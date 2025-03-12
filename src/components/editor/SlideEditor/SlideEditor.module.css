@@ -8,6 +8,7 @@
 }
 
 .slideWrapper {
+    border-radius: 150px;
     max-width: 1366px;
     width: 100%;
     background-color: #fff;

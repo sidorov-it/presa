@@ -3,7 +3,7 @@ import { Slide, Layout, LayoutType, Element, TextElement, ListElement } from '@/
 import { usePresentationStore } from '@/store/presentationStore';
 import LayoutComponent from '@/components/layouts/LayoutComponent';
 import styles from './SlideEditor.module.css';
-
+import Tiptap from '@/components/tiptap/Tiptap';
 interface SlideEditorProps {
     slide: Slide;
     presentationId: string;
@@ -470,7 +470,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             <div className={getSlideClassName()}>
                 <div
                     ref={editorRef}
-                    className={`relative min-h-20 overflow-auto w-full`}
+                    className={`relative min-h-20 overflow-auto w-full rounded-3xl`}
                     style={{
                         ...slide.style,
                         ...getBackgroundStyle(),
@@ -482,42 +482,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 >
                     {/* Контейнер для содержимого */}
                     <div className="relative w-full h-full p-8 mt-10">
-                        {/* Режим редактирования для пустого слайда */}
-                        {isEditing && (
-                            <div className="w-full h-full">
-                                <div className="max-w-3xl mx-auto">
-                                    <textarea
-                                        ref={textAreaRef}
-                                        className="w-full p-2 min-h-[120px] bg-transparent border-none outline-none resize-none text-lg"
-                                        placeholder="Введите текст или "/" для команд..."
-                                        value={editContent}
-                                        onChange={handleContentChange}
-                                    />
-                                    
-                                    <div className="flex space-x-2 mt-4 justify-end">
-                                        <button
-                                            className="px-3 py-1 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded"
-                                            onClick={handleCancelEdit}
-                                        >
-                                            Отмена
-                                        </button>
-                                        <button
-                                            className="px-3 py-1 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded"
-                                            onClick={handleSaveEdit}
-                                        >
-                                            Сохранить
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <SlashCommands 
-                                    isOpen={showSlashCommands}
-                                    position={slashCommandsPosition}
-                                    onSelect={handleSlashCommandSelect}
-                                    onClose={() => setShowSlashCommands(false)}
-                                />
-                            </div>
-                        )}
+                        <Tiptap />
 
                         {/* Рендерим макеты */}
                         {slide.layouts.map((layout) => (
