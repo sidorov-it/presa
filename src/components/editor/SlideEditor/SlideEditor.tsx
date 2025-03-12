@@ -4,6 +4,14 @@ import { usePresentationStore } from '@/store/presentationStore';
 import LayoutComponent from '@/components/layouts/LayoutComponent';
 import styles from './SlideEditor.module.css';
 import Tiptap from '@/components/tiptap/Tiptap';
+import { v4 as uuidv4 } from 'uuid';
+
+// Определяем интерфейс для редактора
+interface EditorInstance {
+    id: string;
+    content: string;
+}
+
 interface SlideEditorProps {
     slide: Slide;
     presentationId: string;
@@ -116,6 +124,20 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const [slashCommandsPosition, setSlashCommandsPosition] = useState({ x: 0, y: 0 });
     const [showTemplates, setShowTemplates] = useState(slide.layouts.length === 0);
     
+    // Состояние для хранения редакторов
+    const [editors, setEditors] = useState<EditorInstance[]>(() => {
+        // Если слайд пустой, создаем один пустой редактор
+        if (slide.layouts.length === 0) {
+            return [{ id: uuidv4(), content: '' }];
+        }
+        return [];
+    });
+    
+    // Состояние для отслеживания активного редактора
+    const [activeEditorId, setActiveEditorId] = useState<string | null>(
+        editors.length > 0 ? editors[0].id : null
+    );
+    
     const editorRef = useRef<HTMLDivElement>(null);
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -173,41 +195,80 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     // Обработчик для клика по слайду (начать редактирование если слайд пустой)
     const handleSlideClick = (e: React.MouseEvent) => {
-        if (slide.layouts.length === 0 && !isEditing) {
-            startEditing();
+        if (slide.layouts.length === 0) {
+            // Если у нас нет редакторов, создаем один
+            if (editors.length === 0) {
+                const newEditor = { id: uuidv4(), content: '' };
+                setEditors([newEditor]);
+                setActiveEditorId(newEditor.id);
+            } else if (activeEditorId === null && editors.length > 0) {
+                // Если есть редакторы, но активный не выбран, выбираем первый
+                setActiveEditorId(editors[0].id);
+            }
         } else {
             setSelectedLayoutId(null);
         }
     };
 
-    // Начать редактирование текста
-    const startEditing = () => {
-        setIsEditing(true);
-        setEditContent('');
-        setShowTemplates(true);
+    // Обработчик для добавления нового редактора при нажатии Enter
+    const handleEnterPressed = (editorId: string) => {
+        // Находим индекс текущего редактора
+        const currentIndex = editors.findIndex(editor => editor.id === editorId);
+        if (currentIndex === -1) return;
         
-        // Фокус на текстовом поле после его рендеринга
-        setTimeout(() => {
-            if (textAreaRef.current) {
-                textAreaRef.current.focus();
-            }
-        }, 10);
+        // Создаем новый редактор
+        const newEditor = { id: uuidv4(), content: '' };
+        
+        // Вставляем новый редактор после текущего
+        const newEditors = [
+            ...editors.slice(0, currentIndex + 1),
+            newEditor,
+            ...editors.slice(currentIndex + 1)
+        ];
+        
+        setEditors(newEditors);
+        
+        // Устанавливаем фокус на новый редактор
+        setActiveEditorId(newEditor.id);
     };
 
-    // Обработчик изменения текста
-    const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const value = e.target.value;
-        setEditContent(value);
+    // Обработчик для удаления пустого редактора при нажатии Backspace
+    const handleBackspacePressed = (editorId: string) => {
+        // Если у нас только один редактор, не удаляем его
+        if (editors.length <= 1) return;
         
-        // Проверяем наличие слеш-команды
-        const lastLineMatch = value.match(/^.*$/m);
-        const lastLine = lastLineMatch ? lastLineMatch[0] : '';
+        // Находим индекс текущего редактора
+        const currentIndex = editors.findIndex(editor => editor.id === editorId);
+        if (currentIndex === -1) return;
         
-        if (lastLine.endsWith('/')) {
-            showSlashCommandMenu(e.target);
-        } else if (showSlashCommands && !lastLine.includes('/')) {
-            setShowSlashCommands(false);
+        // Удаляем текущий редактор
+        const newEditors = [
+            ...editors.slice(0, currentIndex),
+            ...editors.slice(currentIndex + 1)
+        ];
+        
+        setEditors(newEditors);
+        
+        // Устанавливаем фокус на предыдущий редактор (или следующий, если предыдущего нет)
+        const newActiveIndex = currentIndex > 0 ? currentIndex - 1 : 0;
+        if (newEditors.length > 0) {
+            setActiveEditorId(newEditors[newActiveIndex].id);
         }
+    };
+
+    // Обработчик для фокуса на редакторе
+    const handleEditorFocus = (editorId: string) => {
+        setActiveEditorId(editorId);
+    };
+
+    // Обработчик для изменения содержимого редактора
+    const handleContentChange = (editorId: string, content: string) => {
+        // Обновляем содержимое редактора
+        const newEditors = editors.map(editor => 
+            editor.id === editorId ? { ...editor, content } : editor
+        );
+        
+        setEditors(newEditors);
     };
 
     // Показать меню слеш-команд
@@ -470,7 +531,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             <div className={getSlideClassName()}>
                 <div
                     ref={editorRef}
-                    className={`relative min-h-20 overflow-auto w-full rounded-3xl`}
+                    className={`relative min-h-20 overflow-auto w-full rounded-3xl cursor-text`}
                     style={{
                         ...slide.style,
                         ...getBackgroundStyle(),
@@ -480,9 +541,25 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
                 >
-                    {/* Контейнер для содержимого */}
-                    <div className="relative w-full h-full p-8 mt-10">
-                        <Tiptap />
+                    {/* Контейнер для содержимого с CSS Grid */}
+                    <div className={`relative w-full h-full p-8 mt-10 ${styles.slideContent}`}>
+                        {/* Если у нас есть редакторы, отображаем их */}
+                        {editors.length > 0 && slide.layouts.length === 0 && (
+                            editors.map((editor, index) => (
+                                <div key={editor.id} className={styles.editorRow}>
+                                    <Tiptap 
+                                        id={editor.id}
+                                        initialContent={editor.content}
+                                        onEnterPressed={() => handleEnterPressed(editor.id)}
+                                        onBackspacePressed={() => handleBackspacePressed(editor.id)}
+                                        onFocus={() => handleEditorFocus(editor.id)}
+                                        onContentChange={(content) => handleContentChange(editor.id, content)}
+                                        autoFocus={editor.id === activeEditorId}
+                                        placeholder={index === 0 ? "Введите заголовок..." : "Введите текст..."}
+                                    />
+                                </div>
+                            ))
+                        )}
 
                         {/* Рендерим макеты */}
                         {slide.layouts.map((layout) => (
@@ -503,7 +580,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                         ))}
 
                         {/* Шаблоны для пустого слайда */}
-                        {showTemplates && !isEditing && (
+                        {showTemplates && editors.length === 0 && !isEditing && (
                             <div className="max-w-3xl mx-auto text-center mt-8 py-6">
                                 <h3 className="text-lg font-medium text-gray-600 mb-5">
                                     {slide.layouts.length === 0 
@@ -528,7 +605,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                         )}
 
                         {/* Подсказка для клика по пустому слайду */}
-                        {slide.layouts.length === 0 && !showTemplates && !isEditing && (
+                        {slide.layouts.length === 0 && editors.length === 0 && !showTemplates && !isEditing && (
                             <div className="absolute inset-0 flex items-center justify-center text-gray-400 pointer-events-none">
                                 <p className="text-lg">Нажмите для создания слайда</p>
                             </div>

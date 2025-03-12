@@ -97,3 +97,27 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),0 2px 4px -1px rgba(0, 0, 0, 0.06);
     border-radius: 0.375rem;
 }
+
+/* Стили для CSS Grid */
+.slideContent {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    width: 100%;
+    min-height: 100%;
+    padding: 2rem;
+}
+
+.editorRow {
+    width: 100%;
+    min-height: 40px;
+    cursor: text;
+}
+
+.editorRow:first-child {
+    margin-top: 0;
+}
+
+.editorRow:focus-within {
+    outline: none;
+}
