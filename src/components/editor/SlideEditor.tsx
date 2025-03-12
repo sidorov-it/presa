@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Slide, Layout, LayoutType, Element } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
-import LayoutComponent from '../layouts/LayoutComponent';
+import LayoutComponent from '@/components/layouts/LayoutComponent';
 import { generateId } from '@/utils/helpers';
 
 interface SlideEditorProps {

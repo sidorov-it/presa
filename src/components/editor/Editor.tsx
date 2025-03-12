@@ -76,28 +76,14 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
         </div>
       </header>
       
+      <SlidesList
+        slides={presentation.slides}
+        activeSlideId={activeSlideId}
+        onSlideSelect={handleSlideSelect}
+      />
       <div className="flex-1 flex overflow-hidden">
         {/* Боковая панель со списком слайдов */}
-        <div className="w-64 bg-white border-r border-gray-200 overflow-y-auto">
-          <div className="p-4">
-            <h2 className="text-lg font-semibold mb-2">{presentation.title}</h2>
-            <Button
-              variant="secondary"
-              fullWidth
-              onClick={handleAddSlide}
-              className="mb-4"
-              aria-label="Добавить новый слайд"
-            >
-              Добавить слайд
-            </Button>
-            
-            <SlidesList
-              slides={presentation.slides}
-              activeSlideId={activeSlideId}
-              onSlideSelect={handleSlideSelect}
-            />
-          </div>
-        </div>
+        
         
         {/* Основная область редактирования */}
         <div className="flex-1 overflow-y-auto">
