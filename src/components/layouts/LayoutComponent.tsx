@@ -709,12 +709,12 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
         </div>
       )}
       
-      {/* Подсказка для пустого макета */}
-      {layout.elements.length === 0 && (
+      {/* Подсказка для пустого макета не нужна, так как теперь используем текстовый ввод */}
+      {/* {layout.elements.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center text-gray-400 pointer-events-none">
-          <p className="text-sm">Перетащите элементы сюда</p>
+          <p className="text-sm">Нажмите для добавления контента</p>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
