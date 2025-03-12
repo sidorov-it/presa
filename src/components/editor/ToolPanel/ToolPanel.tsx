@@ -572,8 +572,8 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ presentationId, slideId }) => {
               </button>
               
               {/* Всплывающая подсказка */}
-              <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 hidden group-hover:block z-10">
-                <div className="bg-gray-800 text-white text-xs py-1 px-2 rounded whitespace-nowrap">
+              <div className="absolute right-full mr-2 top-1/2 transform -translate-y-1/2 hidden group-hover:block z-10">
+                <div className="bg-gray-800 text-white text-xs py-1 px-2 rounded whitespace-nowrap text-right">
                   {category.tooltip}
                 </div>
               </div>
