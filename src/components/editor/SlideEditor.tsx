@@ -1,155 +1,153 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Slide, Element, Layout } from '@/types';
+import React, { useState, useEffect } from 'react';
+import { Slide, Layout, LayoutType, Element } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
-import LayoutComponent from '@/components/layouts/LayoutComponent';
+import LayoutComponent from '../layouts/LayoutComponent';
+import { generateId } from '@/utils/helpers';
 
 interface SlideEditorProps {
-  slide: Slide;
-  presentationId: string;
-  isPreview?: boolean;
+    slide: Slide;
+    presentationId: string;
 }
 
 const SlideEditor: React.FC<SlideEditorProps> = ({
-  slide,
-  presentationId,
-  isPreview = false,
+    slide,
+    presentationId,
 }) => {
-  const { updateSlide, updateLayout, addLayout } = usePresentationStore();
-  const [isDraggingOver, setIsDraggingOver] = useState(false);
-  const [selectedLayoutId, setSelectedLayoutId] = useState<string | null>(null);
-  const editorRef = useRef<HTMLDivElement>(null);
-  
-  useEffect(() => {
-    if (slide.layouts.length > 0 && !selectedLayoutId) {
-      setSelectedLayoutId(slide.layouts[0].id);
-    }
-  }, [slide.layouts, selectedLayoutId]);
-  
-  const handleUpdateSlideTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateSlide(presentationId, slide.id, { title: e.target.value });
-  };
-  
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDraggingOver(true);
-  };
-  
-  const handleDragLeave = () => {
-    setIsDraggingOver(false);
-  };
-  
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDraggingOver(false);
-    
-    try {
-      const data = JSON.parse(e.dataTransfer.getData('application/json'));
-      
-      if (data.type === 'layout') {
-        const layoutType = data.layoutType;
-        const newLayoutId = addLayout(presentationId, slide.id, layoutType);
-        setSelectedLayoutId(newLayoutId);
-      }
-    } catch (error) {
-      console.error('Error parsing drag data:', error);
-    }
-  };
-  
-  const handleLayoutSelect = (layoutId: string) => {
-    if (!isPreview) {
-      setSelectedLayoutId(layoutId);
-    }
-  };
-  
-  const handleLayoutDelete = (layoutId: string) => {
-    // Удаление макета реализовано в компоненте макета
-    
-    // После удаления, если это был выбранный макет, сбрасываем выбор
-    if (selectedLayoutId === layoutId) {
-      setSelectedLayoutId(null);
-    }
-  };
-  
-  // Функция для обновления размеров и позиций элементов внутри макета
-  const handleElementUpdate = (layoutId: string, elementId: string, data: Partial<Element>) => {
-    // Логика обновления элемента реализована в компоненте макета
-  };
-  
-  // Рассчитываем фон слайда
-  const slideBackground = slide.background.type === 'color'
-    ? { backgroundColor: slide.background.value }
-    : { backgroundImage: `url(${slide.background.value})`, backgroundSize: 'cover', backgroundPosition: 'center' };
-    
-  return (
-    <div className="h-full flex flex-col p-6">
-      {!isPreview && (
-        <div className="mb-4">
-          <input
-            type="text"
-            value={slide.title}
-            onChange={handleUpdateSlideTitle}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Название слайда"
-            aria-label="Название слайда"
-          />
-        </div>
-      )}
-      
-      <div
-        ref={editorRef}
-        className={`
-          flex-1 
-          bg-gray-100 
-          rounded-lg 
-          shadow-inner 
-          overflow-hidden 
-          relative
-          flex 
-          items-center 
-          justify-center
-          transition-all
-          ${isDraggingOver ? 'border-2 border-dashed border-blue-400' : ''}
-        `}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      >
+    const { updateSlide, addLayout, deleteLayout, updateLayout } = usePresentationStore();
+    const [isDraggingOver, setIsDraggingOver] = useState(false);
+    const [selectedLayoutId, setSelectedLayoutId] = useState<string | null>(null);
+
+    // Обработчик для обновления заголовка слайда
+    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        updateSlide(presentationId, slide.id, { title: e.target.value });
+    };
+
+    // Обработчики для drag-and-drop
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        setIsDraggingOver(true);
+    };
+
+    const handleDragLeave = () => {
+        setIsDraggingOver(false);
+    };
+
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        setIsDraggingOver(false);
+
+        try {
+            const data = JSON.parse(e.dataTransfer.getData('application/json'));
+
+            if (data.type === 'layout') {
+                const layoutType = data.layoutType as LayoutType;
+
+                // Создаем новый макет
+                const newLayout: Omit<Layout, 'id'> = {
+                    type: layoutType,
+                    elements: [],
+                    style: {},
+                };
+
+                // Добавляем макет на слайд
+                const newLayoutId = addLayout(presentationId, slide.id, newLayout);
+                setSelectedLayoutId(newLayoutId);
+            }
+        } catch (error) {
+            console.error('Error parsing drag data:', error);
+        }
+    };
+
+    // Обработчик для выбора макета
+    const handleSelectLayout = (layoutId: string) => {
+        setSelectedLayoutId(layoutId);
+    };
+
+    // Обработчик для удаления макета
+    const handleDeleteLayout = (layoutId: string) => {
+        deleteLayout(presentationId, slide.id, layoutId);
+        if (selectedLayoutId === layoutId) {
+            setSelectedLayoutId(null);
+        }
+    };
+
+    // Обработчик для клика по слайду (снятие выделения с макета)
+    const handleSlideClick = () => {
+        setSelectedLayoutId(null);
+    };
+
+    // Получаем стиль фона слайда
+    const getBackgroundStyle = () => {
+        if (slide.background.type === 'color') {
+            return { backgroundColor: slide.background.value };
+        } else if (slide.background.type === 'image') {
+            return {
+                backgroundImage: `url(${slide.background.value})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+            };
+        }
+        return {};
+    };
+
+    return (
         <div
-          className="w-full h-full max-w-4xl mx-auto aspect-[16/9] shadow-md"
-          style={{
-            ...slideBackground,
-            ...slide.style,
-          }}
+            className={`
+        relative
+        w-full
+        h-full
+        overflow-auto
+        ${isDraggingOver ? 'bg-blue-50' : ''}
+      `}
+            style={{
+                ...slide.style,
+                ...getBackgroundStyle(),
+            }}
+            onClick={handleSlideClick}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
         >
-          {slide.layouts.length > 0 ? (
-            slide.layouts.map((layout) => (
-              <LayoutComponent
-                key={layout.id}
-                layout={layout}
-                presentationId={presentationId}
-                slideId={slide.id}
-                isSelected={layout.id === selectedLayoutId}
-                isPreview={isPreview}
-                onSelect={() => handleLayoutSelect(layout.id)}
-                onDelete={() => handleLayoutDelete(layout.id)}
-              />
-            ))
-          ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center p-4 text-gray-400">
-              {isPreview ? (
-                <p>Пустой слайд</p>
-              ) : (
-                <>
-                  <p className="text-lg mb-2">Перетащите макет сюда</p>
-                  <p className="text-sm">или выберите макет из списка справа</p>
-                </>
-              )}
+            {/* Заголовок слайда (виден только в режиме редактирования) */}
+            <div className="absolute top-4 left-4 z-10">
+                <input
+                    type="text"
+                    value={slide.title}
+                    onChange={handleTitleChange}
+                    className="px-2 py-1 bg-white bg-opacity-80 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Заголовок слайда"
+                    aria-label="Заголовок слайда"
+                />
             </div>
-          )}
+            {/* Контейнер для макетов */}
+            <div className="relative w-full h-full p-8 mt-10">
+                {/* Рендерим макеты */}
+                {slide.layouts.map((layout) => (
+                    <div
+                        key={layout.id}
+                        className="relative mb-4 h-auto"
+                        style={{ minHeight: '200px' }}
+                    >
+                        <LayoutComponent
+                            layout={layout}
+                            presentationId={presentationId}
+                            slideId={slide.id}
+                            isSelected={selectedLayoutId === layout.id}
+                            onSelect={() => handleSelectLayout(layout.id)}
+                            onDelete={() => handleDeleteLayout(layout.id)}
+                        />
+                    </div>
+                ))}
+
+                {/* Подсказка для пустого слайда */}
+                {slide.layouts.length === 0 && (
+                    <div className="absolute inset-0 flex items-center justify-center text-gray-400 pointer-events-none">
+                        <p className="text-lg">Перетащите макет на слайд</p>
+                    </div>
+                )}
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default SlideEditor; 

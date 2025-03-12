@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
-import SlidesList from './SlidesList';
-import SlideEditor from './SlideEditor';
-import ToolPanel from './ToolPanel';
-import Button from '../ui/Button';
+import SlidesList from '@/components/editor/SlidesList';
+import SlideEditor from '@/components/editor/SlideEditor';
+import ToolPanel from '@/components/editor/ToolPanel';
+import Button from '@/components/ui/Button';
 
 interface EditorProps {
   presentationId: string;
@@ -105,7 +105,6 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
             <SlideEditor
               slide={activeSlide}
               presentationId={presentationId}
-              isPreview={showPreview}
             />
           ) : (
             <div className="h-full flex items-center justify-center">

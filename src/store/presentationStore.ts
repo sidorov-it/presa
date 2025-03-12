@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
-import { Presentation, Slide, Layout, Element } from '@/types';
+import { Presentation, Slide, Layout, Element, LayoutType } from '@/types';
 
 interface PresentationState {
   presentations: Presentation[];
@@ -19,7 +19,7 @@ interface PresentationState {
   reorderSlides: (presentationId: string, startIndex: number, endIndex: number) => void;
   
   // Работа с макетами
-  addLayout: (presentationId: string, slideId: string, type: Layout['type']) => string;
+  addLayout: (presentationId: string, slideId: string, layout: Omit<Layout, 'id'> | LayoutType) => string;
   updateLayout: (presentationId: string, slideId: string, layoutId: string, data: Partial<Layout>) => void;
   deleteLayout: (presentationId: string, slideId: string, layoutId: string) => void;
   
@@ -205,15 +205,21 @@ export const usePresentationStore = create<PresentationState>((set, get) => ({
   },
   
   // Методы для работы с макетами
-  addLayout: (presentationId, slideId, type) => {
+  addLayout: (presentationId, slideId, layout) => {
     const layoutId = uuidv4();
     
-    const newLayout: Layout = {
-      id: layoutId,
-      type,
-      elements: [],
-      style: {},
-    };
+    // Если передан только тип макета (строка), создаем объект макета
+    const newLayout: Layout = typeof layout === 'string'
+      ? {
+          id: layoutId,
+          type: layout,
+          elements: [],
+          style: {},
+        }
+      : {
+          ...layout,
+          id: layoutId,
+        };
     
     set((state) => ({
       presentations: state.presentations.map((presentation) => {

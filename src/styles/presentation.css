@@ -1,0 +1,363 @@
+/* Общие стили для редактора презентаций */
+.presentation-editor-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.presentation-editor-sidebar {
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #e0e0e0;
+  background-color: #f5f5f5;
+  position: relative;
+}
+
+.presentation-tree-container {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 300px;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 0 8px 8px 0;
+  background-color: #f5f5f5;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  max-height: 80vh;
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+/* Стили для скрытого состояния блока со списком слайдов */
+.presentation-tree-container.hidden {
+  transform: translate(-100%, -50%);
+}
+
+/* Стили для кнопки скрытия/показа */
+.toggle-tree-button {
+  position: absolute;
+  right: -30px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  background-color: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.toggle-tree-button:hover {
+  background-color: #e0e0e0;
+}
+
+.toggle-tree-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.4);
+}
+
+/* Адаптивность для блока со списком слайдов */
+@media (max-width: 768px) {
+  .presentation-tree-container {
+    width: 250px;
+  }
+}
+
+@media (max-width: 576px) {
+  .presentation-tree-container {
+    width: 200px;
+    font-size: 12px;
+  }
+  
+  .presentation-tree-container h2 {
+    font-size: 16px;
+  }
+}
+
+.presentation-tree-container h2 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 18px;
+  color: #333333;
+}
+
+.node-editor-container {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.presentation-preview {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  background-color: #ffffff;
+}
+
+/* Стили для дерева презентации */
+.presentation-tree {
+  font-size: 14px;
+}
+
+.tree-node {
+  margin-bottom: 4px;
+}
+
+.tree-node-content {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.tree-node-content:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.tree-node-content.selected {
+  background-color: rgba(25, 118, 210, 0.1);
+  color: #1976d2;
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-right: 4px;
+  font-size: 10px;
+  color: #757575;
+}
+
+.node-label {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.node-icon {
+  margin-right: 8px;
+}
+
+.tree-node-children {
+  margin-left: 8px;
+}
+
+.presentation-tree-empty {
+  padding: 16px;
+  color: #757575;
+  text-align: center;
+}
+
+/* Стили для редактора узлов */
+.node-editor {
+  padding: 16px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.node-editor h2 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 18px;
+  color: #333333;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 500;
+  color: #555555;
+}
+
+.form-control {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+}
+
+.layout-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.element-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.layout-buttons button,
+.element-buttons button {
+  padding: 6px 12px;
+  background-color: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.layout-buttons button:hover,
+.element-buttons button:hover {
+  background-color: #e0e0e0;
+}
+
+.element-buttons button {
+  background-color: #e3f2fd;
+  border-color: #bbdefb;
+}
+
+.element-buttons button:hover {
+  background-color: #bbdefb;
+}
+
+.node-editor-empty {
+  padding: 24px;
+  text-align: center;
+  color: #757575;
+}
+
+/* Стили для предпросмотра слайда */
+.slide-preview {
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  position: relative;
+}
+
+.slide-title {
+  margin-top: 0;
+  margin-bottom: 24px;
+  font-size: 24px;
+  text-align: center;
+}
+
+.slide-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.direct-elements {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px dashed #e0e0e0;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.layout-preview {
+  width: 100%;
+  min-height: 100px;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+.element-container {
+  padding: 8px;
+}
+
+.element-preview {
+  width: 100%;
+  height: 100%;
+}
+
+.element-preview-wrapper {
+  cursor: move;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.element-preview-wrapper:hover {
+  outline: 2px solid rgba(25, 118, 210, 0.3);
+}
+
+.dragging-over {
+  outline: 2px dashed #1976d2;
+  background-color: rgba(25, 118, 210, 0.05);
+}
+
+.text-element-preview {
+  margin: 0;
+}
+
+.heading-preview {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.paragraph-preview {
+  font-size: 16px;
+}
+
+.list-element-preview {
+  margin: 0;
+  padding-left: 24px;
+}
+
+.image-element-preview {
+  max-width: 100%;
+  height: auto;
+}
+
+.divider-element-preview {
+  width: 100%;
+  margin: 16px 0;
+}
+
+.element-preview-placeholder {
+  padding: 16px;
+  background-color: #f5f5f5;
+  border: 1px dashed #cccccc;
+  border-radius: 4px;
+  text-align: center;
+  color: #757575;
+}
+
+.slide-preview-empty,
+.layout-preview-container,
+.element-preview-container {
+  padding: 24px;
+  text-align: center;
+  color: #757575;
+}
+
+.layout-preview-container h3,
+.element-preview-container h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 18px;
+  color: #333333;
+} 

@@ -52,6 +52,7 @@ export interface BaseElement {
   size: Size;
   style: Style;
   zIndex: number;
+  gridArea?: string;
 }
 
 // Элемент текста
@@ -127,6 +128,9 @@ export interface Layout {
   type: LayoutType;
   elements: Element[];
   style: Style;
+  gridTemplateAreas?: string;
+  gridTemplateColumns?: string;
+  gridTemplateRows?: string;
 }
 
 // Интерфейс слайда

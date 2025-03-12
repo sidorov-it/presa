@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Layout, Element } from '@/types';
+import React, { useState, useEffect, useRef } from 'react';
+import { Layout, Element, TextElement, ListElement, ImageElement, IconElement, VideoElement, ChartElement, ButtonElement, DividerElement } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import ElementComponent from '../elements/ElementComponent';
 
@@ -8,7 +8,6 @@ interface LayoutComponentProps {
   presentationId: string;
   slideId: string;
   isSelected: boolean;
-  isPreview: boolean;
   onSelect: () => void;
   onDelete: () => void;
 }
@@ -18,12 +17,245 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
   presentationId,
   slideId,
   isSelected,
-  isPreview,
   onSelect,
   onDelete,
 }) => {
   const { updateLayout, deleteLayout, addElement, updateElement, deleteElement } = usePresentationStore();
   const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const elementsAddedRef = useRef(false);
+  
+  // Добавляем эффект для автоматического создания элементов при создании макета
+  useEffect(() => {
+    // Проверяем, что элементы еще не были добавлены и макет пустой
+    if (!elementsAddedRef.current && layout.elements.length === 0) {
+      elementsAddedRef.current = true;
+      addDefaultElements();
+    }
+  }, [layout.id]);
+  
+  // Функция для добавления элементов по умолчанию в зависимости от типа макета
+  const addDefaultElements = () => {
+    switch (layout.type) {
+      case 'single-column': {
+        // Создаем элемент заголовка с правильным типом
+        const headingElement: Omit<TextElement, 'id'> = {
+          type: 'heading',
+          content: 'Заголовок',
+          position: { x: 0, y: 0 },
+          size: { width: 100, height: 60 },
+          style: { fontSize: '24px', fontWeight: 'bold', color: '#111111', textAlign: 'center' },
+          zIndex: 1,
+        };
+        addElement(presentationId, slideId, layout.id, headingElement);
+        
+        // Создаем элемент параграфа с правильным типом
+        const paragraphElement: Omit<TextElement, 'id'> = {
+          type: 'paragraph',
+          content: 'Это параграф текста. Двойной клик для редактирования содержимого.',
+          position: { x: 0, y: 0 },
+          size: { width: 100, height: 100 },
+          style: { fontSize: '16px', color: '#333333', textAlign: 'center' },
+          zIndex: 2,
+        };
+        addElement(presentationId, slideId, layout.id, paragraphElement);
+        break;
+      }
+        
+      case 'two-columns': {
+        // Левая колонка - текст
+        const leftHeadingElement: Omit<TextElement, 'id'> = {
+          type: 'heading',
+          content: 'Заголовок',
+          position: { x: 0, y: 0 },
+          size: { width: 100, height: 60 },
+          style: { fontSize: '24px', fontWeight: 'bold', color: '#111111' },
+          zIndex: 1,
+          gridArea: 'left',
+        };
+        addElement(presentationId, slideId, layout.id, leftHeadingElement);
+        
+        const leftParagraphElement: Omit<TextElement, 'id'> = {
+          type: 'paragraph',
+          content: 'Это параграф текста. Двойной клик для редактирования содержимого.',
+          position: { x: 0, y: 0 },
+          size: { width: 100, height: 100 },
+          style: { fontSize: '16px', color: '#333333' },
+          zIndex: 2,
+          gridArea: 'left',
+        };
+        addElement(presentationId, slideId, layout.id, leftParagraphElement);
+        
+        // Правая колонка - текст
+        const rightParagraphElement: Omit<TextElement, 'id'> = {
+          type: 'paragraph',
+          content: 'Вторая колонка с текстом. Двойной клик для редактирования.',
+          position: { x: 0, y: 0 },
+          size: { width: 100, height: 100 },
+          style: { fontSize: '16px', color: '#333333' },
+          zIndex: 3,
+          gridArea: 'right',
+        };
+        addElement(presentationId, slideId, layout.id, rightParagraphElement);
+        break;
+      }
+        
+      case 'three-columns': {
+        // Добавляем три параграфа
+        for (let i = 0; i < 3; i++) {
+          const columnElement: Omit<TextElement, 'id'> = {
+            type: 'paragraph',
+            content: `Колонка ${i + 1}. Двойной клик для редактирования.`,
+            position: { x: 0, y: 0 },
+            size: { width: 100, height: 100 },
+            style: { fontSize: '16px', color: '#333333', textAlign: 'center' },
+            zIndex: i + 1,
+            gridArea: `col${i + 1}`,
+          };
+          addElement(presentationId, slideId, layout.id, columnElement);
+        }
+        break;
+      }
+        
+      case 'image-text': {
+        // Изображение
+        const imageElement: Omit<ImageElement, 'id'> = {
+          type: 'image',
+          src: 'https://via.placeholder.com/600x400',
+          alt: 'Изображение',
+          position: { x: 0, y: 0 },
+          size: { width: 100, height: 100 },
+          style: {},
+          zIndex: 1,
+          gridArea: 'image',
+        };
+        addElement(presentationId, slideId, layout.id, imageElement);
+        
+        // Текст
+        const headingElement: Omit<TextElement, 'id'> = {
+          type: 'heading',
+          content: 'Заголовок',
+          position: { x: 0, y: 0 },
+          size: { width: 100, height: 60 },
+          style: { fontSize: '24px', fontWeight: 'bold', color: '#111111' },
+          zIndex: 2,
+          gridArea: 'text',
+        };
+        addElement(presentationId, slideId, layout.id, headingElement);
+        
+        const paragraphElement: Omit<TextElement, 'id'> = {
+          type: 'paragraph',
+          content: 'Описание изображения. Двойной клик для редактирования.',
+          position: { x: 0, y: 0 },
+          size: { width: 100, height: 100 },
+          style: { fontSize: '16px', color: '#333333' },
+          zIndex: 3,
+          gridArea: 'text',
+        };
+        addElement(presentationId, slideId, layout.id, paragraphElement);
+        break;
+      }
+        
+      case 'text-image': {
+        // Текст
+        const headingElement: Omit<TextElement, 'id'> = {
+          type: 'heading',
+          content: 'Заголовок',
+          position: { x: 0, y: 0 },
+          size: { width: 100, height: 60 },
+          style: { fontSize: '24px', fontWeight: 'bold', color: '#111111' },
+          zIndex: 1,
+          gridArea: 'text',
+        };
+        addElement(presentationId, slideId, layout.id, headingElement);
+        
+        const paragraphElement: Omit<TextElement, 'id'> = {
+          type: 'paragraph',
+          content: 'Описание изображения. Двойной клик для редактирования.',
+          position: { x: 0, y: 0 },
+          size: { width: 100, height: 100 },
+          style: { fontSize: '16px', color: '#333333' },
+          zIndex: 2,
+          gridArea: 'text',
+        };
+        addElement(presentationId, slideId, layout.id, paragraphElement);
+        
+        // Изображение
+        const imageElement: Omit<ImageElement, 'id'> = {
+          type: 'image',
+          src: 'https://via.placeholder.com/600x400',
+          alt: 'Изображение',
+          position: { x: 0, y: 0 },
+          size: { width: 100, height: 100 },
+          style: {},
+          zIndex: 3,
+          gridArea: 'image',
+        };
+        addElement(presentationId, slideId, layout.id, imageElement);
+        break;
+      }
+        
+      case 'icons-with-text': {
+        // Добавляем 3 иконки с текстом
+        for (let i = 0; i < 3; i++) {
+          const iconElement: Omit<IconElement, 'id'> = {
+            type: 'icon',
+            iconName: 'star',
+            position: { x: 0, y: 0 },
+            size: { width: 48, height: 48 },
+            style: { color: '#4a5568' },
+            zIndex: i * 2 + 1,
+            gridArea: `icon${i + 1}`,
+          };
+          addElement(presentationId, slideId, layout.id, iconElement);
+          
+          const textElement: Omit<TextElement, 'id'> = {
+            type: 'paragraph',
+            content: `Описание ${i + 1}`,
+            position: { x: 0, y: 0 },
+            size: { width: 100, height: 40 },
+            style: { fontSize: '14px', color: '#333333', textAlign: 'center' },
+            zIndex: i * 2 + 2,
+            gridArea: `text${i + 1}`,
+          };
+          addElement(presentationId, slideId, layout.id, textElement);
+        }
+        break;
+      }
+        
+      case 'cards': {
+        // Добавляем 3 карточки
+        for (let i = 0; i < 3; i++) {
+          const headingElement: Omit<TextElement, 'id'> = {
+            type: 'heading',
+            content: `Карточка ${i + 1}`,
+            position: { x: 0, y: 0 },
+            size: { width: 100, height: 40 },
+            style: { fontSize: '18px', fontWeight: 'bold', color: '#111111', textAlign: 'center' },
+            zIndex: i * 2 + 1,
+            gridArea: `card${i + 1}`,
+          };
+          addElement(presentationId, slideId, layout.id, headingElement);
+          
+          const paragraphElement: Omit<TextElement, 'id'> = {
+            type: 'paragraph',
+            content: 'Описание карточки',
+            position: { x: 0, y: 0 },
+            size: { width: 100, height: 60 },
+            style: { fontSize: '14px', color: '#333333', textAlign: 'center' },
+            zIndex: i * 2 + 2,
+            gridArea: `card${i + 1}`,
+          };
+          addElement(presentationId, slideId, layout.id, paragraphElement);
+        }
+        break;
+      }
+        
+      case 'blank':
+      default:
+        // Для пустого макета не добавляем элементы
+        break;
+    }
+  };
   
   // Обработчики для drag-and-drop
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -50,103 +282,148 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
         const x = e.clientX - layoutRect.left;
         const y = e.clientY - layoutRect.top;
         
+        // Определяем, в какую область макета попал элемент
+        let gridArea = 'default';
+        
+        // Для макетов с колонками определяем, в какую колонку попал элемент
+        if (layout.type === 'two-columns') {
+          gridArea = x < layoutRect.width / 2 ? 'left' : 'right';
+        } else if (layout.type === 'three-columns') {
+          const colWidth = layoutRect.width / 3;
+          if (x < colWidth) {
+            gridArea = 'col1';
+          } else if (x < colWidth * 2) {
+            gridArea = 'col2';
+          } else {
+            gridArea = 'col3';
+          }
+        } else if (layout.type === 'image-text') {
+          gridArea = x < layoutRect.width / 2 ? 'image' : 'text';
+        } else if (layout.type === 'text-image') {
+          gridArea = x < layoutRect.width / 2 ? 'text' : 'image';
+        }
+        
         // Создаем новый элемент в зависимости от типа
         let newElement: Omit<Element, 'id'>;
         
         switch (elementType) {
-          case 'text':
-            newElement = {
+          case 'text': {
+            const textElement: Omit<TextElement, 'id'> = {
               type: 'text',
               content: 'Двойной клик для редактирования текста',
-              position: { x, y },
+              position: { x: 0, y: 0 },
               size: { width: 200, height: 50 },
               style: { fontSize: '16px', color: '#333333' },
               zIndex: layout.elements.length + 1,
+              gridArea,
             };
+            newElement = textElement;
             break;
+          }
             
-          case 'heading':
-            newElement = {
+          case 'heading': {
+            const headingElement: Omit<TextElement, 'id'> = {
               type: 'heading',
               content: 'Заголовок',
-              position: { x, y },
+              position: { x: 0, y: 0 },
               size: { width: 300, height: 60 },
               style: { fontSize: '24px', fontWeight: 'bold', color: '#111111' },
               zIndex: layout.elements.length + 1,
+              gridArea,
             };
+            newElement = headingElement;
             break;
+          }
             
-          case 'paragraph':
-            newElement = {
+          case 'paragraph': {
+            const paragraphElement: Omit<TextElement, 'id'> = {
               type: 'paragraph',
               content: 'Это параграф текста. Двойной клик для редактирования содержимого.',
-              position: { x, y },
+              position: { x: 0, y: 0 },
               size: { width: 300, height: 100 },
               style: { fontSize: '16px', color: '#333333' },
               zIndex: layout.elements.length + 1,
+              gridArea,
             };
+            newElement = paragraphElement;
             break;
+          }
             
-          case 'list':
-            newElement = {
+          case 'list': {
+            const listElement: Omit<ListElement, 'id'> = {
               type: 'list',
               items: ['Первый пункт', 'Второй пункт', 'Третий пункт'],
               listType: 'bullet',
-              position: { x, y },
+              position: { x: 0, y: 0 },
               size: { width: 300, height: 120 },
               style: { fontSize: '16px', color: '#333333' },
               zIndex: layout.elements.length + 1,
+              gridArea,
             };
+            newElement = listElement;
             break;
+          }
             
-          case 'image':
-            newElement = {
+          case 'image': {
+            const imageElement: Omit<ImageElement, 'id'> = {
               type: 'image',
               src: 'https://via.placeholder.com/300x200',
               alt: 'Изображение',
-              position: { x, y },
+              position: { x: 0, y: 0 },
               size: { width: 300, height: 200 },
               style: { borderRadius: '4px' },
               zIndex: layout.elements.length + 1,
+              gridArea,
             };
+            newElement = imageElement;
             break;
+          }
             
-          case 'divider':
-            newElement = {
+          case 'divider': {
+            const dividerElement: Omit<DividerElement, 'id'> = {
               type: 'divider',
-              position: { x, y },
+              position: { x: 0, y: 0 },
               size: { width: 300, height: 2 },
               style: { backgroundColor: '#e0e0e0' },
               zIndex: layout.elements.length + 1,
+              gridArea,
             };
+            newElement = dividerElement;
             break;
+          }
             
-          case 'icon':
-            newElement = {
+          case 'icon': {
+            const iconElement: Omit<IconElement, 'id'> = {
               type: 'icon',
               iconName: 'star',
-              position: { x, y },
+              position: { x: 0, y: 0 },
               size: { width: 48, height: 48 },
               style: { color: '#4a5568' },
               zIndex: layout.elements.length + 1,
+              gridArea,
             };
+            newElement = iconElement;
             break;
+          }
             
-          case 'video':
-            newElement = {
+          case 'video': {
+            const videoElement: Omit<VideoElement, 'id'> = {
               type: 'video',
               src: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
               autoplay: false,
               controls: true,
-              position: { x, y },
+              position: { x: 0, y: 0 },
               size: { width: 400, height: 225 },
               style: { borderRadius: '4px' },
               zIndex: layout.elements.length + 1,
+              gridArea,
             };
+            newElement = videoElement;
             break;
+          }
             
-          case 'chart':
-            newElement = {
+          case 'chart': {
+            const chartElement: Omit<ChartElement, 'id'> = {
               type: 'chart',
               chartType: 'bar',
               data: {
@@ -159,22 +436,25 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
                   },
                 ],
               },
-              position: { x, y },
+              position: { x: 0, y: 0 },
               size: { width: 400, height: 300 },
               style: { backgroundColor: '#ffffff', borderRadius: '4px' },
               zIndex: layout.elements.length + 1,
+              gridArea,
             };
+            newElement = chartElement;
             break;
+          }
             
-          case 'button':
-            newElement = {
+          case 'button': {
+            const buttonElement: Omit<ButtonElement, 'id'> = {
               type: 'button',
               text: 'Кнопка',
               action: {
                 type: 'link',
                 target: 'https://example.com',
               },
-              position: { x, y },
+              position: { x: 0, y: 0 },
               size: { width: 120, height: 40 },
               style: {
                 backgroundColor: '#4299e1',
@@ -183,8 +463,11 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
                 fontWeight: 'bold',
               },
               zIndex: layout.elements.length + 1,
+              gridArea,
             };
+            newElement = buttonElement;
             break;
+          }
             
           default:
             return;
@@ -200,10 +483,8 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
   
   // Обработчик для выбора макета
   const handleLayoutClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isPreview) {
-      e.stopPropagation();
-      onSelect();
-    }
+    e.stopPropagation();
+    onSelect();
   };
   
   // Обработчик для удаления макета
@@ -223,7 +504,7 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
     deleteElement(presentationId, slideId, layout.id, elementId);
   };
   
-  // Определяем стили макета в зависимости от типа
+  // Определяем стили и структуру макета в зависимости от типа
   const getLayoutStyles = () => {
     const baseStyles = {
       ...layout.style,
@@ -248,6 +529,7 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
           ...baseStyles,
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
+          gridTemplateAreas: '"left right"',
           gap: '20px',
           padding: '20px',
         };
@@ -257,6 +539,7 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
           ...baseStyles,
           display: 'grid',
           gridTemplateColumns: '1fr 1fr 1fr',
+          gridTemplateAreas: '"col1 col2 col3"',
           gap: '20px',
           padding: '20px',
         };
@@ -266,6 +549,7 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
           ...baseStyles,
           display: 'grid',
           gridTemplateColumns: '1fr 1fr 1fr 1fr',
+          gridTemplateAreas: '"col1 col2 col3 col4"',
           gap: '15px',
           padding: '20px',
         };
@@ -275,6 +559,7 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
           ...baseStyles,
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
+          gridTemplateAreas: '"image text"',
           gap: '20px',
           padding: '20px',
         };
@@ -284,6 +569,7 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
           ...baseStyles,
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
+          gridTemplateAreas: '"text image"',
           gap: '20px',
           padding: '20px',
         };
@@ -292,7 +578,9 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
         return {
           ...baseStyles,
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gridTemplateRows: 'repeat(2, 1fr)',
+          gridTemplateAreas: '"card1 card2" "card3 card4"',
           gap: '20px',
           padding: '20px',
         };
@@ -301,7 +589,8 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
         return {
           ...baseStyles,
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gridTemplateAreas: '"icon1 icon2 icon3 icon4"',
           gap: '20px',
           padding: '20px',
         };
@@ -312,11 +601,61 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
     }
   };
   
+  // Группируем элементы по областям сетки
+  const getElementsByGridArea = () => {
+    const elementsByArea: Record<string, Element[]> = {};
+    
+    layout.elements.forEach((element) => {
+      const area = (element as any).gridArea || 'default';
+      if (!elementsByArea[area]) {
+        elementsByArea[area] = [];
+      }
+      elementsByArea[area].push(element);
+    });
+    
+    return elementsByArea;
+  };
+  
+  // Рендерим элементы в соответствии с их областями сетки
+  const renderElements = () => {
+    const elementsByArea = getElementsByGridArea();
+    
+    // Для макетов с сеткой рендерим элементы по областям
+    if (layout.type !== 'blank') {
+      return Object.entries(elementsByArea).map(([area, elements]) => (
+        <div 
+          key={area} 
+          className="flex flex-col items-center justify-center h-full"
+          style={{ gridArea: area }}
+        >
+          {elements.map((element) => (
+            <ElementComponent
+              key={element.id}
+              element={element}
+              onUpdate={(data) => handleElementUpdate(element.id, data)}
+              onDelete={() => handleElementDelete(element.id)}
+            />
+          ))}
+        </div>
+      ));
+    }
+    
+    // Для пустого макета просто рендерим элементы
+    return layout.elements.map((element) => (
+      <ElementComponent
+        key={element.id}
+        element={element}
+        onUpdate={(data) => handleElementUpdate(element.id, data)}
+        onDelete={() => handleElementDelete(element.id)}
+      />
+    ));
+  };
+  
   return (
     <div
       className={`
         relative
-        ${isSelected && !isPreview ? 'outline outline-2 outline-blue-500' : ''}
+        ${isSelected ? 'outline outline-2 outline-blue-500' : ''}
         ${isDraggingOver ? 'bg-blue-50' : ''}
       `}
       style={getLayoutStyles()}
@@ -333,20 +672,12 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
         }
       }}
     >
-      {/* Элементы макета */}
-      {layout.elements.map((element) => (
-        <ElementComponent
-          key={element.id}
-          element={element}
-          isPreview={isPreview}
-          onUpdate={(data) => handleElementUpdate(element.id, data)}
-          onDelete={() => handleElementDelete(element.id)}
-        />
-      ))}
+      {/* Рендерим элементы макета */}
+      {renderElements()}
       
       {/* Кнопки управления макетом (видны только в режиме редактирования и при выборе) */}
-      {isSelected && !isPreview && (
-        <div className="absolute top-2 right-2 flex space-x-1 bg-white rounded-md shadow-sm p-1">
+      {isSelected && (
+        <div className="absolute top-2 right-2 flex space-x-1 bg-white rounded-md shadow-sm p-1 z-50">
           <button
             className="p-1 text-gray-500 hover:text-red-600 rounded"
             onClick={handleDeleteLayout}
@@ -379,7 +710,7 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
       )}
       
       {/* Подсказка для пустого макета */}
-      {layout.elements.length === 0 && !isPreview && (
+      {layout.elements.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center text-gray-400 pointer-events-none">
           <p className="text-sm">Перетащите элементы сюда</p>
         </div>
