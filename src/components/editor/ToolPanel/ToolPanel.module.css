@@ -1,0 +1,13 @@
+.toolPanel {
+    display: flex;
+    flex-direction: column;
+    pointer-events: none;
+    position: absolute;
+    top: 3.5rem;
+    bottom: 0.5rem;
+    justify-content: center;
+    color: #3c3838;
+    right: 0.5rem;
+    z-index: 100;
+    background-color: white;
+}

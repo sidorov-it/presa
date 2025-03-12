@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import SlidesList from '@/components/editor/SlidesList';
 import SlideEditor from '@/components/editor/SlideEditor';
-import ToolPanel from '@/components/editor/ToolPanel';
+import ToolPanel from '@/components/editor/ToolPanel/ToolPanel';
 import Button from '@/components/ui/Button';
-
+import styles from './Editor.module.css';
 interface EditorProps {
   presentationId: string;
 }
@@ -13,16 +13,16 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
   const { getPresentation, addSlide } = usePresentationStore();
   const [activeSlideId, setActiveSlideId] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
-  
+
   const presentation = getPresentation(presentationId);
-  
+
   useEffect(() => {
     // Выбираем первый слайд по умолчанию, если есть слайды
     if (presentation && presentation.slides.length > 0 && !activeSlideId) {
       setActiveSlideId(presentation.slides[0].id);
     }
   }, [presentation, activeSlideId]);
-  
+
   if (!presentation) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -30,30 +30,30 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
       </div>
     );
   }
-  
+
   const activeSlide = presentation.slides.find(
     (slide) => slide.id === activeSlideId
   );
-  
+
   const handleAddSlide = () => {
     const newSlideId = addSlide(presentationId);
     setActiveSlideId(newSlideId);
   };
-  
+
   const handleSlideSelect = (slideId: string) => {
     setActiveSlideId(slideId);
   };
-  
+
   const handlePreviewToggle = () => {
     setShowPreview(!showPreview);
   };
-  
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen flex flex-col bg-[#f6f4f4]">
       <header className="bg-white border-b border-gray-200 p-4">
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold text-blue-600">Presa</h1>
-          
+
           <div className="flex items-center space-x-4">
             <Button
               variant="outline"
@@ -63,11 +63,11 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
             >
               {showPreview ? 'Редактировать' : 'Просмотр'}
             </Button>
-            
-            <Button 
-              variant="primary" 
-              size="sm" 
-              onClick={() => {}}
+
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => { }}
               aria-label="Экспортировать презентацию"
             >
               Экспорт
@@ -75,40 +75,37 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
           </div>
         </div>
       </header>
-      
+
       <SlidesList
         slides={presentation.slides}
         activeSlideId={activeSlideId}
         onSlideSelect={handleSlideSelect}
       />
-      <div className="flex-1 flex overflow-hidden">
-        {/* Боковая панель со списком слайдов */}
-        
-        
+
+      <div className="">
         {/* Основная область редактирования */}
-        <div className="flex-1 overflow-y-auto">
-          {activeSlide ? (
+        <div className="">
+          {presentation.slides.map(slide => (
+            // <div className={styles.slide}>
             <SlideEditor
-              slide={activeSlide}
+              key={slide.id}
+              slide={slide}
               presentationId={presentationId}
+              handleSelectSlide={handleSlideSelect}
+              isSelected={activeSlideId === slide.id}
             />
-          ) : (
-            <div className="h-full flex items-center justify-center">
-              <p className="text-lg text-gray-500">
-                Выберите слайд для редактирования или создайте новый
-              </p>
-            </div>
-          )}
+            // </div>
+          ))}
         </div>
-        
+
         {/* Панель инструментов */}
         {!showPreview && activeSlide && (
-          <div className="w-80 bg-white border-l border-gray-200 overflow-y-auto">
+          // <div className="w-80 bg-white border-l border-gray-200 overflow-y-auto">
             <ToolPanel
               presentationId={presentationId}
               slideId={activeSlide.id}
             />
-          </div>
+          // </div>
         )}
       </div>
     </div>

@@ -57,70 +57,11 @@ const SlidesList: React.FC<SlidesListProps> = ({
         }
     };
 
-
-    const fakeSlides = [
-        {
-            id: '1',
-            title: 'Слайд 1',
-            layouts: []
-        },
-        {
-            id: '2',
-            title: 'Слайд 2',
-            layouts: []
-        },
-        {
-            id: '3',
-            title: 'Слайд 3',
-            layouts: []
-        },
-        {
-            id: '4',
-            title: 'Слайд 4',
-            layouts: []
-        },
-        {
-            id: '5',
-            title: 'Слайд 5',
-            layouts: []
-        },
-        {
-            id: '6',
-            title: 'Слайд 6',
-            layouts: []
-        },
-        {
-            id: '7',
-            title: 'Слайд 7',
-            layouts: []
-        },
-        {
-            id: '8',
-            title: 'Слайд 8',
-            layouts: []
-        },
-        {
-            id: '9',
-            title: 'Слайд 9',
-            layouts: []
-        },
-        {
-            id: '10',
-            title: 'Слайд 10',
-            layouts: []
-        },
-        {
-            id: '11',
-            title: 'Слайд 11',
-            layouts: []
-        },
-        
-    ]
     return (
         <div className={styles.leftPanel}>
             <div className={styles.container}>
                 <ul>
-                    {fakeSlides.map((slide, index) => {
+                    {slides.map((slide, index) => {
                         return (
                             <li key={slide.id} className={styles.slide} style={index !== slides.length - 1 ? { transformOrigin: '50% 50% 0px' } : {}}>
                                 <div className={styles.slideContent}>

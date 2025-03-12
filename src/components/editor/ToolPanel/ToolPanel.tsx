@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { LayoutType, ElementType } from '@/types';
-
+import styles from './ToolPanel.module.css';
 interface ToolPanelProps {
   presentationId: string;
   slideId: string;
@@ -8,7 +8,7 @@ interface ToolPanelProps {
 
 const ToolPanel: React.FC<ToolPanelProps> = ({ presentationId, slideId }) => {
   const [activeTab, setActiveTab] = useState<'layouts' | 'elements' | 'background'>('layouts');
-  
+
   // Макеты, доступные для добавления
   const availableLayouts: { type: LayoutType; title: string; icon: React.ReactNode }[] = [
     {
@@ -111,7 +111,7 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ presentationId, slideId }) => {
       ),
     },
   ];
-  
+
   // Элементы, доступные для добавления
   const availableElements: { type: ElementType; title: string; icon: React.ReactNode }[] = [
     {
@@ -226,7 +226,7 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ presentationId, slideId }) => {
       ),
     },
   ];
-  
+
   // Обработчики драг-н-дроп
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, itemType: 'layout' | 'element', itemData: any) => {
     // Устанавливаем данные для перетаскивания в формате JSON
@@ -234,201 +234,203 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ presentationId, slideId }) => {
       type: itemType,
       ...itemData,
     };
-    
+
     e.dataTransfer.setData('application/json', JSON.stringify(dragData));
     e.dataTransfer.effectAllowed = 'copy';
   };
-  
+
   return (
-    <div className="h-full flex flex-col">
-      {/* Табы панели инструментов */}
-      <div className="flex border-b border-gray-200">
-        <button
-          className={`
+    <div className={styles.toolPanel}>
+      <div className="h-full flex flex-col">
+        {/* Табы панели инструментов */}
+        <div className="flex border-b border-gray-200">
+          <button
+            className={`
             flex-1 py-3 px-4 text-sm font-medium
             ${activeTab === 'layouts' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}
           `}
-          onClick={() => setActiveTab('layouts')}
-          aria-label="Показать макеты"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              setActiveTab('layouts');
-            }
-          }}
-        >
-          Макеты
-        </button>
-        
-        <button
-          className={`
+            onClick={() => setActiveTab('layouts')}
+            aria-label="Показать макеты"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setActiveTab('layouts');
+              }
+            }}
+          >
+            Макеты
+          </button>
+
+          <button
+            className={`
             flex-1 py-3 px-4 text-sm font-medium
             ${activeTab === 'elements' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}
           `}
-          onClick={() => setActiveTab('elements')}
-          aria-label="Показать элементы"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              setActiveTab('elements');
-            }
-          }}
-        >
-          Элементы
-        </button>
-        
-        <button
-          className={`
+            onClick={() => setActiveTab('elements')}
+            aria-label="Показать элементы"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setActiveTab('elements');
+              }
+            }}
+          >
+            Элементы
+          </button>
+
+          <button
+            className={`
             flex-1 py-3 px-4 text-sm font-medium
             ${activeTab === 'background' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}
           `}
-          onClick={() => setActiveTab('background')}
-          aria-label="Настроить фон"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              setActiveTab('background');
-            }
-          }}
-        >
-          Фон
-        </button>
-      </div>
-      
-      {/* Содержимое панели в зависимости от активного таба */}
-      <div className="flex-1 overflow-y-auto p-4">
-        {activeTab === 'layouts' && (
-          <div>
-            <h3 className="text-sm font-medium text-gray-700 mb-3">Smart Layouts</h3>
-            <div className="grid grid-cols-2 gap-4">
-              {availableLayouts.map((layout) => (
-                <div
-                  key={layout.type}
-                  className="border border-gray-200 rounded-lg p-3 hover:border-blue-500 cursor-grab bg-white"
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, 'layout', { layoutType: layout.type })}
-                  aria-label={`Макет: ${layout.title}`}
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      // Обработка нажатия клавиши (например, добавление макета)
-                    }
-                  }}
-                >
-                  <div className="mb-2 text-gray-600 flex justify-center">
-                    {layout.icon}
-                  </div>
-                  <p className="text-xs text-center text-gray-800">{layout.title}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-        
-        {activeTab === 'elements' && (
-          <div>
-            <h3 className="text-sm font-medium text-gray-700 mb-3">Элементы</h3>
-            <div className="grid grid-cols-2 gap-4">
-              {availableElements.map((element) => (
-                <div
-                  key={element.type}
-                  className="border border-gray-200 rounded-lg p-3 hover:border-blue-500 cursor-grab bg-white"
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, 'element', { elementType: element.type })}
-                  aria-label={`Элемент: ${element.title}`}
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      // Обработка нажатия клавиши (например, добавление элемента)
-                    }
-                  }}
-                >
-                  <div className="mb-2 text-gray-600 flex justify-center">
-                    {element.icon}
-                  </div>
-                  <p className="text-xs text-center text-gray-800">{element.title}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-        
-        {activeTab === 'background' && (
-          <div>
-            <h3 className="text-sm font-medium text-gray-700 mb-3">Фон слайда</h3>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Цвет фона
-                </label>
-                <div className="grid grid-cols-5 gap-2">
-                  {['#ffffff', '#f8f9fa', '#e9ecef', '#dee2e6', '#ced4da', '#6c757d', '#495057', '#343a40', '#212529', '#000000'].map((color) => (
-                    <button
-                      key={color}
-                      className="w-full aspect-square rounded-md border border-gray-300 cursor-pointer"
-                      style={{ backgroundColor: color }}
-                      aria-label={`Выбрать цвет фона: ${color}`}
-                      tabIndex={0}
-                    />
-                  ))}
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Пользовательский цвет
-                </label>
-                <input
-                  type="color"
-                  className="w-full h-10 rounded-md border border-gray-300 cursor-pointer"
-                  defaultValue="#ffffff"
-                  aria-label="Выбрать пользовательский цвет фона"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Изображение фона
-                </label>
-                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                  <div className="space-y-1 text-center">
-                    <svg
-                      className="mx-auto h-12 w-12 text-gray-400"
-                      stroke="currentColor"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                    <div className="flex text-sm text-gray-600">
-                      <label
-                        htmlFor="file-upload"
-                        className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
-                      >
-                        <span>Загрузить файл</span>
-                        <input id="file-upload" name="file-upload" type="file" className="sr-only" />
-                      </label>
-                      <p className="pl-1">или перетащите изображение</p>
+            onClick={() => setActiveTab('background')}
+            aria-label="Настроить фон"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setActiveTab('background');
+              }
+            }}
+          >
+            Фон
+          </button>
+        </div>
+
+        {/* Содержимое панели в зависимости от активного таба */}
+        <div className="flex-1 overflow-y-auto p-4">
+          {activeTab === 'layouts' && (
+            <div>
+              <h3 className="text-sm font-medium text-gray-700 mb-3">Smart Layouts</h3>
+              <div className="grid grid-cols-2 gap-4">
+                {availableLayouts.map((layout) => (
+                  <div
+                    key={layout.type}
+                    className="border border-gray-200 rounded-lg p-3 hover:border-blue-500 cursor-grab bg-white"
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, 'layout', { layoutType: layout.type })}
+                    aria-label={`Макет: ${layout.title}`}
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        // Обработка нажатия клавиши (например, добавление макета)
+                      }
+                    }}
+                  >
+                    <div className="mb-2 text-gray-600 flex justify-center">
+                      {layout.icon}
                     </div>
-                    <p className="text-xs text-gray-500">PNG, JPG, GIF до 10MB</p>
+                    <p className="text-xs text-center text-gray-800">{layout.title}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'elements' && (
+            <div>
+              <h3 className="text-sm font-medium text-gray-700 mb-3">Элементы</h3>
+              <div className="grid grid-cols-2 gap-4">
+                {availableElements.map((element) => (
+                  <div
+                    key={element.type}
+                    className="border border-gray-200 rounded-lg p-3 hover:border-blue-500 cursor-grab bg-white"
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, 'element', { elementType: element.type })}
+                    aria-label={`Элемент: ${element.title}`}
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        // Обработка нажатия клавиши (например, добавление элемента)
+                      }
+                    }}
+                  >
+                    <div className="mb-2 text-gray-600 flex justify-center">
+                      {element.icon}
+                    </div>
+                    <p className="text-xs text-center text-gray-800">{element.title}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'background' && (
+            <div>
+              <h3 className="text-sm font-medium text-gray-700 mb-3">Фон слайда</h3>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Цвет фона
+                  </label>
+                  <div className="grid grid-cols-5 gap-2">
+                    {['#ffffff', '#f8f9fa', '#e9ecef', '#dee2e6', '#ced4da', '#6c757d', '#495057', '#343a40', '#212529', '#000000'].map((color) => (
+                      <button
+                        key={color}
+                        className="w-full aspect-square rounded-md border border-gray-300 cursor-pointer"
+                        style={{ backgroundColor: color }}
+                        aria-label={`Выбрать цвет фона: ${color}`}
+                        tabIndex={0}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Пользовательский цвет
+                  </label>
+                  <input
+                    type="color"
+                    className="w-full h-10 rounded-md border border-gray-300 cursor-pointer"
+                    defaultValue="#ffffff"
+                    aria-label="Выбрать пользовательский цвет фона"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Изображение фона
+                  </label>
+                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                    <div className="space-y-1 text-center">
+                      <svg
+                        className="mx-auto h-12 w-12 text-gray-400"
+                        stroke="currentColor"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                      <div className="flex text-sm text-gray-600">
+                        <label
+                          htmlFor="file-upload"
+                          className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                        >
+                          <span>Загрузить файл</span>
+                          <input id="file-upload" name="file-upload" type="file" className="sr-only" />
+                        </label>
+                        <p className="pl-1">или перетащите изображение</p>
+                      </div>
+                      <p className="text-xs text-gray-500">PNG, JPG, GIF до 10MB</p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
