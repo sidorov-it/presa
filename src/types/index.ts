@@ -8,7 +8,8 @@ export type ElementType =
   | 'icon' 
   | 'video' 
   | 'chart' 
-  | 'button';
+  | 'button'
+  | 'editor';
 
 export type LayoutType =
   | 'single-column'
@@ -20,6 +21,62 @@ export type LayoutType =
   | 'cards'
   | 'icons-with-text'
   | 'blank';
+
+// Новый тип для определения структуры сетки
+export type GridTemplate = {
+  areas: string;
+  columns: string;
+  rows: string;
+};
+
+// Словарь предопределенных шаблонов сетки
+export const GridTemplates: Record<LayoutType, GridTemplate> = {
+  'single-column': {
+    areas: '"content"',
+    columns: '1fr',
+    rows: 'auto',
+  },
+  'two-columns': {
+    areas: '"left right"',
+    columns: '1fr 1fr',
+    rows: 'auto',
+  },
+  'three-columns': {
+    areas: '"left center right"',
+    columns: '1fr 1fr 1fr',
+    rows: 'auto',
+  },
+  'four-columns': {
+    areas: '"col1 col2 col3 col4"',
+    columns: '1fr 1fr 1fr 1fr',
+    rows: 'auto',
+  },
+  'image-text': {
+    areas: '"image content"',
+    columns: '1fr 1fr',
+    rows: 'auto',
+  },
+  'text-image': {
+    areas: '"content image"',
+    columns: '1fr 1fr',
+    rows: 'auto',
+  },
+  'cards': {
+    areas: '"card1 card2" "card3 card4"',
+    columns: '1fr 1fr',
+    rows: 'auto auto',
+  },
+  'icons-with-text': {
+    areas: '"icon1 icon2 icon3" "text1 text2 text3"',
+    columns: '1fr 1fr 1fr',
+    rows: 'auto auto',
+  },
+  'blank': {
+    areas: '""',
+    columns: '1fr',
+    rows: 'auto',
+  },
+};
 
 export interface Position {
   x: number;
@@ -59,6 +116,13 @@ export interface BaseElement {
 export interface TextElement extends BaseElement {
   type: 'text' | 'heading' | 'paragraph';
   content: string;
+}
+
+// Элемент редактора Tiptap
+export interface EditorElement extends BaseElement {
+  type: 'editor';
+  content: string;
+  placeholder?: string;
 }
 
 // Элемент списка
@@ -114,6 +178,7 @@ export interface ButtonElement extends BaseElement {
 // Объединенный тип элемента
 export type Element = 
   | TextElement 
+  | EditorElement
   | ListElement 
   | ImageElement 
   | DividerElement 
@@ -122,15 +187,15 @@ export type Element =
   | ChartElement 
   | ButtonElement;
 
-// Интерфейс макета
+// Интерфейс макета (теперь это шаблон CSS Grid)
 export interface Layout {
   id: string;
   type: LayoutType;
   elements: Element[];
   style: Style;
-  gridTemplateAreas?: string;
-  gridTemplateColumns?: string;
-  gridTemplateRows?: string;
+  gridTemplateAreas: string;
+  gridTemplateColumns: string;
+  gridTemplateRows: string;
 }
 
 // Интерфейс слайда

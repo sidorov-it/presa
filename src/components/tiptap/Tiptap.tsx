@@ -26,7 +26,7 @@ const EnterHandlerExtension = (onEnterPressed: () => void, onBackspacePressed: (
           const { empty, $head } = selection
           
           // Проверяем, находится ли курсор в конце документа
-          const isAtEnd = $head.pos === state.doc.content.size
+          const isAtEnd = $head.pos + 1 === state.doc.content.size
           
           if (empty && isAtEnd) {
             onEnterPressed()
@@ -129,7 +129,7 @@ const Tiptap: React.FC<TiptapProps> = ({
     <div className="relative w-full" data-editor-id={id}>
       {editor && (
         <>
-          <FloatingMenu editor={editor} tippyOptions={{ duration: 100 }}>
+          {/* <FloatingMenu editor={editor} tippyOptions={{ duration: 100 }}>
             <div className="bg-white shadow-lg rounded-md p-2 flex gap-2">
               <button
                 onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
@@ -150,7 +150,7 @@ const Tiptap: React.FC<TiptapProps> = ({
                 Список
               </button>
             </div>
-          </FloatingMenu>
+          </FloatingMenu> */}
 
           <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
             <div className="bg-white shadow-lg rounded-md p-2 flex gap-2">

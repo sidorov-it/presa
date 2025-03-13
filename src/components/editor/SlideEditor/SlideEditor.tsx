@@ -1,16 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Slide, Layout, LayoutType, Element, TextElement, ListElement } from '@/types';
+import { Slide, Layout, LayoutType, Element, TextElement, ListElement, EditorElement, GridTemplates, ImageElement } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
-import LayoutComponent from '@/components/layouts/LayoutComponent';
 import styles from './SlideEditor.module.css';
-import Tiptap from '@/components/tiptap/Tiptap';
-import { v4 as uuidv4 } from 'uuid';
+import GridCellElement from '../GridCellElement';
 
-// Определяем интерфейс для редактора
-interface EditorInstance {
-    id: string;
-    content: string;
-}
 
 interface SlideEditorProps {
     slide: Slide;
@@ -108,6 +101,7 @@ const SlashCommands: React.FC<SlashCommandsProps> = ({ isOpen, position, onSelec
     );
 };
 
+
 const SlideEditor: React.FC<SlideEditorProps> = ({
     slide,
     presentationId,
@@ -116,31 +110,14 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 }) => {
     const { updateSlide, addLayout, deleteLayout, updateLayout, addSlide, addElement } = usePresentationStore();
     const [isDraggingOver, setIsDraggingOver] = useState(false);
-    const [selectedLayoutId, setSelectedLayoutId] = useState<string | null>(null);
+    const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
     const [isHovered, setIsHovered] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
-    const [editContent, setEditContent] = useState('');
-    const [showSlashCommands, setShowSlashCommands] = useState(false);
-    const [slashCommandsPosition, setSlashCommandsPosition] = useState({ x: 0, y: 0 });
     const [showTemplates, setShowTemplates] = useState(slide.layouts.length === 0);
     
-    // Состояние для хранения редакторов
-    const [editors, setEditors] = useState<EditorInstance[]>(() => {
-        // Если слайд пустой, создаем один пустой редактор
-        if (slide.layouts.length === 0) {
-            return [{ id: uuidv4(), content: '' }];
-        }
-        return [];
-    });
-    
-    // Состояние для отслеживания активного редактора
-    const [activeEditorId, setActiveEditorId] = useState<string | null>(
-        editors.length > 0 ? editors[0].id : null
-    );
-    
     const editorRef = useRef<HTMLDivElement>(null);
-    const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
+    console.log('slide.id', slide.id)
+    console.log('isSelected', isSelected);
     // Популярные шаблоны для слайдов
     const templates: TemplateCard[] = [
         {
@@ -196,205 +173,137 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     // Обработчик для клика по слайду (начать редактирование если слайд пустой)
     const handleSlideClick = (e: React.MouseEvent) => {
         if (slide.layouts.length === 0) {
-            // Если у нас нет редакторов, создаем один
-            if (editors.length === 0) {
-                const newEditor = { id: uuidv4(), content: '' };
-                setEditors([newEditor]);
-                setActiveEditorId(newEditor.id);
-            } else if (activeEditorId === null && editors.length > 0) {
-                // Если есть редакторы, но активный не выбран, выбираем первый
-                setActiveEditorId(editors[0].id);
-            }
+            // Создаем новый макет с одной ячейкой
+            createDefaultLayout();
         } else {
-            setSelectedLayoutId(null);
+            setSelectedElementId(null);
         }
     };
 
-    // Обработчик для добавления нового редактора при нажатии Enter
-    const handleEnterPressed = (editorId: string) => {
-        // Находим индекс текущего редактора
-        const currentIndex = editors.findIndex(editor => editor.id === editorId);
-        if (currentIndex === -1) return;
+    // Создание макета по умолчанию с одним редактором
+    const createDefaultLayout = () => {
+        // Создаем новый макет с одной ячейкой
+        const gridTemplate = GridTemplates['single-column'];
         
-        // Создаем новый редактор
-        const newEditor = { id: uuidv4(), content: '' };
-        
-        // Вставляем новый редактор после текущего
-        const newEditors = [
-            ...editors.slice(0, currentIndex + 1),
-            newEditor,
-            ...editors.slice(currentIndex + 1)
-        ];
-        
-        setEditors(newEditors);
-        
-        // Устанавливаем фокус на новый редактор
-        setActiveEditorId(newEditor.id);
-    };
-
-    // Обработчик для удаления пустого редактора при нажатии Backspace
-    const handleBackspacePressed = (editorId: string) => {
-        // Если у нас только один редактор, не удаляем его
-        if (editors.length <= 1) return;
-        
-        // Находим индекс текущего редактора
-        const currentIndex = editors.findIndex(editor => editor.id === editorId);
-        if (currentIndex === -1) return;
-        
-        // Удаляем текущий редактор
-        const newEditors = [
-            ...editors.slice(0, currentIndex),
-            ...editors.slice(currentIndex + 1)
-        ];
-        
-        setEditors(newEditors);
-        
-        // Устанавливаем фокус на предыдущий редактор (или следующий, если предыдущего нет)
-        const newActiveIndex = currentIndex > 0 ? currentIndex - 1 : 0;
-        if (newEditors.length > 0) {
-            setActiveEditorId(newEditors[newActiveIndex].id);
-        }
-    };
-
-    // Обработчик для фокуса на редакторе
-    const handleEditorFocus = (editorId: string) => {
-        setActiveEditorId(editorId);
-    };
-
-    // Обработчик для изменения содержимого редактора
-    const handleContentChange = (editorId: string, content: string) => {
-        // Обновляем содержимое редактора
-        const newEditors = editors.map(editor => 
-            editor.id === editorId ? { ...editor, content } : editor
-        );
-        
-        setEditors(newEditors);
-    };
-
-    // Показать меню слеш-команд
-    const showSlashCommandMenu = (element: HTMLTextAreaElement) => {
-        const { selectionStart } = element;
-        const textBeforeCursor = element.value.substring(0, selectionStart);
-        const lines = textBeforeCursor.split('\n');
-        const currentLineIndex = lines.length - 1;
-        
-        // Получаем размеры и позицию textarea
-        const rect = element.getBoundingClientRect();
-        
-        // Определяем позицию каретки
-        const lineHeight = 24; // примерная высота строки
-        const topOffset = rect.top + (currentLineIndex * lineHeight) + lineHeight;
-        
-        setSlashCommandsPosition({
-            x: rect.left + 20,
-            y: topOffset
-        });
-        
-        setShowSlashCommands(true);
-    };
-
-    // Обработчик выбора слеш-команды
-    const handleSlashCommandSelect = (command: string) => {
-        setShowSlashCommands(false);
-        
-        // Создаем новый макет на основе команды
         const newLayout: Omit<Layout, 'id'> = {
             type: 'single-column',
             elements: [],
             style: {},
+            gridTemplateAreas: gridTemplate.areas,
+            gridTemplateColumns: gridTemplate.columns,
+            gridTemplateRows: gridTemplate.rows
         };
         
         // Добавляем макет на слайд
         const layoutId = addLayout(presentationId, slide.id, newLayout);
         
-        // Определяем тип элемента на основе команды
-        if (command.startsWith('heading')) {
-            const headingElement: Omit<TextElement, 'id'> = {
-                type: 'heading',
-                content: 'Заголовок',
-                position: { x: 0, y: 0 },
-                size: { width: 100, height: 60 },
-                style: { fontSize: '28px', fontWeight: 'bold', color: '#111111', textAlign: 'center' },
-                zIndex: 1,
-            };
-            addElement(presentationId, slide.id, layoutId, headingElement);
-        } else if (command === 'paragraph') {
-            const paragraphElement: Omit<TextElement, 'id'> = {
-                type: 'paragraph',
-                content: editContent.replace('/', ''),
-                position: { x: 0, y: 0 },
-                size: { width: 100, height: 100 },
-                style: { fontSize: '16px', color: '#333333', textAlign: 'left' },
-                zIndex: 1,
-            };
-            addElement(presentationId, slide.id, layoutId, paragraphElement);
-        } else if (command.startsWith('list')) {
-            const listType = command === 'list-bullet' ? 'bullet' : 'numbered';
-            const listElement: Omit<ListElement, 'id'> = {
-                type: 'list',
-                items: ['Первый пункт', 'Второй пункт', 'Третий пункт'],
-                listType: 'bullet',
-                position: { x: 0, y: 0 },
-                size: { width: 100, height: 120 },
-                style: { fontSize: '16px', color: '#333333' },
-                zIndex: 1,
-            };
-            addElement(presentationId, slide.id, layoutId, listElement);
-        }
+        // Добавляем редактор в ячейку
+        const editorElement: Omit<EditorElement, 'id'> = {
+            type: 'editor',
+            content: '',
+            position: { x: 0, y: 0 },
+            size: { width: 100, height: 40 },
+            style: { fontSize: '16px', color: '#333333' },
+            zIndex: 1,
+            gridArea: 'content',
+            placeholder: 'Введите текст...'
+        };
         
-        setIsEditing(false);
-        setShowTemplates(false);
-    };
-
-    // Обработчик отмены редактирования
-    const handleCancelEdit = () => {
-        setIsEditing(false);
-        setEditContent('');
-    };
-
-    // Обработчик сохранения текста
-    const handleSaveEdit = () => {
-        if (editContent.trim()) {
-            // Создаем новый макет
-            const newLayout: Omit<Layout, 'id'> = {
-                type: 'single-column',
-                elements: [],
-                style: {},
-            };
-            
-            // Добавляем макет на слайд
-            const layoutId = addLayout(presentationId, slide.id, newLayout);
-            
-            // Добавляем текстовый элемент
-            const textElement: Omit<TextElement, 'id'> = {
-                type: 'paragraph',
-                content: editContent,
-                position: { x: 0, y: 0 },
-                size: { width: 100, height: 100 },
-                style: { fontSize: '16px', color: '#333333', textAlign: 'left' },
-                zIndex: 1,
-            };
-            addElement(presentationId, slide.id, layoutId, textElement);
-        }
-        
-        setIsEditing(false);
-        setEditContent('');
+        const elementId = addElement(presentationId, slide.id, layoutId, editorElement);
+        setSelectedElementId(elementId);
         setShowTemplates(false);
     };
 
     // Обработчик для выбора шаблона
     const handleSelectTemplate = (template: TemplateCard) => {
+        // Получаем шаблон сетки для выбранного типа макета
+        const gridTemplate = GridTemplates[template.type];
+        
         // Создаем новый макет
         const newLayout: Omit<Layout, 'id'> = {
             type: template.type,
             elements: [],
             style: {},
+            gridTemplateAreas: gridTemplate.areas,
+            gridTemplateColumns: gridTemplate.columns,
+            gridTemplateRows: gridTemplate.rows
         };
         
         // Добавляем макет на слайд
-        addLayout(presentationId, slide.id, newLayout);
+        const layoutId = addLayout(presentationId, slide.id, newLayout);
         
-        setIsEditing(false);
+        // Добавляем элементы в зависимости от типа макета
+        if (template.type === 'single-column') {
+            // Добавляем заголовок и текст
+            const headingElement: Omit<EditorElement, 'id'> = {
+                type: 'editor',
+                content: '',
+                position: { x: 0, y: 0 },
+                size: { width: 100, height: 60 },
+                style: { fontSize: '28px', fontWeight: 'bold', color: '#111111' },
+                zIndex: 1,
+                gridArea: 'content',
+                placeholder: 'Введите заголовок...'
+            };
+            
+            const elementId = addElement(presentationId, slide.id, layoutId, headingElement);
+            setSelectedElementId(elementId);
+        } else if (template.type === 'two-columns') {
+            // Добавляем два редактора
+            const leftEditor: Omit<EditorElement, 'id'> = {
+                type: 'editor',
+                content: '',
+                position: { x: 0, y: 0 },
+                size: { width: 100, height: 100 },
+                style: { fontSize: '16px', color: '#333333' },
+                zIndex: 1,
+                gridArea: 'left',
+                placeholder: 'Левая колонка...'
+            };
+            
+            const rightEditor: Omit<EditorElement, 'id'> = {
+                type: 'editor',
+                content: '',
+                position: { x: 0, y: 0 },
+                size: { width: 100, height: 100 },
+                style: { fontSize: '16px', color: '#333333' },
+                zIndex: 1,
+                gridArea: 'right',
+                placeholder: 'Правая колонка...'
+            };
+            
+            const leftId = addElement(presentationId, slide.id, layoutId, leftEditor);
+            addElement(presentationId, slide.id, layoutId, rightEditor);
+            setSelectedElementId(leftId);
+        } else if (template.type === 'image-text') {
+            // Добавляем изображение и текст
+            const imageElement: Omit<ImageElement, 'id'> = {
+                type: 'image',
+                src: 'https://via.placeholder.com/400x300',
+                alt: 'Placeholder Image',
+                position: { x: 0, y: 0 },
+                size: { width: 100, height: 100 },
+                style: {},
+                zIndex: 1,
+                gridArea: 'image'
+            };
+            
+            const textEditor: Omit<EditorElement, 'id'> = {
+                type: 'editor',
+                content: '',
+                position: { x: 0, y: 0 },
+                size: { width: 100, height: 100 },
+                style: { fontSize: '16px', color: '#333333' },
+                zIndex: 1,
+                gridArea: 'content',
+                placeholder: 'Введите текст...'
+            };
+            
+            addElement(presentationId, slide.id, layoutId, imageElement);
+            const textId = addElement(presentationId, slide.id, layoutId, textEditor);
+            setSelectedElementId(textId);
+        }
+        
         setShowTemplates(false);
     };
 
@@ -417,39 +326,23 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
             if (data.type === 'layout') {
                 const layoutType = data.layoutType as LayoutType;
-
-                // Создаем новый макет
-                const newLayout: Omit<Layout, 'id'> = {
-                    type: layoutType,
-                    elements: [],
-                    style: {},
-                };
-
-                // Добавляем макет на слайд
-                const newLayoutId = addLayout(presentationId, slide.id, newLayout);
-                setSelectedLayoutId(newLayoutId);
-                setShowTemplates(false);
+                handleSelectTemplate(templates.find(t => t.type === layoutType) || templates[0]);
             }
         } catch (error) {
             console.error('Error parsing drag data:', error);
         }
     };
 
-    // Обработчик для выбора макета
-    const handleSelectLayout = (layoutId: string) => {
-        setSelectedLayoutId(layoutId);
+    // Обработчик для выбора элемента
+    const handleSelectElement = (elementId: string) => {
+        setSelectedElementId(elementId);
     };
 
-    // Обработчик для удаления макета
-    const handleDeleteLayout = (layoutId: string) => {
-        deleteLayout(presentationId, slide.id, layoutId);
-        if (selectedLayoutId === layoutId) {
-            setSelectedLayoutId(null);
-        }
-        
-        // Если удалили последний макет, показываем шаблоны
-        if (slide.layouts.length <= 1) {
-            setShowTemplates(true);
+    // Обработчик для удаления элемента
+    const handleDeleteElement = (layoutId: string, elementId: string) => {
+        usePresentationStore.getState().deleteElement(presentationId, slide.id, layoutId, elementId);
+        if (selectedElementId === elementId) {
+            setSelectedElementId(null);
         }
     };
 
@@ -541,46 +434,39 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
                 >
-                    {/* Контейнер для содержимого с CSS Grid */}
-                    <div className={`relative w-full h-full p-8 mt-10 ${styles.slideContent}`}>
-                        {/* Если у нас есть редакторы, отображаем их */}
-                        {editors.length > 0 && slide.layouts.length === 0 && (
-                            editors.map((editor, index) => (
-                                <div key={editor.id} className={styles.editorRow}>
-                                    <Tiptap 
-                                        id={editor.id}
-                                        initialContent={editor.content}
-                                        onEnterPressed={() => handleEnterPressed(editor.id)}
-                                        onBackspacePressed={() => handleBackspacePressed(editor.id)}
-                                        onFocus={() => handleEditorFocus(editor.id)}
-                                        onContentChange={(content) => handleContentChange(editor.id, content)}
-                                        autoFocus={editor.id === activeEditorId}
-                                        placeholder={index === 0 ? "Введите заголовок..." : "Введите текст..."}
-                                    />
-                                </div>
-                            ))
-                        )}
-
-                        {/* Рендерим макеты */}
+                    {/* Контейнер для содержимого */}
+                    <div className="relative w-full h-full p-8 mt-10">
+                        {/* Рендерим макеты с CSS Grid */}
                         {slide.layouts.map((layout) => (
                             <div
                                 key={layout.id}
-                                className="relative mb-4 h-auto"
-                                style={{ minHeight: '200px' }}
+                                className={styles.gridContainer}
+                                style={{
+                                    display: 'grid',
+                                    gridTemplateAreas: layout.gridTemplateAreas,
+                                    gridTemplateColumns: layout.gridTemplateColumns,
+                                    gridTemplateRows: layout.gridTemplateRows,
+                                    gap: '1rem',
+                                    ...layout.style
+                                }}
                             >
-                                <LayoutComponent
-                                    layout={layout}
-                                    presentationId={presentationId}
-                                    slideId={slide.id}
-                                    isSelected={selectedLayoutId === layout.id}
-                                    onSelect={() => handleSelectLayout(layout.id)}
-                                    onDelete={() => handleDeleteLayout(layout.id)}
-                                />
+                                {layout.elements.map((element) => (
+                                    <GridCellElement
+                                        key={element.id}
+                                        element={element}
+                                        presentationId={presentationId}
+                                        slideId={slide.id}
+                                        layoutId={layout.id}
+                                        isSelected={selectedElementId === element.id}
+                                        onSelect={() => handleSelectElement(element.id)}
+                                        onDelete={() => handleDeleteElement(layout.id, element.id)}
+                                    />
+                                ))}
                             </div>
                         ))}
 
                         {/* Шаблоны для пустого слайда */}
-                        {showTemplates && editors.length === 0 && !isEditing && (
+                        {showTemplates && (
                             <div className="max-w-3xl mx-auto text-center mt-8 py-6">
                                 <h3 className="text-lg font-medium text-gray-600 mb-5">
                                     {slide.layouts.length === 0 
@@ -605,7 +491,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                         )}
 
                         {/* Подсказка для клика по пустому слайду */}
-                        {slide.layouts.length === 0 && editors.length === 0 && !showTemplates && !isEditing && (
+                        {slide.layouts.length === 0 && !showTemplates && (
                             <div className="absolute inset-0 flex items-center justify-center text-gray-400 pointer-events-none">
                                 <p className="text-lg">Нажмите для создания слайда</p>
                             </div>

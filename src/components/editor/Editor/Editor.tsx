@@ -48,6 +48,8 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
     setShowPreview(!showPreview);
   };
 
+
+  console.log('activeSlideId', activeSlideId)
   return (
     <div className="min-h-screen flex flex-col bg-[#f6f4f4]">
       <header className="bg-white border-b border-gray-200 p-4">

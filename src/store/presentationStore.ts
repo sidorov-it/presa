@@ -82,7 +82,23 @@ export const usePresentationStore = create<PresentationState>((set, get) => ({
     const newSlide: Slide = {
       id: slideId,
       title,
-      layouts: [],
+      layouts: [{
+        id: uuidv4(),
+        type: 'single-column',
+        elements: [{
+          id: uuidv4(),
+          type: 'editor',
+          content: '',
+          position: { x: 0, y: 0 },
+          size: { width: 100, height: 100 },
+          style: {},
+          zIndex: 0,
+        }],
+        style: {},
+        gridTemplateAreas: '',
+        gridTemplateColumns: '',
+        gridTemplateRows: '',
+      }],
       background: {
         type: 'color',
         value: '#ffffff',
