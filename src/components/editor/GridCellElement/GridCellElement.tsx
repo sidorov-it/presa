@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { Element as SlideElement } from '@/types';
 import { GridElementType, GridTextElement, GridEditorElement, GridListElement, GridImageElement } from '@/types/grid-elements';
@@ -16,6 +16,7 @@ const GridCellElement: React.FC<{
     onDelete: () => void;
 }> = ({ element, presentationId, slideId, layoutId, isSelected, onSelect, onDelete }) => {
     const { updateElement, updateLayout } = usePresentationStore();
+    const dragHandleRef = useRef<HTMLDivElement>(null);
     
     // Обработчик для изменения содержимого редактора
     const handleEditorContentChange = (content: string) => {
@@ -159,9 +160,13 @@ const GridCellElement: React.FC<{
                 onContentChange={handleEditorContentChange}
                 autoFocus={isSelected}
                 placeholder={placeholder}
+                customBubbleMenuTrigger={dragHandleRef}
             />
 
-            <div className={styles.dragHandle}/>
+            <div 
+                ref={dragHandleRef}
+                className={styles.dragHandle}
+            />
         </div>
     );
 };

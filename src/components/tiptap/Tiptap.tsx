@@ -1,7 +1,7 @@
 // src/Tiptap.tsx
 import { EditorProvider, FloatingMenu, BubbleMenu, EditorContent } from '@tiptap/react'
 import { useEditor, Editor } from '@tiptap/react'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState, RefObject } from 'react'
 import StarterKit from '@tiptap/starter-kit'
 import Document from '@tiptap/extension-document'
 import Paragraph from '@tiptap/extension-paragraph'
@@ -76,6 +76,7 @@ interface TiptapProps {
   autoFocus?: boolean;
   id?: string;
   placeholder?: string;
+  customBubbleMenuTrigger?: RefObject<HTMLElement>;
 }
 
 // Определяем массив расширений
@@ -103,8 +104,11 @@ const Tiptap: React.FC<TiptapProps> = ({
   onContentChange = () => {},
   autoFocus = false,
   id = '',
-  placeholder = 'Введите текст...'
+  placeholder = 'Введите текст...',
+  customBubbleMenuTrigger
 }) => {
+  const [showBubbleMenu, setShowBubbleMenu] = useState(false);
+  
   const editor = useEditor({
     extensions: getExtensions(onEnterPressed, onBackspacePressed, placeholder),
     content: initialContent,
@@ -132,6 +136,41 @@ const Tiptap: React.FC<TiptapProps> = ({
     }
   }, [autoFocus, editor, focus])
   
+  // Add event listener for custom trigger
+  useEffect(() => {
+    if (customBubbleMenuTrigger?.current && editor) {
+      const handleTriggerClick = (e: MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setShowBubbleMenu(true);
+        // Focus the editor to ensure commands work
+        editor.commands.focus();
+      };
+      
+      const triggerElement = customBubbleMenuTrigger.current;
+      triggerElement.addEventListener('click', handleTriggerClick);
+      
+      return () => {
+        triggerElement.removeEventListener('click', handleTriggerClick);
+      };
+    }
+  }, [customBubbleMenuTrigger, editor]);
+  
+  // Hide bubble menu when clicking outside
+  useEffect(() => {
+    if (showBubbleMenu) {
+      const handleClickOutside = () => {
+        setShowBubbleMenu(false);
+      };
+      
+      document.addEventListener('click', handleClickOutside);
+      return () => {
+        document.removeEventListener('click', handleClickOutside);
+      };
+    }
+  }, [showBubbleMenu]);
+  
+    console.log('showBubbleMenu', showBubbleMenu)
   return (
     <div className="relative w-full" data-editor-id={id}>
       {editor && (
@@ -159,7 +198,12 @@ const Tiptap: React.FC<TiptapProps> = ({
             </div>
           </FloatingMenu> */}
 
-          <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+          <BubbleMenu 
+            editor={editor} 
+            tippyOptions={{ duration: 100 }}
+            // shouldShow={() => showBubbleMenu || editor.isActive('bold') || editor.isActive('italic')}
+            shouldShow={() => showBubbleMenu}
+          >
             <div className="bg-white shadow-lg rounded-md p-2 flex gap-2">
               <button
                 onClick={() => editor.chain().focus().toggleBold().run()}
