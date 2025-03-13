@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Slide, Layout, LayoutType, Element, TextElement, ListElement, EditorElement, GridTemplates, ImageElement } from '@/types';
+import { GridEditorElement, GridImageElement } from '@/types/grid-elements';
 import { usePresentationStore } from '@/store/presentationStore';
 import styles from './SlideEditor.module.css';
 import GridCellElement from '../GridCellElement';
@@ -198,18 +199,18 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         const layoutId = addLayout(presentationId, slide.id, newLayout);
         
         // Добавляем редактор в ячейку
-        const editorElement: Omit<EditorElement, 'id'> = {
+        const editorElement: Omit<GridEditorElement, 'id'> = {
             type: 'editor',
             content: '',
             position: { x: 0, y: 0 },
             size: { width: 100, height: 40 },
             style: { fontSize: '16px', color: '#333333' },
             zIndex: 1,
-            gridArea: 'content',
+            gridArea: 'content', // Используем область 'content' из шаблона single-column
             placeholder: 'Введите текст...'
         };
         
-        const elementId = addElement(presentationId, slide.id, layoutId, editorElement);
+        const elementId = addElement(presentationId, slide.id, layoutId, editorElement as any);
         setSelectedElementId(elementId);
         setShowTemplates(false);
     };
@@ -235,7 +236,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         // Добавляем элементы в зависимости от типа макета
         if (template.type === 'single-column') {
             // Добавляем заголовок и текст
-            const headingElement: Omit<EditorElement, 'id'> = {
+            const headingElement: Omit<GridEditorElement, 'id'> = {
                 type: 'editor',
                 content: '',
                 position: { x: 0, y: 0 },
@@ -246,11 +247,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 placeholder: 'Введите заголовок...'
             };
             
-            const elementId = addElement(presentationId, slide.id, layoutId, headingElement);
+            const elementId = addElement(presentationId, slide.id, layoutId, headingElement as any);
             setSelectedElementId(elementId);
         } else if (template.type === 'two-columns') {
             // Добавляем два редактора
-            const leftEditor: Omit<EditorElement, 'id'> = {
+            const leftEditor: Omit<GridEditorElement, 'id'> = {
                 type: 'editor',
                 content: '',
                 position: { x: 0, y: 0 },
@@ -261,7 +262,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 placeholder: 'Левая колонка...'
             };
             
-            const rightEditor: Omit<EditorElement, 'id'> = {
+            const rightEditor: Omit<GridEditorElement, 'id'> = {
                 type: 'editor',
                 content: '',
                 position: { x: 0, y: 0 },
@@ -272,12 +273,12 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 placeholder: 'Правая колонка...'
             };
             
-            const leftId = addElement(presentationId, slide.id, layoutId, leftEditor);
-            addElement(presentationId, slide.id, layoutId, rightEditor);
+            const leftId = addElement(presentationId, slide.id, layoutId, leftEditor as any);
+            addElement(presentationId, slide.id, layoutId, rightEditor as any);
             setSelectedElementId(leftId);
         } else if (template.type === 'image-text') {
             // Добавляем изображение и текст
-            const imageElement: Omit<ImageElement, 'id'> = {
+            const imageElement: Omit<GridImageElement, 'id'> = {
                 type: 'image',
                 src: 'https://via.placeholder.com/400x300',
                 alt: 'Placeholder Image',
@@ -288,7 +289,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 gridArea: 'image'
             };
             
-            const textEditor: Omit<EditorElement, 'id'> = {
+            const textEditor: Omit<GridEditorElement, 'id'> = {
                 type: 'editor',
                 content: '',
                 position: { x: 0, y: 0 },
@@ -299,8 +300,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 placeholder: 'Введите текст...'
             };
             
-            addElement(presentationId, slide.id, layoutId, imageElement);
-            const textId = addElement(presentationId, slide.id, layoutId, textEditor);
+            addElement(presentationId, slide.id, layoutId, imageElement as any);
+            const textId = addElement(presentationId, slide.id, layoutId, textEditor as any);
             setSelectedElementId(textId);
         }
         

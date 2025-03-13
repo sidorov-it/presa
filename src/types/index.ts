@@ -109,7 +109,7 @@ export interface BaseElement {
   size: Size;
   style: Style;
   zIndex: number;
-  gridArea?: string;
+  gridArea: string;
 }
 
 // Элемент текста

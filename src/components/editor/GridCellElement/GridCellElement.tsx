@@ -1,11 +1,13 @@
+import React from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
-import { EditorElement } from '@/types';
+import { Element as SlideElement } from '@/types';
+import { GridElementType, GridTextElement, GridEditorElement, GridListElement, GridImageElement } from '@/types/grid-elements';
 import Tiptap from '@/components/tiptap/Tiptap';
 import styles from './GridCellElement.module.css';
 
 // Компонент для отображения элемента в ячейке сетки
 const GridCellElement: React.FC<{
-    element: Element;
+    element: SlideElement;
     presentationId: string;
     slideId: string;
     layoutId: string;
@@ -13,15 +15,13 @@ const GridCellElement: React.FC<{
     onSelect: () => void;
     onDelete: () => void;
 }> = ({ element, presentationId, slideId, layoutId, isSelected, onSelect, onDelete }) => {
-    const { updateElement } = usePresentationStore();
+    const { updateElement, updateLayout } = usePresentationStore();
     
     // Обработчик для изменения содержимого редактора
     const handleEditorContentChange = (content: string) => {
-        if (element.type === 'editor') {
-            updateElement(presentationId, slideId, layoutId, element.id, {
-                content
-            });
-        }
+        updateElement(presentationId, slideId, layoutId, element.id, {
+            content: content
+        } as Partial<SlideElement>);
     };
     
     // Обработчик для добавления нового редактора при нажатии Enter
@@ -36,20 +36,40 @@ const GridCellElement: React.FC<{
         const layout = slide.layouts.find(l => l.id === layoutId);
         if (!layout) return;
         
+        // Получаем текущую структуру сетки
+        let { gridTemplateAreas, gridTemplateColumns, gridTemplateRows } = layout;
+        
+        // Создаем новую строку в сетке
+        const rowsArray = gridTemplateRows.split(' ');
+        rowsArray.push('auto');
+        const newGridTemplateRows = rowsArray.join(' ');
+        
+        // Создаем новую область в сетке
+        const areasArray = gridTemplateAreas.split('"').filter(s => s.trim());
+        const newAreaName = `content-${layout.elements.length + 1}`;
+        areasArray.push(`${newAreaName}`);
+        const newGridTemplateAreas = `"${areasArray.join('" "')}"`;
+        
+        // Обновляем макет с новой структурой сетки
+        updateLayout(presentationId, slideId, layoutId, {
+            gridTemplateRows: newGridTemplateRows,
+            gridTemplateAreas: newGridTemplateAreas
+        });
+        
         // Создаем новый элемент редактора
-        const newEditor: Omit<EditorElement, 'id'> = {
+        const newEditor: Omit<GridEditorElement, 'id'> = {
             type: 'editor',
             content: '',
             position: { x: 0, y: 0 },
             size: { width: 100, height: 40 },
             style: { fontSize: '16px', color: '#333333' },
             zIndex: 1,
-            gridArea: 'content', // По умолчанию размещаем в области content
-            placeholder: 'Введите текст...'
+            gridArea: newAreaName,
+            placeholder: ''
         };
         
         // Добавляем новый элемент в макет
-        usePresentationStore.getState().addElement(presentationId, slideId, layoutId, newEditor);
+        usePresentationStore.getState().addElement(presentationId, slideId, layoutId, newEditor as any);
     };
     
     // Обработчик для удаления пустого редактора при нажатии Backspace
@@ -68,115 +88,77 @@ const GridCellElement: React.FC<{
         usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, element.id);
     };
     
+    // Получаем содержимое для редактора в зависимости от типа элемента
+    const getEditorContent = (): string => {
+        switch (element.type) {
+            case 'editor':
+            case 'text':
+            case 'heading':
+            case 'paragraph':
+                return (element as GridTextElement).content;
+            case 'list':
+                const listElement = element as GridListElement;
+                const listType = listElement.listType === 'bullet' ? 'ul' : 'ol';
+                const items = listElement.items.map(item => `<li>${item}</li>`).join('');
+                return `<${listType}>${items}</${listType}>`;
+            case 'image':
+                const imageElement = element as GridImageElement;
+                return `<img src="${imageElement.src}" alt="${imageElement.alt}" style="max-width: 100%; height: auto;" />`;
+            default:
+                return `<p>Неподдерживаемый тип элемента: ${element.type}</p>`;
+        }
+    };
+    
+    // Получаем плейсхолдер для редактора
+    const getPlaceholder = (): string => {
+        if (element.type === 'editor') {
+            const editorElement = element as any;
+            return editorElement.placeholder ?? '';
+        }
+        
+        switch (element.type) {
+            // case 'heading':
+            //     return 'Введите заголовок...';
+            // case 'paragraph':
+            // case 'text':
+            //     return 'Введите текст...';
+            // case 'list':
+            //     return 'Введите элемент списка...';
+            default:
+                return '';
+        }
+    };
+    
+    // Создаем объект стилей
+    const cellStyle: React.CSSProperties = {
+        ...element.style
+    };
+    
+    // Добавляем gridArea, если она определена
+    if (element.gridArea) {
+        cellStyle.gridArea = element.gridArea;
+    } else {
+        cellStyle.gridArea = 'auto';
+    }
+    
     return (
         <div 
             className={`${styles.gridCell} ${isSelected ? styles.gridCellSelected : ''}`}
             onClick={onSelect}
-            style={{ gridArea: element.gridArea }}
+            style={cellStyle}
         >
             <Tiptap 
                 id={element.id}
-                initialContent={element.content}
+                initialContent={getEditorContent()}
                 onEnterPressed={handleEnterPressed}
                 onBackspacePressed={handleBackspacePressed}
                 onFocus={onSelect}
                 onContentChange={handleEditorContentChange}
                 autoFocus={isSelected}
-                placeholder={element.placeholder || 'Введите текст...'}
+                placeholder={getPlaceholder()}
             />
         </div>
     );
-    // Рендерим элемент в зависимости от его типа
-    // switch (element.type) {
-        
-    //     case 'editor':
-    //         return (
-    //             <div 
-    //                 className={`${styles.gridCell} ${isSelected ? styles.gridCellSelected : ''}`}
-    //                 onClick={onSelect}
-    //                 style={{ gridArea: element.gridArea }}
-    //             >
-    //                 <Tiptap 
-    //                     id={element.id}
-    //                     initialContent={element.content}
-    //                     onEnterPressed={handleEnterPressed}
-    //                     onBackspacePressed={handleBackspacePressed}
-    //                     onFocus={onSelect}
-    //                     onContentChange={handleEditorContentChange}
-    //                     autoFocus={isSelected}
-    //                     placeholder={element.placeholder || 'Введите текст...'}
-    //                 />
-    //             </div>
-    //         );
-    //     case 'heading':
-    //     case 'paragraph':
-    //     case 'text':
-    //         return (
-    //             <div 
-    //                 className={`${styles.gridCell} ${isSelected ? styles.gridCellSelected : ''}`}
-    //                 onClick={onSelect}
-    //                 style={{ gridArea: element.gridArea }}
-    //             >
-    //                 <div 
-    //                     className="text-content"
-    //                     style={element.style}
-    //                 >
-    //                     {element.content}
-    //                 </div>
-    //             </div>
-    //         );
-    //     case 'list':
-    //         return (
-    //             <div 
-    //                 className={`${styles.gridCell} ${isSelected ? styles.gridCellSelected : ''}`}
-    //                 onClick={onSelect}
-    //                 style={{ gridArea: element.gridArea }}
-    //             >
-    //                 {element.listType === 'bullet' ? (
-    //                     <ul style={element.style}>
-    //                         {element.items.map((item, index) => (
-    //                             <li key={index}>{item}</li>
-    //                         ))}
-    //                     </ul>
-    //                 ) : (
-    //                     <ol style={element.style}>
-    //                         {element.items.map((item, index) => (
-    //                             <li key={index}>{item}</li>
-    //                         ))}
-    //                     </ol>
-    //                 )}
-    //             </div>
-    //         );
-    //     case 'image':
-    //         return (
-    //             <div 
-    //                 className={`${styles.gridCell} ${isSelected ? styles.gridCellSelected : ''}`}
-    //                 onClick={onSelect}
-    //                 style={{ gridArea: element.gridArea }}
-    //             >
-    //                 <img 
-    //                     src={element.src} 
-    //                     alt={element.alt} 
-    //                     style={{ 
-    //                         width: '100%', 
-    //                         height: '100%', 
-    //                         objectFit: 'contain',
-    //                         ...element.style 
-    //                     }} 
-    //                 />
-    //             </div>
-    //         );
-    //     default:
-    //         return (
-    //             <div 
-    //                 className={`${styles.gridCell} ${isSelected ? styles.gridCellSelected : ''}`}
-    //                 onClick={onSelect}
-    //                 style={{ gridArea: element.gridArea }}
-    //             >
-    //                 Неподдерживаемый тип элемента: {element.type}
-    //             </div>
-    //         );
-    // }
 };
 
 export default GridCellElement;

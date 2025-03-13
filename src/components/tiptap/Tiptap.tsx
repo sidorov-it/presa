@@ -20,15 +20,22 @@ const EnterHandlerExtension = (onEnterPressed: () => void, onBackspacePressed: (
     addKeyboardShortcuts() {
       return {
         'Enter': ({ editor }) => {
-          // Если курсор в конце документа и текущий узел пустой
+          // Если курсор в конце документа и текущий узел пустой или содержит только один параграф
           const { state } = editor
           const { selection } = state
           const { empty, $head } = selection
           
           // Проверяем, находится ли курсор в конце документа
-          const isAtEnd = $head.pos + 1 === state.doc.content.size
+          const isAtEnd = $head.pos === state.doc.content.size
           
-          if (empty && isAtEnd) {
+          // Проверяем, есть ли в документе только один параграф
+          const isSingleParagraph = state.doc.childCount === 1 && state.doc.firstChild?.type.name === 'paragraph'
+          
+          // Проверяем, находится ли курсор в конце единственного параграфа
+          const isAtEndOfParagraph = isSingleParagraph && state.doc.firstChild && $head.pos === state.doc.firstChild.nodeSize - 1
+          
+          // Если курсор в конце документа или это единственный параграф и курсор в его конце
+          if (empty && (isAtEnd || isAtEndOfParagraph)) {
             onEnterPressed()
             return true
           }
