@@ -1,5 +1,5 @@
 // src/Tiptap.tsx
-import { EditorProvider, FloatingMenu, BubbleMenu, EditorContent } from '@tiptap/react'
+import { EditorProvider, FloatingMenu, EditorContent } from '@tiptap/react'
 import { useEditor, Editor } from '@tiptap/react'
 import { useCallback, useEffect, useState, RefObject } from 'react'
 import StarterKit from '@tiptap/starter-kit'
@@ -12,6 +12,7 @@ import Italic from '@tiptap/extension-italic'
 import ListItem from '@tiptap/extension-list-item'
 import Placeholder from '@tiptap/extension-placeholder'
 import { Extension } from '@tiptap/core'
+import { useEditorStore } from '@/store/editorStore'
 
 // Создаем расширение для обработки нажатия Enter и Backspace
 const EnterHandlerExtension = (onEnterPressed: () => void, onBackspacePressed: () => void) => {
@@ -107,13 +108,18 @@ const Tiptap: React.FC<TiptapProps> = ({
   placeholder = 'Введите текст...',
   customBubbleMenuTrigger
 }) => {
-  const [showBubbleMenu, setShowBubbleMenu] = useState(false);
+  // Use the global editor store instead of local state
+  const { setActiveEditor, showMenu } = useEditorStore();
   
   const editor = useEditor({
     extensions: getExtensions(onEnterPressed, onBackspacePressed, placeholder),
     content: initialContent,
     autofocus: autoFocus,
-    onFocus: () => onFocus(),
+    onFocus: () => {
+      onFocus();
+      // Set this editor as the active editor in the store
+      setActiveEditor(editor);
+    },
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
       onContentChange(html);
@@ -142,9 +148,16 @@ const Tiptap: React.FC<TiptapProps> = ({
       const handleTriggerClick = (e: MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        setShowBubbleMenu(true);
-        // Focus the editor to ensure commands work
-        editor.commands.focus();
+        
+        // Use the global store to show the menu
+        setActiveEditor(editor);
+        showMenu(customBubbleMenuTrigger.current as HTMLElement);
+        
+          // Focus the editor to ensure commands work
+          editor.commands.focus();
+          setTimeout(() => {
+            editor.commands.selectAll();
+          }, 10);
       };
       
       const triggerElement = customBubbleMenuTrigger.current;
@@ -154,73 +167,42 @@ const Tiptap: React.FC<TiptapProps> = ({
         triggerElement.removeEventListener('click', handleTriggerClick);
       };
     }
-  }, [customBubbleMenuTrigger, editor]);
+  }, [customBubbleMenuTrigger, editor, setActiveEditor, showMenu]);
   
-  // Hide bubble menu when clicking outside
+  // Update the active editor in the store when the editor changes
   useEffect(() => {
-    if (showBubbleMenu) {
-      const handleClickOutside = () => {
-        setShowBubbleMenu(false);
-      };
-      
-      document.addEventListener('click', handleClickOutside);
+    if (editor) {
       return () => {
-        document.removeEventListener('click', handleClickOutside);
+        // Clean up when component unmounts
+        setActiveEditor(null);
       };
     }
-  }, [showBubbleMenu]);
+  }, [editor, setActiveEditor]);
   
-    console.log('showBubbleMenu', showBubbleMenu)
   return (
     <div className="relative w-full" data-editor-id={id}>
-      {editor && (
-        <>
-          {/* <FloatingMenu editor={editor} tippyOptions={{ duration: 100 }}>
-            <div className="bg-white shadow-lg rounded-md p-2 flex gap-2">
-              <button
-                onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-                className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('heading', { level: 1 }) ? 'bg-gray-200' : ''}`}
-              >
-                H1
-              </button>
-              <button
-                onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-                className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('heading', { level: 2 }) ? 'bg-gray-200' : ''}`}
-              >
-                H2
-              </button>
-              <button
-                onClick={() => editor.chain().focus().toggleBulletList().run()}
-                className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('bulletList') ? 'bg-gray-200' : ''}`}
-              >
-                Список
-              </button>
-            </div>
-          </FloatingMenu> */}
-
-          <BubbleMenu 
-            editor={editor} 
-            tippyOptions={{ duration: 100 }}
-            // shouldShow={() => showBubbleMenu || editor.isActive('bold') || editor.isActive('italic')}
-            shouldShow={() => showBubbleMenu}
+      {/* <FloatingMenu editor={editor} tippyOptions={{ duration: 100 }}>
+        <div className="bg-white shadow-lg rounded-md p-2 flex gap-2">
+          <button
+            onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+            className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('heading', { level: 1 }) ? 'bg-gray-200' : ''}`}
           >
-            <div className="bg-white shadow-lg rounded-md p-2 flex gap-2">
-              <button
-                onClick={() => editor.chain().focus().toggleBold().run()}
-                className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('bold') ? 'bg-gray-200' : ''}`}
-              >
-                Жирный
-              </button>
-              <button
-                onClick={() => editor.chain().focus().toggleItalic().run()}
-                className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('italic') ? 'bg-gray-200' : ''}`}
-              >
-                Курсив
-              </button>
-            </div>
-          </BubbleMenu>
-        </>
-      )}
+            H1
+          </button>
+          <button
+            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+            className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('heading', { level: 2 }) ? 'bg-gray-200' : ''}`}
+          >
+            H2
+          </button>
+          <button
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+            className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('bulletList') ? 'bg-gray-200' : ''}`}
+          >
+            Список
+          </button>
+        </div>
+      </FloatingMenu> */}
 
       <div className="tiptap-editor-wrapper w-full min-h-[40px]">
         {editor && (

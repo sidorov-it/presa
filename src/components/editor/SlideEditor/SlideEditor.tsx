@@ -116,9 +116,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const [showTemplates, setShowTemplates] = useState(slide.layouts.length === 0);
     
     const editorRef = useRef<HTMLDivElement>(null);
-
-    console.log('slide.id', slide.id)
-    console.log('isSelected', isSelected);
     // Популярные шаблоны для слайдов
     const templates: TemplateCard[] = [
         {

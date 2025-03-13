@@ -1,6 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import GlobalBubbleMenu from '@/components/editor/GlobalBubbleMenu/GlobalBubbleMenu';
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] });
 
@@ -18,6 +19,7 @@ export default function RootLayout({
     <html lang="ru">
       <body className={`${inter.className} bg-gray-50 text-gray-900 min-h-screen`}>
         {children}
+        <GlobalBubbleMenu />
       </body>
     </html>
   );

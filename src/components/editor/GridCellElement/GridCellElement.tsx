@@ -49,7 +49,7 @@ const GridCellElement: React.FC<{
         const areasArray = gridTemplateAreas.split('"').filter(s => s.trim());
         const newAreaName = `content-${layout.elements.length + 1}`;
         areasArray.push(`${newAreaName}`);
-        const newGridTemplateAreas = `"${areasArray.join('" "')}"`;
+        const newGridTemplateAreas = `${areasArray.join(' ')}`;
         
         // Обновляем макет с новой структурой сетки
         updateLayout(presentationId, slideId, layoutId, {
@@ -142,9 +142,8 @@ const GridCellElement: React.FC<{
     } else {
         cellStyle.gridArea = 'auto';
     }
-    
+
     const placeholder = isSelected ? getPlaceholder() : ''; 
-    console.log('placeholder', placeholder)
     return (
         <div 
             className={`${styles.gridCell} ${isSelected ? styles.gridCellSelected : ''}`}
