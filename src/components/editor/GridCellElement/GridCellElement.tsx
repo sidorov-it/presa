@@ -111,9 +111,10 @@ const GridCellElement: React.FC<{
     
     // Получаем плейсхолдер для редактора
     const getPlaceholder = (): string => {
+        return  'Введите / для выбора блока'
         if (element.type === 'editor') {
             const editorElement = element as any;
-            return editorElement.placeholder ?? '';
+            return editorElement.placeholder ?? 'Введите / для выбора блока';
         }
         
         switch (element.type) {
@@ -141,13 +142,15 @@ const GridCellElement: React.FC<{
         cellStyle.gridArea = 'auto';
     }
     
+    const placeholder = isSelected ? getPlaceholder() : ''; 
+    console.log('placeholder', placeholder)
     return (
         <div 
             className={`${styles.gridCell} ${isSelected ? styles.gridCellSelected : ''}`}
             onClick={onSelect}
             style={cellStyle}
         >
-            <Tiptap 
+            <Tiptap
                 id={element.id}
                 initialContent={getEditorContent()}
                 onEnterPressed={handleEnterPressed}
@@ -155,8 +158,10 @@ const GridCellElement: React.FC<{
                 onFocus={onSelect}
                 onContentChange={handleEditorContentChange}
                 autoFocus={isSelected}
-                placeholder={getPlaceholder()}
+                placeholder={placeholder}
             />
+
+            <div className={styles.dragHandle}/>
         </div>
     );
 };
