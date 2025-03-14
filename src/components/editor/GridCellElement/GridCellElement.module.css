@@ -26,6 +26,12 @@
     cursor: grab;
     opacity: 0;
     transition: opacity 0.2s ease-in-out;
+    width: 16px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
 }
 
 .dragHandle:active {
@@ -46,36 +52,66 @@
     font-weight: 900;
     line-height: 1;
     content: "⋮";
-    /* margin: .5rem; */
-    -webkit-margin-end: 0;
-    margin-inline-end: 0;
     background: rgba(255, 255, 255, 0.92);
     border: 1px solid rgba(0, 0, 0, 0.08);
     color: #8f8b8b;
-    /* border-radius: 0.125rem; */
+    border-radius: 4px;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
-.dragHandle:hover.dragHandle:after {
+.dragHandle:hover:after {
     background: rgb(247, 243, 242);
+    color: #3b82f6;
 }
 
 /* Drag and drop styles */
 .dragging {
     opacity: 0.5;
-    /* border: 2px dashed #3b82f6; */
 }
 
 .dragOver {
-    border-top: 2px solid #3b82f6;
+    position: relative;
+}
+
+.dragOver::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #3b82f6;
+    z-index: 10;
 }
 
 .dragOverBottom {
-    border-bottom: 2px solid #3b82f6;
+    position: relative;
+}
+
+.dragOverBottom::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #3b82f6;
+    z-index: 10;
 }
 
 .dragOverLayout {
-    background-color: rgba(59, 130, 246, 0.1);
+    position: relative;
+}
+
+.dragOverLayout::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     outline: 2px dashed #3b82f6;
     outline-offset: 2px;
+    pointer-events: none;
+    z-index: 10;
 }

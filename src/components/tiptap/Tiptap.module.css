@@ -1,0 +1,9 @@
+/* Hide the prosemirror dropcursor */
+.ProseMirror-dropcursor {
+  display: none !important;
+}
+
+.editor {
+  outline: none;
+  width: 100%;
+}

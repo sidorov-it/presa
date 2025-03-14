@@ -137,22 +137,52 @@
 
 /* Drag and drop styles */
 .dragOver {
-    border-top: 2px solid #3b82f6;
-    padding-top: 0.25rem;
+    position: relative;
+}
+
+.dragOver::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #3b82f6;
+    z-index: 10;
 }
 
 .dragOverBottom {
-    border-bottom: 2px solid #3b82f6;
-    padding-bottom: 0.25rem;
+    position: relative;
+}
+
+.dragOverBottom::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #3b82f6;
+    z-index: 10;
 }
 
 .dragging {
     opacity: 0.5;
-    border: 2px dashed #3b82f6;
 }
 
 .dragOverLayout {
-    background-color: rgba(59, 130, 246, 0.1);
+    position: relative;
+}
+
+.dragOverLayout::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     outline: 2px dashed #3b82f6;
     outline-offset: 2px;
+    pointer-events: none;
+    z-index: 10;
 }

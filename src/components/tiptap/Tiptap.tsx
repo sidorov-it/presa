@@ -14,6 +14,7 @@ import Placeholder from '@tiptap/extension-placeholder'
 import { Extension } from '@tiptap/core'
 import { useEditorStore } from '@/store/editorStore'
 import { PluginKey, Plugin } from '@tiptap/pm/state'
+import styles from './Tiptap.module.css'
 
 export const pluginKey = new PluginKey('prevent-drop-from-outside');
 
@@ -64,6 +65,13 @@ export const preventDropFromOutsidePlugin = new Plugin({
     },
 });
 
+// Create a custom extension to add the preventDropFromOutsidePlugin
+const PreventDropExtension = Extension.create({
+  name: 'preventDrop',
+  addProseMirrorPlugins() {
+    return [preventDropFromOutsidePlugin];
+  },
+});
 
 // Создаем расширение для обработки нажатия Enter и Backspace
 const EnterHandlerExtension = (onEnterPressed: () => void, onBackspacePressed: () => void) => {
@@ -106,13 +114,14 @@ const EnterHandlerExtension = (onEnterPressed: () => void, onBackspacePressed: (
           // Проверяем, пустой ли документ
           const isEmpty = state.doc.textContent.trim() === ''
           
+          // Если курсор в начале документа и документ пустой
           if (empty && isAtStart && isEmpty) {
             onBackspacePressed()
             return true
           }
           
           return false
-        }
+        },
       }
     },
   })
@@ -133,7 +142,10 @@ interface TiptapProps {
 
 // Определяем массив расширений
 const getExtensions = (onEnterPressed: () => void, onBackspacePressed: () => void, placeholder: string) => [
-  StarterKit, 
+  // Configure StarterKit to disable dropcursor
+  StarterKit.configure({
+    dropcursor: false, // Disable the dropcursor extension
+  }), 
   Document, 
   Paragraph, 
   Text, 
@@ -141,7 +153,7 @@ const getExtensions = (onEnterPressed: () => void, onBackspacePressed: () => voi
   Bold, 
   Italic, 
   ListItem,
-  preventDropFromOutsidePlugin,
+  PreventDropExtension,
   EnterHandlerExtension(onEnterPressed, onBackspacePressed),
   Placeholder.configure({
     placeholder,
@@ -175,6 +187,11 @@ const Tiptap: React.FC<TiptapProps> = ({
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
       onContentChange(html);
+    },
+    editorProps: {
+      attributes: {
+        class: `${styles.editor} custom-tiptap-editor no-dropcursor`,
+      },
     },
   })
   
