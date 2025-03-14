@@ -136,6 +136,7 @@
 }
 
 /* Drag and drop styles */
+/* Vertical drag indicators (top/bottom) */
 .dragOver {
     position: relative;
 }
@@ -162,6 +163,37 @@
     left: 0;
     right: 0;
     height: 2px;
+    background-color: #3b82f6;
+    z-index: 10;
+}
+
+/* Horizontal drag indicators (left/right) */
+.dragOverLeft {
+    position: relative;
+}
+
+.dragOverLeft::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #3b82f6;
+    z-index: 10;
+}
+
+.dragOverRight {
+    position: relative;
+}
+
+.dragOverRight::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 2px;
     background-color: #3b82f6;
     z-index: 10;
 }

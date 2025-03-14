@@ -18,8 +18,8 @@ const GridCellElement: React.FC<{
     onDelete: () => void;
     index?: number;
     onDragStart?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string) => void;
-    onDragOver?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string) => void;
-    onDrop?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string) => void;
+    onDragOver?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string, position: 'top' | 'bottom' | 'left' | 'right') => void;
+    onDrop?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string, position: 'top' | 'bottom' | 'left' | 'right') => void;
     onDragLeave?: (e: React.DragEvent<HTMLDivElement>) => void;
 }> = ({ 
     element, 
@@ -172,25 +172,19 @@ const GridCellElement: React.FC<{
         cellStyle.gridArea = 'auto';
     }
 
-    // Drag and drop handlers
+    // Обработчик для начала перетаскивания
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
         e.stopPropagation();
         setIsDragging(true);
         
-        // Set the drag data
-        e.dataTransfer.setData('application/json', JSON.stringify({
-            elementId: element.id,
-            layoutId: layoutId,
-            type: 'element'
-        }));
-        
-        // Set the drag effect
-        e.dataTransfer.effectAllowed = 'move';
-        
-        // Add a class to the element being dragged
+        // Add the dragging class
         if (e.currentTarget.classList) {
             e.currentTarget.classList.add(styles.dragging);
         }
+        
+        // Set the drag data
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', element.id);
         
         // Call the parent's onDragStart handler if provided
         if (onDragStart) {
@@ -215,19 +209,54 @@ const GridCellElement: React.FC<{
         // Set the drop effect
         e.dataTransfer.dropEffect = 'move';
         
+        // Determine the drop position (top, bottom, left, right)
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left; // x position within the element
+        const y = e.clientY - rect.top;  // y position within the element
+        
+        // Calculate the position based on which quadrant of the element the cursor is in
+        const position = determineDropPosition(x, y, rect.width, rect.height);
+        
         // Call the parent's onDragOver handler if provided
         if (onDragOver) {
-            onDragOver(e, element.id, layoutId);
+            onDragOver(e, element.id, layoutId, position);
         }
+    };
+    
+    // Helper function to determine the drop position
+    const determineDropPosition = (x: number, y: number, width: number, height: number): 'top' | 'bottom' | 'left' | 'right' => {
+        // Calculate distances from each edge
+        const distanceFromTop = y;
+        const distanceFromBottom = height - y;
+        const distanceFromLeft = x;
+        const distanceFromRight = width - x;
+        
+        // Find the minimum distance
+        const minDistance = Math.min(distanceFromTop, distanceFromBottom, distanceFromLeft, distanceFromRight);
+        
+        // Return the position based on the minimum distance
+        if (minDistance === distanceFromTop) return 'top';
+        if (minDistance === distanceFromBottom) return 'bottom';
+        if (minDistance === distanceFromLeft) return 'left';
+        if (minDistance === distanceFromRight) return 'right';
+        
+        // Default to top if something goes wrong
+        return 'top';
     };
     
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
         
+        // Determine the drop position
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const position = determineDropPosition(x, y, rect.width, rect.height);
+        
         // Call the parent's onDrop handler if provided
         if (onDrop) {
-            onDrop(e, element.id, layoutId);
+            onDrop(e, element.id, layoutId, position);
         }
     };
 
@@ -269,10 +298,12 @@ const GridCellElement: React.FC<{
             <div 
                 ref={dragHandleRef}
                 className={styles.dragHandle}
-                draggable={true}
+                draggable
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
-            />
+            >
+                <span className={styles.dragIcon}>⋮⋮</span>
+            </div>
         </div>
     );
 };
