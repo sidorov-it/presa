@@ -83,7 +83,7 @@ export const usePresentationStore = create<PresentationState>()(
       addSlide: (presentationId, title = 'Новый слайд') => {
         const slideId = uuidv4();
 
-        const defaultGridType = 'test';
+        const defaultGridType = 'single-column';
         const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures(defaultGridType);
 
         const elements: Element[] = defaultLayoutGridStructure.rows.map(row => {

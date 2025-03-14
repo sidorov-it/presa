@@ -5,6 +5,7 @@ import { GridElementType, GridTextElement, GridEditorElement, GridListElement, G
 import Tiptap from '@/components/tiptap/Tiptap';
 import styles from './GridCellElement.module.css';
 import { v4 as uuidv4 } from 'uuid';
+import { LayoutType } from '@/types';
 
 // Компонент для отображения элемента в ячейке сетки
 const GridCellElement: React.FC<{
@@ -38,38 +39,44 @@ const GridCellElement: React.FC<{
         const layout = slide.layouts.find(l => l.id === layoutId);
         if (!layout) return;
         
-        // Создаем новую ячейку в структуре сетки
-        const updatedGridStructure = { ...layout.gridStructure };
+        // Instead of adding a new row to the grid structure, we'll add a new block layout
+        // Create a new layout with a grid that has 1 row and the same number of columns as the current layout
+        const newLayoutId = uuidv4();
+        const newLayout = {
+            id: newLayoutId,
+            type: 'custom' as LayoutType,
+            elements: [],
+            style: {},
+            gridStructure: {
+                columns: layout.gridStructure.columns,
+                rows: [
+                    {
+                        id: uuidv4(),
+                        cells: Array.from({ length: layout.gridStructure.columns }, (_, index) => ({
+                            id: uuidv4(),
+                            row: 1,
+                            column: index + 1,
+                            rowSpan: 1,
+                            colSpan: 1,
+                            elementIds: [],
+                            gridArea: `area-${uuidv4()}`
+                        }))
+                    }
+                ]
+            }
+        };
         
-        // Если нет строк, создаем первую строку
-        if (updatedGridStructure.rows.length === 0) {
-            updatedGridStructure.rows.push({
-                id: uuidv4(),
-                cells: []
-            });
-        }
+        // Add the new layout to the slide
+        const updatedLayouts = [...slide.layouts];
+        const currentLayoutIndex = updatedLayouts.findIndex(l => l.id === layoutId);
+        updatedLayouts.splice(currentLayoutIndex + 1, 0, newLayout);
         
-        // Добавляем новую строку
-        const newRowId = uuidv4();
-        updatedGridStructure.rows.push({
-            id: newRowId,
-            cells: [{
-                id: uuidv4(),
-                row: updatedGridStructure.rows.length + 1,
-                column: 1,
-                rowSpan: 1,
-                colSpan: updatedGridStructure.columns,
-                elementIds: [],
-                gridArea: `area-${uuidv4()}`
-            }]
+        // Update the slide with the new layouts
+        usePresentationStore.getState().updateSlide(presentationId, slideId, {
+            layouts: updatedLayouts
         });
         
-        // Обновляем макет с новой структурой сетки
-        updateLayout(presentationId, slideId, layoutId, {
-            gridStructure: updatedGridStructure
-        });
-        
-        // Создаем новый элемент редактора
+        // Create a new editor element for the first cell of the new layout
         const newEditor: Omit<GridEditorElement, 'id'> = {
             type: 'editor',
             content: '',
@@ -77,12 +84,12 @@ const GridCellElement: React.FC<{
             size: { width: 100, height: 40 },
             style: { fontSize: '16px', color: '#333333' },
             zIndex: 1,
-            gridArea: updatedGridStructure.rows[updatedGridStructure.rows.length - 1].cells[0].gridArea || `area-${uuidv4()}`,
+            gridArea: newLayout.gridStructure.rows[0].cells[0].gridArea,
             placeholder: ''
         };
         
-        // Добавляем новый элемент в макет
-        usePresentationStore.getState().addElement(presentationId, slideId, layoutId, newEditor as any);
+        // Add the new editor element to the new layout
+        usePresentationStore.getState().addElement(presentationId, slideId, newLayoutId, newEditor as any);
     };
     
     // Обработчик для удаления пустого редактора при нажатии Backspace
@@ -100,32 +107,11 @@ const GridCellElement: React.FC<{
         // Удаляем элемент
         usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, element.id);
         
-        // Если элемент был в последней строке и это был единственный элемент в этой строке,
-        // удаляем строку из структуры сетки
-        if (layout.gridStructure.rows.length > 1) {
-            const elementCell = layout.gridStructure.rows
-                .flatMap(row => row.cells)
-                .find(cell => cell.elementIds.includes(element.id));
-                
-            if (elementCell) {
-                const rowWithElement = layout.gridStructure.rows.find(row => 
-                    row.cells.some(cell => cell.id === elementCell.id)
-                );
-                
-                if (rowWithElement && rowWithElement.cells.length === 1 && 
-                    rowWithElement.cells[0].elementIds.length === 1) {
-                    // Это последний элемент в строке, удаляем строку
-                    const updatedRows = layout.gridStructure.rows.filter(row => row.id !== rowWithElement.id);
-                    
-                    if (updatedRows.length > 0) {
-                        updateLayout(presentationId, slideId, layoutId, {
-                            gridStructure: {
-                                ...layout.gridStructure,
-                                rows: updatedRows
-                            }
-                        });
-                    }
-                }
+        // If this is the only element in the layout and there are other layouts, delete the entire layout
+        if (layout.elements.length === 1) {
+            // Only delete the layout if there's at least one other layout
+            if (slide.layouts.length > 1) {
+                usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
             }
         }
     };
