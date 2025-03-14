@@ -83,17 +83,11 @@ export const usePresentationStore = create<PresentationState>()(
       addSlide: (presentationId, title = 'Новый слайд') => {
         const slideId = uuidv4();
 
-        const defaultGridType = 'three-columns';
+        const defaultGridType = 'test';
         const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures(defaultGridType);
 
-        const firstCollId = defaultLayoutGridStructure.rows[0].cells[0].id;
-
-        const layout: Layout = {
-          id: uuidv4(),
-          gridStructure: defaultLayoutGridStructure,
-          type: defaultGridType,
-          style: {},
-          elements: [{
+        const elements: Element[] = defaultLayoutGridStructure.rows.map(row => {
+          return row.cells.map(cell => ({
             id: uuidv4(),
             type: 'editor',
             content: '',
@@ -101,8 +95,16 @@ export const usePresentationStore = create<PresentationState>()(
             size: { width: 100, height: 100 },
             style: {},
             zIndex: 0,
-            cellId: firstCollId,
-          }],
+            cellId: cell.id,
+          }))
+        }).flat();
+
+        const layout: Layout = {
+          id: uuidv4(),
+          gridStructure: defaultLayoutGridStructure,
+          type: defaultGridType,
+          style: {},
+          elements,
         }
 
         const newSlide: Slide = {

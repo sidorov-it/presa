@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Slide, Layout, LayoutType, Element, TextElement, ListElement, EditorElement, GridTemplates, ImageElement, generateUniqueGridArea } from '@/types';
+import { Slide, Layout, LayoutType, Element, TextElement, ListElement, EditorElement, ImageElement } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 import { GridEditorElement, GridImageElement } from '@/types/grid-elements';
 import { usePresentationStore } from '@/store/presentationStore';
 import styles from './SlideEditor.module.css';
 import GridCellElement from '../GridCellElement';
-
+import { generateGridTemplateAreas, generateGridTemplateColumns, generateGridTemplateRows, getPredefinedGridStructures } from '@/types';
 
 interface SlideEditorProps {
     slide: Slide;
@@ -182,21 +182,20 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     // Создание макета по умолчанию с одним редактором
     const createDefaultLayout = () => {
         // Создаем новый макет с одной ячейкой
-        const gridTemplate = GridTemplates['single-column'];
-
+        const layoutId = uuidv4();
+        const gridStructure = getPredefinedGridStructures('single-column');
+        
         const newLayout: Omit<Layout, 'id'> = {
             type: 'single-column',
             elements: [],
             style: {},
-            gridTemplateAreas: gridTemplate.areas,
-            gridTemplateColumns: gridTemplate.columns,
-            gridTemplateRows: gridTemplate.rows
+            gridStructure
         };
 
         // Добавляем макет на слайд
-        const layoutId = addLayout(presentationId, slide.id, newLayout);
+        addLayout(presentationId, slide.id, newLayout);
 
-        // Добавляем редактор в ячейку
+        // Добавляем элемент редактора в макет
         const editorElement: Omit<GridEditorElement, 'id'> = {
             type: 'editor',
             content: '',
@@ -204,7 +203,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             size: { width: 100, height: 40 },
             style: { fontSize: '16px', color: '#333333' },
             zIndex: 1,
-            gridArea: 'content', // Используем область 'content' из шаблона single-column
+            gridArea: gridStructure.rows[0].cells[0].gridArea || `area-${uuidv4()}`, // Добавляем fallback
             placeholder: 'Введите текст...'
         };
 
@@ -215,17 +214,22 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     // Рекурсивная функция для рендеринга макетов и их вложенных элементов
     const renderLayoutContent = (layout: Layout) => {
+        // Генерируем CSS grid свойства из структуры сетки
+        const gridTemplateAreas = generateGridTemplateAreas(layout.gridStructure);
+        const gridTemplateColumns = generateGridTemplateColumns(layout.gridStructure);
+        const gridTemplateRows = generateGridTemplateRows(layout.gridStructure);
+        
         return (
             <div
                 key={layout.id}
                 className={styles.gridContainer}
                 style={{
                     display: 'grid',
-                    gridTemplateAreas: layout.gridTemplateAreas,
-                    gridTemplateColumns: layout.gridTemplateColumns,
-                    gridTemplateRows: layout.gridTemplateRows,
+                    gridTemplateAreas: gridTemplateAreas,
+                    gridTemplateColumns: gridTemplateColumns,
+                    gridTemplateRows: gridTemplateRows,
                     gap: '1rem',
-                    gridArea: layout.gridArea,
+                    gridArea: layout.parentId ? layout.id : undefined,
                     ...layout.style
                 }}
             >
@@ -253,25 +257,50 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         );
     };
 
+    // Обработчик для добавления нового макета
+    const handleAddLayout = () => {
+        // Создаем новый макет с одной колонкой
+        const layoutId = uuidv4();
+        const gridStructure = getPredefinedGridStructures('single-column');
+        
+        const newLayout: Omit<Layout, 'id'> = {
+            type: 'single-column',
+            elements: [],
+            style: {},
+            gridStructure
+        };
+
+        // Добавляем макет на слайд
+        addLayout(presentationId, slide.id, newLayout);
+
+        // Добавляем элемент редактора в макет
+        const editorElement: Omit<GridEditorElement, 'id'> = {
+            type: 'editor',
+            content: '',
+            position: { x: 0, y: 0 },
+            size: { width: 100, height: 40 },
+            style: { fontSize: '16px', color: '#333333' },
+            zIndex: 1,
+            gridArea: gridStructure.rows[0].cells[0].gridArea || `area-${uuidv4()}`, // Добавляем fallback
+            placeholder: 'Введите текст...'
+        };
+
+        const elementId = addElement(presentationId, slide.id, layoutId, editorElement as any);
+        setSelectedElementId(elementId);
+        setShowTemplates(false);
+    };
+
     // Обновляем функцию создания макета для поддержки уникальных областей сетки
     const handleSelectTemplate = (template: TemplateCard) => {
-        const gridTemplate = GridTemplates[template.type];
-
-        // Создаем новый макет с уникальными именами областей
+        // Создаем новый макет с предопределенной структурой сетки
         const layoutId = uuidv4();
-        const areas = gridTemplate.areas.split('"').filter(s => s.trim());
-        const uniqueAreas = areas.map(area => {
-            const areaNames = area.trim().split(' ');
-            return areaNames.map(name => generateUniqueGridArea(name, layoutId)).join(' ');
-        });
+        const gridStructure = getPredefinedGridStructures(template.type);
 
         const newLayout: Omit<Layout, 'id'> = {
             type: template.type,
             elements: [],
             style: {},
-            gridTemplateAreas: `"${uniqueAreas.join('" "')}"`,
-            gridTemplateColumns: gridTemplate.columns,
-            gridTemplateRows: gridTemplate.rows
+            gridStructure
         };
 
         // Добавляем макет на слайд
@@ -287,7 +316,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 size: { width: 100, height: 60 },
                 style: { fontSize: '28px', fontWeight: 'bold', color: '#111111' },
                 zIndex: 1,
-                gridArea: 'content',
+                gridArea: gridStructure.rows[0].cells[0].gridArea || `area-${uuidv4()}`,
                 placeholder: 'Введите заголовок...'
             };
 
@@ -302,7 +331,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 size: { width: 100, height: 100 },
                 style: { fontSize: '16px', color: '#333333' },
                 zIndex: 1,
-                gridArea: 'left',
+                gridArea: gridStructure.rows[0].cells[0].gridArea || `area-${uuidv4()}`,
                 placeholder: 'Левая колонка...'
             };
 
@@ -313,7 +342,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 size: { width: 100, height: 100 },
                 style: { fontSize: '16px', color: '#333333' },
                 zIndex: 1,
-                gridArea: 'right',
+                gridArea: gridStructure.rows[0].cells[1].gridArea || `area-${uuidv4()}`,
                 placeholder: 'Правая колонка...'
             };
 
@@ -330,7 +359,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 size: { width: 100, height: 100 },
                 style: {},
                 zIndex: 1,
-                gridArea: 'image'
+                gridArea: gridStructure.rows[0].cells[0].gridArea || `area-${uuidv4()}`
             };
 
             const textEditor: Omit<GridEditorElement, 'id'> = {
@@ -340,7 +369,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 size: { width: 100, height: 100 },
                 style: { fontSize: '16px', color: '#333333' },
                 zIndex: 1,
-                gridArea: 'content',
+                gridArea: gridStructure.rows[0].cells[1].gridArea || `area-${uuidv4()}`,
                 placeholder: 'Введите текст...'
             };
 

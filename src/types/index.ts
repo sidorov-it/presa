@@ -177,7 +177,36 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
         columns: 1,
         rows: []
       };
-    
+
+    case 'test': 
+      return {
+        "columns": 3,
+        "rows": [
+          {
+            id:  generateId(8),
+            "cells": [
+              { id:  generateId(8), "row": 1, "column": 1, "rowSpan": 1, "colSpan": 1, "elementIds": [], "gridArea": generateId(8) },
+              { id:  generateId(8), "row": 1, "column": 2, "rowSpan": 1, "colSpan": 1, "elementIds": [], "gridArea": generateId(8) },
+              { id:  generateId(8), "row": 1, "column": 3, "rowSpan": 3, "colSpan": 1, "elementIds": [], "gridArea": generateId(8) }
+            ]
+          },
+          {
+            id:  generateId(8),
+            "cells": [
+              { id:  generateId(8), "row": 2, "column": 1, "rowSpan": 1, "colSpan": 1, "elementIds": [], "gridArea": generateId(8) },
+              { id:  generateId(8), "row": 2, "column": 2, "rowSpan": 1, "colSpan": 1, "elementIds": [], "gridArea": generateId(8) }
+            ]
+          },
+          {
+            id:  generateId(8),
+            "cells": [
+              { id:  generateId(8), "row": 3, "column": 1, "rowSpan": 1, "colSpan": 1, "elementIds": [], "gridArea": generateId(8) },
+              { id:  generateId(8), "row": 3, "column": 2, "rowSpan": 1, "colSpan": 1, "elementIds": [], "gridArea": generateId(8) }
+            ]
+          }
+        ]
+      }
+      
     default: 
       return {
         columns: 1,
@@ -354,7 +383,7 @@ export const generateGridTemplateAreas = (gridStructure: GridStructure): string 
   // Заполняем матрицу именами областей
   gridStructure.rows.forEach(row => {
     row.cells.forEach(cell => {
-      const areaName = cell.gridArea || `area-${cell.id}`;
+      const areaName = cell.id || `area-${cell.id}`;
 
       // Заполняем все ячейки, которые охватывает данная ячейка
       for (let r = cell.row - 1; r < cell.row - 1 + cell.rowSpan; r++) {
@@ -514,7 +543,7 @@ export const getElementGridStyles = (layout: Layout, elementId: string): { gridA
   for (const row of layout.gridStructure.rows) {
     for (const cell of row.cells) {
       if (cell.elementIds.includes(elementId)) {
-        gridArea = cell.gridArea || `area-${cell.id}`;
+        gridArea = cell.id || `area-${cell.id}`;
         break;
       }
     }
