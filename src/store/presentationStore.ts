@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
-import { Presentation, Slide, Layout, Element, LayoutType } from '@/types';
+import { Presentation, Slide, Layout, Element, LayoutType, GridStructure, getPredefinedGridStructures } from '@/types';
 import { devtools, persist } from 'zustand/middleware'
 
 interface PresentationState {
@@ -83,27 +83,32 @@ export const usePresentationStore = create<PresentationState>()(
       addSlide: (presentationId, title = 'Новый слайд') => {
         const slideId = uuidv4();
 
+        const defaultGridType = 'three-columns';
+        const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures(defaultGridType);
+
+        const firstCollId = defaultLayoutGridStructure.rows[0].cells[0].id;
+
+        const layout: Layout = {
+          id: uuidv4(),
+          gridStructure: defaultLayoutGridStructure,
+          type: defaultGridType,
+          style: {},
+          elements: [{
+            id: uuidv4(),
+            type: 'editor',
+            content: '',
+            position: { x: 0, y: 0 },
+            size: { width: 100, height: 100 },
+            style: {},
+            zIndex: 0,
+            cellId: firstCollId,
+          }],
+        }
+
         const newSlide: Slide = {
           id: slideId,
           title,
-          layouts: [{
-            id: uuidv4(),
-            type: 'single-column',
-            elements: [{
-              id: uuidv4(),
-              type: 'editor',
-              content: '',
-              position: { x: 0, y: 0 },
-              size: { width: 100, height: 100 },
-              style: {},
-              zIndex: 0,
-              // gridArea: 'content-1'
-            }],
-            style: {},
-            gridTemplateAreas: '',
-            gridTemplateColumns: '',
-            gridTemplateRows: '',
-          }],
+          layouts: [layout],
           background: {
             type: 'color',
             value: '#ffffff',

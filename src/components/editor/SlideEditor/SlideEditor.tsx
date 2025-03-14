@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Slide, Layout, LayoutType, Element, TextElement, ListElement, EditorElement, GridTemplates, ImageElement } from '@/types';
+import { Slide, Layout, LayoutType, Element, TextElement, ListElement, EditorElement, GridTemplates, ImageElement, generateUniqueGridArea } from '@/types';
+import { v4 as uuidv4 } from 'uuid';
 import { GridEditorElement, GridImageElement } from '@/types/grid-elements';
 import { usePresentationStore } from '@/store/presentationStore';
 import styles from './SlideEditor.module.css';
@@ -72,9 +73,9 @@ const SlashCommands: React.FC<SlashCommandsProps> = ({ isOpen, position, onSelec
     if (!isOpen) return null;
 
     return (
-        <div 
+        <div
             className="absolute z-50 bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200"
-            style={{ 
+            style={{
                 top: `${position.y}px`,
                 left: `${position.x}px`,
                 width: '240px'
@@ -106,15 +107,15 @@ const SlashCommands: React.FC<SlashCommandsProps> = ({ isOpen, position, onSelec
 const SlideEditor: React.FC<SlideEditorProps> = ({
     slide,
     presentationId,
-    isSelected,
     handleSelectSlide,
+    isSelected,
 }) => {
     const { updateSlide, addLayout, deleteLayout, updateLayout, addSlide, addElement } = usePresentationStore();
     const [isDraggingOver, setIsDraggingOver] = useState(false);
     const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
     const [isHovered, setIsHovered] = useState(false);
     const [showTemplates, setShowTemplates] = useState(slide.layouts.length === 0);
-    
+
     const editorRef = useRef<HTMLDivElement>(null);
     // Популярные шаблоны для слайдов
     const templates: TemplateCard[] = [
@@ -182,7 +183,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const createDefaultLayout = () => {
         // Создаем новый макет с одной ячейкой
         const gridTemplate = GridTemplates['single-column'];
-        
+
         const newLayout: Omit<Layout, 'id'> = {
             type: 'single-column',
             elements: [],
@@ -191,10 +192,10 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             gridTemplateColumns: gridTemplate.columns,
             gridTemplateRows: gridTemplate.rows
         };
-        
+
         // Добавляем макет на слайд
         const layoutId = addLayout(presentationId, slide.id, newLayout);
-        
+
         // Добавляем редактор в ячейку
         const editorElement: Omit<GridEditorElement, 'id'> = {
             type: 'editor',
@@ -206,30 +207,76 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             gridArea: 'content', // Используем область 'content' из шаблона single-column
             placeholder: 'Введите текст...'
         };
-        
+
         const elementId = addElement(presentationId, slide.id, layoutId, editorElement as any);
         setSelectedElementId(elementId);
         setShowTemplates(false);
     };
 
-    // Обработчик для выбора шаблона
+    // Рекурсивная функция для рендеринга макетов и их вложенных элементов
+    const renderLayoutContent = (layout: Layout) => {
+        return (
+            <div
+                key={layout.id}
+                className={styles.gridContainer}
+                style={{
+                    display: 'grid',
+                    gridTemplateAreas: layout.gridTemplateAreas,
+                    gridTemplateColumns: layout.gridTemplateColumns,
+                    gridTemplateRows: layout.gridTemplateRows,
+                    gap: '1rem',
+                    gridArea: layout.gridArea,
+                    ...layout.style
+                }}
+            >
+                {layout.elements.map((element) => {
+                    if ('type' in element && 'elements' in element) {
+                        // Это вложенный макет
+                        return renderLayoutContent(element as Layout);
+                    } else {
+                        // Это обычный элемент
+                        return (
+                            <GridCellElement
+                                key={element.id}
+                                element={element as Element}
+                                presentationId={presentationId}
+                                slideId={slide.id}
+                                layoutId={layout.id}
+                                isSelected={selectedElementId === element.id}
+                                onSelect={() => handleSelectElement(element.id)}
+                                onDelete={() => handleDeleteElement(layout.id, element.id)}
+                            />
+                        );
+                    }
+                })}
+            </div>
+        );
+    };
+
+    // Обновляем функцию создания макета для поддержки уникальных областей сетки
     const handleSelectTemplate = (template: TemplateCard) => {
-        // Получаем шаблон сетки для выбранного типа макета
         const gridTemplate = GridTemplates[template.type];
-        
-        // Создаем новый макет
+
+        // Создаем новый макет с уникальными именами областей
+        const layoutId = uuidv4();
+        const areas = gridTemplate.areas.split('"').filter(s => s.trim());
+        const uniqueAreas = areas.map(area => {
+            const areaNames = area.trim().split(' ');
+            return areaNames.map(name => generateUniqueGridArea(name, layoutId)).join(' ');
+        });
+
         const newLayout: Omit<Layout, 'id'> = {
             type: template.type,
             elements: [],
             style: {},
-            gridTemplateAreas: gridTemplate.areas,
+            gridTemplateAreas: `"${uniqueAreas.join('" "')}"`,
             gridTemplateColumns: gridTemplate.columns,
             gridTemplateRows: gridTemplate.rows
         };
-        
+
         // Добавляем макет на слайд
-        const layoutId = addLayout(presentationId, slide.id, newLayout);
-        
+        addLayout(presentationId, slide.id, newLayout);
+
         // Добавляем элементы в зависимости от типа макета
         if (template.type === 'single-column') {
             // Добавляем заголовок и текст
@@ -243,7 +290,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 gridArea: 'content',
                 placeholder: 'Введите заголовок...'
             };
-            
+
             const elementId = addElement(presentationId, slide.id, layoutId, headingElement as any);
             setSelectedElementId(elementId);
         } else if (template.type === 'two-columns') {
@@ -258,7 +305,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 gridArea: 'left',
                 placeholder: 'Левая колонка...'
             };
-            
+
             const rightEditor: Omit<GridEditorElement, 'id'> = {
                 type: 'editor',
                 content: '',
@@ -269,7 +316,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 gridArea: 'right',
                 placeholder: 'Правая колонка...'
             };
-            
+
             const leftId = addElement(presentationId, slide.id, layoutId, leftEditor as any);
             addElement(presentationId, slide.id, layoutId, rightEditor as any);
             setSelectedElementId(leftId);
@@ -285,7 +332,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 zIndex: 1,
                 gridArea: 'image'
             };
-            
+
             const textEditor: Omit<GridEditorElement, 'id'> = {
                 type: 'editor',
                 content: '',
@@ -296,12 +343,12 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 gridArea: 'content',
                 placeholder: 'Введите текст...'
             };
-            
+
             addElement(presentationId, slide.id, layoutId, imageElement as any);
             const textId = addElement(presentationId, slide.id, layoutId, textEditor as any);
             setSelectedElementId(textId);
         }
-        
+
         setShowTemplates(false);
     };
 
@@ -347,28 +394,28 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     // Обработчик для добавления нового слайда после текущего
     const handleAddSlideAfter = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
-        
+
         // Получаем презентацию из хранилища
         const presentation = usePresentationStore.getState().getPresentation(presentationId);
-        
+
         if (!presentation) return;
-        
+
         // Находим индекс текущего слайда
         const currentSlideIndex = presentation.slides.findIndex(s => s.id === slide.id);
-        
+
         if (currentSlideIndex === -1) return;
-        
+
         // Добавляем новый слайд
         const newSlideId = addSlide(presentationId);
-        
+
         // Перемещаем новый слайд на позицию после текущего
         const newSlideIndex = presentation.slides.length - 1; // Индекс нового слайда (последний)
         usePresentationStore.getState().reorderSlides(
-            presentationId, 
-            newSlideIndex, 
+            presentationId,
+            newSlideIndex,
             currentSlideIndex + 1
         );
-        
+
         // Выбираем новый слайд
         handleSelectSlide(newSlideId);
     };
@@ -390,13 +437,13 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     // Определяем классы для слайда
     const getSlideClassName = () => {
         let className = styles.slideWrapper;
-        
+
         if (isSelected) {
             className += ` ${styles.slideSelected}`;
         } else if (isHovered) {
             className += ` ${styles.slideHovered}`;
         }
-        
+
         return className;
     };
 
@@ -410,8 +457,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     };
 
     return (
-        <div 
-            className={styles.slide} 
+        <div
+            className={styles.slide}
             onMouseEnter={() => {
                 handleMouseEnter();
                 handleSelectSlide(slide.id);
@@ -434,79 +481,20 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 >
                     {/* Контейнер для содержимого */}
                     <div className="relative w-full h-full p-8 mt-10">
-                        {/* Рендерим макеты с CSS Grid */}
-                        {slide.layouts.map((layout) => (
-                            <div
-                                key={layout.id}
-                                className={styles.gridContainer}
-                                style={{
-                                    display: 'grid',
-                                    gridTemplateAreas: layout.gridTemplateAreas,
-                                    gridTemplateColumns: layout.gridTemplateColumns,
-                                    gridTemplateRows: layout.gridTemplateRows,
-                                    gap: '1rem',
-                                    ...layout.style
-                                }}
-                            >
-                                {layout.elements.map((element) => (
-                                    <GridCellElement
-                                        key={element.id}
-                                        element={element}
-                                        presentationId={presentationId}
-                                        slideId={slide.id}
-                                        layoutId={layout.id}
-                                        isSelected={selectedElementId === element.id}
-                                        onSelect={() => handleSelectElement(element.id)}
-                                        onDelete={() => handleDeleteElement(layout.id, element.id)}
-                                    />
-                                ))}
-                            </div>
-                        ))}
-
-                        {/* Шаблоны для пустого слайда */}
-                        {showTemplates && (
-                            <div className="max-w-3xl mx-auto text-center mt-8 py-6">
-                                <h3 className="text-lg font-medium text-gray-600 mb-5">
-                                    {slide.layouts.length === 0 
-                                        ? "Выберите шаблон или нажмите для создания слайда" 
-                                        : "Выберите шаблон для продолжения"}
-                                </h3>
-                                <div className="grid grid-cols-4 gap-4 mt-2">
-                                    {templates.map((template) => (
-                                        <div
-                                            key={template.id}
-                                            className="bg-white border border-gray-200 rounded-lg p-4 hover:border-blue-500 cursor-pointer transition-all shadow-sm hover:shadow"
-                                            onClick={() => handleSelectTemplate(template)}
-                                        >
-                                            <div className="mb-3 text-gray-500 flex justify-center">
-                                                {template.icon}
-                                            </div>
-                                            <p className="text-sm text-gray-700 font-medium">{template.title}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Подсказка для клика по пустому слайду */}
-                        {slide.layouts.length === 0 && !showTemplates && (
-                            <div className="absolute inset-0 flex items-center justify-center text-gray-400 pointer-events-none">
-                                <p className="text-lg">Нажмите для создания слайда</p>
-                            </div>
-                        )}
+                        {slide.layouts.map((layout) => renderLayoutContent(layout))}
                     </div>
-                </div>
-            </div>
 
-            <div className={styles.slideDivider + ' ' + (isHovered ? styles.slideDividerHovered : '')}>
-                <div className={styles.buttons}>
-                    <button 
-                        className={styles.slideDividerButton}
-                        onClick={handleAddSlideAfter}
-                        aria-label="Добавить слайд"
-                    >
-                        +
-                    </button>
+                    <div className={styles.slideDivider + ' ' + (isHovered ? styles.slideDividerHovered : '')}>
+                        <div className={styles.buttons}>
+                            <button
+                                className={styles.slideDividerButton}
+                                onClick={handleAddSlideAfter}
+                                aria-label="Добавить слайд"
+                            >
+                                +
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

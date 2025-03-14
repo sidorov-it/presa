@@ -1,12 +1,4 @@
 /**
- * Генерирует уникальный идентификатор
- * @returns строка с уникальным идентификатором
- */
-export const generateId = (): string => {
-  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-};
-
-/**
  * Форматирует дату в читаемый формат
  * @param timestamp временная метка в миллисекундах
  * @returns отформатированная дата
