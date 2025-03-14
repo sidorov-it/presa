@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { Element as SlideElement } from '@/types';
 import { GridElementType, GridTextElement, GridEditorElement, GridListElement, GridImageElement } from '@/types/grid-elements';
@@ -16,9 +16,28 @@ const GridCellElement: React.FC<{
     isSelected: boolean;
     onSelect: () => void;
     onDelete: () => void;
-}> = ({ element, presentationId, slideId, layoutId, isSelected, onSelect, onDelete }) => {
+    index?: number;
+    onDragStart?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string) => void;
+    onDragOver?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string) => void;
+    onDrop?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string) => void;
+    onDragLeave?: (e: React.DragEvent<HTMLDivElement>) => void;
+}> = ({ 
+    element, 
+    presentationId, 
+    slideId, 
+    layoutId, 
+    isSelected, 
+    onSelect, 
+    onDelete,
+    index,
+    onDragStart,
+    onDragOver,
+    onDrop,
+    onDragLeave
+}) => {
     const { updateElement, updateLayout } = usePresentationStore();
     const dragHandleRef = useRef<HTMLDivElement>(null);
+    const [isDragging, setIsDragging] = useState(false);
     
     // Обработчик для изменения содержимого редактора
     const handleEditorContentChange = (content: string) => {
@@ -153,15 +172,88 @@ const GridCellElement: React.FC<{
         cellStyle.gridArea = 'auto';
     }
 
-    console.log('cellStyle.gridArea', cellStyle.gridArea)
+    // Drag and drop handlers
+    const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+        setIsDragging(true);
+        
+        // Set the drag data
+        e.dataTransfer.setData('application/json', JSON.stringify({
+            elementId: element.id,
+            layoutId: layoutId,
+            type: 'element'
+        }));
+        
+        // Set the drag effect
+        e.dataTransfer.effectAllowed = 'move';
+        
+        // Add a class to the element being dragged
+        if (e.currentTarget.classList) {
+            e.currentTarget.classList.add(styles.dragging);
+        }
+        
+        // Call the parent's onDragStart handler if provided
+        if (onDragStart) {
+            onDragStart(e, element.id, layoutId);
+        }
+    };
+    
+    const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+        setIsDragging(false);
+        
+        // Remove the dragging class
+        if (e.currentTarget.classList) {
+            e.currentTarget.classList.remove(styles.dragging);
+        }
+    };
+    
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Set the drop effect
+        e.dataTransfer.dropEffect = 'move';
+        
+        // Call the parent's onDragOver handler if provided
+        if (onDragOver) {
+            onDragOver(e, element.id, layoutId);
+        }
+    };
+    
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Call the parent's onDrop handler if provided
+        if (onDrop) {
+            onDrop(e, element.id, layoutId);
+        }
+    };
+
+    const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Call the parent's onDragLeave handler if provided
+        if (onDragLeave) {
+            onDragLeave(e);
+        }
+    };
+
     const placeholder = isSelected ? getPlaceholder() : ''; 
     return (
         <div 
-            className={`${styles.gridCell} ${isSelected ? styles.gridCellSelected : ''}`}
+            className={`${styles.gridCell} ${isSelected ? styles.gridCellSelected : ''} ${isDragging ? styles.dragging : ''}`}
             onClick={onSelect}
             style={cellStyle}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            onDragLeave={handleDragLeave}
+            data-element-id={element.id}
+            data-layout-id={layoutId}
+            data-index={index}
         >
-            {/* <span>{cellStyle.gridArea}</span> */}
             <Tiptap
                 id={element.cellId}
                 initialContent={getEditorContent()}
@@ -177,6 +269,9 @@ const GridCellElement: React.FC<{
             <div 
                 ref={dragHandleRef}
                 className={styles.dragHandle}
+                draggable={true}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
             />
         </div>
     );

@@ -23,9 +23,13 @@
     top: 50%;
     transform: translateY(-50%);
     left: -24px;
-    cursor: pointer;
+    cursor: grab;
     opacity: 0;
     transition: opacity 0.2s ease-in-out;
+}
+
+.dragHandle:active {
+    cursor: grabbing;
 }
 
 .gridCell:hover .dragHandle {
@@ -48,10 +52,30 @@
     background: rgba(255, 255, 255, 0.92);
     border: 1px solid rgba(0, 0, 0, 0.08);
     color: #8f8b8b;
-    border-radius: 0.125rem;
+    /* border-radius: 0.125rem; */
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 .dragHandle:hover.dragHandle:after {
     background: rgb(247, 243, 242);
+}
+
+/* Drag and drop styles */
+.dragging {
+    opacity: 0.5;
+    /* border: 2px dashed #3b82f6; */
+}
+
+.dragOver {
+    border-top: 2px solid #3b82f6;
+}
+
+.dragOverBottom {
+    border-bottom: 2px solid #3b82f6;
+}
+
+.dragOverLayout {
+    background-color: rgba(59, 130, 246, 0.1);
+    outline: 2px dashed #3b82f6;
+    outline-offset: 2px;
 }

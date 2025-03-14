@@ -115,6 +115,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
     const [isHovered, setIsHovered] = useState(false);
     const [showTemplates, setShowTemplates] = useState(slide.layouts.length === 0);
+    const [draggedElementId, setDraggedElementId] = useState<string | null>(null);
+    const [draggedLayoutId, setDraggedLayoutId] = useState<string | null>(null);
+    const [dragOverElementId, setDragOverElementId] = useState<string | null>(null);
+    const [dragOverLayoutId, setDragOverLayoutId] = useState<string | null>(null);
+    const [dragOverPosition, setDragOverPosition] = useState<'top' | 'bottom' | null>(null);
 
     const editorRef = useRef<HTMLDivElement>(null);
     // Популярные шаблоны для слайдов
@@ -185,11 +190,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         const layoutId = uuidv4();
         const gridStructure = getPredefinedGridStructures('single-column');
         
-        // Ensure the grid structure has only 1 row
-        if (gridStructure.rows.length > 1) {
-            gridStructure.rows = [gridStructure.rows[0]];
-        }
-        
         const newLayout: Omit<Layout, 'id'> = {
             type: 'single-column',
             elements: [],
@@ -215,6 +215,149 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         const elementId = addElement(presentationId, slide.id, layoutId, editorElement as any);
         setSelectedElementId(elementId);
         setShowTemplates(false);
+    };
+
+    // Обработчик для начала перетаскивания элемента
+    const handleElementDragStart = (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string) => {
+        setDraggedElementId(elementId);
+        setDraggedLayoutId(layoutId);
+    };
+
+    // Обработчик для перетаскивания над элементом
+    const handleElementDragOver = (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string) => {
+        e.preventDefault();
+        
+        if (draggedElementId === elementId) return;
+        
+        setDragOverElementId(elementId);
+        setDragOverLayoutId(layoutId);
+        
+        // Determine if we're dragging over the top or bottom half of the element
+        const rect = e.currentTarget.getBoundingClientRect();
+        const y = e.clientY - rect.top;
+        const position = y < rect.height / 2 ? 'top' : 'bottom';
+        setDragOverPosition(position);
+        
+        // Add appropriate class to the element
+        const elements = document.querySelectorAll(`[data-element-id="${elementId}"]`);
+        elements.forEach(el => {
+            el.classList.remove(styles.dragOver, styles.dragOverBottom);
+            if (position === 'top') {
+                el.classList.add(styles.dragOver);
+            } else {
+                el.classList.add(styles.dragOverBottom);
+            }
+        });
+    };
+
+    // Обработчик для сброса элемента
+    const handleElementDrop = (e: React.DragEvent<HTMLDivElement>, targetElementId: string, targetLayoutId: string) => {
+        e.preventDefault();
+        
+        if (!draggedElementId || !draggedLayoutId) return;
+        
+        // Remove drag over classes
+        const elements = document.querySelectorAll(`.${styles.dragOver}, .${styles.dragOverBottom}`);
+        elements.forEach(el => {
+            el.classList.remove(styles.dragOver, styles.dragOverBottom);
+        });
+        
+        // If dropping on the same element, do nothing
+        if (draggedElementId === targetElementId) {
+            resetDragState();
+            return;
+        }
+        
+        // Get the current layout and target layout
+        const currentLayout = slide.layouts.find(l => l.id === draggedLayoutId);
+        const targetLayout = slide.layouts.find(l => l.id === targetLayoutId);
+        
+        if (!currentLayout || !targetLayout) {
+            resetDragState();
+            return;
+        }
+        
+        // Get the dragged element
+        const draggedElement = currentLayout.elements.find(e => e.id === draggedElementId);
+        
+        if (!draggedElement) {
+            resetDragState();
+            return;
+        }
+        
+        // If dragging within the same layout
+        if (draggedLayoutId === targetLayoutId) {
+            // Reorder elements within the layout
+            const updatedElements = [...targetLayout.elements];
+            const draggedIndex = updatedElements.findIndex(e => e.id === draggedElementId);
+            const targetIndex = updatedElements.findIndex(e => e.id === targetElementId);
+            
+            // Remove the dragged element
+            const [removed] = updatedElements.splice(draggedIndex, 1);
+            
+            // Insert it at the new position
+            const insertIndex = dragOverPosition === 'top' ? targetIndex : targetIndex + 1;
+            updatedElements.splice(insertIndex, 0, removed);
+            
+            // Update the layout
+            updateLayout(presentationId, slide.id, targetLayoutId, {
+                elements: updatedElements
+            });
+        } else {
+            // Moving between layouts
+            // Remove from current layout
+            const updatedCurrentElements = currentLayout.elements.filter(e => e.id !== draggedElementId);
+            
+            // Add to target layout
+            const updatedTargetElements = [...targetLayout.elements];
+            const targetIndex = updatedTargetElements.findIndex(e => e.id === targetElementId);
+            const insertIndex = dragOverPosition === 'top' ? targetIndex : targetIndex + 1;
+            updatedTargetElements.splice(insertIndex, 0, draggedElement);
+            
+            // Update both layouts
+            updateLayout(presentationId, slide.id, draggedLayoutId, {
+                elements: updatedCurrentElements
+            });
+            
+            updateLayout(presentationId, slide.id, targetLayoutId, {
+                elements: updatedTargetElements
+            });
+            
+            // If the current layout is now empty, delete it
+            if (updatedCurrentElements.length === 0) {
+                deleteLayout(presentationId, slide.id, draggedLayoutId);
+            }
+        }
+        
+        resetDragState();
+    };
+
+    // Reset drag state
+    const resetDragState = () => {
+        setDraggedElementId(null);
+        setDraggedLayoutId(null);
+        setDragOverElementId(null);
+        setDragOverLayoutId(null);
+        setDragOverPosition(null);
+    };
+
+    // Обработчик для отмены перетаскивания
+    const handleElementDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        
+        // Check if we're leaving the element completely
+        const relatedTarget = e.relatedTarget as HTMLElement;
+        if (!relatedTarget || !e.currentTarget.contains(relatedTarget)) {
+            // Remove drag over classes
+            const elements = document.querySelectorAll(`.${styles.dragOver}, .${styles.dragOverBottom}`);
+            elements.forEach(el => {
+                el.classList.remove(styles.dragOver, styles.dragOverBottom);
+            });
+            
+            setDragOverElementId(null);
+            setDragOverLayoutId(null);
+            setDragOverPosition(null);
+        }
     };
 
     // Рекурсивная функция для рендеринга макетов и их вложенных элементов
@@ -244,7 +387,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                         width: '100%',
                     }}
                 >
-                    {layout.elements.map((element) => {
+                    {layout.elements.map((element, index) => {
                         // Check if the element is a Layout by checking if it has the required properties
                         const isLayout = (
                             'type' in element && 
@@ -269,6 +412,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                                     isSelected={selectedElementId === element.id}
                                     onSelect={() => handleSelectElement(element.id)}
                                     onDelete={() => handleDeleteElement(layout.id, element.id)}
+                                    index={index}
+                                    onDragStart={handleElementDragStart}
+                                    onDragOver={handleElementDragOver}
+                                    onDrop={handleElementDrop}
+                                    onDragLeave={handleElementDragLeave}
                                 />
                             );
                         }
@@ -283,11 +431,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         // Создаем новый макет с одной колонкой
         const layoutId = uuidv4();
         const gridStructure = getPredefinedGridStructures('single-column');
-        
-        // Ensure the grid structure has only 1 row
-        if (gridStructure.rows.length > 1) {
-            gridStructure.rows = [gridStructure.rows[0]];
-        }
         
         const newLayout: Omit<Layout, 'id'> = {
             type: 'single-column',
@@ -321,93 +464,89 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         // Создаем новый макет с предопределенной структурой сетки
         const layoutId = uuidv4();
         const gridStructure = getPredefinedGridStructures(template.type);
-        
-        // Ensure the grid structure has only 1 row
-        if (gridStructure.rows.length > 1) {
-            // For multi-row templates, we need to create multiple layouts
-            const layouts: Omit<Layout, 'id'>[] = [];
-            
-            gridStructure.rows.forEach((row, index) => {
-                const rowId = uuidv4();
-                const rowGridStructure = {
-                    columns: gridStructure.columns,
-                    rows: [row]
-                };
-                
-                layouts.push({
-                    type: template.type,
-                    elements: [],
-                    style: {},
-                    gridStructure: rowGridStructure
-                });
-            });
-            
-            // Add all layouts to the slide
-            const layoutIds: string[] = [];
-            layouts.forEach(layout => {
-                const id = addLayout(presentationId, slide.id, layout);
-                layoutIds.push(id);
-            });
-            
-            // Add editor elements to each cell in each layout
-            let firstElementId = '';
-            layoutIds.forEach((id, layoutIndex) => {
-                const layout = layouts[layoutIndex];
-                layout.gridStructure.rows[0].cells.forEach(cell => {
-                    const editorElement: Omit<GridEditorElement, 'id'> = {
-                        type: 'editor',
-                        content: '',
-                        position: { x: 0, y: 0 },
-                        size: { width: 100, height: 40 },
-                        style: { fontSize: '16px', color: '#333333' },
-                        zIndex: 1,
-                        gridArea: cell.gridArea || `area-${uuidv4()}`,
-                        placeholder: 'Введите текст...'
-                    };
-                    
-                    const elementId = addElement(presentationId, slide.id, id, editorElement as any);
-                    if (!firstElementId) firstElementId = elementId;
-                });
-            });
-            
-            if (firstElementId) {
-                setSelectedElementId(firstElementId);
-            }
-        } else {
-            // For single-row templates, just create one layout
-            const newLayout: Omit<Layout, 'id'> = {
-                type: template.type,
-                elements: [],
-                style: {},
-                gridStructure
+
+        const newLayout: Omit<Layout, 'id'> = {
+            type: template.type,
+            elements: [],
+            style: {},
+            gridStructure
+        };
+
+        // Добавляем макет на слайд
+        addLayout(presentationId, slide.id, newLayout);
+
+        // Добавляем элементы в зависимости от типа макета
+        if (template.type === 'single-column') {
+            // Добавляем заголовок и текст
+            const headingElement: Omit<GridEditorElement, 'id'> = {
+                type: 'editor',
+                content: '',
+                position: { x: 0, y: 0 },
+                size: { width: 100, height: 60 },
+                style: { fontSize: '28px', fontWeight: 'bold', color: '#111111' },
+                zIndex: 1,
+                gridArea: gridStructure.rows[0].cells[0].gridArea || `area-${uuidv4()}`,
+                placeholder: 'Введите заголовок...'
             };
-            
-            // Add the layout to the slide
-            const layoutId = addLayout(presentationId, slide.id, newLayout);
-            
-            // Add editor elements to each cell
-            let firstElementId = '';
-            gridStructure.rows[0].cells.forEach(cell => {
-                const editorElement: Omit<GridEditorElement, 'id'> = {
-                    type: 'editor',
-                    content: '',
-                    position: { x: 0, y: 0 },
-                    size: { width: 100, height: 40 },
-                    style: { fontSize: '16px', color: '#333333' },
-                    zIndex: 1,
-                    gridArea: cell.gridArea || `area-${uuidv4()}`,
-                    placeholder: 'Введите текст...'
-                };
-                
-                const elementId = addElement(presentationId, slide.id, layoutId, editorElement as any);
-                if (!firstElementId) firstElementId = elementId;
-            });
-            
-            if (firstElementId) {
-                setSelectedElementId(firstElementId);
-            }
+
+            const elementId = addElement(presentationId, slide.id, layoutId, headingElement as any);
+            setSelectedElementId(elementId);
+        } else if (template.type === 'two-columns') {
+            // Добавляем два редактора
+            const leftEditor: Omit<GridEditorElement, 'id'> = {
+                type: 'editor',
+                content: '',
+                position: { x: 0, y: 0 },
+                size: { width: 100, height: 100 },
+                style: { fontSize: '16px', color: '#333333' },
+                zIndex: 1,
+                gridArea: gridStructure.rows[0].cells[0].gridArea || `area-${uuidv4()}`,
+                placeholder: 'Левая колонка...'
+            };
+
+            const rightEditor: Omit<GridEditorElement, 'id'> = {
+                type: 'editor',
+                content: '',
+                position: { x: 0, y: 0 },
+                size: { width: 100, height: 100 },
+                style: { fontSize: '16px', color: '#333333' },
+                zIndex: 1,
+                gridArea: gridStructure.rows[0].cells[1].gridArea || `area-${uuidv4()}`,
+                placeholder: 'Правая колонка...'
+            };
+
+            const leftId = addElement(presentationId, slide.id, layoutId, leftEditor as any);
+            addElement(presentationId, slide.id, layoutId, rightEditor as any);
+            setSelectedElementId(leftId);
+        } else if (template.type === 'image-text') {
+            // Добавляем изображение и текст
+            const imageElement: Omit<GridImageElement, 'id'> = {
+                type: 'image',
+                src: 'https://via.placeholder.com/400x300',
+                alt: 'Placeholder Image',
+                position: { x: 0, y: 0 },
+                size: { width: 100, height: 100 },
+                style: {},
+                zIndex: 1,
+                gridArea: gridStructure.rows[0].cells[0].gridArea || `area-${uuidv4()}`
+            };
+
+            const textEditor: Omit<GridEditorElement, 'id'> = {
+                type: 'editor',
+                content: '',
+                position: { x: 0, y: 0 },
+                size: { width: 100, height: 100 },
+                style: { fontSize: '16px', color: '#333333' },
+                zIndex: 1,
+                gridArea: gridStructure.rows[0].cells[1].gridArea || `area-${uuidv4()}`,
+                placeholder: 'Введите текст...'
+            };
+
+            addElement(presentationId, slide.id, layoutId, imageElement as any);
+            const textId = addElement(presentationId, slide.id, layoutId, textEditor as any);
+            setSelectedElementId(textId);
         }
-        
+
         setShowTemplates(false);
     };
 
