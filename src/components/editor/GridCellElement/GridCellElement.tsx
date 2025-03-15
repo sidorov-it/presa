@@ -338,6 +338,7 @@ const GridCellElement: React.FC<{
         };
 
         const placeholder = isSelected ? getPlaceholder() : '';
+        
         return (
             <div
                 className={`${styles.gridCell} ${isSelected ? styles.gridCellSelected : ''} ${isDragging ? styles.dragging : ''}`}
