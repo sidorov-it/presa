@@ -106,7 +106,7 @@ const SlashCommands: React.FC<SlashCommandsProps> = ({ isOpen, position, onSelec
     );
 };
 
-const getColumnWidths = (columnsCount: number): string[] => {
+export const getColumnWidths = (columnsCount: number): string[] => {
     if (columnsCount === 0) {
         return [];
     } else if (columnsCount === 3) {
@@ -387,7 +387,9 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 targetElement,
                 currentLayout,
                 gridStructure,
-                position
+                position,
+                isMoveInCurrentLayout: true,
+                targetLayout
             });
 
             if (!recalcResult) return;
@@ -398,140 +400,30 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 elements: recalcResult.updatedElements,
             });
         } else {
-            // Moving between layouts - existing code for cross-layout dragging
-            // Calculate the new number of columns
-            const newColumnCount = gridStructure.columns + 1;
-
-            // Find the target cell in the original grid structure
-            const targetCellInOriginal = gridStructure.rows[0].cells.find((cell: any) =>
-                targetElement.cellId === cell.id
-            );
-
-            if (!targetCellInOriginal) {
-                // Try to find by gridArea match
-                const targetCellByGridArea = gridStructure.rows[0].cells.find((cell: any) =>
-                    cell.id === targetElement.cellId
-                );
-
-                if (!targetCellByGridArea) return; // Can't find the target cell
-            }
-
-            // Create a new grid structure with an additional column
-            const updatedGridStructure = {
-                ...gridStructure,
-                columns: newColumnCount,
-                rows: gridStructure.rows.map((row: any) => {
-                    // Find the cell containing the target element
-                    const targetCellIndex = row.cells.findIndex((cell: any) =>
-                        cell.id === targetElement.cellId
-                    );
-
-                    if (targetCellIndex === -1) return row;
-
-                    // Create a new cell for the dragged element
-                    const newCellId = uuidv4();
-                    const newCell = {
-                        id: newCellId,
-                        row: row.cells[targetCellIndex].row,
-                        column: position === 'left' ?
-                            row.cells[targetCellIndex].column :
-                            row.cells[targetCellIndex].column + 1,
-                        rowSpan: 1,
-                        colSpan: 1,
-                        gridArea: `area-${newCellId}`
-                    };
-
-                    // Update the column numbers for all cells after the insertion point
-                    const updatedCells = [...row.cells];
-
-                    // If inserting to the left, increment column numbers for all cells at or after the target
-                    if (position === 'left') {
-                        updatedCells.forEach((cell: any) => {
-                            if (cell.column >= newCell.column) {
-                                cell.column += 1;
-                            }
-                        });
-
-                        // Insert the new cell
-                        updatedCells.splice(targetCellIndex, 0, newCell);
-                    }
-                    // If inserting to the right, increment column numbers for all cells after the target
-                    else {
-                        updatedCells.forEach((cell: any) => {
-                            if (cell.column > row.cells[targetCellIndex].column) {
-                                cell.column += 1;
-                            }
-                        });
-
-                        // Insert the new cell
-                        updatedCells.splice(targetCellIndex + 1, 0, newCell);
-                    }
-
-                    return {
-                        ...row,
-                        cells: updatedCells
-                    };
-                })
-            };
-
-            // Create a copy of the dragged element with a new ID
-            const newElementId = uuidv4();
-
-            // Find the new cell we just created
-            let newGridArea;
-            let newCellId;
-
-            // Get the index of the target cell in the updated structure
-            const targetCellIndex = updatedGridStructure.rows[0].cells.findIndex((cell: any) =>
-                cell.id === targetElement.cellId
-            );
-
-            if (targetCellIndex !== -1) {
-                // For left position, get the cell before the target cell
-                // For right position, get the cell after the target cell
-                const newCellIndex = position === 'left' ? targetCellIndex - 1 : targetCellIndex + 1;
-
-                // Make sure the index is valid
-                if (newCellIndex >= 0 && newCellIndex < updatedGridStructure.rows[0].cells.length) {
-                    newGridArea = updatedGridStructure.rows[0].cells[newCellIndex].gridArea;
-                    newCellId = updatedGridStructure.rows[0].cells[newCellIndex].id;
-                }
-            }
-
-            // Fallback if we couldn't find the grid area
-            if (!newGridArea) {
-                newGridArea = `area-${uuidv4()}`;
-            }
-
-            const newElement = {
-                ...draggedElement,
-                id: newElementId,
-                cellId: newCellId,
-            };
-
-            // Add the new element to the target layout
-            const updatedElements = [...targetLayout.elements, newElement];
-
-            updateLayout(presentationId, slide.id, targetLayout.id, {
-                elements: updatedElements,
-                gridStructure: {
-                    ...updatedGridStructure,
-                    columnWidths: getColumnWidths(updatedElements.length)
-                }
+            const recalcResult = recalcPositions({
+                draggedElement,
+                targetElement,
+                currentLayout,
+                targetLayout,
+                gridStructure,
+                position,
+                isMoveInCurrentLayout: false
             });
 
-            // Remove the dragged element from its original layout if it's a different layout
-            if (currentLayout.id !== targetLayout.id) {
-                const updatedCurrentElements = currentLayout.elements.filter((e: any) => e.id !== draggedElementId);
-                // If the current layout is now empty, delete it
-                if (updatedCurrentElements.length === 0) {
-                    deleteLayout(presentationId, slide.id, currentLayout.id);
-                } else {
-                    updateLayout(presentationId, slide.id, currentLayout.id, {
-                        elements: updatedCurrentElements,
-                    });
-                }
+            if (!recalcResult) return;
+
+            if (recalcResult.needRemoveCurrentLayout) {
+                deleteLayout(presentationId, slide.id, currentLayout.id);
+            } else if (recalcResult.updatedCurrentElements) {
+                updateLayout(presentationId, slide.id, currentLayout.id, {
+                    elements: recalcResult.updatedCurrentElements,
+                });
             }
+
+            updateLayout(presentationId, slide.id, targetLayout.id, {
+                gridStructure: recalcResult.updatedGridStructure,
+                elements: recalcResult.updatedElements,
+            });
         }
     };
 

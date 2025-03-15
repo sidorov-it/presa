@@ -5,12 +5,13 @@
     justify-content: center;
     padding: 1rem;
     position: relative;
+    font-size: calc(1 * 1 * 1rem * 1 * 1.125);
 }
 
 .slideWrapper {
     border-radius: 150px;
-    max-width: 1000px;
-    width: 100%;
+    max-width: calc(64.5em / 1);
+    width: calc(64.5em / 1);
     background-color: #fff;
     box-sizing: border-box;
     position: relative;

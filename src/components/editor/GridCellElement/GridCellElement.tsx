@@ -351,6 +351,7 @@ const GridCellElement: React.FC<{
             e.stopPropagation();
             setIsDragging(true);
 
+            console.log('handleDragStart', element.id);
             // Add the dragging class
             if (e.currentTarget.classList) {
                 e.currentTarget.classList.add(styles.dragging);
@@ -362,6 +363,7 @@ const GridCellElement: React.FC<{
 
             // Call the parent's onDragStart handler if provided
             if (onDragStart) {
+                console.log('onDragStart', element.id);
                 onDragStart(e, element.id, layoutId);
             }
         };
@@ -370,6 +372,7 @@ const GridCellElement: React.FC<{
             e.stopPropagation();
             setIsDragging(false);
 
+            console.log('handleDragEnd', element.id);
             // Remove the dragging class
             if (e.currentTarget.classList) {
                 e.currentTarget.classList.remove(styles.dragging);
@@ -624,7 +627,14 @@ const GridCellElement: React.FC<{
         
         return (
             <div
-                className={`${styles.gridCell} ${isSelected ? styles.gridCellSelected : ''} ${isDragging ? styles.dragging : ''} ${hasMultipleCells ? styles.cellWithBorders : ''} ${isResizing ? styles.resizing : ''}`}
+                className={`
+                    ${styles.gridCell}
+                    ${isSelected ? styles.gridCellSelected : ''}
+                    ${isDragging ? styles.dragging : ''}
+                    ${hasMultipleCells ? styles.cellWithBorders : ''}
+                    ${isResizing ? styles.resizing : ''}
+                    ${hasMultipleCells ? styles.cellWithMultipleCells : ''}
+                `}
                 onClick={onSelect}
                 style={{
                     ...cellStyle,
@@ -654,13 +664,11 @@ const GridCellElement: React.FC<{
 
                 <div
                     ref={dragHandleRef}
-                    className={styles.dragHandle}
+                    className={`${styles.dragHandle} ${hasMultipleCells ? styles.dragHandleMultipleCells : ''}`}
                     draggable
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
-                >
-                    <span className={styles.dragIcon}>⋮⋮</span>
-                </div>
+                />
 
                 {/* Resizable border and indicators for multi-cell layouts */}
                 {hasMultipleCells && !isLastCell && (

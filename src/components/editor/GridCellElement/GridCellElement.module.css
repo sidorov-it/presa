@@ -3,26 +3,22 @@
     min-height: 40px;
     height: fit-content;
     cursor: text;
-    padding: 0.5rem;
+    padding: 0.5rem 0;
     /* border-radius: 0.25rem; */
     transition: all 0.2s ease-in-out;
     width: 100%;
 }
 
-/* .gridCellSelected {
-    outline: 2px solid #3b82f6;
-    outline-offset: 2px;
-} */
-
-.gridCellSelected, .gridCell:hover {
-    background-color: rgba(59, 130, 246, 0.05);
+.cellWithMultipleCells {
+    padding-inline-start: 1.22rem;
+    padding-inline-end: 1.22rem;
 }
 
 .dragHandle {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    left: -24px;
+    left: -18px;
     cursor: grab;
     opacity: 0;
     transition: opacity 0.2s ease-in-out;
@@ -32,6 +28,10 @@
     align-items: center;
     justify-content: center;
     z-index: 20;
+}
+
+.dragHandleMultipleCells {
+    left: 8px;
 }
 
 .dragHandle:active {
