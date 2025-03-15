@@ -42,20 +42,24 @@ const adjustColumnWidths = (
     // Create a new array to avoid modifying the original
     const newColumnWidths = [...columnWidths];
     
-    // Parse all column widths to get their fr values
-    const frValues = columnWidths.map(width => {
-        const match = width.match(/^([\d.]+)fr$/);
-        return match ? parseFloat(match[1]) : 1;
+    // Parse all column widths to get their percentage values
+    const percentValues = columnWidths.map(width => {
+        const match = width.match(/^([\d.]+)%$/);
+        // If the width is in fr format, convert to an equal percentage
+        const frMatch = width.match(/^([\d.]+)fr$/);
+        if (match) {
+            return parseFloat(match[1]);
+        } else if (frMatch) {
+            // Convert fr to percentage (equally distributed)
+            return 100 / totalColumns;
+        } else {
+            return 100 / totalColumns;
+        }
     });
     
-    // Calculate the total fr units
-    const totalFr = frValues.reduce((sum, fr) => sum + fr, 0);
+    // Calculate the total percentage (should be 100%)
+    const totalPercent = percentValues.reduce((sum, percent) => sum + percent, 0);
     
-    console.log('totalFr', totalFr)
-    // Calculate the new fr value for the current column
-    const newFr = Math.max(0.5, Math.min(totalFr - 0.5, newWidth * totalColumns / totalFr));
-    
-    console.log('newFr', newFr)
     // Determine which column to adjust
     let adjustColumnIndex: number;
     
@@ -67,23 +71,62 @@ const adjustColumnWidths = (
         adjustColumnIndex = currentColumnIndex - 1;
     } else {
         // Single column case - just set the current column
-        newColumnWidths[currentColumnIndex] = `${newFr}fr`;
+        newColumnWidths[currentColumnIndex] = `100%`;
         return newColumnWidths;
     }
     
+    // Calculate the new percentage for the current column (clamped to minimum 15%)
+    // newWidth is a fraction between 0 and 1, convert to percentage
+    const newPercent = Math.max(15, Math.min(85, newWidth * 100));
+    
     // Calculate the difference to distribute
-    const difference = frValues[currentColumnIndex] - newFr;
+    const difference = percentValues[currentColumnIndex] - newPercent;
     
-    console.log('difference', difference)
-    // Update the current column
-    newColumnWidths[currentColumnIndex] = `${newFr}fr`;
+    // Update the current column with the new percentage
+    newColumnWidths[currentColumnIndex] = `${newPercent}%`;
     
-    console.log('newColumnWidths', newColumnWidths)
-    // Update the column to adjust
-    // const adjustedFr = Math.max(0.5, frValues[adjustColumnIndex] + difference);
-    const adjustedFr = frValues[adjustColumnIndex] + difference;
-    console.log('adjustedFr', adjustedFr)
-    newColumnWidths[adjustColumnIndex] = `${adjustedFr}fr`;
+    // Update the adjacent column, ensuring it's at least 15%
+    const adjustedPercent = Math.max(15, percentValues[adjustColumnIndex] + difference);
+    
+    // If the adjusted column would be less than 15%, recalculate both columns
+    // to maintain the minimum width while ensuring total is 100%
+    if (adjustedPercent < 15) {
+        // Set the adjusted column to minimum 15%
+        newColumnWidths[adjustColumnIndex] = `15%`;
+        
+        // Calculate what's left for the current column (ensuring total is 100%)
+        let remainingPercent = 100;
+        percentValues.forEach((percent, index) => {
+            if (index !== currentColumnIndex && index !== adjustColumnIndex) {
+                remainingPercent -= percent;
+            }
+        });
+        
+        // Subtract the minimum width of the adjusted column
+        remainingPercent -= 15;
+        
+        // Set the current column to the remaining percentage
+        newColumnWidths[currentColumnIndex] = `${remainingPercent}%`;
+    } else {
+        // Normal case: just set the adjusted column
+        newColumnWidths[adjustColumnIndex] = `${adjustedPercent}%`;
+    }
+    
+    // Ensure the total is exactly 100%
+    let currentTotal = 0;
+    const percentageValues = newColumnWidths.map(width => {
+        const match = width.match(/^([\d.]+)%$/);
+        return match ? parseFloat(match[1]) : 100 / totalColumns;
+    });
+    
+    currentTotal = percentageValues.reduce((sum, percent) => sum + percent, 0);
+    
+    // If there's a small rounding error, adjust the last column
+    if (Math.abs(currentTotal - 100) > 0.1) {
+        const lastColumnPercent = percentageValues[adjustColumnIndex];
+        const adjustment = 100 - (currentTotal - lastColumnPercent);
+        newColumnWidths[adjustColumnIndex] = `${adjustment}%`;
+    }
     
     return newColumnWidths;
 };
@@ -465,26 +508,27 @@ const GridCellElement: React.FC<{
             
             // Update the grid template columns
             const columns = layout.gridStructure.columns;
-            const columnWidths = layout.gridStructure.columnWidths || Array(columns).fill('1fr');
             
-            // Create a new array to avoid modifying the original
-            // const newColumnWidths = [...columnWidths];
+            // Initialize columnWidths with percentages if they're in fr format or don't exist
+            let columnWidths = layout.gridStructure.columnWidths || Array(columns).fill(`${100 / columns}%`);
             
-            // Update the column width for this cell
-            const finalFraction = newFraction * columns;
-            
-            // // Update the layout's grid structure with the new column widths
-            // const updatedGridStructure = {
-            //     ...layout.gridStructure,
-            //     columnWidths: newColumnWidths
-            // };
+            // Convert any fr units to percentages if needed
+            columnWidths = columnWidths.map(width => {
+                if (width.endsWith('fr')) {
+                    const frMatch = width.match(/^([\d.]+)fr$/);
+                    const frValue = frMatch ? parseFloat(frMatch[1]) : 1;
+                    // Convert fr to percentage based on equal distribution
+                    return `${100 / columns}%`;
+                }
+                return width;
+            });
             
             const currentColumnIndex = cell.column - 1;
 
             const newColumnWidths = adjustColumnWidths(
                 columnWidths,
                 currentColumnIndex,
-                finalFraction,
+                newFraction,
                 isLastCell,
                 columns
             );
@@ -494,14 +538,13 @@ const GridCellElement: React.FC<{
                 ...layout.gridStructure,
                 columnWidths: newColumnWidths
             };
+            
             // Use the throttled update to reduce the number of store updates
             throttledUpdateLayout(updatedGridStructure);
         };
         
         // Handle resize end
         const handleResizeEnd = () => {
-            // setIsResizing(false);
-            
             // Remove event listeners
             document.removeEventListener('mousemove', handleResizeMove);
             document.removeEventListener('mouseup', handleResizeEnd);
@@ -529,7 +572,20 @@ const GridCellElement: React.FC<{
             
             // Update the grid template columns
             const columns = layout.gridStructure.columns;
-            const columnWidths = layout.gridStructure.columnWidths || Array(columns).fill('1fr');
+            
+            // Initialize columnWidths with percentages if they're in fr format or don't exist
+            let columnWidths = layout.gridStructure.columnWidths || Array(columns).fill(`${100 / columns}%`);
+            
+            // Convert any fr units to percentages if needed
+            columnWidths = columnWidths.map(width => {
+                if (width.endsWith('fr')) {
+                    const frMatch = width.match(/^([\d.]+)fr$/);
+                    const frValue = frMatch ? parseFloat(frMatch[1]) : 1;
+                    // Convert fr to percentage based on equal distribution
+                    return `${100 / columns}%`;
+                }
+                return width;
+            });
             
             // Get the current column's index (0-based)
             const currentColumnIndex = cell.column - 1;
@@ -553,6 +609,9 @@ const GridCellElement: React.FC<{
             updateLayout(presentationId, slideId, layoutId, {
                 gridStructure: updatedGridStructure
             });
+            
+            // Reset the resizing state
+            setIsResizing(false);
         };
 
         const placeholder = isSelected ? getPlaceholder() : '';

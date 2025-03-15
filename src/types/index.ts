@@ -32,7 +32,6 @@ export interface GridCell {
   column: number;
   rowSpan: number;
   colSpan: number;
-  elementIds: string[]; // IDs of elements placed in this cell
   gridArea?: string;    // CSS grid-area name for this cell
 }
 
@@ -46,7 +45,7 @@ export interface GridRow {
 export interface GridStructure {
   columns: number;
   rows: GridRow[];
-  columnWidths?: string[]; // Array of column width values (e.g. ['1fr', '2fr', '1fr'])
+  columnWidths: string[];
 }
 
 export const getPredefinedGridStructures = (name: LayoutType): GridStructure => {
@@ -58,10 +57,11 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) }
+              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
             ]
           }
-        ]
+        ],
+        columnWidths: ['100%']
       };
     case 'two-columns':
       return {
@@ -70,11 +70,12 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) }
+              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
+              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
             ]
           }
-        ]
+        ],
+        columnWidths: ['50%', '50%']
       };
     case 'three-columns':
       return {
@@ -83,12 +84,13 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 3, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) }
+              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
+              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
+              { id: generateId(8), row: 1, column: 3, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
             ]
           }
-        ]
+        ],
+        columnWidths: ['33.33%', '33.34%', '33.33%']
       };
     case 'four-columns':
       return {
@@ -97,13 +99,14 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 3, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 4, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) }
+              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
+              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
+              { id: generateId(8), row: 1, column: 3, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
+              { id: generateId(8), row: 1, column: 4, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
             ]
           }
-        ]
+        ],
+        columnWidths: ['25%', '25%', '25%', '25%']
       };
     case 'image-text':
       return {
@@ -112,11 +115,12 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) }
+              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
+              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
             ]
           }
-        ]
+        ],
+        columnWidths: ['50%', '50%']
       };
     case 'text-image':
       return {
@@ -125,11 +129,12 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) }
+              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
+              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
             ]
           }
-        ]
+        ],
+        columnWidths: ['50%', '50%']
       };
     case 'cards':
       return {
@@ -138,18 +143,19 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) }
+              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
+              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
             ]
           },
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 2, column: 1, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) },
-              { id: generateId(8), row: 2, column: 2, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) }
+              { id: generateId(8), row: 2, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
+              { id: generateId(8), row: 2, column: 2, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
             ]
           }
-        ]
+        ],
+        columnWidths: ['50%', '50%']
       };
     case 'icons-with-text':
       return {
@@ -158,56 +164,28 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 3, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) }
+              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
+              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
+              { id: generateId(8), row: 1, column: 3, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
             ]
           },
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 2, column: 1, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) },
-              { id: generateId(8), row: 2, column: 2, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) },
-              { id: generateId(8), row: 2, column: 3, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) }
+              { id: generateId(8), row: 2, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
+              { id: generateId(8), row: 2, column: 2, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
+              { id: generateId(8), row: 2, column: 3, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
             ]
           }
-        ]
+        ],
+        columnWidths: ['33.33%', '33.34%', '33.33%']
       };
     case 'blank':
       return {
         columns: 1,
-        rows: []
+        rows: [],
+        columnWidths: ['100%']
       };
-
-    case 'test': 
-      return {
-        "columns": 3,
-        "rows": [
-          {
-            id:  generateId(8),
-            "cells": [
-              { id:  generateId(8), "row": 1, "column": 1, "rowSpan": 1, "colSpan": 1, "elementIds": [], "gridArea": generateId(8) },
-              { id:  generateId(8), "row": 1, "column": 2, "rowSpan": 1, "colSpan": 1, "elementIds": [], "gridArea": generateId(8) },
-              { id:  generateId(8), "row": 1, "column": 3, "rowSpan": 3, "colSpan": 1, "elementIds": [], "gridArea": generateId(8) }
-            ]
-          },
-          {
-            id:  generateId(8),
-            "cells": [
-              { id:  generateId(8), "row": 2, "column": 1, "rowSpan": 1, "colSpan": 1, "elementIds": [], "gridArea": generateId(8) },
-              { id:  generateId(8), "row": 2, "column": 2, "rowSpan": 1, "colSpan": 1, "elementIds": [], "gridArea": generateId(8) }
-            ]
-          },
-          {
-            id:  generateId(8),
-            "cells": [
-              { id:  generateId(8), "row": 3, "column": 1, "rowSpan": 1, "colSpan": 1, "elementIds": [], "gridArea": generateId(8) },
-              { id:  generateId(8), "row": 3, "column": 2, "rowSpan": 1, "colSpan": 1, "elementIds": [], "gridArea": generateId(8) }
-            ]
-          }
-        ]
-      }
-      
     default: 
       return {
         columns: 1,
@@ -215,10 +193,11 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, elementIds: [], gridArea: generateId(8) }
+              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
             ]
           }
-        ]
+        ],
+        columnWidths: ['100%']
       };
   }
 }
@@ -356,7 +335,6 @@ export const createGridCell = (
     column,
     rowSpan,
     colSpan,
-    elementIds: [],
     gridArea: gridArea || `area-${cellId}`
   };
 };
@@ -403,11 +381,20 @@ export const generateGridTemplateAreas = (gridStructure: GridStructure): string 
 
 // Функция для генерации CSS Grid Template Columns из структуры сетки
 export const generateGridTemplateColumns = (gridStructure: GridStructure): string => {
-  // Use columnWidths if available, otherwise generate equal columns
+  // Use columnWidths if available, otherwise generate equal percentage columns
   if (gridStructure.columnWidths && gridStructure.columnWidths.length > 0) {
-    return gridStructure.columnWidths.join(' ');
+    // Convert any fr units to percentages
+    const convertedWidths = gridStructure.columnWidths.map(width => {
+      if (width.endsWith('fr')) {
+        // Convert fr to equal percentage
+        return `${100 / gridStructure.columns}%`;
+      }
+      return width;
+    });
+    return convertedWidths.join(' ');
   }
-  return Array(gridStructure.columns).fill('1fr').join(' ');
+  // Default to equal percentage columns
+  return Array(gridStructure.columns).fill(`${100 / gridStructure.columns}%`).join(' ');
 };
 
 // Функция для генерации CSS Grid Template Rows из структуры сетки
@@ -455,7 +442,6 @@ export const addElementToCell = (layout: Layout, element: Element, cellId: strin
         cellFound = true;
         return {
           ...cell,
-          elementIds: [...cell.elementIds, element.id]
         };
       }
       return cell;
@@ -535,25 +521,4 @@ export const updateCellGridArea = (layout: Layout, cellId: string, gridArea: str
       rows: updatedRows
     }
   };
-};
-
-// Функция для получения CSS стилей для элемента на основе его ячейки
-export const getElementGridStyles = (layout: Layout, elementId: string): { gridArea: string } | null => {
-  const element = layout.elements.find(el => el.id === elementId);
-  if (!element) return null;
-
-  let gridArea: string | undefined;
-
-  // Ищем ячейку, содержащую элемент
-  for (const row of layout.gridStructure.rows) {
-    for (const cell of row.cells) {
-      if (cell.elementIds.includes(elementId)) {
-        gridArea = cell.id || `area-${cell.id}`;
-        break;
-      }
-    }
-    if (gridArea) break;
-  }
-
-  return gridArea ? { gridArea } : null;
 };

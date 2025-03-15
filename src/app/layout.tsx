@@ -19,7 +19,7 @@ export default function RootLayout({
     <html lang="ru">
       <body className={`${inter.className} bg-gray-50 text-gray-900 min-h-screen`}>
         {children}
-        <GlobalBubbleMenu />
+        {/* <GlobalBubbleMenu /> */}
       </body>
     </html>
   );

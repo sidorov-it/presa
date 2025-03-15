@@ -1,4 +1,5 @@
-// src/Tiptap.tsx
+'use client';
+
 import { EditorContent } from '@tiptap/react'
 import { useEditor } from '@tiptap/react'
 import { useCallback, useEffect, RefObject, forwardRef, useImperativeHandle } from 'react'
@@ -151,13 +152,13 @@ const getExtensions = (onEnterPressed: () => void, onBackspacePressed: () => voi
   StarterKit.configure({
     dropcursor: false, // Disable the dropcursor extension
   }), 
-  Document, 
-  Paragraph, 
-  Text, 
-  Heading, 
-  Bold, 
-  Italic, 
-  ListItem,
+  // Document, 
+  // Paragraph, 
+  // Text, 
+  // Heading, 
+  // Bold, 
+  // Italic, 
+  // ListItem,
   PreventDropExtension,
   EnterHandlerExtension(onEnterPressed, onBackspacePressed),
   Placeholder.configure({
@@ -184,6 +185,8 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
     extensions: getExtensions(onEnterPressed, onBackspacePressed, placeholder),
     content: initialContent,
     autofocus: autoFocus,
+    immediatelyRender: false,
+
     onFocus: () => {
       onFocus();
       // Set this editor as the active editor in the store
