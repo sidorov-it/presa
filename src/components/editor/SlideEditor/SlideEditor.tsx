@@ -324,8 +324,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         if (draggedLayoutId === targetLayout.id) {
             // Reorder elements within the layout
             const updatedElements = [...targetLayout.elements];
-            const draggedIndex = updatedElements.findIndex(e => e.id === draggedElementId);
-            const targetIndex = updatedElements.findIndex(e => e.id === targetElementId);
+            const draggedIndex = updatedElements.findIndex((e: any) => e.id === draggedElementId);
+            const targetIndex = updatedElements.findIndex((e: any) => e.id === targetElementId);
             
             // Remove the dragged element
             const [removed] = updatedElements.splice(draggedIndex, 1);
@@ -341,11 +341,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         } else {
             // Moving between layouts
             // Remove from current layout
-            const updatedCurrentElements = currentLayout.elements.filter(e => e.id !== draggedElementId);
+            const updatedCurrentElements = currentLayout.elements.filter((e: any) => e.id !== draggedElementId);
             
             // Add to target layout
             const updatedTargetElements = [...targetLayout.elements];
-            const targetIndex = updatedTargetElements.findIndex(e => e.id === targetElementId);
+            const targetIndex = updatedTargetElements.findIndex((e: any) => e.id === targetElementId);
             const insertIndex = position === 'top' ? targetIndex : targetIndex + 1;
             updatedTargetElements.splice(insertIndex, 0, draggedElement);
             
@@ -383,6 +383,20 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         // Calculate the new number of columns
         const newColumnCount = gridStructure.columns + 1;
         
+        // Find the target cell in the original grid structure
+        const targetCellInOriginal = gridStructure.rows[0].cells.find((cell: any) => 
+            targetElement.cellId === cell.id
+        );
+        
+        if (!targetCellInOriginal) {
+            // Try to find by gridArea match
+            const targetCellByGridArea = gridStructure.rows[0].cells.find((cell: any) => 
+                cell.id === targetElement.cellId
+            );
+            
+            if (!targetCellByGridArea) return; // Can't find the target cell
+        }
+        
         // Create a new grid structure with an additional column
         const updatedGridStructure = {
             ...gridStructure,
@@ -390,7 +404,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             rows: gridStructure.rows.map((row: any) => {
                 // Find the cell containing the target element
                 const targetCellIndex = row.cells.findIndex((cell: any) => 
-                    cell.elementIds.includes(targetElementId)
+                    // (cell.elementIds && cell.elementIds.includes(targetElementId)) ||
+                    cell.id === targetElement.cellId
                 );
                 
                 if (targetCellIndex === -1) return row;
@@ -442,19 +457,41 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             })
         };
         
-        // Create a copy of the dragged element with the new grid area
+        // Create a copy of the dragged element with a new ID
         const newElementId = uuidv4();
-        const newGridArea = updatedGridStructure.rows[0].cells.find(
-            (cell: any) => cell.column === (position === 'left' ? 
-                targetLayout.gridStructure.rows[0].cells.find((c: any) => c.elementIds.includes(targetElementId))?.column : 
-                targetLayout.gridStructure.rows[0].cells.find((c: any) => c.elementIds.includes(targetElementId))?.column + 1
-            )
-        )?.gridArea || `area-${uuidv4()}`;
+        
+        // Find the new cell we just created
+        let newGridArea;
+        let newCellId;
+        
+        // Get the index of the target cell in the updated structure
+        const targetCellIndex = updatedGridStructure.rows[0].cells.findIndex((cell: any) => 
+            // (cell.elementIds && cell.elementIds.includes(targetElementId)) ||
+            cell.id === targetElement.cellId
+        );
+        
+        if (targetCellIndex !== -1) {
+            // For left position, get the cell before the target cell
+            // For right position, get the cell after the target cell
+            const newCellIndex = position === 'left' ? targetCellIndex - 1 : targetCellIndex + 1;
+            
+            // Make sure the index is valid
+            if (newCellIndex >= 0 && newCellIndex < updatedGridStructure.rows[0].cells.length) {
+                newGridArea = updatedGridStructure.rows[0].cells[newCellIndex].gridArea;
+                newCellId = updatedGridStructure.rows[0].cells[newCellIndex].id;
+            }
+        }
+        
+        // Fallback if we couldn't find the grid area
+        if (!newGridArea) {
+            newGridArea = `area-${uuidv4()}`;
+        }
         
         const newElement = {
             ...draggedElement,
             id: newElementId,
-            gridArea: newGridArea
+            // gridArea: newGridArea,
+            cellId: newCellId,
         };
         
         // Update the target layout with the new grid structure
@@ -474,7 +511,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 if (cell.gridArea === newGridArea) {
                     return {
                         ...cell,
-                        elementIds: [...cell.elementIds, newElementId]
+                        elementIds: cell.elementIds ? [...cell.elementIds, newElementId] : [newElementId]
                     };
                 }
                 return cell;
@@ -495,7 +532,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         
         // Remove the dragged element from its original layout if it's a different layout
         if (currentLayout.id !== targetLayout.id) {
-            const updatedCurrentElements = currentLayout.elements.filter(e => e.id !== draggedElementId);
+            const updatedCurrentElements = currentLayout.elements.filter((e: any) => e.id !== draggedElementId);
             updateLayout(presentationId, slide.id, currentLayout.id, {
                 elements: updatedCurrentElements
             });
@@ -597,39 +634,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 </div>
             </div>
         );
-    };
-
-    // Обработчик для добавления нового макета
-    const handleAddLayout = () => {
-        // Создаем новый макет с одной колонкой
-        const layoutId = uuidv4();
-        const gridStructure = getPredefinedGridStructures('single-column');
-        
-        const newLayout: Omit<Layout, 'id'> = {
-            type: 'single-column',
-            elements: [],
-            style: {},
-            gridStructure
-        };
-
-        // Добавляем макет на слайд
-        addLayout(presentationId, slide.id, newLayout);
-
-        // Добавляем элемент редактора в макет
-        const editorElement: Omit<GridEditorElement, 'id'> = {
-            type: 'editor',
-            content: '',
-            position: { x: 0, y: 0 },
-            size: { width: 100, height: 40 },
-            style: { fontSize: '16px', color: '#333333' },
-            zIndex: 1,
-            gridArea: gridStructure.rows[0].cells[0].gridArea || `area-${uuidv4()}`, // Добавляем fallback
-            placeholder: 'Введите текст...'
-        };
-
-        const elementId = addElement(presentationId, slide.id, layoutId, editorElement as any);
-        setSelectedElementId(elementId);
-        setShowTemplates(false);
     };
 
     // Обновляем функцию создания макета для поддержки уникальных областей сетки
