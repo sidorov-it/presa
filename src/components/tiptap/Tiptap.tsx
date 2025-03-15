@@ -1,7 +1,7 @@
 // src/Tiptap.tsx
-import { EditorProvider, FloatingMenu, EditorContent } from '@tiptap/react'
-import { useEditor, Editor } from '@tiptap/react'
-import { useCallback, useEffect, useState, RefObject } from 'react'
+import { EditorContent } from '@tiptap/react'
+import { useEditor } from '@tiptap/react'
+import { useCallback, useEffect, RefObject, forwardRef, useImperativeHandle } from 'react'
 import StarterKit from '@tiptap/starter-kit'
 import Document from '@tiptap/extension-document'
 import Paragraph from '@tiptap/extension-paragraph'
@@ -140,6 +140,11 @@ interface TiptapProps {
   customBubbleMenuTrigger?: RefObject<HTMLElement>;
 }
 
+// Define the ref type
+export interface TiptapRef {
+  focus: () => void;
+}
+
 // Определяем массив расширений
 const getExtensions = (onEnterPressed: () => void, onBackspacePressed: () => void, placeholder: string) => [
   // Configure StarterKit to disable dropcursor
@@ -161,7 +166,7 @@ const getExtensions = (onEnterPressed: () => void, onBackspacePressed: () => voi
   }),
 ]
 
-const Tiptap: React.FC<TiptapProps> = ({ 
+const Tiptap = forwardRef<TiptapRef, TiptapProps>(({ 
   initialContent = '', 
   onEnterPressed = () => {}, 
   onBackspacePressed = () => {},
@@ -171,7 +176,7 @@ const Tiptap: React.FC<TiptapProps> = ({
   id = '',
   placeholder = 'Введите текст...',
   customBubbleMenuTrigger
-}) => {
+}, ref) => {
   // Use the global editor store instead of local state
   const { setActiveEditor, showMenu } = useEditorStore();
   
@@ -198,16 +203,21 @@ const Tiptap: React.FC<TiptapProps> = ({
   // Метод для программного фокуса на редакторе
   const focus = useCallback(() => {
     if (editor) {
-      editor.commands.focus('end')
+      // Focus immediately without any delay
+      editor.commands.focus('end');
     }
   }, [editor])
+  
+  // Expose the focus method via ref
+  useImperativeHandle(ref, () => ({
+    focus
+  }), [focus]);
   
   // Устанавливаем фокус при монтировании, если autoFocus = true
   useEffect(() => {
     if (autoFocus && editor) {
-      setTimeout(() => {
-        focus()
-      }, 0)
+      // Focus immediately
+      focus();
     }
   }, [autoFocus, editor, focus])
   
@@ -305,6 +315,6 @@ const Tiptap: React.FC<TiptapProps> = ({
       `}</style>
     </div>
   )
-}
+})
 
 export default Tiptap

@@ -1,12 +1,17 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
+import { useEditorStore } from '@/store/editorStore';
 import { getPredefinedGridStructures, GridStructure, Layout, Element as SlideElement, TextElement } from '@/types';
 import { GridListElement, GridImageElement, GridTextElement } from '@/types/grid-elements';
-import Tiptap from '@/components/tiptap/Tiptap';
+import Tiptap, { TiptapRef } from '@/components/tiptap/Tiptap';
 import styles from './GridCellElement.module.css';
 import { v4 as uuidv4 } from 'uuid';
 import { LayoutType } from '@/types';
 import { generateId } from '@/utils/id';
+
+// Create a global registry to store editor refs
+// This allows us to access any editor by its ID
+const editorRefs: Record<string, React.RefObject<TiptapRef>> = {};
 
 // Компонент для отображения элемента в ячейке сетки
 const GridCellElement: React.FC<{
@@ -37,8 +42,24 @@ const GridCellElement: React.FC<{
     onDragLeave
 }) => {
         const { updateElement, updateLayout } = usePresentationStore();
+        const { elementToFocus, clearElementToFocus } = useEditorStore();
         const dragHandleRef = useRef<HTMLDivElement>(null);
         const [isDragging, setIsDragging] = useState(false);
+        const editorRef = useRef<HTMLDivElement>(null);
+        
+        // Create a ref for the Tiptap editor
+        const tiptapRef = useRef<TiptapRef>(null);
+        
+        // Register this editor ref in the global registry
+        useEffect(() => {
+            const editorId = `${layoutId}-${element.id}`;
+            editorRefs[editorId] = tiptapRef;
+            
+            return () => {
+                // Clean up when unmounted
+                delete editorRefs[editorId];
+            };
+        }, [layoutId, element.id]);
 
         // Обработчик для изменения содержимого редактора
         const handleEditorContentChange = (content: string) => {
@@ -68,10 +89,12 @@ const GridCellElement: React.FC<{
 
             const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures('single-column');
 
+            const firstNewEditorId = generateId();
             const elements: SlideElement[] = defaultLayoutGridStructure.rows.map(row => {
                 return row.cells.map(cell => ({
-                    id: generateId(),
+                    id: firstNewEditorId,
                     type: 'editor',
+                    textType: 'heading',
                     content: '',
                     position: { x: 0, y: 0 },
                     size: { width: 100, height: 100 },
@@ -82,7 +105,7 @@ const GridCellElement: React.FC<{
             }).flat();
 
             const newLayout: Layout = {
-                id: generateId(),
+                id: newLayoutId,
                 gridStructure: defaultLayoutGridStructure,
                 type: defaultGridType,
                 style: {},
@@ -100,20 +123,57 @@ const GridCellElement: React.FC<{
             });
 
             // Create a new editor element for the first cell of the new layout
-            const newEditor: Omit<TextElement, 'id'> = {
-                type: 'editor',
-                content: '',
-                textType: 'heading',
-                position: { x: 0, y: 0 },
-                size: { width: 100, height: 40 },
-                style: { fontSize: '16px', color: '#333333' },
-                zIndex: 1,
-                cellId: newLayout.gridStructure.rows[0].cells[0].id,
-            };
+            // const newEditor: Omit<TextElement, 'id'> = {
+            //     type: 'editor',
+            //     content: '',
+            //     textType: 'heading',
+            //     position: { x: 0, y: 0 },
+            //     size: { width: 100, height: 40 },
+            //     style: { fontSize: '16px', color: '#333333' },
+            //     zIndex: 1,
+            //     cellId: newLayout.gridStructure.rows[0].cells[0].id,
+            // };
 
-            // Add the new editor element to the new layout
-            usePresentationStore.getState().addElement(presentationId, slideId, newLayoutId, newEditor as any);
+            // Add the new editor element to the new layout and get the new element ID
+            // const newElementId = usePresentationStore.getState().addElement(
+            //     presentationId, 
+            //     slideId, 
+            //     newLayoutId, 
+            //     newEditor as any
+            // );
+
+            // Set the element to focus in the editor store
+            useEditorStore.getState().setElementToFocus(
+                firstNewEditorId,
+                newLayoutId,
+                newLayout.gridStructure.rows[0].cells[0].id
+            );
         };
+
+        // Effect to check if this element should be focused
+        useEffect(() => {
+            if (
+                elementToFocus && 
+                element.id === elementToFocus.elementId && 
+                layoutId === elementToFocus.layoutId && 
+                element.cellId === elementToFocus.cellId
+            ) {
+                // Clear the focus target immediately to prevent multiple focus attempts
+                clearElementToFocus();
+                
+                // Select this element
+                onSelect();
+                
+                // Use requestAnimationFrame to focus as soon as the browser is ready to paint
+                // This ensures the focus happens at the earliest possible moment
+                requestAnimationFrame(() => {
+                    // Focus using the ref
+                    if (tiptapRef.current) {
+                        tiptapRef.current.focus();
+                    }
+                });
+            }
+        }, [element.id, layoutId, element.cellId, elementToFocus, clearElementToFocus, onSelect]);
 
         // Обработчик для удаления пустого редактора при нажатии Backspace
         const handleBackspacePressed = () => {
@@ -289,8 +349,10 @@ const GridCellElement: React.FC<{
                 data-element-id={element.id}
                 data-layout-id={layoutId}
                 data-index={index}
+                ref={editorRef}
             >
                 <Tiptap
+                    ref={tiptapRef}
                     id={element.cellId}
                     initialContent={getEditorContent()}
                     onEnterPressed={handleEnterPressed}

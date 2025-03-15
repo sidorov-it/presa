@@ -11,11 +11,19 @@ interface EditorState {
   triggerElement: HTMLElement | null;
   // Position of the bubble menu
   menuPosition: { x: number, y: number } | null;
+  // Element that should be focused next
+  elementToFocus: {
+    elementId: string;
+    layoutId: string;
+    cellId: string;
+  } | null;
   
   // Actions
   setActiveEditor: (editor: Editor | null) => void;
   showMenu: (triggerElement: HTMLElement) => void;
   hideMenu: () => void;
+  setElementToFocus: (elementId: string, layoutId: string, cellId: string) => void;
+  clearElementToFocus: () => void;
 }
 
 export const useEditorStore = create<EditorState>()(
@@ -25,6 +33,7 @@ export const useEditorStore = create<EditorState>()(
       showBubbleMenu: false,
       triggerElement: null,
       menuPosition: null,
+      elementToFocus: null,
       
       setActiveEditor: (editor) => set({ activeEditor: editor }),
       
@@ -48,6 +57,12 @@ export const useEditorStore = create<EditorState>()(
         triggerElement: null,
         menuPosition: null
       }),
+
+      setElementToFocus: (elementId, layoutId, cellId) => set({
+        elementToFocus: { elementId, layoutId, cellId }
+      }),
+
+      clearElementToFocus: () => set({ elementToFocus: null }),
     }),
     {
       name: 'editor-store',

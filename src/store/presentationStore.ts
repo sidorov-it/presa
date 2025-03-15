@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import { Presentation, Slide, Layout, Element, LayoutType, GridStructure, getPredefinedGridStructures } from '@/types';
 import { devtools, persist } from 'zustand/middleware'
+import { generateId } from '@/utils/id';
 
 interface PresentationState {
   presentations: Presentation[];
@@ -88,7 +89,7 @@ export const usePresentationStore = create<PresentationState>()(
 
         const elements: Element[] = defaultLayoutGridStructure.rows.map(row => {
           return row.cells.map(cell => ({
-            id: uuidv4(),
+            id: generateId(),
             type: 'editor',
             content: '',
             position: { x: 0, y: 0 },
@@ -100,7 +101,7 @@ export const usePresentationStore = create<PresentationState>()(
         }).flat();
 
         const layout: Layout = {
-          id: uuidv4(),
+          id: generateId(),
           gridStructure: defaultLayoutGridStructure,
           type: defaultGridType,
           style: {},

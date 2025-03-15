@@ -257,7 +257,7 @@ export interface BaseElement {
 
 // Элемент текста
 export interface TextElement extends BaseElement {
-  type: 'text' | 'heading' | 'paragraph';
+  textType: 'text' | 'heading' | 'paragraph';
   content: string;
 }
 
