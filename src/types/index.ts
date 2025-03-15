@@ -46,6 +46,7 @@ export interface GridRow {
 export interface GridStructure {
   columns: number;
   rows: GridRow[];
+  columnWidths?: string[]; // Array of column width values (e.g. ['1fr', '2fr', '1fr'])
 }
 
 export const getPredefinedGridStructures = (name: LayoutType): GridStructure => {
@@ -402,6 +403,10 @@ export const generateGridTemplateAreas = (gridStructure: GridStructure): string 
 
 // Функция для генерации CSS Grid Template Columns из структуры сетки
 export const generateGridTemplateColumns = (gridStructure: GridStructure): string => {
+  // Use columnWidths if available, otherwise generate equal columns
+  if (gridStructure.columnWidths && gridStructure.columnWidths.length > 0) {
+    return gridStructure.columnWidths.join(' ');
+  }
   return Array(gridStructure.columns).fill('1fr').join(' ');
 };
 

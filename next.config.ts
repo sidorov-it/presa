@@ -13,9 +13,9 @@ const nextConfig: NextConfig = {
     // !! WARN !!
     ignoreBuildErrors: true,
   },
-  compiler: {
-    removeConsole: true,
-  },
+  // compiler: {
+  //   removeConsole: true,
+  // },
 };
 
 export default nextConfig;

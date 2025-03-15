@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { useEditorStore } from '@/store/editorStore';
 import { getPredefinedGridStructures, GridStructure, Layout, Element as SlideElement } from '@/types';
@@ -10,6 +10,83 @@ import { generateId } from '@/utils/id';
 // Create a global registry to store editor refs
 // This allows us to access any editor by its ID
 const editorRefs: Record<string, React.RefObject<TiptapRef>> = {};
+
+// Simple throttle function to limit the frequency of function calls
+const throttle = (func: Function, limit: number) => {
+    let inThrottle: boolean;
+    let lastResult: any;
+    
+    return function(this: any, ...args: any[]) {
+        if (!inThrottle) {
+            inThrottle = true;
+            lastResult = func.apply(this, args);
+            
+            setTimeout(() => {
+                inThrottle = false;
+            }, limit);
+        }
+        
+        return lastResult;
+    };
+};
+
+
+
+const adjustColumnWidths = (
+    columnWidths: string[], 
+    currentColumnIndex: number, 
+    newWidth: number, 
+    isLastCell: boolean,
+    totalColumns: number
+): string[] => {
+    // Create a new array to avoid modifying the original
+    const newColumnWidths = [...columnWidths];
+    
+    // Parse all column widths to get their fr values
+    const frValues = columnWidths.map(width => {
+        const match = width.match(/^([\d.]+)fr$/);
+        return match ? parseFloat(match[1]) : 1;
+    });
+    
+    // Calculate the total fr units
+    const totalFr = frValues.reduce((sum, fr) => sum + fr, 0);
+    
+    console.log('totalFr', totalFr)
+    // Calculate the new fr value for the current column
+    const newFr = Math.max(0.5, Math.min(totalFr - 0.5, newWidth * totalColumns / totalFr));
+    
+    console.log('newFr', newFr)
+    // Determine which column to adjust
+    let adjustColumnIndex: number;
+    
+    if (!isLastCell) {
+        // If not the last cell, adjust the next column
+        adjustColumnIndex = currentColumnIndex + 1;
+    } else if (currentColumnIndex > 0) {
+        // If this is the last column, adjust the previous column
+        adjustColumnIndex = currentColumnIndex - 1;
+    } else {
+        // Single column case - just set the current column
+        newColumnWidths[currentColumnIndex] = `${newFr}fr`;
+        return newColumnWidths;
+    }
+    
+    // Calculate the difference to distribute
+    const difference = frValues[currentColumnIndex] - newFr;
+    
+    console.log('difference', difference)
+    // Update the current column
+    newColumnWidths[currentColumnIndex] = `${newFr}fr`;
+    
+    console.log('newColumnWidths', newColumnWidths)
+    // Update the column to adjust
+    // const adjustedFr = Math.max(0.5, frValues[adjustColumnIndex] + difference);
+    const adjustedFr = frValues[adjustColumnIndex] + difference;
+    console.log('adjustedFr', adjustedFr)
+    newColumnWidths[adjustColumnIndex] = `${adjustedFr}fr`;
+    
+    return newColumnWidths;
+};
 
 // Компонент для отображения элемента в ячейке сетки
 const GridCellElement: React.FC<{
@@ -25,6 +102,8 @@ const GridCellElement: React.FC<{
     onDragOver?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string, position: 'top' | 'bottom' | 'left' | 'right') => void;
     onDrop?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string, position: 'top' | 'bottom' | 'left' | 'right') => void;
     onDragLeave?: (e: React.DragEvent<HTMLDivElement>) => void;
+    hasMultipleCells?: boolean;
+    isLastCell?: boolean;
 }> = ({
     element,
     presentationId,
@@ -37,13 +116,20 @@ const GridCellElement: React.FC<{
     onDragStart,
     onDragOver,
     onDrop,
-    onDragLeave
+    onDragLeave,
+    hasMultipleCells = false,
+    isLastCell = false
 }) => {
         const { updateElement, updateLayout } = usePresentationStore();
         const { elementToFocus, clearElementToFocus } = useEditorStore();
         const dragHandleRef = useRef<HTMLDivElement>(null);
         const [isDragging, setIsDragging] = useState(false);
         const editorRef = useRef<HTMLDivElement>(null);
+        const resizeBorderRef = useRef<HTMLDivElement>(null);
+        const [isResizing, setIsResizing] = useState(false);
+        const [startX, setStartX] = useState(0);
+        const [startWidth, setStartWidth] = useState(0);
+        const [currentWidth, setCurrentWidth] = useState(0);
         
         // Create a ref for the Tiptap editor
         const tiptapRef = useRef<TiptapRef>(null);
@@ -119,26 +205,6 @@ const GridCellElement: React.FC<{
             usePresentationStore.getState().updateSlide(presentationId, slideId, {
                 layouts: updatedLayouts
             });
-
-            // Create a new editor element for the first cell of the new layout
-            // const newEditor: Omit<TextElement, 'id'> = {
-            //     type: 'editor',
-            //     content: '',
-            //     textType: 'heading',
-            //     position: { x: 0, y: 0 },
-            //     size: { width: 100, height: 40 },
-            //     style: { fontSize: '16px', color: '#333333' },
-            //     zIndex: 1,
-            //     cellId: newLayout.gridStructure.rows[0].cells[0].id,
-            // };
-
-            // Add the new editor element to the new layout and get the new element ID
-            // const newElementId = usePresentationStore.getState().addElement(
-            //     presentationId, 
-            //     slideId, 
-            //     newLayoutId, 
-            //     newEditor as any
-            // );
 
             // Set the element to focus in the editor store
             useEditorStore.getState().setElementToFocus(
@@ -335,18 +401,182 @@ const GridCellElement: React.FC<{
             }
         };
 
+        // Throttled update function to reduce the number of store updates
+        const throttledUpdateLayout = useCallback(
+            throttle((gridStructure: any) => {
+                updateLayout(presentationId, slideId, layoutId, {
+                    gridStructure
+                });
+            }, 50), // Update at most every 50ms
+            [presentationId, slideId, layoutId, updateLayout]
+        );
+
+        // Handle resize start
+        const handleResizeStart = (e: React.MouseEvent<HTMLDivElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            setIsResizing(true);
+            setStartX(e.clientX);
+            
+            // Get the current cell's width
+            const cellElement = editorRef.current;
+            if (cellElement) {
+                const width = cellElement.offsetWidth;
+                setStartWidth(width);
+                setCurrentWidth(width);
+            }
+            
+            // Add event listeners for resize
+            document.addEventListener('mousemove', handleResizeMove);
+            document.addEventListener('mouseup', handleResizeEnd);
+            
+            // Add a class to the body to indicate resizing is in progress
+            document.body.classList.add('resizing');
+        };
+        
+        // Handle resize move
+        const handleResizeMove = (e: MouseEvent) => {
+            if (!isResizing) return;
+            
+            const deltaX = e.clientX - startX;
+            const newWidth = startWidth + deltaX;
+            
+            // Update the current width for visual feedback
+            setCurrentWidth(newWidth);
+            
+            // Get the current layout
+            const presentation = usePresentationStore.getState().getPresentation(presentationId);
+            if (!presentation) return;
+            
+            const slide = presentation.slides.find(s => s.id === slideId);
+            if (!slide) return;
+            
+            const layout = slide.layouts.find(l => l.id === layoutId);
+            if (!layout || !layout.gridStructure) return;
+            
+            // Find the cell in the grid structure
+            const cell = layout.gridStructure.rows[0].cells.find(c => c.id === element.cellId);
+            if (!cell) return;
+            
+            // Calculate the new column width as a fraction of the total
+            const totalWidth = editorRef.current?.parentElement?.offsetWidth || 1000;
+            const newFraction = Math.max(0.1, Math.min(0.9, newWidth / totalWidth));
+            
+            // Update the grid template columns
+            const columns = layout.gridStructure.columns;
+            const columnWidths = layout.gridStructure.columnWidths || Array(columns).fill('1fr');
+            
+            // Create a new array to avoid modifying the original
+            // const newColumnWidths = [...columnWidths];
+            
+            // Update the column width for this cell
+            const finalFraction = newFraction * columns;
+            
+            // // Update the layout's grid structure with the new column widths
+            // const updatedGridStructure = {
+            //     ...layout.gridStructure,
+            //     columnWidths: newColumnWidths
+            // };
+            
+            const currentColumnIndex = cell.column - 1;
+
+            const newColumnWidths = adjustColumnWidths(
+                columnWidths,
+                currentColumnIndex,
+                finalFraction,
+                isLastCell,
+                columns
+            );
+            
+            // Update the layout's grid structure with the new column widths
+            const updatedGridStructure = {
+                ...layout.gridStructure,
+                columnWidths: newColumnWidths
+            };
+            // Use the throttled update to reduce the number of store updates
+            throttledUpdateLayout(updatedGridStructure);
+        };
+        
+        // Handle resize end
+        const handleResizeEnd = () => {
+            // setIsResizing(false);
+            
+            // Remove event listeners
+            document.removeEventListener('mousemove', handleResizeMove);
+            document.removeEventListener('mouseup', handleResizeEnd);
+            
+            // Remove the resizing class from the body
+            document.body.classList.remove('resizing');
+            
+            // Get the current layout one last time to ensure we have the final state
+            const presentation = usePresentationStore.getState().getPresentation(presentationId);
+            if (!presentation) return;
+            
+            const slide = presentation.slides.find(s => s.id === slideId);
+            if (!slide) return;
+            
+            const layout = slide.layouts.find(l => l.id === layoutId);
+            if (!layout || !layout.gridStructure) return;
+            
+            // Find the cell in the grid structure
+            const cell = layout.gridStructure.rows[0].cells.find(c => c.id === element.cellId);
+            if (!cell) return;
+            
+            // Calculate the final column width as a fraction of the total
+            const totalWidth = editorRef.current?.parentElement?.offsetWidth || 1000;
+            const finalFraction = Math.max(0.1, Math.min(0.9, currentWidth / totalWidth));
+            
+            // Update the grid template columns
+            const columns = layout.gridStructure.columns;
+            const columnWidths = layout.gridStructure.columnWidths || Array(columns).fill('1fr');
+            
+            // Get the current column's index (0-based)
+            const currentColumnIndex = cell.column - 1;
+            
+            // Adjust column widths proportionally
+            const newColumnWidths = adjustColumnWidths(
+                columnWidths,
+                currentColumnIndex,
+                finalFraction,
+                isLastCell,
+                columns
+            );
+            
+            // Update the layout's grid structure with the new column widths
+            const updatedGridStructure = {
+                ...layout.gridStructure,
+                columnWidths: newColumnWidths
+            };
+            
+            // Use the throttled update to reduce the number of store updates
+            updateLayout(presentationId, slideId, layoutId, {
+                gridStructure: updatedGridStructure
+            });
+        };
+
         const placeholder = isSelected ? getPlaceholder() : '';
+        
+        // Add a resize style if resizing is in progress
+        const resizeStyle: React.CSSProperties = isResizing ? {
+            width: `${currentWidth}px`,
+            transition: 'none' // Disable transitions during resize for smoother experience
+        } : {};
         
         return (
             <div
-                className={`${styles.gridCell} ${isSelected ? styles.gridCellSelected : ''} ${isDragging ? styles.dragging : ''}`}
+                className={`${styles.gridCell} ${isSelected ? styles.gridCellSelected : ''} ${isDragging ? styles.dragging : ''} ${hasMultipleCells ? styles.cellWithBorders : ''} ${isResizing ? styles.resizing : ''}`}
                 onClick={onSelect}
-                style={cellStyle}
+                style={{
+                    ...cellStyle,
+                    ...resizeStyle
+                }}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
                 onDragLeave={handleDragLeave}
                 data-element-id={element.id}
                 data-layout-id={layoutId}
+                data-cell-id={element.cellId}
                 data-index={index}
                 ref={editorRef}
             >
@@ -362,7 +592,6 @@ const GridCellElement: React.FC<{
                     placeholder={placeholder}
                     customBubbleMenuTrigger={dragHandleRef}
                 />
-                <span>{element.id}</span>
 
                 <div
                     ref={dragHandleRef}
@@ -373,6 +602,19 @@ const GridCellElement: React.FC<{
                 >
                     <span className={styles.dragIcon}>⋮⋮</span>
                 </div>
+
+                {/* Resizable border and indicators for multi-cell layouts */}
+                {hasMultipleCells && !isLastCell && (
+                    <>
+                        <div 
+                            ref={resizeBorderRef}
+                            className={styles.resizableBorder}
+                            onMouseDown={handleResizeStart}
+                        />
+                        {/* <div className={`${styles.borderIndicator} ${styles.borderIndicatorTop}`} />
+                        <div className={`${styles.borderIndicator} ${styles.borderIndicatorBottom}`} /> */}
+                    </>
+                )}
             </div>
         );
     };

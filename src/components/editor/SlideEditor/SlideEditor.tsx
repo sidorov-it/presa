@@ -116,7 +116,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     const { addLayout, deleteLayout, updateLayout, addSlide, addElement } = usePresentationStore();
 
-    console.log('draggedElementId', draggedElementId)
     const editorRef = useRef<HTMLDivElement>(null);
     // Популярные шаблоны для слайдов
     const templates: TemplateCard[] = [
@@ -645,6 +644,9 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         const gridTemplateAreas = generateGridTemplateAreas(layout.gridStructure);
         const gridTemplateColumns = generateGridTemplateColumns(layout.gridStructure);
 
+        // Check if the layout has multiple cells in a row
+        const hasMultipleCells = layout.gridStructure.rows[0]?.cells.length > 1;
+
         return (
             <div
                 key={layout.id}
@@ -662,7 +664,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                         gridTemplateAreas: gridTemplateAreas,
                         gridTemplateColumns: gridTemplateColumns,
                         gridTemplateRows: '1fr', // Always 1 row
-                        gap: '1rem',
+                        // gap: '1rem',
                         width: '100%',
                     }}
                 >
@@ -681,10 +683,13 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                             return renderLayoutContent(element as unknown as Layout);
                         } else {
                             // It's a regular element
-                            // Check if the row has more than 1 cell to determine if we need borders
+                            // Find the cell for this element to determine if it's the last one
+                            const cell = layout.gridStructure.rows[0]?.cells.find(c => c.id === element.cellId);
+                            const isLastCell = cell ? cell.column === layout.gridStructure.columns : false;
+
                             return (
                                 <GridCellElement
-                                    key={`${element.id}-${element.cellId}`}
+                                    key={`${element.id}-${element.cellId}-${isLastCell ? 'last' : ''}`}
                                     element={element as Element}
                                     presentationId={presentationId}
                                     slideId={slide.id}
@@ -697,6 +702,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                                     onDragOver={handleElementDragOver}
                                     onDrop={handleElementDrop}
                                     onDragLeave={handleElementDragLeave}
+                                    hasMultipleCells={hasMultipleCells}
+                                    isLastCell={isLastCell}
                                 />
                             );
                         }

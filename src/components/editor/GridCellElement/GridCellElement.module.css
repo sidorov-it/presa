@@ -4,7 +4,7 @@
     height: fit-content;
     cursor: text;
     padding: 0.5rem;
-    border-radius: 0.25rem;
+    /* border-radius: 0.25rem; */
     transition: all 0.2s ease-in-out;
     width: 100%;
 }
@@ -146,4 +146,64 @@
     outline-offset: 2px;
     pointer-events: none;
     z-index: 10;
+}
+
+/* Cell border styles for multi-cell layouts */
+.cellWithBorders {
+  position: relative;
+  border: 1px solid #e2e8f0;
+}
+
+/* Resizable border styles */
+.resizableBorder {
+  position: absolute;
+  top: 0;
+  right: -3px;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 30;
+  background-color: transparent;
+}
+
+.resizableBorder:hover {
+  background-color: rgba(59, 130, 246, 0.3);
+}
+
+/* 3-dot indicator styles */
+.borderIndicator {
+  position: absolute;
+  right: -3px;
+  width: 6px;
+  height: 16px;
+  background-color: #fff;
+  border: 1px solid #e2e8f0;
+  /* border-radius: 3px; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 40;
+  cursor: pointer;
+}
+
+.borderIndicatorTop {
+  top: 8px;
+}
+
+.borderIndicatorBottom {
+  bottom: 8px;
+}
+
+.borderIndicator::before {
+  content: "⋮";
+  font-size: 12px;
+  line-height: 1;
+  color: #64748b;
+  transform: rotate(90deg);
+}
+
+.cellWithBorders:hover .borderIndicator {
+  opacity: 1;
 }
