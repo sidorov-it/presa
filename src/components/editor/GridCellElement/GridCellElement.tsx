@@ -1,12 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { useEditorStore } from '@/store/editorStore';
-import { getPredefinedGridStructures, GridStructure, Layout, Element as SlideElement, TextElement } from '@/types';
+import { getPredefinedGridStructures, GridStructure, Layout, Element as SlideElement } from '@/types';
 import { GridListElement, GridImageElement, GridTextElement } from '@/types/grid-elements';
 import Tiptap, { TiptapRef } from '@/components/tiptap/Tiptap';
 import styles from './GridCellElement.module.css';
-import { v4 as uuidv4 } from 'uuid';
-import { LayoutType } from '@/types';
 import { generateId } from '@/utils/id';
 
 // Create a global registry to store editor refs
@@ -20,9 +18,9 @@ const GridCellElement: React.FC<{
     slideId: string;
     layoutId: string;
     isSelected: boolean;
+    index?: number;
     onSelect: () => void;
     onDelete: () => void;
-    index?: number;
     onDragStart?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string) => void;
     onDragOver?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string, position: 'top' | 'bottom' | 'left' | 'right') => void;
     onDrop?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string, position: 'top' | 'bottom' | 'left' | 'right') => void;
@@ -33,9 +31,9 @@ const GridCellElement: React.FC<{
     slideId,
     layoutId,
     isSelected,
+    index,
     onSelect,
     onDelete,
-    index,
     onDragStart,
     onDragOver,
     onDrop,

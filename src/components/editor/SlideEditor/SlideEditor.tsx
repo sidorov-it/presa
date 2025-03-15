@@ -681,6 +681,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                             return renderLayoutContent(element as unknown as Layout);
                         } else {
                             // It's a regular element
+                            // Check if the row has more than 1 cell to determine if we need borders
                             return (
                                 <GridCellElement
                                     key={`${element.id}-${element.cellId}`}
