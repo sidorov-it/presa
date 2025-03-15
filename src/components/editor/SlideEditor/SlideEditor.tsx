@@ -1,13 +1,14 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Slide, Layout, LayoutType, Element, TextElement, ListElement, EditorElement, ImageElement, GridCell } from '@/types';
+import { Slide, Layout, LayoutType, Element, TextElement, ListElement, EditorElement, ImageElement, GridCell, GridStructure } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 import { GridEditorElement, GridImageElement } from '@/types/grid-elements';
 import { usePresentationStore } from '@/store/presentationStore';
 import styles from './SlideEditor.module.css';
 import GridCellElement from '../GridCellElement';
 import { generateGridTemplateAreas, generateGridTemplateColumns, generateGridTemplateRows, getPredefinedGridStructures } from '@/types';
+import { recalcPositions } from '@/utils/grid-utils';
 
 interface SlideEditorProps {
     slide: Slide;
@@ -381,111 +382,20 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
         // Handle dragging within the same layout
         if (currentLayout.id === targetLayout.id) {
-            // Find the source and target cells
-            const sourceCellId = draggedElement.cellId;
-            const targetCellId = targetElement.cellId;
-
-            if (!sourceCellId || !targetCellId) return;
-
-            const sourceCell = gridStructure.rows[0].cells.find((cell: any) => cell.id === sourceCellId);
-            const targetCell = gridStructure.rows[0].cells.find((cell: any) => cell.id === targetCellId);
-
-            if (!sourceCell || !targetCell) return;
-
-            const sourceColumn = sourceCell.column;
-            const targetColumn = targetCell.column;
-
-            if (sourceColumn === targetColumn) {
-                return;
-            }
-
-            const fromRigthToLeft = sourceColumn > targetColumn;
-            const fromLeftToRight = sourceColumn < targetColumn;
-
-            // Create a new cell ID for the dragged element
-            const newCellId = uuidv4();
-
-            // Determine the new column position
-            let newColumn: number;
-
-
-            if (fromRigthToLeft) {
-                if (position === 'left') {
-                    newColumn = targetColumn;
-                } else {
-                    newColumn = targetColumn + 1;
-                }
-            } else if (fromLeftToRight) {
-                if (position === 'left') {
-                    newColumn = targetColumn - 1;
-                } else {
-                    newColumn = targetColumn;
-                }
-            }
-
-            // Create updated cells array, removing the source cell
-            const updatedCells = [...gridStructure.rows[0].cells].filter(cell => cell.id !== sourceCellId);
-
-            // Create the new cell for the dragged element
-            const newCell = {
-                id: newCellId,
-                row: targetCell.row,
-                column: newColumn!,
-                rowSpan: 1,
-                colSpan: 1,
-                gridArea: `area-${newCellId}`
-            };
-
-
-            updatedCells.forEach((cell: GridCell) => {
-                if (fromRigthToLeft) {
-                    if (cell.column >= newColumn && cell.column < sourceColumn) {
-                        cell.column += 1;
-                    }
-                } else {
-                    if (cell.column >= sourceColumn && cell.column < newColumn) {
-                        cell.column -= 1;
-                    }
-                }
-            })
-            // Insert the new cell at the correct position
-            updatedCells.push(newCell);
-
-            // Sort cells by column to maintain order
-            updatedCells.sort((a: any, b: any) => a.column - b.column);
-
-            // Update the element to reference the new cell
-            const updatedElements = [...currentLayout.elements].map(element => {
-                if (element.id === draggedElement.id) {
-                    return {
-                        ...element,
-                        cellId: newCellId,
-                    };
-                }
-                return element;
+            const recalcResult = recalcPositions({
+                draggedElement,
+                targetElement,
+                currentLayout,
+                gridStructure,
+                position
             });
 
-            const sourceCellWith = gridStructure.columnWidths[sourceColumn - 1];
-            const targetCellWith = gridStructure.columnWidths[targetColumn - 1];
-
-            const updatedColumnWith = [...gridStructure.columnWidths]
-
-            updatedColumnWith[sourceColumn] = targetCellWith
-            updatedColumnWith[targetColumn] = sourceCellWith
-
-            const updatedGridStructure = {
-                ...gridStructure,
-                rows: gridStructure.rows.map((row: any) => ({
-                    ...row,
-                    cells: updatedCells
-                })),
-                columnWidths: updatedColumnWith
-            };
+            if (!recalcResult) return;
 
             // Update the layout with the new grid structure and elements
             updateLayout(presentationId, slide.id, targetLayout.id, {
-                gridStructure: updatedGridStructure,
-                elements: updatedElements,
+                gridStructure: recalcResult.updatedGridStructure,
+                elements: recalcResult.updatedElements,
             });
         } else {
             // Moving between layouts - existing code for cross-layout dragging
