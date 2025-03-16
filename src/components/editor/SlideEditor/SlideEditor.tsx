@@ -126,7 +126,14 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const [draggedElementId, setDraggedElementId] = useState<string | null>(null);
     const [draggedLayoutId, setDraggedLayoutId] = useState<string | null>(null);
 
-    const { addLayout, deleteLayout, updateLayout, addSlide, addElement } = usePresentationStore();
+    const { 
+        addLayout, 
+        deleteLayout, 
+        updateLayout, 
+        updateAndPotentiallyDeleteLayout,
+        addSlide, 
+        addElement 
+    } = usePresentationStore();
 
     const editorRef = useRef<HTMLDivElement>(null);
     // Популярные шаблоны для слайдов
@@ -320,49 +327,43 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         targetElementId: string,
         position: 'top' | 'bottom'
     ) => {
-        // If dragging within the same layout
-        if (draggedLayoutId === targetLayout.id) {
-            // Reorder elements within the layout
-            const updatedElements = [...targetLayout.elements];
-            const draggedIndex = updatedElements.findIndex((e: any) => e.id === draggedElementId);
-            const targetIndex = updatedElements.findIndex((e: any) => e.id === targetElementId);
+        // Find the target element in the target layout
+        const targetIndex = targetLayout.elements.findIndex((e: any) => e.id === targetElementId);
+        if (targetIndex === -1) return;
 
-            // Remove the dragged element
-            const [removed] = updatedElements.splice(draggedIndex, 1);
+        // Calculate the insert index based on position
+        const insertIndex = position === 'top' ? targetIndex : targetIndex + 1;
 
-            // Insert it at the new position
-            const insertIndex = position === 'top' ? targetIndex : targetIndex + 1;
-            updatedElements.splice(insertIndex, 0, removed);
+        // Create updated elements arrays
+        const updatedTargetElements = [...targetLayout.elements];
+        const updatedCurrentElements = currentLayout.elements.filter((e: any) => e.id !== draggedElement.id);
 
-            // Update the layout
-            updateLayout(presentationId, slide.id, targetLayout.id, {
-                elements: updatedElements
-            });
-        } else {
-            // Moving between layouts
-            // Remove from current layout
-            const updatedCurrentElements = currentLayout.elements.filter((e: any) => e.id !== draggedElementId);
+        // Insert the dragged element at the calculated position
+        updatedTargetElements.splice(insertIndex, 0, draggedElement);
 
-            // Add to target layout
-            const updatedTargetElements = [...targetLayout.elements];
-            const targetIndex = updatedTargetElements.findIndex((e: any) => e.id === targetElementId);
-            const insertIndex = position === 'top' ? targetIndex : targetIndex + 1;
-            updatedTargetElements.splice(insertIndex, 0, draggedElement);
-
-            // Update both layouts
-            updateLayout(presentationId, slide.id, currentLayout.id, {
+        // Update current layout and potentially delete if empty
+        updateAndPotentiallyDeleteLayout(
+            presentationId, 
+            slide.id, 
+            currentLayout.id, 
+            {
                 elements: updatedCurrentElements,
                 gridStructure: {
-                    ...targetLayout.gridStructure,
+                    ...currentLayout.gridStructure,
                     columnWidths: getColumnWidths(updatedCurrentElements.length)
                 }
-            });
+            },
+            true // Delete if empty
+        );
 
-            // If the current layout is now empty, delete it
-            if (updatedCurrentElements.length === 0) {
-                deleteLayout(presentationId, slide.id, currentLayout.id);
+        // Update target layout
+        updateLayout(presentationId, slide.id, targetLayout.id, {
+            elements: updatedTargetElements,
+            gridStructure: {
+                ...targetLayout.gridStructure,
+                columnWidths: getColumnWidths(updatedTargetElements.length)
             }
-        }
+        });
     };
 
     // Handle horizontal drop (left/right)
@@ -412,14 +413,20 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
             if (!recalcResult) return;
 
-            if (recalcResult.needRemoveCurrentLayout) {
-                deleteLayout(presentationId, slide.id, currentLayout.id);
-            } else if (recalcResult.updatedCurrentElements) {
-                updateLayout(presentationId, slide.id, currentLayout.id, {
-                    elements: recalcResult.updatedCurrentElements,
-                });
+            // Update current layout and potentially delete if empty
+            if (recalcResult.updatedCurrentElements) {
+                updateAndPotentiallyDeleteLayout(
+                    presentationId, 
+                    slide.id, 
+                    currentLayout.id, 
+                    {
+                        elements: recalcResult.updatedCurrentElements,
+                    },
+                    recalcResult.needRemoveCurrentLayout // Delete if needed
+                );
             }
 
+            // Update target layout
             updateLayout(presentationId, slide.id, targetLayout.id, {
                 gridStructure: recalcResult.updatedGridStructure,
                 elements: recalcResult.updatedElements,
@@ -501,6 +508,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                             return (
                                 <GridCellElement
                                     key={`${element.id}-${element.cellId}-${isLastCell ? 'last' : ''}`}
+                                    slideEditorRef={editorRef}
                                     element={element as Element}
                                     presentationId={presentationId}
                                     slideId={slide.id}

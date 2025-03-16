@@ -15,33 +15,31 @@ const editorRefs: Record<string, React.RefObject<TiptapRef>> = {};
 const throttle = (func: Function, limit: number) => {
     let inThrottle: boolean;
     let lastResult: any;
-    
-    return function(this: any, ...args: any[]) {
+
+    return function (this: any, ...args: any[]) {
         if (!inThrottle) {
             inThrottle = true;
             lastResult = func.apply(this, args);
-            
+
             setTimeout(() => {
                 inThrottle = false;
             }, limit);
         }
-        
+
         return lastResult;
     };
 };
 
-
-
 const adjustColumnWidths = (
-    columnWidths: string[], 
-    currentColumnIndex: number, 
-    newWidth: number, 
+    columnWidths: string[],
+    currentColumnIndex: number,
+    newWidthPart: number,
     isLastCell: boolean,
     totalColumns: number
 ): string[] => {
     // Create a new array to avoid modifying the original
     const newColumnWidths = [...columnWidths];
-    
+
     // Parse all column widths to get their percentage values
     const percentValues = columnWidths.map(width => {
         const match = width.match(/^([\d.]+)%$/);
@@ -56,76 +54,70 @@ const adjustColumnWidths = (
             return 100 / totalColumns;
         }
     });
+
+    // Calculate the new width for the current column (clamped between 15% and 85%)
+    const newWidthPercentage = Math.max(15, Math.min(85, newWidthPart * 100));
     
-    // Calculate the total percentage (should be 100%)
-    const totalPercent = percentValues.reduce((sum, percent) => sum + percent, 0);
+    // Calculate the difference between the old and new width
+    const difference = percentValues[currentColumnIndex] - newWidthPercentage;
     
-    // Determine which column to adjust
-    let adjustColumnIndex: number;
+    // If there's no change, return the original widths
+    if (Math.abs(difference) < 0.01) {
+        return columnWidths;
+    }
+
+    // Set the width of the current column
+    newColumnWidths[currentColumnIndex] = `${newWidthPercentage.toFixed(2)}%`;
     
-    if (!isLastCell) {
+    // Determine which neighboring cell to adjust
+    let neighborIndex: number;
+    
+    if (!isLastCell && currentColumnIndex < totalColumns - 1) {
         // If not the last cell, adjust the next column
-        adjustColumnIndex = currentColumnIndex + 1;
+        neighborIndex = currentColumnIndex + 1;
     } else if (currentColumnIndex > 0) {
         // If this is the last column, adjust the previous column
-        adjustColumnIndex = currentColumnIndex - 1;
+        neighborIndex = currentColumnIndex - 1;
     } else {
         // Single column case - just set the current column
-        newColumnWidths[currentColumnIndex] = `100%`;
         return newColumnWidths;
     }
     
-    // Calculate the new percentage for the current column (clamped to minimum 15%)
-    // newWidth is a fraction between 0 and 1, convert to percentage
-    const newPercent = Math.max(15, Math.min(85, newWidth * 100));
+    // Calculate the new width for the neighboring cell
+    let neighborNewWidth = percentValues[neighborIndex] + difference;
     
-    // Calculate the difference to distribute
-    const difference = percentValues[currentColumnIndex] - newPercent;
-    
-    // Update the current column with the new percentage
-    newColumnWidths[currentColumnIndex] = `${newPercent}%`;
-    
-    // Update the adjacent column, ensuring it's at least 15%
-    const adjustedPercent = Math.max(15, percentValues[adjustColumnIndex] + difference);
-    
-    // If the adjusted column would be less than 15%, recalculate both columns
-    // to maintain the minimum width while ensuring total is 100%
-    if (adjustedPercent < 15) {
-        // Set the adjusted column to minimum 15%
-        newColumnWidths[adjustColumnIndex] = `15%`;
+    // Ensure the minimum width of 15% is maintained for the neighbor
+    if (neighborNewWidth < 15) {
+        // If the neighbor would be too small, cap it at 15%
+        neighborNewWidth = 15;
         
-        // Calculate what's left for the current column (ensuring total is 100%)
-        let remainingPercent = 100;
-        percentValues.forEach((percent, index) => {
-            if (index !== currentColumnIndex && index !== adjustColumnIndex) {
-                remainingPercent -= percent;
+        // Recalculate the current cell's width to ensure total is 100%
+        const totalOtherCellsWidth = percentValues.reduce((sum, width, index) => {
+            if (index !== currentColumnIndex && index !== neighborIndex) {
+                return sum + width;
             }
-        });
+            return sum;
+        }, 0);
         
-        // Subtract the minimum width of the adjusted column
-        remainingPercent -= 15;
-        
-        // Set the current column to the remaining percentage
-        newColumnWidths[currentColumnIndex] = `${remainingPercent}%`;
+        const maxCurrentCellWidth = 100 - totalOtherCellsWidth - 15; // 15% for neighbor
+        newColumnWidths[currentColumnIndex] = `${Math.min(newWidthPercentage, maxCurrentCellWidth).toFixed(2)}%`;
     } else {
-        // Normal case: just set the adjusted column
-        newColumnWidths[adjustColumnIndex] = `${adjustedPercent}%`;
+        // Set the neighbor's width
+        newColumnWidths[neighborIndex] = `${neighborNewWidth.toFixed(2)}%`;
     }
     
     // Ensure the total is exactly 100%
-    let currentTotal = 0;
-    const percentageValues = newColumnWidths.map(width => {
+    const totalPercentage = newColumnWidths.reduce((sum, width) => {
         const match = width.match(/^([\d.]+)%$/);
-        return match ? parseFloat(match[1]) : 100 / totalColumns;
-    });
+        return sum + (match ? parseFloat(match[1]) : 0);
+    }, 0);
     
-    currentTotal = percentageValues.reduce((sum, percent) => sum + percent, 0);
-    
-    // If there's a small rounding error, adjust the last column
-    if (Math.abs(currentTotal - 100) > 0.1) {
-        const lastColumnPercent = percentageValues[adjustColumnIndex];
-        const adjustment = 100 - (currentTotal - lastColumnPercent);
-        newColumnWidths[adjustColumnIndex] = `${adjustment}%`;
+    if (Math.abs(totalPercentage - 100) > 0.01) {
+        // Adjust the neighbor's width to make the total exactly 100%
+        const currentNeighborWidth = parseFloat(newColumnWidths[neighborIndex]);
+        const adjustment = 100 - totalPercentage;
+        const adjustedNeighborWidth = Math.max(15, currentNeighborWidth + adjustment);
+        newColumnWidths[neighborIndex] = `${adjustedNeighborWidth.toFixed(2)}%`;
     }
     
     return newColumnWidths;
@@ -139,14 +131,15 @@ const GridCellElement: React.FC<{
     layoutId: string;
     isSelected: boolean;
     index?: number;
+    hasMultipleCells?: boolean;
+    isLastCell?: boolean;
+    slideEditorRef: React.RefObject<HTMLDivElement>;
     onSelect: () => void;
     onDelete: () => void;
     onDragStart?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string) => void;
     onDragOver?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string, position: 'top' | 'bottom' | 'left' | 'right') => void;
     onDrop?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string, position: 'top' | 'bottom' | 'left' | 'right') => void;
     onDragLeave?: (e: React.DragEvent<HTMLDivElement>) => void;
-    hasMultipleCells?: boolean;
-    isLastCell?: boolean;
 }> = ({
     element,
     presentationId,
@@ -161,7 +154,8 @@ const GridCellElement: React.FC<{
     onDrop,
     onDragLeave,
     hasMultipleCells = false,
-    isLastCell = false
+    isLastCell = false,
+    slideEditorRef
 }) => {
         const { updateElement, updateLayout } = usePresentationStore();
         const { elementToFocus, clearElementToFocus } = useEditorStore();
@@ -172,16 +166,15 @@ const GridCellElement: React.FC<{
         const [isResizing, setIsResizing] = useState(false);
         const [startX, setStartX] = useState(0);
         const [startWidth, setStartWidth] = useState(0);
-        const [currentWidth, setCurrentWidth] = useState(0);
-        
+
         // Create a ref for the Tiptap editor
         const tiptapRef = useRef<TiptapRef>(null);
-        
+
         // Register this editor ref in the global registry
         useEffect(() => {
             const editorId = `${layoutId}-${element.id}`;
             editorRefs[editorId] = tiptapRef;
-            
+
             return () => {
                 // Clean up when unmounted
                 delete editorRefs[editorId];
@@ -260,17 +253,17 @@ const GridCellElement: React.FC<{
         // Effect to check if this element should be focused
         useEffect(() => {
             if (
-                elementToFocus && 
-                element.id === elementToFocus.elementId && 
-                layoutId === elementToFocus.layoutId && 
+                elementToFocus &&
+                element.id === elementToFocus.elementId &&
+                layoutId === elementToFocus.layoutId &&
                 element.cellId === elementToFocus.cellId
             ) {
                 // Clear the focus target immediately to prevent multiple focus attempts
                 clearElementToFocus();
-                
+
                 // Select this element
                 onSelect();
-                
+
                 // Use requestAnimationFrame to focus as soon as the browser is ready to paint
                 // This ensures the focus happens at the earliest possible moment
                 requestAnimationFrame(() => {
@@ -461,143 +454,98 @@ const GridCellElement: React.FC<{
         const handleResizeStart = (e: React.MouseEvent<HTMLDivElement>) => {
             e.preventDefault();
             e.stopPropagation();
-            
+
             setIsResizing(true);
-            setStartX(e.clientX);
-            
+            const leftBorder = slideEditorRef.current?.getBoundingClientRect().left || 0;
+            setStartX(e.clientX - leftBorder);
+
             // Get the current cell's width
             const cellElement = editorRef.current;
             if (cellElement) {
                 const width = cellElement.offsetWidth;
                 setStartWidth(width);
-                setCurrentWidth(width);
+                // setCurrentWidth(width);
             }
-            
+
             // Add event listeners for resize
             document.addEventListener('mousemove', handleResizeMove);
             document.addEventListener('mouseup', handleResizeEnd);
-            
+
             // Add a class to the body to indicate resizing is in progress
             document.body.classList.add('resizing');
         };
-        
+
         // Handle resize move
         const handleResizeMove = (e: MouseEvent) => {
-            if (!isResizing) return;
-            
-            const deltaX = e.clientX - startX;
-            const newWidth = startWidth + deltaX;
-            
-            // Update the current width for visual feedback
-            setCurrentWidth(newWidth);
-            
             // Get the current layout
             const presentation = usePresentationStore.getState().getPresentation(presentationId);
             if (!presentation) return;
-            
-            const slide = presentation.slides.find(s => s.id === slideId);
-            if (!slide) return;
-            
-            const layout = slide.layouts.find(l => l.id === layoutId);
-            if (!layout || !layout.gridStructure) return;
-            
-            // Find the cell in the grid structure
-            const cell = layout.gridStructure.rows[0].cells.find(c => c.id === element.cellId);
-            if (!cell) return;
-            
-            // Calculate the new column width as a fraction of the total
-            const totalWidth = editorRef.current?.parentElement?.offsetWidth || 1000;
-            const newFraction = Math.max(0.1, Math.min(0.9, newWidth / totalWidth));
-            
-            // Update the grid template columns
-            const columns = layout.gridStructure.columns;
-            
-            // Initialize columnWidths with percentages if they're in fr format or don't exist
-            let columnWidths = layout.gridStructure.columnWidths || Array(columns).fill(`${100 / columns}%`);
-            
-            // Convert any fr units to percentages if needed
-            columnWidths = columnWidths.map(width => {
-                if (width.endsWith('fr')) {
-                    const frMatch = width.match(/^([\d.]+)fr$/);
-                    const frValue = frMatch ? parseFloat(frMatch[1]) : 1;
-                    // Convert fr to percentage based on equal distribution
-                    return `${100 / columns}%`;
-                }
-                return width;
-            });
-            
-            const currentColumnIndex = cell.column - 1;
 
-            const newColumnWidths = adjustColumnWidths(
-                columnWidths,
-                currentColumnIndex,
-                newFraction,
-                isLastCell,
-                columns
-            );
-            
-            // Update the layout's grid structure with the new column widths
-            const updatedGridStructure = {
-                ...layout.gridStructure,
-                columnWidths: newColumnWidths
-            };
-            
-            // Use the throttled update to reduce the number of store updates
-            throttledUpdateLayout(updatedGridStructure);
-        };
-        
-        // Handle resize end
-        const handleResizeEnd = () => {
-            // Remove event listeners
-            document.removeEventListener('mousemove', handleResizeMove);
-            document.removeEventListener('mouseup', handleResizeEnd);
-            
-            // Remove the resizing class from the body
-            document.body.classList.remove('resizing');
-            
-            // Get the current layout one last time to ensure we have the final state
-            const presentation = usePresentationStore.getState().getPresentation(presentationId);
-            if (!presentation) return;
-            
             const slide = presentation.slides.find(s => s.id === slideId);
             if (!slide) return;
-            
+
             const layout = slide.layouts.find(l => l.id === layoutId);
             if (!layout || !layout.gridStructure) return;
-            
+
             // Find the cell in the grid structure
             const cell = layout.gridStructure.rows[0].cells.find(c => c.id === element.cellId);
             if (!cell) return;
+
+            // Get the slide editor dimensions
+            const slideEditorRect = slideEditorRef.current?.getBoundingClientRect();
+            if (!slideEditorRect) return;
             
-            // Calculate the final column width as a fraction of the total
-            const totalWidth = editorRef.current?.parentElement?.offsetWidth || 1000;
-            const finalFraction = Math.max(0.1, Math.min(0.9, currentWidth / totalWidth));
+            // Calculate the total width of the container
+            const totalWidth = slideEditorRef.current?.offsetWidth || 1000;
             
-            // Update the grid template columns
+            // Calculate the new width based on mouse position
+            const clientX = e.clientX - slideEditorRect.left;
+            const deltaX = clientX - startX;
+            const newWidth = startWidth + deltaX;
+            
+            // Calculate the new width as a percentage of the total width
+            let newWidthPercentage = (newWidth / totalWidth) * 100;
+            
+            // Get the number of columns in the grid
             const columns = layout.gridStructure.columns;
             
             // Initialize columnWidths with percentages if they're in fr format or don't exist
-            let columnWidths = layout.gridStructure.columnWidths || Array(columns).fill(`${100 / columns}%`);
+            let columnWidths = layout.gridStructure.columnWidths || Array(columns).fill(`${(100 / columns).toFixed(2)}%`);
             
             // Convert any fr units to percentages if needed
             columnWidths = columnWidths.map(width => {
                 if (width.endsWith('fr')) {
-                    const frMatch = width.match(/^([\d.]+)fr$/);
-                    const frValue = frMatch ? parseFloat(frMatch[1]) : 1;
                     // Convert fr to percentage based on equal distribution
-                    return `${100 / columns}%`;
+                    return `${(100 / columns).toFixed(2)}%`;
                 }
                 return width;
             });
             
-            // Get the current column's index (0-based)
+            // Parse all column widths to get their percentage values
+            const percentValues = columnWidths.map(width => {
+                const match = width.match(/^([\d.]+)%$/);
+                if (match) {
+                    return parseFloat(match[1]);
+                }
+                return 100 / columns;
+            });
+            
+            // Get the current column index (0-based)
             const currentColumnIndex = cell.column - 1;
             
-            // Adjust column widths proportionally
+            // Calculate the maximum allowed width for this cell
+            // This ensures we don't exceed 100% total width
+            const otherColumnsMinWidth = (columns - 1) * 15; // All other columns at minimum 15%
+            const maxAllowedWidth = 100 - otherColumnsMinWidth;
+            
+            // Convert to proportion (0-1) for the adjustColumnWidths function
+            const newWidthPart = Math.min(maxAllowedWidth, Math.max(15, newWidthPercentage)) / 100;
+            
+            // Calculate the new column widths
             const newColumnWidths = adjustColumnWidths(
                 columnWidths,
                 currentColumnIndex,
-                finalFraction,
+                newWidthPart,
                 isLastCell,
                 columns
             );
@@ -608,23 +556,28 @@ const GridCellElement: React.FC<{
                 columnWidths: newColumnWidths
             };
             
-            // Use the throttled update to reduce the number of store updates
+            // Update the layout in the store
             updateLayout(presentationId, slideId, layoutId, {
                 gridStructure: updatedGridStructure
             });
-            
+        };
+
+        // Handle resize end
+        const handleResizeEnd = () => {
+            document.removeEventListener('mousemove', handleResizeMove);
+            document.removeEventListener('mouseup', handleResizeEnd);
+
             // Reset the resizing state
             setIsResizing(false);
         };
 
         const placeholder = isSelected ? getPlaceholder() : '';
-        
+
         // Add a resize style if resizing is in progress
         const resizeStyle: React.CSSProperties = isResizing ? {
-            width: `${currentWidth}px`,
             transition: 'none' // Disable transitions during resize for smoother experience
         } : {};
-        
+
         return (
             <div
                 className={`
@@ -673,13 +626,11 @@ const GridCellElement: React.FC<{
                 {/* Resizable border and indicators for multi-cell layouts */}
                 {hasMultipleCells && !isLastCell && (
                     <>
-                        <div 
+                        <div
                             ref={resizeBorderRef}
                             className={styles.resizableBorder}
                             onMouseDown={handleResizeStart}
                         />
-                        {/* <div className={`${styles.borderIndicator} ${styles.borderIndicatorTop}`} />
-                        <div className={`${styles.borderIndicator} ${styles.borderIndicatorBottom}`} /> */}
                     </>
                 )}
             </div>

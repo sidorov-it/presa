@@ -24,6 +24,13 @@ interface PresentationState {
   addLayout: (presentationId: string, slideId: string, layout: Omit<Layout, 'id'> | LayoutType) => string;
   updateLayout: (presentationId: string, slideId: string, layoutId: string, data: Partial<Layout>) => void;
   deleteLayout: (presentationId: string, slideId: string, layoutId: string) => void;
+  updateAndPotentiallyDeleteLayout: (
+    presentationId: string, 
+    slideId: string, 
+    layoutId: string, 
+    data: Partial<Layout>, 
+    deleteIfEmpty?: boolean
+  ) => void;
 
   // Работа с элементами
   addElement: (presentationId: string, slideId: string, layoutId: string, element: Omit<Element, 'id'>) => string;
@@ -321,6 +328,55 @@ export const usePresentationStore = create<PresentationState>()(
             return presentation;
           }),
         }));
+      },
+
+      updateAndPotentiallyDeleteLayout: (
+        presentationId, 
+        slideId, 
+        layoutId, 
+        data, 
+        deleteIfEmpty = false
+      ) => {
+        set((state) => {
+          const presentation = state.presentations.find((p) => p.id === presentationId);
+          if (!presentation) return state;
+
+          // First, update the layout with the new data
+          const updatedSlides = presentation.slides.map((slide) => {
+            if (slide.id !== slideId) return slide;
+            
+            // Get the updated layout
+            const updatedLayouts = slide.layouts.map((layout) => 
+              layout.id === layoutId ? { ...layout, ...data } : layout
+            );
+            
+            // Check if we need to delete the layout
+            const updatedLayout = updatedLayouts.find((layout) => layout.id === layoutId);
+            
+            if (deleteIfEmpty && updatedLayout && updatedLayout.elements.length === 0) {
+              // If the layout is now empty and deleteIfEmpty is true, remove it
+              return {
+                ...slide,
+                layouts: updatedLayouts.filter((layout) => layout.id !== layoutId)
+              };
+            }
+            
+            // Otherwise just return the slide with updated layouts
+            return {
+              ...slide,
+              layouts: updatedLayouts
+            };
+          });
+
+          // Return the updated state
+          return {
+            presentations: state.presentations.map((p) =>
+              p.id === presentationId 
+                ? { ...presentation, slides: updatedSlides, updatedAt: Date.now() } 
+                : p
+            )
+          };
+        });
       },
 
       // Методы для работы с элементами
