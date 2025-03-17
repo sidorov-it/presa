@@ -2,7 +2,7 @@ import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 import { Element, GridStructure, Layout, GridCell } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 
-const moveElement = (arr, oldIndex, newIndex) => {
+const moveElement = (arr: any[], oldIndex: number, newIndex: number): any[] | null => {
     // Проверка на допустимость индексов
     if (oldIndex < 0 || oldIndex >= arr.length || newIndex < 0 || newIndex >= arr.length) {
         return null; // Возвращаем null, если индексы вне диапазона
@@ -38,10 +38,19 @@ export const recalcPositions = ({
     updatedGridStructure: GridStructure,
     updatedElements: Element[],
     updatedCurrentElements?: Element[],
-    needRemoveCurrentLayout?: boolean
 } | null => {
 
-    if (isMoveInCurrentLayout) {
+    // Check if we're moving an element to a different cell in the same layout
+    if (isMoveInCurrentLayout && draggedElement.cellId === targetElement.cellId) {
+        // Moving within the same cell - just reorder elements
+        return handleMoveWithinSameCell({
+            draggedElement,
+            targetElement,
+            currentLayout,
+            position
+        });
+    } else if (isMoveInCurrentLayout) {
+        // Moving between cells in the same layout
         return recalcPositionsInCurrentLayout({
             draggedElement,
             targetElement,
@@ -50,6 +59,7 @@ export const recalcPositions = ({
             position
         });
     } else {
+        // Moving between different layouts
         return recalcPositionsBetweenLayouts({
             draggedElement,
             targetElement,
@@ -57,8 +67,69 @@ export const recalcPositions = ({
             gridStructure,
             targetLayout,
             position,
-        })
+        });
     }
+};
+
+/**
+ * Handle moving an element within the same cell (reordering)
+ */
+const handleMoveWithinSameCell = ({
+    draggedElement,
+    targetElement,
+    currentLayout,
+    position
+}: {
+    draggedElement: Element,
+    targetElement: Element,
+    currentLayout: Layout,
+    position: 'left' | 'right' | 'top' | 'bottom'
+}): {
+    updatedGridStructure: GridStructure,
+    updatedElements: Element[],
+} | null => {
+    // Get all elements in the cell
+    const cellElements = currentLayout.elements.filter(e => e.cellId === draggedElement.cellId);
+    
+    // Find indices of dragged and target elements
+    const draggedIndex = cellElements.findIndex(e => e.id === draggedElement.id);
+    const targetIndex = cellElements.findIndex(e => e.id === targetElement.id);
+    
+    if (draggedIndex === -1 || targetIndex === -1) return null;
+    
+    // Determine new position based on drop position
+    let newIndex;
+    if (position === 'top' || position === 'left') {
+        newIndex = targetIndex;
+    } else { // bottom or right
+        newIndex = targetIndex + 1;
+    }
+    
+    // If dragging to a position after current position, adjust for the removal
+    if (newIndex > draggedIndex) {
+        newIndex--;
+    }
+    
+    // Create a copy of the cell elements and reorder
+    const reorderedCellElements = [...cellElements];
+    const [movedElement] = reorderedCellElements.splice(draggedIndex, 1);
+    reorderedCellElements.splice(newIndex, 0, movedElement);
+    
+    // Create updated elements array with reordered elements
+    const updatedElements = [...currentLayout.elements];
+    for (let i = 0; i < updatedElements.length; i++) {
+        if (updatedElements[i].cellId === draggedElement.cellId) {
+            // Replace with reordered elements
+            const startIndex = updatedElements.findIndex(e => e.cellId === draggedElement.cellId);
+            updatedElements.splice(startIndex, cellElements.length, ...reorderedCellElements);
+            break;
+        }
+    }
+    
+    return {
+        updatedGridStructure: currentLayout.gridStructure,
+        updatedElements
+    };
 };
 
 const recalcPositionsInCurrentLayout = ({
@@ -77,7 +148,6 @@ const recalcPositionsInCurrentLayout = ({
     updatedGridStructure: GridStructure,
     updatedElements: Element[],
     updatedCurrentElements?: Element[],
-    needRemoveCurrentLayout?: boolean
 } | null => {
     const sourceCellId = draggedElement.cellId;
     const targetCellId = targetElement.cellId;
@@ -89,6 +159,29 @@ const recalcPositionsInCurrentLayout = ({
 
     if (!sourceCell || !targetCell) return null;
 
+    // If we're moving an element between cells in the same row
+    if (position === 'left' || position === 'right') {
+        // Create a copy of the elements array
+        const updatedElements = [...currentLayout.elements];
+        
+        // Find the dragged element index
+        const draggedElementIndex = updatedElements.findIndex(e => e.id === draggedElement.id);
+        
+        if (draggedElementIndex === -1) return null;
+        
+        // Update the cellId of the dragged element to the target cell
+        updatedElements[draggedElementIndex] = {
+            ...updatedElements[draggedElementIndex],
+            cellId: targetCellId
+        };
+        
+        return {
+            updatedGridStructure: gridStructure,
+            updatedElements
+        };
+    }
+    
+    // If we need to create a new cell (original behavior)
     const sourceColumn = sourceCell.column;
     const targetColumn = targetCell.column;
 
@@ -182,7 +275,6 @@ const recalcPositionsBetweenLayouts = ({
     updatedGridStructure: GridStructure,
     updatedElements: Element[],
     updatedCurrentElements?: Element[],
-    needRemoveCurrentLayout?: boolean
 } | null => {
 
     // Moving between layouts - existing code for cross-layout dragging
@@ -314,7 +406,6 @@ const recalcPositionsBetweenLayouts = ({
                 },
                 updatedElements,
                 updatedCurrentElements,
-                needRemoveCurrentLayout: true,
             }
         } else {
             return {
@@ -324,7 +415,6 @@ const recalcPositionsBetweenLayouts = ({
                 },
                 updatedElements,
                 updatedCurrentElements,
-                needRemoveCurrentLayout: false,
             }
         }
     } else {
@@ -334,7 +424,6 @@ const recalcPositionsBetweenLayouts = ({
                 columnWidths: getColumnWidths(updatedElements.length)
             },
             updatedElements,
-            needRemoveCurrentLayout: false,
         }
     }
 

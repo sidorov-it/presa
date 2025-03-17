@@ -9,7 +9,7 @@ import { generateId } from '@/utils/id';
 
 // Create a global registry to store editor refs
 // This allows us to access any editor by its ID
-const editorRefs: Record<string, React.RefObject<TiptapRef>> = {};
+// const editorRefs: Record<string, React.RefObject<TiptapRef>> = {};
 
 const adjustColumnWidths = (
     columnWidths: string[],
@@ -115,6 +115,7 @@ const GridCellElement: React.FC<{
     isLastCell?: boolean;
     slideEditorRef: React.RefObject<HTMLDivElement>;
     dataElementKey?: string;
+    tiptapRefs: React.RefObject<Record<string, React.RefObject<TiptapRef>>>;
     onSelect: (element: SlideElement) => void;
     onDelete: (element: SlideElement) => void;
     onDragStart?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string) => void;
@@ -126,6 +127,7 @@ const GridCellElement: React.FC<{
     presentationId,
     slideId,
     layoutId,
+    tiptapRefs,
     // isSelected,
     index,
     onSelect,
@@ -139,7 +141,7 @@ const GridCellElement: React.FC<{
     slideEditorRef,
     dataElementKey
 }) => {
-        const { updateElement, updateLayout } = usePresentationStore();
+        const { updateElement, updateLayout, addElement } = usePresentationStore();
         const { elementToFocus, clearElementToFocus } = useEditorStore();
         const dragHandleRef = useRef<HTMLDivElement>(null);
         const [isDragging, setIsDragging] = useState(false);
@@ -150,31 +152,61 @@ const GridCellElement: React.FC<{
         const [startWidth, setStartWidth] = useState(0);
 
         // Create a map of element IDs to their Tiptap refs
-        const tiptapRefs = useRef<Record<string, React.RefObject<TiptapRef>>>({});
+        // const tiptapRefs = useRef<Record<string, React.RefObject<TiptapRef>>>({});
 
         // Initialize refs for each element
         useEffect(() => {
             // Create refs for each element if they don't exist
             elements.forEach(element => {
-                if (!tiptapRefs.current[element.id]) {
+                if (tiptapRefs.current && !tiptapRefs.current[element.id]) {
                     tiptapRefs.current[element.id] = React.createRef<TiptapRef>();
                 }
             });
 
             // Register all editor refs in the global registry
-            elements.forEach(element => {
-                const editorId = `${layoutId}-${element.id}`;
-                editorRefs[editorId] = tiptapRefs.current[element.id];
-            });
+            // elements.forEach(element => {
+            //     const editorId = `${layoutId}-${element.id}`;
+            //     editorRefs[editorId] = tiptapRefs.current[element.id];
+            // });
 
             return () => {
                 // Clean up when unmounted
-                elements.forEach(element => {
-                    const editorId = `${layoutId}-${element.id}`;
-                    delete editorRefs[editorId];
-                });
+                // elements.forEach(element => {
+                //     const editorId = `${layoutId}-${element.id}`;
+                //     delete editorRefs[editorId];
+                // });
             };
         }, [layoutId, elements]);
+
+
+        // Effect to check if any element should be focused
+        useEffect(() => {
+            if (elementToFocus) {
+                // Find the element that should be focused
+                const elementToFocusInCell = elements.find(
+                    el => el.id === elementToFocus.elementId &&
+                        layoutId === elementToFocus.layoutId &&
+                        el.cellId === elementToFocus.cellId
+                );
+
+                if (elementToFocusInCell) {
+                    // Clear the focus target immediately to prevent multiple focus attempts
+                    clearElementToFocus();
+
+                    // Select this element
+                    onSelect(elementToFocusInCell);
+
+                    // Use requestAnimationFrame to focus as soon as the browser is ready to paint
+                    requestAnimationFrame(() => {
+                        // Focus using the ref
+                        const ref = tiptapRefs.current?.[elementToFocusInCell.id];
+                        if (ref && ref.current) {
+                            ref.current.focus();
+                        }
+                    });
+                }
+            }
+        }, [elements, layoutId, elementToFocus, clearElementToFocus, onSelect]);
 
         // Обработчик для изменения содержимого редактора
         const handleEditorContentChange = (elementId: string) => (content: string) => {
@@ -273,35 +305,6 @@ const GridCellElement: React.FC<{
             }
         };
 
-        // Effect to check if any element should be focused
-        useEffect(() => {
-            if (elementToFocus) {
-                // Find the element that should be focused
-                const elementToFocusInCell = elements.find(
-                    el => el.id === elementToFocus.elementId && 
-                    layoutId === elementToFocus.layoutId && 
-                    el.cellId === elementToFocus.cellId
-                );
-
-                if (elementToFocusInCell) {
-                    // Clear the focus target immediately to prevent multiple focus attempts
-                    clearElementToFocus();
-
-                    // Select this element
-                    onSelect(elementToFocusInCell);
-
-                    // Use requestAnimationFrame to focus as soon as the browser is ready to paint
-                    requestAnimationFrame(() => {
-                        // Focus using the ref
-                        const ref = tiptapRefs.current[elementToFocusInCell.id];
-                        if (ref && ref.current) {
-                            ref.current.focus();
-                        }
-                    });
-                }
-            }
-        }, [elements, layoutId, elementToFocus, clearElementToFocus, onSelect]);
-
         // Обработчик для удаления пустого редактора при нажатии Backspace
         const handleBackspacePressed = (element: SlideElement) => () => {
             // Если это единственный элемент в макете, не удаляем его
@@ -352,14 +355,14 @@ const GridCellElement: React.FC<{
 
         // Get the first element for cell styling
         const firstElement = elements[0];
-        
+
         // Создаем объект стилей
         const cellStyle: React.CSSProperties = {
             ...firstElement?.style
         };
 
-        // Обработчик для начала перетаскивания
-        const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+        // Обработчик для начала перетаскивания всей ячейки (используется только когда в ячейке один элемент)
+        const handleCellDragStart = (e: React.DragEvent<HTMLDivElement>) => {
             e.stopPropagation();
             setIsDragging(true);
 
@@ -379,6 +382,26 @@ const GridCellElement: React.FC<{
             // Call the parent's onDragStart handler if provided
             if (onDragStart) {
                 onDragStart(e, firstElementId, layoutId);
+            }
+        };
+
+        // Обработчик для начала перетаскивания отдельного элемента
+        const handleElementDragStart = (e: React.DragEvent<HTMLDivElement>, elementId: string) => {
+            e.stopPropagation();
+            setIsDragging(true);
+
+            // Add the dragging class to the element
+            if (e.currentTarget.classList) {
+                e.currentTarget.classList.add(styles.dragging);
+            }
+
+            // Set the drag data
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', elementId);
+
+            // Call the parent's onDragStart handler if provided
+            if (onDragStart) {
+                onDragStart(e, elementId, layoutId);
             }
         };
 
@@ -538,15 +561,6 @@ const GridCellElement: React.FC<{
                 return width;
             });
 
-            // Parse all column widths to get their percentage values
-            const percentValues = columnWidths.map(width => {
-                const match = width.match(/^([\d.]+)%$/);
-                if (match) {
-                    return parseFloat(match[1]);
-                }
-                return 100 / columns;
-            });
-
             // Get the current column index (0-based)
             const currentColumnIndex = cell.column - 1;
 
@@ -588,6 +602,23 @@ const GridCellElement: React.FC<{
             setIsResizing(false);
         };
 
+        const handleBlur = (element: SlideElement) => {
+            const presentation = usePresentationStore.getState().getPresentation(presentationId);
+            if (!presentation) return;
+
+            const slide = presentation.slides.find(s => s.id === slideId);
+            if (!slide) return;
+
+            const layout = slide.layouts.find(l => l.id === layoutId);
+            if (!layout) return;
+
+            const lastRow = layout.gridStructure.rows[layout.gridStructure.rows.length - 1];
+
+            if (slide.layouts.length > 1 && lastRow.cells.length === 1 && lastRow.cells[0].id === element.cellId && tiptapRefs.current?.[element.id]?.current?.isEmpty()) {
+                usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+            }
+        };
+
         // Add a resize style if resizing is in progress
         const resizeStyle: React.CSSProperties = isResizing ? {
             transition: 'none' // Disable transitions during resize for smoother experience
@@ -596,12 +627,17 @@ const GridCellElement: React.FC<{
         return (
             <div
                 className={`
-                    ${styles.gridCell}
+                    ${styles.gridCellElement}
+                    ${hasMultipleCells ? styles.cellWithBorders : ''}
                     ${isDragging ? styles.dragging : ''}
                     ${isResizing ? styles.resizing : ''}
                     ${hasMultipleCells ? styles.cellWithMultipleCells : ''}
                 `}
-                onClick={() => onSelect(firstElement)}
+                onClick={(ev) => {
+                    ev.stopPropagation();
+                    ev.preventDefault();
+                    onSelect(firstElement);
+                }}
                 style={{
                     ...cellStyle,
                     ...resizeStyle,
@@ -620,27 +656,44 @@ const GridCellElement: React.FC<{
                     {elements.map((element, idx) => (
                         <div key={element.id} className={styles.elementWrapper}>
                             <Tiptap
-                                ref={tiptapRefs.current[element.id]}
-                                id={element.cellId}
                                 key={element.id}
+                                ref={tiptapRefs.current?.[element.id]}
+                                id={element.cellId}
+                                autoFocus={true}
                                 initialContent={getEditorContent(element)}
                                 onEnterPressed={handleEnterPressed(element)}
                                 onBackspacePressed={handleBackspacePressed(element)}
                                 onFocus={() => onSelect(element)}
                                 onContentChange={handleEditorContentChange(element.id)}
+                                onBlur={() => handleBlur(element)}
                                 customBubbleMenuTrigger={dragHandleRef}
                             />
+
+                            {/* Individual element drag handle (visible when cell has multiple elements) */}
+                            {elements.length > 1 && (
+                                <div
+                                    className={styles.elementDragHandle}
+                                    draggable
+                                    onDragStart={(e) => handleElementDragStart(e, element.id)}
+                                    onDragEnd={handleDragEnd}
+                                    title="Перетащить элемент"
+                                />
+                            )}
                         </div>
                     ))}
                 </div>
 
-                <div
-                    ref={dragHandleRef}
-                    className={`${styles.dragHandle} ${hasMultipleCells ? styles.dragHandleMultipleCells : ''}`}
-                    draggable
-                    onDragStart={handleDragStart}
-                    onDragEnd={handleDragEnd}
-                />
+                {/* Cell drag handle (visible only when cell has a single element) */}
+                {elements.length === 1 && (
+                    <div
+                        ref={dragHandleRef}
+                        className={`${styles.dragHandle} ${hasMultipleCells ? styles.dragHandleMultipleCells : ''}`}
+                        draggable
+                        onDragStart={handleCellDragStart}
+                        onDragEnd={handleDragEnd}
+                        title="Перетащить ячейку"
+                    />
+                )}
 
                 {/* Resizable border and indicators for multi-cell layouts */}
                 {hasMultipleCells && !isLastCell && (

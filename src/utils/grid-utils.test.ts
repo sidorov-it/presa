@@ -1042,7 +1042,6 @@ describe('recalcPositions', () => {
     expect(result).not.toBeNull();
     if (result) {
       // Check that source layout should be removed
-      expect(result.needRemoveCurrentLayout).toBe(true);
       expect(result.updatedCurrentElements?.length).toBe(0);
       
       // Check that target layout was updated correctly
@@ -1129,7 +1128,6 @@ describe('recalcPositions', () => {
       
       // Check that source layout was updated
       expect(result.updatedCurrentElements?.length).toBe(1);
-      expect(result.needRemoveCurrentLayout).toBeFalsy();
       
       // Check that cells were reordered correctly
       const cells = result.updatedGridStructure.rows[0].cells;
@@ -1216,7 +1214,6 @@ describe('recalcPositions', () => {
       
       // Check that source layout was updated
       expect(result.updatedCurrentElements?.length).toBe(1);
-      expect(result.needRemoveCurrentLayout).toBe(false);
       
       // Check that cells were reordered correctly
       const cells = result.updatedGridStructure.rows[0].cells;
@@ -1288,7 +1285,6 @@ describe('recalcPositions', () => {
     expect(result).not.toBeNull();
     if (result) {
       // Check that source layout should be removed
-      expect(result.needRemoveCurrentLayout).toBe(true);
       expect(result.updatedCurrentElements?.length).toBe(0);
       
       // Check that target layout was updated correctly
@@ -1370,7 +1366,6 @@ describe('recalcPositions', () => {
       
       // Check that source layout was updated
       expect(result.updatedCurrentElements?.length).toBe(1);
-      expect(result.needRemoveCurrentLayout).toBe(false);
       
       // Check that cells were reordered correctly
       const cells = result.updatedGridStructure.rows[0].cells;
@@ -1455,7 +1450,6 @@ describe('recalcPositions', () => {
       
       // Check that source layout was updated
       expect(result.updatedCurrentElements?.length).toBe(1);
-      expect(result.needRemoveCurrentLayout).toBe(false);
       
       // Check that cells were reordered correctly and maintain their spans
       const cells = result.updatedGridStructure.rows[0].cells;

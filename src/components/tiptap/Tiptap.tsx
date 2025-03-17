@@ -4,13 +4,6 @@ import { EditorContent } from '@tiptap/react'
 import { useEditor } from '@tiptap/react'
 import { useCallback, useEffect, RefObject, forwardRef, useImperativeHandle } from 'react'
 import StarterKit from '@tiptap/starter-kit'
-import Document from '@tiptap/extension-document'
-import Paragraph from '@tiptap/extension-paragraph'
-import Text from '@tiptap/extension-text'
-import Heading from '@tiptap/extension-heading'
-import Bold from '@tiptap/extension-bold'
-import Italic from '@tiptap/extension-italic'
-import ListItem from '@tiptap/extension-list-item'
 import Placeholder from '@tiptap/extension-placeholder'
 import { Extension } from '@tiptap/core'
 import { useEditorStore } from '@/store/editorStore'
@@ -23,39 +16,32 @@ export const preventDropFromOutsidePlugin = new Plugin({
     key: pluginKey,
     state: {
         init: () => false,
-        apply: (tr, prev) =>
-        {
+        apply: (tr, prev) => {
             const action = tr.getMeta(pluginKey);
-            if (!action)
-            {
+            if (!action) {
                 return prev;
             }
 
-            switch (action)
-            {
-            case 'drag':
-                return true;
-            case 'drop':
-            default:
-                return false;
+            switch (action) {
+                case 'drag':
+                    return true;
+                case 'drop':
+                default:
+                    return false;
             }
         },
     },
     props: {
         handleDOMEvents: {
-            dragstart(view)
-            {
+            dragstart(view) {
                 const dragFromInsideActive = pluginKey.getState(view.state);
-                if (!dragFromInsideActive)
-                {
+                if (!dragFromInsideActive) {
                     view.dispatch(view.state.tr.setMeta(pluginKey, 'drag'));
                 }
             },
-            drop(view, event)
-            {
+            drop(view, event) {
                 const dragFromInsideActive = pluginKey.getState(view.state);
-                if (dragFromInsideActive)
-                {
+                if (dragFromInsideActive) {
                     view.dispatch(view.state.tr.setMeta(pluginKey, 'drop'));
                     return false;
                 }
@@ -68,202 +54,211 @@ export const preventDropFromOutsidePlugin = new Plugin({
 
 // Create a custom extension to add the preventDropFromOutsidePlugin
 const PreventDropExtension = Extension.create({
-  name: 'preventDrop',
-  addProseMirrorPlugins() {
-    return [preventDropFromOutsidePlugin];
-  },
+    name: 'preventDrop',
+    addProseMirrorPlugins() {
+        return [preventDropFromOutsidePlugin];
+    },
 });
 
 // Создаем расширение для обработки нажатия Enter и Backspace
 const EnterHandlerExtension = (onEnterPressed: () => void, onBackspacePressed: () => void) => {
-  return Extension.create({
-    name: 'enterHandler',
-    addKeyboardShortcuts() {
-      return {
-        'Enter': ({ editor }) => {
-          // Если курсор в конце документа и текущий узел пустой или содержит только один параграф
-          const { state } = editor
-          const { selection } = state
-          const { empty, $head } = selection
-          
-          // Проверяем, находится ли курсор в конце документа
-          const isAtEnd = $head.pos === state.doc.content.size
-          
-          // Проверяем, есть ли в документе только один параграф
-          const isSingleParagraph = state.doc.childCount === 1 && state.doc.firstChild?.type.name === 'paragraph'
-          
-          // Проверяем, находится ли курсор в конце единственного параграфа
-          const isAtEndOfParagraph = isSingleParagraph && state.doc.firstChild && $head.pos === state.doc.firstChild.nodeSize - 1
-          
-          // Если курсор в конце документа или это единственный параграф и курсор в его конце
-          if (empty && (isAtEnd || isAtEndOfParagraph)) {
-            onEnterPressed()
-            return true
-          }
-          
-          return false
+    return Extension.create({
+        name: 'enterHandler',
+        addKeyboardShortcuts() {
+            return {
+                'Enter': ({ editor }) => {
+                    // Если курсор в конце документа и текущий узел пустой или содержит только один параграф
+                    const { state } = editor
+                    const { selection } = state
+                    const { empty, $head } = selection
+
+                    // Проверяем, находится ли курсор в конце документа
+                    const isAtEnd = $head.pos === state.doc.content.size
+
+                    // Проверяем, есть ли в документе только один параграф
+                    const isSingleParagraph = state.doc.childCount === 1 && state.doc.firstChild?.type.name === 'paragraph'
+
+                    // Проверяем, находится ли курсор в конце единственного параграфа
+                    const isAtEndOfParagraph = isSingleParagraph && state.doc.firstChild && $head.pos === state.doc.firstChild.nodeSize - 1
+
+                    // Если курсор в конце документа или это единственный параграф и курсор в его конце
+                    if (empty && (isAtEnd || isAtEndOfParagraph)) {
+                        onEnterPressed()
+                        return true
+                    }
+
+                    return false
+                },
+                'Backspace': ({ editor }) => {
+                    // Если курсор в начале документа и документ пустой
+                    const { state } = editor
+                    const { selection } = state
+                    const { empty, $head } = selection
+
+                    // Проверяем, находится ли курсор в начале документа
+                    const isAtStart = $head.pos === 1
+
+                    // Проверяем, пустой ли документ
+                    const isEmpty = state.doc.textContent.trim() === ''
+
+                    // Если курсор в начале документа и документ пустой
+                    if (empty && isAtStart && isEmpty) {
+                        onBackspacePressed()
+                        return true
+                    }
+
+                    return false
+                },
+            }
         },
-        'Backspace': ({ editor }) => {
-          // Если курсор в начале документа и документ пустой
-          const { state } = editor
-          const { selection } = state
-          const { empty, $head } = selection
-          
-          // Проверяем, находится ли курсор в начале документа
-          const isAtStart = $head.pos === 1
-          
-          // Проверяем, пустой ли документ
-          const isEmpty = state.doc.textContent.trim() === ''
-          
-          // Если курсор в начале документа и документ пустой
-          if (empty && isAtStart && isEmpty) {
-            onBackspacePressed()
-            return true
-          }
-          
-          return false
-        },
-      }
-    },
-  })
+    })
 }
 
 // Определяем типы пропсов
 interface TiptapProps {
-  initialContent?: string;
-  onEnterPressed?: () => void;
-  onBackspacePressed?: () => void;
-  onFocus?: () => void;
-  onContentChange?: (content: string) => void;
-  autoFocus?: boolean;
-  id?: string;
-  placeholder?: string;
-  customBubbleMenuTrigger?: RefObject<HTMLElement>;
+    initialContent?: string;
+    onEnterPressed?: () => void;
+    onBackspacePressed?: () => void;
+    onFocus?: () => void;
+    onBlur?: () => void;
+    onContentChange?: (content: string) => void;
+    autoFocus?: boolean;
+    id?: string;
+    placeholder?: string;
+    customBubbleMenuTrigger?: RefObject<HTMLElement>;
 }
 
 // Define the ref type
 export interface TiptapRef {
-  focus: () => void;
+    focus: () => void;
+    getText: () => string;
+    isEmpty: () => boolean;
 }
 
 // Определяем массив расширений
 const getExtensions = (onEnterPressed: () => void, onBackspacePressed: () => void, placeholder: string) => [
-  // Configure StarterKit to disable dropcursor
-  StarterKit.configure({
-    dropcursor: false, // Disable the dropcursor extension
-  }), 
-  // Document, 
-  // Paragraph, 
-  // Text, 
-  // Heading, 
-  // Bold, 
-  // Italic, 
-  // ListItem,
-  PreventDropExtension,
-  EnterHandlerExtension(onEnterPressed, onBackspacePressed),
-  Placeholder.configure({
-    placeholder,
-    emptyEditorClass: 'is-editor-empty',
-  }),
+    // Configure StarterKit to disable dropcursor
+    StarterKit.configure({
+        dropcursor: false, // Disable the dropcursor extension
+    }),
+    // Document, 
+    // Paragraph, 
+    // Text, 
+    // Heading, 
+    // Bold, 
+    // Italic, 
+    // ListItem,
+    PreventDropExtension,
+    EnterHandlerExtension(onEnterPressed, onBackspacePressed),
+    Placeholder.configure({
+        placeholder,
+        emptyEditorClass: 'is-editor-empty',
+    }),
 ]
 
-const Tiptap = forwardRef<TiptapRef, TiptapProps>(({ 
-  initialContent = '', 
-  onEnterPressed = () => {}, 
-  onBackspacePressed = () => {},
-  onFocus = () => {},
-  onContentChange = () => {},
-  autoFocus = false,
-  id = '',
-  placeholder = 'Введите текст...',
-  customBubbleMenuTrigger
+const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
+    initialContent = '',
+    onEnterPressed = () => { },
+    onBackspacePressed = () => { },
+    onFocus = () => { },
+    onContentChange = () => { },
+    onBlur = () => { },
+    autoFocus = false,
+    id = '',
+    placeholder = '',
+    customBubbleMenuTrigger
 }, ref) => {
-  // Use the global editor store instead of local state
-  const { setActiveEditor, showMenu } = useEditorStore();
-  
-  const editor = useEditor({
-    extensions: getExtensions(onEnterPressed, onBackspacePressed, placeholder),
-    content: initialContent,
-    autofocus: autoFocus,
-    immediatelyRender: false,
+    // Use the global editor store instead of local state
+    const { setActiveEditor, showMenu } = useEditorStore();
 
-    onFocus: () => {
-      onFocus();
-      // Set this editor as the active editor in the store
-      setActiveEditor(editor);
-    },
-    onUpdate: ({ editor }) => {
-      const html = editor.getHTML();
-      onContentChange(html);
-    },
-    editorProps: {
-      attributes: {
-        class: `${styles.editor} custom-tiptap-editor no-dropcursor`,
-      },
-    },
-  })
-  
-  // Метод для программного фокуса на редакторе
-  const focus = useCallback(() => {
-    if (editor) {
-      // Focus immediately without any delay
-      editor.commands.focus('end');
-    }
-  }, [editor])
-  
-  // Expose the focus method via ref
-  useImperativeHandle(ref, () => ({
-    focus
-  }), [focus]);
-  
-  // Устанавливаем фокус при монтировании, если autoFocus = true
-  useEffect(() => {
-    if (autoFocus && editor) {
-      // Focus immediately
-      focus();
-    }
-  }, [autoFocus, editor, focus])
-  
-  // Add event listener for custom trigger
-  useEffect(() => {
-    if (customBubbleMenuTrigger?.current && editor) {
-      const handleTriggerClick = (e: MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        // Use the global store to show the menu
-        setActiveEditor(editor);
-        showMenu(customBubbleMenuTrigger.current as HTMLElement);
-        
-          // Focus the editor to ensure commands work
-          editor.commands.focus();
-          setTimeout(() => {
-            editor.commands.selectAll();
-          }, 10);
-      };
-      
-      const triggerElement = customBubbleMenuTrigger.current;
-      triggerElement.addEventListener('click', handleTriggerClick);
-      
-      return () => {
-        triggerElement.removeEventListener('click', handleTriggerClick);
-      };
-    }
-  }, [customBubbleMenuTrigger, editor, setActiveEditor, showMenu]);
-  
-  // Update the active editor in the store when the editor changes
-  useEffect(() => {
-    if (editor) {
-      return () => {
-        // Clean up when component unmounts
-        setActiveEditor(null);
-      };
-    }
-  }, [editor, setActiveEditor]);
-  
-  return (
-    <div className="relative w-full" data-editor-id={id}>
-      {/* <FloatingMenu editor={editor} tippyOptions={{ duration: 100 }}>
+    const editor = useEditor({
+        extensions: getExtensions(onEnterPressed, onBackspacePressed, placeholder),
+        content: initialContent,
+        autofocus: autoFocus,
+        immediatelyRender: false,
+
+        onBlur: () => {
+            onBlur?.();
+        },
+        onFocus: () => {
+            onFocus();
+            // Set this editor as the active editor in the store
+            setActiveEditor(editor);
+        },
+        onUpdate: ({ editor }) => {
+            const html = editor.getHTML();
+            onContentChange(html);
+        },
+        editorProps: {
+            attributes: {
+                class: `${styles.editor} custom-tiptap-editor no-dropcursor`,
+            },
+        },
+    })
+
+    // Метод для программного фокуса на редакторе
+    const focus = useCallback(() => {
+        if (editor) {
+            // Focus immediately without any delay
+            editor.commands.focus('end');
+        }
+    }, [editor])
+
+    // Expose the focus method via ref
+    useImperativeHandle(ref, () => ({
+        focus,
+        getText: () => editor?.getText() ?? '',
+        isEmpty: () => editor?.isEmpty ?? false
+    }), [focus]);
+
+    // Устанавливаем фокус при монтировании, если autoFocus = true
+    useEffect(() => {
+        if (autoFocus && editor) {
+            // Focus immediately
+            focus();
+        }
+    }, [autoFocus, editor, focus])
+
+    // Add event listener for custom trigger
+    useEffect(() => {
+        if (customBubbleMenuTrigger?.current && editor) {
+            const handleTriggerClick = (e: MouseEvent) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Use the global store to show the menu
+                setActiveEditor(editor);
+                showMenu(customBubbleMenuTrigger.current as HTMLElement);
+
+                // Focus the editor to ensure commands work
+                editor.commands.focus();
+                setTimeout(() => {
+                    editor.commands.selectAll();
+                }, 10);
+            };
+
+            const triggerElement = customBubbleMenuTrigger.current;
+            triggerElement.addEventListener('click', handleTriggerClick);
+
+            return () => {
+                triggerElement.removeEventListener('click', handleTriggerClick);
+            };
+        }
+    }, [customBubbleMenuTrigger, editor, setActiveEditor, showMenu]);
+
+    // Update the active editor in the store when the editor changes
+    useEffect(() => {
+        if (editor) {
+            return () => {
+                // Clean up when component unmounts
+                setActiveEditor(null);
+            };
+        }
+    }, [editor, setActiveEditor]);
+
+    return (
+        <div className="relative w-full" data-editor-id={id}>
+            {/* <FloatingMenu editor={editor} tippyOptions={{ duration: 100 }}>
         <div className="bg-white shadow-lg rounded-md p-2 flex gap-2">
           <button
             onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
@@ -286,16 +281,16 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
         </div>
       </FloatingMenu> */}
 
-      <div className="tiptap-editor-wrapper w-full min-h-[40px]">
-        {editor && (
-          <EditorContent 
-            editor={editor} 
-            className="cursor-text w-full focus:outline-none"
-          />
-        )}
-      </div>
+            <div className="tiptap-editor-wrapper w-full min-h-[40px]">
+                {editor && (
+                    <EditorContent
+                        editor={editor}
+                        className="cursor-text w-full focus:outline-none"
+                    />
+                )}
+            </div>
 
-      <style jsx global>{`
+            <style jsx global>{`
         .ProseMirror {
           padding: 0.5rem;
           min-height: 40px;
@@ -316,8 +311,8 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
           outline: none;
         }
       `}</style>
-    </div>
-  )
+        </div>
+    )
 })
 
 export default Tiptap

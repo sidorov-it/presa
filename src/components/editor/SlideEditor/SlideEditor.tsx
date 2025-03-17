@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Slide, Layout, LayoutType, Element, GridCell, GridRow } from '@/types';
+import { Slide, Layout, LayoutType, Element, GridCell, GridRow, EditorElement } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 import { GridEditorElement, GridImageElement } from '@/types/grid-elements';
 import { usePresentationStore } from '@/store/presentationStore';
@@ -9,6 +9,9 @@ import styles from './SlideEditor.module.css';
 import GridCellElement from '../GridCellElement';
 import { generateGridTemplateAreas, generateGridTemplateColumns, getPredefinedGridStructures } from '@/types';
 import { recalcPositions } from '@/utils/grid-utils';
+import { generateId } from '@/utils/id';
+import { getTextContentFromNodes } from '@tiptap/react';
+import { TiptapRef } from '@/components/tiptap/Tiptap';
 
 interface SlideEditorProps {
     slide: Slide;
@@ -125,6 +128,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
     const [draggedElementId, setDraggedElementId] = useState<string | null>(null);
     const [draggedLayoutId, setDraggedLayoutId] = useState<string | null>(null);
+    const tiptapRefs = useRef<Record<string, React.RefObject<TiptapRef>>>({});
 
     const {
         addLayout,
@@ -190,23 +194,42 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     // Обработчик для клика по слайду (начать редактирование если слайд пустой)
     const handleSlideClick = (e: React.MouseEvent) => {
-        if (slide.layouts.length === 0) {
-            // Создаем новый макет с одной ячейкой
-            createDefaultLayout();
-        } else {
-            setSelectedElementId(null);
+        const rect = editorRef.current?.getBoundingClientRect();
+        if (rect) {
+            const positionY = e.clientY - (rect.top ?? 0);
+            const slideHeight = rect.height ?? 0;
+            const isClickBottom = positionY / slideHeight > 0.5;
+
+            if (slide.layouts.length === 1) {
+            } else if (isClickBottom) {
+                createDefaultLayout();
+            }
+
         }
     };
 
     // Создание макета по умолчанию с одним редактором
     const createDefaultLayout = () => {
         // Создаем новый макет с одной ячейкой
-        const layoutId = uuidv4();
         const gridStructure = getPredefinedGridStructures('single-column');
+
+        const cellId = gridStructure.rows[0].cells[0].id;
+
+        const editorElement: EditorElement = {
+            id: generateId(8),
+            type: 'editor',
+            content: '',
+            position: { x: 0, y: 0 },
+            size: { width: 100, height: 40 },
+            style: { fontSize: '16px', color: '#333333' },
+            zIndex: 1,
+            placeholder: '',
+            cellId
+        };
 
         const newLayout: Omit<Layout, 'id'> = {
             type: 'single-column',
-            elements: [],
+            elements: [editorElement],
             style: {},
             gridStructure
         };
@@ -215,18 +238,10 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         addLayout(presentationId, slide.id, newLayout);
 
         // Добавляем элемент редактора в макет
-        const editorElement: Omit<GridEditorElement, 'id'> = {
-            type: 'editor',
-            content: '',
-            position: { x: 0, y: 0 },
-            size: { width: 100, height: 40 },
-            style: { fontSize: '16px', color: '#333333' },
-            zIndex: 1,
-            placeholder: 'Введите текст...'
-        };
+        
 
-        const elementId = addElement(presentationId, slide.id, layoutId, editorElement as any);
-        setSelectedElementId(elementId);
+        // const elementId = addElement(presentationId, slide.id, layoutId, editorElement as any);
+        // setSelectedElementId(elementId);
         // setShowTemplates(false);
     };
 
@@ -320,15 +335,18 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     // Handle vertical drop (top/bottom)
     const handleVerticalDrop = (
-        draggedElement: any,
-        currentLayout: any,
-        targetLayout: any,
+        draggedElement: Element,
+        currentLayout: Layout,
+        targetLayout: Layout,
         targetElementId: string,
         position: 'top' | 'bottom'
     ) => {
         // Find the target element in the target layout
         const targetIndex = targetLayout.elements.findIndex((e: any) => e.id === targetElementId);
         if (targetIndex === -1) return;
+
+        // Get the target element
+        const targetElement = targetLayout.elements[targetIndex];
 
         // Calculate the insert index based on position
         const insertIndex = position === 'top' ? targetIndex : targetIndex + 1;
@@ -340,11 +358,37 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         // Create a copy of the dragged element to avoid modifying the original
         const draggedElementCopy = { ...draggedElement };
 
+        // If dragging to a different cell, update the cellId
+        if (draggedElementCopy.cellId !== targetElement.cellId) {
+            draggedElementCopy.cellId = targetElement.cellId;
+        }
+
         // Insert the dragged element at the calculated position
         updatedTargetElements.splice(insertIndex, 0, draggedElementCopy);
 
-        // Update current layout and potentially delete if empty
-        updateAndPotentiallyDeleteLayout(
+        // Check if we need to create a new empty editor in the source cell
+        const needNewEmptyEditor = updatedCurrentElements.filter(e => e.cellId === draggedElement.cellId).length === 0;
+        
+        if (needNewEmptyEditor) {
+            // Create a new empty editor element
+            const newEditorElement: EditorElement = {
+                id: generateId(8),
+                type: 'editor',
+                content: '',
+                position: { x: 0, y: 0 },
+                size: { width: 100, height: 40 },
+                style: { fontSize: '16px', color: '#333333' },
+                zIndex: 1,
+                placeholder: 'Введите текст...',
+                cellId: draggedElement.cellId
+            };
+            
+            // Add the new editor to the current layout
+            updatedCurrentElements.push(newEditorElement);
+        }
+
+        // Update current layout
+        updateLayout(
             presentationId,
             slide.id,
             currentLayout.id,
@@ -352,10 +396,9 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 elements: updatedCurrentElements,
                 gridStructure: {
                     ...currentLayout.gridStructure,
-                    columnWidths: getColumnWidths(updatedCurrentElements.length)
+                    columnWidths: getColumnWidths(currentLayout.gridStructure.columns)
                 }
-            },
-            true // Delete if empty
+            }
         );
 
         // Update target layout
@@ -363,7 +406,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             elements: updatedTargetElements,
             gridStructure: {
                 ...targetLayout.gridStructure,
-                columnWidths: getColumnWidths(updatedTargetElements.length)
+                columnWidths: getColumnWidths(targetLayout.gridStructure.columns)
             }
         });
     };
@@ -383,6 +426,13 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         // Get the current grid structure
         const gridStructure = { ...targetLayout.gridStructure };
 
+        // Check if we need to create a new empty editor in the source cell
+        const elementsInSameCell = currentLayout.elements.filter(e => e.cellId === draggedElement.cellId && e.id !== draggedElement.id);
+        const currentRow = currentLayout.gridStructure.rows.find(r => r.cells.find(c => c.id === draggedElement.cellId));
+        const isOnlyOneElementInCell = !currentRow?.cells.some(c => c.id !== draggedElement.cellId);
+
+        const needNewEmptyEditor = elementsInSameCell.length === 0 && !isOnlyOneElementInCell;
+        
         // Handle dragging within the same layout
         if (currentLayout.id === targetLayout.id) {
             const recalcResult = recalcPositions({
@@ -396,6 +446,25 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             });
 
             if (!recalcResult) return;
+
+            // If we need to create a new empty editor
+            if (needNewEmptyEditor) {
+                // Create a new empty editor element
+                const newEditorElement: EditorElement = {
+                    id: generateId(8),
+                    type: 'editor',
+                    content: '',
+                    position: { x: 0, y: 0 },
+                    size: { width: 100, height: 40 },
+                    style: { fontSize: '16px', color: '#333333' },
+                    zIndex: 1,
+                    placeholder: 'Введите текст...',
+                    cellId: draggedElement.cellId
+                };
+                
+                // Add the new editor to the updated elements
+                recalcResult.updatedElements.push(newEditorElement);
+            }
 
             // Update the layout with the new grid structure and elements
             updateLayout(presentationId, slide.id, targetLayout.id, {
@@ -415,16 +484,36 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
             if (!recalcResult) return;
 
-            // Update current layout and potentially delete if empty
+            // If we need to create a new empty editor in the source layout
+            if (needNewEmptyEditor) {
+                // Create a new empty editor element
+                const newEditorElement: EditorElement = {
+                    id: generateId(8),
+                    type: 'editor',
+                    content: '',
+                    position: { x: 0, y: 0 },
+                    size: { width: 100, height: 40 },
+                    style: { fontSize: '16px', color: '#333333' },
+                    zIndex: 1,
+                    placeholder: 'Введите текст...',
+                    cellId: draggedElement.cellId
+                };
+                
+                // Add the new editor to the current layout
+                if (recalcResult.updatedCurrentElements) {
+                    recalcResult.updatedCurrentElements.push(newEditorElement);
+                }
+            }
+
+            // Update current layout
             if (recalcResult.updatedCurrentElements) {
-                updateAndPotentiallyDeleteLayout(
+                updateLayout(
                     presentationId,
                     slide.id,
                     currentLayout.id,
                     {
                         elements: recalcResult.updatedCurrentElements,
-                    },
-                    recalcResult.needRemoveCurrentLayout // Delete if needed
+                    }
                 );
             }
 
@@ -465,7 +554,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         const gridTemplateColumns = generateGridTemplateColumns(layout.gridStructure);
 
         // Check if the layout has multiple cells in a row
-        const hasMultipleCells = layout.gridStructure.rows[0]?.cells.length > 1;
+        const hasMultipleCellsInRow = layout.gridStructure.rows.some(row => row.cells.length > 1);
 
         // Create a map of cellId to column position for sorting
         const cellColumnMap: Record<string, number> = {};
@@ -475,91 +564,56 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             });
         });
 
+        // Group elements by cell
+        const cellElements: Record<string, Element[]> = {};
+        layout.elements.forEach(element => {
+            if (!cellElements[element.cellId]) {
+                cellElements[element.cellId] = [];
+            }
+            cellElements[element.cellId].push(element);
+        });
 
-        const cells: (GridCell & { elements: Element[] })[] = layout.gridStructure.rows.map((row: GridRow) => {
-            return row.cells.map((cell: GridCell) => {
-                return {
-                    ...cell,
-                    elements: layout.elements.filter(el => el.cellId === cell.id).sort((a, b) => {
-                        const columnA = cellColumnMap[a.cellId] || 0;
-                        const columnB = cellColumnMap[b.cellId] || 0;
-                        return columnA - columnB;
-                    })
-                }
-            });
-        }).flat();
-
-        // Sort elements by their column position
-        // const sortedElements = [...layout.elements].sort((a, b) => {
-        //     const columnA = cellColumnMap[a.cellId] || 0;
-        //     const columnB = cellColumnMap[b.cellId] || 0;
-        //     return columnA - columnB;
-        // });
-
+        // Render each row and its cells
         return (
             <div
-                key={layout.id}
-                className={styles.gridContainer}
+                className={styles.layoutContent}
                 style={{
-                    display: 'block',
-                    width: '100%',
-                    marginBottom: '0.5rem',
-                    ...layout.style
+                    display: 'grid',
+                    gridTemplateAreas,
+                    gridTemplateColumns,
                 }}
             >
-                <div
-                    style={{
-                        display: 'flex', // Use flexbox instead of grid
-                        width: '100%',
-                    }}
-                >
-                    {cells.map((cell, index) => {
-                        const isLastCell = cell ? cell.column === layout.gridStructure.columns : false;
+                {layout.gridStructure.rows.map((row: GridRow) => (
+                    <React.Fragment key={row.id}>
+                        {row.cells.map((cell: GridCell, cellIndex: number) => {
+                            const cellId = cell.id;
+                            const elements = cellElements[cellId] || [];
+                            const isLastCell = cellIndex === row.cells.length - 1;
 
-                        // Get the column width for this element
-                        const columnIndex = cell ? cell.column - 1 : index;
-                        const columnWidth = layout.gridStructure.columnWidths?.[columnIndex] || `${100 / layout.gridStructure.columns}%`;
-
-                        // Create a key that includes the column position to ensure proper rendering order
-                        const key = `${cell.id}-${cell.column}-${isLastCell ? 'last' : ''}`;
-
-                        const style: React.CSSProperties = {
-                            width: columnWidth,
-                            flexShrink: 0,
-                            flexGrow: 0
-                        }
-
-                        if (hasMultipleCells) {
-                            style.border = '1px solid #e2e8f0';
-                        }
-
-                        return (
-                            <div
-                                key={key}
-                                style={style}
-                            >
+                            return (
                                 <GridCellElement
-                                    dataElementKey={key}
-                                    slideEditorRef={editorRef}
-                                    elements={cell.elements}
+                                    key={cellId}
+                                    elements={elements}
                                     presentationId={presentationId}
                                     slideId={slide.id}
                                     layoutId={layout.id}
-                                    // isSelected={selectedElementId === element.id}
+                                    index={cellIndex}
+                                    hasMultipleCells={hasMultipleCellsInRow}
+                                    isLastCell={isLastCell}
+                                    slideEditorRef={editorRef}
+                                    tiptapRefs={tiptapRefs}
+                                    dataElementKey={`${layout.id}-${cellId}`}
                                     onSelect={(element) => handleSelectElement(element.id)}
                                     onDelete={(element) => handleDeleteElement(layout.id, element.id)}
-                                    index={index}
                                     onDragStart={handleElementDragStart}
                                     onDragOver={handleElementDragOver}
                                     onDrop={handleElementDrop}
                                     onDragLeave={handleElementDragLeave}
-                                    hasMultipleCells={hasMultipleCells}
-                                    isLastCell={isLastCell}
                                 />
-                            </div>
-                        );
-                    })}
-                </div>
+                            );
+                        })}
+                    </React.Fragment>
+                ))}
             </div>
         );
     };
