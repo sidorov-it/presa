@@ -594,7 +594,6 @@ const GridCellElement: React.FC<{
                 style={{
                     ...cellStyle,
                     ...resizeStyle,
-                    gridArea: element.cellId
                 }}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}

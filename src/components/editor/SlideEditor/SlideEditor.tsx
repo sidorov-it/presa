@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Slide, Layout, LayoutType, Element, TextElement, ListElement, EditorElement, ImageElement, GridCell, GridStructure } from '@/types';
+import { Slide, Layout, LayoutType, Element, TextElement, ListElement, EditorElement, ImageElement, GridCell, GridStructure, GridRow } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 import { GridEditorElement, GridImageElement } from '@/types/grid-elements';
 import { usePresentationStore } from '@/store/presentationStore';
@@ -337,8 +337,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         const updatedTargetElements = [...targetLayout.elements];
         const updatedCurrentElements = currentLayout.elements.filter((e: any) => e.id !== draggedElement.id);
 
+        // Create a copy of the dragged element to avoid modifying the original
+        const draggedElementCopy = { ...draggedElement };
+
         // Insert the dragged element at the calculated position
-        updatedTargetElements.splice(insertIndex, 0, draggedElement);
+        updatedTargetElements.splice(insertIndex, 0, draggedElementCopy);
 
         // Update current layout and potentially delete if empty
         updateAndPotentiallyDeleteLayout(
@@ -464,8 +467,23 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         // Check if the layout has multiple cells in a row
         const hasMultipleCells = layout.gridStructure.rows[0]?.cells.length > 1;
 
+        // Create a map of cellId to column position for sorting
+        const cellColumnMap: Record<string, number> = {};
+        layout.gridStructure.rows.forEach((row: GridRow) => {
+            row.cells.forEach((cell: GridCell) => {
+                cellColumnMap[cell.id] = cell.column;
+            });
+        });
+
+        // Sort elements by their column position
+        const sortedElements = [...layout.elements].sort((a, b) => {
+            const columnA = cellColumnMap[a.cellId] || 0;
+            const columnB = cellColumnMap[b.cellId] || 0;
+            return columnA - columnB;
+        });
+
         console.table([
-            layout.gridStructure.rows[0].cells.map(c => c.id),
+            layout.gridStructure.rows[0]?.cells.map(c => c.id),
             layout.elements.map(e => e.cellId)
         ])
         console.log('gridTemplateAreas', gridTemplateAreas)
@@ -482,15 +500,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             >
                 <div
                     style={{
-                        display: 'grid',
-                        gridTemplateAreas: gridTemplateAreas,
-                        gridTemplateColumns: gridTemplateColumns,
-                        gridTemplateRows: '1fr', // Always 1 row
-                        // gap: '1rem',
+                        display: 'flex', // Use flexbox instead of grid
                         width: '100%',
                     }}
                 >
-                    {layout.elements.map((element, index) => {
+                    {sortedElements.map((element, index) => {
                         // Check if the element is a Layout by checking if it has the required properties
                         const isLayout = (
                             'type' in element &&
@@ -509,28 +523,42 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                             const cell = layout.gridStructure.rows[0]?.cells.find(c => c.id === element.cellId);
                             const isLastCell = cell ? cell.column === layout.gridStructure.columns : false;
 
-                            const key = `${element.id}-${cell!.column}-${element.cellId}-${isLastCell ? 'last' : ''}`;
+                            // Get the column width for this element
+                            const columnIndex = cell ? cell.column - 1 : index;
+                            const columnWidth = layout.gridStructure.columnWidths?.[columnIndex] || `${100 / layout.gridStructure.columns}%`;
+                            
+                            // Create a key that includes the column position to ensure proper rendering order
+                            const columnPosition = cellColumnMap[element.cellId] || 0;
+                            const key = `${element.id}-${columnPosition}-${element.cellId}-${isLastCell ? 'last' : ''}`;
 
                             return (
-                                <GridCellElement
+                                <div 
                                     key={key}
-                                    dataElementKey={key}
-                                    slideEditorRef={editorRef}
-                                    element={element as Element}
-                                    presentationId={presentationId}
-                                    slideId={slide.id}
-                                    layoutId={layout.id}
-                                    isSelected={selectedElementId === element.id}
-                                    onSelect={() => handleSelectElement(element.id)}
-                                    onDelete={() => handleDeleteElement(layout.id, element.id)}
-                                    index={index}
-                                    onDragStart={handleElementDragStart}
-                                    onDragOver={handleElementDragOver}
-                                    onDrop={handleElementDrop}
-                                    onDragLeave={handleElementDragLeave}
-                                    hasMultipleCells={hasMultipleCells}
-                                    isLastCell={isLastCell}
-                                />
+                                    style={{ 
+                                        width: columnWidth,
+                                        flexShrink: 0,
+                                        flexGrow: 0
+                                    }}
+                                >
+                                    <GridCellElement
+                                        dataElementKey={key}
+                                        slideEditorRef={editorRef}
+                                        element={element as Element}
+                                        presentationId={presentationId}
+                                        slideId={slide.id}
+                                        layoutId={layout.id}
+                                        isSelected={selectedElementId === element.id}
+                                        onSelect={() => handleSelectElement(element.id)}
+                                        onDelete={() => handleDeleteElement(layout.id, element.id)}
+                                        index={index}
+                                        onDragStart={handleElementDragStart}
+                                        onDragOver={handleElementDragOver}
+                                        onDrop={handleElementDrop}
+                                        onDragLeave={handleElementDragLeave}
+                                        hasMultipleCells={hasMultipleCells}
+                                        isLastCell={isLastCell}
+                                    />
+                                </div>
                             );
                         }
                     })}
