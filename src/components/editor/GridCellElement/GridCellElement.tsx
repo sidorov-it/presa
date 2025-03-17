@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { useEditorStore } from '@/store/editorStore';
-import { getPredefinedGridStructures, GridStructure, Layout, Element as SlideElement } from '@/types';
+import { getPredefinedGridStructures, GridCell, GridStructure, Layout, Element as SlideElement } from '@/types';
 import { GridListElement, GridImageElement, GridTextElement } from '@/types/grid-elements';
 import Tiptap, { TiptapRef } from '@/components/tiptap/Tiptap';
 import styles from './GridCellElement.module.css';
@@ -10,25 +10,6 @@ import { generateId } from '@/utils/id';
 // Create a global registry to store editor refs
 // This allows us to access any editor by its ID
 const editorRefs: Record<string, React.RefObject<TiptapRef>> = {};
-
-// Simple throttle function to limit the frequency of function calls
-const throttle = (func: Function, limit: number) => {
-    let inThrottle: boolean;
-    let lastResult: any;
-
-    return function (this: any, ...args: any[]) {
-        if (!inThrottle) {
-            inThrottle = true;
-            lastResult = func.apply(this, args);
-
-            setTimeout(() => {
-                inThrottle = false;
-            }, limit);
-        }
-
-        return lastResult;
-    };
-};
 
 const adjustColumnWidths = (
     columnWidths: string[],
@@ -57,10 +38,10 @@ const adjustColumnWidths = (
 
     // Calculate the new width for the current column (clamped between 15% and 85%)
     const newWidthPercentage = Math.max(15, Math.min(85, newWidthPart * 100));
-    
+
     // Calculate the difference between the old and new width
     const difference = percentValues[currentColumnIndex] - newWidthPercentage;
-    
+
     // If there's no change, return the original widths
     if (Math.abs(difference) < 0.01) {
         return columnWidths;
@@ -68,10 +49,10 @@ const adjustColumnWidths = (
 
     // Set the width of the current column
     newColumnWidths[currentColumnIndex] = `${newWidthPercentage.toFixed(2)}%`;
-    
+
     // Determine which neighboring cell to adjust
     let neighborIndex: number;
-    
+
     if (!isLastCell && currentColumnIndex < totalColumns - 1) {
         // If not the last cell, adjust the next column
         neighborIndex = currentColumnIndex + 1;
@@ -82,15 +63,15 @@ const adjustColumnWidths = (
         // Single column case - just set the current column
         return newColumnWidths;
     }
-    
+
     // Calculate the new width for the neighboring cell
     let neighborNewWidth = percentValues[neighborIndex] + difference;
-    
+
     // Ensure the minimum width of 15% is maintained for the neighbor
     if (neighborNewWidth < 15) {
         // If the neighbor would be too small, cap it at 15%
         neighborNewWidth = 15;
-        
+
         // Recalculate the current cell's width to ensure total is 100%
         const totalOtherCellsWidth = percentValues.reduce((sum, width, index) => {
             if (index !== currentColumnIndex && index !== neighborIndex) {
@@ -98,20 +79,20 @@ const adjustColumnWidths = (
             }
             return sum;
         }, 0);
-        
+
         const maxCurrentCellWidth = 100 - totalOtherCellsWidth - 15; // 15% for neighbor
         newColumnWidths[currentColumnIndex] = `${Math.min(newWidthPercentage, maxCurrentCellWidth).toFixed(2)}%`;
     } else {
         // Set the neighbor's width
         newColumnWidths[neighborIndex] = `${neighborNewWidth.toFixed(2)}%`;
     }
-    
+
     // Ensure the total is exactly 100%
     const totalPercentage = newColumnWidths.reduce((sum, width) => {
         const match = width.match(/^([\d.]+)%$/);
         return sum + (match ? parseFloat(match[1]) : 0);
     }, 0);
-    
+
     if (Math.abs(totalPercentage - 100) > 0.01) {
         // Adjust the neighbor's width to make the total exactly 100%
         const currentNeighborWidth = parseFloat(newColumnWidths[neighborIndex]);
@@ -119,34 +100,33 @@ const adjustColumnWidths = (
         const adjustedNeighborWidth = Math.max(15, currentNeighborWidth + adjustment);
         newColumnWidths[neighborIndex] = `${adjustedNeighborWidth.toFixed(2)}%`;
     }
-    
+
     return newColumnWidths;
 };
 
 // Компонент для отображения элемента в ячейке сетки
 const GridCellElement: React.FC<{
-    element: SlideElement;
+    elements: SlideElement[];
     presentationId: string;
     slideId: string;
     layoutId: string;
-    isSelected: boolean;
     index?: number;
     hasMultipleCells?: boolean;
     isLastCell?: boolean;
     slideEditorRef: React.RefObject<HTMLDivElement>;
     dataElementKey?: string;
-    onSelect: () => void;
-    onDelete: () => void;
+    onSelect: (element: SlideElement) => void;
+    onDelete: (element: SlideElement) => void;
     onDragStart?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string) => void;
     onDragOver?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string, position: 'top' | 'bottom' | 'left' | 'right') => void;
     onDrop?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string, position: 'top' | 'bottom' | 'left' | 'right') => void;
     onDragLeave?: (e: React.DragEvent<HTMLDivElement>) => void;
 }> = ({
-    element,
+    elements,
     presentationId,
     slideId,
     layoutId,
-    isSelected,
+    // isSelected,
     index,
     onSelect,
     onDelete,
@@ -169,29 +149,42 @@ const GridCellElement: React.FC<{
         const [startX, setStartX] = useState(0);
         const [startWidth, setStartWidth] = useState(0);
 
-        // Create a ref for the Tiptap editor
-        const tiptapRef = useRef<TiptapRef>(null);
+        // Create a map of element IDs to their Tiptap refs
+        const tiptapRefs = useRef<Record<string, React.RefObject<TiptapRef>>>({});
 
-        // Register this editor ref in the global registry
+        // Initialize refs for each element
         useEffect(() => {
-            const editorId = `${layoutId}-${element.id}`;
-            editorRefs[editorId] = tiptapRef;
+            // Create refs for each element if they don't exist
+            elements.forEach(element => {
+                if (!tiptapRefs.current[element.id]) {
+                    tiptapRefs.current[element.id] = React.createRef<TiptapRef>();
+                }
+            });
+
+            // Register all editor refs in the global registry
+            elements.forEach(element => {
+                const editorId = `${layoutId}-${element.id}`;
+                editorRefs[editorId] = tiptapRefs.current[element.id];
+            });
 
             return () => {
                 // Clean up when unmounted
-                delete editorRefs[editorId];
+                elements.forEach(element => {
+                    const editorId = `${layoutId}-${element.id}`;
+                    delete editorRefs[editorId];
+                });
             };
-        }, [layoutId, element.id]);
+        }, [layoutId, elements]);
 
         // Обработчик для изменения содержимого редактора
-        const handleEditorContentChange = (content: string) => {
-            updateElement(presentationId, slideId, layoutId, element.id, {
+        const handleEditorContentChange = (elementId: string) => (content: string) => {
+            updateElement(presentationId, slideId, layoutId, elementId, {
                 content: content
             } as Partial<SlideElement>);
         };
 
         // Обработчик для добавления нового редактора при нажатии Enter
-        const handleEnterPressed = () => {
+        const handleEnterPressed = (element: SlideElement) => () => {
             // Получаем текущий макет
             const presentation = usePresentationStore.getState().getPresentation(presentationId);
             if (!presentation) return;
@@ -202,19 +195,65 @@ const GridCellElement: React.FC<{
             const layout = slide.layouts.find(l => l.id === layoutId);
             if (!layout) return;
 
-            // Instead of adding a new row to the grid structure, we'll add a new block layout
-            // Create a new layout with a grid that has 1 row and the same number of columns as the current layout
-            const newLayoutId = generateId();
-            const cellId = generateId();
+            const row = layout.gridStructure.rows.find(r => r.cells.find(c => c.id === element.cellId));
 
-            const defaultGridType = 'single-column';
+            // в строке 1 элемент. создаем новую строку
+            if (row!.cells.length === 1) {
+                // Instead of adding a new row to the grid structure, we'll add a new block layout
+                // Create a new layout with a grid that has 1 row and the same number of columns as the current layout
+                const newLayoutId = generateId();
 
-            const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures('single-column');
+                const defaultGridType = 'single-column';
 
-            const firstNewEditorId = generateId();
-            const elements: SlideElement[] = defaultLayoutGridStructure.rows.map(row => {
-                return row.cells.map(cell => ({
-                    id: firstNewEditorId,
+                const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures('single-column');
+
+                const firstNewEditorId = generateId();
+                const newElements: SlideElement[] = defaultLayoutGridStructure.rows.map(row => {
+                    return row.cells.map(cell => ({
+                        id: firstNewEditorId,
+                        type: 'editor',
+                        textType: 'heading',
+                        content: '',
+                        position: { x: 0, y: 0 },
+                        size: { width: 100, height: 100 },
+                        style: {},
+                        zIndex: 0,
+                        cellId: cell.id,
+                    } as SlideElement))
+                }).flat();
+
+                const newLayout: Layout = {
+                    id: newLayoutId,
+                    gridStructure: defaultLayoutGridStructure,
+                    type: defaultGridType,
+                    style: {},
+                    elements: newElements,
+                }
+
+                // Add the new layout to the slide
+                const updatedLayouts = [...slide.layouts];
+                const currentLayoutIndex = updatedLayouts.findIndex(l => l.id === layoutId);
+                updatedLayouts.splice(currentLayoutIndex + 1, 0, newLayout);
+
+                // Update the slide with the new layouts
+                usePresentationStore.getState().updateSlide(presentationId, slideId, {
+                    layouts: updatedLayouts
+                });
+
+                // Set the element to focus in the editor store
+                useEditorStore.getState().setElementToFocus(
+                    firstNewEditorId,
+                    newLayoutId,
+                    newLayout.gridStructure.rows[0].cells[0].id
+                );
+            } else {
+                // в строке больше 1 элемента. просто добавляем новый элемент
+                const newElementId = generateId();
+                const cell = row?.cells.find(c => c.id === element.cellId);
+                if (!cell) return;
+
+                const newElement: SlideElement = {
+                    id: newElementId,
                     type: 'editor',
                     textType: 'heading',
                     content: '',
@@ -223,62 +262,48 @@ const GridCellElement: React.FC<{
                     style: {},
                     zIndex: 0,
                     cellId: cell.id,
-                } as SlideElement))
-            }).flat();
+                }
 
-            const newLayout: Layout = {
-                id: newLayoutId,
-                gridStructure: defaultLayoutGridStructure,
-                type: defaultGridType,
-                style: {},
-                elements,
+                const updatedElements = [...layout.elements];
+                updatedElements.push(newElement);
+
+                layout.elements = updatedElements;
+
+                updateLayout(presentationId, slideId, layoutId, layout);
             }
-
-            // Add the new layout to the slide
-            const updatedLayouts = [...slide.layouts];
-            const currentLayoutIndex = updatedLayouts.findIndex(l => l.id === layoutId);
-            updatedLayouts.splice(currentLayoutIndex + 1, 0, newLayout);
-
-            // Update the slide with the new layouts
-            usePresentationStore.getState().updateSlide(presentationId, slideId, {
-                layouts: updatedLayouts
-            });
-
-            // Set the element to focus in the editor store
-            useEditorStore.getState().setElementToFocus(
-                firstNewEditorId,
-                newLayoutId,
-                newLayout.gridStructure.rows[0].cells[0].id
-            );
         };
 
-        // Effect to check if this element should be focused
+        // Effect to check if any element should be focused
         useEffect(() => {
-            if (
-                elementToFocus &&
-                element.id === elementToFocus.elementId &&
-                layoutId === elementToFocus.layoutId &&
-                element.cellId === elementToFocus.cellId
-            ) {
-                // Clear the focus target immediately to prevent multiple focus attempts
-                clearElementToFocus();
+            if (elementToFocus) {
+                // Find the element that should be focused
+                const elementToFocusInCell = elements.find(
+                    el => el.id === elementToFocus.elementId && 
+                    layoutId === elementToFocus.layoutId && 
+                    el.cellId === elementToFocus.cellId
+                );
 
-                // Select this element
-                onSelect();
+                if (elementToFocusInCell) {
+                    // Clear the focus target immediately to prevent multiple focus attempts
+                    clearElementToFocus();
 
-                // Use requestAnimationFrame to focus as soon as the browser is ready to paint
-                // This ensures the focus happens at the earliest possible moment
-                requestAnimationFrame(() => {
-                    // Focus using the ref
-                    if (tiptapRef.current) {
-                        tiptapRef.current.focus();
-                    }
-                });
+                    // Select this element
+                    onSelect(elementToFocusInCell);
+
+                    // Use requestAnimationFrame to focus as soon as the browser is ready to paint
+                    requestAnimationFrame(() => {
+                        // Focus using the ref
+                        const ref = tiptapRefs.current[elementToFocusInCell.id];
+                        if (ref && ref.current) {
+                            ref.current.focus();
+                        }
+                    });
+                }
             }
-        }, [element.id, layoutId, element.cellId, elementToFocus, clearElementToFocus, onSelect]);
+        }, [elements, layoutId, elementToFocus, clearElementToFocus, onSelect]);
 
         // Обработчик для удаления пустого редактора при нажатии Backspace
-        const handleBackspacePressed = () => {
+        const handleBackspacePressed = (element: SlideElement) => () => {
             // Если это единственный элемент в макете, не удаляем его
             const presentation = usePresentationStore.getState().getPresentation(presentationId);
             if (!presentation) return;
@@ -302,7 +327,7 @@ const GridCellElement: React.FC<{
         };
 
         // Получаем содержимое для редактора в зависимости от типа элемента
-        const getEditorContent = (): string => {
+        const getEditorContent = (element: SlideElement): string => {
             switch (element.type) {
                 case 'editor':
                 case 'text':
@@ -325,41 +350,35 @@ const GridCellElement: React.FC<{
             }
         };
 
-        // Получаем плейсхолдер для редактора
-        const getPlaceholder = (): string => {
-            return 'Введите / для выбора блока';
-        };
-
+        // Get the first element for cell styling
+        const firstElement = elements[0];
+        
         // Создаем объект стилей
         const cellStyle: React.CSSProperties = {
-            ...element.style
+            ...firstElement?.style
         };
-
-        // if (element.cellId) {
-        //     cellStyle.gridArea = element.cellId;
-        // } else {
-        //     cellStyle.gridArea = 'auto';
-        // }
 
         // Обработчик для начала перетаскивания
         const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
             e.stopPropagation();
             setIsDragging(true);
 
-            console.log('handleDragStart', element.id);
             // Add the dragging class
             if (e.currentTarget.classList) {
                 e.currentTarget.classList.add(styles.dragging);
             }
 
+            // Get the first element ID for drag data
+            const firstElementId = firstElement?.id;
+            if (!firstElementId) return;
+
             // Set the drag data
             e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', element.id);
+            e.dataTransfer.setData('text/plain', firstElementId);
 
             // Call the parent's onDragStart handler if provided
             if (onDragStart) {
-                console.log('onDragStart', element.id);
-                onDragStart(e, element.id, layoutId);
+                onDragStart(e, firstElementId, layoutId);
             }
         };
 
@@ -367,7 +386,6 @@ const GridCellElement: React.FC<{
             e.stopPropagation();
             setIsDragging(false);
 
-            console.log('handleDragEnd', element.id);
             // Remove the dragging class
             if (e.currentTarget.classList) {
                 e.currentTarget.classList.remove(styles.dragging);
@@ -381,6 +399,10 @@ const GridCellElement: React.FC<{
             // Set the drop effect
             e.dataTransfer.dropEffect = 'move';
 
+            // Get the first element ID
+            const firstElementId = firstElement?.id;
+            if (!firstElementId) return;
+
             // Determine the drop position (top, bottom, left, right)
             const rect = e.currentTarget.getBoundingClientRect();
             const x = e.clientX - rect.left; // x position within the element
@@ -391,7 +413,7 @@ const GridCellElement: React.FC<{
 
             // Call the parent's onDragOver handler if provided
             if (onDragOver) {
-                onDragOver(e, element.id, layoutId, position);
+                onDragOver(e, firstElementId, layoutId, position);
             }
         };
 
@@ -420,6 +442,10 @@ const GridCellElement: React.FC<{
             e.preventDefault();
             e.stopPropagation();
 
+            // Get the first element ID
+            const firstElementId = firstElement?.id;
+            if (!firstElementId) return;
+
             // Determine the drop position
             const rect = e.currentTarget.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -428,7 +454,7 @@ const GridCellElement: React.FC<{
 
             // Call the parent's onDrop handler if provided
             if (onDrop) {
-                onDrop(e, element.id, layoutId, position);
+                onDrop(e, firstElementId, layoutId, position);
             }
         };
 
@@ -441,16 +467,6 @@ const GridCellElement: React.FC<{
                 onDragLeave(e);
             }
         };
-
-        // Throttled update function to reduce the number of store updates
-        const throttledUpdateLayout = useCallback(
-            throttle((gridStructure: any) => {
-                updateLayout(presentationId, slideId, layoutId, {
-                    gridStructure
-                });
-            }, 50), // Update at most every 50ms
-            [presentationId, slideId, layoutId, updateLayout]
-        );
 
         // Handle resize start
         const handleResizeStart = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -466,7 +482,6 @@ const GridCellElement: React.FC<{
             if (cellElement) {
                 const width = cellElement.offsetWidth;
                 setStartWidth(width);
-                // setCurrentWidth(width);
             }
 
             // Add event listeners for resize
@@ -490,30 +505,30 @@ const GridCellElement: React.FC<{
             if (!layout || !layout.gridStructure) return;
 
             // Find the cell in the grid structure
-            const cell = layout.gridStructure.rows[0].cells.find(c => c.id === element.cellId);
+            const cell = layout.gridStructure.rows[0].cells.find(c => c.id === firstElement?.cellId);
             if (!cell) return;
 
             // Get the slide editor dimensions
             const slideEditorRect = slideEditorRef.current?.getBoundingClientRect();
             if (!slideEditorRect) return;
-            
+
             // Calculate the total width of the container
             const totalWidth = slideEditorRef.current?.offsetWidth || 1000;
-            
+
             // Calculate the new width based on mouse position
             const clientX = e.clientX - slideEditorRect.left;
             const deltaX = clientX - startX;
             const newWidth = startWidth + deltaX;
-            
+
             // Calculate the new width as a percentage of the total width
             let newWidthPercentage = (newWidth / totalWidth) * 100;
-            
+
             // Get the number of columns in the grid
             const columns = layout.gridStructure.columns;
-            
+
             // Initialize columnWidths with percentages if they're in fr format or don't exist
             let columnWidths = layout.gridStructure.columnWidths || Array(columns).fill(`${(100 / columns).toFixed(2)}%`);
-            
+
             // Convert any fr units to percentages if needed
             columnWidths = columnWidths.map(width => {
                 if (width.endsWith('fr')) {
@@ -522,7 +537,7 @@ const GridCellElement: React.FC<{
                 }
                 return width;
             });
-            
+
             // Parse all column widths to get their percentage values
             const percentValues = columnWidths.map(width => {
                 const match = width.match(/^([\d.]+)%$/);
@@ -531,18 +546,18 @@ const GridCellElement: React.FC<{
                 }
                 return 100 / columns;
             });
-            
+
             // Get the current column index (0-based)
             const currentColumnIndex = cell.column - 1;
-            
+
             // Calculate the maximum allowed width for this cell
             // This ensures we don't exceed 100% total width
             const otherColumnsMinWidth = (columns - 1) * 15; // All other columns at minimum 15%
             const maxAllowedWidth = 100 - otherColumnsMinWidth;
-            
+
             // Convert to proportion (0-1) for the adjustColumnWidths function
             const newWidthPart = Math.min(maxAllowedWidth, Math.max(15, newWidthPercentage)) / 100;
-            
+
             // Calculate the new column widths
             const newColumnWidths = adjustColumnWidths(
                 columnWidths,
@@ -551,13 +566,13 @@ const GridCellElement: React.FC<{
                 isLastCell,
                 columns
             );
-            
+
             // Update the layout's grid structure with the new column widths
             const updatedGridStructure = {
                 ...layout.gridStructure,
                 columnWidths: newColumnWidths
             };
-            
+
             // Update the layout in the store
             updateLayout(presentationId, slideId, layoutId, {
                 gridStructure: updatedGridStructure
@@ -573,8 +588,6 @@ const GridCellElement: React.FC<{
             setIsResizing(false);
         };
 
-        const placeholder = isSelected ? getPlaceholder() : '';
-
         // Add a resize style if resizing is in progress
         const resizeStyle: React.CSSProperties = isResizing ? {
             transition: 'none' // Disable transitions during resize for smoother experience
@@ -584,13 +597,11 @@ const GridCellElement: React.FC<{
             <div
                 className={`
                     ${styles.gridCell}
-                    ${isSelected ? styles.gridCellSelected : ''}
                     ${isDragging ? styles.dragging : ''}
-                    ${hasMultipleCells ? styles.cellWithBorders : ''}
                     ${isResizing ? styles.resizing : ''}
                     ${hasMultipleCells ? styles.cellWithMultipleCells : ''}
                 `}
-                onClick={onSelect}
+                onClick={() => onSelect(firstElement)}
                 style={{
                     ...cellStyle,
                     ...resizeStyle,
@@ -598,25 +609,30 @@ const GridCellElement: React.FC<{
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
                 onDragLeave={handleDragLeave}
-                data-element-id={element.id}
+                data-element-id={firstElement?.id}
                 data-layout-id={layoutId}
-                data-cell-id={element.cellId}
+                data-cell-id={firstElement?.cellId}
                 data-element-key={dataElementKey}
                 data-index={index}
                 ref={editorRef}
             >
-                <Tiptap
-                    ref={tiptapRef}
-                    id={element.cellId}
-                    initialContent={getEditorContent()}
-                    onEnterPressed={handleEnterPressed}
-                    onBackspacePressed={handleBackspacePressed}
-                    onFocus={onSelect}
-                    onContentChange={handleEditorContentChange}
-                    autoFocus={isSelected}
-                    placeholder={placeholder}
-                    customBubbleMenuTrigger={dragHandleRef}
-                />
+                <div className={styles.elementsContainer}>
+                    {elements.map((element, idx) => (
+                        <div key={element.id} className={styles.elementWrapper}>
+                            <Tiptap
+                                ref={tiptapRefs.current[element.id]}
+                                id={element.cellId}
+                                key={element.id}
+                                initialContent={getEditorContent(element)}
+                                onEnterPressed={handleEnterPressed(element)}
+                                onBackspacePressed={handleBackspacePressed(element)}
+                                onFocus={() => onSelect(element)}
+                                onContentChange={handleEditorContentChange(element.id)}
+                                customBubbleMenuTrigger={dragHandleRef}
+                            />
+                        </div>
+                    ))}
+                </div>
 
                 <div
                     ref={dragHandleRef}

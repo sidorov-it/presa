@@ -207,3 +207,16 @@
 .cellWithBorders:hover .borderIndicator {
   opacity: 1;
 }
+
+/* Styles for multiple elements in a cell */
+.elementsContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.elementWrapper {
+  width: 100%;
+  position: relative;
+}
