@@ -32,7 +32,6 @@ export interface GridCell {
   column: number;
   rowSpan: number;
   colSpan: number;
-  gridArea?: string;    // CSS grid-area name for this cell
 }
 
 // Интерфейс для строки сетки
@@ -57,7 +56,7 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
+              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1 }
             ]
           }
         ],
@@ -70,8 +69,8 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
+              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1 }
             ]
           }
         ],
@@ -84,9 +83,9 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 3, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
+              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1 },
+              { id: generateId(8), row: 1, column: 3, rowSpan: 1, colSpan: 1 }
             ]
           }
         ],
@@ -99,10 +98,10 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 3, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 4, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
+              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1 },
+              { id: generateId(8), row: 1, column: 3, rowSpan: 1, colSpan: 1 },
+              { id: generateId(8), row: 1, column: 4, rowSpan: 1, colSpan: 1 }
             ]
           }
         ],
@@ -115,8 +114,8 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
+              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1 }
             ]
           }
         ],
@@ -129,8 +128,8 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
+              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1 }
             ]
           }
         ],
@@ -143,15 +142,15 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
+              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1 }
             ]
           },
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 2, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
-              { id: generateId(8), row: 2, column: 2, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
+              { id: generateId(8), row: 2, column: 1, rowSpan: 1, colSpan: 1 },
+              { id: generateId(8), row: 2, column: 2, rowSpan: 1, colSpan: 1 }
             ]
           }
         ],
@@ -164,17 +163,17 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
-              { id: generateId(8), row: 1, column: 3, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
+              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+              { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1 },
+              { id: generateId(8), row: 1, column: 3, rowSpan: 1, colSpan: 1 }
             ]
           },
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 2, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
-              { id: generateId(8), row: 2, column: 2, rowSpan: 1, colSpan: 1, gridArea: generateId(8) },
-              { id: generateId(8), row: 2, column: 3, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
+              { id: generateId(8), row: 2, column: 1, rowSpan: 1, colSpan: 1 },
+              { id: generateId(8), row: 2, column: 2, rowSpan: 1, colSpan: 1 },
+              { id: generateId(8), row: 2, column: 3, rowSpan: 1, colSpan: 1 }
             ]
           }
         ],
@@ -193,7 +192,7 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
           {
             id:  generateId(8),
             cells: [
-              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: generateId(8) }
+              { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1 }
             ]
           }
         ],
@@ -326,7 +325,6 @@ export const createGridCell = (
   column: number,
   rowSpan: number = 1,
   colSpan: number = 1,
-  gridArea?: string
 ): GridCell => {
   const cellId = `cell-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
   return {
@@ -335,7 +333,6 @@ export const createGridCell = (
     column,
     rowSpan,
     colSpan,
-    gridArea: gridArea || `area-${cellId}`
   };
 };
 
@@ -362,7 +359,7 @@ export const generateGridTemplateAreas = (gridStructure: GridStructure): string 
   // Заполняем матрицу именами областей
   gridStructure.rows.forEach(row => {
     row.cells.forEach(cell => {
-      const areaName = cell.id || `area-${cell.id}`;
+      const areaName = cell.id;
 
       // Заполняем все ячейки, которые охватывает данная ячейка
       for (let r = cell.row - 1; r < cell.row - 1 + cell.rowSpan; r++) {
@@ -494,31 +491,3 @@ export interface Presentation {
   createdAt: number;
   updatedAt: number;
 }
-
-// Функция для обновления grid-area ячейки
-export const updateCellGridArea = (layout: Layout, cellId: string, gridArea: string): Layout => {
-  const updatedRows = layout.gridStructure.rows.map(row => {
-    const updatedCells = row.cells.map(cell => {
-      if (cell.id === cellId) {
-        return {
-          ...cell,
-          gridArea
-        };
-      }
-      return cell;
-    });
-
-    return {
-      ...row,
-      cells: updatedCells
-    };
-  });
-
-  return {
-    ...layout,
-    gridStructure: {
-      ...layout.gridStructure,
-      rows: updatedRows
-    }
-  };
-};

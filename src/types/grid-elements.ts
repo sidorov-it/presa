@@ -8,7 +8,6 @@ export interface GridElement {
     size: Size;
     style: Style;
     zIndex: number;
-    gridArea: string;
 }
 
 // Элемент текста

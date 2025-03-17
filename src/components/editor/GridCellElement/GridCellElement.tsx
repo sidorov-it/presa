@@ -134,6 +134,7 @@ const GridCellElement: React.FC<{
     hasMultipleCells?: boolean;
     isLastCell?: boolean;
     slideEditorRef: React.RefObject<HTMLDivElement>;
+    dataElementKey?: string;
     onSelect: () => void;
     onDelete: () => void;
     onDragStart?: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string) => void;
@@ -155,7 +156,8 @@ const GridCellElement: React.FC<{
     onDragLeave,
     hasMultipleCells = false,
     isLastCell = false,
-    slideEditorRef
+    slideEditorRef,
+    dataElementKey
 }) => {
         const { updateElement, updateLayout } = usePresentationStore();
         const { elementToFocus, clearElementToFocus } = useEditorStore();
@@ -333,11 +335,11 @@ const GridCellElement: React.FC<{
             ...element.style
         };
 
-        if (element.cellId) {
-            cellStyle.gridArea = element.cellId;
-        } else {
-            cellStyle.gridArea = 'auto';
-        }
+        // if (element.cellId) {
+        //     cellStyle.gridArea = element.cellId;
+        // } else {
+        //     cellStyle.gridArea = 'auto';
+        // }
 
         // Обработчик для начала перетаскивания
         const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
@@ -591,7 +593,8 @@ const GridCellElement: React.FC<{
                 onClick={onSelect}
                 style={{
                     ...cellStyle,
-                    ...resizeStyle
+                    ...resizeStyle,
+                    gridArea: element.cellId
                 }}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
@@ -599,6 +602,7 @@ const GridCellElement: React.FC<{
                 data-element-id={element.id}
                 data-layout-id={layoutId}
                 data-cell-id={element.cellId}
+                data-element-key={dataElementKey}
                 data-index={index}
                 ref={editorRef}
             >

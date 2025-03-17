@@ -222,7 +222,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             size: { width: 100, height: 40 },
             style: { fontSize: '16px', color: '#333333' },
             zIndex: 1,
-            gridArea: gridStructure.rows[0].cells[0].gridArea || `area-${uuidv4()}`, // Добавляем fallback
             placeholder: 'Введите текст...'
         };
 
@@ -465,6 +464,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         // Check if the layout has multiple cells in a row
         const hasMultipleCells = layout.gridStructure.rows[0]?.cells.length > 1;
 
+        console.table([
+            layout.gridStructure.rows[0].cells.map(c => c.id),
+            layout.elements.map(e => e.cellId)
+        ])
+        console.log('gridTemplateAreas', gridTemplateAreas)
         return (
             <div
                 key={layout.id}
@@ -505,9 +509,12 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                             const cell = layout.gridStructure.rows[0]?.cells.find(c => c.id === element.cellId);
                             const isLastCell = cell ? cell.column === layout.gridStructure.columns : false;
 
+                            const key = `${element.id}-${cell!.column}-${element.cellId}-${isLastCell ? 'last' : ''}`;
+
                             return (
                                 <GridCellElement
-                                    key={`${element.id}-${element.cellId}-${isLastCell ? 'last' : ''}`}
+                                    key={key}
+                                    dataElementKey={key}
                                     slideEditorRef={editorRef}
                                     element={element as Element}
                                     presentationId={presentationId}
@@ -558,7 +565,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 size: { width: 100, height: 60 },
                 style: { fontSize: '28px', fontWeight: 'bold', color: '#111111' },
                 zIndex: 1,
-                gridArea: gridStructure.rows[0].cells[0].gridArea || `area-${uuidv4()}`,
                 placeholder: 'Введите заголовок...'
             };
 
@@ -573,7 +579,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 size: { width: 100, height: 100 },
                 style: { fontSize: '16px', color: '#333333' },
                 zIndex: 1,
-                gridArea: gridStructure.rows[0].cells[0].gridArea || `area-${uuidv4()}`,
                 placeholder: 'Левая колонка...'
             };
 
@@ -584,7 +589,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 size: { width: 100, height: 100 },
                 style: { fontSize: '16px', color: '#333333' },
                 zIndex: 1,
-                gridArea: gridStructure.rows[0].cells[1].gridArea || `area-${uuidv4()}`,
                 placeholder: 'Правая колонка...'
             };
 
@@ -601,7 +605,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 size: { width: 100, height: 100 },
                 style: {},
                 zIndex: 1,
-                gridArea: gridStructure.rows[0].cells[0].gridArea || `area-${uuidv4()}`
             };
 
             const textEditor: Omit<GridEditorElement, 'id'> = {
@@ -611,7 +614,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 size: { width: 100, height: 100 },
                 style: { fontSize: '16px', color: '#333333' },
                 zIndex: 1,
-                gridArea: gridStructure.rows[0].cells[1].gridArea || `area-${uuidv4()}`,
                 placeholder: 'Введите текст...'
             };
 

@@ -40,8 +40,8 @@ describe('recalcPositions', () => {
       rows: [
         {
           cells: [
-            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: 'area-cell1' },
-            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: 'area-cell2' }
+            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 }
           ]
         }
       ],
@@ -113,9 +113,9 @@ describe('recalcPositions', () => {
       rows: [
         {
           cells: [
-            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: 'area-cell1' },
-            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: 'area-cell2' },
-            { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1, gridArea: 'area-cell3' }
+            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
+            { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1 }
           ]
         }
       ],
@@ -185,9 +185,9 @@ describe('recalcPositions', () => {
       rows: [
         {
           cells: [
-            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: 'area-cell1' },
-            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: 'area-cell2' },
-            { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1, gridArea: 'area-cell3' }
+            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
+            { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1 }
           ]
         }
       ],
@@ -257,9 +257,9 @@ describe('recalcPositions', () => {
       rows: [
         {
           cells: [
-            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: 'area-cell1' },
-            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: 'area-cell2' },
-            { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1, gridArea: 'area-cell3' }
+            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
+            { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1 }
           ]
         }
       ],
@@ -328,7 +328,7 @@ describe('recalcPositions', () => {
       rows: [
         {
           cells: [
-            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: 'area-cell1' }
+            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 }
           ]
         }
       ],
@@ -380,8 +380,8 @@ describe('recalcPositions', () => {
       rows: [
         {
           cells: [
-            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: 'area-cell1' },
-            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: 'area-cell2' }
+            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 }
           ]
         }
       ],
@@ -433,8 +433,8 @@ describe('recalcPositions', () => {
       rows: [
         {
           cells: [
-            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: 'area-cell1' },
-            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: 'area-cell2' }
+            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 }
           ]
         }
       ],
@@ -487,9 +487,9 @@ describe('recalcPositions', () => {
       rows: [
         {
           cells: [
-            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: 'area-cell1' },
-            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: 'area-cell2' },
-            { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1, gridArea: 'area-cell3' }
+            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
+            { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1 }
           ]
         }
       ],
@@ -558,9 +558,9 @@ describe('recalcPositions', () => {
       rows: [
         {
           cells: [
-            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: 'area-cell1' },
-            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: 'area-cell2' },
-            { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1, gridArea: 'area-cell3' }
+            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
+            { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1 }
           ]
         }
       ],
@@ -630,10 +630,10 @@ describe('recalcPositions', () => {
       rows: [
         {
           cells: [
-            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: 'area-cell1' },
-            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: 'area-cell2' },
-            { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1, gridArea: 'area-cell3' },
-            { id: 'cell4', row: 1, column: 4, rowSpan: 1, colSpan: 1, gridArea: 'area-cell4' }
+            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
+            { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1 },
+            { id: 'cell4', row: 1, column: 4, rowSpan: 1, colSpan: 1 }
           ]
         }
       ],
@@ -702,9 +702,9 @@ describe('recalcPositions', () => {
       rows: [
         {
           cells: [
-            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: 'area-cell1' },
-            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: 'area-cell2' },
-            { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1, gridArea: 'area-cell3' }
+            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
+            { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1 }
           ]
         }
       ],
@@ -776,11 +776,11 @@ describe('recalcPositions', () => {
       rows: [
         {
           cells: [
-            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: 'area-cell1' },
-            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: 'area-cell2' },
-            { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1, gridArea: 'area-cell3' },
-            { id: 'cell4', row: 1, column: 4, rowSpan: 1, colSpan: 1, gridArea: 'area-cell4' },
-            { id: 'cell5', row: 1, column: 5, rowSpan: 1, colSpan: 1, gridArea: 'area-cell5' }
+            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
+            { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1 },
+            { id: 'cell4', row: 1, column: 4, rowSpan: 1, colSpan: 1 },
+            { id: 'cell5', row: 1, column: 5, rowSpan: 1, colSpan: 1 }
           ]
         }
       ],
@@ -853,12 +853,12 @@ describe('recalcPositions', () => {
       rows: [
         {
           cells: [
-            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: 'area-cell1' },
-            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: 'area-cell2' },
-            { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1, gridArea: 'area-cell3' },
-            { id: 'cell4', row: 1, column: 4, rowSpan: 1, colSpan: 1, gridArea: 'area-cell4' },
-            { id: 'cell5', row: 1, column: 5, rowSpan: 1, colSpan: 1, gridArea: 'area-cell5' },
-            { id: 'cell6', row: 1, column: 6, rowSpan: 1, colSpan: 1, gridArea: 'area-cell6' }
+            { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+            { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
+            { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1 },
+            { id: 'cell4', row: 1, column: 4, rowSpan: 1, colSpan: 1 },
+            { id: 'cell5', row: 1, column: 5, rowSpan: 1, colSpan: 1 },
+            { id: 'cell6', row: 1, column: 6, rowSpan: 1, colSpan: 1 }
           ]
         }
       ],
@@ -939,9 +939,9 @@ describe('recalcPositions', () => {
       rows: [
         {
           cells: [
-            { id: 'cell3', row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: 'area-cell3' },
-            { id: 'cell4', row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: 'area-cell4' },
-            { id: 'cell5', row: 1, column: 3, rowSpan: 1, colSpan: 1, gridArea: 'area-cell5' }
+            { id: 'cell3', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+            { id: 'cell4', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
+            { id: 'cell5', row: 1, column: 3, rowSpan: 1, colSpan: 1 }
           ]
         }
       ],
@@ -1021,8 +1021,8 @@ describe('recalcPositions', () => {
       rows: [
         {
           cells: [
-            { id: 'cell2', row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: 'area-cell2' },
-            { id: 'cell3', row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: 'area-cell3' }
+            { id: 'cell2', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+            { id: 'cell3', row: 1, column: 2, rowSpan: 1, colSpan: 1 }
           ]
         }
       ],
@@ -1096,10 +1096,10 @@ describe('recalcPositions', () => {
       rows: [
         {
           cells: [
-            { id: 'cell3', row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: 'area-cell3' },
-            { id: 'cell4', row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: 'area-cell4' },
-            { id: 'cell5', row: 1, column: 3, rowSpan: 1, colSpan: 1, gridArea: 'area-cell5' },
-            { id: 'cell6', row: 1, column: 4, rowSpan: 1, colSpan: 1, gridArea: 'area-cell6' }
+            { id: 'cell3', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+            { id: 'cell4', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
+            { id: 'cell5', row: 1, column: 3, rowSpan: 1, colSpan: 1 },
+            { id: 'cell6', row: 1, column: 4, rowSpan: 1, colSpan: 1 }
           ]
         }
       ],
@@ -1183,10 +1183,10 @@ describe('recalcPositions', () => {
       rows: [
         {
           cells: [
-            { id: 'cell3', row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: 'area-cell3' },
-            { id: 'cell4', row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: 'area-cell4' },
-            { id: 'cell5', row: 1, column: 3, rowSpan: 1, colSpan: 1, gridArea: 'area-cell5' },
-            { id: 'cell6', row: 1, column: 4, rowSpan: 1, colSpan: 1, gridArea: 'area-cell6' }
+            { id: 'cell3', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+            { id: 'cell4', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
+            { id: 'cell5', row: 1, column: 3, rowSpan: 1, colSpan: 1 },
+            { id: 'cell6', row: 1, column: 4, rowSpan: 1, colSpan: 1 }
           ]
         }
       ],
@@ -1267,8 +1267,8 @@ describe('recalcPositions', () => {
       rows: [
         {
           cells: [
-            { id: 'cell2', row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: 'area-cell2' },
-            { id: 'cell3', row: 1, column: 2, rowSpan: 1, colSpan: 1, gridArea: 'area-cell3' }
+            { id: 'cell2', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
+            { id: 'cell3', row: 1, column: 2, rowSpan: 1, colSpan: 1 }
           ]
         }
       ],
@@ -1344,7 +1344,7 @@ describe('recalcPositions', () => {
       rows: [
         {
           cells: [
-            { id: 'cell2', row: 1, column: 1, rowSpan: 1, colSpan: 1, gridArea: 'area-cell2' }
+            { id: 'cell2', row: 1, column: 1, rowSpan: 1, colSpan: 1 }
           ]
         }
       ],
@@ -1423,9 +1423,9 @@ describe('recalcPositions', () => {
       rows: [
         {
           cells: [
-            { id: 'cell3', row: 1, column: 1, rowSpan: 2, colSpan: 1, gridArea: 'area-cell3' },
-            { id: 'cell4', row: 1, column: 2, rowSpan: 1, colSpan: 2, gridArea: 'area-cell4' },
-            { id: 'cell5', row: 2, column: 2, rowSpan: 1, colSpan: 2, gridArea: 'area-cell5' }
+            { id: 'cell3', row: 1, column: 1, rowSpan: 2, colSpan: 1 },
+            { id: 'cell4', row: 1, column: 2, rowSpan: 1, colSpan: 2 },
+            { id: 'cell5', row: 2, column: 2, rowSpan: 1, colSpan: 2 }
           ]
         }
       ],

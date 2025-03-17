@@ -55,12 +55,11 @@ export const recalcPositions = ({
     ));
 
     // Create the new cell for the dragged element
-    const newCell = {
+    const newCell: GridCell = {
       id: newCellId,
       row: targetCell.row,
       rowSpan: sourceCell.rowSpan || 1,
       colSpan: sourceCell.colSpan || 1,
-      gridArea: `area-${newCellId}`,
       column: 0 // Will be set correctly later
     };
 
@@ -156,7 +155,7 @@ export const recalcPositions = ({
 
         // Create a new cell for the dragged element
         const newCellId = uuidv4();
-        const newCell = {
+        const newCell: GridCell = {
           id: newCellId,
           row: row.cells[targetCellIndex].row,
           column: position === 'left' ?
@@ -166,7 +165,6 @@ export const recalcPositions = ({
             gridStructure.rows[0].cells.find(c => c.id === draggedElement.cellId)?.rowSpan || 1 : 1,
           colSpan: draggedElement.cellId ? 
             gridStructure.rows[0].cells.find(c => c.id === draggedElement.cellId)?.colSpan || 1 : 1,
-          gridArea: `area-${newCellId}`
         };
 
         // Create a deep copy of the cells array
@@ -214,7 +212,6 @@ export const recalcPositions = ({
     const newElementId = uuidv4();
 
     // Find the new cell we just created
-    let newGridArea;
     let newCellId;
 
     // Get the index of the target cell in the updated structure
@@ -229,14 +226,8 @@ export const recalcPositions = ({
 
       // Make sure the index is valid
       if (newCellIndex >= 0 && newCellIndex < updatedGridStructure.rows[0].cells.length) {
-        newGridArea = updatedGridStructure.rows[0].cells[newCellIndex].gridArea;
         newCellId = updatedGridStructure.rows[0].cells[newCellIndex].id;
       }
-    }
-
-    // Fallback if we couldn't find the grid area
-    if (!newGridArea) {
-      newGridArea = `area-${uuidv4()}`;
     }
 
     const newElement = {
