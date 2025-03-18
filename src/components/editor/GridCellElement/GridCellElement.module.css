@@ -74,11 +74,11 @@
 
 .elementWrapper {
     position: relative;
-    margin-bottom: 8px;
+    padding-bottom: 8px;
 }
 
 .elementWrapper:last-child {
-    margin-bottom: 0;
+    padding-bottom: 0;
 }
 
 .elementWrapper:hover .elementDragHandle {
@@ -235,8 +235,4 @@
 
 .cellWithBorders:hover .borderIndicator {
   opacity: 1;
-}
-
-.elementWrapperContent {
-    /* display: contents; */
 }

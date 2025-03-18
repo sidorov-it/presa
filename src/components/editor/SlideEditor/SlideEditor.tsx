@@ -237,7 +237,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         addLayout(presentationId, slide.id, newLayout);
 
         // Добавляем элемент редактора в макет
-        
+
 
         // const elementId = addElement(presentationId, slide.id, layoutId, editorElement as any);
         // setSelectedElementId(elementId);
@@ -257,9 +257,12 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         if (draggedElementId === elementId) return;
 
         // Remove all drag over classes first
-        const elements = document.querySelectorAll(`[data-element-id="${elementId}"]`);
-        console.log('elements', elements);
+        const cellElements = document.querySelectorAll(`[data-cell-id="${elementId}"]`);
+        const elementsElements = document.querySelectorAll(`[data-element-id="${elementId}"]`);
+        // console.log('elements', Array.from(cellElements).map(el => el.dataset.elementId));
+        const elements = Array.from(cellElements).concat(Array.from(elementsElements));
         elements.forEach(el => {
+            // console.log('set classes to element', el);
             el.classList.remove(styles.dragOver, styles.dragOverBottom, styles.dragOverLeft, styles.dragOverRight);
 
             // Add the appropriate class based on the position
@@ -287,10 +290,19 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         if (!draggedElementId || !draggedLayoutId) return;
 
         // Remove all drag over classes
-        const elements = document.querySelectorAll(`.${styles.dragOver}, .${styles.dragOverBottom}, .${styles.dragOverLeft}, .${styles.dragOverRight}`);
-        elements.forEach(el => {
-            el.classList.remove(styles.dragOver, styles.dragOverBottom, styles.dragOverLeft, styles.dragOverRight);
-        });
+        const targetCell = document.querySelector(`[data-cell-id="${targetElementId}"]`);
+        const targetElement = document.querySelector(`[data-element-id="${targetElementId}"]`);
+        if (targetCell) {
+            targetCell.classList.remove(styles.dragOver, styles.dragOverBottom, styles.dragOverLeft, styles.dragOverRight);
+        }
+        if (targetElement) {
+            targetElement.classList.remove(styles.dragOver, styles.dragOverBottom, styles.dragOverLeft, styles.dragOverRight);
+        }
+
+        // const elements = document.querySelectorAll(`.${styles.dragOver}, .${styles.dragOverBottom}, .${styles.dragOverLeft}, .${styles.dragOverRight}`);
+        // elements.forEach(el => {
+        //     el.classList.remove(styles.dragOver, styles.dragOverBottom, styles.dragOverLeft, styles.dragOverRight);
+        // });
 
         // If dropping on the same element, do nothing
         if (draggedElementId === targetElementId) {
@@ -380,25 +392,44 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             // Add the new layout to the slide
             addLayout(presentationId, slide.id, newLayout, insertLayoutIndex);
             deleteLayout(presentationId, slide.id, currentLayout.id);
+        } else if (targetLayout.id === currentLayout.id) {
+            const updatedElements = [...targetLayout.elements].filter((e: any) => e.id !== draggedElement.id);
+
+            updatedElements.splice(insertIndex, 0, {
+                ...draggedElement,
+                cellId: targetElement.cellId
+            });
+
+            updateLayout(
+                presentationId,
+                slide.id,
+                currentLayout.id,
+                {
+                    elements: updatedElements,
+                    gridStructure: {
+                        ...currentLayout.gridStructure,
+                        columnWidths: getColumnWidths(currentLayout.gridStructure.columns)
+                    }
+                }
+            );
         } else {
-            // Create updated elements arrays
             const updatedTargetElements = [...targetLayout.elements];
             const updatedCurrentElements = currentLayout.elements.filter((e: any) => e.id !== draggedElement.id);
-    
+
             // Create a copy of the dragged element to avoid modifying the original
             const draggedElementCopy = { ...draggedElement };
-    
+
             // If dragging to a different cell, update the cellId
             if (draggedElementCopy.cellId !== targetElement.cellId) {
                 draggedElementCopy.cellId = targetElement.cellId;
             }
-    
+
             // Insert the dragged element at the calculated position
             updatedTargetElements.splice(insertIndex, 0, draggedElementCopy);
-    
+
             // Check if we need to create a new empty editor in the source cell
             const needNewEmptyEditor = updatedCurrentElements.filter(e => e.cellId === draggedElement.cellId).length === 0;
-    
+
             if (needNewEmptyEditor) {
                 // Create a new empty editor element
                 const newEditorElement: EditorElement = {
@@ -412,11 +443,12 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     placeholder: 'Введите текст...',
                     cellId: draggedElement.cellId
                 };
-                
+
                 // Add the new editor to the current layout
                 updatedCurrentElements.push(newEditorElement);
             }
-    
+
+
             // Update current layout
             updateLayout(
                 presentationId,
@@ -430,7 +462,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     }
                 }
             );
-    
+
             // Update target layout
             updateLayout(presentationId, slide.id, targetLayout.id, {
                 elements: updatedTargetElements,
@@ -463,7 +495,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         const isOnlyOneElementInCell = !currentRow?.cells.some(c => c.id !== draggedElement.cellId);
 
         const needNewEmptyEditor = elementsInSameCell.length === 0 && !isOnlyOneElementInCell;
-        
+
         // Handle dragging within the same layout
         if (currentLayout.id === targetLayout.id) {
             const recalcResult = recalcPositions({
@@ -492,7 +524,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     placeholder: 'Введите текст...',
                     cellId: draggedElement.cellId
                 };
-                
+
                 // Add the new editor to the updated elements
                 recalcResult.updatedElements.push(newEditorElement);
             }
@@ -529,7 +561,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     placeholder: 'Введите текст...',
                     cellId: draggedElement.cellId
                 };
-                
+
                 // Add the new editor to the current layout
                 if (recalcResult.updatedCurrentElements) {
                     recalcResult.updatedCurrentElements.push(newEditorElement);
@@ -572,7 +604,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     styles.dragOver,
                     styles.dragOverBottom,
                     styles.dragOverLeft,
-                    styles.dragOverRight
+                    styles.dragOverRight,
                 );
             });
         }

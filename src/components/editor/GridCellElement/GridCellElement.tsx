@@ -412,9 +412,13 @@ const GridCellElement: React.FC<{
             }
         };
 
-        const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        const handleDragOver = (e: React.DragEvent<HTMLDivElement>, hasMultipleCells: boolean) => {
             e.preventDefault();
             e.stopPropagation();
+
+            if (!hasMultipleCells) {
+                console.log('onDragOver grid cell', hasMultipleCells)
+            }
 
             // Set the drop effect
             e.dataTransfer.dropEffect = 'move';
@@ -429,9 +433,12 @@ const GridCellElement: React.FC<{
                 // Calculate the position based on which quadrant of the element the cursor is in
                 const position = determineDropPosition(x, y, rect.width, rect.height);
 
+                const elementId = e.currentTarget.dataset.elementId || e.currentTarget.dataset.cellId;
+                if (!elementId) return;
+
                 // Call the parent's onDragOver handler if provided
                 if (onDragOver) {
-                    onDragOver(e, elements[0].id, layoutId, position);
+                    onDragOver(e, elementId, layoutId, position);
                 }
             // } else {
 
@@ -642,7 +649,6 @@ const GridCellElement: React.FC<{
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
                 onDragLeave={handleDragLeave}
-                data-element-id={elements.length === 1 ? elements[0].id : cell.id}
                 data-layout-id={layoutId}
                 data-cell-id={cell.id}
                 data-element-key={dataElementKey}
@@ -655,14 +661,14 @@ const GridCellElement: React.FC<{
                             <div
                                 className={styles.elementWrapperContent}
                                 data-element-id={element.id}
-                                data-cell-id={cell.id}
+                                onDrop={handleDrop}
+                                onDragLeave={handleDragLeave}
                                 onDragOver={(e) => {
                                     if (hasMultipleCells) {
-                                        // console.log('drag over');
+                                        console.log('onDragOver hasMultipleCells', hasMultipleCells)
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        // console.log('drag over', e.currentTarget);
-                                        handleDragOver(e);
+                                        handleDragOver(e, true);
                                     }
                                 }}
 
