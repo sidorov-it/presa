@@ -107,6 +107,7 @@ const adjustColumnWidths = (
 // Компонент для отображения элемента в ячейке сетки
 const GridCellElement: React.FC<{
     elements: SlideElement[];
+    cell: GridCell;
     presentationId: string;
     slideId: string;
     layoutId: string;
@@ -124,6 +125,7 @@ const GridCellElement: React.FC<{
     onDragLeave?: (e: React.DragEvent<HTMLDivElement>) => void;
 }> = ({
     elements,
+    cell,
     presentationId,
     slideId,
     layoutId,
@@ -356,11 +358,6 @@ const GridCellElement: React.FC<{
         // Get the first element for cell styling
         const firstElement = elements[0];
 
-        // Создаем объект стилей
-        const cellStyle: React.CSSProperties = {
-            ...firstElement?.style
-        };
-
         // Обработчик для начала перетаскивания всей ячейки (используется только когда в ячейке один элемент)
         const handleCellDragStart = (e: React.DragEvent<HTMLDivElement>) => {
             e.stopPropagation();
@@ -422,22 +419,23 @@ const GridCellElement: React.FC<{
             // Set the drop effect
             e.dataTransfer.dropEffect = 'move';
 
-            // Get the first element ID
-            const firstElementId = firstElement?.id;
-            if (!firstElementId) return;
+            // console.log('e.currentTarget.', e.currentTarget)
+            // if (elements.length === 1) {
+                // Determine the drop position (top, bottom, left, right)
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX - rect.left; // x position within the element
+                const y = e.clientY - rect.top;  // y position within the element
 
-            // Determine the drop position (top, bottom, left, right)
-            const rect = e.currentTarget.getBoundingClientRect();
-            const x = e.clientX - rect.left; // x position within the element
-            const y = e.clientY - rect.top;  // y position within the element
+                // Calculate the position based on which quadrant of the element the cursor is in
+                const position = determineDropPosition(x, y, rect.width, rect.height);
 
-            // Calculate the position based on which quadrant of the element the cursor is in
-            const position = determineDropPosition(x, y, rect.width, rect.height);
+                // Call the parent's onDragOver handler if provided
+                if (onDragOver) {
+                    onDragOver(e, elements[0].id, layoutId, position);
+                }
+            // } else {
 
-            // Call the parent's onDragOver handler if provided
-            if (onDragOver) {
-                onDragOver(e, firstElementId, layoutId, position);
-            }
+            // }
         };
 
         // Helper function to determine the drop position
@@ -639,15 +637,14 @@ const GridCellElement: React.FC<{
                     onSelect(firstElement);
                 }}
                 style={{
-                    ...cellStyle,
                     ...resizeStyle,
                 }}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
                 onDragLeave={handleDragLeave}
-                data-element-id={firstElement?.id}
+                data-element-id={elements.length === 1 ? elements[0].id : cell.id}
                 data-layout-id={layoutId}
-                data-cell-id={firstElement?.cellId}
+                data-cell-id={cell.id}
                 data-element-key={dataElementKey}
                 data-index={index}
                 ref={editorRef}
@@ -655,20 +652,35 @@ const GridCellElement: React.FC<{
                 <div className={styles.elementsContainer}>
                     {elements.map((element, idx) => (
                         <div key={element.id} className={styles.elementWrapper}>
-                            <Tiptap
-                                key={element.id}
-                                ref={tiptapRefs.current?.[element.id]}
-                                id={element.cellId}
-                                autoFocus={true}
-                                initialContent={getEditorContent(element)}
-                                onEnterPressed={handleEnterPressed(element)}
-                                onBackspacePressed={handleBackspacePressed(element)}
-                                onFocus={() => onSelect(element)}
-                                onContentChange={handleEditorContentChange(element.id)}
-                                onBlur={() => handleBlur(element)}
-                                customBubbleMenuTrigger={dragHandleRef}
-                            />
+                            <div
+                                className={styles.elementWrapperContent}
+                                data-element-id={element.id}
+                                data-cell-id={cell.id}
+                                onDragOver={(e) => {
+                                    if (hasMultipleCells) {
+                                        // console.log('drag over');
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        // console.log('drag over', e.currentTarget);
+                                        handleDragOver(e);
+                                    }
+                                }}
 
+                            >
+                                <Tiptap
+                                    key={element.id}
+                                    ref={tiptapRefs.current?.[element.id]}
+                                    id={element.cellId}
+                                    autoFocus={true}
+                                    initialContent={getEditorContent(element)}
+                                    onEnterPressed={handleEnterPressed(element)}
+                                    onBackspacePressed={handleBackspacePressed(element)}
+                                    onFocus={() => onSelect(element)}
+                                    onContentChange={handleEditorContentChange(element.id)}
+                                    onBlur={() => handleBlur(element)}
+                                    customBubbleMenuTrigger={dragHandleRef}
+                                />
+                            </div>
                             {/* Individual element drag handle (visible when cell has multiple elements) */}
                             {elements.length > 1 && (
                                 <div

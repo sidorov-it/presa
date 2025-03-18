@@ -236,3 +236,7 @@
 .cellWithBorders:hover .borderIndicator {
   opacity: 1;
 }
+
+.elementWrapperContent {
+    /* display: contents; */
+}

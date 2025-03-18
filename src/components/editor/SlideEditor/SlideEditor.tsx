@@ -132,11 +132,10 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     const {
         addLayout,
-        deleteLayout,
         updateLayout,
-        updateAndPotentiallyDeleteLayout,
         addSlide,
-        addElement
+        addElement,
+        deleteLayout
     } = usePresentationStore();
 
     const editorRef = useRef<HTMLDivElement>(null);
@@ -259,6 +258,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
         // Remove all drag over classes first
         const elements = document.querySelectorAll(`[data-element-id="${elementId}"]`);
+        console.log('elements', elements);
         elements.forEach(el => {
             el.classList.remove(styles.dragOver, styles.dragOverBottom, styles.dragOverLeft, styles.dragOverRight);
 
@@ -351,64 +351,95 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         // Calculate the insert index based on position
         const insertIndex = position === 'top' ? targetIndex : targetIndex + 1;
 
-        // Create updated elements arrays
-        const updatedTargetElements = [...targetLayout.elements];
-        const updatedCurrentElements = currentLayout.elements.filter((e: any) => e.id !== draggedElement.id);
+        if (targetLayout.elements.length === 1) {
+            const layoutIndex = slide.layouts.findIndex(l => l.id === targetLayout.id);
 
-        // Create a copy of the dragged element to avoid modifying the original
-        const draggedElementCopy = { ...draggedElement };
+            const insertLayoutIndex = position === 'top' ? layoutIndex : layoutIndex + 1;
 
-        // If dragging to a different cell, update the cellId
-        if (draggedElementCopy.cellId !== targetElement.cellId) {
-            draggedElementCopy.cellId = targetElement.cellId;
-        }
-
-        // Insert the dragged element at the calculated position
-        updatedTargetElements.splice(insertIndex, 0, draggedElementCopy);
-
-        // Check if we need to create a new empty editor in the source cell
-        const needNewEmptyEditor = updatedCurrentElements.filter(e => e.cellId === draggedElement.cellId).length === 0;
-        
-        if (needNewEmptyEditor) {
-            // Create a new empty editor element
-            const newEditorElement: EditorElement = {
-                id: generateId(8),
-                type: 'editor',
-                content: '',
-                position: { x: 0, y: 0 },
-                size: { width: 100, height: 40 },
-                style: { fontSize: '16px', color: '#333333' },
-                zIndex: 1,
-                placeholder: 'Введите текст...',
-                cellId: draggedElement.cellId
-            };
-            
-            // Add the new editor to the current layout
-            updatedCurrentElements.push(newEditorElement);
-        }
-
-        // Update current layout
-        updateLayout(
-            presentationId,
-            slide.id,
-            currentLayout.id,
-            {
-                elements: updatedCurrentElements,
+            // Create a new layout with a grid that has 1 row and the same number of columns as the current layout
+            const newLayout: Omit<Layout, 'id'> = {
+                type: 'single-column',
+                elements: [draggedElement],
+                style: {},
                 gridStructure: {
-                    ...currentLayout.gridStructure,
-                    columnWidths: getColumnWidths(currentLayout.gridStructure.columns)
+                    columns: 1,
+                    columnWidths: ['100%'],
+                    rows: [{
+                        id: generateId(8),
+                        cells: [{
+                            id: draggedElement.cellId,
+                            column: 1,
+                            row: 1,
+                            rowSpan: 1,
+                            colSpan: 1
+                        }]
+                    }]
                 }
-            }
-        );
+            };
 
-        // Update target layout
-        updateLayout(presentationId, slide.id, targetLayout.id, {
-            elements: updatedTargetElements,
-            gridStructure: {
-                ...targetLayout.gridStructure,
-                columnWidths: getColumnWidths(targetLayout.gridStructure.columns)
+            // Add the new layout to the slide
+            addLayout(presentationId, slide.id, newLayout, insertLayoutIndex);
+            deleteLayout(presentationId, slide.id, currentLayout.id);
+        } else {
+            // Create updated elements arrays
+            const updatedTargetElements = [...targetLayout.elements];
+            const updatedCurrentElements = currentLayout.elements.filter((e: any) => e.id !== draggedElement.id);
+    
+            // Create a copy of the dragged element to avoid modifying the original
+            const draggedElementCopy = { ...draggedElement };
+    
+            // If dragging to a different cell, update the cellId
+            if (draggedElementCopy.cellId !== targetElement.cellId) {
+                draggedElementCopy.cellId = targetElement.cellId;
             }
-        });
+    
+            // Insert the dragged element at the calculated position
+            updatedTargetElements.splice(insertIndex, 0, draggedElementCopy);
+    
+            // Check if we need to create a new empty editor in the source cell
+            const needNewEmptyEditor = updatedCurrentElements.filter(e => e.cellId === draggedElement.cellId).length === 0;
+    
+            if (needNewEmptyEditor) {
+                // Create a new empty editor element
+                const newEditorElement: EditorElement = {
+                    id: generateId(8),
+                    type: 'editor',
+                    content: '',
+                    position: { x: 0, y: 0 },
+                    size: { width: 100, height: 40 },
+                    style: { fontSize: '16px', color: '#333333' },
+                    zIndex: 1,
+                    placeholder: 'Введите текст...',
+                    cellId: draggedElement.cellId
+                };
+                
+                // Add the new editor to the current layout
+                updatedCurrentElements.push(newEditorElement);
+            }
+    
+            // Update current layout
+            updateLayout(
+                presentationId,
+                slide.id,
+                currentLayout.id,
+                {
+                    elements: updatedCurrentElements,
+                    gridStructure: {
+                        ...currentLayout.gridStructure,
+                        columnWidths: getColumnWidths(currentLayout.gridStructure.columns)
+                    }
+                }
+            );
+    
+            // Update target layout
+            updateLayout(presentationId, slide.id, targetLayout.id, {
+                elements: updatedTargetElements,
+                gridStructure: {
+                    ...targetLayout.gridStructure,
+                    columnWidths: getColumnWidths(targetLayout.gridStructure.columns)
+                }
+            });
+        }
     };
 
     // Handle horizontal drop (left/right)
@@ -593,6 +624,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                             return (
                                 <GridCellElement
                                     key={cellId}
+                                    cell={cell}
                                     elements={elements}
                                     presentationId={presentationId}
                                     slideId={slide.id}

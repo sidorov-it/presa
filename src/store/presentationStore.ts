@@ -21,14 +21,14 @@ interface PresentationState {
   reorderSlides: (presentationId: string, startIndex: number, endIndex: number) => void;
 
   // Работа с макетами
-  addLayout: (presentationId: string, slideId: string, layout: Omit<Layout, 'id'> | LayoutType) => string;
+  addLayout: (presentationId: string, slideId: string, layout: Omit<Layout, 'id'> | LayoutType, index?: number) => string;
   updateLayout: (presentationId: string, slideId: string, layoutId: string, data: Partial<Layout>) => void;
   deleteLayout: (presentationId: string, slideId: string, layoutId: string) => void;
   updateAndPotentiallyDeleteLayout: (
-    presentationId: string, 
-    slideId: string, 
-    layoutId: string, 
-    data: Partial<Layout>, 
+    presentationId: string,
+    slideId: string,
+    layoutId: string,
+    data: Partial<Layout>,
     deleteIfEmpty?: boolean
   ) => void;
 
@@ -68,13 +68,16 @@ export const usePresentationStore = create<PresentationState>()(
       },
 
       updatePresentation: (id, data) => {
-        set((state) => ({
-          presentations: state.presentations.map((presentation) =>
-            presentation.id === id
-              ? { ...presentation, ...data, updatedAt: Date.now() }
-              : presentation
-          ),
-        }));
+        set((state) => {
+          console.log('updatePresentation', data);
+          return {
+            presentations: state.presentations.map((presentation) =>
+              presentation.id === id
+                ? { ...presentation, ...data, updatedAt: Date.now() }
+                : presentation
+            ),
+          }
+        });
       },
 
       deletePresentation: (id) => {
@@ -241,7 +244,7 @@ export const usePresentationStore = create<PresentationState>()(
       },
 
       // Методы для работы с макетами
-      addLayout: (presentationId, slideId, layout) => {
+      addLayout: (presentationId, slideId, layout, index) => {
         console.log('addLayot', layout)
         const layoutId = uuidv4();
 
@@ -258,53 +261,68 @@ export const usePresentationStore = create<PresentationState>()(
             id: layoutId,
           };
 
-        set((state) => ({
-          presentations: state.presentations.map((presentation) => {
-            if (presentation.id === presentationId) {
-              return {
-                ...presentation,
-                slides: presentation.slides.map((slide) => {
-                  if (slide.id === slideId) {
-                    return {
-                      ...slide,
-                      layouts: [...slide.layouts, newLayout],
-                    };
-                  }
-                  return slide;
-                }),
-                updatedAt: Date.now(),
-              };
-            }
-            return presentation;
-          }),
-        }));
+        set((state) => {
+          const targetSlide = state.presentations.find((p) => p.id === presentationId)?.slides.find((s) => s.id === slideId);
+          const layouts = [...targetSlide?.layouts || []];
+
+          if (!layouts) return state;
+
+          if (index === 0 || index) {
+            layouts.splice(index, 0, newLayout);
+          } else {
+            layouts.push(newLayout);
+          }
+          return {
+            presentations: state.presentations.map((presentation) => {
+              if (presentation.id === presentationId) {
+                return {
+                  ...presentation,
+                  slides: presentation.slides.map((slide) => {
+                    if (slide.id === slideId) {
+                      return {
+                        ...slide,
+                        layouts,
+                      };
+                    }
+                    return slide;
+                  }),
+                  updatedAt: Date.now(),
+                };
+              }
+              return presentation;
+            }),
+          }
+        });
 
         return layoutId;
       },
 
       updateLayout: (presentationId, slideId, layoutId, data) => {
-        set((state) => ({
-          presentations: state.presentations.map((presentation) => {
-            if (presentation.id === presentationId) {
-              return {
-                ...presentation,
-                slides: presentation.slides.map((slide) => {
-                  if (slide.id === slideId) {
-                    return {
-                      ...slide,
-                      layouts: slide.layouts.map((layout) =>
-                        layout.id === layoutId ? { ...layout, ...data } : layout
-                      ),
-                    };
-                  }
-                  return slide;
-                }),
-                updatedAt: Date.now(),
-              };
-            }
-            return presentation;
-          }),
-        }));
+        set((state) => {
+          console.log('updateLayout', data);
+          return {
+            presentations: state.presentations.map((presentation) => {
+              if (presentation.id === presentationId) {
+                return {
+                  ...presentation,
+                  slides: presentation.slides.map((slide) => {
+                    if (slide.id === slideId) {
+                      return {
+                        ...slide,
+                        layouts: slide.layouts.map((layout) =>
+                          layout.id === layoutId ? { ...layout, ...data } : layout
+                        ),
+                      };
+                    }
+                    return slide;
+                  }),
+                  updatedAt: Date.now(),
+                };
+              }
+              return presentation;
+            }),
+          };
+        });
       },
 
       deleteLayout: (presentationId, slideId, layoutId) => {
@@ -331,28 +349,29 @@ export const usePresentationStore = create<PresentationState>()(
       },
 
       updateAndPotentiallyDeleteLayout: (
-        presentationId, 
-        slideId, 
-        layoutId, 
-        data, 
+        presentationId,
+        slideId,
+        layoutId,
+        data,
         deleteIfEmpty = false
       ) => {
         set((state) => {
+          console.log('updateAndPotentiallyDeleteLayout', data);
           const presentation = state.presentations.find((p) => p.id === presentationId);
           if (!presentation) return state;
 
           // First, update the layout with the new data
           const updatedSlides = presentation.slides.map((slide) => {
             if (slide.id !== slideId) return slide;
-            
+
             // Get the updated layout
-            const updatedLayouts = slide.layouts.map((layout) => 
+            const updatedLayouts = slide.layouts.map((layout) =>
               layout.id === layoutId ? { ...layout, ...data } : layout
             );
-            
+
             // Check if we need to delete the layout
             const updatedLayout = updatedLayouts.find((layout) => layout.id === layoutId);
-            
+
             if (deleteIfEmpty && updatedLayout && updatedLayout.elements.length === 0) {
               // If the layout is now empty and deleteIfEmpty is true, remove it
               return {
@@ -360,7 +379,7 @@ export const usePresentationStore = create<PresentationState>()(
                 layouts: updatedLayouts.filter((layout) => layout.id !== layoutId)
               };
             }
-            
+
             // Otherwise just return the slide with updated layouts
             return {
               ...slide,
@@ -371,8 +390,8 @@ export const usePresentationStore = create<PresentationState>()(
           // Return the updated state
           return {
             presentations: state.presentations.map((p) =>
-              p.id === presentationId 
-                ? { ...presentation, slides: updatedSlides, updatedAt: Date.now() } 
+              p.id === presentationId
+                ? { ...presentation, slides: updatedSlides, updatedAt: Date.now() }
                 : p
             )
           };
