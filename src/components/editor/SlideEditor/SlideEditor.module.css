@@ -222,3 +222,53 @@
     display: grid;
 }
 
+/* Layout drag and drop styles */
+.layoutDragOverTop,
+.layoutDragOverBottom {
+    position: relative;
+    z-index: 2;
+}
+
+.layoutDragOverTop::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: #3b82f6; /* Solid blue */
+    z-index: 10;
+    border-radius: 2px;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+    transition: all 0.2s ease;
+}
+
+.layoutDragOverBottom::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: #3b82f6; /* Solid blue */
+    z-index: 10;
+    border-radius: 2px;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+    transition: all 0.2s ease;
+}
+
+.layoutDropIndicator {
+    pointer-events: none;
+    border-radius: 2px;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+    transition: all 0.2s ease;
+}
+
+.layoutDropZone {
+    cursor: pointer;
+}
+
+.layoutDropZoneActive {
+    background-color: rgba(59, 130, 246, 0.2);
+}
+

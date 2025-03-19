@@ -413,8 +413,7 @@ const GridCellElement: React.FC<{
 
         const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
             e.preventDefault();
-            e.stopPropagation();
-
+            
             // Set the drop effect
             e.dataTransfer.dropEffect = 'move';
 
@@ -425,6 +424,21 @@ const GridCellElement: React.FC<{
 
             // Calculate the position based on which quadrant of the element the cursor is in
             const position = determineDropPosition(x, y, rect.width, rect.height);
+
+            // Check if this is near the top or bottom edge and might be intended for layout drop
+            const threshold = 10; // pixels from edge
+            const isNearTopEdge = y < threshold && position === 'top';
+            const isNearBottomEdge = y > rect.height - threshold && position === 'bottom';
+            
+            // If we're near an edge that would indicate a layout-level drop, don't stop propagation
+            // so the event can bubble to the layout handler
+            if (isNearTopEdge || isNearBottomEdge) {
+                // Don't stop propagation in this case
+                return;
+            }
+            
+            // Only stop propagation in non-edge cases
+            e.stopPropagation();
 
             const elementId = e.currentTarget.dataset.elementId || e.currentTarget.dataset.cellId;
             if (!elementId) return;
@@ -667,8 +681,21 @@ const GridCellElement: React.FC<{
                 }}
                 onDragOver={(e) => {
                     e.preventDefault();
+                    
+                    // Check if this is near an edge and should be handled by layout
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const y = e.clientY - rect.top;
+                    const threshold = 10; // pixels
+                    
+                    if (y < threshold || y > rect.height - threshold) {
+                        // Let the event bubble up to the layout
+                        console.log("Cell edge drag - letting bubble to layout");
+                        return;
+                    }
+                    
+                    // Only stop propagation if we're not near an edge
                     e.stopPropagation();
-
+                    
                     // Only process if we're interacting with the cell container directly,
                     // not its children
                     if (e.target === e.currentTarget) {
@@ -677,6 +704,19 @@ const GridCellElement: React.FC<{
                 }}
                 onDrop={(e) => {
                     e.preventDefault();
+                    
+                    // Check if this is near an edge and should be handled by layout
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const y = e.clientY - rect.top;
+                    const threshold = 10; // pixels
+                    
+                    if (y < threshold || y > rect.height - threshold) {
+                        // Let the event bubble up to the layout
+                        console.log("Cell edge drop - letting bubble to layout");
+                        return;
+                    }
+                    
+                    // Only stop propagation if we're not near an edge
                     e.stopPropagation();
 
                     // Only process if we're interacting with the cell container directly
