@@ -546,114 +546,222 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     // Handle horizontal drop (left/right)
     const handleHorizontalDrop = (
         draggedElement: Element,
-        currentLayout: Layout,
+        sourceLayout: Layout,
         targetLayout: Layout,
         targetElementId: string,
         position: 'left' | 'right'
     ) => {
         // Get the target element
         const targetElement = targetLayout.elements.find((e: any) => e.id === targetElementId);
-        if (!targetElement) return;
+        const targetCell = targetLayout.gridStructure.rows.map(row => row.cells).flat().find(c => c.id === targetElementId);
+        if (!targetElement && !targetCell) {
+            return;
+        }
+        const targetGridStructure = { ...targetLayout.gridStructure };
+        const sourceRow = sourceLayout.gridStructure.rows.find(r => r.cells.find(c => c.id === draggedElement.cellId));
 
-        // Get the current grid structure
-        const gridStructure = { ...targetLayout.gridStructure };
+        // перетасквание на ячейку, когда в строке больше 1 ячейки
+        if (targetCell) {
+            // считаем новое кол-во колонов
+            const newColumnCount = targetGridStructure.columns + 1;
+            // находим индекс целевой ячейки
+            const targetCellIndex = targetGridStructure.rows[0].cells.findIndex(c => c.id === targetElementId);
+            // считаем новые ширины колонов
+            const newColumnWidths = getColumnWidths(newColumnCount);
 
-        // Check if we need to create a new empty editor in the source cell
-        const elementsInSameCell = currentLayout.elements.filter(e => e.cellId === draggedElement.cellId && e.id !== draggedElement.id);
-        const currentRow = currentLayout.gridStructure.rows.find(r => r.cells.find(c => c.id === draggedElement.cellId));
-        const isOnlyOneElementInCell = !currentRow?.cells.some(c => c.id !== draggedElement.cellId);
+            const newCellPosition = position === 'left' ? targetCellIndex : targetCellIndex + 1;
+            // обновляем структуру сетки
+            targetGridStructure.columns = newColumnCount;
+            targetGridStructure.columnWidths = newColumnWidths;
 
-        const needNewEmptyEditor = elementsInSameCell.length === 0 && !isOnlyOneElementInCell;
-
-        // Handle dragging within the same layout
-        if (currentLayout.id === targetLayout.id) {
-            const recalcResult = recalcPositions({
-                draggedElement,
-                targetElement,
-                currentLayout,
-                gridStructure,
-                position,
-                isMoveInCurrentLayout: true,
-                targetLayout
+            // создаем новую ячейку
+            const newCellId = generateId(8);
+            targetGridStructure.rows[0].cells.splice(newCellPosition, 0, {
+                id: newCellId,
+                column: newCellPosition + 1,
+                row: 1,
+                rowSpan: 1,
+                colSpan: 1
             });
 
-            if (!recalcResult) return;
+            targetGridStructure.rows[0].cells.forEach(c => {
+                if (c.column >= newCellPosition && c.id !== newCellId) {
+                    c.column = c.column + 1;
+                }
+            })
+            targetGridStructure.rows[0].cells.sort((a, b) => a.column - b.column);
+            // const updatedElement = {
+            //     ...draggedElement,
+            //     cellId: newCellId
+            // }
+            // обновляем ячейку перетаскиваемого элемента
+            // draggedElement.cellId = newCellId;
 
-            // If we need to create a new empty editor
-            if (needNewEmptyEditor) {
-                // Create a new empty editor element
-                const newEditorElement: EditorElement = {
-                    id: generateId(8),
-                    type: 'editor',
-                    content: '',
-                    position: { x: 0, y: 0 },
-                    size: { width: 100, height: 40 },
-                    style: { fontSize: '16px', color: '#333333' },
-                    zIndex: 1,
-                    placeholder: 'Введите текст...',
-                    cellId: draggedElement.cellId
-                };
+            // если перетаскиваемый элемент в строке с несколькими ячейками, то сначала проверяем, не внутри одного layoyt ли происходит dnd
+            // если внутри одного layoyt, то продолжаем обновлять текущий layout
+            if (sourceLayout.id === targetLayout.id) {
+                const updatedElements = targetLayout.elements.map(el => {
+                    if (el.id === draggedElement.id) {
+                        return {
+                            ...el,
+                            cellId: newCellId
+                        }
+                    }
+                    return el;
+                });
 
-                // Add the new editor to the updated elements
-                recalcResult.updatedElements.push(newEditorElement);
-            }
+                const cellElements = updatedElements.filter(el => el.cellId === draggedElement.cellId);
 
-            // Update the layout with the new grid structure and elements
-            updateLayout(presentationId, slide.id, targetLayout.id, {
-                gridStructure: recalcResult.updatedGridStructure,
-                elements: recalcResult.updatedElements,
-            });
-        } else {
-            const recalcResult = recalcPositions({
-                draggedElement,
-                targetElement,
-                currentLayout,
-                targetLayout,
-                gridStructure,
-                position,
-                isMoveInCurrentLayout: false
-            });
+                if (cellElements.length === 0) {
+                    const newCellContent: EditorElement = {
+                        id: generateId(8),
+                        type: 'editor',
+                        content: '',
+                        position: { x: 0, y: 0 },
+                        size: { width: 100, height: 40 },
+                        style: { fontSize: '16px', color: '#333333' },
+                        zIndex: 1,
+                        cellId: draggedElement.cellId
+                    }
 
-            if (!recalcResult) return;
+                    updatedElements.push(newCellContent);
+                }
 
-            // If we need to create a new empty editor in the source layout
-            if (needNewEmptyEditor) {
-                // Create a new empty editor element
-                const newEditorElement: EditorElement = {
-                    id: generateId(8),
-                    type: 'editor',
-                    content: '',
-                    position: { x: 0, y: 0 },
-                    size: { width: 100, height: 40 },
-                    style: { fontSize: '16px', color: '#333333' },
-                    zIndex: 1,
-                    placeholder: 'Введите текст...',
-                    cellId: draggedElement.cellId
-                };
+                updateLayout(presentationId, slide.id, targetLayout.id, {
+                    elements: updatedElements,
+                    gridStructure: targetGridStructure,
+                });
+            } else {
+                const updatedElements = [...targetLayout.elements];
+                updatedElements.splice(targetCellIndex, 0, {
+                    ...draggedElement,
+                    cellId: newCellId
+                });
 
-                // Add the new editor to the current layout
-                if (recalcResult.updatedCurrentElements) {
-                    recalcResult.updatedCurrentElements.push(newEditorElement);
+                updateLayout(presentationId, slide.id, targetLayout.id, {
+                    elements: updatedElements,
+                    gridStructure: targetGridStructure,
+                });
+
+
+                if (sourceRow?.cells.length === 1) {
+                    deleteLayout(presentationId, slide.id, sourceLayout.id);
+                } else {
+                    const updatedSourceElements = sourceLayout.elements.filter(el => el.id !== draggedElement.id);
+                    const sourceGridStructure = { ...sourceLayout.gridStructure };
+
+                    sourceGridStructure.rows[0].cells = [...sourceGridStructure.rows[0].cells.filter(c => c.id !== draggedElement.cellId)];
+                    updateLayout(presentationId, slide.id, sourceLayout.id, {
+                        elements: updatedSourceElements,
+                        gridStructure: sourceGridStructure,
+                    });
                 }
             }
+            // если в разных layout, то продолжаем обновлять целевой layout
+            // проверяем кол-во элементов в его ячейке
+            // если элементов больше 1, то ничего не делаем
+            // если элементов 1, то вставляем пустой редактор
 
-            // Update current layout
-            if (recalcResult.updatedCurrentElements) {
-                updateLayout(
-                    presentationId,
-                    slide.id,
-                    currentLayout.id,
-                    {
-                        elements: recalcResult.updatedCurrentElements,
+            // если перетаскиваемый элемент в строке с одной ячейкой, то удаляем его layout
+        } else {
+            if (!targetElement) return;
+    
+            // Check if we need to create a new empty editor in the source cell
+            const elementsInSameCell = sourceLayout.elements.filter(e => e.cellId === draggedElement.cellId && e.id !== draggedElement.id);
+            const isOnlyOneElementInCell = !sourceRow?.cells.some(c => c.id !== draggedElement.cellId);
+    
+            const needNewEmptyEditor = elementsInSameCell.length === 0 && !isOnlyOneElementInCell;
+    
+            // Handle dragging within the same layout
+            if (sourceLayout.id === targetLayout.id) {
+                const recalcResult = recalcPositions({
+                    draggedElement,
+                    targetElement,
+                    currentLayout: sourceLayout,
+                    gridStructure: targetGridStructure,
+                    position,
+                    isMoveInCurrentLayout: true,
+                    targetLayout
+                });
+    
+                if (!recalcResult) return;
+    
+                // If we need to create a new empty editor
+                if (needNewEmptyEditor) {
+                    // Create a new empty editor element
+                    const newEditorElement: EditorElement = {
+                        id: generateId(8),
+                        type: 'editor',
+                        content: '',
+                        position: { x: 0, y: 0 },
+                        size: { width: 100, height: 40 },
+                        style: { fontSize: '16px', color: '#333333' },
+                        zIndex: 1,
+                        placeholder: 'Введите текст...',
+                        cellId: draggedElement.cellId
+                    };
+    
+                    // Add the new editor to the updated elements
+                    recalcResult.updatedElements.push(newEditorElement);
+                }
+    
+                // Update the layout with the new grid structure and elements
+                updateLayout(presentationId, slide.id, targetLayout.id, {
+                    gridStructure: recalcResult.updatedGridStructure,
+                    elements: recalcResult.updatedElements,
+                });
+            } else {
+                const recalcResult = recalcPositions({
+                    draggedElement,
+                    targetElement,
+                    currentLayout: sourceLayout,
+                    targetLayout,
+                    gridStructure: targetGridStructure,
+                    position,
+                    isMoveInCurrentLayout: false
+                });
+    
+                if (!recalcResult) return;
+    
+                // If we need to create a new empty editor in the source layout
+                if (needNewEmptyEditor) {
+                    // Create a new empty editor element
+                    const newEditorElement: EditorElement = {
+                        id: generateId(8),
+                        type: 'editor',
+                        content: '',
+                        position: { x: 0, y: 0 },
+                        size: { width: 100, height: 40 },
+                        style: { fontSize: '16px', color: '#333333' },
+                        zIndex: 1,
+                        placeholder: 'Введите текст...',
+                        cellId: draggedElement.cellId
+                    };
+    
+                    // Add the new editor to the current layout
+                    if (recalcResult.updatedCurrentElements) {
+                        recalcResult.updatedCurrentElements.push(newEditorElement);
                     }
-                );
+                }
+    
+                // Update current layout
+                if (recalcResult.updatedCurrentElements) {
+                    updateLayout(
+                        presentationId,
+                        slide.id,
+                        sourceLayout.id,
+                        {
+                            elements: recalcResult.updatedCurrentElements,
+                        }
+                    );
+                }
+    
+                // Update target layout
+                updateLayout(presentationId, slide.id, targetLayout.id, {
+                    gridStructure: recalcResult.updatedGridStructure,
+                    elements: recalcResult.updatedElements,
+                });
             }
-
-            // Update target layout
-            updateLayout(presentationId, slide.id, targetLayout.id, {
-                gridStructure: recalcResult.updatedGridStructure,
-                elements: recalcResult.updatedElements,
-            });
         }
     };
 
