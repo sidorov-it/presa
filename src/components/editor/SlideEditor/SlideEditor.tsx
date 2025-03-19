@@ -51,22 +51,22 @@ const SlashCommands: React.FC<SlashCommandsProps> = ({ isOpen, position, onSelec
         if (isOpen) {
             const handleKeyDown = (e: KeyboardEvent) => {
                 switch (e.key) {
-                    case 'ArrowDown':
-                        e.preventDefault();
-                        setActiveIndex(prev => (prev + 1) % commands.length);
-                        break;
-                    case 'ArrowUp':
-                        e.preventDefault();
-                        setActiveIndex(prev => (prev - 1 + commands.length) % commands.length);
-                        break;
-                    case 'Enter':
-                        e.preventDefault();
-                        onSelect(commands[activeIndex].id);
-                        break;
-                    case 'Escape':
-                        e.preventDefault();
-                        onClose();
-                        break;
+                case 'ArrowDown':
+                    e.preventDefault();
+                    setActiveIndex(prev => (prev + 1) % commands.length);
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    setActiveIndex(prev => (prev - 1 + commands.length) % commands.length);
+                    break;
+                case 'Enter':
+                    e.preventDefault();
+                    onSelect(commands[activeIndex].id);
+                    break;
+                case 'Escape':
+                    e.preventDefault();
+                    onClose();
+                    break;
                 }
             };
 
@@ -255,6 +255,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             const isClickBottom = positionY / slideHeight > 0.5;
 
             if (slide.layouts.length === 1) {
+                // nothing?
             } else if (isClickBottom) {
                 createDefaultLayout();
             }

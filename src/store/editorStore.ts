@@ -27,46 +27,46 @@ interface EditorState {
 }
 
 export const useEditorStore = create<EditorState>()(
-  devtools(
-    (set) => ({
-      activeEditor: null,
-      showBubbleMenu: false,
-      triggerElement: null,
-      menuPosition: null,
-      elementToFocus: null,
+    devtools(
+        (set) => ({
+            activeEditor: null,
+            showBubbleMenu: false,
+            triggerElement: null,
+            menuPosition: null,
+            elementToFocus: null,
       
-      setActiveEditor: (editor) => set({ activeEditor: editor }),
+            setActiveEditor: (editor) => set({ activeEditor: editor }),
       
-      showMenu: (triggerElement) => {
-        // Calculate position based on the trigger element
-        const rect = triggerElement.getBoundingClientRect();
-        const menuPosition = {
-          x: rect.left + rect.width / 2, // Center horizontally
-          y: rect.top - 10 // Position slightly above the trigger
-        };
+            showMenu: (triggerElement) => {
+                // Calculate position based on the trigger element
+                const rect = triggerElement.getBoundingClientRect();
+                const menuPosition = {
+                    x: rect.left + rect.width / 2, // Center horizontally
+                    y: rect.top - 10 // Position slightly above the trigger
+                };
         
-        set({ 
-          showBubbleMenu: true, 
-          triggerElement,
-          menuPosition
-        });
-      },
+                set({ 
+                    showBubbleMenu: true, 
+                    triggerElement,
+                    menuPosition
+                });
+            },
       
-      hideMenu: () => set({ 
-        showBubbleMenu: false, 
-        triggerElement: null,
-        menuPosition: null
-      }),
+            hideMenu: () => set({ 
+                showBubbleMenu: false, 
+                triggerElement: null,
+                menuPosition: null
+            }),
 
-      setElementToFocus: (elementId, layoutId, cellId) => set({
-        elementToFocus: { elementId, layoutId, cellId }
-      }),
+            setElementToFocus: (elementId, layoutId, cellId) => set({
+                elementToFocus: { elementId, layoutId, cellId }
+            }),
 
-      clearElementToFocus: () => set({ elementToFocus: null }),
-    }),
-    {
-      name: 'editor-store',
-      enabled: process.env.NODE_ENV === 'development',
-    }
-  )
+            clearElementToFocus: () => set({ elementToFocus: null }),
+        }),
+        {
+            name: 'editor-store',
+            enabled: process.env.NODE_ENV === 'development',
+        }
+    )
 ); 

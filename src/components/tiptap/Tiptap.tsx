@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unknown-property */
 'use client';
 
 import { EditorContent } from '@tiptap/react'
@@ -23,11 +24,11 @@ export const preventDropFromOutsidePlugin = new Plugin({
             }
 
             switch (action) {
-                case 'drag':
-                    return true;
-                case 'drop':
-                default:
-                    return false;
+            case 'drag':
+                return true;
+            case 'drop':
+            default:
+                return false;
             }
         },
     },
@@ -314,5 +315,7 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
         </div>
     )
 })
+
+Tiptap.displayName = 'Tiptap';
 
 export default Tiptap

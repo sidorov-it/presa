@@ -6,21 +6,21 @@ import GlobalBubbleMenu from '@/components/editor/GlobalBubbleMenu/GlobalBubbleM
 const inter = Inter({ subsets: ['latin', 'cyrillic'] });
 
 export const metadata: Metadata = {
-  title: 'Presa - Создание презентаций с помощью ИИ',
-  description: 'Создавайте красивые презентации с помощью искусственного интеллекта',
+    title: 'Presa - Создание презентаций с помощью ИИ',
+    description: 'Создавайте красивые презентации с помощью искусственного интеллекта',
 };
 
 export default function RootLayout({
-  children,
+    children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <html lang="ru">
-      <body className={`${inter.className} bg-gray-50 text-gray-900 min-h-screen`}>
-        {children}
-        {/* <GlobalBubbleMenu /> */}
-      </body>
-    </html>
-  );
+    return (
+        <html lang="ru">
+            <body className={`${inter.className} bg-gray-50 text-gray-900 min-h-screen`}>
+                {children}
+                {/* <GlobalBubbleMenu /> */}
+            </body>
+        </html>
+    );
 }

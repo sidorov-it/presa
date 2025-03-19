@@ -147,151 +147,108 @@ const GridCellElement: React.FC<{
     slideEditorRef,
     dataElementKey
 }) => {
-        const { updateElement, updateLayout, addElement } = usePresentationStore();
-        const { elementToFocus, clearElementToFocus } = useEditorStore();
-        const dragHandleRef = useRef<HTMLDivElement>(null);
-        const [draggingElementId, setDraggingElementId] = useState<string | null>(null);
-        const editorRef = useRef<HTMLDivElement>(null);
-        const resizeBorderRef = useRef<HTMLDivElement>(null);
-        const [isResizing, setIsResizing] = useState(false);
-        const [startX, setStartX] = useState(0);
-        const [startWidth, setStartWidth] = useState(0);
+    const { updateElement, updateLayout, addElement } = usePresentationStore();
+    const { elementToFocus, clearElementToFocus } = useEditorStore();
+    const dragHandleRef = useRef<HTMLDivElement>(null);
+    const [draggingElementId, setDraggingElementId] = useState<string | null>(null);
+    const editorRef = useRef<HTMLDivElement>(null);
+    const resizeBorderRef = useRef<HTMLDivElement>(null);
+    const [isResizing, setIsResizing] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [startWidth, setStartWidth] = useState(0);
 
-        // Create a map of element IDs to their Tiptap refs
-        // const tiptapRefs = useRef<Record<string, React.RefObject<TiptapRef>>>({});
+    // Create a map of element IDs to their Tiptap refs
+    // const tiptapRefs = useRef<Record<string, React.RefObject<TiptapRef>>>({});
 
-        // Initialize refs for each element
-        useEffect(() => {
-            // Create refs for each element if they don't exist
-            elements.forEach(element => {
-                if (tiptapRefs.current && !tiptapRefs.current[element.id]) {
-                    tiptapRefs.current[element.id] = React.createRef<TiptapRef>();
-                }
-            });
+    // Initialize refs for each element
+    useEffect(() => {
+        // Create refs for each element if they don't exist
+        elements.forEach(element => {
+            if (tiptapRefs.current && !tiptapRefs.current[element.id]) {
+                tiptapRefs.current[element.id] = React.createRef<TiptapRef>();
+            }
+        });
 
-            // Register all editor refs in the global registry
+        // Register all editor refs in the global registry
+        // elements.forEach(element => {
+        //     const editorId = `${layoutId}-${element.id}`;
+        //     editorRefs[editorId] = tiptapRefs.current[element.id];
+        // });
+
+        return () => {
+            // Clean up when unmounted
             // elements.forEach(element => {
             //     const editorId = `${layoutId}-${element.id}`;
-            //     editorRefs[editorId] = tiptapRefs.current[element.id];
+            //     delete editorRefs[editorId];
             // });
-
-            return () => {
-                // Clean up when unmounted
-                // elements.forEach(element => {
-                //     const editorId = `${layoutId}-${element.id}`;
-                //     delete editorRefs[editorId];
-                // });
-            };
-        }, [layoutId, elements]);
+        };
+    }, [layoutId, elements]);
 
 
-        // Effect to check if any element should be focused
-        useEffect(() => {
-            if (elementToFocus) {
-                // Find the element that should be focused
-                const elementToFocusInCell = elements.find(
-                    el => el.id === elementToFocus.elementId &&
+    // Effect to check if any element should be focused
+    useEffect(() => {
+        if (elementToFocus) {
+            // Find the element that should be focused
+            const elementToFocusInCell = elements.find(
+                el => el.id === elementToFocus.elementId &&
                         layoutId === elementToFocus.layoutId &&
                         el.cellId === elementToFocus.cellId
-                );
+            );
 
-                if (elementToFocusInCell) {
-                    // Clear the focus target immediately to prevent multiple focus attempts
-                    clearElementToFocus();
+            if (elementToFocusInCell) {
+                // Clear the focus target immediately to prevent multiple focus attempts
+                clearElementToFocus();
 
-                    // Select this element
-                    onSelect(elementToFocusInCell);
+                // Select this element
+                onSelect(elementToFocusInCell);
 
-                    // Use requestAnimationFrame to focus as soon as the browser is ready to paint
-                    requestAnimationFrame(() => {
-                        // Focus using the ref
-                        const ref = tiptapRefs.current?.[elementToFocusInCell.id];
-                        if (ref && ref.current) {
-                            ref.current.focus();
-                        }
-                    });
-                }
-            }
-        }, [elements, layoutId, elementToFocus, clearElementToFocus, onSelect]);
-
-        // Обработчик для изменения содержимого редактора
-        const handleEditorContentChange = (elementId: string) => (content: string) => {
-            updateElement(presentationId, slideId, layoutId, elementId, {
-                content: content
-            } as Partial<SlideElement>);
-        };
-
-        // Обработчик для добавления нового редактора при нажатии Enter
-        const handleEnterPressed = (element: SlideElement) => () => {
-            // Получаем текущий макет
-            const presentation = usePresentationStore.getState().getPresentation(presentationId);
-            if (!presentation) return;
-
-            const slide = presentation.slides.find(s => s.id === slideId);
-            if (!slide) return;
-
-            const layout = slide.layouts.find(l => l.id === layoutId);
-            if (!layout) return;
-
-            const row = layout.gridStructure.rows.find(r => r.cells.find(c => c.id === element.cellId));
-
-            // в строке 1 элемент. создаем новую строку
-            if (row!.cells.length === 1) {
-                // Instead of adding a new row to the grid structure, we'll add a new block layout
-                // Create a new layout with a grid that has 1 row and the same number of columns as the current layout
-                const newLayoutId = generateId();
-
-                const defaultGridType = 'single-column';
-
-                const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures('single-column');
-
-                const firstNewEditorId = generateId();
-                const newElements: SlideElement[] = defaultLayoutGridStructure.rows.map(row => {
-                    return row.cells.map(cell => ({
-                        id: firstNewEditorId,
-                        type: 'editor',
-                        textType: 'heading',
-                        content: '',
-                        position: { x: 0, y: 0 },
-                        size: { width: 100, height: 100 },
-                        style: {},
-                        zIndex: 0,
-                        cellId: cell.id,
-                    } as SlideElement))
-                }).flat();
-
-                const newLayout: Layout = {
-                    id: newLayoutId,
-                    gridStructure: defaultLayoutGridStructure,
-                    type: defaultGridType,
-                    style: {},
-                    elements: newElements,
-                }
-
-                // Add the new layout to the slide
-                const updatedLayouts = [...slide.layouts];
-                const currentLayoutIndex = updatedLayouts.findIndex(l => l.id === layoutId);
-                updatedLayouts.splice(currentLayoutIndex + 1, 0, newLayout);
-
-                // Update the slide with the new layouts
-                usePresentationStore.getState().updateSlide(presentationId, slideId, {
-                    layouts: updatedLayouts
+                // Use requestAnimationFrame to focus as soon as the browser is ready to paint
+                requestAnimationFrame(() => {
+                    // Focus using the ref
+                    const ref = tiptapRefs.current?.[elementToFocusInCell.id];
+                    if (ref && ref.current) {
+                        ref.current.focus();
+                    }
                 });
+            }
+        }
+    }, [elements, layoutId, elementToFocus, clearElementToFocus, onSelect]);
 
-                // Set the element to focus in the editor store
-                useEditorStore.getState().setElementToFocus(
-                    firstNewEditorId,
-                    newLayoutId,
-                    newLayout.gridStructure.rows[0].cells[0].id
-                );
-            } else {
-                // в строке больше 1 элемента. просто добавляем новый элемент
-                const newElementId = generateId();
-                const cell = row?.cells.find(c => c.id === element.cellId);
-                if (!cell) return;
+    // Обработчик для изменения содержимого редактора
+    const handleEditorContentChange = (elementId: string) => (content: string) => {
+        updateElement(presentationId, slideId, layoutId, elementId, {
+            content: content
+        } as Partial<SlideElement>);
+    };
 
-                const newElement: SlideElement = {
-                    id: newElementId,
+    // Обработчик для добавления нового редактора при нажатии Enter
+    const handleEnterPressed = (element: SlideElement) => () => {
+        // Получаем текущий макет
+        const presentation = usePresentationStore.getState().getPresentation(presentationId);
+        if (!presentation) return;
+
+        const slide = presentation.slides.find(s => s.id === slideId);
+        if (!slide) return;
+
+        const layout = slide.layouts.find(l => l.id === layoutId);
+        if (!layout) return;
+
+        const row = layout.gridStructure.rows.find(r => r.cells.find(c => c.id === element.cellId));
+
+        // в строке 1 элемент. создаем новую строку
+        if (row!.cells.length === 1) {
+            // Instead of adding a new row to the grid structure, we'll add a new block layout
+            // Create a new layout with a grid that has 1 row and the same number of columns as the current layout
+            const newLayoutId = generateId();
+
+            const defaultGridType = 'single-column';
+
+            const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures('single-column');
+
+            const firstNewEditorId = generateId();
+            const newElements: SlideElement[] = defaultLayoutGridStructure.rows.map(row => {
+                return row.cells.map(cell => ({
+                    id: firstNewEditorId,
                     type: 'editor',
                     textType: 'heading',
                     content: '',
@@ -300,546 +257,590 @@ const GridCellElement: React.FC<{
                     style: {},
                     zIndex: 0,
                     cellId: cell.id,
-                }
+                } as SlideElement))
+            }).flat();
 
-                const updatedElements = [...layout.elements];
-                updatedElements.push(newElement);
-
-                layout.elements = updatedElements;
-
-                updateLayout(presentationId, slideId, layoutId, layout);
-            }
-        };
-
-        // Обработчик для удаления пустого редактора при нажатии Backspace
-        const handleBackspacePressed = (element: SlideElement) => () => {
-            // Если это единственный элемент в макете, не удаляем его
-            const presentation = usePresentationStore.getState().getPresentation(presentationId);
-            if (!presentation) return;
-
-            const slide = presentation.slides.find(s => s.id === slideId);
-            if (!slide) return;
-
-            const layout = slide.layouts.find(l => l.id === layoutId);
-            if (!layout || layout.elements.length <= 1) return;
-
-            // Удаляем элемент
-            usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, element.id);
-
-            // If this is the only element in the layout and there are other layouts, delete the entire layout
-            if (layout.elements.length === 1) {
-                // Only delete the layout if there's at least one other layout
-                if (slide.layouts.length > 1) {
-                    usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
-                }
-            }
-        };
-
-        // Получаем содержимое для редактора в зависимости от типа элемента
-        const getEditorContent = (element: SlideElement): string => {
-            switch (element.type) {
-                case 'editor':
-                case 'text':
-                case 'heading':
-                case 'paragraph':
-                    // FIXME: этих типов недолжно быть
-                    return (element as unknown as GridTextElement).content;
-                case 'list':
-                    // FIXME: этих типов недолжно быть
-                    const listElement = element as unknown as GridListElement;
-                    const listType = listElement.listType === 'bullet' ? 'ul' : 'ol';
-                    const items = listElement.items.map(item => `<li>${item}</li>`).join('');
-                    return `<${listType}>${items}</${listType}>`;
-                case 'image':
-                    // FIXME: этих типов недолжно быть
-                    const imageElement = element as unknown as GridImageElement;
-                    return `<img src="${imageElement.src}" alt="${imageElement.alt}" style="max-width: 100%; height: auto;" />`;
-                default:
-                    return `<p>Неподдерживаемый тип элемента: ${element.type}</p>`;
-            }
-        };
-
-        // Get the first element for cell styling
-        const firstElement = elements[0];
-
-        // Обработчик для начала перетаскивания всей ячейки (используется только когда в ячейке один элемент)
-        const handleCellDragStart = (e: React.DragEvent<HTMLDivElement>) => {
-            e.stopPropagation();
-
-            // Get the first element ID for drag data
-            const firstElementId = firstElement?.id;
-            if (!firstElementId) return;
-            setDraggingElementId(cell.id);
-
-            // Set the drag data
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('application/json', JSON.stringify({
-                elementId: firstElementId,
-                layoutId: layoutId,
-                cellId: cell.id
-            }));
-
-            // Call the parent's onDragStart handler if provided
-            if (onDragStart) {
-                onDragStart(e, firstElementId, layoutId);
-            }
-        };
-
-        // Обработчик для начала перетаскивания отдельного элемента
-        const handleElementDragStart = (e: React.DragEvent<HTMLDivElement>, elementId: string) => {
-            e.stopPropagation();
-            setDraggingElementId(elementId);
-            // setIsDragging(true);
-
-
-            // Set the drag data
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('application/json', JSON.stringify({
-                elementId: elementId,
-                layoutId: layoutId,
-                cellId: cell.id
-            }));
-
-            // Call the parent's onDragStart handler if provided
-            if (onDragStart) {
-                onDragStart(e, elementId, layoutId);
-            }
-        };
-
-        const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
-            e.stopPropagation();
-            setDraggingElementId(null);
-        };
-
-        const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-            e.preventDefault();
-
-            const isSingleElementInCell = elements.length === 1;
-            if (isSingleElementInCell) {
-                return;
-            }
-            // Set the drop effect
-            e.dataTransfer.dropEffect = 'move';
-
-            // Determine the drop position (top, bottom, left, right)
-            const rect = e.currentTarget.getBoundingClientRect();
-            const x = e.clientX - rect.left; // x position within the element
-            const y = e.clientY - rect.top;  // y position within the element
-
-            // Calculate the position based on which quadrant of the element the cursor is in
-            const position = determineDropPosition(x, y, rect.width, rect.height);
-
-            // Check if this is near the top or bottom edge and might be intended for layout drop
-            const threshold = 20; // pixels from edge
-            const isNearTopEdge = y < threshold && position === 'top';
-            const isNearBottomEdge = y > rect.height - threshold && position === 'bottom';
-
-            // If we're near an edge that would indicate a layout-level drop, don't stop propagation
-            // so the event can bubble to the layout handler
-            if (isNearTopEdge || isNearBottomEdge) {
-                // Don't stop propagation in this case
-                return;
+            const newLayout: Layout = {
+                id: newLayoutId,
+                gridStructure: defaultLayoutGridStructure,
+                type: defaultGridType,
+                style: {},
+                elements: newElements,
             }
 
-            // Only stop propagation in non-edge cases
-            e.stopPropagation();
+            // Add the new layout to the slide
+            const updatedLayouts = [...slide.layouts];
+            const currentLayoutIndex = updatedLayouts.findIndex(l => l.id === layoutId);
+            updatedLayouts.splice(currentLayoutIndex + 1, 0, newLayout);
 
-            const elementId = e.currentTarget.dataset.elementId || e.currentTarget.dataset.cellId;
-            if (!elementId) return;
+            // Update the slide with the new layouts
+            usePresentationStore.getState().updateSlide(presentationId, slideId, {
+                layouts: updatedLayouts
+            });
 
-            // Call the parent's onDragOver handler if provided
-            if (onDragOver) {
-                onDragOver(e, elementId, layoutId, position);
-            }
-        };
-
-        // Helper function to determine the drop position
-        const determineDropPosition = (x: number, y: number, width: number, height: number): 'top' | 'bottom' | 'left' | 'right' => {
-            // Calculate distances from each edge
-            const distanceFromTop = y;
-            const distanceFromBottom = height - y;
-            const distanceFromLeft = x;
-            const distanceFromRight = width - x;
-
-            // Find the minimum distance
-            const minDistance = Math.min(distanceFromTop, distanceFromBottom, distanceFromLeft, distanceFromRight);
-
-            // Return the position based on the minimum distance
-            if (minDistance === distanceFromTop) return 'top';
-            if (minDistance === distanceFromBottom) return 'bottom';
-            if (minDistance === distanceFromLeft) return 'left';
-            if (minDistance === distanceFromRight) return 'right';
-
-            // Default to top if something goes wrong
-            return 'top';
-        };
-
-        const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-            e.preventDefault();
-            e.stopPropagation();
-
-            // Get the first element ID
-            const firstElementId = firstElement?.id;
-            if (!firstElementId) return;
-
-            // Determine the drop position
-            const rect = e.currentTarget.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const position = determineDropPosition(x, y, rect.width, rect.height);
-
-            // Call the parent's onDrop handler if provided
-            if (onDrop) {
-                onDrop(e, firstElementId, layoutId, position);
-            }
-        };
-
-        const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-            e.preventDefault();
-            e.stopPropagation();
-
-            // Call the parent's onDragLeave handler if provided
-            if (onDragLeave) {
-                onDragLeave(e);
-            }
-        };
-
-        // Handle resize start
-        const handleResizeStart = (e: React.MouseEvent<HTMLDivElement>) => {
-            e.preventDefault();
-            e.stopPropagation();
-
-            setIsResizing(true);
-            const leftBorder = slideEditorRef.current?.getBoundingClientRect().left || 0;
-            setStartX(e.clientX - leftBorder);
-
-            // Get the current cell's width
-            const cellElement = editorRef.current;
-            if (cellElement) {
-                const width = cellElement.offsetWidth;
-                setStartWidth(width);
-            }
-
-            // Add event listeners for resize
-            document.addEventListener('mousemove', handleResizeMove);
-            document.addEventListener('mouseup', handleResizeEnd);
-
-            // Add a class to the body to indicate resizing is in progress
-            document.body.classList.add('resizing');
-        };
-
-        // Handle resize move
-        const handleResizeMove = (e: MouseEvent) => {
-            // Get the current layout
-            const presentation = usePresentationStore.getState().getPresentation(presentationId);
-            if (!presentation) return;
-
-            const slide = presentation.slides.find(s => s.id === slideId);
-            if (!slide) return;
-
-            const layout = slide.layouts.find(l => l.id === layoutId);
-            if (!layout || !layout.gridStructure) return;
-
-            // Find the cell in the grid structure
-            const cell = layout.gridStructure.rows[0].cells.find(c => c.id === firstElement?.cellId);
+            // Set the element to focus in the editor store
+            useEditorStore.getState().setElementToFocus(
+                firstNewEditorId,
+                newLayoutId,
+                newLayout.gridStructure.rows[0].cells[0].id
+            );
+        } else {
+            // в строке больше 1 элемента. просто добавляем новый элемент
+            const newElementId = generateId();
+            const cell = row?.cells.find(c => c.id === element.cellId);
             if (!cell) return;
 
-            // Get the slide editor dimensions
-            const slideEditorRect = slideEditorRef.current?.getBoundingClientRect();
-            if (!slideEditorRect) return;
+            const newElement: SlideElement = {
+                id: newElementId,
+                type: 'editor',
+                textType: 'heading',
+                content: '',
+                position: { x: 0, y: 0 },
+                size: { width: 100, height: 100 },
+                style: {},
+                zIndex: 0,
+                cellId: cell.id,
+            }
 
-            // Calculate the total width of the container
-            const totalWidth = slideEditorRef.current?.offsetWidth || 1000;
+            const updatedElements = [...layout.elements];
+            updatedElements.push(newElement);
 
-            // Calculate the new width based on mouse position
-            const clientX = e.clientX - slideEditorRect.left;
-            const deltaX = clientX - startX;
-            const newWidth = startWidth + deltaX;
+            layout.elements = updatedElements;
 
-            // Calculate the new width as a percentage of the total width
-            let newWidthPercentage = (newWidth / totalWidth) * 100;
+            updateLayout(presentationId, slideId, layoutId, layout);
+        }
+    };
 
-            // Get the number of columns in the grid
-            const columns = layout.gridStructure.columns;
+    // Обработчик для удаления пустого редактора при нажатии Backspace
+    const handleBackspacePressed = (element: SlideElement) => () => {
+        // Если это единственный элемент в макете, не удаляем его
+        const presentation = usePresentationStore.getState().getPresentation(presentationId);
+        if (!presentation) return;
 
-            // Initialize columnWidths with percentages if they're in fr format or don't exist
-            let columnWidths = layout.gridStructure.columnWidths || Array(columns).fill(`${(100 / columns).toFixed(2)}%`);
+        const slide = presentation.slides.find(s => s.id === slideId);
+        if (!slide) return;
 
-            // Convert any fr units to percentages if needed
-            columnWidths = columnWidths.map(width => {
-                if (width.endsWith('fr')) {
-                    // Convert fr to percentage based on equal distribution
-                    return `${(100 / columns).toFixed(2)}%`;
-                }
-                return width;
-            });
+        const layout = slide.layouts.find(l => l.id === layoutId);
+        if (!layout || layout.elements.length <= 1) return;
 
-            // Get the current column index (0-based)
-            const currentColumnIndex = cell.column - 1;
+        // Удаляем элемент
+        usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, element.id);
 
-            // Calculate the maximum allowed width for this cell
-            // This ensures we don't exceed 100% total width
-            const otherColumnsMinWidth = (columns - 1) * 15; // All other columns at minimum 15%
-            const maxAllowedWidth = 100 - otherColumnsMinWidth;
-
-            // Convert to proportion (0-1) for the adjustColumnWidths function
-            const newWidthPart = Math.min(maxAllowedWidth, Math.max(15, newWidthPercentage)) / 100;
-
-            // Calculate the new column widths
-            const newColumnWidths = adjustColumnWidths(
-                columnWidths,
-                currentColumnIndex,
-                newWidthPart,
-                isLastCell,
-                columns
-            );
-
-            // Update the layout's grid structure with the new column widths
-            const updatedGridStructure = {
-                ...layout.gridStructure,
-                columnWidths: newColumnWidths
-            };
-
-            // Update the layout in the store
-            updateLayout(presentationId, slideId, layoutId, {
-                gridStructure: updatedGridStructure
-            });
-        };
-
-        // Handle resize end
-        const handleResizeEnd = () => {
-            document.removeEventListener('mousemove', handleResizeMove);
-            document.removeEventListener('mouseup', handleResizeEnd);
-
-            // Reset the resizing state
-            setIsResizing(false);
-        };
-
-        const handleBlur = (element: SlideElement) => {
-            const presentation = usePresentationStore.getState().getPresentation(presentationId);
-            if (!presentation) return;
-
-            const slide = presentation.slides.find(s => s.id === slideId);
-            if (!slide) return;
-
-            const layout = slide.layouts.find(l => l.id === layoutId);
-            if (!layout) return;
-
-            const lastRow = layout.gridStructure.rows[layout.gridStructure.rows.length - 1];
-
-            if (slide.layouts.length > 1 && lastRow.cells.length === 1 && lastRow.cells[0].id === element.cellId && tiptapRefs.current?.[element.id]?.current?.isEmpty()) {
+        // If this is the only element in the layout and there are other layouts, delete the entire layout
+        if (layout.elements.length === 1) {
+            // Only delete the layout if there's at least one other layout
+            if (slide.layouts.length > 1) {
                 usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
             }
-        };
+        }
+    };
 
-        // Add a resize style if resizing is in progress
-        const resizeStyle: React.CSSProperties = isResizing ? {
-            transition: 'none' // Disable transitions during resize for smoother experience
-        } : {};
+    // Получаем содержимое для редактора в зависимости от типа элемента
+    const getEditorContent = (element: SlideElement): string => {
+        switch (element.type) {
+        case 'editor':
+        case 'text':
+        case 'heading':
+        case 'paragraph':
+            // FIXME: этих типов недолжно быть
+            return (element as unknown as GridTextElement).content;
+            // case 'list':
+            //     // FIXME: этих типов недолжно быть
+            //     const listElement = element as unknown as GridListElement;
+            //     const listType = listElement.listType === 'bullet' ? 'ul' : 'ol';
+            //     const items = listElement.items.map(item => `<li>${item}</li>`).join('');
+            //     return `<${listType}>${items}</${listType}>`;
+            // case 'image':
+            //     // FIXME: этих типов недолжно быть
+            //     const imageElement = element as unknown as GridImageElement;
+            //     return `<img src="${imageElement.src}" alt="${imageElement.alt}" style="max-width: 100%; height: auto;" />`;
+        default:
+            return `<p>Неподдерживаемый тип элемента: ${element.type}</p>`;
+        }
+    };
 
-        const getGridCellElementClassName = () => {
-            let className = `${styles.gridCellElement} ${draggingElementId === cell.id ? styles.dragging : ''} ${isResizing ? styles.resizing : ''} ${hasMultipleCells ? styles.cellWithMultipleCells : ''}`;
-            if (dragOverElement === cell.id) {
-                className += ` ${styles.dragOver}`;
-                if (dragOverPosition === 'top') {
-                    className += ` ${styles.dragOverTop}`;
-                } else if (dragOverPosition === 'bottom') {
-                    className += ` ${styles.dragOverBottom}`;
-                } else if (dragOverPosition === 'left') {
-                    className += ` ${styles.dragOverLeft}`;
-                } else if (dragOverPosition === 'right') {
-                    className += ` ${styles.dragOverRight}`;
-                }
+    // Get the first element for cell styling
+    const firstElement = elements[0];
+
+    // Обработчик для начала перетаскивания всей ячейки (используется только когда в ячейке один элемент)
+    const handleCellDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+
+        // Get the first element ID for drag data
+        const firstElementId = firstElement?.id;
+        if (!firstElementId) return;
+        setDraggingElementId(cell.id);
+
+        // Set the drag data
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('application/json', JSON.stringify({
+            elementId: firstElementId,
+            layoutId: layoutId,
+            cellId: cell.id
+        }));
+
+        // Call the parent's onDragStart handler if provided
+        if (onDragStart) {
+            onDragStart(e, firstElementId, layoutId);
+        }
+    };
+
+    // Обработчик для начала перетаскивания отдельного элемента
+    const handleElementDragStart = (e: React.DragEvent<HTMLDivElement>, elementId: string) => {
+        e.stopPropagation();
+        setDraggingElementId(elementId);
+        // setIsDragging(true);
+
+
+        // Set the drag data
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('application/json', JSON.stringify({
+            elementId: elementId,
+            layoutId: layoutId,
+            cellId: cell.id
+        }));
+
+        // Call the parent's onDragStart handler if provided
+        if (onDragStart) {
+            onDragStart(e, elementId, layoutId);
+        }
+    };
+
+    const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+        setDraggingElementId(null);
+    };
+
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+
+        const isSingleElementInCell = elements.length === 1;
+        if (isSingleElementInCell) {
+            return;
+        }
+        // Set the drop effect
+        e.dataTransfer.dropEffect = 'move';
+
+        // Determine the drop position (top, bottom, left, right)
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left; // x position within the element
+        const y = e.clientY - rect.top;  // y position within the element
+
+        // Calculate the position based on which quadrant of the element the cursor is in
+        const position = determineDropPosition(x, y, rect.width, rect.height);
+
+        // Check if this is near the top or bottom edge and might be intended for layout drop
+        const threshold = 20; // pixels from edge
+        const isNearTopEdge = y < threshold && position === 'top';
+        const isNearBottomEdge = y > rect.height - threshold && position === 'bottom';
+
+        // If we're near an edge that would indicate a layout-level drop, don't stop propagation
+        // so the event can bubble to the layout handler
+        if (isNearTopEdge || isNearBottomEdge) {
+            // Don't stop propagation in this case
+            return;
+        }
+
+        // Only stop propagation in non-edge cases
+        e.stopPropagation();
+
+        const elementId = e.currentTarget.dataset.elementId || e.currentTarget.dataset.cellId;
+        if (!elementId) return;
+
+        // Call the parent's onDragOver handler if provided
+        if (onDragOver) {
+            onDragOver(e, elementId, layoutId, position);
+        }
+    };
+
+    // Helper function to determine the drop position
+    const determineDropPosition = (x: number, y: number, width: number, height: number): 'top' | 'bottom' | 'left' | 'right' => {
+        // Calculate distances from each edge
+        const distanceFromTop = y;
+        const distanceFromBottom = height - y;
+        const distanceFromLeft = x;
+        const distanceFromRight = width - x;
+
+        // Find the minimum distance
+        const minDistance = Math.min(distanceFromTop, distanceFromBottom, distanceFromLeft, distanceFromRight);
+
+        // Return the position based on the minimum distance
+        if (minDistance === distanceFromTop) return 'top';
+        if (minDistance === distanceFromBottom) return 'bottom';
+        if (minDistance === distanceFromLeft) return 'left';
+        if (minDistance === distanceFromRight) return 'right';
+
+        // Default to top if something goes wrong
+        return 'top';
+    };
+
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Get the first element ID
+        const firstElementId = firstElement?.id;
+        if (!firstElementId) return;
+
+        // Determine the drop position
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const position = determineDropPosition(x, y, rect.width, rect.height);
+
+        // Call the parent's onDrop handler if provided
+        if (onDrop) {
+            onDrop(e, firstElementId, layoutId, position);
+        }
+    };
+
+    const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Call the parent's onDragLeave handler if provided
+        if (onDragLeave) {
+            onDragLeave(e);
+        }
+    };
+
+    // Handle resize start
+    const handleResizeStart = (e: React.MouseEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        setIsResizing(true);
+        const leftBorder = slideEditorRef.current?.getBoundingClientRect().left || 0;
+        setStartX(e.clientX - leftBorder);
+
+        // Get the current cell's width
+        const cellElement = editorRef.current;
+        if (cellElement) {
+            const width = cellElement.offsetWidth;
+            setStartWidth(width);
+        }
+
+        // Add event listeners for resize
+        document.addEventListener('mousemove', handleResizeMove);
+        document.addEventListener('mouseup', handleResizeEnd);
+
+        // Add a class to the body to indicate resizing is in progress
+        document.body.classList.add('resizing');
+    };
+
+    // Handle resize move
+    const handleResizeMove = (e: MouseEvent) => {
+        // Get the current layout
+        const presentation = usePresentationStore.getState().getPresentation(presentationId);
+        if (!presentation) return;
+
+        const slide = presentation.slides.find(s => s.id === slideId);
+        if (!slide) return;
+
+        const layout = slide.layouts.find(l => l.id === layoutId);
+        if (!layout || !layout.gridStructure) return;
+
+        // Find the cell in the grid structure
+        const cell = layout.gridStructure.rows[0].cells.find(c => c.id === firstElement?.cellId);
+        if (!cell) return;
+
+        // Get the slide editor dimensions
+        const slideEditorRect = slideEditorRef.current?.getBoundingClientRect();
+        if (!slideEditorRect) return;
+
+        // Calculate the total width of the container
+        const totalWidth = slideEditorRef.current?.offsetWidth || 1000;
+
+        // Calculate the new width based on mouse position
+        const clientX = e.clientX - slideEditorRect.left;
+        const deltaX = clientX - startX;
+        const newWidth = startWidth + deltaX;
+
+        // Calculate the new width as a percentage of the total width
+        const newWidthPercentage = (newWidth / totalWidth) * 100;
+
+        // Get the number of columns in the grid
+        const columns = layout.gridStructure.columns;
+
+        // Initialize columnWidths with percentages if they're in fr format or don't exist
+        let columnWidths = layout.gridStructure.columnWidths || Array(columns).fill(`${(100 / columns).toFixed(2)}%`);
+
+        // Convert any fr units to percentages if needed
+        columnWidths = columnWidths.map(width => {
+            if (width.endsWith('fr')) {
+                // Convert fr to percentage based on equal distribution
+                return `${(100 / columns).toFixed(2)}%`;
             }
-            return className;
+            return width;
+        });
+
+        // Get the current column index (0-based)
+        const currentColumnIndex = cell.column - 1;
+
+        // Calculate the maximum allowed width for this cell
+        // This ensures we don't exceed 100% total width
+        const otherColumnsMinWidth = (columns - 1) * 15; // All other columns at minimum 15%
+        const maxAllowedWidth = 100 - otherColumnsMinWidth;
+
+        // Convert to proportion (0-1) for the adjustColumnWidths function
+        const newWidthPart = Math.min(maxAllowedWidth, Math.max(15, newWidthPercentage)) / 100;
+
+        // Calculate the new column widths
+        const newColumnWidths = adjustColumnWidths(
+            columnWidths,
+            currentColumnIndex,
+            newWidthPart,
+            isLastCell,
+            columns
+        );
+
+        // Update the layout's grid structure with the new column widths
+        const updatedGridStructure = {
+            ...layout.gridStructure,
+            columnWidths: newColumnWidths
         };
 
-        const getElementWrapperClassName = (elementId: string): string => {
-            let className = '';
+        // Update the layout in the store
+        updateLayout(presentationId, slideId, layoutId, {
+            gridStructure: updatedGridStructure
+        });
+    };
 
-            if (dragOverElement === elementId) {
-                if (!hasMultipleCells && (dragOverPosition === 'top' || dragOverPosition === 'bottom')) {
-                    return className;
-                }
+    // Handle resize end
+    const handleResizeEnd = () => {
+        document.removeEventListener('mousemove', handleResizeMove);
+        document.removeEventListener('mouseup', handleResizeEnd);
 
-                className += ` ${styles.dragOver}`;
-                if (dragOverPosition === 'top') {
-                    className += ` ${styles.dragOverTop}`;
-                } else if (dragOverPosition === 'bottom') {
-                    className += ` ${styles.dragOverBottom}`;
-                } else if (dragOverPosition === 'left') {
-                    className += ` ${styles.dragOverLeft}`;
-                } else if (dragOverPosition === 'right') {
-                    className += ` ${styles.dragOverRight}`;
-                }
+        // Reset the resizing state
+        setIsResizing(false);
+    };
+
+    const handleBlur = (element: SlideElement) => {
+        const presentation = usePresentationStore.getState().getPresentation(presentationId);
+        if (!presentation) return;
+
+        const slide = presentation.slides.find(s => s.id === slideId);
+        if (!slide) return;
+
+        const layout = slide.layouts.find(l => l.id === layoutId);
+        if (!layout) return;
+
+        const lastRow = layout.gridStructure.rows[layout.gridStructure.rows.length - 1];
+
+        if (slide.layouts.length > 1 && lastRow.cells.length === 1 && lastRow.cells[0].id === element.cellId && tiptapRefs.current?.[element.id]?.current?.isEmpty()) {
+            usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+        }
+    };
+
+    // Add a resize style if resizing is in progress
+    const resizeStyle: React.CSSProperties = isResizing ? {
+        transition: 'none' // Disable transitions during resize for smoother experience
+    } : {};
+
+    const getGridCellElementClassName = () => {
+        let className = `${styles.gridCellElement} ${draggingElementId === cell.id ? styles.dragging : ''} ${isResizing ? styles.resizing : ''} ${hasMultipleCells ? styles.cellWithMultipleCells : ''}`;
+        if (dragOverElement === cell.id) {
+            className += ` ${styles.dragOver}`;
+            if (dragOverPosition === 'top') {
+                className += ` ${styles.dragOverTop}`;
+            } else if (dragOverPosition === 'bottom') {
+                className += ` ${styles.dragOverBottom}`;
+            } else if (dragOverPosition === 'left') {
+                className += ` ${styles.dragOverLeft}`;
+            } else if (dragOverPosition === 'right') {
+                className += ` ${styles.dragOverRight}`;
             }
-            return className;
-        };
+        }
+        return className;
+    };
 
-        return (
-            <div
-                className={getGridCellElementClassName()}
-                onClick={(ev) => {
-                    ev.stopPropagation();
-                    ev.preventDefault();
-                    onSelect(firstElement);
-                }}
-                style={{
-                    ...resizeStyle,
-                }}
-                onDragOver={(e) => {
-                    e.preventDefault();
+    const getElementWrapperClassName = (elementId: string): string => {
+        let className = '';
 
-                    // Check if this is near an edge and should be handled by layout
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const y = e.clientY - rect.top;
-                    const threshold = 10; // pixels
+        if (dragOverElement === elementId) {
+            if (!hasMultipleCells && (dragOverPosition === 'top' || dragOverPosition === 'bottom')) {
+                return className;
+            }
 
-                    if (y < threshold || y > rect.height - threshold) {
-                        // Let the event bubble up to the layout
-                        return;
-                    }
+            className += ` ${styles.dragOver}`;
+            if (dragOverPosition === 'top') {
+                className += ` ${styles.dragOverTop}`;
+            } else if (dragOverPosition === 'bottom') {
+                className += ` ${styles.dragOverBottom}`;
+            } else if (dragOverPosition === 'left') {
+                className += ` ${styles.dragOverLeft}`;
+            } else if (dragOverPosition === 'right') {
+                className += ` ${styles.dragOverRight}`;
+            }
+        }
+        return className;
+    };
 
-                    // Only stop propagation if we're not near an edge
-                    e.stopPropagation();
+    return (
+        <div
+            className={getGridCellElementClassName()}
+            onClick={(ev) => {
+                ev.stopPropagation();
+                ev.preventDefault();
+                onSelect(firstElement);
+            }}
+            style={{
+                ...resizeStyle,
+            }}
+            onDragOver={(e) => {
+                e.preventDefault();
 
-                    // Only process if we're interacting with the cell container directly,
-                    // not its children
-                    if (e.target === e.currentTarget) {
-                        handleDragOver(e);
-                    }
-                }}
-                onDrop={(e) => {
-                    e.preventDefault();
+                // Check if this is near an edge and should be handled by layout
+                const rect = e.currentTarget.getBoundingClientRect();
+                const y = e.clientY - rect.top;
+                const threshold = 10; // pixels
 
-                    // Check if this is near an edge and should be handled by layout
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const y = e.clientY - rect.top;
-                    const threshold = 10; // pixels
+                if (y < threshold || y > rect.height - threshold) {
+                    // Let the event bubble up to the layout
+                    return;
+                }
 
-                    if (y < threshold || y > rect.height - threshold) {
-                        // Let the event bubble up to the layout
-                        return;
-                    }
+                // Only stop propagation if we're not near an edge
+                e.stopPropagation();
 
-                    // Only stop propagation if we're not near an edge
-                    e.stopPropagation();
+                // Only process if we're interacting with the cell container directly,
+                // not its children
+                if (e.target === e.currentTarget) {
+                    handleDragOver(e);
+                }
+            }}
+            onDrop={(e) => {
+                e.preventDefault();
 
-                    // Only process if we're interacting with the cell container directly
-                    if (e.target === e.currentTarget) {
-                        handleDrop(e);
-                    }
-                }}
-                onDragLeave={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                // Check if this is near an edge and should be handled by layout
+                const rect = e.currentTarget.getBoundingClientRect();
+                const y = e.clientY - rect.top;
+                const threshold = 10; // pixels
 
-                    // Check if we're leaving the element completely
-                    const relatedTarget = e.relatedTarget as HTMLElement;
-                    if (!relatedTarget || !e.currentTarget.contains(relatedTarget)) {
-                        handleDragLeave(e);
-                    }
-                }}
-                data-layout-id={layoutId}
-                data-cell-id={cell.id}
-                data-element-key={dataElementKey}
-                data-index={index}
-                ref={editorRef}
-            >
-                <div className={styles.elementsContainer}>
-                    {elements.map((element, idx) => (
-                        <div key={element.id} className={styles.elementWrapper}>
-                            <div
-                                className={getElementWrapperClassName(element.id)}
-                                data-element-id={element.id}
-                                onDrop={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleDrop(e);
-                                }}
-                                onDragLeave={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleDragLeave(e);
-                                }}
-                                onDragOver={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
+                if (y < threshold || y > rect.height - threshold) {
+                    // Let the event bubble up to the layout
+                    return;
+                }
 
-                                    // Get the element id from the current target
-                                    const elementId = e.currentTarget.dataset.elementId;
-                                    if (!elementId) return;
+                // Only stop propagation if we're not near an edge
+                e.stopPropagation();
 
-                                    // Determine drop position
-                                    const rect = e.currentTarget.getBoundingClientRect();
-                                    const x = e.clientX - rect.left;
-                                    const y = e.clientY - rect.top;
-                                    const position = determineDropPosition(x, y, rect.width, rect.height);
+                // Only process if we're interacting with the cell container directly
+                if (e.target === e.currentTarget) {
+                    handleDrop(e);
+                }
+            }}
+            onDragLeave={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
 
-                                    // Call the parent handler with the correct element ID
-                                    if (onDragOver) {
-                                        onDragOver(e, elementId, layoutId, position);
-                                    }
-                                }}
-                            >
-                                <Tiptap
-                                    key={element.id}
-                                    ref={tiptapRefs.current?.[element.id]}
-                                    id={element.cellId}
-                                    autoFocus={true}
-                                    initialContent={getEditorContent(element)}
-                                    onEnterPressed={handleEnterPressed(element)}
-                                    onBackspacePressed={handleBackspacePressed(element)}
-                                    onFocus={() => onSelect(element)}
-                                    onContentChange={handleEditorContentChange(element.id)}
-                                    onBlur={() => handleBlur(element)}
-                                    customBubbleMenuTrigger={dragHandleRef}
-                                />
-                            </div>
-                            {/* Individual element drag handle (visible when cell has multiple elements) */}
-                            <div
-                                className={styles.elementDragHandle}
-                                draggable
-                                onDragStart={(e) => handleElementDragStart(e, element.id)}
-                                onDragEnd={handleDragEnd}
-                                onDragOver={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                }}
-                                title="Перетащить элемент"
+                // Check if we're leaving the element completely
+                const relatedTarget = e.relatedTarget as HTMLElement;
+                if (!relatedTarget || !e.currentTarget.contains(relatedTarget)) {
+                    handleDragLeave(e);
+                }
+            }}
+            data-layout-id={layoutId}
+            data-cell-id={cell.id}
+            data-element-key={dataElementKey}
+            data-index={index}
+            ref={editorRef}
+        >
+            <div className={styles.elementsContainer}>
+                {elements.map((element, idx) => (
+                    <div key={element.id} className={styles.elementWrapper}>
+                        <div
+                            className={getElementWrapperClassName(element.id)}
+                            data-element-id={element.id}
+                            onDrop={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleDrop(e);
+                            }}
+                            onDragLeave={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleDragLeave(e);
+                            }}
+                            onDragOver={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+
+                                // Get the element id from the current target
+                                const elementId = e.currentTarget.dataset.elementId;
+                                if (!elementId) return;
+
+                                // Determine drop position
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                const x = e.clientX - rect.left;
+                                const y = e.clientY - rect.top;
+                                const position = determineDropPosition(x, y, rect.width, rect.height);
+
+                                // Call the parent handler with the correct element ID
+                                if (onDragOver) {
+                                    onDragOver(e, elementId, layoutId, position);
+                                }
+                            }}
+                        >
+                            <Tiptap
+                                key={element.id}
+                                ref={tiptapRefs.current?.[element.id]}
+                                id={element.cellId}
+                                // eslint-disable-next-line jsx-a11y/no-autofocus
+                                autoFocus={true}
+                                initialContent={getEditorContent(element)}
+                                onEnterPressed={handleEnterPressed(element)}
+                                onBackspacePressed={handleBackspacePressed(element)}
+                                onFocus={() => onSelect(element)}
+                                onContentChange={handleEditorContentChange(element.id)}
+                                onBlur={() => handleBlur(element)}
+                                customBubbleMenuTrigger={dragHandleRef}
                             />
                         </div>
-                    ))}
-                </div>
-
-                {/* Cell drag handle (visible only when cell has a single element) */}
-                {hasMultipleCells && (
-                    <div
-                        ref={dragHandleRef}
-                        className={`${styles.elementDragHandle} ${hasMultipleCells ? styles.dragHandleMultipleCells : ''}`}
-                        draggable
-                        onDragStart={handleCellDragStart}
-                        onDragEnd={handleDragEnd}
-                        onDragOver={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                        }}
-                        title="Перетащить ячейку"
-                    />
-                )}
-
-                {/* Resizable border and indicators for multi-cell layouts */}
-                {hasMultipleCells && !isLastCell && (
-                    <>
+                        {/* Individual element drag handle (visible when cell has multiple elements) */}
                         <div
-                            ref={resizeBorderRef}
-                            className={styles.resizableBorder}
-                            onMouseDown={handleResizeStart}
+                            className={styles.elementDragHandle}
+                            draggable
+                            onDragStart={(e) => handleElementDragStart(e, element.id)}
+                            onDragEnd={handleDragEnd}
+                            onDragOver={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }}
+                            title="Перетащить элемент"
                         />
-                    </>
-                )}
+                    </div>
+                ))}
             </div>
-        );
-    };
+
+            {/* Cell drag handle (visible only when cell has a single element) */}
+            {hasMultipleCells && (
+                <div
+                    ref={dragHandleRef}
+                    className={`${styles.elementDragHandle} ${hasMultipleCells ? styles.dragHandleMultipleCells : ''}`}
+                    draggable
+                    onDragStart={handleCellDragStart}
+                    onDragEnd={handleDragEnd}
+                    onDragOver={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }}
+                    title="Перетащить ячейку"
+                />
+            )}
+
+            {/* Resizable border and indicators for multi-cell layouts */}
+            {hasMultipleCells && !isLastCell && (
+                <>
+                    <div
+                        ref={resizeBorderRef}
+                        className={styles.resizableBorder}
+                        onMouseDown={handleResizeStart}
+                    />
+                </>
+            )}
+        </div>
+    );
+};
 
 export default GridCellElement;

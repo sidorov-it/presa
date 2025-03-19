@@ -235,7 +235,7 @@ const recalcPositionsInCurrentLayout = ({
     });
 
     // Handle column widths
-    let updatedColumnWidths = [...gridStructure.columnWidths];
+    const updatedColumnWidths = [...gridStructure.columnWidths];
 
     moveElement(updatedColumnWidths, sourceCell.column - 1, targetCell.column - 1);
 
