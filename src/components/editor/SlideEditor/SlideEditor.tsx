@@ -290,19 +290,10 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         if (!draggedElementId || !draggedLayoutId) return;
 
         // Remove all drag over classes
-        const targetCell = document.querySelector(`[data-cell-id="${targetElementId}"]`);
-        const targetElement = document.querySelector(`[data-element-id="${targetElementId}"]`);
-        if (targetCell) {
-            targetCell.classList.remove(styles.dragOver, styles.dragOverBottom, styles.dragOverLeft, styles.dragOverRight);
-        }
-        if (targetElement) {
-            targetElement.classList.remove(styles.dragOver, styles.dragOverBottom, styles.dragOverLeft, styles.dragOverRight);
-        }
-
-        // const elements = document.querySelectorAll(`.${styles.dragOver}, .${styles.dragOverBottom}, .${styles.dragOverLeft}, .${styles.dragOverRight}`);
-        // elements.forEach(el => {
-        //     el.classList.remove(styles.dragOver, styles.dragOverBottom, styles.dragOverLeft, styles.dragOverRight);
-        // });
+        const elements = document.querySelectorAll(`.${styles.dragOver}, .${styles.dragOverBottom}, .${styles.dragOverLeft}, .${styles.dragOverRight}`);
+        elements.forEach(el => {
+            el.classList.remove(styles.dragOver, styles.dragOverBottom, styles.dragOverLeft, styles.dragOverRight);
+        });
 
         // If dropping on the same element, do nothing
         if (draggedElementId === targetElementId) {
@@ -591,20 +582,34 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     // Обработчик для отмены перетаскивания
     const handleElementDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
+        e.stopPropagation();
 
         // Check if we're leaving the element completely
         const relatedTarget = e.relatedTarget as HTMLElement;
+        
+        // Clear drag indicators only if we're leaving for an element that's not a child
         if (!relatedTarget || !e.currentTarget.contains(relatedTarget)) {
-            // Remove drag over classes
-            const elements = document.querySelectorAll(
+            // Remove drag over classes from the specific element first
+            if (e.currentTarget.classList) {
+                e.currentTarget.classList.remove(
+                    styles.dragOver,
+                    styles.dragOverBottom,
+                    styles.dragOverLeft,
+                    styles.dragOverRight
+                );
+            }
+            
+            // Then clear all drag indicators from the document if needed
+            const allDragIndicators = document.querySelectorAll(
                 `.${styles.dragOver}, .${styles.dragOverBottom}, .${styles.dragOverLeft}, .${styles.dragOverRight}`
             );
-            elements.forEach(el => {
+            
+            allDragIndicators.forEach(el => {
                 el.classList.remove(
                     styles.dragOver,
                     styles.dragOverBottom,
                     styles.dragOverLeft,
-                    styles.dragOverRight,
+                    styles.dragOverRight
                 );
             });
         }
@@ -768,7 +773,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
-        // setIsDraggingOver(false);
 
         try {
             const data = JSON.parse(e.dataTransfer.getData('application/json'));
