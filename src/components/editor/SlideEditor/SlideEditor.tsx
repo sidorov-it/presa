@@ -118,6 +118,13 @@ export const getColumnWidths = (columnsCount: number): string[] => {
     }
 }
 
+type DndState = {
+    dragOverElement: string | null;
+    dragOverPosition: 'top' | 'bottom' | 'left' | 'right' | null;
+    targetElementId: string | null;
+    targetLayoutId: string | null;
+};
+
 const SlideEditor: React.FC<SlideEditorProps> = ({
     slide,
     presentationId,
@@ -128,8 +135,29 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const [draggedElementId, setDraggedElementId] = useState<string | null>(null);
     const [draggedLayoutId, setDraggedLayoutId] = useState<string | null>(null);
     const tiptapRefs = useRef<Record<string, React.RefObject<TiptapRef>>>({});
-    const [dragOverElement, setDragOverElement] = useState<string | null>(null);
-    const [dragOverPosition, setDragOverPosition] = useState<'top' | 'bottom' | 'left' | 'right' | null>(null);
+    const dndStateRef = useRef<DndState>({
+        dragOverElement: null,
+        dragOverPosition: null,
+        targetElementId: null,
+        targetLayoutId: null
+    });
+    const [dndState, setDndState] = useState<DndState>({
+        dragOverElement: null,
+        dragOverPosition: null,
+        targetElementId: null,
+        targetLayoutId: null
+    });
+
+    const updateDndState = (newState: Partial<DndState>) => {
+        setDndState(prevState => {
+            dndStateRef.current = { ...dndStateRef.current, ...newState };
+            return { ...prevState, ...newState };
+        });
+    };
+    // const [dragOverElement, setDragOverElement] = useState<string | null>(null);
+    // const [dragOverPosition, setDragOverPosition] = useState<'top' | 'bottom' | 'left' | 'right' | null>(null);
+    // const [targetElementId, setTargetElementId] = useState<string | null>(null);
+    // const [targetLayoutId, setTargetLayoutId] = useState<string | null>(null);
 
     const {
         addLayout,
@@ -245,70 +273,91 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         // setShowTemplates(false);
     };
 
+    useEffect(() => {
+        // Create a document-level handler that references current state
+        const handleDocumentDragStart = (event: DragEvent) => {
+        };
+        
+        const handleDocumentDragOver = (event: DragEvent) => {
+            // Need to prevent default to allow drop
+            event.preventDefault();
+            
+            // Check if the drag is happening outside of the slide area
+            if (editorRef.current) {
+                const editorRect = editorRef.current.getBoundingClientRect();
+                const isOutsideSlide = 
+                    event.clientX < editorRect.left || 
+                    event.clientX > editorRect.right || 
+                    event.clientY < editorRect.top || 
+                    event.clientY > editorRect.bottom;
+                
+                if (isOutsideSlide && draggedElementId) {
+                    // Set a special state for dropping outside, or you could use a fixed position indicator
+                    // setDragOverElement('outside');
+                    resetDragState();
+                }
+            }
+        };
+        
+        const handleDocumentDrop = (event: DragEvent) => {
+            event.preventDefault();
+            
+            // Only process if we have dragged element info
+            if (draggedElementId && draggedLayoutId && dndStateRef.current.targetElementId && dndStateRef.current.targetLayoutId) {
+                const dragEvent = event as unknown as React.DragEvent<HTMLDivElement>;
+                handleElementDrop(dragEvent);
+            }
+        };
+
+        // Add event listeners
+        document.addEventListener("dragstart", handleDocumentDragStart);
+        document.addEventListener("dragover", handleDocumentDragOver);
+        document.addEventListener("drop", handleDocumentDrop);
+
+        // Clean up listeners when component unmounts
+        return () => {
+            document.removeEventListener("dragstart", handleDocumentDragStart);
+            document.removeEventListener("dragover", handleDocumentDragOver);
+            document.removeEventListener("drop", handleDocumentDrop);
+        };
+    }, [draggedElementId, draggedLayoutId, dndStateRef.current.targetElementId, dndStateRef.current.targetLayoutId]); // Include current state values as dependencies
+
     // Обработчик для начала перетаскивания элемента
     const handleElementDragStart = (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string) => {
         setDraggedElementId(elementId);
         setDraggedLayoutId(layoutId);
+
     };
 
     // Обработчик для перетаскивания над элементом
     const handleElementDragOver = (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string, position: 'top' | 'bottom' | 'left' | 'right') => {
-        console.log('handleElementDragOver slide editor');
         e.preventDefault();
 
         if (draggedElementId === elementId) return;
 
-        setDragOverElement(elementId);
-        setDragOverPosition(position);
-        // Remove all drag over classes first
-        // const cellElements = document.querySelectorAll(`[data-cell-id="${elementId}"]`);
-        // const elementsElements = document.querySelectorAll(`[data-element-id="${elementId}"]`);
-        // // console.log('elements', Array.from(cellElements).map(el => el.dataset.elementId));
-        // const elements = Array.from(cellElements).concat(Array.from(elementsElements));
-        // elements.forEach(el => {
-        //     // console.log('set classes to element', el);
-        //     el.classList.remove(styles.dragOver, styles.dragOverBottom, styles.dragOverLeft, styles.dragOverRight);
-
-        //     // Add the appropriate class based on the position
-        //     switch (position) {
-        //         case 'top':
-        //             el.classList.add(styles.dragOver);
-        //             break;
-        //         case 'bottom':
-        //             el.classList.add(styles.dragOverBottom);
-        //             break;
-        //         case 'left':
-        //             el.classList.add(styles.dragOverLeft);
-        //             break;
-        //         case 'right':
-        //             el.classList.add(styles.dragOverRight);
-        //             break;
-        //     }
-        // });
+        updateDndState({
+            dragOverElement: elementId,
+            dragOverPosition: position,
+            targetElementId: elementId,
+            targetLayoutId: layoutId
+        });
     };
 
     // Обработчик для сброса элемента
-    const handleElementDrop = (e: React.DragEvent<HTMLDivElement>, targetElementId: string, targetLayoutId: string, position: 'top' | 'bottom' | 'left' | 'right') => {
-        console.log('handleElementDrop slide editor');
+    const handleElementDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
 
         if (!draggedElementId || !draggedLayoutId) return;
 
-        // Remove all drag over classes
-        // const elements = document.querySelectorAll(`.${styles.dragOver}, .${styles.dragOverBottom}, .${styles.dragOverLeft}, .${styles.dragOverRight}`);
-        // elements.forEach(el => {
-        //     el.classList.remove(styles.dragOver, styles.dragOverBottom, styles.dragOverLeft, styles.dragOverRight);
-        // });
-
         // If dropping on the same element, do nothing
-        if (draggedElementId === targetElementId) {
+        if (draggedElementId === dndStateRef.current.targetElementId) {
             resetDragState();
             return;
         }
 
         // Get the current layout and target layout
         const currentLayout = slide.layouts.find(l => l.id === draggedLayoutId);
-        const targetLayout = slide.layouts.find(l => l.id === targetLayoutId);
+        const targetLayout = slide.layouts.find(l => l.id === dndStateRef.current.targetLayoutId);
 
         if (!currentLayout || !targetLayout) {
             resetDragState();
@@ -318,18 +367,18 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         // Get the dragged element
         const draggedElement = currentLayout.elements.find(e => e.id === draggedElementId);
 
-        if (!draggedElement) {
+        if (!draggedElement || !dndStateRef.current.targetElementId || !dndStateRef.current.targetLayoutId) {
             resetDragState();
             return;
         }
-
+        
         // Handle vertical dragging (top/bottom)
-        if (position === 'top' || position === 'bottom') {
-            handleVerticalDrop(draggedElement, currentLayout, targetLayout, targetElementId, position);
+        if (dndStateRef.current.dragOverPosition === 'top' || dndStateRef.current.dragOverPosition === 'bottom') {
+            handleVerticalDrop(draggedElement, currentLayout, targetLayout, dndStateRef.current.targetElementId, dndStateRef.current.dragOverPosition);
         }
         // Handle horizontal dragging (left/right)
-        else if (position === 'left' || position === 'right') {
-            handleHorizontalDrop(draggedElement, currentLayout, targetLayout, targetElementId, position);
+        else if (dndStateRef.current.dragOverPosition === 'left' || dndStateRef.current.dragOverPosition === 'right') {
+            handleHorizontalDrop(draggedElement, currentLayout, targetLayout, dndStateRef.current.targetElementId, dndStateRef.current.dragOverPosition);
         }
 
         resetDragState();
@@ -339,7 +388,15 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const resetDragState = () => {
         setDraggedElementId(null);
         setDraggedLayoutId(null);
-        setDragOverElement(null);
+        updateDndState({
+            dragOverElement: null,
+            dragOverPosition: null,
+            targetElementId: null,
+            targetLayoutId: null
+        });
+        // setDragOverElement(null);
+        // setTargetElementId(null);
+        // setTargetLayoutId(null);
     };
 
     // Handle vertical drop (top/bottom)
@@ -586,41 +643,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     };
 
     // Обработчик для отмены перетаскивания
-    const handleElementDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-        console.log('handleElementDragLeave slide editor');
-        // e.preventDefault();
-        // e.stopPropagation();
-
-        // // Check if we're leaving the element completely
-        // const relatedTarget = e.relatedTarget as HTMLElement;
-        
-        // // Clear drag indicators only if we're leaving for an element that's not a child
-        // if (!relatedTarget || !e.currentTarget.contains(relatedTarget)) {
-        //     // Remove drag over classes from the specific element first
-        //     if (e.currentTarget.classList) {
-        //         e.currentTarget.classList.remove(
-        //             styles.dragOver,
-        //             styles.dragOverBottom,
-        //             styles.dragOverLeft,
-        //             styles.dragOverRight
-        //         );
-        //     }
-            
-        //     // Then clear all drag indicators from the document if needed
-        //     const allDragIndicators = document.querySelectorAll(
-        //         `.${styles.dragOver}, .${styles.dragOverBottom}, .${styles.dragOverLeft}, .${styles.dragOverRight}`
-        //     );
-            
-        //     allDragIndicators.forEach(el => {
-        //         el.classList.remove(
-        //             styles.dragOver,
-        //             styles.dragOverBottom,
-        //             styles.dragOverLeft,
-        //             styles.dragOverRight
-        //         );
-        //     });
-        // }
-    };
+    const handleElementDragLeave = (e: React.DragEvent<HTMLDivElement>) => {};
 
     // Рекурсивная функция для рендеринга макетов и их вложенных элементов
     const renderLayoutContent = (layout: Layout) => {
@@ -672,8 +695,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                                     tiptapRefs={tiptapRefs}
                                     cell={cell}
                                     elements={elements}
-                                    dragOverElement={dragOverElement}
-                                    dragOverPosition={dragOverPosition}
+                                    dragOverElement={dndStateRef.current.dragOverElement}
+                                    dragOverPosition={dndStateRef.current.dragOverPosition}
                                     presentationId={presentationId}
                                     slideId={slide.id}
                                     layoutId={layout.id}

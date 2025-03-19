@@ -378,7 +378,11 @@ const GridCellElement: React.FC<{
 
             // Set the drag data
             e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', firstElementId);
+            e.dataTransfer.setData('application/json', JSON.stringify({
+                elementId: firstElementId,
+                layoutId: layoutId,
+                cellId: cell.id
+            }));
 
             // Call the parent's onDragStart handler if provided
             if (onDragStart) {
@@ -399,7 +403,11 @@ const GridCellElement: React.FC<{
 
             // Set the drag data
             e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', elementId);
+            e.dataTransfer.setData('application/json', JSON.stringify({
+                elementId: elementId,
+                layoutId: layoutId,
+                cellId: cell.id
+            }));
 
             // Call the parent's onDragStart handler if provided
             if (onDragStart) {
@@ -408,7 +416,6 @@ const GridCellElement: React.FC<{
         };
 
     const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
-            console.log('handleDragEnd grid cell element');
             e.stopPropagation();
             setDraggingElementId(null);
 
@@ -419,7 +426,6 @@ const GridCellElement: React.FC<{
         };
 
         const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-            console.log('handleDragOver grid cell element');
             e.preventDefault();
             e.stopPropagation();
 
@@ -465,7 +471,6 @@ const GridCellElement: React.FC<{
         };
 
         const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-            console.log('handleDrop grid cell element');
             e.preventDefault();
             e.stopPropagation();
 
@@ -486,7 +491,6 @@ const GridCellElement: React.FC<{
         };
 
         const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-            console.log('handleDragLeave grid cell element');
             e.preventDefault();
             e.stopPropagation();
 

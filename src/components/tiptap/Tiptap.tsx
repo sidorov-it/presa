@@ -183,7 +183,7 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
         onFocus: () => {
             onFocus();
             // Set this editor as the active editor in the store
-            setActiveEditor(editor);
+            // setActiveEditor(editor);
         },
         onUpdate: ({ editor }) => {
             const html = editor.getHTML();
