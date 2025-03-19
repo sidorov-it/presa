@@ -365,12 +365,7 @@ const GridCellElement: React.FC<{
         // Обработчик для начала перетаскивания всей ячейки (используется только когда в ячейке один элемент)
         const handleCellDragStart = (e: React.DragEvent<HTMLDivElement>) => {
             e.stopPropagation();
-            
-            // Add the dragging class
-            if (e.currentTarget.classList) {
-                e.currentTarget.classList.add(styles.dragging);
-            }
-            
+
             // Get the first element ID for drag data
             const firstElementId = firstElement?.id;
             if (!firstElementId) return;
@@ -396,10 +391,6 @@ const GridCellElement: React.FC<{
             setDraggingElementId(elementId);
             // setIsDragging(true);
 
-            // Add the dragging class to the element
-            // if (e.currentTarget.classList) {
-            //     e.currentTarget.classList.add(styles.dragging);
-            // }
 
             // Set the drag data
             e.dataTransfer.effectAllowed = 'move';
@@ -415,14 +406,9 @@ const GridCellElement: React.FC<{
             }
         };
 
-    const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
+        const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
             e.stopPropagation();
             setDraggingElementId(null);
-
-            // Remove the dragging class
-            if (e.currentTarget.classList) {
-                e.currentTarget.classList.remove(styles.dragging);
-            }
         };
 
         const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -649,24 +635,24 @@ const GridCellElement: React.FC<{
             }
             return className;
         };
-    
-    const getElementWrapperClassName = (elementId: string): string => {
-        let className = '';
 
-        if (dragOverElement === elementId) {
-            className += ` ${styles.dragOver}`;
-            if (dragOverPosition === 'top') {
-                className += ` ${styles.dragOverTop}`;
-            } else if (dragOverPosition === 'bottom') {
-                className += ` ${styles.dragOverBottom}`;
-            } else if (dragOverPosition === 'left') {
-                className += ` ${styles.dragOverLeft}`;
-            } else if (dragOverPosition === 'right') {
-                className += ` ${styles.dragOverRight}`;
+        const getElementWrapperClassName = (elementId: string): string => {
+            let className = '';
+
+            if (dragOverElement === elementId) {
+                className += ` ${styles.dragOver}`;
+                if (dragOverPosition === 'top') {
+                    className += ` ${styles.dragOverTop}`;
+                } else if (dragOverPosition === 'bottom') {
+                    className += ` ${styles.dragOverBottom}`;
+                } else if (dragOverPosition === 'left') {
+                    className += ` ${styles.dragOverLeft}`;
+                } else if (dragOverPosition === 'right') {
+                    className += ` ${styles.dragOverRight}`;
+                }
             }
-        }
-        return className;
-    };
+            return className;
+        };
 
         return (
             <div
@@ -682,7 +668,7 @@ const GridCellElement: React.FC<{
                 onDragOver={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    
+
                     // Only process if we're interacting with the cell container directly,
                     // not its children
                     if (e.target === e.currentTarget) {
@@ -692,7 +678,7 @@ const GridCellElement: React.FC<{
                 onDrop={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    
+
                     // Only process if we're interacting with the cell container directly
                     if (e.target === e.currentTarget) {
                         handleDrop(e);
@@ -701,7 +687,7 @@ const GridCellElement: React.FC<{
                 onDragLeave={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    
+
                     // Check if we're leaving the element completely
                     const relatedTarget = e.relatedTarget as HTMLElement;
                     if (!relatedTarget || !e.currentTarget.contains(relatedTarget)) {
@@ -733,17 +719,17 @@ const GridCellElement: React.FC<{
                                 onDragOver={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    
+
                                     // Get the element id from the current target
                                     const elementId = e.currentTarget.dataset.elementId;
                                     if (!elementId) return;
-                                    
+
                                     // Determine drop position
                                     const rect = e.currentTarget.getBoundingClientRect();
                                     const x = e.clientX - rect.left;
                                     const y = e.clientY - rect.top;
                                     const position = determineDropPosition(x, y, rect.width, rect.height);
-                                    
+
                                     // Call the parent handler with the correct element ID
                                     if (onDragOver) {
                                         onDragOver(e, elementId, layoutId, position);
@@ -786,7 +772,7 @@ const GridCellElement: React.FC<{
                 {elements.length === 1 && (
                     <div
                         ref={dragHandleRef}
-                        className={`${styles.dragHandle} ${hasMultipleCells ? styles.dragHandleMultipleCells : ''}`}
+                        className={`${styles.elementDragHandle} ${hasMultipleCells ? styles.dragHandleMultipleCells : ''}`}
                         draggable
                         onDragStart={handleCellDragStart}
                         onDragEnd={handleDragEnd}

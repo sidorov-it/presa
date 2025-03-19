@@ -12,6 +12,7 @@
 .cellWithMultipleCells {
     padding-inline-start: 1.22rem;
     padding-inline-end: 1.22rem;
+    border: 1px solid #64748b;
 }
 
 .dragHandle {
@@ -34,14 +35,17 @@
 }
 
 .dragHandleMultipleCells {
-    left: 8px;
+    top: 0px !important;
+    opacity: 1 !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) rotate(90deg) !important;
 }
 
 .gridCellElement {
     position: relative;
 }
 
-.gridCellElement:hover .dragHandle {
+.gridCellElement:hover .elementDragHandle {
     opacity: 1;
 }
 

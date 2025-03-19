@@ -199,10 +199,6 @@
     z-index: 10;
 }
 
-.dragging {
-    opacity: 0.5;
-}
-
 .dragOverLayout {
     position: relative;
 }

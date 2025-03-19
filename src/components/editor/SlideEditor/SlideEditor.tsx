@@ -464,6 +464,24 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         } else if (targetLayout.id === currentLayout.id) {
             const updatedElements = [...targetLayout.elements].filter((e: any) => e.id !== draggedElement.id);
 
+            // если изменилась ячейка, то смотрим, остались ли в ней другие элементы
+            // если нет, то создаем новый элемент
+            if (draggedElement.cellId !== targetElement.cellId) {
+                const cellElements = updatedElements.filter(e => e.cellId === draggedElement.cellId);
+                const isOnlyOneElementInCell = cellElements.length === 0;
+                if (isOnlyOneElementInCell) {
+                    updatedElements.push({
+                        id: generateId(8),
+                        type: 'editor',
+                        content: '',
+                        position: { x: 0, y: 0 },
+                        size: { width: 100, height: 40 },
+                        style: { fontSize: '16px', color: '#333333' },
+                        zIndex: 1,
+                        cellId: draggedElement.cellId
+                    });
+                }
+            }
             updatedElements.splice(insertIndex, 0, {
                 ...draggedElement,
                 cellId: targetElement.cellId
@@ -810,6 +828,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                             const cellId = cell.id;
                             const elements = cellElements[cellId] || [];
                             const isLastCell = cellIndex === row.cells.length - 1;
+                            // const hasMultipleCells = row.cells.length > 1;
 
                             return (
                                 <GridCellElement
