@@ -10,7 +10,6 @@ import GridCellElement from '../GridCellElement';
 import { generateGridTemplateAreas, generateGridTemplateColumns, getPredefinedGridStructures } from '@/types';
 import { recalcPositions } from '@/utils/grid-utils';
 import { generateId } from '@/utils/id';
-import { getTextContentFromNodes } from '@tiptap/react';
 import { TiptapRef } from '@/components/tiptap/Tiptap';
 
 interface SlideEditorProps {
@@ -129,6 +128,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const [draggedElementId, setDraggedElementId] = useState<string | null>(null);
     const [draggedLayoutId, setDraggedLayoutId] = useState<string | null>(null);
     const tiptapRefs = useRef<Record<string, React.RefObject<TiptapRef>>>({});
+    const [dragOverElement, setDragOverElement] = useState<string | null>(null);
+    const [dragOverPosition, setDragOverPosition] = useState<'top' | 'bottom' | 'left' | 'right' | null>(null);
 
     const {
         addLayout,
@@ -252,53 +253,48 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     // Обработчик для перетаскивания над элементом
     const handleElementDragOver = (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string, position: 'top' | 'bottom' | 'left' | 'right') => {
+        console.log('handleElementDragOver slide editor');
         e.preventDefault();
 
         if (draggedElementId === elementId) return;
 
+        setDragOverElement(elementId);
+        setDragOverPosition(position);
         // Remove all drag over classes first
-        const cellElements = document.querySelectorAll(`[data-cell-id="${elementId}"]`);
-        const elementsElements = document.querySelectorAll(`[data-element-id="${elementId}"]`);
-        // console.log('elements', Array.from(cellElements).map(el => el.dataset.elementId));
-        const elements = Array.from(cellElements).concat(Array.from(elementsElements));
-        elements.forEach(el => {
-            // console.log('set classes to element', el);
-            el.classList.remove(styles.dragOver, styles.dragOverBottom, styles.dragOverLeft, styles.dragOverRight);
+        // const cellElements = document.querySelectorAll(`[data-cell-id="${elementId}"]`);
+        // const elementsElements = document.querySelectorAll(`[data-element-id="${elementId}"]`);
+        // // console.log('elements', Array.from(cellElements).map(el => el.dataset.elementId));
+        // const elements = Array.from(cellElements).concat(Array.from(elementsElements));
+        // elements.forEach(el => {
+        //     // console.log('set classes to element', el);
+        //     el.classList.remove(styles.dragOver, styles.dragOverBottom, styles.dragOverLeft, styles.dragOverRight);
 
-            // Add the appropriate class based on the position
-            switch (position) {
-                case 'top':
-                    el.classList.add(styles.dragOver);
-                    break;
-                case 'bottom':
-                    el.classList.add(styles.dragOverBottom);
-                    break;
-                case 'left':
-                    el.classList.add(styles.dragOverLeft);
-                    break;
-                case 'right':
-                    el.classList.add(styles.dragOverRight);
-                    break;
-            }
-        });
+        //     // Add the appropriate class based on the position
+        //     switch (position) {
+        //         case 'top':
+        //             el.classList.add(styles.dragOver);
+        //             break;
+        //         case 'bottom':
+        //             el.classList.add(styles.dragOverBottom);
+        //             break;
+        //         case 'left':
+        //             el.classList.add(styles.dragOverLeft);
+        //             break;
+        //         case 'right':
+        //             el.classList.add(styles.dragOverRight);
+        //             break;
+        //     }
+        // });
     };
 
     // Обработчик для сброса элемента
     const handleElementDrop = (e: React.DragEvent<HTMLDivElement>, targetElementId: string, targetLayoutId: string, position: 'top' | 'bottom' | 'left' | 'right') => {
+        console.log('handleElementDrop slide editor');
         e.preventDefault();
 
         if (!draggedElementId || !draggedLayoutId) return;
 
         // Remove all drag over classes
-        const targetCell = document.querySelector(`[data-cell-id="${targetElementId}"]`);
-        const targetElement = document.querySelector(`[data-element-id="${targetElementId}"]`);
-        if (targetCell) {
-            targetCell.classList.remove(styles.dragOver, styles.dragOverBottom, styles.dragOverLeft, styles.dragOverRight);
-        }
-        if (targetElement) {
-            targetElement.classList.remove(styles.dragOver, styles.dragOverBottom, styles.dragOverLeft, styles.dragOverRight);
-        }
-
         // const elements = document.querySelectorAll(`.${styles.dragOver}, .${styles.dragOverBottom}, .${styles.dragOverLeft}, .${styles.dragOverRight}`);
         // elements.forEach(el => {
         //     el.classList.remove(styles.dragOver, styles.dragOverBottom, styles.dragOverLeft, styles.dragOverRight);
@@ -343,6 +339,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const resetDragState = () => {
         setDraggedElementId(null);
         setDraggedLayoutId(null);
+        setDragOverElement(null);
     };
 
     // Handle vertical drop (top/bottom)
@@ -590,24 +587,39 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     // Обработчик для отмены перетаскивания
     const handleElementDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
+        console.log('handleElementDragLeave slide editor');
+        // e.preventDefault();
+        // e.stopPropagation();
 
-        // Check if we're leaving the element completely
-        const relatedTarget = e.relatedTarget as HTMLElement;
-        if (!relatedTarget || !e.currentTarget.contains(relatedTarget)) {
-            // Remove drag over classes
-            const elements = document.querySelectorAll(
-                `.${styles.dragOver}, .${styles.dragOverBottom}, .${styles.dragOverLeft}, .${styles.dragOverRight}`
-            );
-            elements.forEach(el => {
-                el.classList.remove(
-                    styles.dragOver,
-                    styles.dragOverBottom,
-                    styles.dragOverLeft,
-                    styles.dragOverRight,
-                );
-            });
-        }
+        // // Check if we're leaving the element completely
+        // const relatedTarget = e.relatedTarget as HTMLElement;
+        
+        // // Clear drag indicators only if we're leaving for an element that's not a child
+        // if (!relatedTarget || !e.currentTarget.contains(relatedTarget)) {
+        //     // Remove drag over classes from the specific element first
+        //     if (e.currentTarget.classList) {
+        //         e.currentTarget.classList.remove(
+        //             styles.dragOver,
+        //             styles.dragOverBottom,
+        //             styles.dragOverLeft,
+        //             styles.dragOverRight
+        //         );
+        //     }
+            
+        //     // Then clear all drag indicators from the document if needed
+        //     const allDragIndicators = document.querySelectorAll(
+        //         `.${styles.dragOver}, .${styles.dragOverBottom}, .${styles.dragOverLeft}, .${styles.dragOverRight}`
+        //     );
+            
+        //     allDragIndicators.forEach(el => {
+        //         el.classList.remove(
+        //             styles.dragOver,
+        //             styles.dragOverBottom,
+        //             styles.dragOverLeft,
+        //             styles.dragOverRight
+        //         );
+        //     });
+        // }
     };
 
     // Рекурсивная функция для рендеринга макетов и их вложенных элементов
@@ -656,16 +668,18 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                             return (
                                 <GridCellElement
                                     key={cellId}
+                                    slideEditorRef={editorRef}
+                                    tiptapRefs={tiptapRefs}
                                     cell={cell}
                                     elements={elements}
+                                    dragOverElement={dragOverElement}
+                                    dragOverPosition={dragOverPosition}
                                     presentationId={presentationId}
                                     slideId={slide.id}
                                     layoutId={layout.id}
                                     index={cellIndex}
                                     hasMultipleCells={hasMultipleCellsInRow}
                                     isLastCell={isLastCell}
-                                    slideEditorRef={editorRef}
-                                    tiptapRefs={tiptapRefs}
                                     dataElementKey={`${layout.id}-${cellId}`}
                                     onSelect={(element) => handleSelectElement(element.id)}
                                     onDelete={(element) => handleDeleteElement(layout.id, element.id)}

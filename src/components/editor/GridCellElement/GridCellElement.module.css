@@ -106,27 +106,33 @@
 .dragOver::before {
     content: '';
     position: absolute;
+    /* top: 0;
+    left: 0;
+    right: 0; */
+    background-color: #3b82f6;
+    z-index: 10;
+}
+
+.dragOverTop {
+    position: relative;
+}
+
+.dragOverTop::before {
     top: 0;
     left: 0;
     right: 0;
     height: 2px;
-    background-color: #3b82f6;
-    z-index: 10;
 }
 
 .dragOverBottom {
     position: relative;
 }
 
-.dragOverBottom::after {
-    content: '';
-    position: absolute;
+.dragOverBottom::before {
     bottom: 0;
     left: 0;
     right: 0;
     height: 2px;
-    background-color: #3b82f6;
-    z-index: 10;
 }
 
 /* Horizontal drag indicators (left/right) */
@@ -135,29 +141,21 @@
 }
 
 .dragOverLeft::before {
-    content: '';
-    position: absolute;
     top: 0;
     left: 0;
     bottom: 0;
     width: 2px;
-    background-color: #3b82f6;
-    z-index: 10;
 }
 
 .dragOverRight {
     position: relative;
 }
 
-.dragOverRight::after {
-    content: '';
-    position: absolute;
+.dragOverRight::before {
     top: 0;
     right: 0;
     bottom: 0;
     width: 2px;
-    background-color: #3b82f6;
-    z-index: 10;
 }
 
 .dragOverLayout {
