@@ -816,6 +816,10 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         return (
             <div
                 className={styles.layoutContent}
+                data-layout-id={layout.id}
+                // onDragOver={() => {
+                //     console.log('onDragOver layout')
+                // }}
                 style={{
                     display: 'grid',
                     gridTemplateAreas,

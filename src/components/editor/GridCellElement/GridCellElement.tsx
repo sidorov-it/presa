@@ -751,25 +751,23 @@ const GridCellElement: React.FC<{
                                 />
                             </div>
                             {/* Individual element drag handle (visible when cell has multiple elements) */}
-                            {elements.length > 1 && (
-                                <div
-                                    className={styles.elementDragHandle}
-                                    draggable
-                                    onDragStart={(e) => handleElementDragStart(e, element.id)}
-                                    onDragEnd={handleDragEnd}
-                                    onDragOver={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                    }}
-                                    title="Перетащить элемент"
-                                />
-                            )}
+                            <div
+                                className={styles.elementDragHandle}
+                                draggable
+                                onDragStart={(e) => handleElementDragStart(e, element.id)}
+                                onDragEnd={handleDragEnd}
+                                onDragOver={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                }}
+                                title="Перетащить элемент"
+                            />
                         </div>
                     ))}
                 </div>
 
                 {/* Cell drag handle (visible only when cell has a single element) */}
-                {elements.length === 1 && (
+                {hasMultipleCells && (
                     <div
                         ref={dragHandleRef}
                         className={`${styles.elementDragHandle} ${hasMultipleCells ? styles.dragHandleMultipleCells : ''}`}
