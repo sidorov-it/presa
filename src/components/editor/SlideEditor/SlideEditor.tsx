@@ -139,14 +139,16 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         dragOverElement: null,
         dragOverPosition: null,
         targetElementId: null,
-        targetLayoutId: null
+        targetLayoutId: null,
     });
+
     const [dndState, setDndState] = useState<DndState>({
         dragOverElement: null,
         dragOverPosition: null,
         targetElementId: null,
-        targetLayoutId: null
+        targetLayoutId: null,
     });
+
     // New state for layout-level drag and drop
     const [layoutDragState, setLayoutDragState] = useState<{
         dragOverLayout: string | null,
@@ -156,11 +158,27 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         dragOverPosition: null
     });
 
-    const updateDndState = (newState: Partial<DndState>) => {
-        setDndState(prevState => {
-            dndStateRef.current = { ...dndStateRef.current, ...newState };
+    const updateLayoutDragState = (newState: Partial<any>) => {
+        setLayoutDragState(prevState => {
             return { ...prevState, ...newState };
         });
+
+        setDndState({
+            dragOverElement: null,
+            dragOverPosition: null,
+            targetElementId: null,
+            targetLayoutId: null
+        });
+    };
+    const updateDndState = (newState: Partial<DndState>) => {
+        setDndState(prevState => {
+            dndStateRef.current = { ...prevState, ...newState };
+            return { ...prevState, ...newState };
+        });
+        setLayoutDragState({
+            dragOverLayout: null,
+            dragOverPosition: null,
+        })
     };
     // const [dragOverElement, setDragOverElement] = useState<string | null>(null);
     // const [dragOverPosition, setDragOverPosition] = useState<'top' | 'bottom' | 'left' | 'right' | null>(null);
@@ -299,11 +317,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     event.clientY < editorRect.top ||
                     event.clientY > editorRect.bottom;
 
-                if (isOutsideSlide && draggedElementId) {
+                if (draggedElementId) {
                     // Set a special state for dropping outside, or you could use a fixed position indicator
                     // setDragOverElement('outside');
                     resetDragState();
-                    setLayoutDragState({
+                    updateLayoutDragState({
                         dragOverLayout: null,
                         dragOverPosition: null
                     });
@@ -327,7 +345,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             }
 
             // Reset layout drag state
-            setLayoutDragState({
+            updateLayoutDragState({
                 dragOverLayout: null,
                 dragOverPosition: null
             });
@@ -335,13 +353,13 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
         // Add event listeners
         document.addEventListener("dragstart", handleDocumentDragStart);
-        document.addEventListener("dragover", handleDocumentDragOver);
+        // document.addEventListener("dragover", handleDocumentDragOver);
         document.addEventListener("drop", handleDocumentDrop);
 
         // Clean up event listeners on unmount
         return () => {
             document.removeEventListener("dragstart", handleDocumentDragStart);
-            document.removeEventListener("dragover", handleDocumentDragOver);
+            // document.removeEventListener("dragover", handleDocumentDragOver);
             document.removeEventListener("drop", handleDocumentDrop);
         };
     }, [draggedElementId, draggedLayoutId, slide.id]);
@@ -349,8 +367,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     // Обработчик для начала перетаскивания элемента
     const handleElementDragStart = (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string) => {
         e.stopPropagation();
-
-        console.log('Element drag start:', elementId, 'from layout:', layoutId);
 
         // Set drag data for internal use
         setDraggedElementId(elementId);
@@ -365,7 +381,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         });
 
         // Clear layout drag state
-        setLayoutDragState({
+        updateLayoutDragState({
             dragOverLayout: null,
             dragOverPosition: null
         });
@@ -381,13 +397,16 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const handleElementDragOver = (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string, position: 'top' | 'bottom' | 'left' | 'right') => {
         e.preventDefault();
 
-        if (!draggedElementId || !draggedLayoutId) return;
+        if (!draggedElementId || !draggedLayoutId) {
+            return;
+        }
+
 
         // If this is the same element, don't do anything
         if (draggedElementId === elementId) return;
 
         // Clear any layout-level drag indicators
-        setLayoutDragState({
+        updateLayoutDragState({
             dragOverLayout: null,
             dragOverPosition: null
         });
@@ -405,9 +424,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const handleLayoutDragOver = (e: React.DragEvent<HTMLDivElement>, layoutId: string) => {
         e.preventDefault();
 
-        // Add a console log to confirm the function is being called
-        console.log('Layout drag over event detected:', layoutId);
-
         if (!draggedElementId || !draggedLayoutId || draggedLayoutId === layoutId) return;
 
         // Get the layout element
@@ -418,8 +434,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         const mouseY = e.clientY;
         const mouseYRelative = mouseY - layoutRect.top;
         const threshold = 30; // Increased threshold for better detection
-
-        console.log('Mouse position relative to layout:', mouseYRelative, 'Layout height:', layoutRect.height);
 
         // Determine if we're in the top or bottom drop zone
         let position: 'top' | 'bottom' | null = null;
@@ -432,8 +446,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
         // Only update state if we're in a drop zone
         if (position) {
-            console.log('Layout drag over:', layoutId, position);
-
             // Clear element-level drag state
             updateDndState({
                 dragOverElement: null,
@@ -443,14 +455,13 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             });
 
             // Set layout-level drag state
-            console.log('set layout drag state', layoutId, position)
-            setLayoutDragState({
+            updateLayoutDragState({
                 dragOverLayout: layoutId,
                 dragOverPosition: position
             });
         } else {
             // Reset layout drag state if not in a drop zone
-            setLayoutDragState({
+            updateLayoutDragState({
                 dragOverLayout: null,
                 dragOverPosition: null
             });
@@ -461,7 +472,9 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const handleElementDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
 
-        if (!draggedElementId || !draggedLayoutId) return;
+        if (!draggedElementId || !draggedLayoutId) {
+            return;
+        }
 
         // If dropping on the same element, do nothing
         if (draggedElementId === dndStateRef.current.targetElementId) {
@@ -509,7 +522,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             targetLayoutId: null
         });
         // Also reset layout drag state
-        setLayoutDragState({
+        updateLayoutDragState({
             dragOverLayout: null,
             dragOverPosition: null
         });
@@ -897,10 +910,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             return;
         }
 
-        console.log('Layout drop:', draggedElementId, 'from', draggedLayoutId,
-            'to layout', layoutDragState.dragOverLayout,
-            'position', layoutDragState.dragOverPosition);
-
+    
         // Get the current layout and target layout
         const currentLayout = slide.layouts.find(l => l.id === draggedLayoutId);
         const targetLayout = slide.layouts.find(l => l.id === layoutDragState.dragOverLayout);
@@ -921,8 +931,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         // Create a new layout with the dragged element
         const layoutIndex = slide.layouts.findIndex(l => l.id === targetLayout.id);
         const insertLayoutIndex = layoutDragState.dragOverPosition === 'top' ? layoutIndex : layoutIndex + 1;
-
-        console.log('Creating new layout at index:', insertLayoutIndex);
 
         // Create a new layout with a grid that has 1 row
         const newLayout: Omit<Layout, 'id'> = {
@@ -950,12 +958,10 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
         // If this is the only element in the layout and source layout has only one cell, delete the source layout
         if (currentLayout.elements.length === 1 && currentLayout.gridStructure.rows[0].cells.length === 1) {
-            console.log('Deleting source layout as it will be empty');
             // Add the new layout and delete the old one
             addLayout(presentationId, slide.id, newLayout, insertLayoutIndex);
             deleteLayout(presentationId, slide.id, currentLayout.id);
         } else {
-            console.log('Keeping source layout and updating elements');
             // Add the new layout
             addLayout(presentationId, slide.id, newLayout, insertLayoutIndex);
 
@@ -964,7 +970,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
             // Check if we need to add a new empty editor to the source cell
             if (elementsInSameCell.length === 0) {
-                console.log('Adding empty editor to source cell');
                 // Create a new empty editor element
                 const newEditorElement: EditorElement = {
                     id: generateId(8),
@@ -989,14 +994,14 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
         // Reset drag states
         resetDragState();
-        setLayoutDragState({
+        updateLayoutDragState({
             dragOverLayout: null,
             dragOverPosition: null
         });
     };
 
     // Рекурсивная функция для рендеринга макетов и их вложенных элементов
-    const renderLayoutContent = (layout: Layout) => {
+    const renderLayoutContent = (layout: Layout, isFirstLayout: boolean) => {
         // Генерируем CSS grid свойства из структуры сетки
         const gridTemplateAreas = generateGridTemplateAreas(layout.gridStructure);
         const gridTemplateColumns = generateGridTemplateColumns(layout.gridStructure);
@@ -1042,12 +1047,10 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 }}
                 onDragEnter={(e) => {
                     e.preventDefault();
-                    console.log('Layout drag enter:', layout.id);
                 }}
                 onDrop={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('Layout drop event on layout:', layout.id);
 
                     // Only process if we're in a layout drop zone
                     if (layoutDragState.dragOverLayout === layout.id && layoutDragState.dragOverPosition) {
@@ -1063,55 +1066,55 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 }}
             >
                 {/* Top drop zone - an explicit area for dropping above layout */}
-                <div
-                    className={`${styles.layoutDropZone} ${layoutDragState.dragOverLayout === layout.id && layoutDragState.dragOverPosition === 'top' ? styles.layoutDropZoneActive : ''}`}
-                    style={{
-                        position: 'absolute',
-                        top: '-12px',
-                        left: 0,
-                        right: 0,
-                        height: '24px',
-                        zIndex: 5
-                    }}
-                    onDragOver={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (draggedElementId && draggedLayoutId && draggedLayoutId !== layout.id) {
-                            console.log('Explicit top drop zone activated for layout:', layout.id);
-                            setLayoutDragState({
-                                dragOverLayout: layout.id,
-                                dragOverPosition: 'top'
-                            });
-                        }
-                    }}
-                    onDragLeave={(e) => {
-                        e.preventDefault();
-                        // Only clear if we're not entering another valid drop zone
-                        const relatedTarget = e.relatedTarget as HTMLElement;
-                        if (!relatedTarget || !relatedTarget.closest(`[data-layout-id="${layout.id}"]`)) {
-                            setLayoutDragState({
-                                dragOverLayout: null,
-                                dragOverPosition: null
-                            });
-                        }
-                    }}
-                    onDrop={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('Explicit top drop zone drop for layout:', layout.id);
-                        if (draggedElementId && draggedLayoutId) {
-                            setLayoutDragState({
-                                dragOverLayout: layout.id,
-                                dragOverPosition: 'top'
-                            });
-                            handleLayoutDrop();
-                        }
-                    }}
-                />
+                {isFirstLayout && (
+                    <div
+                        className={styles.layoutDropZone}
+                        style={{
+                            position: 'absolute',
+                            top: '-12px',
+                            left: 0,
+                            right: 0,
+                            height: '24px',
+                            zIndex: 5
+                        }}
+                        onDragOver={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (draggedElementId && draggedLayoutId && draggedLayoutId !== layout.id) {
+                                updateLayoutDragState({
+                                    dragOverLayout: layout.id,
+                                    dragOverPosition: 'top'
+                                });
+                            }
+                        }}
+                        onDragLeave={(e) => {
+                            e.preventDefault();
+                            // Only clear if we're not entering another valid drop zone
+                            const relatedTarget = e.relatedTarget as HTMLElement;
+                            if (!relatedTarget || !relatedTarget.closest(`[data-layout-id="${layout.id}"]`)) {
+                                updateLayoutDragState({
+                                    dragOverLayout: null,
+                                    dragOverPosition: null
+                                });
+                            }
+                        }}
+                        onDrop={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (draggedElementId && draggedLayoutId) {
+                                updateLayoutDragState({
+                                    dragOverLayout: layout.id,
+                                    dragOverPosition: 'top'
+                                });
+                                handleLayoutDrop();
+                            }
+                        }}
+                    />
+                )}
 
                 {/* Bottom drop zone - an explicit area for dropping below layout */}
                 <div
-                    className={`${styles.layoutDropZone} ${layoutDragState.dragOverLayout === layout.id && layoutDragState.dragOverPosition === 'bottom' ? styles.layoutDropZoneActive : ''}`}
+                    className={styles.layoutDropZone}
                     style={{
                         position: 'absolute',
                         bottom: '-12px',
@@ -1124,8 +1127,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                         e.preventDefault();
                         e.stopPropagation();
                         if (draggedElementId && draggedLayoutId && draggedLayoutId !== layout.id) {
-                            console.log('Explicit bottom drop zone activated for layout:', layout.id);
-                            setLayoutDragState({
+                            updateLayoutDragState({
                                 dragOverLayout: layout.id,
                                 dragOverPosition: 'bottom'
                             });
@@ -1136,7 +1138,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                         // Only clear if we're not entering another valid drop zone
                         const relatedTarget = e.relatedTarget as HTMLElement;
                         if (!relatedTarget || !relatedTarget.closest(`[data-layout-id="${layout.id}"]`)) {
-                            setLayoutDragState({
+                            updateLayoutDragState({
                                 dragOverLayout: null,
                                 dragOverPosition: null
                             });
@@ -1145,9 +1147,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     onDrop={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        console.log('Explicit bottom drop zone drop for layout:', layout.id);
                         if (draggedElementId && draggedLayoutId) {
-                            setLayoutDragState({
+                            updateLayoutDragState({
                                 dragOverLayout: layout.id,
                                 dragOverPosition: 'bottom'
                             });
@@ -1165,7 +1166,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                             top: '-6px',
                             left: 0,
                             right: 0,
-                            height: '3px',
+                            height: '2px',
                             backgroundColor: '#3b82f6',
                             zIndex: 10
                         }}
@@ -1181,7 +1182,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                             bottom: '-6px',
                             left: 0,
                             right: 0,
-                            height: '3px',
+                            height: 'px',
                             backgroundColor: '#3b82f6',
                             zIndex: 10
                         }}
@@ -1203,8 +1204,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                                     tiptapRefs={tiptapRefs}
                                     cell={cell}
                                     elements={elements}
-                                    dragOverElement={dndStateRef.current.dragOverElement}
-                                    dragOverPosition={dndStateRef.current.dragOverPosition}
+                                    dragOverElement={dndState.dragOverElement}
+                                    dragOverPosition={dndState.dragOverPosition}
                                     presentationId={presentationId}
                                     slideId={slide.id}
                                     layoutId={layout.id}
@@ -1316,7 +1317,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
         // Check if we're currently in the middle of a layout-level drag operation
         if (draggedElementId && draggedLayoutId && layoutDragState.dragOverLayout && layoutDragState.dragOverPosition) {
-            console.log('Processing layout-level drop');
             handleLayoutDrop();
             return;
         }
@@ -1428,17 +1428,15 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     onClick={handleSlideClick}
                     onDragOver={(e) => {
                         e.preventDefault();
-                        console.log("Slide container drag over");
                     }}
                     onDrop={(e) => {
                         e.preventDefault();
-                        console.log("Slide container drop");
                         handleDrop(e);
                     }}
                 >
                     {/* Контейнер для содержимого */}
                     <div className="relative w-full h-full p-8 mt-10">
-                        {slide.layouts.map((layout) => renderLayoutContent(layout))}
+                        {slide.layouts.map((layout, index) => renderLayoutContent(layout, index === 0))}
                     </div>
 
                     <div className={styles.slideDivider}>
