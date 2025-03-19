@@ -72,6 +72,19 @@
     color: #64748b;
 }
 
+.elementWrapper {
+    position: relative;
+    padding-bottom: 8px;
+}
+
+.elementWrapper:last-child {
+    padding-bottom: 0;
+}
+
+.elementWrapper:hover .elementDragHandle {
+    opacity: 1;
+}
+
 /* Styles for multiple elements in a cell */
 .elementsContainer {
     display: flex;
@@ -83,6 +96,85 @@
 /* Drag and drop styles */
 .dragging {
     opacity: 0.5;
+}
+
+/* Vertical drag indicators (top/bottom) */
+.dragOver {
+    position: relative;
+}
+
+.dragOver::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #3b82f6;
+    z-index: 10;
+}
+
+.dragOverBottom {
+    position: relative;
+}
+
+.dragOverBottom::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #3b82f6;
+    z-index: 10;
+}
+
+/* Horizontal drag indicators (left/right) */
+.dragOverLeft {
+    position: relative;
+}
+
+.dragOverLeft::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #3b82f6;
+    z-index: 10;
+}
+
+.dragOverRight {
+    position: relative;
+}
+
+.dragOverRight::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #3b82f6;
+    z-index: 10;
+}
+
+.dragOverLayout {
+    position: relative;
+}
+
+.dragOverLayout::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    outline: 2px dashed #3b82f6;
+    outline-offset: 2px;
+    pointer-events: none;
+    z-index: 10;
 }
 
 /* Cell border styles for multi-cell layouts */
@@ -107,8 +199,40 @@
   background-color: rgba(59, 130, 246, 0.3);
 }
 
-.elementWrapperContent {
-    position: relative;
-    width: 100%;
-    height: 100%;
+/* 3-dot indicator styles */
+.borderIndicator {
+  position: absolute;
+  right: -3px;
+  width: 6px;
+  height: 16px;
+  background-color: #fff;
+  border: 1px solid #e2e8f0;
+  /* border-radius: 3px; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 40;
+  cursor: pointer;
+}
+
+.borderIndicatorTop {
+  top: 8px;
+}
+
+.borderIndicatorBottom {
+  bottom: 8px;
+}
+
+.borderIndicator::before {
+  content: "⋮";
+  font-size: 12px;
+  line-height: 1;
+  color: #64748b;
+  transform: rotate(90deg);
+}
+
+.cellWithBorders:hover .borderIndicator {
+  opacity: 1;
 }

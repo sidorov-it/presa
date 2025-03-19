@@ -146,7 +146,7 @@ const GridCellElement: React.FC<{
         const { updateElement, updateLayout, addElement } = usePresentationStore();
         const { elementToFocus, clearElementToFocus } = useEditorStore();
         const dragHandleRef = useRef<HTMLDivElement>(null);
-        const [draggingElementId, setDraggingElementId] = useState<string | null>(null);
+        const [isDragging, setIsDragging] = useState(false);
         const editorRef = useRef<HTMLDivElement>(null);
         const resizeBorderRef = useRef<HTMLDivElement>(null);
         const [isResizing, setIsResizing] = useState(false);
@@ -361,16 +361,16 @@ const GridCellElement: React.FC<{
         // Обработчик для начала перетаскивания всей ячейки (используется только когда в ячейке один элемент)
         const handleCellDragStart = (e: React.DragEvent<HTMLDivElement>) => {
             e.stopPropagation();
-            
+            setIsDragging(true);
+
             // Add the dragging class
             if (e.currentTarget.classList) {
                 e.currentTarget.classList.add(styles.dragging);
             }
-            
+
             // Get the first element ID for drag data
             const firstElementId = firstElement?.id;
             if (!firstElementId) return;
-            setDraggingElementId(cell.id);
 
             // Set the drag data
             e.dataTransfer.effectAllowed = 'move';
@@ -385,13 +385,12 @@ const GridCellElement: React.FC<{
         // Обработчик для начала перетаскивания отдельного элемента
         const handleElementDragStart = (e: React.DragEvent<HTMLDivElement>, elementId: string) => {
             e.stopPropagation();
-            setDraggingElementId(elementId);
-            // setIsDragging(true);
+            setIsDragging(true);
 
             // Add the dragging class to the element
-            // if (e.currentTarget.classList) {
-            //     e.currentTarget.classList.add(styles.dragging);
-            // }
+            if (e.currentTarget.classList) {
+                e.currentTarget.classList.add(styles.dragging);
+            }
 
             // Set the drag data
             e.dataTransfer.effectAllowed = 'move';
@@ -405,7 +404,7 @@ const GridCellElement: React.FC<{
 
         const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
             e.stopPropagation();
-            setDraggingElementId(null);
+            setIsDragging(false);
 
             // Remove the dragging class
             if (e.currentTarget.classList) {
@@ -413,28 +412,37 @@ const GridCellElement: React.FC<{
             }
         };
 
-        const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        const handleDragOver = (e: React.DragEvent<HTMLDivElement>, hasMultipleCells: boolean) => {
             e.preventDefault();
             e.stopPropagation();
+
+            if (!hasMultipleCells) {
+                console.log('onDragOver grid cell', hasMultipleCells)
+            }
 
             // Set the drop effect
             e.dataTransfer.dropEffect = 'move';
 
-            // Determine the drop position (top, bottom, left, right)
-            const rect = e.currentTarget.getBoundingClientRect();
-            const x = e.clientX - rect.left; // x position within the element
-            const y = e.clientY - rect.top;  // y position within the element
+            // console.log('e.currentTarget.', e.currentTarget)
+            // if (elements.length === 1) {
+                // Determine the drop position (top, bottom, left, right)
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX - rect.left; // x position within the element
+                const y = e.clientY - rect.top;  // y position within the element
 
-            // Calculate the position based on which quadrant of the element the cursor is in
-            const position = determineDropPosition(x, y, rect.width, rect.height);
+                // Calculate the position based on which quadrant of the element the cursor is in
+                const position = determineDropPosition(x, y, rect.width, rect.height);
 
-            const elementId = e.currentTarget.dataset.elementId || e.currentTarget.dataset.cellId;
-            if (!elementId) return;
+                const elementId = e.currentTarget.dataset.elementId || e.currentTarget.dataset.cellId;
+                if (!elementId) return;
 
-            // Call the parent's onDragOver handler if provided
-            if (onDragOver) {
-                onDragOver(e, elementId, layoutId, position);
-            }
+                // Call the parent's onDragOver handler if provided
+                if (onDragOver) {
+                    onDragOver(e, elementId, layoutId, position);
+                }
+            // } else {
+
+            // }
         };
 
         // Helper function to determine the drop position
@@ -626,7 +634,7 @@ const GridCellElement: React.FC<{
                 className={`
                     ${styles.gridCellElement}
                     ${hasMultipleCells ? styles.cellWithBorders : ''}
-                    ${draggingElementId === cell.id ? styles.dragging : ''}
+                    ${isDragging ? styles.dragging : ''}
                     ${isResizing ? styles.resizing : ''}
                     ${hasMultipleCells ? styles.cellWithMultipleCells : ''}
                 `}
@@ -638,35 +646,9 @@ const GridCellElement: React.FC<{
                 style={{
                     ...resizeStyle,
                 }}
-                onDragOver={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    // Only process if we're interacting with the cell container directly,
-                    // not its children
-                    if (e.target === e.currentTarget) {
-                        handleDragOver(e);
-                    }
-                }}
-                onDrop={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    // Only process if we're interacting with the cell container directly
-                    if (e.target === e.currentTarget) {
-                        handleDrop(e);
-                    }
-                }}
-                onDragLeave={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    // Check if we're leaving the element completely
-                    const relatedTarget = e.relatedTarget as HTMLElement;
-                    if (!relatedTarget || !e.currentTarget.contains(relatedTarget)) {
-                        handleDragLeave(e);
-                    }
-                }}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                onDragLeave={handleDragLeave}
                 data-layout-id={layoutId}
                 data-cell-id={cell.id}
                 data-element-key={dataElementKey}
@@ -679,35 +661,17 @@ const GridCellElement: React.FC<{
                             <div
                                 className={styles.elementWrapperContent}
                                 data-element-id={element.id}
-                                onDrop={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleDrop(e);
-                                }}
-                                onDragLeave={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleDragLeave(e);
-                                }}
+                                onDrop={handleDrop}
+                                onDragLeave={handleDragLeave}
                                 onDragOver={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    
-                                    // Get the element id from the current target
-                                    const elementId = e.currentTarget.dataset.elementId;
-                                    if (!elementId) return;
-                                    
-                                    // Determine drop position
-                                    const rect = e.currentTarget.getBoundingClientRect();
-                                    const x = e.clientX - rect.left;
-                                    const y = e.clientY - rect.top;
-                                    const position = determineDropPosition(x, y, rect.width, rect.height);
-                                    
-                                    // Call the parent handler with the correct element ID
-                                    if (onDragOver) {
-                                        onDragOver(e, elementId, layoutId, position);
+                                    if (hasMultipleCells) {
+                                        console.log('onDragOver hasMultipleCells', hasMultipleCells)
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleDragOver(e, true);
                                     }
                                 }}
+
                             >
                                 <Tiptap
                                     key={element.id}
@@ -730,10 +694,6 @@ const GridCellElement: React.FC<{
                                     draggable
                                     onDragStart={(e) => handleElementDragStart(e, element.id)}
                                     onDragEnd={handleDragEnd}
-                                    onDragOver={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                    }}
                                     title="Перетащить элемент"
                                 />
                             )}
@@ -749,10 +709,6 @@ const GridCellElement: React.FC<{
                         draggable
                         onDragStart={handleCellDragStart}
                         onDragEnd={handleDragEnd}
-                        onDragOver={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                        }}
                         title="Перетащить ячейку"
                     />
                 )}
