@@ -320,7 +320,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             document.removeEventListener("dragover", handleDocumentDragOver);
             document.removeEventListener("drop", handleDocumentDrop);
         };
-    }, [draggedElementId, draggedLayoutId, dndStateRef.current.targetElementId, dndStateRef.current.targetLayoutId]); // Include current state values as dependencies
+    }, [draggedElementId, draggedLayoutId, dndState.targetElementId, dndState.targetLayoutId]); // Include current state values as dependencies
 
     // Обработчик для начала перетаскивания элемента
     const handleElementDragStart = (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string) => {
@@ -329,18 +329,33 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     };
 
-    // Обработчик для перетаскивания над элементом
     const handleElementDragOver = (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string, position: 'top' | 'bottom' | 'left' | 'right') => {
         e.preventDefault();
 
         if (draggedElementId === elementId) return;
 
+        const layout = slide.layouts.find(l => l.id === layoutId);
+
+        if (!layout) return;
+
+        const targetElement = layout.elements.find(e => e.id === elementId);
+        
+        const targetRow = layout.gridStructure.rows.find(r => r.cells.find(c => c.id === elementId)) || layout.gridStructure.rows.find(r => r.cells.find(c => c.id === targetElement?.cellId));
+
+        const targetCell = targetRow?.cells.find(c => c.id === elementId);
+
+        if (!targetElement && !targetCell) return;
+
+        if (targetRow?.cells.length && targetRow.cells.length > 1 && targetElement && (position == 'left' || position == 'right')) {
+            return;
+        }
         updateDndState({
             dragOverElement: elementId,
             dragOverPosition: position,
             targetElementId: elementId,
             targetLayoutId: layoutId
         });
+
     };
 
     // Обработчик для сброса элемента
