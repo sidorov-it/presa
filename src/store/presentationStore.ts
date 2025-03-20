@@ -1,41 +1,42 @@
 import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
-import { Presentation, Slide, Layout, Element, LayoutType, GridStructure, getPredefinedGridStructures } from '@/types';
-import { devtools, persist } from 'zustand/middleware'
+import { IPresentation, Slide, Layout, Element, LayoutType, GridStructure, getPredefinedGridStructures } from '@/types';
+import { devtools } from 'zustand/middleware'
 import { generateId } from '@/utils/id';
 
 interface PresentationState {
-  presentations: Presentation[];
+    presentations: IPresentation[];
 
-  // Работа с презентациями
-  createPresentation: (title: string) => string;
-  updatePresentation: (id: string, data: Partial<Presentation>) => void;
-  deletePresentation: (id: string) => void;
-  getPresentation: (id: string) => Presentation | undefined;
+    // Работа с презентациями
+    createPresentation: (title: string) => string;
+    updatePresentation: (id: string, data: Partial<IPresentation>) => void;
+    deletePresentation: (id: string) => void;
+    getPresentation: (id: string) => IPresentation | undefined;
 
-  // Работа со слайдами
-  addSlide: (presentationId: string, title?: string) => string;
-  updateSlide: (presentationId: string, slideId: string, data: Partial<Slide>) => void;
-  deleteSlide: (presentationId: string, slideId: string) => void;
-  duplicateSlide: (presentationId: string, slideId: string) => string;
-  reorderSlides: (presentationId: string, startIndex: number, endIndex: number) => void;
+    // Работа со слайдами
+    addSlide: (presentationId: string, title?: string) => string;
+    updateSlide: (presentationId: string, slideId: string, data: Partial<Slide>) => void;
+    deleteSlide: (presentationId: string, slideId: string) => void;
+    duplicateSlide: (presentationId: string, slideId: string) => string;
+    reorderSlides: (presentationId: string, startIndex: number, endIndex: number) => void;
 
-  // Работа с макетами
-  addLayout: (presentationId: string, slideId: string, layout: Omit<Layout, 'id'> | LayoutType, index?: number) => string;
-  updateLayout: (presentationId: string, slideId: string, layoutId: string, data: Partial<Layout>) => void;
-  deleteLayout: (presentationId: string, slideId: string, layoutId: string) => void;
-  updateAndPotentiallyDeleteLayout: (
-    presentationId: string,
-    slideId: string,
-    layoutId: string,
-    data: Partial<Layout>,
-    deleteIfEmpty?: boolean
-  ) => void;
+    // Работа с макетами
+    addLayout: (presentationId: string, slideId: string, layout: Omit<Layout, 'id'> | LayoutType, index?: number) => string;
+    updateLayout: (presentationId: string, slideId: string, layoutId: string, data: Partial<Layout>) => void;
+    deleteLayout: (presentationId: string, slideId: string, layoutId: string) => void;
+    updateAndPotentiallyDeleteLayout: (
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        data: Partial<Layout>,
+        deleteIfEmpty?: boolean
+    ) => void;
+    findLayoutByElementId: (elementId: string) => Layout | undefined;
 
-  // Работа с элементами
-  addElement: (presentationId: string, slideId: string, layoutId: string, element: Omit<Element, 'id'>) => string;
-  updateElement: (presentationId: string, slideId: string, layoutId: string, elementId: string, data: Partial<Element>) => void;
-  deleteElement: (presentationId: string, slideId: string, layoutId: string, elementId: string) => void;
+    // Работа с элементами
+    addElement: (presentationId: string, slideId: string, layoutId: string, element: Omit<Element, 'id'>) => string;
+    updateElement: (presentationId: string, slideId: string, layoutId: string, elementId: string, data: Partial<Element>) => void;
+    deleteElement: (presentationId: string, slideId: string, layoutId: string, elementId: string) => void;
 }
 
 // Create the store with properly configured middleware
@@ -49,7 +50,7 @@ export const usePresentationStore = create<PresentationState>()(
                 const id = uuidv4();
                 const now = Date.now();
 
-                const newPresentation: Presentation = {
+                const newPresentation: IPresentation = {
                     id,
                     title,
                     slides: [],
@@ -398,6 +399,12 @@ export const usePresentationStore = create<PresentationState>()(
                 });
             },
 
+            findLayoutByElementId: (elementId: string) => {
+                const presentation = get().presentations.find((p) => p.slides.some((s) => s.layouts.some((l) => l.elements.some((e) => e.id === elementId))));
+                if (!presentation) return null;
+
+                return presentation.slides.flatMap((s) => s.layouts).find((l) => l.elements.some((e) => e.id === elementId));
+            },
             // Методы для работы с элементами
             addElement: (presentationId, slideId, layoutId, elementData) => {
                 const elementId = uuidv4();

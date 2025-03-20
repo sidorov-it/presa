@@ -14,7 +14,7 @@ const SlidesList: React.FC<SlidesListProps> = ({
     activeSlideId,
     onSlideSelect,
 }) => {
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(true);
     const { duplicateSlide, deleteSlide } = usePresentationStore();
     const panelRef = useRef<HTMLDivElement>(null);
 

@@ -30,8 +30,8 @@ export interface GridCell {
   id: string;
   row: number;
   column: number;
-  rowSpan: number;
-  colSpan: number;
+//   rowSpan: number;
+//   colSpan: number;
 }
 
 // Интерфейс для строки сетки
@@ -56,7 +56,7 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 {
                     id:  generateId(8),
                     cells: [
-                        { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1 }
+                        { id: generateId(8), row: 1, column: 1}
                     ]
                 }
             ],
@@ -69,8 +69,8 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 {
                     id:  generateId(8),
                     cells: [
-                        { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1 }
+                        { id: generateId(8), row: 1, column: 1},
+                        { id: generateId(8), row: 1, column: 2}
                     ]
                 }
             ],
@@ -83,9 +83,9 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 {
                     id:  generateId(8),
                     cells: [
-                        { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1 },
-                        { id: generateId(8), row: 1, column: 3, rowSpan: 1, colSpan: 1 }
+                        { id: generateId(8), row: 1, column: 1},
+                        { id: generateId(8), row: 1, column: 2},
+                        { id: generateId(8), row: 1, column: 3}
                     ]
                 }
             ],
@@ -98,10 +98,10 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 {
                     id:  generateId(8),
                     cells: [
-                        { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1 },
-                        { id: generateId(8), row: 1, column: 3, rowSpan: 1, colSpan: 1 },
-                        { id: generateId(8), row: 1, column: 4, rowSpan: 1, colSpan: 1 }
+                        { id: generateId(8), row: 1, column: 1},
+                        { id: generateId(8), row: 1, column: 2},
+                        { id: generateId(8), row: 1, column: 3},
+                        { id: generateId(8), row: 1, column: 4}
                     ]
                 }
             ],
@@ -114,8 +114,8 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 {
                     id:  generateId(8),
                     cells: [
-                        { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1 }
+                        { id: generateId(8), row: 1, column: 1},
+                        { id: generateId(8), row: 1, column: 2}
                     ]
                 }
             ],
@@ -128,8 +128,8 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 {
                     id:  generateId(8),
                     cells: [
-                        { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1 }
+                        { id: generateId(8), row: 1, column: 1},
+                        { id: generateId(8), row: 1, column: 2}
                     ]
                 }
             ],
@@ -142,15 +142,15 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 {
                     id:  generateId(8),
                     cells: [
-                        { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1 }
+                        { id: generateId(8), row: 1, column: 1},
+                        { id: generateId(8), row: 1, column: 2}
                     ]
                 },
                 {
                     id:  generateId(8),
                     cells: [
-                        { id: generateId(8), row: 2, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: generateId(8), row: 2, column: 2, rowSpan: 1, colSpan: 1 }
+                        { id: generateId(8), row: 2, column: 1},
+                        { id: generateId(8), row: 2, column: 2}
                     ]
                 }
             ],
@@ -163,17 +163,17 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 {
                     id:  generateId(8),
                     cells: [
-                        { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: generateId(8), row: 1, column: 2, rowSpan: 1, colSpan: 1 },
-                        { id: generateId(8), row: 1, column: 3, rowSpan: 1, colSpan: 1 }
+                        { id: generateId(8), row: 1, column: 1},
+                        { id: generateId(8), row: 1, column: 2},
+                        { id: generateId(8), row: 1, column: 3}
                     ]
                 },
                 {
                     id:  generateId(8),
                     cells: [
-                        { id: generateId(8), row: 2, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: generateId(8), row: 2, column: 2, rowSpan: 1, colSpan: 1 },
-                        { id: generateId(8), row: 2, column: 3, rowSpan: 1, colSpan: 1 }
+                        { id: generateId(8), row: 2, column: 1},
+                        { id: generateId(8), row: 2, column: 2},
+                        { id: generateId(8), row: 2, column: 3}
                     ]
                 }
             ],
@@ -192,7 +192,7 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 {
                     id:  generateId(8),
                     cells: [
-                        { id: generateId(8), row: 1, column: 1, rowSpan: 1, colSpan: 1 }
+                        { id: generateId(8), row: 1, column: 1}
                     ]
                 }
             ],
@@ -323,16 +323,16 @@ export interface Layout {
 export const createGridCell = (
     row: number,
     column: number,
-    rowSpan: number = 1,
-    colSpan: number = 1,
+    // rowSpan: number = 1,
+    // colSpan: number = 1,
 ): GridCell => {
     const cellId = `cell-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     return {
         id: cellId,
         row,
         column,
-        rowSpan,
-        colSpan,
+        // rowSpan,
+        // colSpan,
     };
 };
 
@@ -347,8 +347,7 @@ export const createGridRow = (cells: GridCell[] = []): GridRow => {
 // Функция для генерации CSS Grid Template Areas из структуры сетки
 export const generateGridTemplateAreas = (gridStructure: GridStructure): string => {
     // Создаем матрицу для представления сетки
-    const maxRows = Math.max(...gridStructure.rows.map(row =>
-        Math.max(...row.cells.map(cell => cell.row + cell.rowSpan - 1))), 0);
+    const maxRows = 1;
 
     if (maxRows === 0) return '""';
 
@@ -362,8 +361,8 @@ export const generateGridTemplateAreas = (gridStructure: GridStructure): string 
             const areaName = cell.id;
 
             // Заполняем все ячейки, которые охватывает данная ячейка
-            for (let r = cell.row - 1; r < cell.row - 1 + cell.rowSpan; r++) {
-                for (let c = cell.column - 1; c < cell.column - 1 + cell.colSpan; c++) {
+            for (let r = cell.row - 1; r < cell.row - 1; r++) {
+                for (let c = cell.column - 1; c < cell.column - 1; c++) {
                     if (r < maxRows && c < gridStructure.columns) {
                         grid[r][c] = areaName;
                     }
@@ -397,7 +396,7 @@ export const generateGridTemplateColumns = (gridStructure: GridStructure): strin
 // Функция для генерации CSS Grid Template Rows из структуры сетки
 export const generateGridTemplateRows = (gridStructure: GridStructure): string => {
     const maxRows = Math.max(...gridStructure.rows.map(row =>
-        Math.max(...row.cells.map(cell => cell.row + cell.rowSpan - 1))), 0);
+        Math.max(...row.cells.map(cell => cell.row - 1))), 0);
 
     return Array(maxRows).fill('auto').join(' ');
 };
@@ -483,7 +482,7 @@ export interface Slide {
 }
 
 // Интерфейс презентации
-export interface Presentation {
+export interface IPresentation {
   id: string;
   title: string;
   description?: string;

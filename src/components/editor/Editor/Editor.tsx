@@ -4,9 +4,12 @@ import SlidesList from '@/components/editor/SlidesList';
 import SlideEditor from '@/components/editor/SlideEditor';
 import ToolPanel from '@/components/editor/ToolPanel/ToolPanel';
 import Button from '@/components/ui/Button';
-import styles from './Editor.module.css';
+import { DndProvider } from '@/contexts/DragDropContext';
+import Presentation from '../Presentation';
+import DragDropIndicator from '@/components/DragDropIndicator';
+
 interface EditorProps {
-  presentationId: string;
+    presentationId: string;
 }
 
 const Editor: React.FC<EditorProps> = ({ presentationId }) => {
@@ -17,7 +20,7 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
     const presentation = getPresentation(presentationId);
 
     useEffect(() => {
-    // Выбираем первый слайд по умолчанию, если есть слайды
+        // Выбираем первый слайд по умолчанию, если есть слайды
         if (presentation && presentation.slides.length > 0 && !activeSlideId) {
             setActiveSlideId(presentation.slides[0].id);
         }
@@ -49,66 +52,77 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col bg-[#f6f4f4]">
-            <header className="bg-white border-b border-gray-200 p-4">
-                <div className="container mx-auto flex justify-between items-center">
-                    <h1 className="text-2xl font-bold text-blue-600">Presa</h1>
+        <DndProvider presentationId={presentationId}>
+            <div className="min-h-screen flex flex-col bg-[#f6f4f4]">
+                <header className="bg-white border-b border-gray-200 p-4">
+                    <div className="container mx-auto flex justify-between items-center">
+                        <h1 className="text-2xl font-bold text-blue-600">Presa</h1>
 
-                    <div className="flex items-center space-x-4">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handlePreviewToggle}
-                            aria-label={showPreview ? 'Выйти из режима просмотра' : 'Предпросмотр презентации'}
-                        >
-                            {showPreview ? 'Редактировать' : 'Просмотр'}
-                        </Button>
+                        <div className="flex items-center space-x-4">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handlePreviewToggle}
+                                aria-label={showPreview ? 'Выйти из режима просмотра' : 'Предпросмотр презентации'}
+                            >
+                                {showPreview ? 'Редактировать' : 'Просмотр'}
+                            </Button>
 
-                        <Button
-                            variant="primary"
-                            size="sm"
-                            onClick={() => { }}
-                            aria-label="Экспортировать презентацию"
-                        >
-              Экспорт
-                        </Button>
+                            <Button
+                                variant="primary"
+                                size="sm"
+                                onClick={() => { }}
+                                aria-label="Экспортировать презентацию"
+                            >
+                                Экспорт
+                            </Button>
+                        </div>
                     </div>
-                </div>
-            </header>
+                </header>
 
-            <SlidesList
-                slides={presentation.slides}
-                activeSlideId={activeSlideId}
-                onSlideSelect={handleSlideSelect}
-            />
+                <SlidesList
+                    slides={presentation.slides}
+                    activeSlideId={activeSlideId}
+                    onSlideSelect={handleSlideSelect}
+                />
 
-            <div className="">
-                {/* Основная область редактирования */}
                 <div className="">
-                    {presentation.slides.map(slide => (
-                        // <div className={styles.slide}>
-                        <SlideEditor
-                            key={slide.id}
-                            slide={slide}
+                    {/* Основная область редактирования */}
+                    <Presentation
+                        presentation={presentation}
+                        presentationId={presentationId}
+                        activeSlideId={activeSlideId}
+                        handleSlideSelect={handleSlideSelect}
+                    />
+                    {/* <div className="">
+                        {presentation.slides.map(slide => (
+                            // <div className={styles.slide}>
+                            <SlideEditor
+                                key={slide.id}
+                                slide={slide}
+                                presentationId={presentationId}
+                                handleSelectSlide={handleSlideSelect}
+                                isSelected={activeSlideId === slide.id}
+                            />
+                            // </div>
+                        ))}
+                    </div> */}
+
+                    {/* Панель инструментов */}
+                    {!showPreview && activeSlide && (
+                        // <div className="w-80 bg-white border-l border-gray-200 overflow-y-auto">
+                        <ToolPanel
                             presentationId={presentationId}
-                            handleSelectSlide={handleSlideSelect}
-                            isSelected={activeSlideId === slide.id}
+                            slideId={activeSlide.id}
                         />
                         // </div>
-                    ))}
+                    )}
                 </div>
-
-                {/* Панель инструментов */}
-                {!showPreview && activeSlide && (
-                // <div className="w-80 bg-white border-l border-gray-200 overflow-y-auto">
-                    <ToolPanel
-                        presentationId={presentationId}
-                        slideId={activeSlide.id}
-                    />
-                // </div>
-                )}
+                
+                {/* Global drag-drop indicator */}
+                <DragDropIndicator />
             </div>
-        </div>
+        </DndProvider>
     );
 };
 

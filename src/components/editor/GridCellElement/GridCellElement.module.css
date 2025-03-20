@@ -9,6 +9,11 @@
     width: 100%;
 }
 
+.elementContent {
+    border: 1px solid red;
+    padding: 1rem;
+}
+
 .cellWithMultipleCells {
     padding-inline-start: 1.22rem;
     padding-inline-end: 1.22rem;
@@ -49,6 +54,36 @@
     opacity: 1;
 }
 
+.cellDragHandle {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(90deg);
+    width: 16px;
+    height: 16px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 20;
+}
+
+.cellDragHandle::before {
+    content: "⋮";
+    font-size: 10px;
+    line-height: 1;
+    color: #64748b;
+}
+
+.multiCell:hover .cellDragHandle {
+    opacity: 1;
+}
+
 /* Individual element drag handle styles */
 .elementDragHandle {
     position: absolute;
@@ -77,6 +112,7 @@
 }
 
 .elementWrapper {
+    border: 1px dashed #64748b;
     position: relative;
     padding-bottom: 8px;
 }
@@ -94,89 +130,14 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: 100%;
+    position: relative;
+    border: 1px solid rgb(219, 206, 32);
+    padding: 1rem;
 }
 
 /* Drag and drop styles */
 .dragging {
     opacity: 0.5;
-}
-
-/* Vertical drag indicators (top/bottom) */
-.dragOver {
-    position: relative;
-}
-
-.dragOver::before {
-    content: '';
-    position: absolute;
-    /* top: 0;
-    left: 0;
-    right: 0; */
-    background-color: #3b82f6;
-    z-index: 10;
-}
-
-.dragOverTop {
-    position: relative;
-}
-
-.dragOverTop::before {
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-}
-
-.dragOverBottom {
-    position: relative;
-}
-
-.dragOverBottom::before {
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-}
-
-/* Horizontal drag indicators (left/right) */
-.dragOverLeft {
-    position: relative;
-}
-
-.dragOverLeft::before {
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 2px;
-}
-
-.dragOverRight {
-    position: relative;
-}
-
-.dragOverRight::before {
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 2px;
-}
-
-.dragOverLayout {
-    position: relative;
-}
-
-.dragOverLayout::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    outline: 2px dashed #3b82f6;
-    outline-offset: 2px;
-    pointer-events: none;
-    z-index: 10;
 }
 
 /* Cell border styles for multi-cell layouts */
@@ -220,19 +181,27 @@
 }
 
 .borderIndicatorTop {
-  top: 8px;
+  top: -8px;
+}
+
+.borderIndicatorLeft {
+  left: -8px;
+  right: auto;
+}
+
+.borderIndicatorRight {
+  right: -8px;
 }
 
 .borderIndicatorBottom {
-  bottom: 8px;
+  bottom: -8px;
 }
 
 .borderIndicator::before {
   content: "⋮";
-  font-size: 12px;
+  font-size: 10px;
   line-height: 1;
   color: #64748b;
-  transform: rotate(90deg);
 }
 
 .cellWithBorders:hover .borderIndicator {

@@ -40,8 +40,8 @@ describe('recalcPositions', () => {
             rows: [
                 {
                     cells: [
-                        { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 }
+                        { id: 'cell1', row: 1, column: 1},
+                        { id: 'cell2', row: 1, column: 2}
                     ]
                 }
             ],
@@ -113,9 +113,9 @@ describe('recalcPositions', () => {
             rows: [
                 {
                     cells: [
-                        { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1 }
+                        { id: 'cell1', row: 1, column: 1},
+                        { id: 'cell2', row: 1, column: 2},
+                        { id: 'cell3', row: 1, column: 3}
                     ]
                 }
             ],
@@ -185,9 +185,9 @@ describe('recalcPositions', () => {
             rows: [
                 {
                     cells: [
-                        { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1 }
+                        { id: 'cell1', row: 1, column: 1},
+                        { id: 'cell2', row: 1, column: 2},
+                        { id: 'cell3', row: 1, column: 3}
                     ]
                 }
             ],
@@ -257,9 +257,9 @@ describe('recalcPositions', () => {
             rows: [
                 {
                     cells: [
-                        { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1 }
+                        { id: 'cell1', row: 1, column: 1},
+                        { id: 'cell2', row: 1, column: 2},
+                        { id: 'cell3', row: 1, column: 3}
                     ]
                 }
             ],
@@ -328,7 +328,7 @@ describe('recalcPositions', () => {
             rows: [
                 {
                     cells: [
-                        { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 }
+                        { id: 'cell1', row: 1, column: 1}
                     ]
                 }
             ],
@@ -380,8 +380,8 @@ describe('recalcPositions', () => {
             rows: [
                 {
                     cells: [
-                        { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 }
+                        { id: 'cell1', row: 1, column: 1},
+                        { id: 'cell2', row: 1, column: 2}
                     ]
                 }
             ],
@@ -433,8 +433,8 @@ describe('recalcPositions', () => {
             rows: [
                 {
                     cells: [
-                        { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 }
+                        { id: 'cell1', row: 1, column: 1},
+                        { id: 'cell2', row: 1, column: 2}
                     ]
                 }
             ],
@@ -487,9 +487,9 @@ describe('recalcPositions', () => {
             rows: [
                 {
                     cells: [
-                        { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1 }
+                        { id: 'cell1', row: 1, column: 1},
+                        { id: 'cell2', row: 1, column: 2},
+                        { id: 'cell3', row: 1, column: 3}
                     ]
                 }
             ],
@@ -558,9 +558,9 @@ describe('recalcPositions', () => {
             rows: [
                 {
                     cells: [
-                        { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1 }
+                        { id: 'cell1', row: 1, column: 1},
+                        { id: 'cell2', row: 1, column: 2},
+                        { id: 'cell3', row: 1, column: 3}
                     ]
                 }
             ],
@@ -630,10 +630,10 @@ describe('recalcPositions', () => {
             rows: [
                 {
                     cells: [
-                        { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell4', row: 1, column: 4, rowSpan: 1, colSpan: 1 }
+                        { id: 'cell1', row: 1, column: 1},
+                        { id: 'cell2', row: 1, column: 2},
+                        { id: 'cell3', row: 1, column: 3},
+                        { id: 'cell4', row: 1, column: 4}
                     ]
                 }
             ],
@@ -702,9 +702,9 @@ describe('recalcPositions', () => {
             rows: [
                 {
                     cells: [
-                        { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1 }
+                        { id: 'cell1', row: 1, column: 1},
+                        { id: 'cell2', row: 1, column: 2},
+                        { id: 'cell3', row: 1, column: 3}
                     ]
                 }
             ],
@@ -776,11 +776,11 @@ describe('recalcPositions', () => {
             rows: [
                 {
                     cells: [
-                        { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell4', row: 1, column: 4, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell5', row: 1, column: 5, rowSpan: 1, colSpan: 1 }
+                        { id: 'cell1', row: 1, column: 1},
+                        { id: 'cell2', row: 1, column: 2},
+                        { id: 'cell3', row: 1, column: 3},
+                        { id: 'cell4', row: 1, column: 4},
+                        { id: 'cell5', row: 1, column: 5}
                     ]
                 }
             ],
@@ -853,12 +853,12 @@ describe('recalcPositions', () => {
             rows: [
                 {
                     cells: [
-                        { id: 'cell1', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell2', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell3', row: 1, column: 3, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell4', row: 1, column: 4, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell5', row: 1, column: 5, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell6', row: 1, column: 6, rowSpan: 1, colSpan: 1 }
+                        { id: 'cell1', row: 1, column: 1},
+                        { id: 'cell2', row: 1, column: 2},
+                        { id: 'cell3', row: 1, column: 3},
+                        { id: 'cell4', row: 1, column: 4},
+                        { id: 'cell5', row: 1, column: 5},
+                        { id: 'cell6', row: 1, column: 6}
                     ]
                 }
             ],
@@ -939,9 +939,9 @@ describe('recalcPositions', () => {
             rows: [
                 {
                     cells: [
-                        { id: 'cell3', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell4', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell5', row: 1, column: 3, rowSpan: 1, colSpan: 1 }
+                        { id: 'cell3', row: 1, column: 1},
+                        { id: 'cell4', row: 1, column: 2},
+                        { id: 'cell5', row: 1, column: 3}
                     ]
                 }
             ],
@@ -1021,8 +1021,8 @@ describe('recalcPositions', () => {
             rows: [
                 {
                     cells: [
-                        { id: 'cell2', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell3', row: 1, column: 2, rowSpan: 1, colSpan: 1 }
+                        { id: 'cell2', row: 1, column: 1},
+                        { id: 'cell3', row: 1, column: 2}
                     ]
                 }
             ],
@@ -1095,10 +1095,10 @@ describe('recalcPositions', () => {
             rows: [
                 {
                     cells: [
-                        { id: 'cell3', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell4', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell5', row: 1, column: 3, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell6', row: 1, column: 4, rowSpan: 1, colSpan: 1 }
+                        { id: 'cell3', row: 1, column: 1},
+                        { id: 'cell4', row: 1, column: 2},
+                        { id: 'cell5', row: 1, column: 3},
+                        { id: 'cell6', row: 1, column: 4}
                     ]
                 }
             ],
@@ -1181,10 +1181,10 @@ describe('recalcPositions', () => {
             rows: [
                 {
                     cells: [
-                        { id: 'cell3', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell4', row: 1, column: 2, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell5', row: 1, column: 3, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell6', row: 1, column: 4, rowSpan: 1, colSpan: 1 }
+                        { id: 'cell3', row: 1, column: 1},
+                        { id: 'cell4', row: 1, column: 2},
+                        { id: 'cell5', row: 1, column: 3},
+                        { id: 'cell6', row: 1, column: 4}
                     ]
                 }
             ],
@@ -1264,8 +1264,8 @@ describe('recalcPositions', () => {
             rows: [
                 {
                     cells: [
-                        { id: 'cell2', row: 1, column: 1, rowSpan: 1, colSpan: 1 },
-                        { id: 'cell3', row: 1, column: 2, rowSpan: 1, colSpan: 1 }
+                        { id: 'cell2', row: 1, column: 1},
+                        { id: 'cell3', row: 1, column: 2}
                     ]
                 }
             ],
@@ -1340,7 +1340,7 @@ describe('recalcPositions', () => {
             rows: [
                 {
                     cells: [
-                        { id: 'cell2', row: 1, column: 1, rowSpan: 1, colSpan: 1 }
+                        { id: 'cell2', row: 1, column: 1}
                     ]
                 }
             ],
@@ -1418,9 +1418,9 @@ describe('recalcPositions', () => {
             rows: [
                 {
                     cells: [
-                        { id: 'cell3', row: 1, column: 1, rowSpan: 2, colSpan: 1 },
-                        { id: 'cell4', row: 1, column: 2, rowSpan: 1, colSpan: 2 },
-                        { id: 'cell5', row: 2, column: 2, rowSpan: 1, colSpan: 2 }
+                        { id: 'cell3', row: 1, column: 1 },
+                        { id: 'cell4', row: 1, column: 2 },
+                        { id: 'cell5', row: 2, column: 2 }
                     ]
                 }
             ],
@@ -1455,15 +1455,6 @@ describe('recalcPositions', () => {
             const cells = result.updatedGridStructure.rows[0].cells;
             expect(cells.length).toBe(4);
             expect(cells.map(c => c.column)).toEqual([1, 2, 3, 4]);
-      
-            // Check that rowSpan and colSpan values were preserved
-            const cell3 = cells.find(c => c.id === 'cell3');
-            expect(cell3?.rowSpan).toBe(2);
-            expect(cell3?.colSpan).toBe(1);
-      
-            const cell4 = cells.find(c => c.id === 'cell4');
-            expect(cell4?.rowSpan).toBe(1);
-            expect(cell4?.colSpan).toBe(2);
         }
     });
 }); 

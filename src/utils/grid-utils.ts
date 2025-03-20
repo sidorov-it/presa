@@ -201,8 +201,8 @@ const recalcPositionsInCurrentLayout = ({
     const newCell: GridCell = {
         id: newCellId,
         row: targetCell.row,
-        rowSpan: sourceCell.rowSpan || 1,
-        colSpan: sourceCell.colSpan || 1,
+        // rowSpan: sourceCell.rowSpan || 1,
+        // colSpan: sourceCell.colSpan || 1,
         column: 0 // Will be set correctly later
     };
 
@@ -317,10 +317,10 @@ const recalcPositionsBetweenLayouts = ({
                 column: position === 'left' ?
                     row.cells[targetCellIndex].column :
                     row.cells[targetCellIndex].column + 1,
-                rowSpan: draggedElement.cellId ?
-                    gridStructure.rows[0].cells.find(c => c.id === draggedElement.cellId)?.rowSpan || 1 : 1,
-                colSpan: draggedElement.cellId ?
-                    gridStructure.rows[0].cells.find(c => c.id === draggedElement.cellId)?.colSpan || 1 : 1,
+                // rowSpan: draggedElement.cellId ?
+                //     gridStructure.rows[0].cells.find(c => c.id === draggedElement.cellId)?.rowSpan || 1 : 1,
+                // colSpan: draggedElement.cellId ?
+                //     gridStructure.rows[0].cells.find(c => c.id === draggedElement.cellId)?.colSpan || 1 : 1,
             };
 
             // Create a deep copy of the cells array
@@ -402,7 +402,7 @@ const recalcPositionsBetweenLayouts = ({
             return {
                 updatedGridStructure: {
                     ...updatedGridStructure,
-                    columnWidths: getColumnWidths(updatedElements.length)
+                    columnWidths: getColumnWidths(newColumnCount)
                 },
                 updatedElements,
                 updatedCurrentElements,
@@ -411,7 +411,7 @@ const recalcPositionsBetweenLayouts = ({
             return {
                 updatedGridStructure: {
                     ...updatedGridStructure,
-                    columnWidths: getColumnWidths(updatedElements.length)
+                    columnWidths: getColumnWidths(newColumnCount)
                 },
                 updatedElements,
                 updatedCurrentElements,
@@ -421,7 +421,7 @@ const recalcPositionsBetweenLayouts = ({
         return {
             updatedGridStructure: {
                 ...updatedGridStructure,
-                columnWidths: getColumnWidths(updatedElements.length)
+                columnWidths: getColumnWidths(newColumnCount)
             },
             updatedElements,
         }
