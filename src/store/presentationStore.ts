@@ -1,17 +1,31 @@
 import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
-import { IPresentation, Slide, Layout, Element, LayoutType, GridStructure, getPredefinedGridStructures } from '@/types';
-import { devtools } from 'zustand/middleware'
+import {
+    IPresentation,
+    Slide,
+    Layout,
+    Element,
+    ElementType,
+    LayoutType,
+    EditorElement,
+    GridStructure,
+    getPredefinedGridStructures
+} from '@/types';
+import { devtools } from 'zustand/middleware';
 import { generateId } from '@/utils/id';
+import { HistoryAction, useHistoryStore } from './historyStore';
 
 interface PresentationState {
     presentations: IPresentation[];
+
+    recordAction: (action: Omit<HistoryAction, 'timestamp' | 'transactionId'>) => void;
 
     // Работа с презентациями
     createPresentation: (title: string) => string;
     updatePresentation: (id: string, data: Partial<IPresentation>) => void;
     deletePresentation: (id: string) => void;
     getPresentation: (id: string) => IPresentation | undefined;
+    setFullState: (state: { presentations: IPresentation[] }) => void;
 
     // Работа со слайдами
     addSlide: (presentationId: string, title?: string) => string;
@@ -37,6 +51,12 @@ interface PresentationState {
     addElement: (presentationId: string, slideId: string, layoutId: string, element: Omit<Element, 'id'>) => string;
     updateElement: (presentationId: string, slideId: string, layoutId: string, elementId: string, data: Partial<Element>) => void;
     deleteElement: (presentationId: string, slideId: string, layoutId: string, elementId: string) => void;
+
+    // Undo/Redo operations
+    undo: (presentationId: string) => void;
+    redo: (presentationId: string) => void;
+    canUndo: (presentationId: string) => boolean;
+    canRedo: (presentationId: string) => boolean;
 }
 
 // Create the store with properly configured middleware
@@ -45,6 +65,16 @@ export const usePresentationStore = create<PresentationState>()(
         (set, get) => ({
             presentations: [],
 
+            recordAction: (action: Omit<HistoryAction, 'timestamp' | 'transactionId'>) => {
+                const historyStore = useHistoryStore.getState();
+                if (historyStore.hasActiveTransaction(action.presentationId)) {
+                    // Don't record individual actions during a transaction
+                    // Let the transaction helper handle it
+                } else {
+                    // Record action normally
+                    historyStore.recordAction({ ...action });
+                }
+            },
             // Методы для работы с презентациями
             createPresentation: (title: string) => {
                 const id = uuidv4();
@@ -58,9 +88,27 @@ export const usePresentationStore = create<PresentationState>()(
                     updatedAt: now,
                 };
 
+                // Capture the state before the operation
+                const beforeState = { ...get() };
+
                 set((state) => ({
                     presentations: [...state.presentations, newPresentation],
                 }));
+
+                // Initialize history for the new presentation
+                useHistoryStore.getState().initHistory(id);
+
+                // Capture the state after the operation
+                const afterState = { ...get() };
+
+                // Record this action with the entire store state
+                get().recordAction({
+                    type: 'presentation',
+                    description: 'Create presentation',
+                    presentationId: id,
+                    before: { presentations: beforeState.presentations },
+                    after: afterState
+                });
 
                 // Добавляем первый слайд по умолчанию
                 get().addSlide(id, 'Титульный слайд');
@@ -69,19 +117,39 @@ export const usePresentationStore = create<PresentationState>()(
             },
 
             updatePresentation: (id, data) => {
+                const currentPresentation = get().getPresentation(id);
+                if (!currentPresentation) return;
+
+                // Capture the state before the operation
+                const beforeState = { ...get() };
+
                 set((state) => {
-                    console.log('updatePresentation', data);
-                    return {
+                    const updatedState = {
                         presentations: state.presentations.map((presentation) =>
                             presentation.id === id
                                 ? { ...presentation, ...data, updatedAt: Date.now() }
                                 : presentation
                         ),
                     }
+                    get().recordAction({
+                        type: 'presentation',
+                        description: 'Update presentation details',
+                        presentationId: id,
+                        before: { presentations: beforeState.presentations },
+                        after: updatedState
+                    });
+
+                    return updatedState;
                 });
             },
 
             deletePresentation: (id) => {
+                const presentation = get().getPresentation(id);
+                if (!presentation) return;
+
+                // Clear history for the presentation being deleted
+                useHistoryStore.getState().clearHistory(id);
+
                 set((state) => ({
                     presentations: state.presentations.filter((presentation) => presentation.id !== id),
                 }));
@@ -91,17 +159,21 @@ export const usePresentationStore = create<PresentationState>()(
                 return get().presentations.find((presentation) => presentation.id === id);
             },
 
+
             // Методы для работы со слайдами
             addSlide: (presentationId, title = 'Новый слайд') => {
+                const beforeState = { ...get() };
+
                 const slideId = uuidv4();
 
                 const defaultGridType = 'single-column';
                 const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures(defaultGridType);
 
-                const elements: Element[] = defaultLayoutGridStructure.rows.map(row => {
+                // Create editor elements for each cell
+                const elements: EditorElement[] = defaultLayoutGridStructure.rows.map(row => {
                     return row.cells.map(cell => ({
                         id: generateId(),
-                        type: 'editor',
+                        type: 'editor' as const,
                         content: '',
                         position: { x: 0, y: 0 },
                         size: { width: 100, height: 100 },
@@ -130,58 +202,113 @@ export const usePresentationStore = create<PresentationState>()(
                     style: {},
                 };
 
-                set((state) => ({
-                    presentations: state.presentations.map((presentation) => {
-                        if (presentation.id === presentationId) {
-                            return {
-                                ...presentation,
-                                slides: [...presentation.slides, newSlide],
-                                updatedAt: Date.now(),
-                            };
-                        }
-                        return presentation;
-                    }),
-                }));
+                set((state) => {
+                    const updatedState = {
+                        presentations: state.presentations.map((presentation) => {
+                            if (presentation.id === presentationId) {
+                                return {
+                                    ...presentation,
+                                    slides: [...presentation.slides, newSlide],
+                                    updatedAt: Date.now(),
+                                };
+                            }
+                            return presentation;
+                        }),
+                    };
 
-                // Добавляем пустой макет по умолчанию
-                // get().addLayout(presentationId, slideId, 'blank');
+                    get().recordAction({
+                        type: 'slide',
+                        description: 'Add new slide',
+                        presentationId,
+                        slideId,
+                        before: { presentations: beforeState.presentations },
+                        after: updatedState
+                    });
+
+                    return updatedState;
+                });
 
                 return slideId;
             },
 
             updateSlide: (presentationId, slideId, data) => {
-                set((state) => ({
-                    presentations: state.presentations.map((presentation) => {
-                        if (presentation.id === presentationId) {
-                            return {
-                                ...presentation,
-                                slides: presentation.slides.map((slide) =>
-                                    slide.id === slideId ? { ...slide, ...data } : slide
-                                ),
-                                updatedAt: Date.now(),
-                            };
-                        }
-                        return presentation;
-                    }),
-                }));
+                const beforeState = { ...get() };
+
+                const currentPresentation = get().getPresentation(presentationId);
+                if (!currentPresentation) return;
+
+                const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
+                if (!currentSlide) return;
+
+                set((state) => {
+                    const updatedState = {
+                        presentations: state.presentations.map((presentation) => {
+                            if (presentation.id === presentationId) {
+                                return {
+                                    ...presentation,
+                                    slides: presentation.slides.map((slide) =>
+                                        slide.id === slideId ? { ...slide, ...data } : slide
+                                    ),
+                                    updatedAt: Date.now(),
+                                };
+                            }
+                            return presentation;
+                        }),
+                    }
+
+                    // Record the action for history
+                    get().recordAction({
+                        type: 'slide',
+                        description: 'Update slide',
+                        presentationId,
+                        slideId,
+                        before: { presentations: beforeState.presentations },
+                        after: updatedState
+                    });
+
+                    return updatedState;
+                });
             },
 
             deleteSlide: (presentationId, slideId) => {
-                set((state) => ({
-                    presentations: state.presentations.map((presentation) => {
-                        if (presentation.id === presentationId) {
-                            return {
-                                ...presentation,
-                                slides: presentation.slides.filter((slide) => slide.id !== slideId),
-                                updatedAt: Date.now(),
-                            };
-                        }
-                        return presentation;
-                    }),
-                }));
+                const beforeState = { ...get() };
+
+                const currentPresentation = get().getPresentation(presentationId);
+                if (!currentPresentation) return;
+
+                const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
+                if (!currentSlide) return;
+
+                set((state) => {
+                    const updatedState = {
+                        presentations: state.presentations.map((presentation) => {
+                            if (presentation.id === presentationId) {
+                                return {
+                                    ...presentation,
+                                    slides: presentation.slides.filter((slide) => slide.id !== slideId),
+                                    updatedAt: Date.now(),
+                                };
+                            }
+                            return presentation;
+                        }),
+                    }
+
+                    get().recordAction({
+                        type: 'slide',
+                        description: 'Delete slide',
+                        presentationId,
+                        slideId,
+                        before: { presentations: beforeState.presentations },
+                        after: updatedState
+                    });
+
+                    return updatedState;
+                });
             },
 
             duplicateSlide: (presentationId, slideId) => {
+                const beforeState = { ...get() };
+
                 const { presentations } = get();
                 const presentation = presentations.find((p) => p.id === presentationId);
 
@@ -208,23 +335,44 @@ export const usePresentationStore = create<PresentationState>()(
                     })),
                 };
 
-                set((state) => ({
-                    presentations: state.presentations.map((p) => {
-                        if (p.id === presentationId) {
-                            return {
-                                ...p,
-                                slides: [...p.slides, clonedSlide],
-                                updatedAt: Date.now(),
-                            };
-                        }
-                        return p;
-                    }),
-                }));
+
+                set((state) => {
+                    const updatedState = {
+                        presentations: state.presentations.map((p) => {
+                            if (p.id === presentationId) {
+                                return {
+                                    ...p,
+                                    slides: [...p.slides, clonedSlide],
+                                    updatedAt: Date.now(),
+                                };
+                            }
+                            return p;
+                        }),
+                    }
+                    get().recordAction({
+                        type: 'slide',
+                        description: 'Duplicate slide',
+                        presentationId,
+                        slideId: newSlideId,
+                        before: { presentations: beforeState.presentations },
+                        after: updatedState
+                    });
+                    return updatedState;
+                });
 
                 return newSlideId;
             },
 
             reorderSlides: (presentationId, startIndex, endIndex) => {
+                const beforeState = { ...get() };
+
+                const currentPresentation = get().getPresentation(presentationId);
+                if (!currentPresentation) return;
+
+                const newSlides = [...currentPresentation.slides];
+                const [removed] = newSlides.splice(startIndex, 1);
+                newSlides.splice(endIndex, 0, removed);
+
                 set((state) => {
                     const presentation = state.presentations.find((p) => p.id === presentationId);
 
@@ -234,46 +382,86 @@ export const usePresentationStore = create<PresentationState>()(
                     const [removed] = newSlides.splice(startIndex, 1);
                     newSlides.splice(endIndex, 0, removed);
 
-                    return {
+                    const updatedState = {
                         presentations: state.presentations.map((p) =>
                             p.id === presentationId
                                 ? { ...p, slides: newSlides, updatedAt: Date.now() }
                                 : p
                         ),
                     };
+                    get().recordAction({
+                        type: 'presentation',
+                        description: 'Reorder slides',
+                        presentationId,
+                        before: { presentations: beforeState.presentations },
+                        after: updatedState
+                    });
+
+                    return updatedState;
                 });
             },
 
             // Методы для работы с макетами
             addLayout: (presentationId, slideId, layout, index) => {
-                console.log('addLayot', layout)
-                const layoutId = uuidv4();
+                const beforeState = { ...get() };
 
-                // Если передан только тип макета (строка), создаем объект макета
-                const newLayout: Layout = typeof layout === 'string'
-                    ? {
+                const layoutId = uuidv4();
+                let newLayout: Layout;
+
+                const currentPresentation = get().getPresentation(presentationId);
+                if (!currentPresentation) return layoutId;
+
+                const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
+                if (!currentSlide) return layoutId;
+
+                if (typeof layout === 'string') {
+                    // Это тип макета (LayoutType), создаем новый макет по типу
+                    const gridStructure = getPredefinedGridStructures(layout as LayoutType);
+
+                    // Создаем элементы для каждой ячейки сетки
+                    const elements: EditorElement[] = gridStructure.rows.map(row =>
+                        row.cells.map(cell => ({
+                            id: uuidv4(),
+                            type: 'editor' as const,
+                            content: '',
+                            position: { x: 0, y: 0 },
+                            size: { width: 100, height: 100 },
+                            style: { fontSize: '16px', color: '#333333' },
+                            zIndex: 1,
+                            placeholder: 'Введите текст...',
+                            cellId: cell.id,
+                        }))
+                    ).flat();
+
+                    newLayout = {
                         id: layoutId,
-                        type: layout,
-                        elements: [],
+                        type: layout as LayoutType,
+                        elements,
+                        gridStructure,
                         style: {},
-                    }
-                    : {
-                        ...layout,
+                    };
+                } else {
+                    // Это объект макета, добавляем только ID
+                    newLayout = {
+                        ...layout as Layout,
                         id: layoutId,
                     };
+                }
 
                 set((state) => {
                     const targetSlide = state.presentations.find((p) => p.id === presentationId)?.slides.find((s) => s.id === slideId);
-                    const layouts = [...targetSlide?.layouts || []];
 
-                    if (!layouts) return state;
-
-                    if (index === 0 || index) {
+                    let layouts: Layout[];
+                    if (typeof index === 'number' && targetSlide && index <= targetSlide.layouts.length) {
+                        // Если индекс указан и валиден
+                        layouts = [...targetSlide.layouts];
                         layouts.splice(index, 0, newLayout);
                     } else {
-                        layouts.push(newLayout);
+                        // Иначе добавляем в конец
+                        layouts = targetSlide ? [...targetSlide.layouts, newLayout] : [newLayout];
                     }
-                    return {
+
+                    const updatedState = {
                         presentations: state.presentations.map((presentation) => {
                             if (presentation.id === presentationId) {
                                 return {
@@ -292,16 +480,39 @@ export const usePresentationStore = create<PresentationState>()(
                             }
                             return presentation;
                         }),
-                    }
+                    };
+
+                    get().recordAction({
+                        type: 'layout',
+                        description: 'Add layout',
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        before: { presentations: beforeState.presentations },
+                        after: updatedState
+                    });
+
+                    return updatedState;
                 });
 
                 return layoutId;
             },
 
             updateLayout: (presentationId, slideId, layoutId, data) => {
+                const beforeState = { ...get() };
+
+                const currentPresentation = get().getPresentation(presentationId);
+                if (!currentPresentation) return;
+
+                const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
+                if (!currentSlide) return;
+
+                const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
+                if (!currentLayout) return;
+
+
                 set((state) => {
-                    console.log('updateLayout', data);
-                    return {
+                    const updatedState = {
                         presentations: state.presentations.map((presentation) => {
                             if (presentation.id === presentationId) {
                                 return {
@@ -323,30 +534,68 @@ export const usePresentationStore = create<PresentationState>()(
                             return presentation;
                         }),
                     };
+                    // Record the action for history
+                    get().recordAction({
+                        type: 'layout',
+                        description: 'Update layout',
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        before: { presentations: beforeState.presentations },
+                        after: updatedState
+                    });
+
+                    return updatedState;
                 });
+
             },
 
             deleteLayout: (presentationId, slideId, layoutId) => {
-                set((state) => ({
-                    presentations: state.presentations.map((presentation) => {
-                        if (presentation.id === presentationId) {
-                            return {
-                                ...presentation,
-                                slides: presentation.slides.map((slide) => {
-                                    if (slide.id === slideId) {
-                                        return {
-                                            ...slide,
-                                            layouts: slide.layouts.filter((layout) => layout.id !== layoutId),
-                                        };
-                                    }
-                                    return slide;
-                                }),
-                                updatedAt: Date.now(),
-                            };
-                        }
-                        return presentation;
-                    }),
-                }));
+                const beforeState = { ...get() };
+
+                const currentPresentation = get().getPresentation(presentationId);
+                if (!currentPresentation) return;
+
+                const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
+                if (!currentSlide) return;
+
+                const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
+                if (!currentLayout) return;
+
+                set((state) => {
+                    const updatedState = {
+                        presentations: state.presentations.map((presentation) => {
+                            if (presentation.id === presentationId) {
+                                return {
+                                    ...presentation,
+                                    slides: presentation.slides.map((slide) => {
+                                        if (slide.id === slideId) {
+                                            return {
+                                                ...slide,
+                                                layouts: slide.layouts.filter((layout) => layout.id !== layoutId),
+                                            };
+                                        }
+                                        return slide;
+                                    }),
+                                    updatedAt: Date.now(),
+                                };
+                            }
+                            return presentation;
+                        }),
+                    }
+
+                    get().recordAction({
+                        type: 'layout',
+                        description: 'Delete layout',
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        before: { presentations: beforeState.presentations },
+                        after: updatedState
+                    });
+
+                    return updatedState;
+                });
             },
 
             updateAndPotentiallyDeleteLayout: (
@@ -356,8 +605,24 @@ export const usePresentationStore = create<PresentationState>()(
                 data,
                 deleteIfEmpty = false
             ) => {
+                const beforeState = { ...get() };
+
+                const currentPresentation = get().getPresentation(presentationId);
+                if (!currentPresentation) return;
+
+                const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
+                if (!currentSlide) return;
+
+                const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
+                if (!currentLayout) return;
+
+                let shouldDelete = false;
+                if (deleteIfEmpty && 'elements' in data) {
+                    const updatedElements = data.elements as Element[];
+                    shouldDelete = updatedElements.length === 0;
+                }
+
                 set((state) => {
-                    console.log('updateAndPotentiallyDeleteLayout', data);
                     const presentation = state.presentations.find((p) => p.id === presentationId);
                     if (!presentation) return state;
 
@@ -388,25 +653,51 @@ export const usePresentationStore = create<PresentationState>()(
                         };
                     });
 
-                    // Return the updated state
-                    return {
-                        presentations: state.presentations.map((p) =>
-                            p.id === presentationId
-                                ? { ...presentation, slides: updatedSlides, updatedAt: Date.now() }
-                                : p
-                        )
+                    // Update the presentation with new slides
+                    const updatedState = {
+                        presentations: state.presentations.map((p) => {
+                            if (p.id === presentationId) {
+                                return {
+                                    ...p,
+                                    slides: updatedSlides,
+                                    updatedAt: Date.now()
+                                };
+                            }
+                            return p;
+                        })
                     };
+
+                    get().recordAction({
+                        type: 'layout',
+                        description: shouldDelete ? 'Delete empty layout' : 'Update layout',
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        before: { presentations: beforeState.presentations },
+                        after: updatedState
+                    });
+
+                    return updatedState;
                 });
             },
 
-            findLayoutByElementId: (elementId: string) => {
-                const presentation = get().presentations.find((p) => p.slides.some((s) => s.layouts.some((l) => l.elements.some((e) => e.id === elementId))));
-                if (!presentation) return null;
-
-                return presentation.slides.flatMap((s) => s.layouts).find((l) => l.elements.some((e) => e.id === elementId));
+            findLayoutByElementId: (elementId) => {
+                for (const presentation of get().presentations) {
+                    for (const slide of presentation.slides) {
+                        for (const layout of slide.layouts) {
+                            if (layout.elements.some(e => e.id === elementId)) {
+                                return layout;
+                            }
+                        }
+                    }
+                }
+                return undefined;
             },
+
             // Методы для работы с элементами
             addElement: (presentationId, slideId, layoutId, elementData) => {
+                const beforeState = { ...get() };
+
                 const elementId = uuidv4();
 
                 const newElement: Element = {
@@ -414,102 +705,207 @@ export const usePresentationStore = create<PresentationState>()(
                     id: elementId,
                 };
 
-                set((state) => ({
-                    presentations: state.presentations.map((presentation) => {
-                        if (presentation.id === presentationId) {
-                            return {
-                                ...presentation,
-                                slides: presentation.slides.map((slide) => {
-                                    if (slide.id === slideId) {
-                                        return {
-                                            ...slide,
-                                            layouts: slide.layouts.map((layout) => {
-                                                if (layout.id === layoutId) {
-                                                    return {
-                                                        ...layout,
-                                                        elements: [...layout.elements, newElement],
-                                                    };
-                                                }
-                                                return layout;
-                                            }),
-                                        };
-                                    }
-                                    return slide;
-                                }),
-                                updatedAt: Date.now(),
-                            };
-                        }
-                        return presentation;
-                    }),
-                }));
+                const currentPresentation = get().getPresentation(presentationId);
+                if (!currentPresentation) return elementId;
+
+                const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
+                if (!currentSlide) return elementId;
+
+                const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
+                if (!currentLayout) return elementId;
+
+                set((state) => {
+                    const updatedState = {
+                        presentations: state.presentations.map((presentation) => {
+                            if (presentation.id === presentationId) {
+                                return {
+                                    ...presentation,
+                                    slides: presentation.slides.map((slide) => {
+                                        if (slide.id === slideId) {
+                                            return {
+                                                ...slide,
+                                                layouts: slide.layouts.map((layout) => {
+                                                    if (layout.id === layoutId) {
+                                                        return {
+                                                            ...layout,
+                                                            elements: [...layout.elements, newElement],
+                                                        };
+                                                    }
+                                                    return layout;
+                                                }),
+                                            };
+                                        }
+                                        return slide;
+                                    }),
+                                    updatedAt: Date.now(),
+                                };
+                            }
+                            return presentation;
+                        }),
+                    };
+
+                    get().recordAction({
+                        type: 'element',
+                        description: 'Add element',
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        elementId,
+                        before: { presentations: beforeState.presentations },
+                        after: updatedState
+                    });
+
+                    return updatedState;
+                });
 
                 return elementId;
             },
 
             updateElement: (presentationId, slideId, layoutId, elementId, data) => {
-                set((state) => ({
-                    presentations: state.presentations.map((presentation) => {
-                        if (presentation.id === presentationId) {
-                            return {
-                                ...presentation,
-                                slides: presentation.slides.map((slide) => {
-                                    if (slide.id === slideId) {
-                                        return {
-                                            ...slide,
-                                            layouts: slide.layouts.map((layout) => {
-                                                if (layout.id === layoutId) {
-                                                    return {
-                                                        ...layout,
-                                                        elements: layout.elements.map((element) =>
-                                                            element.id === elementId ? { ...element, ...data } : element
-                                                        ),
-                                                    };
-                                                }
-                                                return layout;
-                                            }),
-                                        };
-                                    }
-                                    return slide;
-                                }),
-                                updatedAt: Date.now(),
-                            };
-                        }
-                        return presentation;
-                    }),
-                }));
+                const beforeState = { ...get() };
+
+                const currentPresentation = get().getPresentation(presentationId);
+                if (!currentPresentation) return;
+
+                const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
+                if (!currentSlide) return;
+
+                const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
+                if (!currentLayout) return;
+
+                const currentElement = currentLayout.elements.find(element => element.id === elementId);
+                if (!currentElement) return;
+
+                set((state) => {
+                    const updatedState = {
+                        presentations: state.presentations.map((presentation) => {
+                            if (presentation.id === presentationId) {
+                                return {
+                                    ...presentation,
+                                    slides: presentation.slides.map((slide) => {
+                                        if (slide.id === slideId) {
+                                            return {
+                                                ...slide,
+                                                layouts: slide.layouts.map((layout) => {
+                                                    if (layout.id === layoutId) {
+                                                        return {
+                                                            ...layout,
+                                                            elements: layout.elements.map((element) =>
+                                                                element.id === elementId ? { ...element, ...data } : element
+                                                            ),
+                                                        };
+                                                    }
+                                                    return layout;
+                                                }),
+                                            };
+                                        }
+                                        return slide;
+                                    }),
+                                    updatedAt: Date.now(),
+                                };
+                            }
+                            return presentation;
+                        }),
+                    };
+
+                    get().recordAction({
+                        type: 'element',
+                        description: 'Update element',
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        elementId,
+                        before: { presentations: beforeState.presentations },
+                        after: updatedState
+                    });
+                    return updatedState;
+                });
             },
 
             deleteElement: (presentationId, slideId, layoutId, elementId) => {
-                set((state) => ({
-                    presentations: state.presentations.map((presentation) => {
-                        if (presentation.id === presentationId) {
-                            return {
-                                ...presentation,
-                                slides: presentation.slides.map((slide) => {
-                                    if (slide.id === slideId) {
-                                        return {
-                                            ...slide,
-                                            layouts: slide.layouts.map((layout) => {
-                                                if (layout.id === layoutId) {
-                                                    return {
-                                                        ...layout,
-                                                        elements: layout.elements.filter(
-                                                            (element) => element.id !== elementId
-                                                        ),
-                                                    };
-                                                }
-                                                return layout;
-                                            }),
-                                        };
-                                    }
-                                    return slide;
-                                }),
-                                updatedAt: Date.now(),
-                            };
-                        }
-                        return presentation;
-                    }),
-                }));
+                const beforeState = { ...get() };
+
+                const currentPresentation = get().getPresentation(presentationId);
+                if (!currentPresentation) return;
+
+                const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
+                if (!currentSlide) return;
+
+                const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
+                if (!currentLayout) return;
+
+                const currentElement = currentLayout.elements.find(element => element.id === elementId);
+                if (!currentElement) return;
+
+                set((state) => {
+                    const updatedState = {
+                        presentations: state.presentations.map((presentation) => {
+                            if (presentation.id === presentationId) {
+                                return {
+                                    ...presentation,
+                                    slides: presentation.slides.map((slide) => {
+                                        if (slide.id === slideId) {
+                                            return {
+                                                ...slide,
+                                                layouts: slide.layouts.map((layout) => {
+                                                    if (layout.id === layoutId) {
+                                                        return {
+                                                            ...layout,
+                                                            elements: layout.elements.filter(
+                                                                (element) => element.id !== elementId
+                                                            ),
+                                                        };
+                                                    }
+                                                    return layout;
+                                                }),
+                                            };
+                                        }
+                                        return slide;
+                                    }),
+                                    updatedAt: Date.now(),
+                                };
+                            }
+                            return presentation;
+                        }),
+                    };
+
+                    // Record the action for history
+                    get().recordAction({
+                        type: 'element',
+                        description: 'Delete element',
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        elementId,
+                        before: { presentations: beforeState.presentations },
+                        after: updatedState
+                    });
+                    return updatedState;
+                });
+            },
+
+            // Undo/Redo operations - delegate to history store
+            undo: (presentationId: string) => {
+                useHistoryStore.getState().undo(presentationId);
+            },
+
+            redo: (presentationId: string) => {
+                useHistoryStore.getState().redo(presentationId);
+            },
+
+            canUndo: (presentationId: string) => {
+                return useHistoryStore.getState().canUndo(presentationId);
+            },
+
+            canRedo: (presentationId: string) => {
+                return useHistoryStore.getState().canRedo(presentationId);
+            },
+
+            setFullState: (state: { presentations: IPresentation[] }) => {
+                // Direct setter for presentations array used by undo/redo operations
+                if (state && Array.isArray(state.presentations)) {
+                    set({ presentations: JSON.parse(JSON.stringify(state.presentations)) });
+                }
             },
         }),
         {

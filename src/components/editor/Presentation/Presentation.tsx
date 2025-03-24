@@ -1,6 +1,7 @@
 import { IPresentation, Slide } from "@/types";
 import SlideEditor from "../SlideEditor";
 import { useDnd } from "@/contexts/DragDropContext";
+
 export default function Presentation(
     { presentation, presentationId, activeSlideId, handleSlideSelect }:
         { presentation: IPresentation, presentationId: string, activeSlideId: string | null, handleSlideSelect: (slideId: string) => void }

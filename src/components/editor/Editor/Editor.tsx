@@ -7,6 +7,7 @@ import Button from '@/components/ui/Button';
 import { DndProvider } from '@/contexts/DragDropContext';
 import Presentation from '../Presentation';
 import DragDropIndicator from '@/components/DragDropIndicator';
+import UndoRedoControls from '@/components/UndoRedoControls';
 
 interface EditorProps {
     presentationId: string;
@@ -59,6 +60,8 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
                         <h1 className="text-2xl font-bold text-blue-600">Presa</h1>
 
                         <div className="flex items-center space-x-4">
+                            <UndoRedoControls presentationId={presentationId} />
+                            
                             <Button
                                 variant="outline"
                                 size="sm"

@@ -20,7 +20,6 @@ const DropIndicator = () => {
         } else {
             // Small delay to allow for animation
             const timeout = setTimeout(() => {
-                console.log('hiding indicator')
                 setVisible(false);
             }, 150);
             return () => clearTimeout(timeout);

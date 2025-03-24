@@ -197,6 +197,12 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
         },
     })
 
+    useEffect(() => {
+        if (editor) {
+            editor.commands.setContent(initialContent);
+        }
+    }, [editor, initialContent])
+
     // Метод для программного фокуса на редакторе
     const focus = useCallback(() => {
         if (editor) {

@@ -17,6 +17,15 @@ interface LayoutContentProps {
     slideId: string;
 }
 
+function simpleHash(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0; // Преобразование в 32-битное число
+    }
+    return Math.abs(hash).toString(36); // Конвертация в строку
+}
+
 const LayoutContent: React.FC<LayoutContentProps> = ({
     layout,
     isFirstLayout,
@@ -28,9 +37,6 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     slideId
 }) => {
     const { state, handleDrop, handleDragStart } = useDnd();
-
-    // Get drag indicator states from the context
-    const { layoutIndicator, layoutPosition } = state.indicators;
 
     // Generate CSS grid properties from the grid structure
     const gridTemplateAreas = generateGridTemplateAreas(layout.gridStructure);
@@ -49,7 +55,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     });
 
     // Remove layout drag class logic - we'll use global indicator now
-    let layoutClassName = styles.layoutContent;
+    const layoutClassName = styles.layoutContent;
 
     const handleLocalDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -99,9 +105,12 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                             const elements = cellElements[cellId] || [];
                             const isLastCell = cellIndex === row.cells.length - 1;
 
+                            const elementsIds = elements.map(element => element.id);
+
+                            const key = `${cellId}-${simpleHash(JSON.stringify(elementsIds))}`;
                             return (
                                 <GridCellElement
-                                    key={cellId}
+                                    key={key}
                                     slideEditorRef={slideEditorRef}
                                     tiptapRefs={tiptapRefs}
                                     cell={cell}
@@ -114,7 +123,6 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                                     index={cellIndex}
                                     hasMultipleCells={hasMultipleCellsInRow}
                                     isLastCell={isLastCell}
-                                    dataElementKey={`${layout.id}-${cellId}`}
                                     onSelect={(element) => onSelectElement(element.id)}
                                     onDelete={(element) => onDeleteElement(layout.id, element.id)}
                                 />

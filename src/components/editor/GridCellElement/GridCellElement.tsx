@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { GridCell, Element, GridStructure, getPredefinedGridStructures, Layout } from '@/types';
 import { useDnd } from '@/contexts/DragDropContext';
 import Tiptap, { TiptapRef } from '@/components/tiptap/Tiptap';
@@ -11,25 +11,6 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { generateId } from '@/utils/id';
 import { useEditorStore } from '@/store/editorStore';
 
-const determineDropPosition = (x: number, y: number, width: number, height: number): 'top' | 'bottom' | 'left' | 'right' => {
-    // Calculate distances from each edge
-    const distanceFromTop = y;
-    const distanceFromBottom = height - y;
-    const distanceFromLeft = x;
-    const distanceFromRight = width - x;
-
-    // Find the minimum distance
-    const minDistance = Math.min(distanceFromTop, distanceFromBottom, distanceFromLeft, distanceFromRight);
-
-    // Return the position based on the minimum distance
-    if (minDistance === distanceFromTop) return 'top';
-    if (minDistance === distanceFromBottom) return 'bottom';
-    if (minDistance === distanceFromLeft) return 'left';
-    if (minDistance === distanceFromRight) return 'right';
-
-    // Default to top if something goes wrong
-    return 'top';
-};
 
 interface GridCellElementProps {
     cell: GridCell;
@@ -42,7 +23,6 @@ interface GridCellElementProps {
     index: number;
     hasMultipleCells: boolean;
     isLastCell: boolean;
-    dataElementKey: string;
     slideEditorRef: React.RefObject<HTMLDivElement>;
     tiptapRefs: React.RefObject<Record<string, React.RefObject<TiptapRef>>>;
     onSelect: (element: Element) => void;
@@ -52,37 +32,19 @@ interface GridCellElementProps {
 const GridCellElement: React.FC<GridCellElementProps> = ({
     cell,
     elements,
-    dragOverElement,
-    dragOverPosition,
     presentationId,
     slideId,
     layoutId,
-    index,
     hasMultipleCells,
-    isLastCell,
-    dataElementKey,
-    slideEditorRef,
     tiptapRefs,
-    onSelect,
-    onDelete
+    onSelect
 }) => {
     const {
-        handleDragStart,
-        handleDrop
-    } = useDnd();
+        handleDragStart    } = useDnd();
 
     const dragHandleRef = useRef<HTMLDivElement>(null);
 
-    const { updateElement, updateLayout, addElement } = usePresentationStore();
-
-    // The rest of your component's code
-    // We're keeping most of the component the same, just changing the DnD handlers
-
-    // Cell styling and className logic stays the same
-    const cellStyle = {
-        // gridArea: `cell-${cell.row}-${cell.column}`,
-        // any other styles you have
-    };
+    const { updateElement, updateLayout } = usePresentationStore();
 
     const cellClassName = `${styles.gridCell} ${hasMultipleCells ? styles.multiCell : ''}`;
 
@@ -187,29 +149,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             updateLayout(presentationId, slideId, layoutId, layout);
         }
     };
-    // Обработчик для удаления пустого редактора при нажатии Backspace
-    // const handleBackspacePressed = (element: Element) => () => {
-    //     // Если это единственный элемент в макете, не удаляем его
-    //     const presentation = usePresentationStore.getState().getPresentation(presentationId);
-    //     if (!presentation) return;
-
-    //     const slide = presentation.slides.find(s => s.id === slideId);
-    //     if (!slide) return;
-
-    //     const layout = slide.layouts.find(l => l.id === layoutId);
-    //     if (!layout || layout.elements.length <= 1) return;
-
-    //     // Удаляем элемент
-    //     usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, element.id);
-
-    //     // If this is the only element in the layout and there are other layouts, delete the entire layout
-    //     if (layout.elements.length === 1) {
-    //         // Only delete the layout if there's at least one other layout
-    //         if (slide.layouts.length > 1) {
-    //             usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
-    //         }
-    //     }
-    // };
 
     const handleEditorContentChange = (elementId: string) => (content: string) => {
         updateElement(presentationId, slideId, layoutId, elementId, {
@@ -262,7 +201,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     return (
         <div
             className={`${styles.gridCellElement} ${hasMultipleCells ? styles.multiCell : ''}`}
-            style={cellStyle}
             data-element-id={cell.id}
             // data-layout-id={layoutId}
             data-cell-id={cell.id}
