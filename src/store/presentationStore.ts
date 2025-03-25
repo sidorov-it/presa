@@ -545,6 +545,8 @@ export const usePresentationStore = create<PresentationState>()(
                             return presentation;
                         }),
                     };
+
+                    console.log('updatedState', updatedState);
                     // Record the action for history
                     get().recordAction({
                         type: 'layout',
