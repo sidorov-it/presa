@@ -344,9 +344,16 @@ export const usePresentationStore = create<PresentationState>()(
                     const updatedState = {
                         presentations: state.presentations.map((p) => {
                             if (p.id === presentationId) {
+                                const updatedSlides = [...p.slides];
+
+                                const originSlideIndex = updatedSlides.findIndex(slide => slide.id === slideId);
+                                if (originSlideIndex !== -1) {
+                                    updatedSlides.splice(originSlideIndex + 1, 0, clonedSlide);
+                                }
+
                                 return {
                                     ...p,
-                                    slides: [...p.slides, clonedSlide],
+                                    slides: updatedSlides,
                                     updatedAt: Date.now(),
                                 };
                             }

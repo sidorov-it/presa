@@ -861,7 +861,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 });
 
                 const updatedSourceGridStructure = JSON.parse(JSON.stringify(sourceGridStructure));
-                updatedSourceGridStructure.rows[0].cells = updatedSourceGridStructure.rows[0].cells.filter(c => c.id !== draggedCell.id);
+                updatedSourceGridStructure.rows[0].cells = updatedSourceGridStructure.rows[0].cells.filter((c: GridCell) => c.id !== draggedCell.id);
                 if (updatedSourceGridStructure.rows[0].cells.length === 0) {
                     DragDropTransactionHelper.deleteLayout(presentationId, slide.id, sourceLayout.id);
                 } else {
@@ -981,12 +981,12 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
                 targetGridStructure.rows[0].cells.splice(newCellPosition, 0, newCell);
 
-                targetGridStructure.rows[0].cells.forEach(c => {
+                targetGridStructure.rows[0].cells.forEach((c: GridCell) => {
                     if (c.column >= newCellPosition && c.id !== newCellId) {
                         c.column = c.column + 1;
                     }
                 })
-                targetGridStructure.rows[0].cells.sort((a, b) => a.column - b.column);
+                targetGridStructure.rows[0].cells.sort((a: GridCell, b: GridCell) => a.column - b.column);
 
                 // Update target layout
                 DragDropTransactionHelper.updateLayout(presentationId, slide.id, targetLayout.id, {
@@ -1188,7 +1188,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             DragDropTransactionHelper.updateSlide(presentationId, slide.id, slide);
 
             const updatedSourceGridStructure = JSON.parse(JSON.stringify(sourceLayout.gridStructure));
-            updatedSourceGridStructure.rows[0].cells = updatedSourceGridStructure.rows[0].cells.filter(c => c.id !== prevStateRef.current.source.cellId);
+            updatedSourceGridStructure.rows[0].cells = updatedSourceGridStructure.rows[0].cells.filter((c: GridCell) => c.id !== prevStateRef.current.source.cellId);
             updatedSourceGridStructure.columns = updatedSourceGridStructure.columns - 1;
             const updatedSourceColumnWidths = getColumnWidths(updatedSourceGridStructure.columns);
             const updatedSourceElements = sourceLayout.elements.filter(e => e.cellId !== prevStateRef.current.source.cellId);
@@ -1251,16 +1251,16 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     return el;
                 })
 
-                const targetCellIndex = targetGridStructure.rows[0].cells.findIndex(c => c.id === prevStateRef.current.target.cellId);
+                const targetCellIndex = targetGridStructure.rows[0].cells.findIndex((c: GridCell) => c.id === prevStateRef.current.target.cellId);
 
                 const newCellPosition = prevStateRef.current.indicators.cellPosition === 'left' ? targetCellIndex : targetCellIndex + 1;
                 targetGridStructure.rows[0].cells.splice(newCellPosition, 0, newCell);
 
-                targetGridStructure.rows[0].cells.forEach((c, index) => {
+                targetGridStructure.rows[0].cells.forEach((c: GridCell, index: number) => {
                     c.column = index + 1;
                 })
 
-                targetGridStructure.rows[0].cells.sort((a, b) => a.column - b.column);
+                targetGridStructure.rows[0].cells.sort((a: GridCell, b: GridCell) => a.column - b.column);
 
                 const elementsInCell = updatedElements.filter(e => e.cellId === sourceElement.cellId);
                 if (elementsInCell.length === 0) {
@@ -1288,12 +1288,12 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 });
             } else if (prevStateRef.current.source.cellId) {
                 // перемещение ячейки
-                const sourceCellIndex = targetGridStructure.rows[0].cells.findIndex(c => c.id === prevStateRef.current.source.cellId);
-                const targetCellIndex = targetGridStructure.rows[0].cells.findIndex(c => c.id === prevStateRef.current.target.cellId);
+                const sourceCellIndex = targetGridStructure.rows[0].cells.findIndex((c: GridCell) => c.id === prevStateRef.current.source.cellId);
+                const targetCellIndex = targetGridStructure.rows[0].cells.findIndex((c: GridCell) => c.id === prevStateRef.current.target.cellId);
 
                 const sourceCell = targetGridStructure.rows[0].cells[sourceCellIndex];
-                const updatedCells = targetGridStructure.rows[0].cells.filter(c => c.id !== prevStateRef.current.source.cellId);
-                const newTargetCellIndex = updatedCells.findIndex(c => c.id === prevStateRef.current.target.cellId);
+                const updatedCells = targetGridStructure.rows[0].cells.filter((c: GridCell) => c.id !== prevStateRef.current.source.cellId);
+                const newTargetCellIndex = updatedCells.findIndex((c: GridCell) => c.id === prevStateRef.current.target.cellId);
 
                 const newCellPosition = (prevStateRef.current.indicators.cellPosition === 'left' ? newTargetCellIndex : newTargetCellIndex + 1) + 1;
                 updatedCells.splice(newCellPosition - 1, 0, {
@@ -1301,11 +1301,11 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     column: newCellPosition
                 });
 
-                updatedCells.forEach((c, index) => {
+                updatedCells.forEach((c: GridCell, index: number) => {
                     c.column = index + 1;
                 })
 
-                updatedCells.sort((a, b) => a.column - b.column);
+                updatedCells.sort((a: GridCell, b: GridCell) => a.column - b.column);
 
                 const sourceCellWidth = targetGridStructure.columnWidths[sourceCellIndex];
                 const targetCellWidth = targetGridStructure.columnWidths[targetCellIndex];
@@ -1345,7 +1345,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     column: 1,
                 };
 
-                const targetCellIndex = targetGridStructure.rows[0].cells.findIndex(c => c.id === prevStateRef.current.target.cellId);
+                const targetCellIndex = targetGridStructure.rows[0].cells.findIndex((c: GridCell) => c.id === prevStateRef.current.target.cellId);
 
                 const newCellPosition = prevStateRef.current.indicators.cellPosition === 'left' ? targetCellIndex : targetCellIndex + 1;
                 targetGridStructure.rows[0].cells.splice(newCellPosition, 0, newCell);
@@ -1356,11 +1356,11 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     cellId: newCellId
                 });
 
-                targetGridStructure.rows[0].cells.forEach((c, index) => {
+                targetGridStructure.rows[0].cells.forEach((c: GridCell, index: number) => {
                     c.column = index + 1;
                 })
 
-                targetGridStructure.rows[0].cells.sort((a, b) => a.column - b.column);
+                targetGridStructure.rows[0].cells.sort((a: GridCell, b: GridCell) => a.column - b.column);
 
                 DragDropTransactionHelper.updateLayout(presentationId, slide.id, targetLayout.id, {
                     gridStructure: {
@@ -1417,7 +1417,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     column: 1,
                 };
 
-                const targetCellIndex = targetGridStructure.rows[0].cells.findIndex(c => c.id === prevStateRef.current.target.cellId);
+                const targetCellIndex = targetGridStructure.rows[0].cells.findIndex((c: GridCell) => c.id === prevStateRef.current.target.cellId);
 
                 const newCellPosition = prevStateRef.current.indicators.cellPosition === 'left' ? targetCellIndex : targetCellIndex + 1;
                 targetGridStructure.rows[0].cells.splice(newCellPosition, 0, newCell);
@@ -1433,11 +1433,11 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     })
                 })
 
-                targetGridStructure.rows[0].cells.forEach((c, index) => {
+                targetGridStructure.rows[0].cells.forEach((c: GridCell, index: number) => {
                     c.column = index + 1;
                 })
 
-                targetGridStructure.rows[0].cells.sort((a, b) => a.column - b.column);
+                targetGridStructure.rows[0].cells.sort((a: GridCell, b: GridCell) => a.column - b.column);
 
                 DragDropTransactionHelper.updateLayout(presentationId, slide.id, targetLayout.id, {
                     gridStructure: {

@@ -199,6 +199,7 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
 
     useEffect(() => {
         if (editor) {
+            console.log('initialContent', initialContent)
             editor.commands.setContent(initialContent);
         }
     }, [editor, initialContent])

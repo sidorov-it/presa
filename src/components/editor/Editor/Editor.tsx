@@ -4,10 +4,12 @@ import SlidesList from '@/components/editor/SlidesList';
 import ToolPanel from '@/components/editor/ToolPanel/ToolPanel';
 import Button from '@/components/ui/Button';
 import { DndProvider } from '@/contexts/DragDropContext';
+import { SlideMenuProvider } from '@/contexts/SlideMenuContext';
 import Presentation from '../Presentation';
 import DragDropIndicator from '@/components/DragDropIndicator';
 import UndoRedoControls from '@/components/UndoRedoControls';
 import { Slide } from '@/types';
+import SlideMenu from '../SlideMenu/SlideMenu';
 
 interface EditorProps {
     presentationId: string;
@@ -54,77 +56,66 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
 
     return (
         <DndProvider presentationId={presentationId}>
-            <div className="min-h-screen flex flex-col bg-[#f6f4f4]">
-                <header className="bg-white border-b border-gray-200 p-4">
-                    <div className="container mx-auto flex justify-between items-center">
-                        <h1 className="text-2xl font-bold text-blue-600">Presa</h1>
+            <SlideMenuProvider presentationId={presentationId}>
+                <div className="min-h-screen flex flex-col bg-[#f6f4f4]">
+                    <header className="bg-white border-b border-gray-200 p-4">
+                        <div className="container mx-auto flex justify-between items-center">
+                            <h1 className="text-2xl font-bold text-blue-600">Presa</h1>
 
-                        <div className="flex items-center space-x-4">
-                            <UndoRedoControls presentationId={presentationId} />
-                            
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handlePreviewToggle}
-                                aria-label={showPreview ? 'Выйти из режима просмотра' : 'Предпросмотр презентации'}
-                            >
-                                {showPreview ? 'Редактировать' : 'Просмотр'}
-                            </Button>
+                            <div className="flex items-center space-x-4">
+                                <UndoRedoControls presentationId={presentationId} />
+                                
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handlePreviewToggle}
+                                    aria-label={showPreview ? 'Выйти из режима просмотра' : 'Предпросмотр презентации'}
+                                >
+                                    {showPreview ? 'Редактировать' : 'Просмотр'}
+                                </Button>
 
-                            <Button
-                                variant="primary"
-                                size="sm"
-                                onClick={() => { }}
-                                aria-label="Экспортировать презентацию"
-                            >
-                                Экспорт
-                            </Button>
+                                <Button
+                                    variant="primary"
+                                    size="sm"
+                                    onClick={() => { }}
+                                    aria-label="Экспортировать презентацию"
+                                >
+                                    Экспорт
+                                </Button>
+                            </div>
                         </div>
-                    </div>
-                </header>
+                    </header>
 
-                <SlidesList
-                    slides={presentation.slides}
-                    activeSlideId={activeSlideId}
-                    onSlideSelect={handleSlideSelect}
-                />
-
-                <div className="">
-                    {/* Основная область редактирования */}
-                    <Presentation
-                        presentation={presentation}
-                        presentationId={presentationId}
+                    <SlidesList
+                        slides={presentation.slides}
                         activeSlideId={activeSlideId}
-                        handleSlideSelect={handleSlideSelect}
+                        onSlideSelect={handleSlideSelect}
                     />
-                    {/* <div className="">
-                        {presentation.slides.map(slide => (
-                            // <div className={styles.slide}>
-                            <SlideEditor
-                                key={slide.id}
-                                slide={slide}
+
+                    <div className="">
+                        {/* Основная область редактирования */}
+                        <Presentation
+                            presentation={presentation}
+                            presentationId={presentationId}
+                            activeSlideId={activeSlideId}
+                            handleSlideSelect={handleSlideSelect}
+                        />
+
+                        {/* Панель инструментов */}
+                        {!showPreview && activeSlide && (
+                            // <div className="w-80 bg-white border-l border-gray-200 overflow-y-auto">
+                            <ToolPanel
                                 presentationId={presentationId}
-                                handleSelectSlide={handleSlideSelect}
-                                isSelected={activeSlideId === slide.id}
+                                slideId={activeSlide.id}
                             />
                             // </div>
-                        ))}
-                    </div> */}
-
-                    {/* Панель инструментов */}
-                    {!showPreview && activeSlide && (
-                        // <div className="w-80 bg-white border-l border-gray-200 overflow-y-auto">
-                        <ToolPanel
-                            presentationId={presentationId}
-                            slideId={activeSlide.id}
-                        />
-                        // </div>
-                    )}
+                        )}
+                    </div>
+                    <SlideMenu />
+                    {/* Global drag-drop indicator */}
+                    <DragDropIndicator />
                 </div>
-                
-                {/* Global drag-drop indicator */}
-                <DragDropIndicator />
-            </div>
+            </SlideMenuProvider>
         </DndProvider>
     );
 };

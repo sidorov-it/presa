@@ -1,11 +1,13 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/no-noninteractive-tabindex */
 import React from 'react';
 import { Slide } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 
 interface SlidesListProps {
-  slides: Slide[];
-  activeSlideId: string | null;
-  onSlideSelect: (slideId: string) => void;
+    slides: Slide[];
+    activeSlideId: string | null;
+    onSlideSelect: (slideId: string) => void;
 }
 
 const SlidesList: React.FC<SlidesListProps> = ({
@@ -14,7 +16,7 @@ const SlidesList: React.FC<SlidesListProps> = ({
     onSlideSelect,
 }) => {
     const { duplicateSlide, deleteSlide } = usePresentationStore();
-  
+
     if (slides.length === 0) {
         return (
             <div className="text-center py-4">
@@ -22,7 +24,7 @@ const SlidesList: React.FC<SlidesListProps> = ({
             </div>
         );
     }
-  
+
     const handleDuplicate = (
         e: React.MouseEvent<HTMLButtonElement>,
         presentationId: string,
@@ -32,7 +34,7 @@ const SlidesList: React.FC<SlidesListProps> = ({
         const newSlideId = duplicateSlide(presentationId, slideId);
         onSlideSelect(newSlideId);
     };
-  
+
     const handleDelete = (
         e: React.MouseEvent<HTMLButtonElement>,
         presentationId: string,
@@ -40,7 +42,7 @@ const SlidesList: React.FC<SlidesListProps> = ({
     ) => {
         e.stopPropagation();
         deleteSlide(presentationId, slideId);
-    
+
         // Если удалили активный слайд, выбираем первый доступный
         if (activeSlideId === slideId && slides.length > 1) {
             const nextSlideIndex = slides.findIndex((slide) => slide.id === slideId) - 1;
@@ -55,20 +57,20 @@ const SlidesList: React.FC<SlidesListProps> = ({
             }
         }
     };
-  
+
     return (
         <div className="space-y-2">
             {slides.map((slide, index) => {
                 const isActive = slide.id === activeSlideId;
-        
+
                 return (
                     <div
                         key={slide.id}
                         className={`
-              p-2 rounded-lg cursor-pointer transition-all
-              hover:bg-gray-100
-              ${isActive ? 'bg-blue-50 border border-blue-200' : ''}
-            `}
+                                p-2 rounded-lg cursor-pointer transition-all
+                                hover:bg-gray-100
+                                ${isActive ? 'bg-blue-50 border border-blue-200' : ''}
+                        `}
                         onClick={() => onSlideSelect(slide.id)}
                         tabIndex={0}
                         aria-label={`Слайд ${index + 1}: ${slide.title}`}
@@ -81,7 +83,7 @@ const SlidesList: React.FC<SlidesListProps> = ({
                     >
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-sm font-medium">Слайд {index + 1}</span>
-              
+
                             <div className="flex space-x-1">
                                 <button
                                     className="p-1 text-gray-500 hover:text-blue-600 rounded"
@@ -92,9 +94,9 @@ const SlidesList: React.FC<SlidesListProps> = ({
                                         if (e.key === 'Enter' || e.key === ' ') {
                                             e.preventDefault();
                                             handleDuplicate(
-                        e as unknown as React.MouseEvent<HTMLButtonElement>,
-                        slide.id.split('-')[0],
-                        slide.id
+                                                e as unknown as React.MouseEvent<HTMLButtonElement>,
+                                                slide.id.split('-')[0],
+                                                slide.id
                                             );
                                         }
                                     }}
@@ -114,7 +116,7 @@ const SlidesList: React.FC<SlidesListProps> = ({
                                         <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
                                     </svg>
                                 </button>
-                
+
                                 <button
                                     className="p-1 text-gray-500 hover:text-red-600 rounded"
                                     onClick={(e) => handleDelete(e, slide.id.split('-')[0], slide.id)}
@@ -124,9 +126,9 @@ const SlidesList: React.FC<SlidesListProps> = ({
                                         if (e.key === 'Enter' || e.key === ' ') {
                                             e.preventDefault();
                                             handleDelete(
-                        e as unknown as React.MouseEvent<HTMLButtonElement>,
-                        slide.id.split('-')[0],
-                        slide.id
+                                                e as unknown as React.MouseEvent<HTMLButtonElement>,
+                                                slide.id.split('-')[0],
+                                                slide.id
                                             );
                                         }
                                     }}
@@ -149,7 +151,7 @@ const SlidesList: React.FC<SlidesListProps> = ({
                                 </button>
                             </div>
                         </div>
-            
+
                         <div
                             className="w-full aspect-[16/9] bg-white rounded border border-gray-200 flex items-center justify-center text-xs text-gray-400"
                         >
@@ -164,7 +166,7 @@ const SlidesList: React.FC<SlidesListProps> = ({
                                 'Пустой слайд'
                             )}
                         </div>
-            
+
                         <p className="mt-1 text-xs truncate">{slide.title}</p>
                     </div>
                 );

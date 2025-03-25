@@ -8,6 +8,8 @@ import { usePresentationStore } from '@/store/presentationStore';
 import styles from './SlideEditor.module.css';
 import { TiptapRef } from '@/components/tiptap/Tiptap';
 import LayoutContent from './LayoutContent';
+import { useSlideMenu } from '@/contexts/SlideMenuContext';
+import SlideMenu from '../SlideMenu/SlideMenu';
 
 interface SlideEditorProps {
     slide: Slide;
@@ -36,6 +38,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const tiptapRefs = useRef<Record<string, React.RefObject<TiptapRef>>>({});
     const editorRef = useRef<HTMLDivElement>(null);
     const [isSelected, setIsSelected] = useState(false);
+    const { openMenu, state: { slideId: menuSlideId } } = useSlideMenu();
 
     const { addSlide } = usePresentationStore();
 
@@ -83,6 +86,12 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         // handleSelectSlide(newSlideId);
     };
 
+    // Обработчик для открытия меню слайда
+    const handleOpenSlideMenu = (e: React.MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+        openMenu(slide.id);
+    };
+
     // Получаем стиль фона слайда
     const getBackgroundStyle = () => {
         if (slide.background?.type === 'color') {
@@ -128,6 +137,23 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     }}
                     onClick={() => { }}
                 >
+                    {(isSelected || menuSlideId === slide.id) && (
+                        <div
+                            className={`${styles.slideDragHandle} ${menuSlideId === slide.id ? styles.slideDragHandleMenuOpen : ''}`}
+                            data-slide-drag-handle={slide.id}
+                            aria-label="Открыть меню слайда"
+                            // tabIndex={0}
+                            onClick={handleOpenSlideMenu}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    handleOpenSlideMenu(e as unknown as React.MouseEvent<HTMLDivElement>);
+                                }
+                            }}
+                        >
+                            ⋮
+                        </div>
+                    )}
+
                     <div className="relative w-full h-full p-8">
                         {slide.layouts.map((layout, index) => (
                             <LayoutContent
@@ -156,6 +182,9 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     </div>
                 </div>
             </div>
+            
+            {/* The SlideMenu component will render itself when the menu is open */}
+            {/* <SlideMenu /> */}
         </div>
     );
 };
