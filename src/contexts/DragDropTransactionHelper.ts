@@ -40,17 +40,17 @@ export const DragDropTransactionHelper = {
      */
     wrapInTransaction: (presentationId: string, description: string, callback: () => void) => {
         const historyStore = useHistoryStore.getState();
-        
+
         // Capture the entire state before changes
         const beforeState = { presentations: [...usePresentationStore.getState().presentations] };
-        
+
         try {
             historyStore.beginTransaction(presentationId, description);
             callback();
-            
+
             // Capture the entire state after changes
             const afterState = { presentations: [...usePresentationStore.getState().presentations] };
-            
+
             // Record this as a presentation-level change with complete state
             historyStore.recordTransactionAction({
                 type: 'presentation',
@@ -59,7 +59,7 @@ export const DragDropTransactionHelper = {
                 before: beforeState,
                 after: afterState
             });
-            
+
             historyStore.commitTransaction(presentationId);
         } catch (error) {
             historyStore.cancelTransaction(presentationId);
@@ -78,16 +78,16 @@ export const DragDropTransactionHelper = {
     ) => {
         const presentationStore = usePresentationStore.getState();
         const historyStore = useHistoryStore.getState();
-        
+
         // Capture the entire state before changes
         const beforeState = { presentations: [...presentationStore.presentations] };
-        
+
         // Perform the update operation
         presentationStore.updateLayout(presentationId, slideId, layoutId, data);
-        
+
         // Capture the entire state after changes
         const afterState = { presentations: [...usePresentationStore.getState().presentations] };
-        
+
         // Record this action within the current transaction
         historyStore.recordTransactionAction({
             type: 'layout',
@@ -110,16 +110,16 @@ export const DragDropTransactionHelper = {
     ) => {
         const presentationStore = usePresentationStore.getState();
         const historyStore = useHistoryStore.getState();
-        
+
         // Capture the entire state before changes
         const beforeState = { presentations: [...presentationStore.presentations] };
-        
+
         // Perform the delete operation
         presentationStore.deleteLayout(presentationId, slideId, layoutId);
-        
+
         // Capture the entire state after changes
         const afterState = { presentations: [...usePresentationStore.getState().presentations] };
-        
+
         // Record this action within the current transaction
         historyStore.recordTransactionAction({
             type: 'layout',
@@ -143,16 +143,16 @@ export const DragDropTransactionHelper = {
     ) => {
         const presentationStore = usePresentationStore.getState();
         const historyStore = useHistoryStore.getState();
-        
+
         // Capture the entire state before changes
         const beforeState = { presentations: [...presentationStore.presentations] };
-        
+
         // Perform the add operation
         const newLayoutId = presentationStore.addLayout(presentationId, slideId, layout, index);
-        
+
         // Capture the entire state after changes
         const afterState = { presentations: [...usePresentationStore.getState().presentations] };
-        
+
         // Record this action within the current transaction
         historyStore.recordTransactionAction({
             type: 'layout',
@@ -163,7 +163,7 @@ export const DragDropTransactionHelper = {
             before: beforeState,
             after: afterState
         });
-        
+
         return newLayoutId;
     },
 
@@ -177,16 +177,16 @@ export const DragDropTransactionHelper = {
     ) => {
         const presentationStore = usePresentationStore.getState();
         const historyStore = useHistoryStore.getState();
-        
+
         // Capture the entire state before changes
         const beforeState = { presentations: [...presentationStore.presentations] };
-        
+
         // Perform the update operation
         presentationStore.updateSlide(presentationId, slideId, data);
-        
+
         // Capture the entire state after changes
         const afterState = { presentations: [...usePresentationStore.getState().presentations] };
-        
+
         // Record this action within the current transaction
         historyStore.recordTransactionAction({
             type: 'slide',

@@ -6,7 +6,7 @@ type IndicatorType = 'element' | 'layout' | 'slide' | 'cell';
 
 const DropIndicator = () => {
     const { state } = useDnd();
-    const { indicators, dragState, source } = state;
+    const { indicators, dragState } = state;
     const [visible, setVisible] = useState(false);
 
     const {
@@ -142,7 +142,7 @@ const DropIndicator = () => {
 
             const rect = cell.getBoundingClientRect();
             const position = indicators.cellPosition;
-            
+
             if (position === 'left' || position === 'right') {
                 return {
                     targetRect: rect,
@@ -159,17 +159,12 @@ const DropIndicator = () => {
     const indicatorInfo = getIndicatorInfo();
     if (!indicatorInfo) return null;
 
-    const { targetRect, position, type, isMultiCell } = indicatorInfo;
+    const { targetRect, position, type } = indicatorInfo;
 
     // Generate styles based on position and context
     const getIndicatorStyles = () => {
         // Different thicknesses for different indicator types
         const thickness = type === 'element' ? 2 : type === 'cell' ? 3 : 3;
-
-        // Different offsets for different indicator types
-        // const offset = type === 'element' ? -1 :
-        //     type === 'cell' ? -2 :
-        //         -4; // Layout gets a larger offset
 
         const offset = 0;
         let styles: React.CSSProperties = {

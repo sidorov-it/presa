@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Layout, GridRow, GridCell, Element } from '@/types';
 import { useDnd } from '@/contexts/DragDropContext';
 import { generateGridTemplateAreas, generateGridTemplateColumns } from '@/types';
@@ -8,7 +8,6 @@ import { TiptapRef } from '@/components/tiptap/Tiptap';
 
 interface LayoutContentProps {
     layout: Layout;
-    isFirstLayout: boolean;
     onSelectElement: (elementId: string) => void;
     onDeleteElement: (layoutId: string, elementId: string) => void;
     slideEditorRef: React.RefObject<HTMLDivElement>;
@@ -17,7 +16,7 @@ interface LayoutContentProps {
     slideId: string;
 }
 
-function simpleHash(str) {
+function simpleHash(str: string) {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
         hash = (hash << 5) - hash + str.charCodeAt(i);
@@ -28,7 +27,6 @@ function simpleHash(str) {
 
 const LayoutContent: React.FC<LayoutContentProps> = ({
     layout,
-    isFirstLayout,
     onSelectElement,
     onDeleteElement,
     slideEditorRef,

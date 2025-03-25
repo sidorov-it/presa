@@ -1,7 +1,6 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import GlobalBubbleMenu from '@/components/editor/GlobalBubbleMenu/GlobalBubbleMenu';
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] });
 

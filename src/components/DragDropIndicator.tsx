@@ -3,15 +3,15 @@ import Portal from './Portal';
 import DropIndicator from './DropIndicator';
 
 const DragDropIndicator = () => {
-  const { isDragging } = useDnd();
+    const { isDragging } = useDnd();
   
-  if (!isDragging()) return null;
+    if (!isDragging()) return null;
   
-  return (
-    <Portal>
-      <DropIndicator />
-    </Portal>
-  );
+    return (
+        <Portal>
+            <DropIndicator />
+        </Portal>
+    );
 };
 
 export default DragDropIndicator; 

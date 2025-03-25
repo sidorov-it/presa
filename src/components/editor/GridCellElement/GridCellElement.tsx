@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { GridCell, Element, GridStructure, getPredefinedGridStructures, Layout } from '@/types';
 import { useDnd } from '@/contexts/DragDropContext';
 import Tiptap, { TiptapRef } from '@/components/tiptap/Tiptap';

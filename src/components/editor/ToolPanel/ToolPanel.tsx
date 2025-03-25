@@ -302,152 +302,152 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, presen
     // Функция для получения содержимого на основе категории
     const getPopupContent = () => {
         switch (category) {
-        case 'templates':
-            return (
-                <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-3">Шаблоны слайдов</h3>
-                    <div className="grid grid-cols-3 gap-3">
-                        {templates.map((template) => (
-                            <div
-                                key={template.id}
-                                className="border border-gray-200 rounded-lg p-3 hover:border-blue-500 cursor-grab bg-white"
-                                draggable
-                                onDragStart={(e) => handleDragStart(e, 'template', { templateId: template.id })}
-                                aria-label={`Шаблон: ${template.title}`}
-                            >
-                                <div className="mb-2 text-gray-600 flex justify-center">
-                                    {template.icon}
+            case 'templates':
+                return (
+                    <div>
+                        <h3 className="text-sm font-medium text-gray-700 mb-3">Шаблоны слайдов</h3>
+                        <div className="grid grid-cols-3 gap-3">
+                            {templates.map((template) => (
+                                <div
+                                    key={template.id}
+                                    className="border border-gray-200 rounded-lg p-3 hover:border-blue-500 cursor-grab bg-white"
+                                    draggable
+                                    onDragStart={(e) => handleDragStart(e, 'template', { templateId: template.id })}
+                                    aria-label={`Шаблон: ${template.title}`}
+                                >
+                                    <div className="mb-2 text-gray-600 flex justify-center">
+                                        {template.icon}
+                                    </div>
+                                    <p className="text-xs text-center text-gray-800">{template.title}</p>
                                 </div>
-                                <p className="text-xs text-center text-gray-800">{template.title}</p>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
-                </div>
-            );
+                );
 
-        case 'layouts':
-            return (
-                <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-3">Макеты</h3>
-                    <div className="grid grid-cols-3 gap-3">
-                        {layouts.map((layout) => (
-                            <div
-                                key={layout.type}
-                                className="border border-gray-200 rounded-lg p-3 hover:border-blue-500 cursor-grab bg-white"
-                                draggable
-                                onDragStart={(e) => handleDragStart(e, 'layout', { layoutType: layout.type })}
-                                aria-label={`Макет: ${layout.title}`}
-                            >
-                                <div className="mb-2 text-gray-600 flex justify-center">
-                                    {layout.icon}
+            case 'layouts':
+                return (
+                    <div>
+                        <h3 className="text-sm font-medium text-gray-700 mb-3">Макеты</h3>
+                        <div className="grid grid-cols-3 gap-3">
+                            {layouts.map((layout) => (
+                                <div
+                                    key={layout.type}
+                                    className="border border-gray-200 rounded-lg p-3 hover:border-blue-500 cursor-grab bg-white"
+                                    draggable
+                                    onDragStart={(e) => handleDragStart(e, 'layout', { layoutType: layout.type })}
+                                    aria-label={`Макет: ${layout.title}`}
+                                >
+                                    <div className="mb-2 text-gray-600 flex justify-center">
+                                        {layout.icon}
+                                    </div>
+                                    <p className="text-xs text-center text-gray-800">{layout.title}</p>
                                 </div>
-                                <p className="text-xs text-center text-gray-800">{layout.title}</p>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
-                </div>
-            );
+                );
 
-        case 'elements':
-            return (
-                <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-3">Базовые элементы</h3>
-                    <div className="grid grid-cols-3 gap-3">
-                        {elements.map((element) => (
-                            <div
-                                key={element.type}
-                                className="border border-gray-200 rounded-lg p-3 hover:border-blue-500 cursor-grab bg-white"
-                                draggable
-                                onDragStart={(e) => handleDragStart(e, 'element', { elementType: element.type })}
-                                aria-label={`Элемент: ${element.title}`}
-                            >
-                                <div className="mb-2 text-gray-600 flex justify-center">
-                                    {element.icon}
+            case 'elements':
+                return (
+                    <div>
+                        <h3 className="text-sm font-medium text-gray-700 mb-3">Базовые элементы</h3>
+                        <div className="grid grid-cols-3 gap-3">
+                            {elements.map((element) => (
+                                <div
+                                    key={element.type}
+                                    className="border border-gray-200 rounded-lg p-3 hover:border-blue-500 cursor-grab bg-white"
+                                    draggable
+                                    onDragStart={(e) => handleDragStart(e, 'element', { elementType: element.type })}
+                                    aria-label={`Элемент: ${element.title}`}
+                                >
+                                    <div className="mb-2 text-gray-600 flex justify-center">
+                                        {element.icon}
+                                    </div>
+                                    <p className="text-xs text-center text-gray-800">{element.title}</p>
                                 </div>
-                                <p className="text-xs text-center text-gray-800">{element.title}</p>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
-                </div>
-            );
+                );
 
-        case 'images':
-            return (
-                <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-3">Изображения</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                        {images.map((image) => (
-                            <div
-                                key={image.id}
-                                className="border border-gray-200 rounded-lg p-3 hover:border-blue-500 cursor-pointer bg-white"
-                                aria-label={`Изображение: ${image.title}`}
-                            >
-                                <div className="mb-2 text-gray-600 flex justify-center">
-                                    {image.icon}
+            case 'images':
+                return (
+                    <div>
+                        <h3 className="text-sm font-medium text-gray-700 mb-3">Изображения</h3>
+                        <div className="grid grid-cols-2 gap-3">
+                            {images.map((image) => (
+                                <div
+                                    key={image.id}
+                                    className="border border-gray-200 rounded-lg p-3 hover:border-blue-500 cursor-pointer bg-white"
+                                    aria-label={`Изображение: ${image.title}`}
+                                >
+                                    <div className="mb-2 text-gray-600 flex justify-center">
+                                        {image.icon}
+                                    </div>
+                                    <p className="text-xs text-center text-gray-800">{image.title}</p>
                                 </div>
-                                <p className="text-xs text-center text-gray-800">{image.title}</p>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="mt-4 p-4 border-2 border-dashed border-gray-300 rounded-md">
-                        <div className="text-center">
-                            <svg
-                                className="mx-auto h-12 w-12 text-gray-400"
-                                stroke="currentColor"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M7 16a3 3 0 01-3-3V6a3 3 0 013-3h10a3 3 0 013 3v7a3 3 0 01-3 3H7zm10-6h.01"
-                                />
-                            </svg>
-                            <p className="mt-1 text-xs font-medium text-gray-900">
+                            ))}
+                        </div>
+                        <div className="mt-4 p-4 border-2 border-dashed border-gray-300 rounded-md">
+                            <div className="text-center">
+                                <svg
+                                    className="mx-auto h-12 w-12 text-gray-400"
+                                    stroke="currentColor"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M7 16a3 3 0 01-3-3V6a3 3 0 013-3h10a3 3 0 013 3v7a3 3 0 01-3 3H7zm10-6h.01"
+                                    />
+                                </svg>
+                                <p className="mt-1 text-xs font-medium text-gray-900">
                   Перетащите изображение или выберите файл
-                            </p>
-                            <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF до 10MB</p>
-                        </div>
-                    </div>
-                </div>
-            );
-
-        case 'videos':
-            return (
-                <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-3">Видео</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                        {videos.map((video) => (
-                            <div
-                                key={video.id}
-                                className="border border-gray-200 rounded-lg p-3 hover:border-blue-500 cursor-pointer bg-white"
-                                aria-label={`Видео: ${video.title}`}
-                            >
-                                <div className="mb-2 text-gray-600 flex justify-center">
-                                    {video.icon}
-                                </div>
-                                <p className="text-xs text-center text-gray-800">{video.title}</p>
+                                </p>
+                                <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF до 10MB</p>
                             </div>
-                        ))}
-                    </div>
-                    <div className="mt-4">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                Вставьте URL видео (YouTube, Vimeo)
-                        </label>
-                        <div className="mt-1 flex rounded-md shadow-sm">
-                            <input
-                                type="text"
-                                className="focus:ring-blue-500 focus:border-blue-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300"
-                                placeholder="https://youtube.com/watch?v="
-                            />
                         </div>
                     </div>
-                </div>
-            );
+                );
 
-        default:
-            return null;
+            case 'videos':
+                return (
+                    <div>
+                        <h3 className="text-sm font-medium text-gray-700 mb-3">Видео</h3>
+                        <div className="grid grid-cols-2 gap-3">
+                            {videos.map((video) => (
+                                <div
+                                    key={video.id}
+                                    className="border border-gray-200 rounded-lg p-3 hover:border-blue-500 cursor-pointer bg-white"
+                                    aria-label={`Видео: ${video.title}`}
+                                >
+                                    <div className="mb-2 text-gray-600 flex justify-center">
+                                        {video.icon}
+                                    </div>
+                                    <p className="text-xs text-center text-gray-800">{video.title}</p>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-4">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
+                Вставьте URL видео (YouTube, Vimeo)
+                            </label>
+                            <div className="mt-1 flex rounded-md shadow-sm">
+                                <input
+                                    type="text"
+                                    className="focus:ring-blue-500 focus:border-blue-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300"
+                                    placeholder="https://youtube.com/watch?v="
+                                />
+                            </div>
+                        </div>
+                    </div>
+                );
+
+            default:
+                return null;
         }
     };
 

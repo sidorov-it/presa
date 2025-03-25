@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { IPresentation } from '@/types';
 import { usePresentationStore } from './presentationStore';
 
 // Define history action types

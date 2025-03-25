@@ -49,155 +49,155 @@ export interface GridStructure {
 
 export const getPredefinedGridStructures = (name: LayoutType): GridStructure => {
     switch (name) {
-    case 'single-column':
-        return {
-            columns: 1,
-            rows: [
-                {
-                    id:  generateId(8),
-                    cells: [
-                        { id: generateId(8), row: 1, column: 1}
-                    ]
-                }
-            ],
-            columnWidths: ['100%']
-        };
-    case 'two-columns':
-        return {
-            columns: 2,
-            rows: [
-                {
-                    id:  generateId(8),
-                    cells: [
-                        { id: generateId(8), row: 1, column: 1},
-                        { id: generateId(8), row: 1, column: 2}
-                    ]
-                }
-            ],
-            columnWidths: ['50%', '50%']
-        };
-    case 'three-columns':
-        return {
-            columns: 3,
-            rows: [
-                {
-                    id:  generateId(8),
-                    cells: [
-                        { id: generateId(8), row: 1, column: 1},
-                        { id: generateId(8), row: 1, column: 2},
-                        { id: generateId(8), row: 1, column: 3}
-                    ]
-                }
-            ],
-            columnWidths: ['33.33%', '33.34%', '33.33%']
-        };
-    case 'four-columns':
-        return {
-            columns: 4,
-            rows: [
-                {
-                    id:  generateId(8),
-                    cells: [
-                        { id: generateId(8), row: 1, column: 1},
-                        { id: generateId(8), row: 1, column: 2},
-                        { id: generateId(8), row: 1, column: 3},
-                        { id: generateId(8), row: 1, column: 4}
-                    ]
-                }
-            ],
-            columnWidths: ['25%', '25%', '25%', '25%']
-        };
-    case 'image-text':
-        return {
-            columns: 2,
-            rows: [
-                {
-                    id:  generateId(8),
-                    cells: [
-                        { id: generateId(8), row: 1, column: 1},
-                        { id: generateId(8), row: 1, column: 2}
-                    ]
-                }
-            ],
-            columnWidths: ['50%', '50%']
-        };
-    case 'text-image':
-        return {
-            columns: 2,
-            rows: [
-                {
-                    id:  generateId(8),
-                    cells: [
-                        { id: generateId(8), row: 1, column: 1},
-                        { id: generateId(8), row: 1, column: 2}
-                    ]
-                }
-            ],
-            columnWidths: ['50%', '50%']
-        };
-    case 'cards':
-        return {
-            columns: 2,
-            rows: [
-                {
-                    id:  generateId(8),
-                    cells: [
-                        { id: generateId(8), row: 1, column: 1},
-                        { id: generateId(8), row: 1, column: 2}
-                    ]
-                },
-                {
-                    id:  generateId(8),
-                    cells: [
-                        { id: generateId(8), row: 2, column: 1},
-                        { id: generateId(8), row: 2, column: 2}
-                    ]
-                }
-            ],
-            columnWidths: ['50%', '50%']
-        };
-    case 'icons-with-text':
-        return {
-            columns: 3,
-            rows: [
-                {
-                    id:  generateId(8),
-                    cells: [
-                        { id: generateId(8), row: 1, column: 1},
-                        { id: generateId(8), row: 1, column: 2},
-                        { id: generateId(8), row: 1, column: 3}
-                    ]
-                },
-                {
-                    id:  generateId(8),
-                    cells: [
-                        { id: generateId(8), row: 2, column: 1},
-                        { id: generateId(8), row: 2, column: 2},
-                        { id: generateId(8), row: 2, column: 3}
-                    ]
-                }
-            ],
-            columnWidths: ['33.33%', '33.34%', '33.33%']
-        };
-    case 'blank':
-        return {
-            columns: 1,
-            rows: [],
-            columnWidths: ['100%']
-        };
-    default: 
-        return {
-            columns: 1,
-            rows: [
-                {
-                    id:  generateId(8),
-                    cells: [
-                        { id: generateId(8), row: 1, column: 1}
-                    ]
-                }
-            ],
-            columnWidths: ['100%']
-        };
+        case 'single-column':
+            return {
+                columns: 1,
+                rows: [
+                    {
+                        id:  generateId(8),
+                        cells: [
+                            { id: generateId(8), row: 1, column: 1}
+                        ]
+                    }
+                ],
+                columnWidths: ['100%']
+            };
+        case 'two-columns':
+            return {
+                columns: 2,
+                rows: [
+                    {
+                        id:  generateId(8),
+                        cells: [
+                            { id: generateId(8), row: 1, column: 1},
+                            { id: generateId(8), row: 1, column: 2}
+                        ]
+                    }
+                ],
+                columnWidths: ['50%', '50%']
+            };
+        case 'three-columns':
+            return {
+                columns: 3,
+                rows: [
+                    {
+                        id:  generateId(8),
+                        cells: [
+                            { id: generateId(8), row: 1, column: 1},
+                            { id: generateId(8), row: 1, column: 2},
+                            { id: generateId(8), row: 1, column: 3}
+                        ]
+                    }
+                ],
+                columnWidths: ['33.33%', '33.34%', '33.33%']
+            };
+        case 'four-columns':
+            return {
+                columns: 4,
+                rows: [
+                    {
+                        id:  generateId(8),
+                        cells: [
+                            { id: generateId(8), row: 1, column: 1},
+                            { id: generateId(8), row: 1, column: 2},
+                            { id: generateId(8), row: 1, column: 3},
+                            { id: generateId(8), row: 1, column: 4}
+                        ]
+                    }
+                ],
+                columnWidths: ['25%', '25%', '25%', '25%']
+            };
+        case 'image-text':
+            return {
+                columns: 2,
+                rows: [
+                    {
+                        id:  generateId(8),
+                        cells: [
+                            { id: generateId(8), row: 1, column: 1},
+                            { id: generateId(8), row: 1, column: 2}
+                        ]
+                    }
+                ],
+                columnWidths: ['50%', '50%']
+            };
+        case 'text-image':
+            return {
+                columns: 2,
+                rows: [
+                    {
+                        id:  generateId(8),
+                        cells: [
+                            { id: generateId(8), row: 1, column: 1},
+                            { id: generateId(8), row: 1, column: 2}
+                        ]
+                    }
+                ],
+                columnWidths: ['50%', '50%']
+            };
+        case 'cards':
+            return {
+                columns: 2,
+                rows: [
+                    {
+                        id:  generateId(8),
+                        cells: [
+                            { id: generateId(8), row: 1, column: 1},
+                            { id: generateId(8), row: 1, column: 2}
+                        ]
+                    },
+                    {
+                        id:  generateId(8),
+                        cells: [
+                            { id: generateId(8), row: 2, column: 1},
+                            { id: generateId(8), row: 2, column: 2}
+                        ]
+                    }
+                ],
+                columnWidths: ['50%', '50%']
+            };
+        case 'icons-with-text':
+            return {
+                columns: 3,
+                rows: [
+                    {
+                        id:  generateId(8),
+                        cells: [
+                            { id: generateId(8), row: 1, column: 1},
+                            { id: generateId(8), row: 1, column: 2},
+                            { id: generateId(8), row: 1, column: 3}
+                        ]
+                    },
+                    {
+                        id:  generateId(8),
+                        cells: [
+                            { id: generateId(8), row: 2, column: 1},
+                            { id: generateId(8), row: 2, column: 2},
+                            { id: generateId(8), row: 2, column: 3}
+                        ]
+                    }
+                ],
+                columnWidths: ['33.33%', '33.34%', '33.33%']
+            };
+        case 'blank':
+            return {
+                columns: 1,
+                rows: [],
+                columnWidths: ['100%']
+            };
+        default: 
+            return {
+                columns: 1,
+                rows: [
+                    {
+                        id:  generateId(8),
+                        cells: [
+                            { id: generateId(8), row: 1, column: 1}
+                        ]
+                    }
+                ],
+                columnWidths: ['100%']
+            };
     }
 }
 export interface Position {

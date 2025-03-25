@@ -1,11 +1,10 @@
-import { create } from 'zustand';
+
 import { v4 as uuidv4 } from 'uuid';
 import {
     IPresentation,
     Slide,
     Layout,
     Element,
-    ElementType,
     LayoutType,
     EditorElement,
     GridStructure,
@@ -14,6 +13,7 @@ import {
 import { devtools } from 'zustand/middleware';
 import { generateId } from '@/utils/id';
 import { HistoryAction, useHistoryStore } from './historyStore';
+import { create } from 'zustand';
 
 interface PresentationState {
     presentations: IPresentation[];
@@ -28,7 +28,7 @@ interface PresentationState {
     setFullState: (state: { presentations: IPresentation[] }) => void;
 
     // Работа со слайдами
-    addSlide: (presentationId: string, title?: string) => string;
+    addSlide: (presentationId: string, index?: number) => string;
     updateSlide: (presentationId: string, slideId: string, data: Partial<Slide>) => void;
     deleteSlide: (presentationId: string, slideId: string) => void;
     duplicateSlide: (presentationId: string, slideId: string) => string;
@@ -111,7 +111,7 @@ export const usePresentationStore = create<PresentationState>()(
                 });
 
                 // Добавляем первый слайд по умолчанию
-                get().addSlide(id, 'Титульный слайд');
+                get().addSlide(id, 0);
 
                 return id;
             },
@@ -161,7 +161,7 @@ export const usePresentationStore = create<PresentationState>()(
 
 
             // Методы для работы со слайдами
-            addSlide: (presentationId, title = 'Новый слайд') => {
+            addSlide: (presentationId, index = 0) => {
                 const beforeState = { ...get() };
 
                 const slideId = uuidv4();
@@ -193,7 +193,7 @@ export const usePresentationStore = create<PresentationState>()(
 
                 const newSlide: Slide = {
                     id: slideId,
-                    title,
+                    title: `Слайд ${index + 1}`,
                     layouts: [layout],
                     background: {
                         type: 'color',
@@ -206,9 +206,13 @@ export const usePresentationStore = create<PresentationState>()(
                     const updatedState = {
                         presentations: state.presentations.map((presentation) => {
                             if (presentation.id === presentationId) {
+                                const newSlides = [...presentation.slides];
+
+                                newSlides.splice(index, 0, newSlide);
+
                                 return {
                                     ...presentation,
-                                    slides: [...presentation.slides, newSlide],
+                                    slides: newSlides,
                                     updatedAt: Date.now(),
                                 };
                             }
@@ -913,4 +917,4 @@ export const usePresentationStore = create<PresentationState>()(
             enabled: true,
         }
     )
-); 
+);

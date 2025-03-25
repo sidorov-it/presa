@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import SlidesList from '@/components/editor/SlidesList';
-import SlideEditor from '@/components/editor/SlideEditor';
 import ToolPanel from '@/components/editor/ToolPanel/ToolPanel';
 import Button from '@/components/ui/Button';
 import { DndProvider } from '@/contexts/DragDropContext';
 import Presentation from '../Presentation';
 import DragDropIndicator from '@/components/DragDropIndicator';
 import UndoRedoControls from '@/components/UndoRedoControls';
+import { Slide } from '@/types';
 
 interface EditorProps {
     presentationId: string;
@@ -36,7 +36,7 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
     }
 
     const activeSlide = presentation.slides.find(
-        (slide) => slide.id === activeSlideId
+        (slide: Slide) => slide.id === activeSlideId
     );
 
     const handleAddSlide = () => {

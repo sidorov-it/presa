@@ -24,11 +24,11 @@ export const preventDropFromOutsidePlugin = new Plugin({
             }
 
             switch (action) {
-            case 'drag':
-                return true;
-            case 'drop':
-            default:
-                return false;
+                case 'drag':
+                    return true;
+                case 'drop':
+                default:
+                    return false;
             }
         },
     },

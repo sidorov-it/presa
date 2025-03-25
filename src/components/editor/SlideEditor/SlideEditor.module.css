@@ -3,7 +3,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding: 1rem;
+    padding: 3rem;
     position: relative;
     font-size: calc(1 * 1 * 1rem * 1 * 1.125);
 }
@@ -48,7 +48,8 @@
 
 .slideDivider {
     position: absolute;
-    bottom: 0;
+    bottom: -3rem;
+    transform: translateY(50%);
     left: 0;
     right: 0;
     display: flex;

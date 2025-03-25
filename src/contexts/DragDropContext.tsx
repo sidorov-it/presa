@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, ReactNode, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
 import deepEqual from 'deep-equal';
 import { Element, GridCell, Layout } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
