@@ -31,6 +31,10 @@ export type DndState = {
         cellPosition: Position | null;
     };
     isReadyToDrop: boolean;
+    newElement: {
+        id: string | null;
+        defaultProps: any;
+    }
 };
 
 export type DndAction =
@@ -42,4 +46,5 @@ export type DndAction =
     | { type: 'SET_SLIDE_INDICATOR'; payload: string | null }
     | { type: 'COMPLETE_DROP' }
     | { type: 'CANCEL_DRAG' }
-    | { type: 'SET_READY_TO_DROP'; payload: boolean };
+    | { type: 'SET_READY_TO_DROP'; payload: boolean }
+    | { type: 'START_DRAG_MENU_ITEM'; payload: { id: string | null; defaultProps: any } };

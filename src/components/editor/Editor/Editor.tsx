@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import SlidesList from '@/components/editor/SlidesList';
-import ToolPanel from '@/components/editor/ToolPanel/ToolPanel';
+import ElementsPanel from '@/components/editor/ElementsPanel/ElementsPanel';
 import Button from '@/components/ui/Button';
 import { DndProvider } from '@/contexts/DragDropContext';
 import { SlideMenuProvider } from '@/contexts/SlideMenuContext';
@@ -104,7 +104,7 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
                         {/* Панель инструментов */}
                         {!showPreview && activeSlide && (
                             // <div className="w-80 bg-white border-l border-gray-200 overflow-y-auto">
-                            <ToolPanel
+                            <ElementsPanel
                                 presentationId={presentationId}
                                 slideId={activeSlide.id}
                             />

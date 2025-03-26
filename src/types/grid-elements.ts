@@ -1,9 +1,9 @@
-import { ElementType, Position, Size, Style } from './index';
+import { TextElementType, Position, Size, Style } from './index';
 
 // Базовый интерфейс для всех элементов в сетке
 export interface GridElement {
     id: string;
-    type: ElementType;
+    type: TextElementType;
     position: Position;
     size: Size;
     style: Style;

@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
 import deepEqual from 'deep-equal';
-import { Element, GridCell, GridStructure, Layout, Slide } from '@/types';
+import { BaseElement, GridCell, GridStructure, Layout, Slide, TextElement } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import { generateId } from '@/utils/id';
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 import { DragDropTransactionHelper } from './DragDropTransactionHelper';
 import { DndState, DndAction, DropTarget, Position } from '@/types/DragDropTypes';
+import { getNewElement } from '@/elements/registry';
 
 const initialState: DndState = {
     dragState: 'idle',
@@ -29,6 +30,10 @@ const initialState: DndState = {
         cellIndicator: null,
         cellPosition: null
     },
+    newElement: {
+        id: null,
+        defaultProps: null
+    },
     isReadyToDrop: false
 };
 
@@ -50,7 +55,18 @@ function dndReducer(state: DndState, action: DndAction): DndState {
                 },
                 // Clear any previous indicators and targets
                 target: { ...initialState.target },
-                indicators: { ...initialState.indicators }
+                indicators: { ...initialState.indicators },
+                newElement: { ...initialState.newElement }
+            };
+            break;
+
+        case 'START_DRAG_MENU_ITEM':
+            updatedState = {
+                ...state,
+                dragState: 'dragging',
+                target: { ...initialState.target },
+                indicators: { ...initialState.indicators },
+                newElement: action.payload
             };
             break;
         case 'SET_DROP_TARGET':
@@ -114,7 +130,6 @@ function dndReducer(state: DndState, action: DndAction): DndState {
                 isReadyToDrop: action.payload
             };
             break;
-
         default:
             return state;
     }
@@ -125,6 +140,24 @@ function dndReducer(state: DndState, action: DndAction): DndState {
 
     prevStateRef.current = updatedState as DndState;
     return updatedState as DndState;
+}
+
+const getEmptyLayout = () => {
+    const layout: Layout = {
+        id: generateId(),
+        type: 'single-column',
+        elements: [],
+        style: {},
+        gridStructure: {
+            rows: [{
+                id: generateId(),
+                cells: []
+            }],
+            columns: 1,
+            columnWidths: [],
+        }
+    }
+    return layout;
 }
 
 // Create context
@@ -139,9 +172,10 @@ type DndContextType = {
     completeDrop: () => void;
     cancelDrag: () => void;
     handleDragStart: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string, cellId?: string) => void;
+    handleNewElementDragStart: (e: React.DragEvent<HTMLDivElement>, elementId: string, defaultProps: any) => void;
     handleDrop: (e: React.DragEvent<HTMLDivElement>) => void;
     isDragging: () => boolean;
-    getElement: (elementId: string, layoutId: string) => Element | undefined;
+    getElement: (elementId: string, layoutId: string) => BaseElement | undefined;
     getLayout: (layoutId: string) => Layout | undefined;
     processElementDrop: () => void;
     processLayoutDrop: () => void;
@@ -180,7 +214,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         return slide.layouts.find(l => l.id === layoutId);
     };
 
-    const getElement = (elementId: string, layoutId: string): Element | undefined => {
+    const getElement = (elementId: string, layoutId: string): BaseElement | undefined => {
         const layout = getLayout(layoutId);
         if (!layout) return undefined;
         return layout.elements.find(e => e.id === elementId);
@@ -191,7 +225,6 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         if (!layout) return undefined;
         return layout.gridStructure.rows[0].cells.find(cell => cell.id === cellId)
     };
-
 
     // Basic handler functions
     const startDrag = (elementId: string | null, layoutId: string, cellId?: string) => {
@@ -244,6 +277,11 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             cellId
         }));
     };
+
+    const handleNewElementDragStart = (e: React.DragEvent<HTMLDivElement>, id: string, defaultProps: any) => {
+        e.stopPropagation();
+        dispatch({ type: 'START_DRAG_MENU_ITEM', payload: { id, defaultProps } });
+    }
 
     // Centralized drag over handling with document-level listeners
     useEffect(() => {
@@ -314,14 +352,22 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 return;
             }
 
-            // Get layout information to determine the appropriate target
-            const sourceLayout = layoutId ? getLayout(state.source.layoutId || '') : undefined;
             const targetLayout = layoutId ? getLayout(layoutId) : undefined;
 
-            // If we can't find layouts, exit early
-            if (!sourceLayout || !targetLayout) {
+            // Get layout information to determine the appropriate target
+            if (!state.newElement) {
+                const sourceLayout = layoutId ? getLayout(state.source.layoutId || '') : undefined;
+
+                if (!sourceLayout || !targetLayout) {
+                    return;
+                }
+            }
+
+            if (!targetLayout) {
                 return;
             }
+
+            // If we can't find layouts, exit early
 
             // Check if we're dealing with a layout that has a single cell with a single element
             const isSingleCellSingleElement =
@@ -733,7 +779,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             document.removeEventListener('drop', handleDocumentDrop);
             document.removeEventListener('keydown', handleKeyDown);
         };
-    }, [state.dragState, state.source]);
+    }, [state.dragState, state.source, state.newElement]);
 
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -743,93 +789,240 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
     // Implementation of processElementDrop
     const processElementDrop = () => {
-        if (!prevStateRef.current.target.elementId || !prevStateRef.current.target.layoutId || !prevStateRef.current.indicators.elementPosition || !prevStateRef.current.source.layoutId
-        ) {
+        const isSourceElementInSlide = prevStateRef.current.source.layoutId && (prevStateRef.current.source.elementId || prevStateRef.current.source.cellId);
+        const isNewElement = !!prevStateRef.current.newElement.id;
+
+        if (!prevStateRef.current.target.elementId || !prevStateRef.current.target.layoutId || !prevStateRef.current.indicators.elementPosition || (!isSourceElementInSlide && !isNewElement)) {
             return;
         }
 
-        const sourceLayout = getLayout(prevStateRef.current.source.layoutId);
-        const targetLayout = getLayout(prevStateRef.current.target.layoutId);
-        let draggedElement;
-        if (prevStateRef.current.source.elementId) {
-            draggedElement = getElement(prevStateRef.current.source.elementId, prevStateRef.current.source.layoutId);
-        }
-        let draggedCell;
-        if (prevStateRef.current.source.cellId) {
-            draggedCell = getCell(prevStateRef.current.source.cellId, prevStateRef.current.source.layoutId);
-        }
+        if (isNewElement) {
+            console.log('drop new element', prevStateRef.current.newElement);
 
-        if (!sourceLayout || !targetLayout) {
-            return;
-        }
+            if (!prevStateRef.current.newElement.id) {
+                console.warn('No element id found for new element');
+                return;
+            }
 
-        // Ensure we have either a valid element or cell to drag
-        if (!draggedElement && !draggedCell) {
-            console.warn('No valid element or cell found for dragging');
-            return;
-        }
+            const targetLayout = getLayout(prevStateRef.current.target.layoutId);
 
-        const position = prevStateRef.current.indicators.elementPosition;
-        const targetSlide = getLayoutSlide(targetLayout.id);
-        const sourceSlide = getLayoutSlide(sourceLayout.id);
+            const newElement = getNewElement(prevStateRef.current.newElement.id);
 
-        if (!targetSlide || !sourceSlide) return;
 
-        if (draggedElement) {
+            if (!targetLayout || !newElement) {
+                return;
+            }
+
+            const position = prevStateRef.current.indicators.elementPosition;
+            const targetSlide = getLayoutSlide(targetLayout.id);
+
+            if (!targetSlide) return;
+
             const targetElement = targetLayout.elements.find(e => e.id === prevStateRef.current.target.elementId);
             if (!targetElement) return;
 
-            // Case 2.1: left/right of element
-            if (position === 'left' || position === 'right') {
-                // Change the position of source cell
-                processMoveElementToElementHorizontal({
-                    draggedElement,
-                    targetLayout,
-                    targetElement,
-                    targetSlide,
-                    position
-                })
+            // Change the position of source cell
+            processAddElementToCell({
+                element: newElement,
+                targetLayout,
+                targetElement,
+                targetSlide,
+                position
+            })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        } else {
+            if (!prevStateRef.current.source.layoutId) {
+                return;
             }
-            // Cse 2.2: top/bottom
-            else if (position === 'top' || position === 'bottom') {
-                processMoveCellToElementVertical({
-                    sourceLayout,
-                    targetLayout,
-                    targetElement,
-                    draggedElement,
-                    targetSlide,
-                    sourceSlide,
-                    position
-                })
+
+            const sourceLayout = getLayout(prevStateRef.current.source.layoutId);
+            const targetLayout = getLayout(prevStateRef.current.target.layoutId);
+            let draggedElement;
+            if (prevStateRef.current.source.elementId) {
+                draggedElement = getElement(prevStateRef.current.source.elementId, prevStateRef.current.source.layoutId);
             }
-        }
-        else if (draggedCell) {
-            // перетаскивание внутри одного layout
-            if (targetLayout.id === sourceLayout.id) {
-                if (position === 'top' || position === 'bottom') {
-                    // меняем celId у элементов
-                    // обновляем elements в target cell
-                    // в sorce cell добавляем пустой редактор
-                    processMoveCellToCellInCurrentLayoutVertical({
-                        sourceLayout,
+            let draggedCell;
+            if (prevStateRef.current.source.cellId) {
+                draggedCell = getCell(prevStateRef.current.source.cellId, prevStateRef.current.source.layoutId);
+            }
+
+            if (!sourceLayout || !targetLayout) {
+                return;
+            }
+
+            // Ensure we have either a valid element or cell to drag
+            if (!draggedElement && !draggedCell) {
+                console.warn('No valid element or cell found for dragging');
+                return;
+            }
+
+            const position = prevStateRef.current.indicators.elementPosition;
+            const targetSlide = getLayoutSlide(targetLayout.id);
+            const sourceSlide = getLayoutSlide(sourceLayout.id);
+
+            if (!targetSlide || !sourceSlide) return;
+
+            if (draggedElement) {
+                const targetElement = targetLayout.elements.find(e => e.id === prevStateRef.current.target.elementId);
+                if (!targetElement) return;
+
+                // Case 2.1: left/right of element
+                if (position === 'left' || position === 'right') {
+                    // Change the position of source cell
+                    processMoveElementToElementHorizontal({
+                        draggedElement,
                         targetLayout,
-                        draggedCell,
+                        targetElement,
                         targetSlide,
                         position
                     })
                 }
-            } else {
-                processMoveCellToCellInOtherLayoutVertical({
-                    sourceLayout,
-                    targetLayout,
-                    draggedCell: draggedCell!,
-                    targetSlide,
-                    sourceSlide,
-                    position
-                })
+                // Cse 2.2: top/bottom
+                else if (position === 'top' || position === 'bottom') {
+                    processMoveCellToElementVertical({
+                        sourceLayout,
+                        targetLayout,
+                        targetElement,
+                        draggedElement,
+                        targetSlide,
+                        sourceSlide,
+                        position
+                    })
+                }
+            }
+            else if (draggedCell) {
+                // перетаскивание внутри одного layout
+                if (targetLayout.id === sourceLayout.id) {
+                    if (position === 'top' || position === 'bottom') {
+                        // меняем celId у элементов
+                        // обновляем elements в target cell
+                        // в sorce cell добавляем пустой редактор
+                        processMoveCellToCellInCurrentLayoutVertical({
+                            sourceLayout,
+                            targetLayout,
+                            draggedCell,
+                            targetSlide,
+                            position
+                        })
+                    }
+                } else {
+                    processMoveCellToCellInOtherLayoutVertical({
+                        sourceLayout,
+                        targetLayout,
+                        draggedCell: draggedCell!,
+                        targetSlide,
+                        sourceSlide,
+                        position
+                    })
+                }
             }
         }
     };
+
+    const processAddElementToCell = ({
+        element,
+        targetLayout,
+        targetElement,
+        targetSlide,
+        position
+    }: {
+        element: Omit<BaseElement, 'cellId'>,
+        targetLayout: Layout,
+        targetElement: BaseElement,
+        targetSlide: Slide,
+        position: Position
+        }) => {
+        if (position === 'left' || position === 'right') {
+            // Change the position of source cell
+            const updatedElements = [...targetLayout.elements];
+            const targetIndex = updatedElements.findIndex(e => e.id === targetElement.id);
+
+            if (targetIndex !== -1) {
+                updatedElements.splice(position === 'left' ? targetIndex : targetIndex + 1, 0, {
+                    ...element,
+                    cellId: targetElement.cellId
+                });
+
+                DragDropTransactionHelper.updateLayout(presentationId, targetSlide.id, targetLayout.id, {
+                    elements: updatedElements
+                });
+            }
+        } else {
+            const targetElementIndex = targetLayout.elements.findIndex(e => e.id === targetElement.id);
+
+            const updatedElement = {
+                ...element,
+                cellId: targetElement.cellId
+            }
+
+            const targetIndex = position === 'top' ? targetElementIndex : targetElementIndex + 1;
+            const updatedTargetElements = [...targetLayout.elements].filter(el => el.id !== element.id);
+            updatedTargetElements.splice(targetIndex, 0, updatedElement);
+
+            console.log('updatedTargetElements', updatedTargetElements);
+            DragDropTransactionHelper.updateLayout(presentationId, targetSlide.id, targetLayout.id, {
+                elements: updatedTargetElements,
+            });
+        }
+    }
+
+    const processAddElementToLayout = ({
+        targetLayout,
+        targetSlide,
+        position,
+        elementTypeId
+    }: {
+        targetLayout: Layout,
+        targetSlide: Slide,
+        position: Position,
+        elementTypeId: string
+    }) => {
+        const newElement = getNewElement(elementTypeId);
+        if (!newElement) return;
+
+        const newLayout: Layout = getEmptyLayout();
+
+        const newCellId = generateId();
+        const newCell: GridCell = {
+            id: newCellId,
+            row: 1,
+            column: 1,
+        };
+
+        newLayout.gridStructure.rows[0].cells.push(newCell);
+        newLayout.elements.push({
+            ...newElement,
+            cellId: newCellId
+        });
+
+        const targetLayoutIndex = targetSlide.layouts.findIndex(l => l.id === targetLayout.id);
+        if (targetLayoutIndex === -1) return;
+
+        const newLayoutIndex = position === 'top' ? targetLayoutIndex : targetLayoutIndex + 1;
+        DragDropTransactionHelper.addLayout(presentationId, targetSlide.id, newLayout, newLayoutIndex);
+    }
+
+
+
+
+
 
     const processMoveCellToCellInCurrentLayoutVertical = ({
         sourceLayout,
@@ -854,9 +1047,10 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
         const updatedElements = position === 'top' ? [...updatedSourceElements, ...updatedLayoutElements] : [...updatedLayoutElements, ...updatedSourceElements];
 
-        const editor: Element = {
+        const editor: TextElement = {
             id: generateId(8),
             type: 'editor',
+            textType: 'text',
             content: '',
             position: { x: 0, y: 0 },
             size: { width: 100, height: 100 },
@@ -909,9 +1103,10 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
         const updatedSourceLayoutElements = sourceLayout.elements.filter(e => e.cellId !== draggedCell.id);
 
-        const editor: Element = {
+        const editor: TextElement = {
             id: generateId(8),
             type: 'editor',
+            textType: 'text',
             content: '',
             position: { x: 0, y: 0 },
             size: { width: 100, height: 100 },
@@ -937,11 +1132,11 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         position
     }: {
         sourceLayout: Layout,
-        targetLayout: Layout,
-        targetElement: Element,
-        draggedElement: Element,
-        targetSlide: Slide,
         sourceSlide: Slide,
+        targetLayout: Layout,
+        targetElement: BaseElement,
+        draggedElement: BaseElement,
+        targetSlide: Slide,
         position: Position
     }) => {
         // Create a new layout for each element in the cell
@@ -962,9 +1157,10 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             updatedTargetElements.splice(targetIndex, 0, updatedElement);
 
             if (elementsInSourceCell.length === 0) {
-                const editor: Element = {
+                const editor: TextElement = {
                     id: generateId(8),
                     type: 'editor',
+                    textType: 'text',
                     content: '',
                     position: { x: 0, y: 0 },
                     size: { width: 100, height: 100 },
@@ -1004,9 +1200,10 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     DragDropTransactionHelper.deleteLayout(presentationId, sourceSlide.id, sourceLayout.id);
                 }
             } else if (elementsInSourceCell.length === 0 && sourceLayout.gridStructure.columns > 1) {
-                const editor: Element = {
+                const editor: TextElement = {
                     id: generateId(8),
                     type: 'editor',
+                    textType: 'text',
                     content: '',
                     position: { x: 0, y: 0 },
                     size: { width: 100, height: 100 },
@@ -1031,9 +1228,9 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         targetSlide,
         position
     }: {
-        draggedElement: Element,
+        draggedElement: Omit<BaseElement, 'cellId'>,
         targetLayout: Layout,
-        targetElement: Element,
+        targetElement: BaseElement,
         targetSlide: Slide,
         position: Position
     }) => {
@@ -1058,364 +1255,464 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
     // Implementation of processLayoutDrop
     const processLayoutDrop = () => {
-        if (!prevStateRef.current.indicators.layoutIndicator || !prevStateRef.current.indicators.layoutPosition || !prevStateRef.current.source.layoutId || !prevStateRef.current.target.layoutId ||
-            (!prevStateRef.current.source.elementId
-                && !prevStateRef.current.source.cellId
-            )
-        ) {
+        const isSourceElementInSlide = prevStateRef.current.source.layoutId && (prevStateRef.current.source.elementId || prevStateRef.current.source.cellId);
+        const isNewElement = !!prevStateRef.current.newElement.id;
+
+        if (!prevStateRef.current.indicators.layoutIndicator || !prevStateRef.current.indicators.layoutPosition || !prevStateRef.current.target.layoutId || (!isSourceElementInSlide && !isNewElement)) {
             return;
         }
 
-        const sourceLayout = getLayout(prevStateRef.current.source.layoutId);
-        const targetLayout = getLayout(prevStateRef.current.indicators.layoutIndicator);
+        if (isNewElement) {
+            const targetLayout = getLayout(prevStateRef.current.indicators.layoutIndicator);
+            const targetSlide = getLayoutSlide(prevStateRef.current.target.layoutId);
 
-        if (!sourceLayout || !targetLayout) {
-            return;
-        }
-        const targetSlide = getLayoutSlide(prevStateRef.current.target.layoutId);
-        const sourceSlide = getLayoutSlide(prevStateRef.current.source.layoutId);
-        if (!targetSlide || !sourceSlide) return;
-
-        if (prevStateRef.current.source.elementId) {
-            const draggedElement = sourceLayout.elements.find(e => e.id === prevStateRef.current.source.elementId);
-            if (!draggedElement) {
-                console.warn('No valid element found for dragging in processLayoutDrop');
+            if (!targetLayout || !targetSlide || !prevStateRef.current.newElement.id) {
                 return;
             }
 
-            const position = prevStateRef.current.indicators.layoutPosition;
-
-            const targetGridStructure = JSON.parse(JSON.stringify(targetLayout.gridStructure));
-            // Case 3: cell move by 1 element
-            if (position === 'left' || position === 'right') {
-                // создаём новую ячейку
-                // обновляем cellId у элемента
-                // обновляем columnWidths в целевой gridStructure
-                // обновляем elements в целевой layout
-                // обновляем cells в целевой gridStructure
-                // удаляеми сходную сетку
-
-                // будем создавать новую ячейку в целевой сетке. считаем новое количество колонок
-                const newColumnCount = targetGridStructure.columns + 1;
-                // считаем новые ширины колонок
-                const newColumnWidths = getColumnWidths(newColumnCount);
-                // определяем позицию новой ячейки
-                const newCellPosition = position === 'left' ? 0 : 1;
-
-                const newCellId = generateId();
-                const newCell = {
-                    id: newCellId,
-                    column: newCellPosition + 1,
-                    row: 1,
-                };
-
-                const updatedDraggedElement: Element = {
-                    ...draggedElement,
-                    cellId: newCellId
-                };
-
-                const updatedTargetLayoutElements = [...targetLayout.elements];
-                updatedTargetLayoutElements.splice(newCellPosition, 0, updatedDraggedElement);
-
-                targetGridStructure.rows[0].cells.splice(newCellPosition, 0, newCell);
-
-                targetGridStructure.rows[0].cells.forEach((c: GridCell) => {
-                    if (c.column >= newCellPosition && c.id !== newCellId) {
-                        c.column = c.column + 1;
-                    }
-                })
-                targetGridStructure.rows[0].cells.sort((a: GridCell, b: GridCell) => a.column - b.column);
-
-                // Update target layout
-                DragDropTransactionHelper.updateLayout(presentationId, targetSlide.id, targetLayout.id, {
-                    gridStructure: {
-                        ...targetGridStructure,
-                        // rows: [{
-                        //     ...targetLayout.gridStructure.rows[0],
-                        //     cells: position === 'left' ? [newCell, ...targetLayout.gridStructure.rows[0].cells] : [...targetLayout.gridStructure.rows[0].cells, newCell]
-                        // }],
-                        columnWidths: newColumnWidths,
-                        columns: newColumnCount
-                    },
-                    elements: updatedTargetLayoutElements,
-                });
-
-                if (sourceLayout.elements.length === 1) {
-                    if (sourceSlide.layouts.length === 1) {
-                        DragDropTransactionHelper.deleteSlide(presentationId, sourceSlide.id);
-                    } else {
-                        DragDropTransactionHelper.deleteLayout(presentationId, sourceSlide.id, sourceLayout.id);
-                    }
-                } else {
-                    const updatedElements = sourceLayout.elements.filter(e => e.id !== draggedElement.id);
-                    const elementsInCell = updatedElements.filter(e => e.cellId === draggedElement.cellId);
-
-                    if (elementsInCell.length === 0) {
-                        const updatedCells = sourceLayout.gridStructure.rows[0].cells.filter(c => c.id !== draggedElement.cellId);
-                        const updatedColumnWidthsSourceLayout = getColumnWidths(sourceLayout.gridStructure.columns - 1);
-
-                        DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
-                            gridStructure: {
-                                ...sourceLayout.gridStructure,
-                                columns: sourceLayout.gridStructure.columns - 1,
-                                rows: [{
-                                    ...sourceLayout.gridStructure.rows[0],
-                                    cells: updatedCells
-                                }],
-                                columnWidths: updatedColumnWidthsSourceLayout
-                            },
-                            elements: updatedElements
-                        });
-                    } else {
-                        DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
-                            elements: updatedElements
-                        });
-                    }
-                    // Delete source cell
-                }
+            processAddElementToLayout({
+                targetLayout,
+                targetSlide,
+                position: prevStateRef.current.indicators.layoutPosition,
+                elementTypeId: prevStateRef.current.newElement.id,
+            })
+            return;
+        } else {
+            if (!prevStateRef.current.source.layoutId) {
+                return;
             }
-            // Case 3.2: top/bottom
-            else if (position === 'top' || position === 'bottom') {
-                const draggedElement = sourceLayout.elements.find(e => e.id === prevStateRef.current.source.elementId);
+        
+            const sourceLayout = getLayout(prevStateRef.current.source.layoutId);
+            const targetLayout = getLayout(prevStateRef.current.indicators.layoutIndicator);
 
+            if (!sourceLayout || !targetLayout) {
+                return;
+            }
+            const targetSlide = getLayoutSlide(prevStateRef.current.target.layoutId);
+            const sourceSlide = getLayoutSlide(prevStateRef.current.source.layoutId);
+            if (!targetSlide || !sourceSlide) return;
+
+            if (prevStateRef.current.source.elementId) {
+                const draggedElement = sourceLayout.elements.find(e => e.id === prevStateRef.current.source.elementId);
                 if (!draggedElement) {
                     console.warn('No valid element found for dragging in processLayoutDrop');
                     return;
                 }
 
-                const elementsSourceCell = sourceLayout.elements.filter(e => e.cellId === draggedElement.cellId);
+                const position = prevStateRef.current.indicators.layoutPosition;
 
-                if (sourceLayout.elements.length === 1) {
-                    // элемент 1. переносим на новую позицию
-                    const indexSourceLayout = sourceSlide.layouts.findIndex(l => l.id === sourceLayout.id);
-                    const sourceLayouts = JSON.parse(JSON.stringify(sourceSlide.layouts));
+                // const targetGridStructure = JSON.parse(JSON.stringify(targetLayout.gridStructure));
+                // Case 3: cell move by 1 element
+                if (position === 'left' || position === 'right') {
+                    console.warn('processLayoutDrop: position is left or right');
+                    // // создаём новую ячейку
+                    // // обновляем cellId у элемента
+                    // // обновляем columnWidths в целевой gridStructure
+                    // // обновляем elements в целевой layout
+                    // // обновляем cells в целевой gridStructure
+                    // // удаляеми сходную сетку
 
-                    sourceLayouts.splice(indexSourceLayout, 1);
+                    // // будем создавать новую ячейку в целевой сетке. считаем новое количество колонок
+                    // const newColumnCount = targetGridStructure.columns + 1;
+                    // // считаем новые ширины колонок
+                    // const newColumnWidths = getColumnWidths(newColumnCount);
+                    // // определяем позицию новой ячейки
+                    // const newCellPosition = position === 'left' ? 0 : 1;
 
-                    const targetLayouts = JSON.parse(JSON.stringify(targetSlide.layouts));
+                    // const newCellId = generateId();
+                    // const newCell = {
+                    //     id: newCellId,
+                    //     column: newCellPosition + 1,
+                    //     row: 1,
+                    // };
 
-                    const indexTargetLayout = targetLayouts.findIndex(l => l.id === targetLayout.id);
-                    const targetIndex = position === 'top' ? indexTargetLayout : indexTargetLayout + 1;
-                    targetLayouts.splice(targetIndex, 0, sourceLayout);
+                    // const updatedDraggedElement: BaseElement = {
+                    //     ...draggedElement,
+                    //     cellId: newCellId
+                    // };
 
-                    DragDropTransactionHelper.updateSlide(presentationId, targetSlide.id, {
-                        ...targetSlide,
-                        layouts: targetLayouts
-                    });
+                    // const updatedTargetLayoutElements = [...targetLayout.elements];
+                    // updatedTargetLayoutElements.splice(newCellPosition, 0, updatedDraggedElement);
 
-                    if (sourceSlide.id !== targetSlide.id) {
-                        if (sourceSlide.layouts.length === 0) {
-                            DragDropTransactionHelper.deleteSlide(presentationId, sourceSlide.id);
-                        } else {
-                            DragDropTransactionHelper.deleteLayout(presentationId, sourceSlide.id, sourceLayout.id);
-                        }
+                    // targetGridStructure.rows[0].cells.splice(newCellPosition, 0, newCell);
+
+                    // targetGridStructure.rows[0].cells.forEach((c: GridCell) => {
+                    //     if (c.column >= newCellPosition && c.id !== newCellId) {
+                    //         c.column = c.column + 1;
+                    //     }
+                    // })
+                    // targetGridStructure.rows[0].cells.sort((a: GridCell, b: GridCell) => a.column - b.column);
+
+                    // // Update target layout
+                    // DragDropTransactionHelper.updateLayout(presentationId, targetSlide.id, targetLayout.id, {
+                    //     gridStructure: {
+                    //         ...targetGridStructure,
+                    //         // rows: [{
+                    //         //     ...targetLayout.gridStructure.rows[0],
+                    //         //     cells: position === 'left' ? [newCell, ...targetLayout.gridStructure.rows[0].cells] : [...targetLayout.gridStructure.rows[0].cells, newCell]
+                    //         // }],
+                    //         columnWidths: newColumnWidths,
+                    //         columns: newColumnCount
+                    //     },
+                    //     elements: updatedTargetLayoutElements,
+                    // });
+
+                    // if (sourceLayout.elements.length === 1) {
+                    //     if (sourceSlide.layouts.length === 1) {
+                    //         DragDropTransactionHelper.deleteSlide(presentationId, sourceSlide.id);
+                    //     } else {
+                    //         DragDropTransactionHelper.deleteLayout(presentationId, sourceSlide.id, sourceLayout.id);
+                    //     }
+                    // } else {
+                    //     const updatedElements = sourceLayout.elements.filter(e => e.id !== draggedElement.id);
+                    //     const elementsInCell = updatedElements.filter(e => e.cellId === draggedElement.cellId);
+
+                    //     if (elementsInCell.length === 0) {
+                    //         const updatedCells = sourceLayout.gridStructure.rows[0].cells.filter(c => c.id !== draggedElement.cellId);
+                    //         const updatedColumnWidthsSourceLayout = getColumnWidths(sourceLayout.gridStructure.columns - 1);
+
+                    //         DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
+                    //             gridStructure: {
+                    //                 ...sourceLayout.gridStructure,
+                    //                 columns: sourceLayout.gridStructure.columns - 1,
+                    //                 rows: [{
+                    //                     ...sourceLayout.gridStructure.rows[0],
+                    //                     cells: updatedCells
+                    //                 }],
+                    //                 columnWidths: updatedColumnWidthsSourceLayout
+                    //             },
+                    //             elements: updatedElements
+                    //         });
+                    //     } else {
+                    //         DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
+                    //             elements: updatedElements
+                    //         });
+                    //     }
+                    //     // Delete source cell
+                    // }
+                }
+                // Case 3.2: top/bottom
+                else if (position === 'top' || position === 'bottom') {
+                    const draggedElement = sourceLayout.elements.find(e => e.id === prevStateRef.current.source.elementId);
+
+                    if (!draggedElement) {
+                        console.warn('No valid element found for dragging in processLayoutDrop');
+                        return;
                     }
-                } else {
-                    if (elementsSourceCell.length === 1 && sourceLayout.gridStructure.columns > 1) {
-                        // переносим только элемент. на его месте создаем пустой редактор
-                        // из elements в source layout удаляем элемент
-                        // в source layout добавляем пустой редактор
-                        // обновляем elements в source layout
-                        // в target layout фильтруем элементы от элементов целевой ячейки
-                        // вставляем между целевыми элементами элементы из source layout
-                        // обновляем elements в target layout
-                        const updatedSourceElements = sourceLayout.elements.filter(e => e.id !== draggedElement.id);
 
-                        const editor: Element = {
-                            id: generateId(8),
-                            type: 'editor',
-                            content: '',
-                            position: { x: 0, y: 0 },
-                            size: { width: 100, height: 100 },
-                            cellId: draggedElement.cellId,
-                            style: {},
-                            zIndex: 1,
-                        }
+                    const elementsSourceCell = sourceLayout.elements.filter(e => e.cellId === draggedElement.cellId);
 
-                        updatedSourceElements.push(editor);
+                    if (sourceLayout.elements.length === 1) {
+                        // элемент 1. переносим на новую позицию
+                        const indexSourceLayout = sourceSlide.layouts.findIndex(l => l.id === sourceLayout.id);
+                        const sourceLayouts = JSON.parse(JSON.stringify(sourceSlide.layouts));
 
-                        DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
-                            elements: updatedSourceElements,
+                        sourceLayouts.splice(indexSourceLayout, 1);
+
+                        const targetLayouts = JSON.parse(JSON.stringify(targetSlide.layouts));
+
+                        const indexTargetLayout = targetLayouts.findIndex((l: Layout) => l.id === targetLayout.id);
+                        const targetIndex = position === 'top' ? indexTargetLayout : indexTargetLayout + 1;
+                        targetLayouts.splice(targetIndex, 0, sourceLayout);
+
+                        DragDropTransactionHelper.updateSlide(presentationId, targetSlide.id, {
+                            ...targetSlide,
+                            layouts: targetLayouts
                         });
 
-                        const newCellId = generateId();
-                        const newLayout: Layout = {
-                            id: generateId(),
-                            gridStructure: {
-                                rows: [{
-                                    id: generateId(),
-                                    cells: [{
-                                        id: newCellId,
-                                        row: 1,
-                                        column: 1,
-                                    }],
-                                }],
-                                columns: 1,
-                                columnWidths: getColumnWidths(1)
-                            },
-                            elements: [{
-                                ...draggedElement,
-                                cellId: newCellId
-                            }],
-                            type: 'single-column',
-                            style: {}
+                        if (sourceSlide.id !== targetSlide.id) {
+                            if (sourceSlide.layouts.length === 0) {
+                                DragDropTransactionHelper.deleteSlide(presentationId, sourceSlide.id);
+                            } else {
+                                DragDropTransactionHelper.deleteLayout(presentationId, sourceSlide.id, sourceLayout.id);
+                            }
                         }
-
-                        const targetLayoutIndex = targetSlide.layouts.findIndex(l => l.id === targetLayout.id);
-
-                        const newLayoutsOffset = prevStateRef.current.indicators.layoutPosition === 'top' ? targetLayoutIndex : targetLayoutIndex + 1;
-
-                        DragDropTransactionHelper.addLayout(presentationId, targetSlide.id, newLayout, newLayoutsOffset);
                     } else {
-                        // элементов несколько. только переносим source element
-                        const updatedSourceElements = sourceLayout.elements.filter(e => e.id !== draggedElement.id);
-                        DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
-                            elements: updatedSourceElements,
-                        });
+                        if (elementsSourceCell.length === 1 && sourceLayout.gridStructure.columns > 1) {
+                            // переносим только элемент. на его месте создаем пустой редактор
+                            // из elements в source layout удаляем элемент
+                            // в source layout добавляем пустой редактор
+                            // обновляем elements в source layout
+                            // в target layout фильтруем элементы от элементов целевой ячейки
+                            // вставляем между целевыми элементами элементы из source layout
+                            // обновляем elements в target layout
+                            const updatedSourceElements = sourceLayout.elements.filter(e => e.id !== draggedElement.id);
 
-                        const newCellId = generateId();
-                        const newLayout: Layout = {
-                            id: generateId(),
-                            gridStructure: {
-                                rows: [{
-                                    id: generateId(),
-                                    cells: [{
-                                        id: newCellId,
-                                        row: 1,
-                                        column: 1,
+                            const editor: TextElement = {
+                                id: generateId(8),
+                                type: 'editor',
+                                textType: 'text',
+                                content: '',
+                                position: { x: 0, y: 0 },
+                                size: { width: 100, height: 100 },
+                                cellId: draggedElement.cellId,
+                                style: {},
+                                zIndex: 1,
+                            }
+
+                            updatedSourceElements.push(editor);
+
+                            DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
+                                elements: updatedSourceElements,
+                            });
+
+                            const newCellId = generateId();
+                            const newLayout: Layout = {
+                                id: generateId(),
+                                gridStructure: {
+                                    rows: [{
+                                        id: generateId(),
+                                        cells: [{
+                                            id: newCellId,
+                                            row: 1,
+                                            column: 1,
+                                        }],
                                     }],
+                                    columns: 1,
+                                    columnWidths: getColumnWidths(1)
+                                },
+                                elements: [{
+                                    ...draggedElement,
+                                    cellId: newCellId
                                 }],
-                                columns: 1,
-                                columnWidths: getColumnWidths(1)
-                            },
-                            elements: [{
-                                ...draggedElement,
-                                cellId: newCellId
-                            }],
-                            type: 'single-column',
-                            style: {}
+                                type: 'single-column',
+                                style: {}
+                            }
+
+                            const targetLayoutIndex = targetSlide.layouts.findIndex(l => l.id === targetLayout.id);
+
+                            const newLayoutsOffset = prevStateRef.current.indicators.layoutPosition === 'top' ? targetLayoutIndex : targetLayoutIndex + 1;
+
+                            DragDropTransactionHelper.addLayout(presentationId, targetSlide.id, newLayout, newLayoutsOffset);
+                        } else {
+                            // элементов несколько. только переносим source element
+                            const updatedSourceElements = sourceLayout.elements.filter(e => e.id !== draggedElement.id);
+                            DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
+                                elements: updatedSourceElements,
+                            });
+
+                            const newCellId = generateId();
+                            const newLayout: Layout = {
+                                id: generateId(),
+                                gridStructure: {
+                                    rows: [{
+                                        id: generateId(),
+                                        cells: [{
+                                            id: newCellId,
+                                            row: 1,
+                                            column: 1,
+                                        }],
+                                    }],
+                                    columns: 1,
+                                    columnWidths: getColumnWidths(1)
+                                },
+                                elements: [{
+                                    ...draggedElement,
+                                    cellId: newCellId
+                                }],
+                                type: 'single-column',
+                                style: {}
+                            }
+
+                            const targetLayoutIndex = targetSlide.layouts.findIndex(l => l.id === targetLayout.id);
+
+                            const newLayoutsOffset = prevStateRef.current.indicators.layoutPosition === 'top' ? targetLayoutIndex : targetLayoutIndex + 1;
+
+                            DragDropTransactionHelper.addLayout(presentationId, targetSlide.id, newLayout, newLayoutsOffset);
                         }
-
-                        const targetLayoutIndex = targetSlide.layouts.findIndex(l => l.id === targetLayout.id);
-
-                        const newLayoutsOffset = prevStateRef.current.indicators.layoutPosition === 'top' ? targetLayoutIndex : targetLayoutIndex + 1;
-
-                        DragDropTransactionHelper.addLayout(presentationId, targetSlide.id, newLayout, newLayoutsOffset);
                     }
                 }
-            }
-        } else if (prevStateRef.current.source.cellId) {
-            // перетаскиваем ячейку сверху/снизу layout
-            const targetLayoutIndex = targetSlide.layouts.findIndex(l => l.id === targetLayout.id);
+            } else if (prevStateRef.current.source.cellId) {
+                // перетаскиваем ячейку сверху/снизу layout
+                const targetLayoutIndex = targetSlide.layouts.findIndex(l => l.id === targetLayout.id);
 
-            const newLayoutsOffset = prevStateRef.current.indicators.layoutPosition === 'top' ? targetLayoutIndex : targetLayoutIndex + 1;
+                const newLayoutsOffset = prevStateRef.current.indicators.layoutPosition === 'top' ? targetLayoutIndex : targetLayoutIndex + 1;
 
-            const sourceCellElements = sourceLayout.elements.filter(e => e.cellId === prevStateRef.current.source.cellId);
+                const sourceCellElements = sourceLayout.elements.filter(e => e.cellId === prevStateRef.current.source.cellId);
 
-            const newLayouts = sourceCellElements.map((element) => {
-                const newLayoutId = generateId();
-                const newCellId = generateId();
+                const newLayouts = sourceCellElements.map((element) => {
+                    const newLayoutId = generateId();
+                    const newCellId = generateId();
 
-                return {
-                    id: newLayoutId,
-                    gridStructure: {
-                        rows: [{
-                            id: generateId(),
-                            cells: [{
-                                id: newCellId,
-                                row: 1,
-                                column: 1,
-                            }]
+                    return {
+                        id: newLayoutId,
+                        gridStructure: {
+                            rows: [{
+                                id: generateId(),
+                                cells: [{
+                                    id: newCellId,
+                                    row: 1,
+                                    column: 1,
+                                }]
+                            }],
+                            columns: 1,
+                            columnWidths: getColumnWidths(1)
+                        },
+                        elements: [{
+                            ...element,
+                            cellId: newCellId
                         }],
-                        columns: 1,
-                        columnWidths: getColumnWidths(1)
-                    },
-                    elements: [{
-                        ...element,
-                        cellId: newCellId
-                    }],
-                    type: 'single-column',
-                    style: {}
-                } as Layout
-            })
-            const targetLayouts = [...targetSlide.layouts];
+                        type: 'single-column',
+                        style: {}
+                    } as Layout
+                })
+                const targetLayouts = [...targetSlide.layouts];
 
-            targetLayouts.splice(newLayoutsOffset, 0, ...newLayouts);
+                targetLayouts.splice(newLayoutsOffset, 0, ...newLayouts);
 
-            // ?????
-            DragDropTransactionHelper.updateSlide(presentationId, targetSlide.id, {
-                ...targetSlide,
-                layouts: targetLayouts
-            });
+                // ?????
+                DragDropTransactionHelper.updateSlide(presentationId, targetSlide.id, {
+                    ...targetSlide,
+                    layouts: targetLayouts
+                });
 
-            const updatedSourceGridStructure = JSON.parse(JSON.stringify(sourceLayout.gridStructure));
-            updatedSourceGridStructure.rows[0].cells = updatedSourceGridStructure.rows[0].cells.filter((c: GridCell) => c.id !== prevStateRef.current.source.cellId);
-            updatedSourceGridStructure.columns = updatedSourceGridStructure.columns - 1;
-            const updatedSourceColumnWidths = getColumnWidths(updatedSourceGridStructure.columns);
-            const updatedSourceElements = sourceLayout.elements.filter(e => e.cellId !== prevStateRef.current.source.cellId);
-            DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
-                gridStructure: { ...updatedSourceGridStructure, columnWidths: updatedSourceColumnWidths },
-                elements: updatedSourceElements
-            });
+                const updatedSourceGridStructure = JSON.parse(JSON.stringify(sourceLayout.gridStructure));
+                updatedSourceGridStructure.rows[0].cells = updatedSourceGridStructure.rows[0].cells.filter((c: GridCell) => c.id !== prevStateRef.current.source.cellId);
+                updatedSourceGridStructure.columns = updatedSourceGridStructure.columns - 1;
+                const updatedSourceColumnWidths = getColumnWidths(updatedSourceGridStructure.columns);
+                const updatedSourceElements = sourceLayout.elements.filter(e => e.cellId !== prevStateRef.current.source.cellId);
+                DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
+                    gridStructure: { ...updatedSourceGridStructure, columnWidths: updatedSourceColumnWidths },
+                    elements: updatedSourceElements
+                });
+            }
         }
     };
 
     const processCellDrop = () => {
-        if (!prevStateRef.current.target.cellId || (!prevStateRef.current.source.elementId && !prevStateRef.current.source.cellId) ||
-            !prevStateRef.current.source.layoutId || !prevStateRef.current.target.layoutId
-        ) {
+        const isSourceElementInSlide = prevStateRef.current.source.layoutId && (prevStateRef.current.source.elementId || prevStateRef.current.source.cellId);
+        const isNewElement = !!prevStateRef.current.newElement.id;
+
+        if (!prevStateRef.current.target.cellId || !prevStateRef.current.target.layoutId || (!isSourceElementInSlide && !isNewElement)) {
             return;
         }
 
-        const sourceLayout = getLayout(prevStateRef.current.source.layoutId);
         const targetLayout = getLayout(prevStateRef.current.target.layoutId);
 
-        if (!sourceLayout || !targetLayout) {
+        if (!targetLayout) {
             return;
         }
 
         const targetSlide = getLayoutSlide(targetLayout.id);
-        const sourceSlide = getLayoutSlide(sourceLayout.id);
-        if (!targetSlide || !sourceSlide) return;
 
-        // const targetGridStructure = { ...targetLayout.gridStructure };
-        const targetGridStructure = JSON.parse(JSON.stringify(targetLayout.gridStructure));
+        if (!targetSlide) {
+            return;
+        }
 
-        if (sourceLayout.id === targetLayout.id) {
-            // перемещение внутри одного layout
-            if (prevStateRef.current.source.elementId) {
-                processMoveElementToCellInCurrentLayout({
-                    sourceLayout,
-                    targetLayout,
-                    targetGridStructure,
-                    targetSlide
-                })
-            } else if (prevStateRef.current.source.cellId) {
-                processMoveCellToCellInCurrentLayout({
-                    targetLayout,
-                    targetGridStructure,
-                    targetSlide
-                })
-            }
+        if (isNewElement) {
+            processAddElementToSiblingCell({
+                targetLayout,
+                targetSlide,
+                elementTypeId: prevStateRef.current.newElement.id!,
+            })
+            console.log('drop new element', prevStateRef.current.newElement);
         } else {
-            if (prevStateRef.current.source.elementId) {
-                processMoveElementToCellToOtherLayout({
-                    sourceLayout,
-                    targetLayout,
-                    targetGridStructure,
-                    targetSlide,
-                    sourceSlide
-                })
-            } else if (prevStateRef.current.source.cellId) {
-                processMoveCellToCellToOtherLayout({
-                    sourceLayout,
-                    targetLayout,
-                    targetGridStructure,
-                    targetSlide,
-                    sourceSlide
-                })
+            if (!prevStateRef.current.source.layoutId) {
+                return;
+            }
+
+            const sourceLayout = getLayout(prevStateRef.current.source.layoutId);
+
+            if (!sourceLayout) {
+                return;
+            }
+
+            const sourceSlide = getLayoutSlide(sourceLayout.id);
+            if (!sourceSlide) return;
+
+            // const targetGridStructure = { ...targetLayout.gridStructure };
+            const targetGridStructure = JSON.parse(JSON.stringify(targetLayout.gridStructure));
+
+            if (sourceLayout.id === targetLayout.id) {
+                // перемещение внутри одного layout
+                if (prevStateRef.current.source.elementId) {
+                    processMoveElementToCellInCurrentLayout({
+                        sourceLayout,
+                        targetLayout,
+                        targetGridStructure,
+                        targetSlide: targetSlide!
+                    })
+                } else if (prevStateRef.current.source.cellId) {
+                    processMoveCellToCellInCurrentLayout({
+                        targetLayout,
+                        targetGridStructure,
+                        targetSlide: targetSlide!
+                    })
+                }
+            } else {
+                if (prevStateRef.current.source.elementId) {
+                    processMoveElementToCellToOtherLayout({
+                        sourceLayout,
+                        targetLayout,
+                        targetGridStructure,
+                        targetSlide: targetSlide!,
+                        sourceSlide: sourceSlide!
+                    })
+                } else if (prevStateRef.current.source.cellId) {
+                    processMoveCellToCellToOtherLayout({
+                        sourceLayout,
+                        targetLayout,
+                        targetGridStructure,
+                        targetSlide: targetSlide!,
+                        sourceSlide: sourceSlide!
+                    })
+                }
             }
         }
+    }
+
+    const processAddElementToSiblingCell= ({
+        targetLayout,
+        targetSlide,
+        elementTypeId,
+    }: {
+        targetLayout: Layout,
+        targetSlide: Slide,
+        elementTypeId: string,
+    }) => {
+        const newElement = getNewElement(elementTypeId);
+
+        if (!newElement) {
+            return;
+        }
+        const targetCell = targetLayout.gridStructure.rows[0].cells.find(c => c.id === prevStateRef.current.target.cellId);
+
+        if (!targetCell) return;
+
+        const newCellId = generateId();
+        const newCell: GridCell = {
+            id: newCellId,
+            row: 1,
+            column: 1,
+        };
+
+        const targetGridStructure = JSON.parse(JSON.stringify(targetLayout.gridStructure));
+
+        const targetCellIndex = targetGridStructure.rows[0].cells.findIndex((c: GridCell) => c.id === prevStateRef.current.target.cellId);
+
+        const newCellPosition = prevStateRef.current.indicators.cellPosition === 'left' ? targetCellIndex : targetCellIndex + 1;
+        targetGridStructure.rows[0].cells.splice(newCellPosition, 0, newCell);
+
+        const updatedTargetElements = [...targetLayout.elements];
+        updatedTargetElements.splice(newCellPosition, 0, {
+            ...newElement,
+            cellId: newCellId
+        });
+
+        targetGridStructure.rows[0].cells.forEach((c: GridCell, index: number) => {
+            c.column = index + 1;
+        })
+
+        targetGridStructure.rows[0].cells.sort((a: GridCell, b: GridCell) => a.column - b.column);
+
+        DragDropTransactionHelper.updateLayout(presentationId, targetSlide.id, targetLayout.id, {
+            gridStructure: {
+                ...targetGridStructure,
+                columns: targetGridStructure.columns + 1,
+                columnWidths: getColumnWidths(targetGridStructure.columns + 1)
+            },
+            elements: updatedTargetElements,
+        });
     }
 
     const processMoveCellToCellToOtherLayout = ({
@@ -1573,7 +1870,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
         const elementsInSourceCell = updatedSourceElements.filter(e => e.cellId === sourceElement.cellId);
         if (elementsInSourceCell.length === 0) {
-            const editor: Element = {
+            const editor: TextElement = {
                 id: generateId(8),
                 type: 'editor',
                 content: '',
@@ -1581,8 +1878,8 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 size: { width: 100, height: 100 },
                 style: { fontSize: '16px', color: '#333333' },
                 zIndex: 1,
-                placeholder: 'Левая колонка...',
-                cellId: sourceElement.cellId
+                cellId: sourceElement.cellId,
+                textType: 'text',
             };
             updatedSourceElements.push(editor);
         }
@@ -1645,7 +1942,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
         const elementsInCell = updatedElements.filter(e => e.cellId === sourceElement.cellId);
         if (elementsInCell.length === 0) {
-            const editor: Element = {
+            const editor: TextElement = {
                 id: generateId(8),
                 type: 'editor',
                 content: '',
@@ -1653,8 +1950,8 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 size: { width: 100, height: 100 },
                 style: { fontSize: '16px', color: '#333333' },
                 zIndex: 1,
-                placeholder: 'Левая колонка...',
-                cellId: sourceElement.cellId
+                cellId: sourceElement.cellId,
+                textType: 'text',
             };
             updatedElements.push(editor);
         }
@@ -1725,6 +2022,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         completeDrop,
         cancelDrag,
         handleDragStart,
+        handleNewElementDragStart,
         handleDrop,
         isDragging,
         getElement,

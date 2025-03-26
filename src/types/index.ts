@@ -1,50 +1,51 @@
 import { generateId } from "@/utils/id";
+import { IconType } from "react-icons/lib";
 
-export type ElementType =
-  | 'text'
-  | 'heading'
-  | 'paragraph'
-  | 'list'
-  | 'image'
-  | 'divider'
-  | 'icon'
-  | 'video'
-  | 'chart'
-  | 'button'
-  | 'editor';
+export type TextElementType =
+    | 'text'
+    | 'heading'
+    | 'paragraph'
+    | 'list'
+    | 'image'
+    | 'divider'
+    | 'icon'
+    | 'video'
+    | 'chart'
+    | 'button'
+    | 'editor';
 
 export type LayoutType =
-  | 'single-column'
-  | 'two-columns'
-  | 'three-columns'
-  | 'four-columns'
-  | 'image-text'
-  | 'text-image'
-  | 'cards'
-  | 'icons-with-text'
-  | 'blank'
-  | 'custom'; // User-defined grid layouts
+    | 'single-column'
+    | 'two-columns'
+    | 'three-columns'
+    | 'four-columns'
+    | 'image-text'
+    | 'text-image'
+    | 'cards'
+    | 'icons-with-text'
+    | 'blank'
+    | 'custom'; // User-defined grid layouts
 
 // Интерфейс для ячейки сетки
 export interface GridCell {
-  id: string;
-  row: number;
-  column: number;
-//   rowSpan: number;
-//   colSpan: number;
+    id: string;
+    row: number;
+    column: number;
+    //   rowSpan: number;
+    //   colSpan: number;
 }
 
 // Интерфейс для строки сетки
 export interface GridRow {
-  id: string;
-  cells: GridCell[];
+    id: string;
+    cells: GridCell[];
 }
 
 // Интерфейс для определения структуры сетки с поддержкой объединения ячеек
 export interface GridStructure {
-  columns: number;
-  rows: GridRow[];
-  columnWidths: string[];
+    columns: number;
+    rows: GridRow[];
+    columnWidths: string[];
 }
 
 export const getPredefinedGridStructures = (name: LayoutType): GridStructure => {
@@ -54,9 +55,9 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 columns: 1,
                 rows: [
                     {
-                        id:  generateId(8),
+                        id: generateId(8),
                         cells: [
-                            { id: generateId(8), row: 1, column: 1}
+                            { id: generateId(8), row: 1, column: 1 }
                         ]
                     }
                 ],
@@ -67,10 +68,10 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 columns: 2,
                 rows: [
                     {
-                        id:  generateId(8),
+                        id: generateId(8),
                         cells: [
-                            { id: generateId(8), row: 1, column: 1},
-                            { id: generateId(8), row: 1, column: 2}
+                            { id: generateId(8), row: 1, column: 1 },
+                            { id: generateId(8), row: 1, column: 2 }
                         ]
                     }
                 ],
@@ -81,11 +82,11 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 columns: 3,
                 rows: [
                     {
-                        id:  generateId(8),
+                        id: generateId(8),
                         cells: [
-                            { id: generateId(8), row: 1, column: 1},
-                            { id: generateId(8), row: 1, column: 2},
-                            { id: generateId(8), row: 1, column: 3}
+                            { id: generateId(8), row: 1, column: 1 },
+                            { id: generateId(8), row: 1, column: 2 },
+                            { id: generateId(8), row: 1, column: 3 }
                         ]
                     }
                 ],
@@ -96,12 +97,12 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 columns: 4,
                 rows: [
                     {
-                        id:  generateId(8),
+                        id: generateId(8),
                         cells: [
-                            { id: generateId(8), row: 1, column: 1},
-                            { id: generateId(8), row: 1, column: 2},
-                            { id: generateId(8), row: 1, column: 3},
-                            { id: generateId(8), row: 1, column: 4}
+                            { id: generateId(8), row: 1, column: 1 },
+                            { id: generateId(8), row: 1, column: 2 },
+                            { id: generateId(8), row: 1, column: 3 },
+                            { id: generateId(8), row: 1, column: 4 }
                         ]
                     }
                 ],
@@ -112,10 +113,10 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 columns: 2,
                 rows: [
                     {
-                        id:  generateId(8),
+                        id: generateId(8),
                         cells: [
-                            { id: generateId(8), row: 1, column: 1},
-                            { id: generateId(8), row: 1, column: 2}
+                            { id: generateId(8), row: 1, column: 1 },
+                            { id: generateId(8), row: 1, column: 2 }
                         ]
                     }
                 ],
@@ -126,10 +127,10 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 columns: 2,
                 rows: [
                     {
-                        id:  generateId(8),
+                        id: generateId(8),
                         cells: [
-                            { id: generateId(8), row: 1, column: 1},
-                            { id: generateId(8), row: 1, column: 2}
+                            { id: generateId(8), row: 1, column: 1 },
+                            { id: generateId(8), row: 1, column: 2 }
                         ]
                     }
                 ],
@@ -140,17 +141,17 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 columns: 2,
                 rows: [
                     {
-                        id:  generateId(8),
+                        id: generateId(8),
                         cells: [
-                            { id: generateId(8), row: 1, column: 1},
-                            { id: generateId(8), row: 1, column: 2}
+                            { id: generateId(8), row: 1, column: 1 },
+                            { id: generateId(8), row: 1, column: 2 }
                         ]
                     },
                     {
-                        id:  generateId(8),
+                        id: generateId(8),
                         cells: [
-                            { id: generateId(8), row: 2, column: 1},
-                            { id: generateId(8), row: 2, column: 2}
+                            { id: generateId(8), row: 2, column: 1 },
+                            { id: generateId(8), row: 2, column: 2 }
                         ]
                     }
                 ],
@@ -161,19 +162,19 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 columns: 3,
                 rows: [
                     {
-                        id:  generateId(8),
+                        id: generateId(8),
                         cells: [
-                            { id: generateId(8), row: 1, column: 1},
-                            { id: generateId(8), row: 1, column: 2},
-                            { id: generateId(8), row: 1, column: 3}
+                            { id: generateId(8), row: 1, column: 1 },
+                            { id: generateId(8), row: 1, column: 2 },
+                            { id: generateId(8), row: 1, column: 3 }
                         ]
                     },
                     {
-                        id:  generateId(8),
+                        id: generateId(8),
                         cells: [
-                            { id: generateId(8), row: 2, column: 1},
-                            { id: generateId(8), row: 2, column: 2},
-                            { id: generateId(8), row: 2, column: 3}
+                            { id: generateId(8), row: 2, column: 1 },
+                            { id: generateId(8), row: 2, column: 2 },
+                            { id: generateId(8), row: 2, column: 3 }
                         ]
                     }
                 ],
@@ -185,14 +186,14 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 rows: [],
                 columnWidths: ['100%']
             };
-        default: 
+        default:
             return {
                 columns: 1,
                 rows: [
                     {
-                        id:  generateId(8),
+                        id: generateId(8),
                         cells: [
-                            { id: generateId(8), row: 1, column: 1}
+                            { id: generateId(8), row: 1, column: 1 }
                         ]
                     }
                 ],
@@ -201,122 +202,122 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
     }
 }
 export interface Position {
-  x: number;
-  y: number;
+    x: number;
+    y: number;
 }
 
 export interface Size {
-  width: number;
-  height: number;
+    width: number;
+    height: number;
 }
 
 export interface Style {
-  backgroundColor?: string;
-  color?: string;
-  fontSize?: string;
-  fontWeight?: string;
-  borderRadius?: string;
-  borderColor?: string;
-  borderWidth?: string;
-  padding?: string;
-  margin?: string;
-  textAlign?: 'left' | 'center' | 'right' | 'justify';
+    backgroundColor?: string;
+    color?: string;
+    fontSize?: string;
+    fontWeight?: string;
+    borderRadius?: string;
+    borderColor?: string;
+    borderWidth?: string;
+    padding?: string;
+    margin?: string;
+    textAlign?: 'left' | 'center' | 'right' | 'justify';
 }
 
 // Базовый интерфейс для всех элементов
 export interface BaseElement {
-  id: string;
-  type: ElementType;
-  position: Position;
-  size: Size;
-  style: Style;
-  zIndex: number;
-  cellId: string;   // Reference to the cell this element belongs to
+    id: string;
+    type: TextElementType;
+    position: Position;
+    size: Size;
+    style: Style;
+    zIndex: number;
+    cellId: string;   // Reference to the cell this element belongs to
 }
 
 // Элемент текста
 export interface TextElement extends BaseElement {
-  textType: 'text' | 'heading' | 'paragraph';
-  content: string;
+    textType: 'text' | 'heading' | 'paragraph';
+    content: string;
 }
 
 // Элемент редактора Tiptap
 export interface EditorElement extends BaseElement {
-  type: 'editor';
-  content: string;
-  placeholder?: string;
+    type: 'editor';
+    content: string;
+    placeholder?: string;
 }
 
 // Элемент списка
 export interface ListElement extends BaseElement {
-  type: 'list';
-  items: string[];
-  listType: 'bullet' | 'numbered';
+    type: 'list';
+    items: string[];
+    listType: 'bullet' | 'numbered';
 }
 
 // Элемент изображения
 export interface ImageElement extends BaseElement {
-  type: 'image';
-  src: string;
-  alt: string;
+    type: 'image';
+    src: string;
+    alt: string;
 }
 
 // Элемент разделителя
 export interface DividerElement extends BaseElement {
-  type: 'divider';
+    type: 'divider';
 }
 
 // Элемент иконки
 export interface IconElement extends BaseElement {
-  type: 'icon';
-  iconName: string;
+    type: 'icon';
+    iconName: string;
 }
 
 // Элемент видео
 export interface VideoElement extends BaseElement {
-  type: 'video';
-  src: string;
-  autoplay: boolean;
-  controls: boolean;
+    type: 'video';
+    src: string;
+    autoplay: boolean;
+    controls: boolean;
 }
 
 // Элемент диаграммы
 export interface ChartElement extends BaseElement {
-  type: 'chart';
-  chartType: 'bar' | 'line' | 'pie' | 'donut';
-  data: any; // Данные для диаграммы
+    type: 'chart';
+    chartType: 'bar' | 'line' | 'pie' | 'donut';
+    data: any; // Данные для диаграммы
 }
 
 // Элемент кнопки
 export interface ButtonElement extends BaseElement {
-  type: 'button';
-  text: string;
-  action: {
-    type: 'link' | 'slide';
-    target: string; // URL или ID слайда
-  };
+    type: 'button';
+    text: string;
+    action: {
+        type: 'link' | 'slide';
+        target: string; // URL или ID слайда
+    };
 }
 
 // Объединенный тип элемента
 export type Element =
-  | TextElement
-  | EditorElement
-  | ListElement
-  | ImageElement
-  | DividerElement
-  | IconElement
-  | VideoElement
-  | ChartElement
-  | ButtonElement;
+    | TextElement
+    | EditorElement
+    | ListElement
+    | ImageElement
+    | DividerElement
+    | IconElement
+    | VideoElement
+    | ChartElement
+    | ButtonElement;
 
 // Интерфейс макета с поддержкой объединения ячеек
 export interface Layout {
-  id: string;
-  type: LayoutType;
-  elements: Element[];
-  style: Style;
-  gridStructure: GridStructure;
-  parentId?: string;  // Reference to parent layout if nested
+    id: string;
+    type: LayoutType;
+    elements: BaseElement[];
+    style: Style;
+    gridStructure: GridStructure;
+    parentId?: string;  // Reference to parent layout if nested
 }
 
 // Функция для создания новой ячейки
@@ -349,7 +350,7 @@ export const generateGridTemplateAreas = (gridStructure: GridStructure): string 
     // Создаем матрицу для представления сетки
     const maxRows = 1;
 
-    if (maxRows === 0) return '""';
+    // if (maxRows === 0) return '""';
 
     // Инициализируем матрицу пустыми значениями
     const grid: string[][] = Array(maxRows).fill(null)
@@ -379,7 +380,7 @@ export const generateGridTemplateAreas = (gridStructure: GridStructure): string 
 export const generateGridTemplateColumns = (gridStructure: GridStructure): string => {
     // Use columnWidths if available, otherwise generate equal percentage columns
     if (gridStructure.columnWidths && gridStructure.columnWidths.length > 0) {
-    // Convert any fr units to percentages
+        // Convert any fr units to percentages
         const convertedWidths = gridStructure.columnWidths.map(width => {
             if (width.endsWith('fr')) {
                 // Convert fr to equal percentage
@@ -408,13 +409,14 @@ export const createLayout = (type: LayoutType = 'blank'): Layout => {
     let gridStructure: GridStructure;
 
     if (type !== 'custom') {
-    // Используем предопределенную структуру для стандартных типов
-        gridStructure = JSON.parse(JSON.stringify(getPredefinedGridStructures[type]));
+        // Используем предопределенную структуру для стандартных типов
+        gridStructure = JSON.parse(JSON.stringify(getPredefinedGridStructures(type)));
     } else {
-    // Создаем пустую структуру для пользовательских макетов
+        // Создаем пустую структуру для пользовательских макетов
         gridStructure = {
             columns: 1,
-            rows: []
+            rows: [],
+            columnWidths: []
         };
     }
 
@@ -471,22 +473,59 @@ export const addElementToCell = (layout: Layout, element: Element, cellId: strin
 
 // Интерфейс слайда
 export interface Slide {
-  id: string;
-  title: string;
-  layouts: Layout[];
-  background: {
-    type: 'color' | 'image';
-    value: string;
-  };
-  style: Style;
+    id: string;
+    title: string;
+    layouts: Layout[];
+    background: {
+        type: 'color' | 'image';
+        value: string;
+    };
+    style: Style;
 }
 
 // Интерфейс презентации
 export interface IPresentation {
-  id: string;
-  title: string;
-  description?: string;
-  slides: Slide[];
-  createdAt: number;
-  updatedAt: number;
+    id: string;
+    title: string;
+    description?: string;
+    slides: Slide[];
+    createdAt: number;
+    updatedAt: number;
+}
+
+
+// Element Type Definition
+export type ElementConfig = {
+    id: string;
+    type: string;
+    category: string;
+    label: string;
+    icon?: IconType;
+    defaultProps?: Record<string, any>;
+    MenuComponent?: React.ComponentType<any>;
+}
+
+export type ELEMENT_TYPE = 'element' | 'layout' | 'slide';
+
+export type ElementType = {
+    id: string;
+    type: ELEMENT_TYPE;
+    label: string;
+    Icon?: IconType;
+    defaultProps?: Record<string, any>;
+    MenuComponent?: React.ComponentType<any>;
+}
+
+export type SubCategory = {
+    id: string;
+    label: string;
+    elements: ElementType[];
+}
+
+export type Category = {
+    id: string;
+    label: string;
+    Icon: IconType;
+    subCategories?: SubCategory[];
+    elements?: ElementType[];
 }
