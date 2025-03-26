@@ -27,15 +27,6 @@ const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, cla
     // Handle keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            // Ignore if inside input, textarea or contentEditable elements
-            if (
-                document.activeElement instanceof HTMLInputElement ||
-                document.activeElement instanceof HTMLTextAreaElement ||
-                (document.activeElement && document.activeElement.getAttribute('contenteditable') === 'true')
-            ) {
-                return;
-            }
-
             // Undo: Ctrl+Z or Command+Z
             if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
                 e.preventDefault();
