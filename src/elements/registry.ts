@@ -1,19 +1,63 @@
 import { generateId } from '@/utils/id'
-import { type Category, type Element, type ElementConfig, type ELEMENT_TYPE, EditorElement, TextElementType } from '../types'
+import { type Category, TextElement } from '../types'
 import { FaFont, FaTable, FaList, FaBox, FaImage, FaVideo, FaRegChartBar, FaUpload, FaLink, FaQrcode, FaQuoteLeft, FaToggleOn, FaToggleOff } from 'react-icons/fa'
 
-export const getNewElement = (type: string): Omit<EditorElement, 'cellId'> => {
-    const editor = {
+// export const getNewElement = (type: string): Omit<TextElement, 'cellId'> => {
+//     const editor = {
+//         id: generateId(8),
+//         type: 'editor',
+//         textType: 'text',
+//         content: '',
+//         position: { x: 0, y: 0 },
+//         size: { width: 100, height: 100 },
+//         style: {},
+//         zIndex: 1,
+//     }
+
+//     return editor;
+// }
+
+
+export const getNewElement = (type: string): Omit<TextElement, 'cellId'> => {
+    // Find the element configuration in the registry
+    const elementConfig = elementsRegistry
+        .flatMap(category => 
+            category.subCategories 
+                ? category.subCategories.flatMap(sub => sub.elements)
+                : category.elements
+        )
+        .find(element => element?.id === type);
+
+    // Base properties for all elements
+    const baseElement = {
         id: generateId(8),
         type: 'editor',
-        content: '',
+        textType: type,
+        content: elementConfig?.defaultProps?.content ?? '',
         position: { x: 0, y: 0 },
-        size: { width: 100, height: 100 },
+        size: { width: 300, height: 100 }, // Increased default width for better text editing
         style: {},
         zIndex: 1,
-    }
+    };
 
-    return editor;
+    // // Merge with specific properties based on element type
+    // if (type.includes('heading')) {
+    //     return {
+    //         ...baseElement,
+    //         textType: 'heading',
+    //         level: elementConfig?.defaultProps?.level ?? 1
+    //     };
+    // }
+
+    // if (type === 'quote') {
+    //     return {
+    //         ...baseElement,
+    //         textType: 'quote'
+    //     };
+    // }
+
+    // Return default text element for other types
+    return baseElement;
 }
 
 export const elementsRegistry: Category[] = [
@@ -32,42 +76,42 @@ export const elementsRegistry: Category[] = [
                         type: 'element',
                         label: 'Заголовок',
                         Icon: FaFont,
-                        defaultProps: { level: 1, content: '' }
+                        defaultProps: { textType: 'heading', level: 1, content: '<h1>Заголовок</h1>' }
                     },
                     {
                         id: 'heading-1',
                         type: 'element',
                         label: 'Подзаголовок 1',
                         Icon: FaFont,
-                        defaultProps: { level: 2, content: '' }
+                        defaultProps: { textType: 'heading', level: 2, content: '<h2>Подзаголовок 1</h2>' }
                     },
                     {
                         id: 'heading-2',
                         type: 'element',
                         label: 'Подзаголовок 2',
                         Icon: FaFont,
-                        defaultProps: { level: 3, content: '' }
+                        defaultProps: { textType: 'heading', level: 3, content: '<h3>Подзаголовок 2</h3>' }
                     },
                     {
                         id: 'heading-3',
                         type: 'element',
                         label: 'Подзаголовок 3',
                         Icon: FaFont,
-                        defaultProps: { level: 4, content: '' }
+                        defaultProps: { textType: 'heading', level: 4, content: '<h4>Подзаголовок 3</h4>' }
                     },
                     {
                         id: 'heading-4',
                         type: 'element',
                         label: 'Подзаголовок 4',
                         Icon: FaFont,
-                        defaultProps: { level: 5, content: '' }
+                        defaultProps: { textType: 'heading', level: 5, content: '<h5>Подзаголовок 4</h5>' }
                     },
                     {
                         id: 'quote',
                         type: 'element',
                         label: 'Цитата',
                         Icon: FaQuoteLeft,
-                        defaultProps: { content: '' }
+                        defaultProps: { textType: 'quote', content: '<blockquote>Цитата</blockquote>' }
                     },
                 ]
             },

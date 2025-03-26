@@ -122,7 +122,6 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ presentationId, slideId }
         }
     };
 
-
     return (
         <div className={styles.elementsPanel}>
             <div className="bg-white rounded-lg shadow-lg py-2 px-1">
