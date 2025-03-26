@@ -3,17 +3,19 @@ import { usePresentationStore } from '@/store/presentationStore';
 
 // Define slide menu state types
 type SlideMenuState = {
-  isOpen: boolean;
-  slideId: string | null;
+    isOpen: boolean;
+    slideId: string | null;
+    elementId: string | null;
 };
 
 type SlideMenuAction =
-  | { type: 'OPEN_MENU'; payload: { slideId: string } }
-  | { type: 'CLOSE_MENU' };
+    | { type: 'OPEN_MENU'; payload: { slideId?: string | null; elementId?: string | null } }
+    | { type: 'CLOSE_MENU' };
 
 const initialState: SlideMenuState = {
     isOpen: false,
     slideId: null,
+    elementId: null,
 };
 
 // Reducer for managing slide menu state
@@ -22,7 +24,8 @@ const slideMenuReducer = (state: SlideMenuState, action: SlideMenuAction): Slide
         case 'OPEN_MENU':
             return {
                 isOpen: true,
-                slideId: action.payload.slideId,
+                slideId: action.payload.slideId ?? null,
+                elementId: action.payload.elementId ?? null,
             };
         case 'CLOSE_MENU':
             return initialState;
@@ -33,11 +36,13 @@ const slideMenuReducer = (state: SlideMenuState, action: SlideMenuAction): Slide
 
 // Create context
 type SlideMenuContextType = {
-  state: SlideMenuState;
-  openMenu: (slideId: string) => void;
-  closeMenu: () => void;
-  duplicateSlide: () => void;
-  deleteSlide: () => void;
+    state: SlideMenuState;
+    openMenu: (slideId?: string | null, elementId?: string | null) => void;
+    closeMenu: () => void;
+    duplicateSlide: () => void;
+    duplicateElement: () => void;
+    deleteSlide: () => void;
+    deleteElement: () => void;
 };
 
 const SlideMenuContext = createContext<SlideMenuContextType | undefined>(undefined);
@@ -49,12 +54,15 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
 }) => {
     const [state, dispatch] = useReducer(slideMenuReducer, initialState);
     const {
+        findLayoutByElementId,
         duplicateSlide: duplicateSlideInStore,
         deleteSlide: deleteSlideInStore,
+        duplicateElement: duplicateElementInStore,
+        deleteElement: deleteElementInStore,
     } = usePresentationStore();
-    
-    const openMenu = (slideId: string) => {
-        dispatch({ type: 'OPEN_MENU', payload: { slideId } });
+
+    const openMenu = (slideId?: string | null, elementId?: string | null) => {
+        dispatch({ type: 'OPEN_MENU', payload: { slideId, elementId } });
     };
 
     const closeMenu = () => {
@@ -75,6 +83,22 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
         }
     };
 
+    const duplicateElement = () => {
+        if (state.slideId && state.elementId) {
+            duplicateElementInStore(presentationId, state.slideId, state.elementId);
+            closeMenu();
+        }
+    };
+
+    const deleteElement = () => {
+        if (state.slideId && state.elementId) {
+            const layout = findLayoutByElementId(state.elementId);
+            if (layout) {
+                deleteElementInStore(presentationId, state.slideId, layout.id, state.elementId);
+                closeMenu();
+            }
+        }
+    };
     return (
         <SlideMenuContext.Provider
             value={{
@@ -83,6 +107,8 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
                 closeMenu,
                 duplicateSlide,
                 deleteSlide,
+                duplicateElement,
+                deleteElement,
             }}
         >
             {children}

@@ -10,6 +10,7 @@ import { useRef } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { generateId } from '@/utils/id';
 import { useEditorStore } from '@/store/editorStore';
+import { useSlideMenu } from '@/contexts/SlideMenuContext';
 
 
 interface GridCellElementProps {
@@ -39,8 +40,9 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     tiptapRefs,
     onSelect
 }) => {
-    const {
-        handleDragStart    } = useDnd();
+    const { handleDragStart } = useDnd();
+
+    const { openMenu, state: { elementId: menuElementId } } = useSlideMenu();
 
     const dragHandleRef = useRef<HTMLDivElement>(null);
 
@@ -156,7 +158,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         } as Partial<Element>);
     };
 
-
     // Render your component's elements
     const renderElement = (element: Element) => {
         return (
@@ -168,8 +169,10 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             >
                 <div key={element.id} className={styles.elementWrapper}>
                     <div 
-                        className={styles.elementDragHandle}
+                        className={`${styles.elementDragHandle} ${menuElementId === element.id ? styles.elementDragHandleMenuOpen : ''}`}
                         draggable="true"
+                        data-element-drag-handle={element.id}
+                        onClick={() => openMenu(slideId, element.id)}
                         onDragStart={(e) => {
                             e.stopPropagation();
                             handleDragStart(e, element.id, layoutId, element.cellId);

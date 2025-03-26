@@ -133,6 +133,33 @@ export const DragDropTransactionHelper = {
     },
 
     /**
+     * Deletes a slide with transaction tracking
+     */
+    deleteSlide: (presentationId: string, slideId: string) => {
+        const presentationStore = usePresentationStore.getState();
+        const historyStore = useHistoryStore.getState();
+
+        // Capture the entire state before changes
+        const beforeState = { presentations: [...presentationStore.presentations] };
+
+        // Perform the delete operation
+        presentationStore.deleteSlide(presentationId, slideId);
+
+        // Capture the entire state after changes
+        const afterState = { presentations: [...usePresentationStore.getState().presentations] };
+
+        // Record this action within the current transaction
+        historyStore.recordTransactionAction({
+            type: 'slide',
+            description: 'Delete slide during drag-drop',
+            presentationId,
+            slideId,
+            before: beforeState,
+            after: afterState
+        });
+    },
+
+    /**
      * Adds a layout with transaction tracking
      */
     addLayout: (

@@ -215,18 +215,11 @@
 .slideDragHandle::after {
     position: absolute;
     content: "";
-    inset: calc(var(0.5rem)* -1);
+    inset: calc(var(0.5rem) * -1);
     cursor: pointer;
 }
 
-
-
 .slideDragHandleMenuOpen {
-    /* background: #2208cc;
-    border-color: rgba(0, 0, 0, 0.08);
-    color: #806cff; */
-
     background: #eae7ff;
     backdrop-filter: blur(8px);
-
 }

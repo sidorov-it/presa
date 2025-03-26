@@ -38,7 +38,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const tiptapRefs = useRef<Record<string, React.RefObject<TiptapRef>>>({});
     const editorRef = useRef<HTMLDivElement>(null);
     const [isSelected, setIsSelected] = useState(false);
-    const { openMenu, state: { slideId: menuSlideId } } = useSlideMenu();
+    const { openMenu, state: { slideId: menuSlideId, elementId: menuElementId } } = useSlideMenu();
 
     const { addSlide } = usePresentationStore();
 
@@ -117,6 +117,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         return className;
     };
 
+    const slideMenuOpen = menuSlideId === slide.id && menuElementId === null;
+
     return (
         <div
             className={styles.slide}
@@ -137,9 +139,9 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     }}
                     onClick={() => { }}
                 >
-                    {(isSelected || menuSlideId === slide.id) && (
+                    {(isSelected || slideMenuOpen) && (
                         <div
-                            className={`${styles.slideDragHandle} ${menuSlideId === slide.id ? styles.slideDragHandleMenuOpen : ''}`}
+                            className={`${styles.slideDragHandle} ${slideMenuOpen ? styles.slideDragHandleMenuOpen : ''}`}
                             data-slide-drag-handle={slide.id}
                             aria-label="Открыть меню слайда"
                             // tabIndex={0}
@@ -154,7 +156,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                         </div>
                     )}
 
-                    <div className="relative w-full h-full p-8">
+                    <div className="relative w-full h-full p-8" data-slide-id={slide.id}>
                         {slide.layouts.map((layout, index) => (
                             <LayoutContent
                                 key={layout.id}

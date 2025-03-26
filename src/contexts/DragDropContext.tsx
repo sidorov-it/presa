@@ -164,11 +164,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
     // Import required functions from your store
     const {
-        //DragDropTransactionHelper.updateLayout,
-        //DragDropTransactionHelper.addLayout,
-        // deleteLayout,
         getPresentation,
-        // updateSlide
     } = usePresentationStore();
 
     const getLayoutSlide = (layoutId: string) => {
@@ -774,8 +770,10 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         }
 
         const position = prevStateRef.current.indicators.elementPosition;
-        const slide = getLayoutSlide(targetLayout.id);
-        if (!slide) return;
+        const targetSlide = getLayoutSlide(targetLayout.id);
+        const sourceSlide = getLayoutSlide(sourceLayout.id);
+
+        if (!targetSlide || !sourceSlide) return;
 
         if (draggedElement) {
             const targetElement = targetLayout.elements.find(e => e.id === prevStateRef.current.target.elementId);
@@ -788,7 +786,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     draggedElement,
                     targetLayout,
                     targetElement,
-                    slide,
+                    targetSlide,
                     position
                 })
             }
@@ -799,7 +797,8 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     targetLayout,
                     targetElement,
                     draggedElement,
-                    slide,
+                    targetSlide,
+                    sourceSlide,
                     position
                 })
             }
@@ -815,10 +814,19 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                         sourceLayout,
                         targetLayout,
                         draggedCell,
-                        slide,
+                        targetSlide,
                         position
                     })
                 }
+            } else {
+                processMoveCellToCellInOtherLayoutVertical({
+                    sourceLayout,
+                    targetLayout,
+                    draggedCell: draggedCell!,
+                    targetSlide,
+                    sourceSlide,
+                    position
+                })
             }
         }
     };
@@ -827,13 +835,13 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         sourceLayout,
         targetLayout,
         draggedCell,
-        slide,
+        targetSlide,
         position
     }: {
         sourceLayout: Layout,
         targetLayout: Layout,
         draggedCell: GridCell,
-        slide: Slide,
+        targetSlide: Slide,
         position: Position
     }) => {
         const targetElement = targetLayout.elements.find(c => c.id === prevStateRef.current.target.elementId!);
@@ -859,8 +867,63 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
         updatedElements.push(editor);
 
-        DragDropTransactionHelper.updateLayout(presentationId, slide.id, sourceLayout.id, {
+        DragDropTransactionHelper.updateLayout(presentationId, targetSlide.id, sourceLayout.id, {
             elements: updatedElements
+        });
+    }
+
+    const processMoveCellToCellInOtherLayoutVertical = ({
+        sourceLayout,
+        targetLayout,
+        draggedCell,
+        targetSlide,
+        sourceSlide,
+        position
+    }: {
+        sourceLayout: Layout,
+        targetLayout: Layout,
+        draggedCell: GridCell,
+        targetSlide: Slide,
+        sourceSlide: Slide,
+        position: Position
+    }) => {
+        const targetElement = targetLayout.elements.find(c => c.id === prevStateRef.current.target.elementId!);
+        if (!targetElement) return;
+
+        const targetCellId = targetElement.cellId;
+
+        const updatedSourceDraggedElements = sourceLayout.elements.filter(e => e.cellId === draggedCell.id).map(el => ({ ...el, cellId: targetCellId }));
+
+        const elementsInTargetCell = targetLayout.elements.filter(e => e.cellId === targetCellId);
+        const targetElementIndex = elementsInTargetCell.findIndex(e => e.id === targetElement.id);
+
+        const positionIndex = position === 'top' ? targetElementIndex : targetElementIndex + 1;
+
+
+        const updatedElements = [...targetLayout.elements];
+        updatedElements.splice(positionIndex, 0, ...updatedSourceDraggedElements);
+
+        DragDropTransactionHelper.updateLayout(presentationId, targetSlide.id, targetLayout.id, {
+            elements: updatedElements
+        });
+
+        const updatedSourceLayoutElements = sourceLayout.elements.filter(e => e.cellId !== draggedCell.id);
+
+        const editor: Element = {
+            id: generateId(8),
+            type: 'editor',
+            content: '',
+            position: { x: 0, y: 0 },
+            size: { width: 100, height: 100 },
+            cellId: draggedCell.id,
+            style: {},
+            zIndex: 1,
+        }
+
+        updatedSourceLayoutElements.push(editor);
+
+        DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
+            elements: updatedSourceLayoutElements
         });
     }
 
@@ -869,14 +932,16 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         targetLayout,
         targetElement,
         draggedElement,
-        slide,
+        targetSlide,
+        sourceSlide,
         position
     }: {
         sourceLayout: Layout,
         targetLayout: Layout,
         targetElement: Element,
         draggedElement: Element,
-        slide: Slide,
+        targetSlide: Slide,
+        sourceSlide: Slide,
         position: Position
     }) => {
         // Create a new layout for each element in the cell
@@ -910,7 +975,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
                 updatedTargetElements.push(editor);
             }
-            DragDropTransactionHelper.updateLayout(presentationId, slide.id, targetLayout.id, {
+            DragDropTransactionHelper.updateLayout(presentationId, targetSlide.id, targetLayout.id, {
                 elements: updatedTargetElements,
             });
         } else {
@@ -926,14 +991,18 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             updatedTargetElements.splice(targetIndex, 0, updatedElement);
 
             console.log('updatedTargetElements', updatedTargetElements);
-            DragDropTransactionHelper.updateLayout(presentationId, slide.id, targetLayout.id, {
+            DragDropTransactionHelper.updateLayout(presentationId, targetSlide.id, targetLayout.id, {
                 elements: updatedTargetElements,
             });
 
             const updatedSourceElements = sourceLayout.elements.filter(e => e.id !== draggedElement.id);
             const elementsInSourceCell = updatedSourceElements.filter(e => e.cellId === sourceCell.id);
             if (updatedSourceElements.length === 0) {
-                DragDropTransactionHelper.deleteLayout(presentationId, slide.id, sourceLayout.id);
+                if (sourceSlide.layouts.length === 1) {
+                    DragDropTransactionHelper.deleteSlide(presentationId, sourceSlide.id);
+                } else {
+                    DragDropTransactionHelper.deleteLayout(presentationId, sourceSlide.id, sourceLayout.id);
+                }
             } else if (elementsInSourceCell.length === 0 && sourceLayout.gridStructure.columns > 1) {
                 const editor: Element = {
                     id: generateId(8),
@@ -947,11 +1016,11 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 }
 
                 updatedSourceElements.push(editor);
+                DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
+                    elements: updatedSourceElements,
+                });
             }
 
-            DragDropTransactionHelper.updateLayout(presentationId, slide.id, sourceLayout.id, {
-                elements: updatedSourceElements,
-            });
         }
     }
 
@@ -959,13 +1028,13 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         draggedElement,
         targetLayout,
         targetElement,
-        slide,
+        targetSlide,
         position
     }: {
         draggedElement: Element,
         targetLayout: Layout,
         targetElement: Element,
-        slide: Slide,
+        targetSlide: Slide,
         position: Position
     }) => {
         // Change the position of source cell
@@ -977,7 +1046,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             const [movedElement] = updatedElements.splice(sourceIndex, 1);
             updatedElements.splice(position === 'left' ? targetIndex : targetIndex + 1, 0, movedElement);
 
-            DragDropTransactionHelper.updateLayout(presentationId, slide.id, targetLayout.id, {
+            DragDropTransactionHelper.updateLayout(presentationId, targetSlide.id, targetLayout.id, {
                 elements: updatedElements
             });
         }
@@ -989,7 +1058,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
     // Implementation of processLayoutDrop
     const processLayoutDrop = () => {
-        if (!prevStateRef.current.indicators.layoutIndicator || !prevStateRef.current.indicators.layoutPosition || !prevStateRef.current.source.layoutId ||
+        if (!prevStateRef.current.indicators.layoutIndicator || !prevStateRef.current.indicators.layoutPosition || !prevStateRef.current.source.layoutId || !prevStateRef.current.target.layoutId ||
             (!prevStateRef.current.source.elementId
                 && !prevStateRef.current.source.cellId
             )
@@ -1003,8 +1072,9 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         if (!sourceLayout || !targetLayout) {
             return;
         }
-        const slide = getLayoutSlide(prevStateRef.current.source.layoutId);
-        if (!slide) return;
+        const targetSlide = getLayoutSlide(prevStateRef.current.target.layoutId);
+        const sourceSlide = getLayoutSlide(prevStateRef.current.source.layoutId);
+        if (!targetSlide || !sourceSlide) return;
 
         if (prevStateRef.current.source.elementId) {
             const draggedElement = sourceLayout.elements.find(e => e.id === prevStateRef.current.source.elementId);
@@ -1057,7 +1127,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 targetGridStructure.rows[0].cells.sort((a: GridCell, b: GridCell) => a.column - b.column);
 
                 // Update target layout
-                DragDropTransactionHelper.updateLayout(presentationId, slide.id, targetLayout.id, {
+                DragDropTransactionHelper.updateLayout(presentationId, targetSlide.id, targetLayout.id, {
                     gridStructure: {
                         ...targetGridStructure,
                         // rows: [{
@@ -1071,7 +1141,11 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 });
 
                 if (sourceLayout.elements.length === 1) {
-                    DragDropTransactionHelper.deleteLayout(presentationId, slide.id, sourceLayout.id);
+                    if (sourceSlide.layouts.length === 1) {
+                        DragDropTransactionHelper.deleteSlide(presentationId, sourceSlide.id);
+                    } else {
+                        DragDropTransactionHelper.deleteLayout(presentationId, sourceSlide.id, sourceLayout.id);
+                    }
                 } else {
                     const updatedElements = sourceLayout.elements.filter(e => e.id !== draggedElement.id);
                     const elementsInCell = updatedElements.filter(e => e.cellId === draggedElement.cellId);
@@ -1080,7 +1154,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                         const updatedCells = sourceLayout.gridStructure.rows[0].cells.filter(c => c.id !== draggedElement.cellId);
                         const updatedColumnWidthsSourceLayout = getColumnWidths(sourceLayout.gridStructure.columns - 1);
 
-                        DragDropTransactionHelper.updateLayout(presentationId, slide.id, sourceLayout.id, {
+                        DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
                             gridStructure: {
                                 ...sourceLayout.gridStructure,
                                 columns: sourceLayout.gridStructure.columns - 1,
@@ -1093,7 +1167,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                             elements: updatedElements
                         });
                     } else {
-                        DragDropTransactionHelper.updateLayout(presentationId, slide.id, sourceLayout.id, {
+                        DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
                             elements: updatedElements
                         });
                     }
@@ -1113,14 +1187,22 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
                 if (sourceLayout.elements.length === 1) {
                     // элемент 1. переносим на новую позицию
-                    const indexSourceLayout = slide.layouts.findIndex(l => l.id === sourceLayout.id);
-                    slide.layouts.splice(indexSourceLayout, 1);
+                    const indexSourceLayout = sourceSlide.layouts.findIndex(l => l.id === sourceLayout.id);
+                    sourceSlide.layouts.splice(indexSourceLayout, 1);
 
-                    const indexTargetLayout = slide.layouts.findIndex(l => l.id === targetLayout.id);
+                    const indexTargetLayout = targetSlide.layouts.findIndex(l => l.id === targetLayout.id);
                     const targetIndex = position === 'top' ? indexTargetLayout : indexTargetLayout + 1;
-                    slide.layouts.splice(targetIndex, 0, sourceLayout);
+                    targetSlide.layouts.splice(targetIndex, 0, sourceLayout);
 
-                    DragDropTransactionHelper.updateSlide(presentationId, slide.id, slide);
+                    DragDropTransactionHelper.updateSlide(presentationId, targetSlide.id, targetSlide);
+
+                    if (sourceSlide.id !== targetSlide.id) {
+                        if (sourceSlide.layouts.length === 0) {
+                            DragDropTransactionHelper.deleteSlide(presentationId, sourceSlide.id);
+                        } else {
+                            DragDropTransactionHelper.deleteLayout(presentationId, sourceSlide.id, sourceLayout.id);
+                        }
+                    }
                 } else {
                     if (elementsSourceCell.length === 1 && sourceLayout.gridStructure.columns > 1) {
                         // переносим только элемент. на его месте создаем пустой редактор
@@ -1145,7 +1227,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
                         updatedSourceElements.push(editor);
 
-                        DragDropTransactionHelper.updateLayout(presentationId, slide.id, sourceLayout.id, {
+                        DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
                             elements: updatedSourceElements,
                         });
 
@@ -1172,15 +1254,15 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                             style: {}
                         }
 
-                        const targetLayoutIndex = slide.layouts.findIndex(l => l.id === targetLayout.id);
+                        const targetLayoutIndex = targetSlide.layouts.findIndex(l => l.id === targetLayout.id);
 
                         const newLayoutsOffset = prevStateRef.current.indicators.layoutPosition === 'top' ? targetLayoutIndex : targetLayoutIndex + 1;
 
-                        DragDropTransactionHelper.addLayout(presentationId, slide.id, newLayout, newLayoutsOffset);
+                        DragDropTransactionHelper.addLayout(presentationId, targetSlide.id, newLayout, newLayoutsOffset);
                     } else {
                         // элементов несколько. только переносим source element
                         const updatedSourceElements = sourceLayout.elements.filter(e => e.id !== draggedElement.id);
-                        DragDropTransactionHelper.updateLayout(presentationId, slide.id, sourceLayout.id, {
+                        DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
                             elements: updatedSourceElements,
                         });
 
@@ -1207,17 +1289,17 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                             style: {}
                         }
 
-                        const targetLayoutIndex = slide.layouts.findIndex(l => l.id === targetLayout.id);
+                        const targetLayoutIndex = targetSlide.layouts.findIndex(l => l.id === targetLayout.id);
 
                         const newLayoutsOffset = prevStateRef.current.indicators.layoutPosition === 'top' ? targetLayoutIndex : targetLayoutIndex + 1;
 
-                        DragDropTransactionHelper.addLayout(presentationId, slide.id, newLayout, newLayoutsOffset);
+                        DragDropTransactionHelper.addLayout(presentationId, targetSlide.id, newLayout, newLayoutsOffset);
                     }
                 }
             }
         } else if (prevStateRef.current.source.cellId) {
             // перетаскиваем ячейку сверху/снизу layout
-            const targetLayoutIndex = slide.layouts.findIndex(l => l.id === targetLayout.id);
+            const targetLayoutIndex = targetSlide.layouts.findIndex(l => l.id === targetLayout.id);
 
             const newLayoutsOffset = prevStateRef.current.indicators.layoutPosition === 'top' ? targetLayoutIndex : targetLayoutIndex + 1;
 
@@ -1250,17 +1332,17 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 } as Layout
             })
 
-            slide.layouts.splice(newLayoutsOffset, 0, ...newLayouts);
+            targetSlide.layouts.splice(newLayoutsOffset, 0, ...newLayouts);
 
             // ?????
-            DragDropTransactionHelper.updateSlide(presentationId, slide.id, slide);
+            DragDropTransactionHelper.updateSlide(presentationId, targetSlide.id, targetSlide);
 
             const updatedSourceGridStructure = JSON.parse(JSON.stringify(sourceLayout.gridStructure));
             updatedSourceGridStructure.rows[0].cells = updatedSourceGridStructure.rows[0].cells.filter((c: GridCell) => c.id !== prevStateRef.current.source.cellId);
             updatedSourceGridStructure.columns = updatedSourceGridStructure.columns - 1;
             const updatedSourceColumnWidths = getColumnWidths(updatedSourceGridStructure.columns);
             const updatedSourceElements = sourceLayout.elements.filter(e => e.cellId !== prevStateRef.current.source.cellId);
-            DragDropTransactionHelper.updateLayout(presentationId, slide.id, sourceLayout.id, {
+            DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
                 gridStructure: { ...updatedSourceGridStructure, columnWidths: updatedSourceColumnWidths },
                 elements: updatedSourceElements
             });
@@ -1281,8 +1363,9 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             return;
         }
 
-        const slide = getLayoutSlide(targetLayout.id);
-        if (!slide) return;
+        const targetSlide = getLayoutSlide(targetLayout.id);
+        const sourceSlide = getLayoutSlide(sourceLayout.id);
+        if (!targetSlide || !sourceSlide) return;
 
         // const targetGridStructure = { ...targetLayout.gridStructure };
         const targetGridStructure = JSON.parse(JSON.stringify(targetLayout.gridStructure));
@@ -1294,13 +1377,13 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     sourceLayout,
                     targetLayout,
                     targetGridStructure,
-                    slide
+                    targetSlide
                 })
             } else if (prevStateRef.current.source.cellId) {
                 processMoveCellToCellInCurrentLayout({
                     targetLayout,
                     targetGridStructure,
-                    slide
+                    targetSlide
                 })
             }
         } else {
@@ -1309,14 +1392,16 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     sourceLayout,
                     targetLayout,
                     targetGridStructure,
-                    slide
+                    targetSlide,
+                    sourceSlide
                 })
             } else if (prevStateRef.current.source.cellId) {
                 processMoveCellToCellToOtherLayout({
                     sourceLayout,
                     targetLayout,
                     targetGridStructure,
-                    slide
+                    targetSlide,
+                    sourceSlide
                 })
             }
         }
@@ -1326,12 +1411,14 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         sourceLayout,
         targetLayout,
         targetGridStructure,
-        slide
+        targetSlide,
+        sourceSlide
     }: {
         sourceLayout: Layout,
         targetLayout: Layout,
         targetGridStructure: GridStructure,
-        slide: Slide
+        targetSlide: Slide,
+        sourceSlide: Slide
     }) => {
         // перемещение ячейки из одного layout в другой
         // в target layout создаем новую ячейку
@@ -1374,7 +1461,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
         targetGridStructure.rows[0].cells.sort((a: GridCell, b: GridCell) => a.column - b.column);
 
-        DragDropTransactionHelper.updateLayout(presentationId, slide.id, targetLayout.id, {
+        DragDropTransactionHelper.updateLayout(presentationId, targetSlide.id, targetLayout.id, {
             gridStructure: {
                 ...targetGridStructure,
                 columns: targetGridStructure.columns + 1,
@@ -1387,7 +1474,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
         const updatedSourceCells = sourceLayout.gridStructure.rows[0].cells.filter(c => c.id !== sourceCell.id);
 
-        DragDropTransactionHelper.updateLayout(presentationId, slide.id, sourceLayout.id, {
+        DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
             elements: updatedSourceElements,
             gridStructure: {
                 ...sourceLayout.gridStructure,
@@ -1405,12 +1492,14 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         sourceLayout,
         targetLayout,
         targetGridStructure,
-        slide
+        targetSlide,
+        sourceSlide
     }: {
         sourceLayout: Layout,
         targetLayout: Layout,
         targetGridStructure: GridStructure,
-        slide: Slide
+        targetSlide: Slide,
+        sourceSlide: Slide
     }) => {
         // перемещение элемента
         // в target layout создаем новую ячейку
@@ -1451,7 +1540,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
         targetGridStructure.rows[0].cells.sort((a: GridCell, b: GridCell) => a.column - b.column);
 
-        DragDropTransactionHelper.updateLayout(presentationId, slide.id, targetLayout.id, {
+        DragDropTransactionHelper.updateLayout(presentationId, targetSlide.id, targetLayout.id, {
             gridStructure: {
                 ...targetGridStructure,
                 columns: targetGridStructure.columns + 1,
@@ -1463,7 +1552,11 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         const updatedSourceElements = sourceLayout.elements.filter(e => e.id !== sourceElement.id);
 
         if (sourceLayout.gridStructure.rows[0].cells.length === 1) {
-            DragDropTransactionHelper.deleteLayout(presentationId, slide.id, sourceLayout.id);
+            if (sourceSlide.layouts.length === 1) {
+                DragDropTransactionHelper.deleteSlide(presentationId, sourceSlide.id);
+            } else {
+                DragDropTransactionHelper.deleteLayout(presentationId, sourceSlide.id, sourceLayout.id);
+            }
             return;
         }
 
@@ -1483,7 +1576,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             updatedSourceElements.push(editor);
         }
 
-        DragDropTransactionHelper.updateLayout(presentationId, slide.id, sourceLayout.id, {
+        DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
             elements: updatedSourceElements,
         });
     }
@@ -1492,12 +1585,12 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         sourceLayout,
         targetLayout,
         targetGridStructure,
-        slide
+        targetSlide
     }: {
         sourceLayout: Layout,
         targetLayout: Layout,
         targetGridStructure: GridStructure,
-        slide: Slide
+        targetSlide: Slide
     }) => {
         // перемещение элемента
         // создаем новую ячейку в целевой сетке
@@ -1555,7 +1648,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             updatedElements.push(editor);
         }
 
-        DragDropTransactionHelper.updateLayout(presentationId, slide.id, targetLayout.id, {
+        DragDropTransactionHelper.updateLayout(presentationId, targetSlide.id, targetLayout.id, {
             gridStructure: {
                 ...targetGridStructure,
                 columns: targetGridStructure.columns + 1,
@@ -1568,11 +1661,11 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
     const processMoveCellToCellInCurrentLayout = ({
         targetLayout,
         targetGridStructure,
-        slide
+        targetSlide,
     }: {
         targetLayout: Layout,
         targetGridStructure: GridStructure,
-        slide: Slide
+        targetSlide: Slide,
     }) => {
         // перемещение ячейки
         const sourceCellIndex = targetGridStructure.rows[0].cells.findIndex((c: GridCell) => c.id === prevStateRef.current.source.cellId);
@@ -1601,7 +1694,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         targetGridStructure.columnWidths[targetCellIndex] = sourceCellWidth;
 
         targetGridStructure.rows[0].cells = updatedCells;
-        DragDropTransactionHelper.updateLayout(presentationId, slide.id, targetLayout.id, {
+        DragDropTransactionHelper.updateLayout(presentationId, targetSlide.id, targetLayout.id, {
             gridStructure: {
                 ...targetGridStructure,
                 columnWidths: targetGridStructure.columnWidths

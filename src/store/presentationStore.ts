@@ -14,6 +14,7 @@ import { devtools } from 'zustand/middleware';
 import { generateId } from '@/utils/id';
 import { HistoryAction, useHistoryStore } from './historyStore';
 import { create } from 'zustand';
+import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 
 interface PresentationState {
     presentations: IPresentation[];
@@ -51,6 +52,7 @@ interface PresentationState {
     addElement: (presentationId: string, slideId: string, layoutId: string, element: Omit<Element, 'id'>) => string;
     updateElement: (presentationId: string, slideId: string, layoutId: string, elementId: string, data: Partial<Element>) => void;
     deleteElement: (presentationId: string, slideId: string, layoutId: string, elementId: string) => void;
+    duplicateElement: (presentationId: string, slideId: string, elementId: string) => void;
 
     // Undo/Redo operations
     undo: (presentationId: string) => void;
@@ -774,6 +776,122 @@ export const usePresentationStore = create<PresentationState>()(
                 return elementId;
             },
 
+            duplicateElement: (presentationId, slideId, elementId) => {
+                const beforeState = { ...get() };
+
+                const currentPresentation = get().getPresentation(presentationId);
+                if (!currentPresentation) return;
+
+                const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
+                if (!currentSlide) return;
+
+                const currentLayout = currentSlide.layouts.find(layout => layout.elements.some(element => element.id === elementId));
+                if (!currentLayout) return;
+
+                const currentElement = currentLayout.elements.find(element => element.id === elementId);
+                if (!currentElement) return;
+
+                const newElementId = uuidv4();
+
+                const newElement: Element = {
+                    ...currentElement,
+                    id: newElementId,
+                };
+
+                set((state) => {
+                    let updatedState;
+                    if (currentLayout.gridStructure.columns > 1) {
+                        updatedState = {
+                            presentations: state.presentations.map((presentation) => {
+                                if (presentation.id === presentationId) {
+                                    return {
+                                        ...presentation,
+                                        slides: presentation.slides.map((slide) => {
+                                            if (slide.id === slideId) {
+                                                return {
+                                                    ...slide,
+                                                    layouts: slide.layouts.map((layout) => {
+                                                        if (layout.id === currentLayout.id) {
+                                                            const updatedElements = [...layout.elements];
+                                                            const targetIndex = updatedElements.findIndex(element => element.id === elementId);
+                                                            updatedElements.splice(targetIndex + 1, 0, newElement);
+                                                            return { ...layout, elements: updatedElements };
+                                                        }
+                                                        return layout;
+                                                    }),
+                                                };
+                                            }
+                                            return slide;
+                                        }),
+                                        updatedAt: Date.now(),
+                                    };
+                                }
+                                return presentation;
+                            }),
+                        };
+
+                        get().recordAction({
+                            type: 'element',
+                            description: 'Duplicate element',
+                            presentationId,
+                            slideId,
+                            layoutId: currentLayout.id,
+                            elementId,
+                            before: { presentations: beforeState.presentations },
+                            after: updatedState
+                        });
+                    } else {
+                        const cellId = generateId(8);
+                        const newLayout: Layout = {
+                            id: generateId(),
+                            gridStructure: {
+                                columns: 1,
+                                columnWidths: getColumnWidths(1),
+                                rows: [{
+                                    id: generateId(),
+                                    cells: [{
+                                        id: cellId,
+                                        row: 0,
+                                        column: 1,
+                                    }]
+                                }]
+                            },
+                            type: currentLayout.type,
+                            elements: [{
+                                ...newElement,
+                                cellId,
+                            }],
+                            style: currentLayout.style,
+                        };
+                        const currentLayoutIndex = currentSlide.layouts.findIndex(layout => layout.id === currentLayout.id);
+                        const updatedLayouts = JSON.parse(JSON.stringify(currentSlide.layouts));
+                        
+                        updatedLayouts.splice(currentLayoutIndex + 1, 0, newLayout);
+
+                        updatedState = {
+                            presentations: state.presentations.map((presentation) => {
+                                if (presentation.id === presentationId) {
+                                    return {
+                                        ...presentation,
+                                        slides: presentation.slides.map((slide) => {
+                                            if (slide.id === slideId) {
+                                                return {
+                                                    ...slide,
+                                                    layouts: updatedLayouts,
+                                                };
+                                            }
+                                            return slide;
+                                        }),
+                                        updatedAt: Date.now(),
+                                    };
+                                }
+                                return presentation;
+                            }),
+                        };
+                    }
+                    return updatedState;
+                })
+            },
             updateElement: (presentationId, slideId, layoutId, elementId, data) => {
                 const beforeState = { ...get() };
 
