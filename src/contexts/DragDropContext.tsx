@@ -1188,13 +1188,20 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 if (sourceLayout.elements.length === 1) {
                     // элемент 1. переносим на новую позицию
                     const indexSourceLayout = sourceSlide.layouts.findIndex(l => l.id === sourceLayout.id);
-                    sourceSlide.layouts.splice(indexSourceLayout, 1);
+                    const sourceLayouts = JSON.parse(JSON.stringify(sourceSlide.layouts));
 
-                    const indexTargetLayout = targetSlide.layouts.findIndex(l => l.id === targetLayout.id);
+                    sourceLayouts.splice(indexSourceLayout, 1);
+
+                    const targetLayouts = JSON.parse(JSON.stringify(targetSlide.layouts));
+
+                    const indexTargetLayout = targetLayouts.findIndex(l => l.id === targetLayout.id);
                     const targetIndex = position === 'top' ? indexTargetLayout : indexTargetLayout + 1;
-                    targetSlide.layouts.splice(targetIndex, 0, sourceLayout);
+                    targetLayouts.splice(targetIndex, 0, sourceLayout);
 
-                    DragDropTransactionHelper.updateSlide(presentationId, targetSlide.id, targetSlide);
+                    DragDropTransactionHelper.updateSlide(presentationId, targetSlide.id, {
+                        ...targetSlide,
+                        layouts: targetLayouts
+                    });
 
                     if (sourceSlide.id !== targetSlide.id) {
                         if (sourceSlide.layouts.length === 0) {
@@ -1331,11 +1338,15 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     style: {}
                 } as Layout
             })
+            const targetLayouts = [...targetSlide.layouts];
 
-            targetSlide.layouts.splice(newLayoutsOffset, 0, ...newLayouts);
+            targetLayouts.splice(newLayoutsOffset, 0, ...newLayouts);
 
             // ?????
-            DragDropTransactionHelper.updateSlide(presentationId, targetSlide.id, targetSlide);
+            DragDropTransactionHelper.updateSlide(presentationId, targetSlide.id, {
+                ...targetSlide,
+                layouts: targetLayouts
+            });
 
             const updatedSourceGridStructure = JSON.parse(JSON.stringify(sourceLayout.gridStructure));
             updatedSourceGridStructure.rows[0].cells = updatedSourceGridStructure.rows[0].cells.filter((c: GridCell) => c.id !== prevStateRef.current.source.cellId);
