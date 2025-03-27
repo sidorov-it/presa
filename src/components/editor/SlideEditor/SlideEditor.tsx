@@ -3,13 +3,15 @@
 'use client'
 
 import React, { useState, useRef } from 'react';
-import { Slide } from '@/types';
+import { EditorElement, getPredefinedGridStructures, Layout, Slide } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import styles from './SlideEditor.module.css';
 import { TiptapRef } from '@/components/tiptap/Tiptap';
 import LayoutContent from './LayoutContent';
 import { useSlideMenu } from '@/contexts/SlideMenuContext';
 import SlideMenu from '../SlideMenu/SlideMenu';
+import { generateId } from '@/utils/id';
+import { DragDropTransactionHelper } from '@/contexts/DragDropTransactionHelper';
 
 interface SlideEditorProps {
     slide: Slide;
@@ -119,6 +121,52 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     const slideMenuOpen = menuSlideId === slide.id && menuElementId === null;
 
+    const handleSlideClick = (e: React.MouseEvent) => {
+        const rect = editorRef.current?.getBoundingClientRect();
+        if (rect) {
+            const positionY = e.clientY - (rect.top ?? 0);
+            const slideHeight = rect.height ?? 0;
+            const isClickBottom = slideHeight - positionY < 30;
+
+            if (isClickBottom) {
+                createDefaultLayout();
+            }
+        }
+    };
+
+     // Создание макета по умолчанию с одним редактором
+    const createDefaultLayout = () => {
+        // Создаем новый макет с одной ячейкой
+
+        const gridStructure = getPredefinedGridStructures('single-column');
+
+        const cellId = gridStructure.rows[0].cells[0].id;
+
+        const editorElement: EditorElement = {
+            id: generateId(8),
+            type: 'editor',
+            content: '',
+            position: { x: 0, y: 0 },
+            size: { width: 100, height: 40 },
+            style: { fontSize: '16px', color: '#333333' },
+            zIndex: 1,
+            placeholder: '',
+            cellId
+        };
+
+        const newLayout: Omit<Layout, 'id'> = {
+            type: 'single-column',
+            elements: [editorElement],
+            style: {},
+            gridStructure
+        };
+
+
+        DragDropTransactionHelper.addLayout(presentationId, slide.id, newLayout, slide.layouts.length);
+
+        // addLayout(presentationId, slide.id, newLayout);
+    };
+
     return (
         <div
             className={styles.slide}
@@ -156,7 +204,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                         </div>
                     )}
 
-                    <div className="relative w-full h-full p-8" data-slide-id={slide.id}>
+                    <div className="relative w-full h-full p-8" data-slide-id={slide.id} onClick={handleSlideClick}>
                         {slide.layouts.map((layout, index) => (
                             <LayoutContent
                                 key={layout.id}
