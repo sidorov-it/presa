@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { elementsRegistry } from '@/elements/registry';
 import styles from './ElementsPanel.module.css';
 import { useDnd } from '@/contexts/DragDropContext';
@@ -122,6 +122,10 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ presentationId, slideId }
         }
     };
 
+    const handleClose = useCallback(() => {
+        setActiveCategory(null);
+    }, []);
+
     return (
         <div className={styles.elementsPanel}>
             <div className="bg-white rounded-lg shadow-lg py-2 px-1">
@@ -151,7 +155,7 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ presentationId, slideId }
             <PopupMenu
                 isOpen={activeCategory !== null}
                 category={activeCategory}
-                onClose={() => setActiveCategory(null)}
+                onClose={handleClose}
                 presentationId={presentationId}
                 slideId={slideId}
             />

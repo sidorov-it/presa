@@ -13,6 +13,99 @@ import { useEditorStore } from '@/store/editorStore';
 import { useSlideMenu } from '@/contexts/SlideMenuContext';
 
 
+const adjustColumnWidths = (
+    columnWidths: string[],
+    currentColumnIndex: number,
+    newWidthPart: number,
+    isLastCell: boolean,
+    totalColumns: number
+): string[] => {
+    // Create a new array to avoid modifying the original
+    const newColumnWidths = [...columnWidths];
+
+    // Parse all column widths to get their percentage values
+    const percentValues = columnWidths.map(width => {
+        const match = width.match(/^([\d.]+)%$/);
+        // If the width is in fr format, convert to an equal percentage
+        const frMatch = width.match(/^([\d.]+)fr$/);
+        if (match) {
+            return parseFloat(match[1]);
+        } else if (frMatch) {
+            // Convert fr to percentage (equally distributed)
+            return 100 / totalColumns;
+        } else {
+            return 100 / totalColumns;
+        }
+    });
+
+    // Calculate the new width for the current column (clamped between 15% and 85%)
+    const newWidthPercentage = Math.max(15, Math.min(85, newWidthPart * 100));
+
+    // Calculate the difference between the old and new width
+    const difference = percentValues[currentColumnIndex] - newWidthPercentage;
+
+    // If there's no change, return the original widths
+    if (Math.abs(difference) < 0.01) {
+        return columnWidths;
+    }
+
+    // Set the width of the current column
+    newColumnWidths[currentColumnIndex] = `${newWidthPercentage.toFixed(2)}%`;
+
+    // Determine which neighboring cell to adjust
+    let neighborIndex: number;
+
+    if (!isLastCell && currentColumnIndex < totalColumns - 1) {
+        // If not the last cell, adjust the next column
+        neighborIndex = currentColumnIndex + 1;
+    } else if (currentColumnIndex > 0) {
+        // If this is the last column, adjust the previous column
+        neighborIndex = currentColumnIndex - 1;
+    } else {
+        // Single column case - just set the current column
+        return newColumnWidths;
+    }
+
+    // Calculate the new width for the neighboring cell
+    let neighborNewWidth = percentValues[neighborIndex] + difference;
+
+    // Ensure the minimum width of 15% is maintained for the neighbor
+    if (neighborNewWidth < 15) {
+        // If the neighbor would be too small, cap it at 15%
+        neighborNewWidth = 15;
+
+        // Recalculate the current cell's width to ensure total is 100%
+        const totalOtherCellsWidth = percentValues.reduce((sum, width, index) => {
+            if (index !== currentColumnIndex && index !== neighborIndex) {
+                return sum + width;
+            }
+            return sum;
+        }, 0);
+
+        const maxCurrentCellWidth = 100 - totalOtherCellsWidth - 15; // 15% for neighbor
+        newColumnWidths[currentColumnIndex] = `${Math.min(newWidthPercentage, maxCurrentCellWidth).toFixed(2)}%`;
+    } else {
+        // Set the neighbor's width
+        newColumnWidths[neighborIndex] = `${neighborNewWidth.toFixed(2)}%`;
+    }
+
+    // Ensure the total is exactly 100%
+    const totalPercentage = newColumnWidths.reduce((sum, width) => {
+        const match = width.match(/^([\d.]+)%$/);
+        return sum + (match ? parseFloat(match[1]) : 0);
+    }, 0);
+
+    if (Math.abs(totalPercentage - 100) > 0.01) {
+        // Adjust the neighbor's width to make the total exactly 100%
+        const currentNeighborWidth = parseFloat(newColumnWidths[neighborIndex]);
+        const adjustment = 100 - totalPercentage;
+        const adjustedNeighborWidth = Math.max(15, currentNeighborWidth + adjustment);
+        newColumnWidths[neighborIndex] = `${adjustedNeighborWidth.toFixed(2)}%`;
+    }
+
+    return newColumnWidths;
+};
+
 interface GridCellElementProps {
     cell: GridCell;
     elements: Element[];
@@ -24,7 +117,6 @@ interface GridCellElementProps {
     index: number;
     hasMultipleCells: boolean;
     isLastCell: boolean;
-    slideEditorRef: React.RefObject<HTMLDivElement>;
     tiptapRefs: React.RefObject<Record<string, React.RefObject<TiptapRef>>>;
     onSelect: (element: Element) => void;
     onDelete: (element: Element) => void;
@@ -38,17 +130,23 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     layoutId,
     hasMultipleCells,
     tiptapRefs,
-    onSelect
+    onSelect,
+    isLastCell
 }) => {
     const { handleDragStart } = useDnd();
 
     const { openMenu, state: { elementId: menuElementId } } = useSlideMenu();
 
     const dragHandleRef = useRef<HTMLDivElement>(null);
+    const resizeBorderRef = useRef<HTMLDivElement>(null);
+    const startXRef = useRef(0);
+    const startWidthRef = useRef<number | null>(null);
+
+    const resizebleElementRef = useRef<string | null>(null);
+
+    const editorRef = useRef<HTMLDivElement>(null);
 
     const { updateElement, updateLayout } = usePresentationStore();
-
-    const cellClassName = `${styles.gridCell} ${hasMultipleCells ? styles.multiCell : ''}`;
 
     const getEditorContent = (element: Element): string => {
         switch (element.type) {
@@ -158,17 +256,124 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         } as Partial<Element>);
     };
 
+    // Handle resize start
+    const handleResizeStart = (e: React.MouseEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const leftBorder = editorRef.current?.parentElement?.getBoundingClientRect().left || 0;
+        const initialX = e.clientX - leftBorder;
+        // setStartX(initialX);
+        startXRef.current = initialX;
+
+        // Get the current cell's width
+        const cellElement = editorRef.current;
+        if (cellElement) {
+            const width = cellElement.offsetWidth;
+            startWidthRef.current = width;
+            resizebleElementRef.current = cellElement.getAttribute('data-element-id');
+        }
+
+        // Add event listeners for resize
+        document.addEventListener('mousemove', handleResizeMove);
+        document.addEventListener('mouseup', handleResizeEnd);
+
+        // Add a class to the body to indicate resizing is in progress
+        document.body.classList.add('resizing');
+    };
+
+    // Handle resize move
+    const handleResizeMove = (e: MouseEvent) => {
+        // Get the current layout
+        if (!startWidthRef.current) return;
+        const presentation = usePresentationStore.getState().getPresentation(presentationId);
+        if (!presentation) return;
+
+        const slide = presentation.slides.find(s => s.id === slideId);
+        if (!slide) return;
+
+        const layout = slide.layouts.find(l => l.id === layoutId);
+        if (!layout || !layout.gridStructure) return;
+
+        const cell = layout.gridStructure.rows[0].cells.find(c => c.id === resizebleElementRef.current);
+        if (!cell) return;
+
+        if (!editorRef.current?.parentElement) {
+            return;
+        }
+
+        // Get the slide editor dimensions
+        const slideEditorRect = editorRef.current.parentElement.getBoundingClientRect();
+        if (!slideEditorRect) return;
+
+        // Calculate the total width of the container
+        const padding = 16;
+        const totalWidth = editorRef.current.parentElement.offsetWidth - padding * 2;
+
+        // Calculate the new width based on mouse position
+        const currentX = e.clientX - slideEditorRect.left;
+        const deltaX = currentX - startXRef.current;
+        const newWidth = Math.max(0, startWidthRef.current + deltaX);
+
+        // Calculate the new width as a percentage of the total width
+        const newWidthPercentage = (newWidth / totalWidth) * 100;
+
+        // Get the number of columns in the grid
+        const columns = layout.gridStructure.columns;
+
+        // Initialize columnWidths with percentages if they're in fr format or don't exist
+        const columnWidths = layout.gridStructure.columnWidths || Array(columns).fill(`${(100 / columns).toFixed(2)}%`);
+
+        // Get the current column index (0-based)
+        const currentColumnIndex = cell.column - 1;
+
+        // Calculate the maximum allowed width for this cell
+        // This ensures we don't exceed 100% total width
+        const otherColumnsMinWidth = (columns - 1) * 15; // All other columns at minimum 15%
+        const maxAllowedWidth = 100 - otherColumnsMinWidth;
+
+        // Convert to proportion (0-1) for the adjustColumnWidths function
+        const newWidthPart = Math.min(maxAllowedWidth, Math.max(15, newWidthPercentage)) / 100;
+
+        // Calculate the new column widths
+        const newColumnWidths = adjustColumnWidths(
+            columnWidths,
+            currentColumnIndex,
+            newWidthPart,
+            isLastCell,
+            columns
+        );
+
+        // Update the layout's grid structure with the new column widths
+        const updatedGridStructure = {
+            ...layout.gridStructure,
+            columnWidths: newColumnWidths
+        };
+
+        // Update the layout in the store
+        updateLayout(presentationId, slideId, layoutId, {
+            gridStructure: updatedGridStructure
+        });
+    };
+
+    // Handle resize end
+    const handleResizeEnd = () => {
+        startWidthRef.current = null;
+        resizebleElementRef.current = null;
+
+        document.removeEventListener('mousemove', handleResizeMove);
+        document.removeEventListener('mouseup', handleResizeEnd);
+    };
+
     // Render your component's elements
     const renderElement = (element: Element) => {
         return (
-            <div 
+            <div
                 className={styles.elementContent}
                 data-element-id={element.id}
-                // data-layout-id={layoutId}
-                // data-cell-id={element.cellId}
             >
                 <div key={element.id} className={styles.elementWrapper}>
-                    <div 
+                    <div
                         className={`${styles.elementDragHandle} ${menuElementId === element.id ? styles.elementDragHandleMenuOpen : ''}`}
                         draggable="true"
                         data-element-drag-handle={element.id}
@@ -194,9 +399,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                         customBubbleMenuTrigger={dragHandleRef}
                     />
                 </div>
-                <div>
-                    elementId: {element.id}
-                </div>
             </div>
         );
     };
@@ -209,10 +411,11 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             data-cell-id={cell.id}
             data-cell="true"
             data-is-multi-cell={hasMultipleCells ? "true" : "false"}
+            ref={editorRef}
         >
             {/* Drag handle for the entire cell */}
             {hasMultipleCells && (
-                <div 
+                <div
                     className={styles.cellDragHandle}
                     draggable="true"
                     onDragStart={(e) => {
@@ -222,14 +425,14 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     title="Drag this cell"
                 />
             )}
-            
-            <div className={cellClassName}>
-                <div 
+
+            <div className={styles.gridCell}>
+                <div
                     className={styles.elementsContainer}
                     data-is-multi-cell={hasMultipleCells ? "true" : "false"}
                 >
                     {elements.map((element, idx) => (
-                        <div 
+                        <div
                             key={element.id}
                             data-is-first-element={idx === 0 ? "true" : "false"}
                             data-is-last-element={idx === elements.length - 1 ? "true" : "false"}
@@ -237,11 +440,19 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                             {renderElement(element)}
                         </div>
                     ))}
-                    <div>
-                        cellId: {cell.id} {cell.column}
-                    </div>
+
+                    {/* Resizable border and indicators for multi-cell layouts */}
                 </div>
             </div>
+            {hasMultipleCells && !isLastCell && (
+                <>
+                    <div
+                        ref={resizeBorderRef}
+                        className={styles.resizableBorder}
+                        onMouseDown={handleResizeStart}
+                    />
+                </>
+            )}
         </div>
     );
 };

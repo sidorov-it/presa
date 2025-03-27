@@ -10,7 +10,6 @@
 }
 
 .elementContent {
-    border: 1px solid red;
     padding: 1rem;
 }
 
@@ -132,7 +131,6 @@
 }
 
 .elementWrapper {
-    border: 1px dashed #64748b;
     position: relative;
     padding-bottom: 8px;
 }
@@ -144,7 +142,9 @@
 .elementWrapper:hover .elementDragHandle {
     opacity: 1;
 }
-
+.multiCell {
+    border: 1px solid #e5e0df;
+}
 .multiCell:hover .cellDragHandle {
     opacity: 1;
 }
@@ -155,7 +155,6 @@
     flex-direction: column;
     width: 100%;
     position: relative;
-    border: 1px solid rgb(219, 206, 32);
     padding: 1rem;
 }
 

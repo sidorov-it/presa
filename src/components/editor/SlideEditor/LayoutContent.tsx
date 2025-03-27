@@ -10,7 +10,6 @@ interface LayoutContentProps {
     layout: Layout;
     onSelectElement: (elementId: string) => void;
     onDeleteElement: (layoutId: string, elementId: string) => void;
-    slideEditorRef: React.RefObject<HTMLDivElement>;
     tiptapRefs: React.RefObject<Record<string, React.RefObject<TiptapRef>>>;
     presentationId: string;
     slideId: string;
@@ -29,7 +28,6 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     layout,
     onSelectElement,
     onDeleteElement,
-    slideEditorRef,
     tiptapRefs,
     presentationId,
     slideId
@@ -109,7 +107,6 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                             return (
                                 <GridCellElement
                                     key={key}
-                                    slideEditorRef={slideEditorRef}
                                     tiptapRefs={tiptapRefs}
                                     cell={cell}
                                     elements={elements}

@@ -134,7 +134,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         }
     };
 
-     // Создание макета по умолчанию с одним редактором
+    // Создание макета по умолчанию с одним редактором
     const createDefaultLayout = () => {
         // Создаем новый макет с одной ячейкой
 
@@ -211,7 +211,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                                 layout={layout}
                                 onSelectElement={handleSelectElement}
                                 onDeleteElement={handleDeleteElement}
-                                slideEditorRef={editorRef}
                                 tiptapRefs={tiptapRefs}
                                 presentationId={presentationId}
                                 slideId={slide.id}
