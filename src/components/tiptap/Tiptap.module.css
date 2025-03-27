@@ -4,6 +4,6 @@
 }
 
 .editor {
-  outline: none;
-  width: 100%;
+  @apply p-2 w-full relative cursor-text;
+  min-height: 40px;
 }

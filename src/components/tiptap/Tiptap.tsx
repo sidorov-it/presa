@@ -17,6 +17,7 @@ import { useEditorStore } from '@/store/editorStore'
 import { PluginKey, Plugin } from '@tiptap/pm/state'
 import styles from './Tiptap.module.css'
 import { ButtonNode, ToggleNode } from './extensions'
+import { SlashCommandExtension } from './SlashCommandExtension'
 
 export const pluginKey = new PluginKey('prevent-drop-from-outside');
 
@@ -134,6 +135,10 @@ interface TiptapProps {
     id?: string;
     placeholder?: string;
     customBubbleMenuTrigger?: RefObject<HTMLElement>;
+    onAddElement?: (type: string) => void;
+    presentationId?: string;
+    slideId?: string;
+    layoutId?: string;
 }
 
 // Define the ref type
@@ -144,7 +149,12 @@ export interface TiptapRef {
 }
 
 // Определяем массив расширений
-const getExtensions = (onEnterPressed: () => void, onBackspacePressed: () => void, placeholder: string) => [
+const getExtensions = (
+    onEnterPressed: () => void, 
+    onBackspacePressed: () => void, 
+    placeholder: string,
+    onAddElement?: (type: string) => void
+) => [
     // Базовый набор расширений
     StarterKit.configure({
         dropcursor: false,
@@ -248,6 +258,11 @@ const getExtensions = (onEnterPressed: () => void, onBackspacePressed: () => voi
         emptyEditorClass: 'is-editor-empty',
     }),
 
+    // Slash command
+    SlashCommandExtension.configure({
+        onAddElement: onAddElement || (() => {}),
+    }),
+
     // Добавляем кнопку и переключатель
     ButtonNode,
     ToggleNode,
@@ -263,13 +278,17 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
     autoFocus = false,
     id = '',
     placeholder = '',
-    customBubbleMenuTrigger
+    customBubbleMenuTrigger,
+    onAddElement,
+    presentationId,
+    slideId,
+    layoutId,
 }, ref) => {
     // Use the global editor store instead of local state
     const { setActiveEditor, showMenu } = useEditorStore();
 
     const editor = useEditor({
-        extensions: getExtensions(onEnterPressed, onBackspacePressed, placeholder),
+        extensions: getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement),
         content: initialContent,
         autofocus: autoFocus,
         editorProps: {

@@ -1,16 +1,16 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { GridCell, Element, GridStructure, getPredefinedGridStructures, Layout } from '@/types';
 import { useDnd } from '@/contexts/DragDropContext';
 import Tiptap, { TiptapRef } from '@/components/tiptap/Tiptap';
 import styles from './GridCellElement.module.css'; // Make sure this exists
 import { GridTextElement } from '@/types/grid-elements';
-import { useRef } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { generateId } from '@/utils/id';
 import { useEditorStore } from '@/store/editorStore';
 import { useSlideMenu } from '@/contexts/SlideMenuContext';
+import { getNewElement } from '@/elements/registry';
 
 
 const adjustColumnWidths = (
@@ -146,7 +146,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     const editorRef = useRef<HTMLDivElement>(null);
 
-    const { updateElement, updateLayout } = usePresentationStore();
+    const { updateElement, updateLayout, addElement } = usePresentationStore();
 
     const getEditorContent = (element: Element): string => {
         switch (element.type) {
@@ -365,6 +365,20 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         document.removeEventListener('mouseup', handleResizeEnd);
     };
 
+    // Handler for adding new elements via slash command
+    const handleAddElement = (type: string) => {
+        const elementData = getNewElement(type);
+        if (elementData) {
+            const newElementWithCell = {
+                ...elementData,
+                cellId: cell.id
+            };
+            
+            // Add the element to the current layout
+            addElement(presentationId, slideId, layoutId, newElementWithCell);
+        }
+    };
+
     // Render your component's elements
     const renderElement = (element: Element) => {
         return (
@@ -397,6 +411,10 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                         onContentChange={handleEditorContentChange(element.id)}
                         onBlur={() => { }}
                         customBubbleMenuTrigger={dragHandleRef}
+                        onAddElement={handleAddElement}
+                        presentationId={presentationId}
+                        slideId={slideId}
+                        layoutId={layoutId}
                     />
                 </div>
             </div>
@@ -420,7 +438,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     draggable="true"
                     onDragStart={(e) => {
                         e.stopPropagation();
-                        handleDragStart(e, null, layoutId, cell.id);
+                        handleDragStart(e, '', layoutId, cell.id);
                     }}
                     title="Drag this cell"
                 />
