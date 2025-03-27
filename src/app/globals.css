@@ -67,11 +67,285 @@
 }
 
 @layer base {
+
   /* * {
     @apply border-border;
   } */
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* style the editor, add style to H1 H2 H3 */
+.tiptap {
+  @apply max-w-full !important;
+  @apply focus:outline-none;
+  @apply p-4;
+  @apply prose prose-sm sm:prose lg:prose-lg xl:prose-xl;
+
+  p, h1, h2, h3, ul, li { 
+    @apply mt-0 mb-0 !important;
+  }  
+}
+
+@layer components {
+  .ProseMirror {
+    /* ... existing styles ... */
+
+    table {
+      @apply w-full border-collapse mb-4;
+    }
+
+    td {
+      @apply border border-gray-300 p-2 min-w-[100px];
+    }
+
+    tr {
+      @apply border-b border-gray-300;
+    }
+
+    /* Опционально: стили для наведения и выделения */
+    td:hover {
+      @apply bg-gray-50;
+    }
+
+    td.selected {
+      @apply bg-blue-50;
+    }
+
+    /* Общие стили для всех списков */
+    ul, ol {
+      @apply mb-4 pl-6 space-y-1;
+    }
+
+    /* Маркированные списки */
+    ul {
+      @apply list-disc;
+
+      ul {
+        @apply list-[circle] ml-4;
+      }
+
+      ul ul {
+        @apply list-[square];
+      }
+    }
+
+    /* Нумерованные списки */
+    ol {
+      @apply list-decimal;
+
+      ol {
+        @apply list-[lower-alpha] ml-4;
+      }
+
+      ol ol {
+        @apply list-[lower-roman];
+      }
+    }
+
+    /* Списки задач */
+    ul[data-type="taskList"] {
+      @apply list-none pl-2;
+
+      li {
+        @apply flex gap-2 items-start;
+
+        > label {
+          @apply mt-1;
+        }
+
+        > div {
+          @apply flex-1;
+        }
+
+        /* Чекбокс */
+        input[type="checkbox"] {
+          @apply h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500;
+        }
+      }
+    }
+
+    /* Вложенные списки */
+    li {
+      @apply my-0.5;
+
+      p {
+        @apply m-0;
+      }
+
+      > ul, > ol {
+        @apply mt-1 mb-1;
+      }
+    }
+
+    /* Общие стили для всех блоков */
+    .box, .note-box, .info-box, .warning-box, .caution-box, .success-box, .question-box {
+      @apply p-4 rounded-lg mb-4 border;
+    }
+
+    /* Стили для каждого типа блока */
+    .box {
+      @apply bg-gray-50 border-gray-200;
+    }
+
+    .note-box {
+      @apply bg-blue-50 border-blue-200;
+    }
+
+    .info-box {
+      @apply bg-cyan-50 border-cyan-200;
+    }
+
+    .warning-box {
+      @apply bg-yellow-50 border-yellow-200;
+    }
+
+    .caution-box {
+      @apply bg-red-50 border-red-200;
+    }
+
+    .success-box {
+      @apply bg-green-50 border-green-200;
+    }
+
+    .question-box {
+      @apply bg-purple-50 border-purple-200;
+    }
+
+    /* Интерактивные элементы */
+    .interactive-button {
+      @apply px-4 py-2 bg-blue-500 text-white rounded-md 
+             hover:bg-blue-600 active:bg-blue-700 
+             transition-colors duration-200
+             focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+    }
+
+    /* Стили для переключателя */
+    .toggle-wrapper {
+      @apply mb-4;
+
+      .toggle {
+        @apply flex items-center cursor-pointer;
+
+        input[type="checkbox"] {
+          @apply sr-only;
+        }
+
+        .toggle-label {
+          @apply relative pl-12 select-none;
+
+          &:before {
+            content: '';
+            @apply absolute left-0 top-1/2 -translate-y-1/2
+                   w-10 h-6 bg-gray-200 rounded-full
+                   transition-colors duration-200;
+          }
+
+          &:after {
+            content: '';
+            @apply absolute left-1 top-1/2 -translate-y-1/2
+                   w-4 h-4 bg-white rounded-full
+                   transition-transform duration-200;
+          }
+        }
+
+        input:checked + .toggle-label {
+          &:before {
+            @apply bg-blue-500;
+          }
+
+          &:after {
+            @apply translate-x-5;
+          }
+        }
+
+        input:focus + .toggle-label {
+          &:before {
+            @apply ring-2 ring-blue-500 ring-offset-2;
+          }
+        }
+      }
+    }
+
+    .toggle-wrapper {
+      @apply border rounded-lg mb-4;
+
+      .toggle-header {
+          @apply flex items-center gap-2 p-3 cursor-pointer 
+                 hover:bg-gray-50 select-none;
+
+          .toggle-icon {
+              @apply text-gray-500 transition-transform duration-200;
+          }
+
+          .toggle-title {
+              @apply font-medium;
+          }
+      }
+
+      .toggle-content {
+          @apply hidden px-4 pb-4;
+          
+          &.open {
+              @apply block;
+          }
+      }
+
+      /* Темная тема */
+      .dark & {
+          @apply border-gray-700;
+
+          .toggle-header {
+              @apply hover:bg-gray-800;
+          }
+      }
+  }
+  }
+
+  /* Темная тема */
+  .dark .ProseMirror {
+    .box {
+      @apply bg-gray-800 border-gray-700;
+    }
+
+    .note-box {
+      @apply bg-blue-900/20 border-blue-800;
+    }
+
+    .info-box {
+      @apply bg-cyan-900/20 border-cyan-800;
+    }
+
+    .warning-box {
+      @apply bg-yellow-900/20 border-yellow-800;
+    }
+
+    .caution-box {
+      @apply bg-red-900/20 border-red-800;
+    }
+
+    .success-box {
+      @apply bg-green-900/20 border-green-800;
+    }
+
+    .question-box {
+      @apply bg-purple-900/20 border-purple-800;
+    }
+
+    .interactive-button {
+      @apply bg-blue-600 hover:bg-blue-700 active:bg-blue-800;
+    }
+
+    .toggle-wrapper .toggle {
+      .toggle-label:before {
+        @apply bg-gray-700;
+      }
+
+      input:checked + .toggle-label:before {
+        @apply bg-blue-600;
+      }
+    }
   }
 }

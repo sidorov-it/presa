@@ -1,6 +1,6 @@
 import { generateId } from '@/utils/id'
 import { type Category, TextElement } from '../types'
-import { FaFont, FaTable, FaList, FaBox, FaImage, FaVideo, FaRegChartBar, FaUpload, FaLink, FaQrcode, FaQuoteLeft, FaToggleOn, FaToggleOff } from 'react-icons/fa'
+import { FaFont, FaTable, FaList, FaBox, FaImage, FaVideo, FaRegChartBar, FaUpload, FaLink, FaQrcode, FaQuoteLeft, FaToggleOn } from 'react-icons/fa'
 
 // export const getNewElement = (type: string): Omit<TextElement, 'cellId'> => {
 //     const editor = {
@@ -21,8 +21,8 @@ import { FaFont, FaTable, FaList, FaBox, FaImage, FaVideo, FaRegChartBar, FaUplo
 export const getNewElement = (type: string): Omit<TextElement, 'cellId'> => {
     // Find the element configuration in the registry
     const elementConfig = elementsRegistry
-        .flatMap(category => 
-            category.subCategories 
+        .flatMap(category =>
+            category.subCategories
                 ? category.subCategories.flatMap(sub => sub.elements)
                 : category.elements
         )
@@ -118,29 +118,99 @@ export const elementsRegistry: Category[] = [
             {
                 id: 'tables',
                 label: 'Таблицы',
-                // Icon: FaTable,
                 elements: [
                     {
                         id: 'table-2x2',
                         type: 'element',
                         label: 'Таблица 2x2',
                         Icon: FaTable,
-                        defaultProps: { rows: 2, cols: 2 }
+                        defaultProps: {
+                            textType: 'table',
+                            content: `
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td><p>Ячейка 1</p></td>
+                                            <td><p>Ячейка 2</p></td>
+                                        </tr>
+                                        <tr>
+                                            <td><p>Ячейка 3</p></td>
+                                            <td><p>Ячейка 4</p></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            `
+                        }
                     },
                     {
                         id: 'table-3x3',
                         type: 'element',
                         label: 'Таблица 3x3',
                         Icon: FaTable,
-                        defaultProps: { rows: 3, cols: 3 }
+                        defaultProps: {
+                            textType: 'table',
+                            content: `
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td><p>Ячейка 1</p></td>
+                                            <td><p>Ячейка 2</p></td>
+                                            <td><p>Ячейка 3</p></td>
+                                        </tr>
+                                        <tr>
+                                            <td><p>Ячейка 4</p></td>
+                                            <td><p>Ячейка 5</p></td>
+                                            <td><p>Ячейка 6</p></td>
+                                        </tr>
+                                        <tr>
+                                            <td><p>Ячейка 7</p></td>
+                                            <td><p>Ячейка 8</p></td>
+                                            <td><p>Ячейка 9</p></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            `
+                        }
                     },
                     {
                         id: 'table-4x4',
                         type: 'element',
                         label: 'Таблица 4x4',
                         Icon: FaTable,
-                        defaultProps: { rows: 4, cols: 4 }
-                    },
+                        defaultProps: {
+                            textType: 'table',
+                            content: `
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td><p>Ячейка 1</p></td>
+                                            <td><p>Ячейка 2</p></td>
+                                            <td><p>Ячейка 3</p></td>
+                                            <td><p>Ячейка 4</p></td>
+                                        </tr>
+                                        <tr>
+                                            <td><p>Ячейка 5</p></td>
+                                            <td><p>Ячейка 6</p></td>
+                                            <td><p>Ячейка 7</p></td>
+                                            <td><p>Ячейка 8</p></td>
+                                        </tr>
+                                        <tr>
+                                            <td><p>Ячейка 9</p></td>
+                                            <td><p>Ячейка 10</p></td>
+                                            <td><p>Ячейка 11</p></td>
+                                            <td><p>Ячейка 12</p></td>
+                                        </tr>
+                                        <tr>
+                                            <td><p>Ячейка 13</p></td>
+                                            <td><p>Ячейка 14</p></td>
+                                            <td><p>Ячейка 15</p></td>
+                                            <td><p>Ячейка 16</p></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            `
+                        }
+                    }
                 ]
             },
             {
@@ -156,108 +226,146 @@ export const elementsRegistry: Category[] = [
                         type: 'element',
                         label: 'Список',
                         Icon: FaList,
-                        defaultProps: { content: '' }
+                        defaultProps: {
+                            content: ` <ul>
+          <li>A list item</li>
+          <li>And another one</li>
+        </ul>
+` }
                     },
                     {
                         id: 'numered-list',
                         type: 'element',
                         label: 'Нумерованный список',
                         Icon: FaList,
-                        defaultProps: { content: '' }
+                        defaultProps: {
+                            content: ` <ol>
+          <li>A list item</li>
+          <li>And another one</li>
+        </ol>
+` }
                     },
                     {
                         id: 'todo-list',
                         type: 'element',
                         label: 'Список задач',
                         Icon: FaList,
-                        defaultProps: { content: '' }
+                        defaultProps: {
+                            content: `<ul data-type="taskList">
+          <li data-type="taskItem" data-checked="true">A list item</li>
+          <li data-type="taskItem" data-checked="false">And another one</li>
+        </ul>` }
                     },
                 ]
             },
             {
                 id: 'boxes',
                 label: 'Блоки',
-                // Icon: FaBox,
                 elements: [
-                    // Box
                     {
                         id: 'box',
                         type: 'element',
                         label: 'Блок',
                         Icon: FaBox,
-                        defaultProps: { content: '' }
+                        defaultProps: {
+                            textType: 'box',
+                            content: `<div class="box"><p>Простой блок текста</p></div>`
+                        }
                     },
-                    // Note box
                     {
                         id: 'note-box',
                         type: 'element',
                         label: 'Блок с заметкой',
                         Icon: FaBox,
-                        defaultProps: { content: '' }
+                        defaultProps: {
+                            textType: 'note-box',
+                            content: `<div class="note-box"><p>📝 Важная заметка</p></div>`
+                        }
                     },
-                    // Info
                     {
                         id: 'info-box',
                         type: 'element',
                         label: 'Блок с информацией',
                         Icon: FaBox,
-                        defaultProps: { content: '' }
+                        defaultProps: {
+                            textType: 'info-box',
+                            content: `<div class="info-box"><p>ℹ️ Полезная информация</p></div>`
+                        }
                     },
-                    // Warning
                     {
                         id: 'warning-box',
                         type: 'element',
                         label: 'Блок с предупреждением',
                         Icon: FaBox,
-                        defaultProps: { content: '' }
+                        defaultProps: {
+                            textType: 'warning-box',
+                            content: `<div class="warning-box"><p>⚠️ Предупреждение</p></div>`
+                        }
                     },
-                    // Caution
                     {
                         id: 'caution-box',
                         type: 'element',
                         label: 'Блок с предостережением',
                         Icon: FaBox,
-                        defaultProps: { content: '' }
+                        defaultProps: {
+                            textType: 'caution-box',
+                            content: `<div class="caution-box"><p>🚨 Внимание!</p></div>`
+                        }
                     },
-                    // Success
                     {
                         id: 'success-box',
                         type: 'element',
                         label: 'Блок с успехом',
                         Icon: FaBox,
-                        defaultProps: { content: '' }
+                        defaultProps: {
+                            textType: 'success-box',
+                            content: `<div class="success-box"><p>✅ Успешно выполнено</p></div>`
+                        }
                     },
-                    // Question
                     {
                         id: 'question-box',
                         type: 'element',
                         label: 'Блок с вопросом',
                         Icon: FaBox,
-                        defaultProps: { content: '' }
-                    },
+                        defaultProps: {
+                            textType: 'question-box',
+                            content: `<div class="question-box"><p>❓ Частый вопрос</p></div>`
+                        }
+                    }
                 ]
             },
             {
                 id: 'interactive',
                 label: 'Интерактивные элементы',
-                // Icon: FaInteractive,
                 elements: [
-                    // Button
                     {
                         id: 'button',
                         type: 'element',
                         label: 'Кнопка',
                         Icon: FaBox,
-                        defaultProps: { content: 'Кнопка' }
+                        defaultProps: {
+                            textType: 'button',
+                            content: `<button data-type="button">Текст кнопки</button>`
+                        }
                     },
-                    // Toggle
                     {
                         id: 'toggle',
                         type: 'element',
                         label: 'Переключатель',
                         Icon: FaToggleOn,
-                        defaultProps: { content: '' }
-                    },
+                        defaultProps: {
+                            textType: 'toggle',
+                            content: `<div data-type="toggle" data-open="false">
+    <div class="toggle-header">
+        <span class="toggle-icon">▶</span>
+        <span class="toggle-title">Заголовок</span>
+    </div>
+    <div class="toggle-content">
+        <p>Содержимое переключателя</p>
+    </div>
+</div>`
+                        }
+                    }
                 ]
             },
             // ... остальные подкатегории

@@ -6,10 +6,17 @@ import { useEditor } from '@tiptap/react'
 import { useCallback, useEffect, RefObject, forwardRef, useImperativeHandle } from 'react'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
+import TaskList from '@tiptap/extension-task-list'
+import TaskItem from '@tiptap/extension-task-item'
+import Table from '@tiptap/extension-table'
+import TableRow from '@tiptap/extension-table-row'
+import TableHeader from '@tiptap/extension-table-header'
+import TableCell from '@tiptap/extension-table-cell'
 import { Extension } from '@tiptap/core'
 import { useEditorStore } from '@/store/editorStore'
 import { PluginKey, Plugin } from '@tiptap/pm/state'
 import styles from './Tiptap.module.css'
+import { ButtonNode, ToggleNode } from './extensions'
 
 export const pluginKey = new PluginKey('prevent-drop-from-outside');
 
@@ -138,23 +145,112 @@ export interface TiptapRef {
 
 // Определяем массив расширений
 const getExtensions = (onEnterPressed: () => void, onBackspacePressed: () => void, placeholder: string) => [
-    // Configure StarterKit to disable dropcursor
+    // Базовый набор расширений
     StarterKit.configure({
-        dropcursor: false, // Disable the dropcursor extension
+        dropcursor: false,
+        heading: {
+            levels: [1, 2, 3, 4, 5]
+        },
+        bulletList: {
+            keepMarks: true,
+            keepAttributes: false,
+        },
+        orderedList: {
+            keepMarks: true,
+            keepAttributes: false,
+        },
     }),
-    // Document, 
-    // Paragraph, 
-    // Text, 
-    // Heading, 
-    // Bold, 
-    // Italic, 
-    // ListItem,
+
+    // Таблицы
+    Table.configure({
+        resizable: true,
+        HTMLAttributes: {
+            class: 'tiptap-table',
+        },
+    }),
+    TableRow,
+    TableHeader,
+    TableCell,
+
+    // Списки задач
+    TaskList.configure({
+        HTMLAttributes: {
+            class: 'task-list',
+        },
+    }),
+    TaskItem.configure({
+        nested: true,
+    }),
+
+    // Кастомные блоки
+    Extension.create({
+        name: 'customBox',
+        addGlobalAttributes() {
+            return [
+                {
+                    types: ['paragraph'],
+                    attributes: {
+                        class: {
+                            default: null,
+                            parseHTML: element => {
+                                const classes = ['box', 'note-box', 'info-box', 'warning-box', 
+                                               'caution-box', 'success-box', 'question-box'];
+                                const className = element.className;
+                                return classes.find(c => className.includes(c)) || null;
+                            },
+                            renderHTML: attributes => {
+                                if (!attributes.class) return {};
+                                return { class: attributes.class };
+                            },
+                        },
+                    },
+                },
+            ];
+        },
+    }),
+
+    // Интерактивные элементы
+    Extension.create({
+        name: 'interactiveElements',
+        addGlobalAttributes() {
+            return [
+                {
+                    types: ['paragraph'],
+                    attributes: {
+                        'data-type': {
+                            default: null,
+                            parseHTML: element => element.getAttribute('data-type'),
+                            renderHTML: attributes => {
+                                if (!attributes['data-type']) return {};
+                                return {
+                                    'data-type': attributes['data-type'],
+                                    class: attributes['data-type'] === 'button' 
+                                        ? 'interactive-button' 
+                                        : 'toggle-wrapper'
+                                };
+                            },
+                        },
+                    },
+                },
+            ];
+        },
+    }),
+
+    // Предотвращение дропа извне
     PreventDropExtension,
+
+    // Обработка Enter и Backspace
     EnterHandlerExtension(onEnterPressed, onBackspacePressed),
+
+    // Плейсхолдер
     Placeholder.configure({
         placeholder,
         emptyEditorClass: 'is-editor-empty',
     }),
+
+    // Добавляем кнопку и переключатель
+    ButtonNode,
+    ToggleNode,
 ]
 
 const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
@@ -176,8 +272,44 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
         extensions: getExtensions(onEnterPressed, onBackspacePressed, placeholder),
         content: initialContent,
         autofocus: autoFocus,
-        immediatelyRender: false,
+        editorProps: {
+            attributes: {
+                class: `${styles.editor} custom-tiptap-editor no-dropcursor`,
+            },
+            handleClick: (view, pos, event) => {
+                const target = event.target as HTMLElement;
+                const toggleHeader = target.closest('.toggle-header');
+                
+                if (toggleHeader) {
+                    const toggleWrapper = toggleHeader.closest('.toggle-wrapper');
+                    if (toggleWrapper) {
+                        const isOpen = toggleHeader.getAttribute('data-open') === 'true';
+                        const newState = !isOpen;
+                        
+                        // Обновляем состояние в DOM
+                        toggleHeader.setAttribute('data-open', String(newState));
+                        toggleHeader.classList.add('open', String(newState));
 
+                        const content = toggleWrapper.querySelector('.toggle-content');
+                        if (content) {
+                            content.classList.add('open', String(newState));
+                        }
+                        const icon = toggleHeader.querySelector('.toggle-icon');
+                        if (icon) {
+                            icon.textContent = newState ? '▼' : '▶';
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            },
+        },
+        immediatelyRender: true,
+        onContentError: (error) => {
+            console.log('contentError', error)
+
+            return false;
+        },
         onBlur: () => {
             onBlur?.();
         },
@@ -189,11 +321,6 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
         onUpdate: ({ editor }) => {
             const html = editor.getHTML();
             onContentChange(html);
-        },
-        editorProps: {
-            attributes: {
-                class: `${styles.editor} custom-tiptap-editor no-dropcursor`,
-            },
         },
     })
 
@@ -317,6 +444,49 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
         
         .ProseMirror:focus {
           outline: none;
+        }
+
+        /* Стили для кнопки */
+        button[data-type="button"] {
+            @apply px-4 py-2 bg-blue-500 text-white rounded-md 
+                   hover:bg-blue-600 active:bg-blue-700 
+                   transition-colors duration-200
+                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+        }
+
+        /* Стили для переключателя */
+        .toggle-wrapper {
+            @apply border rounded-lg mb-4;
+
+            .toggle-header {
+                @apply flex items-center gap-2 p-3 cursor-pointer 
+                       hover:bg-gray-50 select-none;
+
+                .toggle-icon {
+                    @apply text-gray-500 transition-transform duration-200;
+                }
+
+                .toggle-title {
+                    @apply font-medium;
+                }
+            }
+
+            .toggle-content {
+                @apply hidden px-4 pb-4;
+                
+                &.open {
+                    @apply block;
+                }
+            }
+
+            /* Темная тема */
+            .dark & {
+                @apply border-gray-700;
+
+                .toggle-header {
+                    @apply hover:bg-gray-800;
+                }
+            }
         }
       `}</style>
         </div>
