@@ -2,23 +2,21 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 'use client'
 
-import React, { useState, useRef } from 'react';
-import { EditorElement, getPredefinedGridStructures, Layout, Slide } from '@/types';
+import React, { useState, useRef, RefObject } from 'react';
+import { EditorElement, getPredefinedGridStructures, Layout, Slide, TipTapRefs } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import styles from './SlideEditor.module.css';
-import { TiptapRef } from '@/components/tiptap/Tiptap';
 import LayoutContent from './LayoutContent';
 import { useSlideMenu } from '@/contexts/SlideMenuContext';
-import SlideMenu from '../SlideMenu/SlideMenu';
 import { generateId } from '@/utils/id';
 import { DragDropTransactionHelper } from '@/contexts/DragDropTransactionHelper';
-import { Editor } from '@tiptap/react';
 
 interface SlideEditorProps {
     slide: Slide;
     presentationId: string;
     handleSelectSlide: (slideId: string) => void;
     isSelected: boolean;
+    tiptapRefs: RefObject<TipTapRefs>;
 }
 
 export const getColumnWidths = (columnsCount: number): string[] => {
