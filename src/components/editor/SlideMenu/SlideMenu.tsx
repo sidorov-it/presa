@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useSlideMenu, MenuElementType } from '@/contexts/SlideMenuContext';
 import styles from './SlideMenu.module.css';
+import { useEditorStore } from '@/store/editorStore';
+import { getElementMenuComponent } from '@/elements/registry';
 
 // Define menu item types
 interface MenuItemProps {
@@ -64,8 +66,13 @@ const SlideMenu: React.FC = () => {
         editElement
     } = useSlideMenu();
 
+    const { activeElementType } = useEditorStore();
+
+    const MenuComponent = activeElementType ? getElementMenuComponent(activeElementType) : null;
+
     const menuRef = useRef<HTMLDivElement>(null);
     const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
+    const activeEditor = useEditorStore((state) => state.activeEditor);
 
     // Close the menu when clicking outside of it
     useEffect(() => {
@@ -210,6 +217,7 @@ const SlideMenu: React.FC = () => {
         }
     };
 
+
     return (
         <div
             ref={menuRef}
@@ -217,7 +225,9 @@ const SlideMenu: React.FC = () => {
             style={menuStyle}
         >
             <ul className="divide-y divide-gray-100">
-                {renderMenuItems()}
+                {MenuComponent ? <MenuComponent
+                    editor={activeEditor}
+                /> : renderMenuItems()}
             </ul>
         </div>
     );

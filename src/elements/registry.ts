@@ -1,23 +1,16 @@
 import { generateId } from '@/utils/id'
-import { type Category, TextElement } from '../types'
+import { type Category, TextElement, TextElementType } from '@/types'
 import { FaFont, FaTable, FaList, FaBox, FaImage, FaVideo, FaRegChartBar, FaUpload, FaLink, FaQrcode, FaQuoteLeft, FaToggleOn } from 'react-icons/fa'
 import editorsDefaultContent from './textEditor/defaultContent';
 
-// export const getNewElement = (type: string): Omit<TextElement, 'cellId'> => {
-//     const editor = {
-//         id: generateId(8),
-//         type: 'editor',
-//         textType: 'text',
-//         content: '',
-//         position: { x: 0, y: 0 },
-//         size: { width: 100, height: 100 },
-//         style: {},
-//         zIndex: 1,
-//     }
-
-//     return editor;
-// }
-
+// Define components for the BubbleMenu
+import HeadingBubbleMenu from '@/components/editor/BubbleMenus/HeadingBubbleMenu';
+import QuoteBubbleMenu from '@/components/editor/BubbleMenus/QuoteBubbleMenu';
+import TableBubbleMenu from '@/components/editor/BubbleMenus/TableBubbleMenu';
+import ListBubbleMenu from '@/components/editor/BubbleMenus/ListBubbleMenu';
+import BoxBubbleMenu from '@/components/editor/BubbleMenus/BoxBubbleMenu';
+import ButtonBubbleMenu from '@/components/editor/BubbleMenus/ButtonBubbleMenu';
+import DefaultBubbleMenu from '@/components/editor/BubbleMenus/DefaultBubbleMenu';
 
 export const getNewElement = (type: string): Omit<TextElement, 'cellId'> => {
     // Find the element configuration in the registry
@@ -32,8 +25,8 @@ export const getNewElement = (type: string): Omit<TextElement, 'cellId'> => {
     // Base properties for all elements
     const baseElement = {
         id: generateId(8),
-        type: 'editor',
-        textType: type,
+        type: 'editor' as TextElementType, // Cast to TextElementType to fix type error
+        textType: type as 'text' | 'heading' | 'paragraph', // Cast to valid textType
         content: elementConfig?.defaultProps?.content ?? '',
         position: { x: 0, y: 0 },
         size: { width: 300, height: 100 }, // Increased default width for better text editing
@@ -74,44 +67,50 @@ export const elementsRegistry: Category[] = [
                 elements: [
                     {
                         id: 'title',
-                        type: 'element',
+                        type: 'editor',
                         label: 'Заголовок',
                         Icon: FaFont,
+                        MenuComponent: HeadingBubbleMenu,
                         defaultProps: { textType: 'heading', level: 1, content: editorsDefaultContent.title }
                     },
                     {
                         id: 'heading-1',
-                        type: 'element',
+                        type: 'editor',
                         label: 'Подзаголовок 1',
                         Icon: FaFont,
+                        MenuComponent: HeadingBubbleMenu,
                         defaultProps: { textType: 'heading', level: 2, content: editorsDefaultContent.heading1 }
                     },
                     {
                         id: 'heading-2',
-                        type: 'element',
+                        type: 'editor',
                         label: 'Подзаголовок 2',
                         Icon: FaFont,
+                        MenuComponent: HeadingBubbleMenu,
                         defaultProps: { textType: 'heading', level: 3, content: editorsDefaultContent.heading2 }
                     },
                     {
                         id: 'heading-3',
-                        type: 'element',
+                        type: 'editor',
                         label: 'Подзаголовок 3',
                         Icon: FaFont,
+                        MenuComponent: HeadingBubbleMenu,
                         defaultProps: { textType: 'heading', level: 4, content: editorsDefaultContent.heading3 }
                     },
                     {
                         id: 'heading-4',
-                        type: 'element',
+                        type: 'editor',
                         label: 'Подзаголовок 4',
                         Icon: FaFont,
+                        MenuComponent: HeadingBubbleMenu,
                         defaultProps: { textType: 'heading', level: 5, content: editorsDefaultContent.heading4 }
                     },
                     {
                         id: 'quote',
-                        type: 'element',
+                        type: 'editor',
                         label: 'Цитата',
                         Icon: FaQuoteLeft,
+                        MenuComponent: QuoteBubbleMenu,
                         defaultProps: { textType: 'quote', content: editorsDefaultContent.quote }
                     },
                 ]
@@ -122,9 +121,10 @@ export const elementsRegistry: Category[] = [
                 elements: [
                     {
                         id: 'table-2x2',
-                        type: 'element',
+                        type: 'table',
                         label: 'Таблица 2x2',
                         Icon: FaTable,
+                        MenuComponent: TableBubbleMenu,
                         defaultProps: {
                             textType: 'table',
                             content: editorsDefaultContent.table2x2,
@@ -132,9 +132,10 @@ export const elementsRegistry: Category[] = [
                     },
                     {
                         id: 'table-3x3',
-                        type: 'element',
+                        type: 'table',
                         label: 'Таблица 3x3',
                         Icon: FaTable,
+                        MenuComponent: TableBubbleMenu,
                         defaultProps: {
                             textType: 'table',
                             content: editorsDefaultContent.table3x3,
@@ -142,9 +143,10 @@ export const elementsRegistry: Category[] = [
                     },
                     {
                         id: 'table-4x4',
-                        type: 'element',
+                        type: 'table',
                         label: 'Таблица 4x4',
                         Icon: FaTable,
+                        MenuComponent: TableBubbleMenu,
                         defaultProps: {
                             textType: 'table',
                             content: editorsDefaultContent.table4x4
@@ -162,27 +164,30 @@ export const elementsRegistry: Category[] = [
                     // Todo
                     {
                         id: 'bullet-list',
-                        type: 'element',
+                        type: 'editor',
                         label: 'Список',
                         Icon: FaList,
+                        MenuComponent: ListBubbleMenu,
                         defaultProps: {
                             content: editorsDefaultContent.lists
                         }
                     },
                     {
                         id: 'numered-list',
-                        type: 'element',
+                        type: 'editor',
                         label: 'Нумерованный список',
                         Icon: FaList,
+                        MenuComponent: ListBubbleMenu,
                         defaultProps: {
                             content: editorsDefaultContent.numeredList
                         }
                     },
                     {
                         id: 'todo-list',
-                        type: 'element',
+                        type: 'editor',
                         label: 'Список задач',
                         Icon: FaList,
+                        MenuComponent: ListBubbleMenu,
                         defaultProps: {
                             content: editorsDefaultContent.todoList
                         }
@@ -195,9 +200,10 @@ export const elementsRegistry: Category[] = [
                 elements: [
                     {
                         id: 'box',
-                        type: 'element',
+                        type: 'editor',
                         label: 'Блок',
                         Icon: FaBox,
+                        MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'box',
                             content: editorsDefaultContent.box
@@ -205,9 +211,10 @@ export const elementsRegistry: Category[] = [
                     },
                     {
                         id: 'note-box',
-                        type: 'element',
+                        type: 'editor',
                         label: 'Блок с заметкой',
                         Icon: FaBox,
+                        MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'note-box',
                             content: editorsDefaultContent.noteBox
@@ -215,9 +222,10 @@ export const elementsRegistry: Category[] = [
                     },
                     {
                         id: 'info-box',
-                        type: 'element',
+                        type: 'editor',
                         label: 'Блок с информацией',
                         Icon: FaBox,
+                        MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'info-box',
                             content: editorsDefaultContent.infoBox
@@ -225,9 +233,10 @@ export const elementsRegistry: Category[] = [
                     },
                     {
                         id: 'warning-box',
-                        type: 'element',
+                        type: 'editor',
                         label: 'Блок с предупреждением',
                         Icon: FaBox,
+                        MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'warning-box',
                             content: editorsDefaultContent.warningBox
@@ -235,9 +244,10 @@ export const elementsRegistry: Category[] = [
                     },
                     {
                         id: 'caution-box',
-                        type: 'element',
+                        type: 'editor',
                         label: 'Блок с предостережением',
                         Icon: FaBox,
+                        MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'caution-box',
                             content: editorsDefaultContent.cautionBox
@@ -245,9 +255,10 @@ export const elementsRegistry: Category[] = [
                     },
                     {
                         id: 'success-box',
-                        type: 'element',
+                        type: 'editor',
                         label: 'Блок с успехом',
                         Icon: FaBox,
+                        MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'success-box',
                             content: editorsDefaultContent.successBox
@@ -255,9 +266,10 @@ export const elementsRegistry: Category[] = [
                     },
                     {
                         id: 'question-box',
-                        type: 'element',
+                        type: 'editor',
                         label: 'Блок с вопросом',
                         Icon: FaBox,
+                        MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'question-box',
                             content: editorsDefaultContent.questionBox
@@ -271,9 +283,10 @@ export const elementsRegistry: Category[] = [
                 elements: [
                     {
                         id: 'button',
-                        type: 'element',
+                        type: 'editor',
                         label: 'Кнопка',
                         Icon: FaBox,
+                        MenuComponent: ButtonBubbleMenu,
                         defaultProps: {
                             textType: 'button',
                             content: editorsDefaultContent.button
@@ -281,9 +294,10 @@ export const elementsRegistry: Category[] = [
                     },
                     {
                         id: 'toggle',
-                        type: 'element',
+                        type: 'editor',
                         label: 'Переключатель',
                         Icon: FaToggleOn,
+                        MenuComponent: DefaultBubbleMenu,
                         defaultProps: {
                             textType: 'toggle',
                             content: editorsDefaultContent.toggle
@@ -305,6 +319,7 @@ export const elementsRegistry: Category[] = [
                 type: 'element',
                 label: 'Загрузка изображения',
                 Icon: FaUpload,
+                MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
             // Link
@@ -313,6 +328,7 @@ export const elementsRegistry: Category[] = [
                 type: 'element',
                 label: 'Ссылка',
                 Icon: FaLink,
+                MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
             // QR
@@ -321,6 +337,7 @@ export const elementsRegistry: Category[] = [
                 type: 'element',
                 label: 'QR-код',
                 Icon: FaQrcode,
+                MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
         ]
@@ -335,6 +352,7 @@ export const elementsRegistry: Category[] = [
                 type: 'element',
                 label: 'Видео',
                 Icon: FaVideo,
+                MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             }
         ]
@@ -350,6 +368,7 @@ export const elementsRegistry: Category[] = [
                 type: 'element',
                 label: 'Столбчатая диаграмма',
                 Icon: FaRegChartBar,
+                MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
             // Bar chart
@@ -358,6 +377,7 @@ export const elementsRegistry: Category[] = [
                 type: 'element',
                 label: 'Столбчатая диаграмма',
                 Icon: FaRegChartBar,
+                MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
             // Line chart
@@ -366,6 +386,7 @@ export const elementsRegistry: Category[] = [
                 type: 'element',
                 label: 'Линейная диаграмма',
                 Icon: FaRegChartBar,
+                MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
             // Pie chart
@@ -374,6 +395,7 @@ export const elementsRegistry: Category[] = [
                 type: 'element',
                 label: 'Круговая диаграмма',
                 Icon: FaRegChartBar,
+                MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
             // Donut  chart
@@ -382,6 +404,7 @@ export const elementsRegistry: Category[] = [
                 type: 'element',
                 label: 'Кольцевая диаграмма',
                 Icon: FaRegChartBar,
+                MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
         ]
@@ -389,6 +412,18 @@ export const elementsRegistry: Category[] = [
 
 ]
 
+
+export const getElementMenuComponent = (type: string): React.ComponentType<any> | undefined => {
+    const elementConfig = elementsRegistry
+        .flatMap(category =>
+            category.subCategories
+                ? category.subCategories.flatMap(sub => sub.elements)
+                : category.elements
+        )
+        .find(element => element?.type === type);
+
+    return elementConfig?.MenuComponent;
+}
 // export const getElementConfig = (type: string): ElementConfig | undefined => {
 //   return elementRegistry.find(element => element.type === type)
 // }

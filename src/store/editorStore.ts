@@ -11,6 +11,8 @@ interface EditorState {
   triggerElement: HTMLElement | null;
   // Position of the bubble menu
   menuPosition: { x: number, y: number } | null;
+  // Type of the active element
+  activeElementType: string | null;
   // Element that should be focused next
   elementToFocus: {
     elementId: string;
@@ -20,7 +22,7 @@ interface EditorState {
   
   // Actions
   setActiveEditor: (editor: Editor | null) => void;
-  showMenu: (triggerElement: HTMLElement) => void;
+  showMenu: (triggerElement: HTMLElement, elementType?: string) => void;
   hideMenu: () => void;
   setElementToFocus: (elementId: string, layoutId: string, cellId: string) => void;
   clearElementToFocus: () => void;
@@ -33,11 +35,12 @@ export const useEditorStore = create<EditorState>()(
             showBubbleMenu: false,
             triggerElement: null,
             menuPosition: null,
+            activeElementType: null,
             elementToFocus: null,
       
             setActiveEditor: (editor) => set({ activeEditor: editor }),
       
-            showMenu: (triggerElement) => {
+            showMenu: (triggerElement, elementType = undefined) => {
                 // Calculate position based on the trigger element
                 const rect = triggerElement.getBoundingClientRect();
                 const menuPosition = {
@@ -48,14 +51,16 @@ export const useEditorStore = create<EditorState>()(
                 set({ 
                     showBubbleMenu: true, 
                     triggerElement,
-                    menuPosition
+                    menuPosition,
+                    activeElementType: elementType || null
                 });
             },
       
             hideMenu: () => set({ 
                 showBubbleMenu: false, 
                 triggerElement: null,
-                menuPosition: null
+                menuPosition: null,
+                activeElementType: null
             }),
 
             setElementToFocus: (elementId, layoutId, cellId) => set({

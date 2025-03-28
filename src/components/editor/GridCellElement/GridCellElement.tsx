@@ -141,6 +141,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const { handleDragStart } = useDnd();
 
     const { openMenu, state: { elementId: menuElementId, columnId: menuColumnId } } = useSlideMenu();
+    const { showMenu, setActiveEditor } = useEditorStore();
 
     const { beginTransaction, recordTransactionAction, commitTransaction } = useHistoryStore();
 
@@ -179,7 +180,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         if (!layout) return;
 
         const cell = layout.gridStructure.rows.find(r => r.cells.find(c => c.id === element.cellId));
-    
+
         const elementsInCell = layout.elements.filter(e => e.cellId === element.cellId);
 
         const slideIndex = presentation.slides.findIndex(s => s.id === slideId);
@@ -535,7 +536,51 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                         className={`${styles.elementDragHandle} ${menuElementId === element.id ? styles.elementDragHandleMenuOpen : ''}`}
                         draggable="true"
                         data-element-drag-handle={element.id}
-                        onClick={() => openMenu(slideId, element.id, 'element')}
+                        onClick={(e) => {
+                            // Open the SlideMenu for element actions
+                            const editor = tiptapRefs.current?.editors[element.id]?.editor;
+
+                            if (element.type === 'editor' && editor) {
+                                if (editor.getText().length > 0) {
+                                    setActiveEditor(editor);
+                                    editor.chain().focus().selectAll().run();
+                                } else {
+                                    return;
+                                }
+                            }
+                            else {
+                                openMenu(slideId, element.id, 'element');
+                             }
+
+                            // Also show the BubbleMenu for formatting
+                            // const editor = tiptapRefs.current?.editors[element.id]?.editor;
+                            // if (editor) {
+                            //     setActiveEditor(editor);
+
+                            //     // Get the element's textType for the BubbleMenu
+                            //     // First try to get it directly from the element
+                            //     // let elementTextType = (element as any).textType;
+
+
+                            //     // // If no textType is found, try to determine it from the content
+                            //     // if (!elementTextType) {
+                            //     //     const content = (element as any).content || '';
+                            //     //     if (content.includes('<h1>') || content.includes('<h2>') || content.includes('<h3>')) {
+                            //     //         elementTextType = 'heading';
+                            //     //     } else if (content.includes('<table>')) {
+                            //     //         elementTextType = 'table';
+                            //     //     } else if (content.includes('<ul>') || content.includes('<ol>')) {
+                            //     //         elementTextType = 'list';
+                            //     //     } else if (content.includes('<blockquote>')) {
+                            //     //         elementTextType = 'quote';
+                            //     //     } else {
+                            //     //         elementTextType = 'text';
+                            //     //     }
+                            //     // }
+
+                            //     showMenu(e.currentTarget, element.type);
+                            // }
+                        }}
                         onDragStart={(e) => {
                             e.stopPropagation();
                             handleDragStart(e, element.id, layoutId, element.cellId);

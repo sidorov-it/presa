@@ -8,6 +8,16 @@ export default {
   ],
   theme: {
     extend: {
+      typography: {
+        DEFAULT: {
+          css: {
+            'strong': {
+              color: 'inherit',
+              fontWeight: '700',
+            },
+          },
+        },
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
@@ -15,6 +25,8 @@ export default {
     },
   },
   plugins: [
-    require('@tailwindcss/typography'),
+    require('@tailwindcss/typography')({
+        skip: ['.tiptap :where(strong):not(:where([class~="not-prose"],[class~="not-prose"] *))']
+    }),
   ],
 } satisfies Config;

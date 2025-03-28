@@ -12,13 +12,18 @@ import Table from '@tiptap/extension-table'
 import TableRow from '@tiptap/extension-table-row'
 import TableHeader from '@tiptap/extension-table-header'
 import TableCell from '@tiptap/extension-table-cell'
-import { Editor, Extension, generateHTML } from '@tiptap/core'
+import TextStyle from '@tiptap/extension-text-style'
+import { Color } from '@tiptap/extension-color'
+import Underline from '@tiptap/extension-underline'
+import TextAlign from '@tiptap/extension-text-align'
+import Strike from '@tiptap/extension-strike'
+import { Extension, generateHTML } from '@tiptap/core'
 import { useEditorStore } from '@/store/editorStore'
 import styles from './Tiptap.module.css'
 import { SlashCommandExtension, PreventDropExtension, EnterHandlerExtension, ArrowNavigationExtension, EditorWithMethods } from './extensions/index'
 import { ButtonNode, ToggleNode } from './nodes'
 import { TipTapRefs } from '@/types';
-
+import CommonBubbleMenu from './CommonBubbleMenu';
 
 // Определяем типы пропсов
 interface TiptapProps {
@@ -62,137 +67,148 @@ const getExtensions = (
         editorRefs: React.RefObject<HTMLDivElement>[];
     }>
 ) => [
-    // Базовый набор расширений
-    StarterKit.configure({
-        dropcursor: false,
-        heading: {
-            levels: [1, 2, 3, 4, 5]
-        },
-        bulletList: {
-            keepMarks: true,
-            keepAttributes: false,
-        },
-        orderedList: {
-            keepMarks: true,
-            keepAttributes: false,
-        },
-    }),
+        // Базовый набор расширений
+        StarterKit.configure({
+            dropcursor: false,
+            heading: {
+                levels: [1, 2, 3, 4, 5]
+            },
+            bulletList: {
+                keepMarks: true,
+                keepAttributes: false,
+            },
+            orderedList: {
+                keepMarks: true,
+                keepAttributes: false,
+            },
+        }),
+        TextStyle,
+        Color,
+        Underline,
+        TextAlign.configure({
+            types: ['heading', 'paragraph'],
+        }),
+        Strike,
+        // Таблицы
+        Table.configure({
+            resizable: true,
+            HTMLAttributes: {
+                class: 'tiptap-table',
+            },
+        }),
+        TableRow,
+        TableHeader,
+        TableCell,
 
-    // Таблицы
-    Table.configure({
-        resizable: true,
-        HTMLAttributes: {
-            class: 'tiptap-table',
-        },
-    }),
-    TableRow,
-    TableHeader,
-    TableCell,
+        // Списки задач
+        TaskList.configure({
+            HTMLAttributes: {
+                class: 'task-list',
+            },
+        }),
+        TaskItem.configure({
+            nested: true,
+        }),
 
-    // Списки задач
-    TaskList.configure({
-        HTMLAttributes: {
-            class: 'task-list',
-        },
-    }),
-    TaskItem.configure({
-        nested: true,
-    }),
+        // BubbleMenu.configure({
+        //     element: document.querySelector('.menu'),
+        //   }),
 
-    // Кастомные блоки
-    // почему Extension, а не Node?
-    Extension.create({
-        name: 'customBox',
-        addGlobalAttributes() {
-            return [
-                {
-                    types: ['paragraph'],
-                    attributes: {
-                        class: {
-                            default: null,
-                            parseHTML: element => {
-                                const classes = ['box', 'note-box', 'info-box', 'warning-box',
-                                    'caution-box', 'success-box', 'question-box'];
-                                const className = element.className;
-                                return classes.find(c => className.includes(c)) || null;
-                            },
-                            renderHTML: attributes => {
-                                if (!attributes.class) return {};
-                                return { class: attributes.class };
-                            },
-                        },
-                    },
-                },
-            ];
-        },
-    }),
 
-    // Интерактивные элементы
-    Extension.create({
-        name: 'interactiveElements',
-        addGlobalAttributes() {
-            return [
-                {
-                    types: ['paragraph'],
-                    attributes: {
-                        'data-type': {
-                            default: null,
-                            parseHTML: element => element.getAttribute('data-type'),
-                            renderHTML: attributes => {
-                                if (!attributes['data-type']) return {};
-                                return {
-                                    'data-type': attributes['data-type'],
-                                    class: attributes['data-type'] === 'button'
-                                        ? 'interactive-button'
-                                        : 'toggle-wrapper'
-                                };
+        // Кастомные блоки
+        // почему Extension, а не Node?
+        Extension.create({
+            name: 'customBox',
+            addGlobalAttributes() {
+                return [
+                    {
+                        types: ['paragraph'],
+                        attributes: {
+                            class: {
+                                default: null,
+                                parseHTML: element => {
+                                    const classes = ['box', 'note-box', 'info-box', 'warning-box',
+                                        'caution-box', 'success-box', 'question-box'];
+                                    const className = element.className;
+                                    return classes.find(c => className.includes(c)) || null;
+                                },
+                                renderHTML: attributes => {
+                                    if (!attributes.class) return {};
+                                    return { class: attributes.class };
+                                },
                             },
                         },
                     },
-                },
-            ];
-        },
-    }),
+                ];
+            },
+        }),
 
-    // Предотвращение дропа извне
-    PreventDropExtension,
+        // Интерактивные элементы
+        Extension.create({
+            name: 'interactiveElements',
+            addGlobalAttributes() {
+                return [
+                    {
+                        types: ['paragraph'],
+                        attributes: {
+                            'data-type': {
+                                default: null,
+                                parseHTML: element => element.getAttribute('data-type'),
+                                renderHTML: attributes => {
+                                    if (!attributes['data-type']) return {};
+                                    return {
+                                        'data-type': attributes['data-type'],
+                                        class: attributes['data-type'] === 'button'
+                                            ? 'interactive-button'
+                                            : 'toggle-wrapper'
+                                    };
+                                },
+                            },
+                        },
+                    },
+                ];
+            },
+        }),
 
-    EnterHandlerExtension((contentBeforeCursor, contentAfterCursor) => {
-        if (!contentBeforeCursor && !contentAfterCursor) return;
-        const htmlBeforeCursor = generateHTML(contentBeforeCursor!, getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement))
-        const htmlAfterCursor = generateHTML(contentAfterCursor!, getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement))
-        console.log('htmlAfterCursor', htmlAfterCursor)
-        console.log('htmlBeforeCursor', htmlBeforeCursor)
-        onEnterPressed(htmlBeforeCursor, htmlAfterCursor)
-    },  (isEmpty) => {
-        onBackspacePressed(isEmpty)
-    }),
+        // Предотвращение дропа извне
+        PreventDropExtension,
 
-    // Slash command
-    SlashCommandExtension.configure({
-        onAddElement: onAddElement || (() => { }),
-    }),
-    
-    // Arrow key navigation between editors
-    ...(presentationId && slideId && layoutId && elementId && tiptapRefs ? [
-        ArrowNavigationExtension(
-            presentationId,
-            slideId,
-            layoutId,
-            elementId,
-            tiptapRefs
-        )
-    ] : []),
+        EnterHandlerExtension((contentBeforeCursor, contentAfterCursor) => {
+            if (!contentBeforeCursor && !contentAfterCursor) return;
+            const htmlBeforeCursor = generateHTML(contentBeforeCursor!, getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement))
+            const htmlAfterCursor = generateHTML(contentAfterCursor!, getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement))
+            console.log('htmlAfterCursor', htmlAfterCursor)
+            console.log('htmlBeforeCursor', htmlBeforeCursor)
+            onEnterPressed(htmlBeforeCursor, htmlAfterCursor)
+        }, (isEmpty) => {
+            onBackspacePressed(isEmpty)
+        }),
 
-    // Плейсхолдер
-    Placeholder.configure({
-        placeholder,
-        emptyEditorClass: 'is-editor-empty',
-    }),
-    // Добавляем кнопку и переключатель
-    ButtonNode,
-    ToggleNode,
-]
+        // Slash command
+        SlashCommandExtension.configure({
+            onAddElement: onAddElement || (() => { }),
+        }),
+
+        // Arrow key navigation between editors
+        ...(presentationId && slideId && layoutId && elementId && tiptapRefs ? [
+            ArrowNavigationExtension(
+                presentationId,
+                slideId,
+                layoutId,
+                elementId,
+                tiptapRefs
+            )
+        ] : []),
+
+        // Плейсхолдер
+        Placeholder.configure({
+            placeholder,
+            emptyEditorClass: 'is-editor-empty',
+        }),
+        // Добавляем кнопку и переключатель
+        ButtonNode,
+        ToggleNode,
+    ]
 
 const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
     initialContent = '',
@@ -216,9 +232,9 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
 
     const editor = useEditor({
         extensions: getExtensions(
-            onEnterPressed, 
-            onBackspacePressed, 
-            placeholder, 
+            onEnterPressed,
+            onBackspacePressed,
+            placeholder,
             onAddElement,
             presentationId,
             slideId,
@@ -279,8 +295,6 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
             onContentChange(html);
         },
     })
-
-
 
     useEffect(() => {
         if (editor) {
@@ -378,7 +392,7 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
           </button>
         </div>
       </FloatingMenu> */}
-
+            <CommonBubbleMenu editor={editor} />
             <div className="tiptap-editor-wrapper w-full min-h-[40px]">
                 {editor && (
                     <EditorContent
@@ -558,6 +572,14 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
 
             .dark .slash-menu-no-results {
                 color: #9CA3AF;
+            }
+
+            .tiptap-editor-wrapper .tippy-box[data-theme~='light'] {
+                border-radius: 0.375rem; 
+                background-color: #ffffff; 
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                border: none;
+                box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.1);
             }
 
             /* Tippy theme override */
