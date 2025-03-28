@@ -103,7 +103,6 @@ export default function CommonBubbleMenu({
         maxWidth: '100%',
         delay: [0, 0],
         duration: [100, 0],
-        updateDuration: 0,
         popperOptions: {
           modifiers: [
             {
