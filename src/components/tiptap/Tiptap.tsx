@@ -24,7 +24,7 @@ import { TipTapRefs } from '@/types';
 interface TiptapProps {
     initialContent?: string;
     onEnterPressed?: (content?: any) => void;
-    onBackspacePressed?: () => void;
+    onBackspacePressed?: (isEmpty: boolean) => void;
     onFocus?: () => void;
     onBlur?: () => void;
     onContentChange?: (content: string) => void;
@@ -201,7 +201,6 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
     onFocus = () => { },
     onContentChange = () => { },
     onBlur = () => { },
-    autoFocus = false,
     id = '',
     placeholder = '',
     customBubbleMenuTrigger,

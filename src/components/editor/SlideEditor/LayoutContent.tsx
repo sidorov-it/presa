@@ -1,4 +1,4 @@
-import React, { RefObject } from 'react';
+import React, { RefObject, useState } from 'react';
 import { Layout, GridRow, GridCell, Element, TipTapRefs } from '@/types';
 import { useDnd } from '@/contexts/DragDropContext';
 import { generateGridTemplateAreas, generateGridTemplateColumns } from '@/types';
@@ -32,6 +32,8 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     slideId
 }) => {
     const { state, handleDrop, handleDragStart } = useDnd();
+
+    const [isSlideHovered, setIsSlideHovered] = useState(false);
 
     // Generate CSS grid properties from the grid structure
     const gridTemplateAreas = generateGridTemplateAreas(layout.gridStructure);
@@ -70,6 +72,8 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 data-layout-id={layout.id}
                 data-is-single-element-layout={isSingleElementSingleCellLayout ? "true" : "false"}
                 onDrop={handleLocalDrop}
+                onMouseEnter={() => setIsSlideHovered(true)}
+                onMouseLeave={() => setIsSlideHovered(false)}
             >
                 {/* Layout drag handle */}
                 {layout.elements.length > 1 && (
@@ -116,6 +120,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                                     layoutId={layout.id}
                                     index={cellIndex}
                                     hasMultipleCells={hasMultipleCellsInRow}
+                                    isSlideHovered={isSlideHovered}
                                     isLastCell={isLastCell}
                                     onSelect={(element) => onSelectElement(element.id)}
                                     onDelete={(element) => onDeleteElement(layout.id, element.id)}

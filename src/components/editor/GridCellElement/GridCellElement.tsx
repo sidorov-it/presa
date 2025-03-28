@@ -119,8 +119,9 @@ interface GridCellElementProps {
     layoutId: string;
     index: number;
     hasMultipleCells: boolean;
+    isSlideHovered: boolean;
     isLastCell: boolean;
-    tiptapRefs: TipTapRefs;
+    tiptapRefs: RefObject<TipTapRefs>;
     onSelect: (element: Element) => void;
     onDelete: (element: Element) => void;
 }
@@ -132,6 +133,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     slideId,
     layoutId,
     hasMultipleCells,
+    isSlideHovered,
     tiptapRefs,
     onSelect,
     isLastCell
@@ -517,7 +519,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
             updateElement(presentationId, slideId, layoutId, elementId, newElementWithCell as Partial<Element>);
 
-            tiptapRefs.current.editors[elementId]?.editor.commands.setContent(elementData.content);
+            tiptapRefs.current?.editors[elementId]?.editor.commands.setContent(elementData.content);
         }
     };
 
@@ -542,15 +544,12 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     />
                     <Tiptap
                         key={element.id}
-                        ref={tiptapRefs}
                         elementId={element.id}
                         tiptapRefs={tiptapRefs}
                         id={element.cellId}
-                        // eslint-disable-next-line jsx-a11y/no-autofocus
-                        autoFocus={true}
                         initialContent={getEditorContent(element)}
                         onEnterPressed={handleEnterPressed(element)}
-                        onBackspacePressed={(isEmpty) => handleBackspacePressed(element, isEmpty)}
+                        onBackspacePressed={(isEmpty: boolean) => handleBackspacePressed(element, isEmpty)}
                         onFocus={() => onSelect(element)}
                         onContentChange={handleEditorContentChange(element.id)}
                         onBlur={() => { }}
@@ -567,7 +566,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     return (
         <div
-            className={`${styles.gridCellElement} ${hasMultipleCells ? styles.multiCell : ''}`}
+            className={`${styles.gridCellElement} ${hasMultipleCells ? styles.multiCell : ''} ${hasMultipleCells && !isSlideHovered ? styles.multiCellNoHover : ''}`}
             data-element-id={cell.id}
             // data-layout-id={layoutId}
             data-cell-id={cell.id}

@@ -71,6 +71,8 @@
 
 .gridCellElement {
     position: relative;
+    box-sizing: border-box;
+    border: 1px solid transparent;
 }
 
 .gridCellElement:hover .elementDragHandle {
@@ -142,9 +144,19 @@
 .elementWrapper:hover .elementDragHandle {
     opacity: 1;
 }
+
 .multiCell {
     border: 1px solid #e5e0df;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease-in-out;
 }
+
+.multiCellNoHover {
+    border: 1px solid transparent;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease-in-out;
+}
+
 .multiCell:hover .cellDragHandle {
     opacity: 1;
 }
