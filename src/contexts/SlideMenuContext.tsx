@@ -1,21 +1,30 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 
+// Define menu element types
+export type MenuElementType = 'element' | 'column' | 'layout' | 'slide';
+
 // Define slide menu state types
 type SlideMenuState = {
     isOpen: boolean;
     slideId: string | null;
     elementId: string | null;
+    elementType: MenuElementType | null;
+    layoutId: string | null;
+    columnId: string | null;
 };
 
 type SlideMenuAction =
-    | { type: 'OPEN_MENU'; payload: { slideId?: string | null; elementId?: string | null } }
+    | { type: 'OPEN_MENU'; payload: { slideId?: string | null; elementId?: string | null; elementType?: MenuElementType | null; layoutId?: string | null; columnId?: string | null } }
     | { type: 'CLOSE_MENU' };
 
 const initialState: SlideMenuState = {
     isOpen: false,
     slideId: null,
     elementId: null,
+    elementType: null,
+    layoutId: null,
+    columnId: null,
 };
 
 // Reducer for managing slide menu state
@@ -26,6 +35,9 @@ const slideMenuReducer = (state: SlideMenuState, action: SlideMenuAction): Slide
                 isOpen: true,
                 slideId: action.payload.slideId ?? null,
                 elementId: action.payload.elementId ?? null,
+                elementType: action.payload.elementType ?? null,
+                layoutId: action.payload.layoutId ?? null,
+                columnId: action.payload.columnId ?? null,
             };
         case 'CLOSE_MENU':
             return initialState;
@@ -37,12 +49,14 @@ const slideMenuReducer = (state: SlideMenuState, action: SlideMenuAction): Slide
 // Create context
 type SlideMenuContextType = {
     state: SlideMenuState;
-    openMenu: (slideId?: string | null, elementId?: string | null) => void;
+    openMenu: (slideId?: string | null, elementId?: string | null, elementType?: MenuElementType | null, layoutId?: string | null, columnId?: string | null) => void;
     closeMenu: () => void;
     duplicateSlide: () => void;
     duplicateElement: () => void;
     deleteSlide: () => void;
     deleteElement: () => void;
+    deleteLayout: () => void;
+    editElement: () => void;
 };
 
 const SlideMenuContext = createContext<SlideMenuContextType | undefined>(undefined);
@@ -59,10 +73,26 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
         deleteSlide: deleteSlideInStore,
         duplicateElement: duplicateElementInStore,
         deleteElement: deleteElementInStore,
+        deleteLayout: deleteLayoutInStore,
     } = usePresentationStore();
 
-    const openMenu = (slideId?: string | null, elementId?: string | null) => {
-        dispatch({ type: 'OPEN_MENU', payload: { slideId, elementId } });
+    const openMenu = (
+        slideId?: string | null, 
+        elementId?: string | null, 
+        elementType?: MenuElementType | null,
+        layoutId?: string | null,
+        columnId?: string | null
+    ) => {
+        dispatch({ 
+            type: 'OPEN_MENU', 
+            payload: { 
+                slideId, 
+                elementId, 
+                elementType,
+                layoutId,
+                columnId
+            } 
+        });
     };
 
     const closeMenu = () => {
@@ -99,6 +129,20 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
             }
         }
     };
+
+    const deleteLayout = () => {
+        if (state.slideId && state.layoutId) {
+            deleteLayoutInStore(presentationId, state.slideId, state.layoutId);
+            closeMenu();
+        }
+    };
+
+    const editElement = () => {
+        // This will be implemented later when we have element editing functionality
+        // For now it just closes the menu
+        closeMenu();
+    };
+
     return (
         <SlideMenuContext.Provider
             value={{
@@ -109,6 +153,8 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
                 deleteSlide,
                 duplicateElement,
                 deleteElement,
+                deleteLayout,
+                editElement,
             }}
         >
             {children}

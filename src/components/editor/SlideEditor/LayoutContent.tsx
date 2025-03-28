@@ -4,6 +4,7 @@ import { useDnd } from '@/contexts/DragDropContext';
 import { generateGridTemplateAreas, generateGridTemplateColumns } from '@/types';
 import GridCellElement from '../GridCellElement';
 import styles from './SlideEditor.module.css';
+import { useSlideMenu } from '@/contexts/SlideMenuContext';
 
 interface LayoutContentProps {
     layout: Layout;
@@ -17,10 +18,11 @@ interface LayoutContentProps {
 function simpleHash(str: string) {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
-        hash = (hash << 5) - hash + str.charCodeAt(i);
-        hash |= 0; // Преобразование в 32-битное число
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
     }
-    return Math.abs(hash).toString(36); // Конвертация в строку
+    return hash.toString(36);
 }
 
 const LayoutContent: React.FC<LayoutContentProps> = ({
@@ -32,7 +34,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     slideId
 }) => {
     const { state, handleDrop, handleDragStart } = useDnd();
-
+    const { openMenu, state: { layoutId: menuLayoutId } } = useSlideMenu();
     const [isSlideHovered, setIsSlideHovered] = useState(false);
 
     // Generate CSS grid properties from the grid structure
@@ -48,7 +50,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
         if (!cellElements[element.cellId]) {
             cellElements[element.cellId] = [];
         }
-        cellElements[element.cellId].push(element);
+        cellElements[element.cellId].push(element as Element);
     });
 
     // Remove layout drag class logic - we'll use global indicator now
@@ -78,8 +80,10 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 {/* Layout drag handle */}
                 {layout.elements.length > 1 && (
                     <div
-                        className={styles.layoutDragHandle}
+                        className={`${styles.layoutDragHandle} ${menuLayoutId === layout.id ? styles.layoutDragHandleMenuOpen : ''}`}
                         draggable="true"
+                        data-layout-drag-handle={layout.id}
+                        onClick={() => openMenu(slideId, null, 'layout', layout.id)}
                         onDragStart={(e) => {
                             e.stopPropagation();
                             handleDragStart(e, layout.elements[0].id, layout.id, layout.elements[0].cellId);

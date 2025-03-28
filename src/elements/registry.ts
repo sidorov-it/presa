@@ -1,6 +1,7 @@
 import { generateId } from '@/utils/id'
 import { type Category, TextElement } from '../types'
 import { FaFont, FaTable, FaList, FaBox, FaImage, FaVideo, FaRegChartBar, FaUpload, FaLink, FaQrcode, FaQuoteLeft, FaToggleOn } from 'react-icons/fa'
+import editorsDefaultContent from './textEditor/defaultContent';
 
 // export const getNewElement = (type: string): Omit<TextElement, 'cellId'> => {
 //     const editor = {
@@ -76,42 +77,42 @@ export const elementsRegistry: Category[] = [
                         type: 'element',
                         label: 'Заголовок',
                         Icon: FaFont,
-                        defaultProps: { textType: 'heading', level: 1, content: '<h1>Заголовок</h1>' }
+                        defaultProps: { textType: 'heading', level: 1, content: editorsDefaultContent.title }
                     },
                     {
                         id: 'heading-1',
                         type: 'element',
                         label: 'Подзаголовок 1',
                         Icon: FaFont,
-                        defaultProps: { textType: 'heading', level: 2, content: '<h2>Подзаголовок 1</h2>' }
+                        defaultProps: { textType: 'heading', level: 2, content: editorsDefaultContent.heading1 }
                     },
                     {
                         id: 'heading-2',
                         type: 'element',
                         label: 'Подзаголовок 2',
                         Icon: FaFont,
-                        defaultProps: { textType: 'heading', level: 3, content: '<h3>Подзаголовок 2</h3>' }
+                        defaultProps: { textType: 'heading', level: 3, content: editorsDefaultContent.heading2 }
                     },
                     {
                         id: 'heading-3',
                         type: 'element',
                         label: 'Подзаголовок 3',
                         Icon: FaFont,
-                        defaultProps: { textType: 'heading', level: 4, content: '<h4>Подзаголовок 3</h4>' }
+                        defaultProps: { textType: 'heading', level: 4, content: editorsDefaultContent.heading3 }
                     },
                     {
                         id: 'heading-4',
                         type: 'element',
                         label: 'Подзаголовок 4',
                         Icon: FaFont,
-                        defaultProps: { textType: 'heading', level: 5, content: '<h5>Подзаголовок 4</h5>' }
+                        defaultProps: { textType: 'heading', level: 5, content: editorsDefaultContent.heading4 }
                     },
                     {
                         id: 'quote',
                         type: 'element',
                         label: 'Цитата',
                         Icon: FaQuoteLeft,
-                        defaultProps: { textType: 'quote', content: '<blockquote>Цитата</blockquote>' }
+                        defaultProps: { textType: 'quote', content: editorsDefaultContent.quote }
                     },
                 ]
             },
@@ -126,20 +127,7 @@ export const elementsRegistry: Category[] = [
                         Icon: FaTable,
                         defaultProps: {
                             textType: 'table',
-                            content: `
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td><p>Ячейка 1</p></td>
-                                            <td><p>Ячейка 2</p></td>
-                                        </tr>
-                                        <tr>
-                                            <td><p>Ячейка 3</p></td>
-                                            <td><p>Ячейка 4</p></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            `
+                            content: editorsDefaultContent.table2x2,
                         }
                     },
                     {
@@ -149,27 +137,7 @@ export const elementsRegistry: Category[] = [
                         Icon: FaTable,
                         defaultProps: {
                             textType: 'table',
-                            content: `
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td><p>Ячейка 1</p></td>
-                                            <td><p>Ячейка 2</p></td>
-                                            <td><p>Ячейка 3</p></td>
-                                        </tr>
-                                        <tr>
-                                            <td><p>Ячейка 4</p></td>
-                                            <td><p>Ячейка 5</p></td>
-                                            <td><p>Ячейка 6</p></td>
-                                        </tr>
-                                        <tr>
-                                            <td><p>Ячейка 7</p></td>
-                                            <td><p>Ячейка 8</p></td>
-                                            <td><p>Ячейка 9</p></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            `
+                            content: editorsDefaultContent.table3x3,
                         }
                     },
                     {
@@ -179,36 +147,7 @@ export const elementsRegistry: Category[] = [
                         Icon: FaTable,
                         defaultProps: {
                             textType: 'table',
-                            content: `
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td><p>Ячейка 1</p></td>
-                                            <td><p>Ячейка 2</p></td>
-                                            <td><p>Ячейка 3</p></td>
-                                            <td><p>Ячейка 4</p></td>
-                                        </tr>
-                                        <tr>
-                                            <td><p>Ячейка 5</p></td>
-                                            <td><p>Ячейка 6</p></td>
-                                            <td><p>Ячейка 7</p></td>
-                                            <td><p>Ячейка 8</p></td>
-                                        </tr>
-                                        <tr>
-                                            <td><p>Ячейка 9</p></td>
-                                            <td><p>Ячейка 10</p></td>
-                                            <td><p>Ячейка 11</p></td>
-                                            <td><p>Ячейка 12</p></td>
-                                        </tr>
-                                        <tr>
-                                            <td><p>Ячейка 13</p></td>
-                                            <td><p>Ячейка 14</p></td>
-                                            <td><p>Ячейка 15</p></td>
-                                            <td><p>Ячейка 16</p></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            `
+                            content: editorsDefaultContent.table4x4
                         }
                     }
                 ]
@@ -227,11 +166,8 @@ export const elementsRegistry: Category[] = [
                         label: 'Список',
                         Icon: FaList,
                         defaultProps: {
-                            content: ` <ul>
-          <li>A list item</li>
-          <li>And another one</li>
-        </ul>
-` }
+                            content: editorsDefaultContent.lists
+                        }
                     },
                     {
                         id: 'numered-list',
@@ -239,11 +175,8 @@ export const elementsRegistry: Category[] = [
                         label: 'Нумерованный список',
                         Icon: FaList,
                         defaultProps: {
-                            content: ` <ol>
-          <li>A list item</li>
-          <li>And another one</li>
-        </ol>
-` }
+                            content: editorsDefaultContent.numeredList
+                        }
                     },
                     {
                         id: 'todo-list',
@@ -251,10 +184,8 @@ export const elementsRegistry: Category[] = [
                         label: 'Список задач',
                         Icon: FaList,
                         defaultProps: {
-                            content: `<ul data-type="taskList">
-          <li data-type="taskItem" data-checked="true">A list item</li>
-          <li data-type="taskItem" data-checked="false">And another one</li>
-        </ul>` }
+                            content: editorsDefaultContent.todoList
+                        }
                     },
                 ]
             },
@@ -269,7 +200,7 @@ export const elementsRegistry: Category[] = [
                         Icon: FaBox,
                         defaultProps: {
                             textType: 'box',
-                            content: `<div class="box"><p>Простой блок текста</p></div>`
+                            content: editorsDefaultContent.box
                         }
                     },
                     {
@@ -279,7 +210,7 @@ export const elementsRegistry: Category[] = [
                         Icon: FaBox,
                         defaultProps: {
                             textType: 'note-box',
-                            content: `<div class="note-box"><p>📝 Важная заметка</p></div>`
+                            content: editorsDefaultContent.noteBox
                         }
                     },
                     {
@@ -289,7 +220,7 @@ export const elementsRegistry: Category[] = [
                         Icon: FaBox,
                         defaultProps: {
                             textType: 'info-box',
-                            content: `<div class="info-box"><p>ℹ️ Полезная информация</p></div>`
+                            content: editorsDefaultContent.infoBox
                         }
                     },
                     {
@@ -299,7 +230,7 @@ export const elementsRegistry: Category[] = [
                         Icon: FaBox,
                         defaultProps: {
                             textType: 'warning-box',
-                            content: `<div class="warning-box"><p>⚠️ Предупреждение</p></div>`
+                            content: editorsDefaultContent.warningBox
                         }
                     },
                     {
@@ -309,7 +240,7 @@ export const elementsRegistry: Category[] = [
                         Icon: FaBox,
                         defaultProps: {
                             textType: 'caution-box',
-                            content: `<div class="caution-box"><p>🚨 Внимание!</p></div>`
+                            content: editorsDefaultContent.cautionBox
                         }
                     },
                     {
@@ -319,7 +250,7 @@ export const elementsRegistry: Category[] = [
                         Icon: FaBox,
                         defaultProps: {
                             textType: 'success-box',
-                            content: `<div class="success-box"><p>✅ Успешно выполнено</p></div>`
+                            content: editorsDefaultContent.successBox
                         }
                     },
                     {
@@ -329,7 +260,7 @@ export const elementsRegistry: Category[] = [
                         Icon: FaBox,
                         defaultProps: {
                             textType: 'question-box',
-                            content: `<div class="question-box"><p>❓ Частый вопрос</p></div>`
+                            content: editorsDefaultContent.questionBox
                         }
                     }
                 ]
@@ -345,7 +276,7 @@ export const elementsRegistry: Category[] = [
                         Icon: FaBox,
                         defaultProps: {
                             textType: 'button',
-                            content: `<button data-type="button">Текст кнопки</button>`
+                            content: editorsDefaultContent.button
                         }
                     },
                     {
@@ -355,15 +286,7 @@ export const elementsRegistry: Category[] = [
                         Icon: FaToggleOn,
                         defaultProps: {
                             textType: 'toggle',
-                            content: `<div data-type="toggle" data-open="false">
-    <div class="toggle-header">
-        <span class="toggle-icon">▶</span>
-        <span class="toggle-title">Заголовок</span>
-    </div>
-    <div class="toggle-content">
-        <p>Содержимое переключателя</p>
-    </div>
-</div>`
+                            content: editorsDefaultContent.toggle
                         }
                     }
                 ]

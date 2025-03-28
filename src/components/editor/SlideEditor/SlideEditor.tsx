@@ -90,7 +90,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     // Обработчик для открытия меню слайда
     const handleOpenSlideMenu = (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
-        openMenu(slide.id);
+        openMenu(slide.id, null, 'slide');
     };
 
     // Получаем стиль фона слайда

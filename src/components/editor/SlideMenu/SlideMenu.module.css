@@ -3,25 +3,37 @@
     border-width: 1px; 
     border-color: #E5E7EB; 
     background-color: #ffffff; 
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    min-width: 150px;
+    overflow: hidden;
 }
 
 .slideMenuButton {
     display: flex; 
-    padding: 0.5rem 0.25rem;
+    padding: 0.5rem 1rem;
     align-items: center; 
     width: 100%; 
     font-size: 0.875rem;
     line-height: 1.25rem; 
     text-align: left; 
     color: #374151; 
+    transition: background-color 0.2s ease;
 }
 
 .slideMenuButton:hover {
     background-color: #F3F4F6; 
 }
 
+.slideMenuButton:focus {
+    outline: none;
+    background-color: #F3F4F6;
+}
+
 .removeButton {
     color: #DC2626; 
+}
+
+.removeButton:hover {
+    background-color: #FEE2E2;
 }
 

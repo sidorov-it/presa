@@ -140,7 +140,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 }) => {
     const { handleDragStart } = useDnd();
 
-    const { openMenu, state: { elementId: menuElementId } } = useSlideMenu();
+    const { openMenu, state: { elementId: menuElementId, columnId: menuColumnId } } = useSlideMenu();
 
     const { beginTransaction, recordTransactionAction, commitTransaction } = useHistoryStore();
 
@@ -535,7 +535,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                         className={`${styles.elementDragHandle} ${menuElementId === element.id ? styles.elementDragHandleMenuOpen : ''}`}
                         draggable="true"
                         data-element-drag-handle={element.id}
-                        onClick={() => openMenu(slideId, element.id)}
+                        onClick={() => openMenu(slideId, element.id, 'element')}
                         onDragStart={(e) => {
                             e.stopPropagation();
                             handleDragStart(e, element.id, layoutId, element.cellId);
@@ -577,8 +577,10 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             {/* Drag handle for the entire cell */}
             {hasMultipleCells && (
                 <div
-                    className={styles.cellDragHandle}
+                    className={`${styles.cellDragHandle} ${menuColumnId === cell.id ? styles.cellDragHandleMenuOpen : ''}`}
                     draggable="true"
+                    data-column-drag-handle={cell.id}
+                    onClick={() => openMenu(slideId, null, 'column', layoutId, cell.id)}
                     onDragStart={(e) => {
                         e.stopPropagation();
                         handleDragStart(e, '', layoutId, cell.id);
