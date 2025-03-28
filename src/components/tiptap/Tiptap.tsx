@@ -14,114 +14,10 @@ import TableHeader from '@tiptap/extension-table-header'
 import TableCell from '@tiptap/extension-table-cell'
 import { Extension } from '@tiptap/core'
 import { useEditorStore } from '@/store/editorStore'
-import { PluginKey, Plugin } from '@tiptap/pm/state'
 import styles from './Tiptap.module.css'
-import { ButtonNode, ToggleNode } from './extensions'
-import { SlashCommandExtension } from './SlashCommandExtension'
+import { SlashCommandExtension, PreventDropExtension, EnterHandlerExtension } from './extensions'
+import { ButtonNode, ToggleNode } from './nodes'
 
-export const pluginKey = new PluginKey('prevent-drop-from-outside');
-
-export const preventDropFromOutsidePlugin = new Plugin({
-    key: pluginKey,
-    state: {
-        init: () => false,
-        apply: (tr, prev) => {
-            const action = tr.getMeta(pluginKey);
-            if (!action) {
-                return prev;
-            }
-
-            switch (action) {
-                case 'drag':
-                    return true;
-                case 'drop':
-                default:
-                    return false;
-            }
-        },
-    },
-    props: {
-        handleDOMEvents: {
-            dragstart(view) {
-                const dragFromInsideActive = pluginKey.getState(view.state);
-                if (!dragFromInsideActive) {
-                    view.dispatch(view.state.tr.setMeta(pluginKey, 'drag'));
-                }
-            },
-            drop(view, event) {
-                const dragFromInsideActive = pluginKey.getState(view.state);
-                if (dragFromInsideActive) {
-                    view.dispatch(view.state.tr.setMeta(pluginKey, 'drop'));
-                    return false;
-                }
-                event.preventDefault();
-                return true;
-            },
-        },
-    },
-});
-
-// Create a custom extension to add the preventDropFromOutsidePlugin
-const PreventDropExtension = Extension.create({
-    name: 'preventDrop',
-    addProseMirrorPlugins() {
-        return [preventDropFromOutsidePlugin];
-    },
-});
-
-// Создаем расширение для обработки нажатия Enter и Backspace
-const EnterHandlerExtension = (onEnterPressed: () => void, onBackspacePressed: () => void) => {
-    return Extension.create({
-        name: 'enterHandler',
-        addKeyboardShortcuts() {
-            return {
-                'Enter': ({ editor }) => {
-                    // Если курсор в конце документа и текущий узел пустой или содержит только один параграф
-                    const { state } = editor
-                    const { selection } = state
-                    const { empty, $head } = selection
-
-                    // Проверяем, находится ли курсор в конце документа
-                    const isAtEnd = $head.pos === state.doc.content.size
-
-                    // Проверяем, есть ли в документе только один параграф
-                    const isSingleParagraph = state.doc.childCount === 1 && state.doc.firstChild?.type.name === 'paragraph'
-
-                    // Проверяем, находится ли курсор в конце единственного параграфа
-                    const isAtEndOfParagraph = isSingleParagraph && state.doc.firstChild && $head.pos === state.doc.firstChild.nodeSize - 1
-
-                    // Если курсор в конце документа или это единственный параграф и курсор в его конце
-                    if (empty && (isAtEnd || isAtEndOfParagraph)) {
-                        onEnterPressed()
-                        return true
-                    }
-
-                    return false
-                },
-                'Backspace': ({ editor }) => {
-                    // Если курсор в начале документа и документ пустой
-                    const { state } = editor
-                    const { selection } = state
-                    const { empty, $head } = selection
-
-                    // Проверяем, находится ли курсор в начале документа
-                    const isAtStart = $head.pos === 1
-
-                    // Проверяем, пустой ли документ
-                    const isEmpty = state.doc.textContent.trim() === ''
-
-                    // Если курсор в начале документа и документ пустой
-                    if (empty && isAtStart && isEmpty) {
-                        onBackspacePressed()
-                        return true
-                    }
-
-                    return false
-                },
-            }
-        },
-    })
-}
 
 // Определяем типы пропсов
 interface TiptapProps {
@@ -150,8 +46,8 @@ export interface TiptapRef {
 
 // Определяем массив расширений
 const getExtensions = (
-    onEnterPressed: () => void, 
-    onBackspacePressed: () => void, 
+    onEnterPressed: () => void,
+    onBackspacePressed: () => void,
     placeholder: string,
     onAddElement?: (type: string) => void
 ) => [
@@ -193,6 +89,7 @@ const getExtensions = (
     }),
 
     // Кастомные блоки
+    // почему Extension, а не Node?
     Extension.create({
         name: 'customBox',
         addGlobalAttributes() {
@@ -203,8 +100,8 @@ const getExtensions = (
                         class: {
                             default: null,
                             parseHTML: element => {
-                                const classes = ['box', 'note-box', 'info-box', 'warning-box', 
-                                               'caution-box', 'success-box', 'question-box'];
+                                const classes = ['box', 'note-box', 'info-box', 'warning-box',
+                                    'caution-box', 'success-box', 'question-box'];
                                 const className = element.className;
                                 return classes.find(c => className.includes(c)) || null;
                             },
@@ -234,8 +131,8 @@ const getExtensions = (
                                 if (!attributes['data-type']) return {};
                                 return {
                                     'data-type': attributes['data-type'],
-                                    class: attributes['data-type'] === 'button' 
-                                        ? 'interactive-button' 
+                                    class: attributes['data-type'] === 'button'
+                                        ? 'interactive-button'
                                         : 'toggle-wrapper'
                                 };
                             },
@@ -249,20 +146,19 @@ const getExtensions = (
     // Предотвращение дропа извне
     PreventDropExtension,
 
-    // Обработка Enter и Backspace
     EnterHandlerExtension(onEnterPressed, onBackspacePressed),
+
+    // Slash command
+    SlashCommandExtension.configure({
+        onAddElement: onAddElement || (() => { }),
+    }),
+    // Обработка Enter и Backspace
 
     // Плейсхолдер
     Placeholder.configure({
         placeholder,
         emptyEditorClass: 'is-editor-empty',
     }),
-
-    // Slash command
-    SlashCommandExtension.configure({
-        onAddElement: onAddElement || (() => {}),
-    }),
-
     // Добавляем кнопку и переключатель
     ButtonNode,
     ToggleNode,
@@ -298,13 +194,13 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
             handleClick: (view, pos, event) => {
                 const target = event.target as HTMLElement;
                 const toggleHeader = target.closest('.toggle-header');
-                
+
                 if (toggleHeader) {
                     const toggleWrapper = toggleHeader.closest('.toggle-wrapper');
                     if (toggleWrapper) {
                         const isOpen = toggleHeader.getAttribute('data-open') === 'true';
                         const newState = !isOpen;
-                        
+
                         // Обновляем состояние в DOM
                         toggleHeader.setAttribute('data-open', String(newState));
                         toggleHeader.classList.add('open', String(newState));
@@ -507,6 +403,121 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
                 }
             }
         }
+
+        /* Slash Command Menu Styles */
+            .slash-menu {
+                overflow-y: auto; 
+                z-index: 50; 
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem; 
+                border-radius: 0.375rem; 
+                width: 100%; 
+                background-color: #ffffff; 
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
+                max-height: 300px;
+                border: 1px solid #3b82f6; /* Blue outline */
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(59, 130, 246, 0.3);
+                min-width: 200px;
+            }
+
+            .slash-menu-item {
+                display: flex; 
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem; 
+                padding-left: 0.75rem;
+                padding-right: 0.75rem; 
+                gap: 0.5rem; 
+                font-size: 0.875rem;
+                line-height: 1.25rem; 
+                color: #374151; 
+                transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                transition-duration: 300ms; 
+                cursor: pointer; 
+            }
+
+            .slash-menu-item:hover {
+                background-color: #EFF6FF; 
+            }
+
+            .slash-menu-item.selected {
+                color: #2563EB; 
+                background-color: #EFF6FF;
+            }
+
+            .slash-menu-item-icon {
+                display: flex; 
+                justify-content: center; 
+                align-items: center; 
+                color: #3B82F6; 
+                width: 20px;
+                height: 20px;
+            }
+
+            .slash-menu-item-label {
+                flex-grow: 1; 
+                font-weight: 500; 
+            }
+
+            .slash-menu-no-results {
+                padding: 0.75rem; 
+                font-size: 0.875rem;
+                line-height: 1.25rem; 
+                text-align: center; 
+                color: #6B7280; 
+            }
+
+            /* Dark mode support */
+            .dark .slash-menu {
+                border-color: #3B82F6; 
+                background-color: #1F2937; 
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(59, 130, 246, 0.4);
+            }
+
+            .dark .slash-menu-item {
+                color: #D1D5DB; 
+            }
+
+            .dark .slash-menu-item:hover {
+                background-color: #1E3A8A; 
+                --bg-opacity: 0.3; 
+            }
+
+            .dark .slash-menu-item.selected {
+                color: #60A5FA; 
+                background-color: #1E3A8A; 
+                --bg-opacity: 0.3; 
+            }
+
+            .dark .slash-menu-item-icon {
+                color: #60A5FA; 
+            }
+
+            .dark .slash-menu-no-results {
+                color: #9CA3AF;
+            }
+
+            /* Tippy theme override */
+            .tippy-box[data-theme~='light'] {
+                border-radius: 0.375rem; 
+                background-color: #ffffff; 
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                border: 1px solid #3b82f6;
+                box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.1);
+            }
+
+            .tippy-box[data-theme~='light'] .tippy-content {
+                padding: 0; ;
+            }
+
+            .dark .tippy-box[data-theme~='light'] {
+                background-color: #1F2937; 
+                border: 1px solid #3b82f6;
+            }
+
+            .slash-menu-item.selected {
+                background-color: #EFF6FF; 
+            }
       `}</style>
         </div>
     )

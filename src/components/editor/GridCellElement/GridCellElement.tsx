@@ -366,16 +366,16 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     };
 
     // Handler for adding new elements via slash command
-    const handleAddElement = (type: string) => {
+    const handleAddElement = (type: string, elementId: string) => {
         const elementData = getNewElement(type);
         if (elementData) {
             const newElementWithCell = {
                 ...elementData,
-                cellId: cell.id
+                cellId: cell.id,
+                id: elementId
             };
-            
-            // Add the element to the current layout
-            addElement(presentationId, slideId, layoutId, newElementWithCell);
+
+            updateElement(presentationId, slideId, layoutId, elementId, newElementWithCell as Partial<Element>);
         }
     };
 
@@ -411,7 +411,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                         onContentChange={handleEditorContentChange(element.id)}
                         onBlur={() => { }}
                         customBubbleMenuTrigger={dragHandleRef}
-                        onAddElement={handleAddElement}
+                        onAddElement={(type) => handleAddElement(type, element.id)}
                         presentationId={presentationId}
                         slideId={slideId}
                         layoutId={layoutId}
@@ -471,6 +471,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     />
                 </>
             )}
+            <div>cellId: {cell.id}</div>
         </div>
     );
 };
