@@ -12,17 +12,17 @@ import Table from '@tiptap/extension-table'
 import TableRow from '@tiptap/extension-table-row'
 import TableHeader from '@tiptap/extension-table-header'
 import TableCell from '@tiptap/extension-table-cell'
-import { Extension } from '@tiptap/core'
+import { Editor, Extension, generateHTML } from '@tiptap/core'
 import { useEditorStore } from '@/store/editorStore'
 import styles from './Tiptap.module.css'
-import { SlashCommandExtension, PreventDropExtension, EnterHandlerExtension } from './extensions'
+import { SlashCommandExtension, PreventDropExtension, EnterHandlerExtension } from './extensions/index'
 import { ButtonNode, ToggleNode } from './nodes'
 
 
 // Определяем типы пропсов
 interface TiptapProps {
     initialContent?: string;
-    onEnterPressed?: () => void;
+    onEnterPressed?: (content?: any) => void;
     onBackspacePressed?: () => void;
     onFocus?: () => void;
     onBlur?: () => void;
@@ -35,6 +35,11 @@ interface TiptapProps {
     presentationId?: string;
     slideId?: string;
     layoutId?: string;
+    tiptapRefs: RefObject<{
+        editors: Record<string, Editor>;
+        editorRefs: React.RefObject<HTMLDivElement>[];
+    }>;
+    elementId: string;
 }
 
 // Define the ref type
@@ -46,8 +51,8 @@ export interface TiptapRef {
 
 // Определяем массив расширений
 const getExtensions = (
-    onEnterPressed: () => void,
-    onBackspacePressed: () => void,
+    onEnterPressed: (contentBeforeCursor?: string, contentAfterCursor?: string) => void,
+    onBackspacePressed: (isEmpty: boolean) => void,
     placeholder: string,
     onAddElement?: (type: string) => void
 ) => [
@@ -146,7 +151,16 @@ const getExtensions = (
     // Предотвращение дропа извне
     PreventDropExtension,
 
-    EnterHandlerExtension(onEnterPressed, onBackspacePressed),
+    EnterHandlerExtension((contentBeforeCursor, contentAfterCursor) => {
+        if (!contentBeforeCursor && !contentAfterCursor) return;
+        const htmlBeforeCursor = generateHTML(contentBeforeCursor!, getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement))
+        const htmlAfterCursor = generateHTML(contentAfterCursor!, getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement))
+        console.log('htmlAfterCursor', htmlAfterCursor)
+        console.log('htmlBeforeCursor', htmlBeforeCursor)
+        onEnterPressed(htmlBeforeCursor, htmlAfterCursor)
+    },  (isEmpty) => {
+        onBackspacePressed(isEmpty)
+    }),
 
     // Slash command
     SlashCommandExtension.configure({
@@ -179,6 +193,8 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
     presentationId,
     slideId,
     layoutId,
+    tiptapRefs,
+    elementId,
 }, ref) => {
     // Use the global editor store instead of local state
     const { setActiveEditor, showMenu } = useEditorStore();
@@ -186,7 +202,7 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
     const editor = useEditor({
         extensions: getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement),
         content: initialContent,
-        autofocus: autoFocus,
+        // autofocus: autoFocus,
         editorProps: {
             attributes: {
                 class: `${styles.editor} custom-tiptap-editor no-dropcursor`,
@@ -239,12 +255,14 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
         },
     })
 
+
+
     useEffect(() => {
         if (editor) {
             console.log('initialContent', initialContent)
             editor.commands.setContent(initialContent);
         }
-    }, [editor, initialContent])
+    }, [editor])
 
     // Метод для программного фокуса на редакторе
     const focus = useCallback(() => {
@@ -255,19 +273,24 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
     }, [editor])
 
     // Expose the focus method via ref
-    useImperativeHandle(ref, () => ({
-        focus,
-        getText: () => editor?.getText() ?? '',
-        isEmpty: () => editor?.isEmpty ?? false
-    }), [focus]);
+    // useImperativeHandle(ref, () => {
+    if (tiptapRefs?.current) {
+        // tiptapRefs.current.editors[elementId] = editor;
+        tiptapRefs.current.editors[elementId] = {
+            editor,
+            focus,
+            getText: () => editor?.getText() ?? '',
+            isEmpty: !!editor?.isEmpty ?? false
+        };
+    }
 
     // Устанавливаем фокус при монтировании, если autoFocus = true
-    useEffect(() => {
-        if (autoFocus && editor) {
-            // Focus immediately
-            focus();
-        }
-    }, [autoFocus, editor, focus])
+    // useEffect(() => {
+    //     if (autoFocus && editor) {
+    //         // Focus immediately
+    //         focus();
+    //     }
+    // }, [autoFocus, editor, focus])
 
     // Add event listener for custom trigger
     useEffect(() => {

@@ -1,16 +1,18 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { RefObject, useRef } from 'react';
 import { GridCell, Element, GridStructure, getPredefinedGridStructures, Layout } from '@/types';
 import { useDnd } from '@/contexts/DragDropContext';
 import Tiptap, { TiptapRef } from '@/components/tiptap/Tiptap';
 import styles from './GridCellElement.module.css'; // Make sure this exists
 import { GridTextElement } from '@/types/grid-elements';
 import { usePresentationStore } from '@/store/presentationStore';
+import { useHistoryStore } from '@/store/historyStore';
 import { generateId } from '@/utils/id';
 import { useEditorStore } from '@/store/editorStore';
 import { useSlideMenu } from '@/contexts/SlideMenuContext';
 import { getNewElement } from '@/elements/registry';
+import { Editor } from '@tiptap/react';
 
 
 const adjustColumnWidths = (
@@ -117,7 +119,10 @@ interface GridCellElementProps {
     index: number;
     hasMultipleCells: boolean;
     isLastCell: boolean;
-    tiptapRefs: React.RefObject<Record<string, React.RefObject<TiptapRef>>>;
+    tiptapRefs: RefObject<{
+        editors: Record<string, Editor>;
+        editorRefs: React.RefObject<HTMLDivElement>[];
+    }>;
     onSelect: (element: Element) => void;
     onDelete: (element: Element) => void;
 }
@@ -136,6 +141,8 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const { handleDragStart } = useDnd();
 
     const { openMenu, state: { elementId: menuElementId } } = useSlideMenu();
+
+    const { beginTransaction, recordTransactionAction, commitTransaction } = useHistoryStore();
 
     const dragHandleRef = useRef<HTMLDivElement>(null);
     const resizeBorderRef = useRef<HTMLDivElement>(null);
@@ -161,7 +168,20 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         }
     };
 
-    const handleEnterPressed = (element: Element) => () => {
+    const handleBackspacePressed = (element: Element, isEmpty: boolean) => {
+        const presentation = usePresentationStore.getState().getPresentation(presentationId);
+        if (!presentation) return;
+
+        const slide = presentation.slides.find(s => s.id === slideId);
+        if (!slide) return;
+
+        const layout = slide.layouts.find(l => l.id === layoutId);
+        if (!layout) return;
+
+        const row = layout.gridStructure.rows.find(r => r.cells.find(c => c.id === element.cellId));
+    }
+
+    const handleEnterPressed = (element: Element) => (contentBeforeCursor?: string, contentAfterCursor?: string) => {
         // Получаем текущий макет
         const presentation = usePresentationStore.getState().getPresentation(presentationId);
         if (!presentation) return;
@@ -190,7 +210,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     id: firstNewEditorId,
                     type: 'editor' as const,
                     textType: 'heading' as const,
-                    content: '',
+                    content: contentAfterCursor || '',
                     position: { x: 0, y: 0 },
                     size: { width: 100, height: 100 },
                     style: {},
@@ -212,10 +232,37 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             const currentLayoutIndex = updatedLayouts.findIndex(l => l.id === layoutId);
             updatedLayouts.splice(currentLayoutIndex + 1, 0, newLayout);
 
+            updatedLayouts.forEach(layout => {
+                layout.elements.forEach(el => {
+                    if (el.id === element.id) {
+                        return {
+                            ...el,
+                            content: contentBeforeCursor || ''
+                        }
+                    }
+                    return el;
+                })
+            })
+
             // Update the slide with the new layouts
             usePresentationStore.getState().updateSlide(presentationId, slideId, {
                 layouts: updatedLayouts
             });
+
+            commitTransaction(presentationId);
+            // const updatedCurrentElements = layout.elements.map(el => {
+            // if (el.id === element.id) {
+            //     return {
+            //         ...el,
+            //         content: contentBeforeCursor || ''
+            //     }
+            // }
+            // return el;
+            // })
+
+            // usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, {
+            //     elements: updatedCurrentElements
+            // });
 
             // Set the element to focus in the editor store
             useEditorStore.getState().setElementToFocus(
@@ -223,11 +270,18 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 newLayoutId,
                 newLayout.gridStructure.rows[0].cells[0].id
             );
+
+            setTimeout(() => {
+                tiptapRefs.current?.editors[firstNewEditorId]?.focus();
+            }, 10);
+
         } else {
             // в строке больше 1 элемента. просто добавляем новый элемент
             const newElementId = generateId();
             const cell = row?.cells.find(c => c.id === element.cellId);
             if (!cell) return;
+
+            const newElementIndex = layout.elements.findIndex(e => e.id === element.id);
 
             const newElement: Element = {
                 id: newElementId,
@@ -242,11 +296,16 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             }
 
             const updatedElements = [...layout.elements];
-            updatedElements.push(newElement);
+            updatedElements.splice(newElementIndex + 1, 0, newElement);
 
             layout.elements = updatedElements;
 
             updateLayout(presentationId, slideId, layoutId, layout);
+
+            console.log('tiptapRefs.current', tiptapRefs.current, newElementId)
+            setTimeout(() => {
+                tiptapRefs.current?.editors[newElementId]?.focus();
+            }, 10)
         }
     };
 
@@ -376,6 +435,8 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             };
 
             updateElement(presentationId, slideId, layoutId, elementId, newElementWithCell as Partial<Element>);
+
+            tiptapRefs.current.editors[elementId]?.editor.commands.setContent(elementData.content);
         }
     };
 
@@ -400,13 +461,15 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     />
                     <Tiptap
                         key={element.id}
-                        ref={tiptapRefs.current?.[element.id]}
+                        ref={tiptapRefs}
+                        elementId={element.id}
+                        tiptapRefs={tiptapRefs}
                         id={element.cellId}
                         // eslint-disable-next-line jsx-a11y/no-autofocus
                         autoFocus={true}
                         initialContent={getEditorContent(element)}
                         onEnterPressed={handleEnterPressed(element)}
-                        onBackspacePressed={() => { }}
+                        onBackspacePressed={(isEmpty) => handleBackspacePressed(element, isEmpty)}
                         onFocus={() => onSelect(element)}
                         onContentChange={handleEditorContentChange(element.id)}
                         onBlur={() => { }}
@@ -471,7 +534,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     />
                 </>
             )}
-            <div>cellId: {cell.id}</div>
+            {/* <div>cellId: {cell.id}</div> */}
         </div>
     );
 };

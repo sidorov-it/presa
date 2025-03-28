@@ -6,11 +6,11 @@ export default function Presentation(
     { presentation, presentationId, activeSlideId, handleSlideSelect }:
         { presentation: IPresentation, presentationId: string, activeSlideId: string | null, handleSlideSelect: (slideId: string) => void }
 ) {
-    const { state } = useDnd();
+    // const { state } = useDnd();
 
     return (
         <div className="">
-            <div className="w-full p-4 bg-white rounded-lg shadow-sm mb-4">
+            {/* <div className="w-full p-4 bg-white rounded-lg shadow-sm mb-4">
                 <table className="w-full table-auto">
                     <thead>
                         <tr className="bg-gray-50">
@@ -31,7 +31,7 @@ export default function Presentation(
                         ))}
                     </tbody>
                 </table>
-            </div>
+            </div> */}
 
             {presentation.slides.map((slide: Slide) => (
                 <SlideEditor

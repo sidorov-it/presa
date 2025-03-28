@@ -6,6 +6,7 @@ import { PluginKey } from '@tiptap/pm/state';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/themes/light-border.css';
 import 'tippy.js/themes/light.css';
+import 'tippy.js/animations/shift-away.css';
 
 // Icon mappings - we need these to render SVG icons directly in HTML
 // since we can't use React components in this context
@@ -248,7 +249,7 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
                 pluginKey: SlashCommandPluginKey,
                 editor: this.editor,
                 char: '/',
-                startOfLine: false,
+                startOfLine: true,
                 items: ({ query }) => {
                     // Return filtered items based on query
                     return elementsRegistry
@@ -289,6 +290,7 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
                                 maxWidth: 300,
                                 animation: 'shift-away',
                                 popperOptions: {
+                                    strategy: 'absolute',
                                     modifiers: [{
                                         name: 'preventOverflow',
                                         options: {

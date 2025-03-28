@@ -12,6 +12,7 @@ import { useSlideMenu } from '@/contexts/SlideMenuContext';
 import SlideMenu from '../SlideMenu/SlideMenu';
 import { generateId } from '@/utils/id';
 import { DragDropTransactionHelper } from '@/contexts/DragDropTransactionHelper';
+import { Editor } from '@tiptap/react';
 
 interface SlideEditorProps {
     slide: Slide;
@@ -37,7 +38,13 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     // isSelected,
 }) => {
     const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
-    const tiptapRefs = useRef<Record<string, React.RefObject<TiptapRef>>>({});
+    const tiptapRefs = useRef<{
+        editors: Record<string, Editor>;
+        editorRefs: React.RefObject<HTMLDivElement>[];
+    }>({
+        editors: {},
+        editorRefs: []
+    });
     const editorRef = useRef<HTMLDivElement>(null);
     const [isSelected, setIsSelected] = useState(false);
     const { openMenu, state: { slideId: menuSlideId, elementId: menuElementId } } = useSlideMenu();

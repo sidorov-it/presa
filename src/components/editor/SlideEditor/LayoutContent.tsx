@@ -1,16 +1,20 @@
-import React from 'react';
+import React, { RefObject } from 'react';
 import { Layout, GridRow, GridCell, Element } from '@/types';
 import { useDnd } from '@/contexts/DragDropContext';
 import { generateGridTemplateAreas, generateGridTemplateColumns } from '@/types';
 import GridCellElement from '../GridCellElement';
 import styles from './SlideEditor.module.css';
 import { TiptapRef } from '@/components/tiptap/Tiptap';
+import { Editor } from '@tiptap/react';
 
 interface LayoutContentProps {
     layout: Layout;
     onSelectElement: (elementId: string) => void;
     onDeleteElement: (layoutId: string, elementId: string) => void;
-    tiptapRefs: React.RefObject<Record<string, React.RefObject<TiptapRef>>>;
+    tiptapRefs: RefObject<{
+        editors: Record<string, Editor>;
+        editorRefs: React.RefObject<HTMLDivElement>[];
+    }>;
     presentationId: string;
     slideId: string;
 }
