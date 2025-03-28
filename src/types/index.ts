@@ -1,4 +1,7 @@
+import { EditorWithMethods } from "@/components/tiptap/extensions/ArrowNavigationExtension";
 import { generateId } from "@/utils/id";
+import { Editor } from "@tiptap/react";
+import { RefObject } from "react";
 import { IconType } from "react-icons/lib";
 
 export type TextElementType =
@@ -528,4 +531,9 @@ export type Category = {
     Icon: IconType;
     subCategories?: SubCategory[];
     elements?: ElementType[];
+}
+
+export type TipTapRefs = {
+    editors: Record<string, EditorWithMethods>;
+    editorRefs: React.RefObject<HTMLDivElement>[];
 }

@@ -15,8 +15,9 @@ import TableCell from '@tiptap/extension-table-cell'
 import { Editor, Extension, generateHTML } from '@tiptap/core'
 import { useEditorStore } from '@/store/editorStore'
 import styles from './Tiptap.module.css'
-import { SlashCommandExtension, PreventDropExtension, EnterHandlerExtension } from './extensions/index'
+import { SlashCommandExtension, PreventDropExtension, EnterHandlerExtension, ArrowNavigationExtension, EditorWithMethods } from './extensions/index'
 import { ButtonNode, ToggleNode } from './nodes'
+import { TipTapRefs } from '@/types';
 
 
 // Определяем типы пропсов
@@ -35,10 +36,7 @@ interface TiptapProps {
     presentationId?: string;
     slideId?: string;
     layoutId?: string;
-    tiptapRefs: RefObject<{
-        editors: Record<string, Editor>;
-        editorRefs: React.RefObject<HTMLDivElement>[];
-    }>;
+    tiptapRefs: RefObject<TipTapRefs>;
     elementId: string;
 }
 
@@ -54,7 +52,15 @@ const getExtensions = (
     onEnterPressed: (contentBeforeCursor?: string, contentAfterCursor?: string) => void,
     onBackspacePressed: (isEmpty: boolean) => void,
     placeholder: string,
-    onAddElement?: (type: string) => void
+    onAddElement?: (type: string) => void,
+    presentationId?: string,
+    slideId?: string,
+    layoutId?: string,
+    elementId?: string,
+    tiptapRefs?: RefObject<{
+        editors: Record<string, EditorWithMethods>;
+        editorRefs: React.RefObject<HTMLDivElement>[];
+    }>
 ) => [
     // Базовый набор расширений
     StarterKit.configure({
@@ -166,7 +172,17 @@ const getExtensions = (
     SlashCommandExtension.configure({
         onAddElement: onAddElement || (() => { }),
     }),
-    // Обработка Enter и Backspace
+    
+    // Arrow key navigation between editors
+    ...(presentationId && slideId && layoutId && elementId && tiptapRefs ? [
+        ArrowNavigationExtension(
+            presentationId,
+            slideId,
+            layoutId,
+            elementId,
+            tiptapRefs
+        )
+    ] : []),
 
     // Плейсхолдер
     Placeholder.configure({
@@ -200,7 +216,17 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
     const { setActiveEditor, showMenu } = useEditorStore();
 
     const editor = useEditor({
-        extensions: getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement),
+        extensions: getExtensions(
+            onEnterPressed, 
+            onBackspacePressed, 
+            placeholder, 
+            onAddElement,
+            presentationId,
+            slideId,
+            layoutId,
+            elementId,
+            tiptapRefs
+        ),
         content: initialContent,
         // autofocus: autoFocus,
         editorProps: {
@@ -265,10 +291,10 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
     }, [editor])
 
     // Метод для программного фокуса на редакторе
-    const focus = useCallback(() => {
+    const focus = useCallback((position: 'start' | 'end' = 'end') => {
         if (editor) {
             // Focus immediately without any delay
-            editor.commands.focus('end');
+            editor.commands.focus(position);
         }
     }, [editor])
 
@@ -280,7 +306,7 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
             editor,
             focus,
             getText: () => editor?.getText() ?? '',
-            isEmpty: !!editor?.isEmpty ?? false
+            isEmpty: editor?.isEmpty || false
         };
     }
 
@@ -441,6 +467,21 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
                 border: 1px solid #3b82f6; /* Blue outline */
                 box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(59, 130, 246, 0.3);
                 min-width: 200px;
+            }
+
+            /* Element focus styles for keyboard navigation */
+            .element-focus {
+                outline: 3px solid #3b82f6 !important; /* Blue outline */
+                border-radius: 4px;
+                position: relative;
+                z-index: 10;
+                animation: pulse-focus 1s ease-in-out;
+            }
+
+            @keyframes pulse-focus {
+                0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+                70% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
             }
 
             .slash-menu-item {

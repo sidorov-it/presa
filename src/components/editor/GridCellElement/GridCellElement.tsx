@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { RefObject, useRef } from 'react';
-import { GridCell, Element, GridStructure, getPredefinedGridStructures, Layout } from '@/types';
+import { GridCell, Element, GridStructure, getPredefinedGridStructures, Layout, TipTapRefs } from '@/types';
 import { useDnd } from '@/contexts/DragDropContext';
 import Tiptap, { TiptapRef } from '@/components/tiptap/Tiptap';
 import styles from './GridCellElement.module.css'; // Make sure this exists
@@ -120,10 +120,7 @@ interface GridCellElementProps {
     index: number;
     hasMultipleCells: boolean;
     isLastCell: boolean;
-    tiptapRefs: RefObject<{
-        editors: Record<string, Editor>;
-        editorRefs: React.RefObject<HTMLDivElement>[];
-    }>;
+    tiptapRefs: TipTapRefs;
     onSelect: (element: Element) => void;
     onDelete: (element: Element) => void;
 }
@@ -154,7 +151,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     const editorRef = useRef<HTMLDivElement>(null);
 
-    const { updateElement, updateLayout, addElement } = usePresentationStore();
+    const { updateElement, updateLayout } = usePresentationStore();
 
     const getEditorContent = (element: Element): string => {
         switch (element.type) {

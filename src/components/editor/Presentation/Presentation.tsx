@@ -1,12 +1,17 @@
-import { IPresentation, Slide } from "@/types";
+import { IPresentation, Slide, TipTapRefs } from "@/types";
 import SlideEditor from "../SlideEditor";
-import { useDnd } from "@/contexts/DragDropContext";
+import { useRef } from "react";
 
 export default function Presentation(
     { presentation, presentationId, activeSlideId, handleSlideSelect }:
         { presentation: IPresentation, presentationId: string, activeSlideId: string | null, handleSlideSelect: (slideId: string) => void }
 ) {
     // const { state } = useDnd();
+
+    const tiptapRefs = useRef<TipTapRefs>({
+        editors: {},
+        editorRefs: []
+    });
 
     return (
         <div className="">
@@ -36,6 +41,7 @@ export default function Presentation(
             {presentation.slides.map((slide: Slide) => (
                 <SlideEditor
                     key={slide.id}
+                    tiptapRefs={tiptapRefs}
                     slide={slide}
                     presentationId={presentationId}
                     handleSelectSlide={handleSlideSelect}
