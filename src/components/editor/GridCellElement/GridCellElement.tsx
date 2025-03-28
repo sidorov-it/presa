@@ -13,6 +13,7 @@ import { useEditorStore } from '@/store/editorStore';
 import { useSlideMenu } from '@/contexts/SlideMenuContext';
 import { getNewElement } from '@/elements/registry';
 import { Editor } from '@tiptap/react';
+import { getColumnWidths } from '../SlideEditor/SlideEditor';
 
 
 const adjustColumnWidths = (
@@ -178,7 +179,90 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         const layout = slide.layouts.find(l => l.id === layoutId);
         if (!layout) return;
 
-        const row = layout.gridStructure.rows.find(r => r.cells.find(c => c.id === element.cellId));
+        const cell = layout.gridStructure.rows.find(r => r.cells.find(c => c.id === element.cellId));
+    
+        const elementsInCell = layout.elements.filter(e => e.cellId === element.cellId);
+
+        const slideIndex = presentation.slides.findIndex(s => s.id === slideId);
+        const layoutIndex = slide.layouts.findIndex(l => l.id === layoutId);
+
+        const isMultiCellRow = layout.gridStructure.rows[0].cells.length > 1;
+
+
+        if (layoutIndex === 0 && slideIndex === 0 && !isMultiCellRow) {
+            // backspace в первой строке первого слайда -> ничего не делаем
+            return;
+        }
+
+        if (elementsInCell.length === 1 && layoutIndex === 0 && slide.layouts.length > 1) {
+            // склеиваем 2 слайда
+            const currentSlideIndex = presentation.slides.findIndex(s => s.id === slideId);
+            const previousSlideIndex = currentSlideIndex - 1;
+
+            const previousSlide = presentation.slides[previousSlideIndex];
+
+            if (previousSlide) {
+                // берем лэйауты из текущего слайда
+                const slideLayouts = [...slide.layouts];
+                // удалеяем текущий лэйаут
+                slideLayouts.splice(layoutIndex, 1);
+
+                // берем оставшиеся и добавляем в предыдущий слайд
+                const previousSlideLayouts = [...previousSlide.layouts, ...slideLayouts];
+                beginTransaction(presentationId, 'merge slides');
+
+                const { deleteSlide, updateSlide } = usePresentationStore.getState()
+                // удаляем текущий слайд
+                deleteSlide(presentationId, slideId);
+
+                updateSlide(presentationId, previousSlide.id, {
+                    layouts: previousSlideLayouts
+                });
+                // usePresentationStore.getState().updateSlide(presentationId, slideId, {
+                //     layouts: updatedLayouts
+                // });
+            } else {
+                const updatedLayouts = [...slide.layouts];
+                updatedLayouts.splice(layoutIndex, 1);
+                usePresentationStore.getState().updateSlide(presentationId, slideId, {
+                    layouts: updatedLayouts
+                });
+            }
+        }
+        // backspace не в первой строке -> удаляем layout
+        else if (elementsInCell.length === 1 && layoutIndex !== 0 && slide.layouts.length > 1) {
+            usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+        }
+        // backspace в единственном элементе в ячейке с несколькими ячейками -> удаляем всю ячейку
+        else if (isMultiCellRow && elementsInCell.length === 1) {
+            const updatedLayout = { ...layout };
+            const updatedElements = updatedLayout.elements.filter(e => e.cellId !== element.cellId);
+            updatedLayout.elements = updatedElements;
+
+            const updatedCells = updatedLayout.gridStructure.rows[0].cells.filter(c => c.id !== element.cellId)
+                .map((cell, index) => ({
+                    ...cell,
+                    column: index
+                }))
+                .sort((a, b) => a.column - b.column);
+
+            updatedLayout.gridStructure.rows[0].cells = updatedCells;
+            updatedLayout.gridStructure.columns = updatedLayout.gridStructure.columns - 1;
+            const updatedColumnWidths = getColumnWidths(updatedLayout.gridStructure.columns);
+            updatedLayout.gridStructure.columnWidths = updatedColumnWidths;
+            usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
+        }
+        // backspace в первом элементе в ячейке с несколькими элементами -> удаляем первый элемент. ставим фокус на следующем
+        else if (isMultiCellRow && elementsInCell.length >= 1) {
+            const updatedLayout = { ...layout };
+            const updatedElements = updatedLayout.elements.filter(e => e.id !== element.id);
+            updatedLayout.elements = updatedElements;
+            usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
+        }
+        // удаление единственного элемента на слайде. удаляем весь слайд
+        else if (elementsInCell.length === 1 && layout.elements.length === 1) {
+            usePresentationStore.getState().deleteSlide(presentationId, slideId);
+        }
     }
 
     const handleEnterPressed = (element: Element) => (contentBeforeCursor?: string, contentAfterCursor?: string) => {
