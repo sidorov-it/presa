@@ -193,7 +193,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             return;
         }
 
-        if (elementsInCell.length === 1 && layoutIndex === 0 && slide.layouts.length > 1) {
+        if (elementsInCell.length === 1 && !isMultiCellRow && layoutIndex === 0 && slide.layouts.length > 1) {
             // склеиваем 2 слайда
             const currentSlideIndex = presentation.slides.findIndex(s => s.id === slideId);
             const previousSlideIndex = currentSlideIndex - 1;
@@ -229,7 +229,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             }
         }
         // backspace не в первой строке -> удаляем layout
-        else if (elementsInCell.length === 1 && layoutIndex !== 0 && slide.layouts.length > 1) {
+        else if (elementsInCell.length === 1 && !isMultiCellRow && layoutIndex !== 0 && slide.layouts.length > 1) {
             usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
         }
         // backspace в единственном элементе в ячейке с несколькими ячейками -> удаляем всю ячейку
