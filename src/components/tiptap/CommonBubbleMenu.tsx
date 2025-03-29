@@ -1,5 +1,6 @@
 import { BubbleMenu, Editor } from "@tiptap/react";
 import { ColorPicker } from "./ColorPicker";
+import { LinkEditor } from "./LinkEditor";
 import styles from "./BubbleMenu.module.css";
 import {
   BiBold,
@@ -7,7 +8,6 @@ import {
   BiUnderline,
   BiStrikethrough,
   BiCode,
-  BiLink,
   BiListOl,
   BiListUl,
   BiCheckSquare,
@@ -80,13 +80,6 @@ export default function CommonBubbleMenu({
   const handleAlignment = useCallback((align: 'left' | 'center' | 'right' | 'justify') => {
     editor.chain().focus().setTextAlign(align).run();
   }, [editor]);
-
-  const handleLink = () => {
-    const url = window.prompt('URL:');
-    if (url) {
-      editor.chain().focus().setLink({ href: url }).run();
-    }
-  };
 
   const handleClearStyles = () => {
     editor.chain().focus().clearNodes().unsetAllMarks().run();
@@ -200,13 +193,10 @@ export default function CommonBubbleMenu({
           <BiCode size={16} />
         </button>
 
-        <button
-          onClick={handleLink}
-          className={`${styles.button} ${editor.isActive('link') ? styles.active : ''}`}
-          aria-label="Ссылка"
-        >
-          <BiLink size={16} />
-        </button>
+        <LinkEditor
+          editor={editor}
+          className={styles.button}
+        />
 
         <button
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
