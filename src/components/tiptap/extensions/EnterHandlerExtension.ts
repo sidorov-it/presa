@@ -12,6 +12,27 @@ export const EnterHandlerExtension = (onEnterPressed: (contentBeforeCursor?: JSO
                     const { selection } = state
                     const { $head } = selection
 
+                    // Проверяем, находится ли курсор внутри списка, поднимаясь по дереву узлов
+                    let isInList = false
+                    let currentNode = $head.parent
+                    let depth = $head.depth
+                    
+                    while (depth > 0) {
+                        if (currentNode.type.name === 'listItem' || 
+                            currentNode.type.name === 'bulletList' || 
+                            currentNode.type.name === 'orderedList') {
+                            isInList = true
+                            break
+                        }
+                        depth--
+                        currentNode = $head.node(depth)
+                    }
+
+                    // Если курсор в списке, позволяем стандартную обработку Enter
+                    if (isInList) {
+                        return false // Передаем управление стандартному обработчику списков Tiptap
+                    }
+
                     // Get the current cursor position
                     const cursorPos = $head.pos
 
@@ -20,7 +41,6 @@ export const EnterHandlerExtension = (onEnterPressed: (contentBeforeCursor?: JSO
 
                     const contentBeforeCursor = state.doc.cut(0, cursorPos).toJSON()
 
-                    // if (empty && isAtEndOfBlock) {
                     // If there's content after the cursor, pass it to the callback
                     if (contentAfterCursor && contentAfterCursor.content?.length > 0) {
                         // Delete the content after cursor in current editor
@@ -37,9 +57,6 @@ export const EnterHandlerExtension = (onEnterPressed: (contentBeforeCursor?: JSO
                         onEnterPressed()
                     }
                     return true
-                    // }
-
-                    // return false
                 },
                 'Backspace': ({ editor }) => {
                     const { state } = editor
