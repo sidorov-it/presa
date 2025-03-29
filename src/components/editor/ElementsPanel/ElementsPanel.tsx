@@ -51,7 +51,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, presen
                                     {subCategory.elements.map(element => (
                                         <div
                                             key={element.id}
-                                            className="border border-gray-200 rounded-lg p-2 hover:border-blue-500 cursor-grab bg-white"
+                                            className={`${styles.elementItem}`}
                                             draggable
                                             onDragStart={(e) => handleDragStart(e, element)}
                                             aria-label={`${subCategory.label}: ${element.label}`}
