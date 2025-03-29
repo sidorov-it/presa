@@ -1,4 +1,3 @@
-
 const editorsDefaultContent = {
     title: '<h1>Заголовок</h1>',
     heading1: '<h2>Подзаголовок 1</h2>',
@@ -83,13 +82,13 @@ const editorsDefaultContent = {
     <li data-type="taskItem" data-checked="true">A list item</li>
     <li data-type="taskItem" data-checked="false">And another one</li>
 </ul>`,
-    box: `<div class="box"><p>Простой блок текста</p></div>`,
-    noteBox: `<div class="note-box"><p>📝 Важная заметка</p></div>`,
-    infoBox: `<div class="info-box"><p>ℹ️ Полезная информация</p></div>`,
-    warningBox: `<div class="warning-box"><p>⚠️ Предупреждение</p></div>`,
-    cautionBox: `<div class="caution-box"><p>🚨 Внимание!</p></div>`,
-    successBox: `<div class="success-box"><p>✅ Успешно выполнено</p></div>`,
-    questionBox: `<div class="question-box"><p>❓ Частый вопрос</p></div>`,
+    box: `<div data-type="box" class="box"><p>Простой блок текста</p></div>`,
+    noteBox: `<div data-type="note-box" class="note-box"><p>📝 Важная заметка</p></div>`,
+    infoBox: `<div data-type="info-box" class="info-box"><p>ℹ️ Полезная информация</p></div>`,
+    warningBox: `<div data-type="warning-box" class="warning-box"><p>⚠️ Предупреждение</p></div>`,
+    cautionBox: `<div data-type="caution-box" class="caution-box"><p>🚨 Внимание!</p></div>`,
+    successBox: `<div data-type="success-box" class="success-box"><p>✅ Успешно выполнено</p></div>`,
+    questionBox: `<div data-type="question-box" class="question-box"><p>❓ Частый вопрос</p></div>`,
     button: `<button data-type="button">Текст кнопки</button>`,
     toggle: `
 <div data-type="toggle" data-open="false">

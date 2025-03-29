@@ -508,7 +508,7 @@ export type ElementConfig = {
     MenuComponent?: React.ComponentType<any>;
 }
 
-export type ELEMENT_TYPE = 'element' | 'layout' | 'slide';
+export type ELEMENT_TYPE = 'editor' |'element' | 'layout' | 'slide';
 
 export type ElementType = {
     id: string;

@@ -21,7 +21,17 @@ import { Extension, generateHTML } from '@tiptap/core'
 import { useEditorStore } from '@/store/editorStore'
 import styles from './Tiptap.module.css'
 import { SlashCommandExtension, PreventDropExtension, EnterHandlerExtension, ArrowNavigationExtension, EditorWithMethods } from './extensions/index'
-import { ButtonNode, ToggleNode } from './nodes'
+import { 
+    ButtonNode, 
+    ToggleNode, 
+    BoxNode, 
+    NoteBoxNode, 
+    InfoBoxNode, 
+    WarningBoxNode, 
+    CautionBoxNode, 
+    SuccessBoxNode, 
+    QuestionBoxNode 
+} from './nodes'
 import { TipTapRefs } from '@/types';
 import CommonBubbleMenu from './CommonBubbleMenu';
 import Link from '@tiptap/extension-link';
@@ -176,34 +186,6 @@ const getExtensions = (
         //   }),
 
 
-        // Кастомные блоки
-        // почему Extension, а не Node?
-        Extension.create({
-            name: 'customBox',
-            addGlobalAttributes() {
-                return [
-                    {
-                        types: ['paragraph'],
-                        attributes: {
-                            class: {
-                                default: null,
-                                parseHTML: element => {
-                                    const classes = ['box', 'note-box', 'info-box', 'warning-box',
-                                        'caution-box', 'success-box', 'question-box'];
-                                    const className = element.className;
-                                    return classes.find(c => className.includes(c)) || null;
-                                },
-                                renderHTML: attributes => {
-                                    if (!attributes.class) return {};
-                                    return { class: attributes.class };
-                                },
-                            },
-                        },
-                    },
-                ];
-            },
-        }),
-
         // Интерактивные элементы
         Extension.create({
             name: 'interactiveElements',
@@ -269,6 +251,14 @@ const getExtensions = (
         // Добавляем кнопку и переключатель
         ButtonNode,
         ToggleNode,
+        // Добавляем блоки разных типов
+        BoxNode,
+        NoteBoxNode,
+        InfoBoxNode,
+        WarningBoxNode,
+        CautionBoxNode,
+        SuccessBoxNode,
+        QuestionBoxNode,
     ]
 
 const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
