@@ -91,15 +91,11 @@ const editorsDefaultContent = {
     questionBox: `<div data-type="question-box" class="question-box"><p>❓ Частый вопрос</p></div>`,
     button: `<button data-type="button">Текст кнопки</button>`,
     toggle: `
-<div data-type="toggle" data-open="false">
-    <div class="toggle-header">
-        <span class="toggle-icon">▶</span>
-        <span class="toggle-title">Заголовок</span>
-    </div>
-    <div class="toggle-content">
-        <p>Содержимое переключателя</p>
-    </div>
-</div>`
+      <details>
+        <summary>This is a summary</summary>
+        <p>Surprise!</p>
+      </details>
+`
 }
 
 export default editorsDefaultContent;

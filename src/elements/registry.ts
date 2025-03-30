@@ -299,7 +299,7 @@ export const elementsRegistry: Category[] = [
                         Icon: FaToggleOn,
                         MenuComponent: DefaultBubbleMenu,
                         defaultProps: {
-                            textType: 'toggle',
+                            textType: 'details',
                             content: editorsDefaultContent.toggle
                         }
                     }

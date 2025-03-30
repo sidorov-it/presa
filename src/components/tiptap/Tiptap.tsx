@@ -23,7 +23,6 @@ import styles from './Tiptap.module.css'
 import { SlashCommandExtension, PreventDropExtension, EnterHandlerExtension, ArrowNavigationExtension, EditorWithMethods } from './extensions/index'
 import { 
     ButtonNode, 
-    ToggleNode, 
     BoxNode, 
     NoteBoxNode, 
     InfoBoxNode, 
@@ -35,6 +34,9 @@ import {
 import { TipTapRefs } from '@/types';
 import CommonBubbleMenu from './CommonBubbleMenu';
 import Link from '@tiptap/extension-link';
+import Details from '@tiptap-pro/extension-details'
+import DetailsContent from '@tiptap-pro/extension-details-content'
+import DetailsSummary from '@tiptap-pro/extension-details-summary'
 
 // Определяем типы пропсов
 interface TiptapProps {
@@ -248,9 +250,15 @@ const getExtensions = (
             placeholder,
             emptyEditorClass: 'is-editor-empty',
         }),
-        // Добавляем кнопку и переключатель
         ButtonNode,
-        ToggleNode,
+        Details.configure({
+            persist: true,
+            HTMLAttributes: {
+              class: 'details',
+            },
+        }),
+        DetailsSummary,
+        DetailsContent,
         // Добавляем блоки разных типов
         BoxNode,
         NoteBoxNode,
@@ -298,33 +306,6 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
         editorProps: {
             attributes: {
                 class: `${styles.editor} custom-tiptap-editor no-dropcursor`,
-            },
-            handleClick: (view, pos, event) => {
-                const target = event.target as HTMLElement;
-                const toggleHeader = target.closest('.toggle-header');
-
-                if (toggleHeader) {
-                    const toggleWrapper = toggleHeader.closest('.toggle-wrapper');
-                    if (toggleWrapper) {
-                        const isOpen = toggleHeader.getAttribute('data-open') === 'true';
-                        const newState = !isOpen;
-
-                        // Обновляем состояние в DOM
-                        toggleHeader.setAttribute('data-open', String(newState));
-                        toggleHeader.classList.add('open', String(newState));
-
-                        const content = toggleWrapper.querySelector('.toggle-content');
-                        if (content) {
-                            content.classList.add('open', String(newState));
-                        }
-                        const icon = toggleHeader.querySelector('.toggle-icon');
-                        if (icon) {
-                            icon.textContent = newState ? '▼' : '▶';
-                        }
-                    }
-                    return true;
-                }
-                return false;
             },
         },
         immediatelyRender: true,
@@ -453,208 +434,7 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
                 )}
             </div>
 
-            <style jsx global>{`
-        .ProseMirror {
-          padding: 0.5rem;
-          min-height: 40px;
-          outline: none;
-          cursor: text;
-          width: 100%;
-        }
-        
-        .ProseMirror p.is-editor-empty:first-child::before {
-          content: attr(data-placeholder);
-          float: left;
-          color: #adb5bd;
-          pointer-events: none;
-          height: 0;
-        }
-        
-        .ProseMirror:focus {
-          outline: none;
-        }
-
-        /* Стили для кнопки */
-        button[data-type="button"] {
-            @apply px-4 py-2 bg-blue-500 text-white rounded-md 
-                   hover:bg-blue-600 active:bg-blue-700 
-                   transition-colors duration-200
-                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
-        }
-
-        /* Стили для переключателя */
-        .toggle-wrapper {
-            @apply border rounded-lg mb-4;
-
-            .toggle-header {
-                @apply flex items-center gap-2 p-3 cursor-pointer 
-                       hover:bg-gray-50 select-none;
-
-                .toggle-icon {
-                    @apply text-gray-500 transition-transform duration-200;
-                }
-
-                .toggle-title {
-                    @apply font-medium;
-                }
-            }
-
-            .toggle-content {
-                @apply hidden px-4 pb-4;
-                
-                &.open {
-                    @apply block;
-                }
-            }
-
-            /* Темная тема */
-            .dark & {
-                @apply border-gray-700;
-
-                .toggle-header {
-                    @apply hover:bg-gray-800;
-                }
-            }
-        }
-
-        /* Slash Command Menu Styles */
-            .slash-menu {
-                overflow-y: auto; 
-                z-index: 50; 
-                padding-top: 0.5rem;
-                padding-bottom: 0.5rem; 
-                border-radius: 0.375rem; 
-                width: 100%; 
-                background-color: #ffffff; 
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
-                max-height: 300px;
-                border: 1px solid #3b82f6; /* Blue outline */
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(59, 130, 246, 0.3);
-                min-width: 200px;
-            }
-
-            /* Element focus styles for keyboard navigation */
-            .element-focus {
-                outline: 3px solid #3b82f6 !important; /* Blue outline */
-                border-radius: 4px;
-                position: relative;
-                z-index: 10;
-                animation: pulse-focus 1s ease-in-out;
-            }
-
-            @keyframes pulse-focus {
-                0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
-                70% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0); }
-                100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-            }
-
-            .slash-menu-item {
-                display: flex; 
-                padding-top: 0.5rem;
-                padding-bottom: 0.5rem; 
-                padding-left: 0.75rem;
-                padding-right: 0.75rem; 
-                gap: 0.5rem; 
-                font-size: 0.875rem;
-                line-height: 1.25rem; 
-                color: #374151; 
-                transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-                transition-duration: 300ms; 
-                cursor: pointer; 
-            }
-
-            .slash-menu-item:hover {
-                background-color: #EFF6FF; 
-            }
-
-            .slash-menu-item.selected {
-                color: #2563EB; 
-                background-color: #EFF6FF;
-            }
-
-            .slash-menu-item-icon {
-                display: flex; 
-                justify-content: center; 
-                align-items: center; 
-                color: #3B82F6; 
-                width: 20px;
-                height: 20px;
-            }
-
-            .slash-menu-item-label {
-                flex-grow: 1; 
-                font-weight: 500; 
-            }
-
-            .slash-menu-no-results {
-                padding: 0.75rem; 
-                font-size: 0.875rem;
-                line-height: 1.25rem; 
-                text-align: center; 
-                color: #6B7280; 
-            }
-
-            /* Dark mode support */
-            .dark .slash-menu {
-                border-color: #3B82F6; 
-                background-color: #1F2937; 
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(59, 130, 246, 0.4);
-            }
-
-            .dark .slash-menu-item {
-                color: #D1D5DB; 
-            }
-
-            .dark .slash-menu-item:hover {
-                background-color: #1E3A8A; 
-                --bg-opacity: 0.3; 
-            }
-
-            .dark .slash-menu-item.selected {
-                color: #60A5FA; 
-                background-color: #1E3A8A; 
-                --bg-opacity: 0.3; 
-            }
-
-            .dark .slash-menu-item-icon {
-                color: #60A5FA; 
-            }
-
-            .dark .slash-menu-no-results {
-                color: #9CA3AF;
-            }
-
-            .tiptap-editor-wrapper .tippy-box[data-theme~='light'] {
-                border-radius: 0.375rem; 
-                background-color: #ffffff; 
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-                border: none;
-                box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.1);
-            }
-
-            /* Tippy theme override */
-            .tippy-box[data-theme~='light'] {
-                border-radius: 0.375rem; 
-                background-color: #ffffff; 
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-                border: 1px solid #3b82f6;
-                box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.1);
-            }
-
-            .tippy-box[data-theme~='light'] .tippy-content {
-                padding: 0; ;
-            }
-
-            .dark .tippy-box[data-theme~='light'] {
-                background-color: #1F2937; 
-                border: 1px solid #3b82f6;
-            }
-
-            .slash-menu-item.selected {
-                background-color: #EFF6FF; 
-            }
-      `}</style>
+            
         </div>
     )
 })
