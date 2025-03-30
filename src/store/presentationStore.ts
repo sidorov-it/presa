@@ -54,9 +54,9 @@ interface PresentationState {
     getCell: (presentationId: string, slideId: string, layoutId: string, cellId: string) => GridCell | undefined;
 
     // Работа с элементами
-    getElement: (presentationId: string, slideId: string, layoutId: string, elementId: string) => Element | undefined;
-    addElement: (presentationId: string, slideId: string, layoutId: string, element: Omit<Element, 'id'>) => string;
-    updateElement: (presentationId: string, slideId: string, layoutId: string, elementId: string, data: Partial<Element>) => void;
+    getElement: (presentationId: string, slideId: string, layoutId: string, elementId: string) => BaseElement | undefined;
+    addElement: (presentationId: string, slideId: string, layoutId: string, element: Omit<BaseElement, 'id'>) => string;
+    updateElement: (presentationId: string, slideId: string, layoutId: string, elementId: string, data: Partial<BaseElement>) => void;
     deleteElement: (presentationId: string, slideId: string, layoutId: string, elementId: string) => void;
     duplicateElement: (presentationId: string, slideId: string, elementId: string) => void;
     addColumn: (presentationId: string, slideId: string, layoutId: string, columnId: string, position: 'left' | 'right', elements?: BaseElement[]) => void;
@@ -68,6 +68,8 @@ interface PresentationState {
     alignColumnBottom: (presentationId: string, slideId: string, layoutId: string, columnId: string) => void;
     alignColumn: (presentationId: string, slideId: string, layoutId: string, columnId: string, alignment: 'top' | 'center' | 'bottom') => void;
     deleteColumn: (presentationId: string, slideId: string, layoutId: string, columnId: string) => void;
+
+    mergeSlideWithPrevious: (presentationId: string, slideId: string) => void;
 
     // Undo/Redo operations
     undo: (presentationId: string) => void;
@@ -390,6 +392,65 @@ export const usePresentationStore = create<PresentationState>()(
 
                 return newSlideId;
             },
+
+            mergeSlideWithPrevious: (presentationId, slideId) => {
+                const beforeState = { ...get() };
+
+                const currentPresentation = get().getPresentation(presentationId);
+                if (!currentPresentation) return;
+
+                const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
+                if (!currentSlide) return;
+                
+                const currentSlideIndex = currentPresentation.slides.findIndex(slide => slide.id === slideId);
+                if (currentSlideIndex === 0) return;
+
+                const previousSlide = currentPresentation.slides[currentSlideIndex - 1];
+                if (!previousSlide) return;
+
+                set((state) => {
+                    // удаляем текущий слайд
+                    // обновляем layouts в предыдущем слайде
+                    let updatedSlides = [...currentPresentation.slides];
+                    updatedSlides.splice(currentSlideIndex, 1);
+
+                    const updatedLayoutsInPreviousSlide = [...previousSlide.layouts, ...currentSlide.layouts];
+
+                    updatedSlides = updatedSlides.map((slide) => {
+                        if (slide.id === previousSlide.id) {
+                            return {
+                                ...slide,
+                                layouts: updatedLayoutsInPreviousSlide,
+                            };
+                        }
+                        return slide;
+                    })
+
+                    const updatedState = {
+                        presentations: state.presentations.map((presentation) => {
+                            if (presentation.id === presentationId) {
+                                return {
+                                    ...presentation,
+                                    slides: updatedSlides,
+                                    updatedAt: Date.now(),
+                                };
+                            }
+                            return presentation;
+                        }),
+                    };
+
+                    get().recordAction({
+                        type: 'slide',
+                        description: 'Merge slide with previous',
+                        presentationId,
+                        before: { presentations: beforeState.presentations },
+                        after: updatedState
+                    });
+
+                    return updatedState;
+                });
+            },
+
 
             reorderSlides: (presentationId, startIndex, endIndex) => {
                 const beforeState = { ...get() };

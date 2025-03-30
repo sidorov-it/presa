@@ -75,6 +75,10 @@ const AlignBottomIcon = () => (
     <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h24v24H0V0z"></path><path d="M16 13h-3V3h-2v10H8l4 4 4-4zM4 19v2h16v-2H4z"></path></svg>
 )
 
+const MergeIcon = () => (
+    <svg aria-hidden="true" focusable="false" data-prefix="far" data-icon="arrow-up" className="svg-inline--fa fa-arrow-up fa-fw " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="currentColor" d="M209.4 39.4C204.8 34.7 198.6 32 192 32s-12.8 2.7-17.4 7.4l-168 176c-9.2 9.6-8.8 24.8 .8 33.9s24.8 8.8 33.9-.8L168 115.9V456c0 13.3 10.7 24 24 24s24-10.7 24-24V115.9L342.6 248.6c9.2 9.6 24.3 9.9 33.9 .8s9.9-24.3 .8-33.9l-168-176z"></path></svg>
+)
+
 const SlideMenu: React.FC = () => {
     const {
         state,
@@ -96,22 +100,34 @@ const SlideMenu: React.FC = () => {
         getElement,
         getCell,
         getLayout,
-        getSlide
+        getSlide,
+        getPresentation,
+        mergeSlideWithPrevious,
     } = useSlideMenu();
 
     const { activeElementType, activeEditor } = useEditorStore();
 
+    const presentation = getPresentation()
     const element = getElement(state.slideId, state.layoutId, state.elementId);
     const cell = getCell(state.slideId, state.layoutId, state.columnId);
     const layout = getLayout(state.slideId, state.layoutId);
     const slide = getSlide(state.slideId);
     
+    let slideIndex = 0;
+    if (state.elementType === 'slide') {
+        const slide = getSlide(state.slideId);
+        if (slide) {
+            slideIndex = presentation?.slides.findIndex((s) => s.id === slide.id) ?? 0;
+        }
+    }
+
     const MenuComponent = activeElementType ? getElementMenuComponent(activeElementType) : null;
 
     const menuRef = useRef<HTMLDivElement>(null);
     const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
     // const activeEditor = useEditorStore((state) => state.activeEditor);
 
+    
     // Close the menu when clicking outside of it
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -212,7 +228,12 @@ const SlideMenu: React.FC = () => {
         }
     }
 
-
+    const handleMergeSlide = () => {
+        if (state.slideId) {
+            mergeSlideWithPrevious();
+            closeMenu();
+        }
+    }
     if (!state.isOpen || !position) {
         return null;
     }
@@ -316,7 +337,6 @@ const SlideMenu: React.FC = () => {
                     </>
                 );
             case 'slide':
-            default:
                 return (
                     <>
                         <MenuItem 
@@ -324,6 +344,13 @@ const SlideMenu: React.FC = () => {
                             label="Duplicate" 
                             onClick={duplicateSlide} 
                         />
+                        {slideIndex > 0 && (
+                            <MenuItem 
+                                icon={<MergeIcon />} 
+                                label="Merge" 
+                                onClick={handleMergeSlide} 
+                            />
+                        )}
                         <MenuItem 
                             icon={<DeleteIcon />} 
                             label="Delete" 
@@ -332,6 +359,8 @@ const SlideMenu: React.FC = () => {
                         />
                     </>
                 );
+            default:
+                return null;
         }
     };
 

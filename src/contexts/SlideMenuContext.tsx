@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
+import { BaseElement, GridCell, IPresentation, Layout, Slide } from '@/types';
 
 // Define menu element types
 export type MenuElementType = 'element' | 'column' | 'layout' | 'slide';
@@ -54,6 +55,9 @@ type SlideMenuContextType = {
     state: SlideMenuState;
     openMenu: (slideId?: string | null, elementId?: string | null, elementType?: MenuElementType | null, layoutId?: string | null, columnId?: string | null, isTextEditor?: boolean) => void;
     closeMenu: () => void;
+
+    getPresentation: () => IPresentation | null | undefined;
+
     duplicateSlide: () => void;
     duplicateElement: () => void;
     deleteSlide: () => void;
@@ -69,10 +73,11 @@ type SlideMenuContextType = {
     alignColumnBottom: (slideId: string, layoutId: string, columnId: string) => void;
     deleteColumn: (slideId: string, layoutId: string, columnId: string) => void;
 
-    getElement: (slideId: string | null, layoutId: string | null, elementId: string | null) => void;
-    getCell: (slideId: string | null, layoutId: string | null, columnId: string | null) => void;
-    getLayout: (slideId: string | null, layoutId: string | null) => void;
-    getSlide: (slideId: string | null) => void;
+    getElement: (slideId: string | null, layoutId: string | null, elementId: string | null) => BaseElement | null | undefined;
+    getCell: (slideId: string | null, layoutId: string | null, columnId: string | null) => GridCell | null | undefined;
+    getLayout: (slideId: string | null, layoutId: string | null) => Layout | null | undefined;
+    getSlide: (slideId: string | null) => Slide | null | undefined;
+    mergeSlideWithPrevious: () => void;
 };
 
 const SlideMenuContext = createContext<SlideMenuContextType | undefined>(undefined);
@@ -101,6 +106,8 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
         getCell: getCellInStore,
         getLayout: getLayoutInStore,
         getSlide: getSlideInStore,
+        getPresentation: getPresentationInStore,
+        mergeSlideWithPrevious: mergeSlideWithPreviousInStore,
     } = usePresentationStore();
 
     const openMenu = (
@@ -124,6 +131,10 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
         });
     };
 
+    const getPresentation = () => {
+        return getPresentationInStore(presentationId);
+    };
+
     const closeMenu = () => {
         dispatch({ type: 'CLOSE_MENU' });
     };
@@ -134,6 +145,13 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
             closeMenu();
         }
     };
+
+    const mergeSlideWithPrevious = () => {
+        if (state.slideId) {
+            mergeSlideWithPreviousInStore(presentationId, state.slideId);
+            closeMenu();
+        }
+    }
 
     const deleteSlide = () => {
         if (state.slideId) {
@@ -250,6 +268,8 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
                 getCell,
                 getLayout,
                 getSlide,
+                getPresentation,
+                mergeSlideWithPrevious,
             }}
         >
             {children}
