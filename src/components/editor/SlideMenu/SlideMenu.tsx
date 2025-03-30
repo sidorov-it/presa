@@ -197,6 +197,7 @@ const SlideMenu: React.FC = () => {
             closeMenu();
         }
     }
+
     if (!state.isOpen || !position) {
         return null;
     }

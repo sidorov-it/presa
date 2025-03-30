@@ -211,22 +211,18 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
 
     const updateAlignLayout = (layoutId: string, align: 'top' | 'center' | 'bottom') => {
         updateAlignLayoutInStore(presentationId, layoutId, align);
-        closeMenu();
     }
 
     const alignColumnTop = (slideId: string, layoutId: string, columnId: string) => {
         alignColumnTopInStore(presentationId, slideId, layoutId, columnId);
-        closeMenu();
     }
 
     const alignColumnCenter = (slideId: string, layoutId: string, columnId: string) => {
         alignColumnCenterInStore(presentationId, slideId, layoutId, columnId);
-        closeMenu();
     }
 
     const alignColumnBottom = (slideId: string, layoutId: string, columnId: string) => {
         alignColumnBottomInStore(presentationId, slideId, layoutId, columnId);
-        closeMenu();
     }
 
     const deleteColumn = (slideId: string, layoutId: string, columnId: string) => {

@@ -1,6 +1,7 @@
 import { AlignCenterIcon, AlignTopIcon, AlignBottomIcon, DeleteIcon } from '@/components/icons';
 import styles from './LayoutMenu.module.css';
 import { useSlideMenu } from '@/contexts/SlideMenuContext';
+import { useEffect } from 'react';
 
 export default function LayoutMenu({
     position,
@@ -8,26 +9,45 @@ export default function LayoutMenu({
     position: { x: number, y: number }
     layoutId: string
 }) {
-    const { state, updateAlignLayout } = useSlideMenu();
+    const { state, updateAlignLayout, deleteLayout, closeMenu } = useSlideMenu();
+
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            // Don't hide if clicking on the editor or the bubble menu itself
+            const target = e.target as HTMLElement;
+            if (target.closest('.layout-menu')) {
+                return;
+            }
+            closeMenu();
+        };
+  
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [closeMenu]);
 
     const handleAlignTop = () => {
         if (state.slideId && state.layoutId) {
             updateAlignLayout(state.layoutId, 'top');
-            // closeMenu()
         }
     }
 
     const handleAlignCenter = () => {
         if (state.slideId && state.layoutId) {
             updateAlignLayout(state.layoutId, 'center');
-            // closeMenu()
         }
     }
 
     const handleAlignBottom = () => {
         if (state.slideId && state.layoutId) {
             updateAlignLayout(state.layoutId, 'bottom');
-            // closeMenu()
+        }
+    }
+
+    const handleDeleteLayout = () => {
+        if (state.slideId && state.layoutId) {
+            deleteLayout();
         }
     }
 
@@ -46,7 +66,7 @@ export default function LayoutMenu({
                     <AlignBottomIcon />
                 </button>
                 <div className={styles.layoutMenuButtonSeparator} />
-                <button className={`${styles.layoutMenuButton} ${styles.removeButton}`}>
+                <button className={`${styles.layoutMenuButton} ${styles.removeButton}`} onClick={handleDeleteLayout}>
                     <DeleteIcon />
                 </button>
             </div>

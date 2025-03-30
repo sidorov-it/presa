@@ -3,7 +3,7 @@
 import React, { RefObject, useRef } from 'react';
 import { GridCell, Element, GridStructure, getPredefinedGridStructures, Layout, TipTapRefs } from '@/types';
 import { useDnd } from '@/contexts/DragDropContext';
-import Tiptap, { TiptapRef } from '@/components/tiptap/Tiptap';
+import Tiptap from '@/components/tiptap/Tiptap';
 import styles from './GridCellElement.module.css'; // Make sure this exists
 import { GridTextElement } from '@/types/grid-elements';
 import { usePresentationStore } from '@/store/presentationStore';
@@ -561,7 +561,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                             else {
                                 handleMenuClick(element.id, 'element');
                                 // openMenu(slideId, element.id, 'element');
-                             }
+                            }
                         }}
                         handleKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
