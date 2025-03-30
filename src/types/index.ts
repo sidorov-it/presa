@@ -34,6 +34,7 @@ export interface GridCell {
     id: string;
     row: number;
     column: number;
+    alignment?: 'top' | 'center' | 'bottom';
     //   rowSpan: number;
     //   colSpan: number;
 }

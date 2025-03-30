@@ -3,19 +3,20 @@ import { useSlideMenu, MenuElementType } from '@/contexts/SlideMenuContext';
 import styles from './SlideMenu.module.css';
 import { useEditorStore } from '@/store/editorStore';
 import { getElementMenuComponent } from '@/elements/registry';
-
+import { usePresentationStore } from '@/store/presentationStore';
 // Define menu item types
 interface MenuItemProps {
     icon: React.ReactNode;
     label: string;
     onClick: () => void;
     className?: string;
+    active?: boolean;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ icon, label, onClick, className }) => (
+const MenuItem: React.FC<MenuItemProps> = ({ icon, label, onClick, className, active }) => (
     <li>
         <button
-            className={`${styles.slideMenuButton} ${className || ''}`}
+            className={`${styles.slideMenuButton} ${className || ''} ${active ? styles.active : ''}`}
             onClick={onClick}
             aria-label={label}
             tabIndex={0}
@@ -54,6 +55,26 @@ const MoveIcon = () => (
     </svg>
 );
 
+const AddColumnLeftIcon = () => (
+    <svg aria-hidden="true" focusable="false" data-prefix="far" data-icon="diagram-cells" className="svg-inline--fa fa-diagram-cells fa-fw fa-rotate-270 " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M448 224c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64C28.7 32 0 60.7 0 96v64c0 35.3 28.7 64 64 64l384 0zm16 128v64c0 8.8-7.2 16-16 16l-80 0H144 64c-8.8 0-16-7.2-16-16l0-64c0-8.8 7.2-16 16-16H448c8.8 0 16 7.2 16 16zm48 64V352c0-35.3-28.7-64-64-64L64 288c-35.3 0-64 28.7-64 64v64c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64z"></path></svg>
+);
+
+const AddColumnRightIcon = () => (
+    <svg aria-hidden="true" focusable="false" data-prefix="far" data-icon="diagram-cells" className="svg-inline--fa fa-diagram-cells fa-fw fa-rotate-90 " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M448 224c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64C28.7 32 0 60.7 0 96v64c0 35.3 28.7 64 64 64l384 0zm16 128v64c0 8.8-7.2 16-16 16l-80 0H144 64c-8.8 0-16-7.2-16-16l0-64c0-8.8 7.2-16 16-16H448c8.8 0 16 7.2 16 16zm48 64V352c0-35.3-28.7-64-64-64L64 288c-35.3 0-64 28.7-64 64v64c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64z"></path></svg>
+);
+
+const AlignTopIcon = () => (
+    <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h24v24H0V0z"></path><path d="M8 11h3v10h2V11h3l-4-4-4 4zM4 3v2h16V3H4z"></path></svg>
+)
+
+const AlignCenterIcon = () => (
+    <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h24v24H0V0z"></path><path d="M8 19h3v4h2v-4h3l-4-4-4 4zm8-14h-3V1h-2v4H8l4 4 4-4zM4 11v2h16v-2H4z"></path></svg>
+)
+
+const AlignBottomIcon = () => (
+    <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h24v24H0V0z"></path><path d="M16 13h-3V3h-2v10H8l4 4 4-4zM4 19v2h16v-2H4z"></path></svg>
+)
+
 const SlideMenu: React.FC = () => {
     const {
         state,
@@ -63,11 +84,28 @@ const SlideMenu: React.FC = () => {
         duplicateElement,
         deleteElement,
         deleteLayout,
-        editElement
+        editElement,
+
+        addColumnLeft,
+        addColumnRight,
+        duplicateColumn,
+        alignColumnTop,
+        alignColumnCenter,
+        alignColumnBottom,
+        deleteColumn,
+        getElement,
+        getCell,
+        getLayout,
+        getSlide
     } = useSlideMenu();
 
     const { activeElementType } = useEditorStore();
 
+    const element = getElement(state.slideId, state.layoutId, state.elementId);
+    const cell = getCell(state.slideId, state.layoutId, state.columnId);
+    const layout = getLayout(state.slideId, state.layoutId);
+    const slide = getSlide(state.slideId);
+    
     const MenuComponent = activeElementType ? getElementMenuComponent(activeElementType) : null;
 
     const menuRef = useRef<HTMLDivElement>(null);
@@ -125,6 +163,56 @@ const SlideMenu: React.FC = () => {
         };
     }, [state.isOpen, state.slideId, state.elementId, state.elementType, state.layoutId, state.columnId]);
 
+    const handleAddColumnLeft = () => {
+        if (state.slideId && state.layoutId && state.columnId) {
+            addColumnLeft(state.slideId, state.layoutId, state.columnId);
+            closeMenu()
+        }
+    }
+
+    const handleAddColumnRight = () => {
+        if (state.slideId && state.layoutId && state.columnId) {
+            addColumnRight(state.slideId, state.layoutId, state.columnId);
+            closeMenu()
+        }
+    }
+
+    const handleDuplicateColumn = () => {
+        if (state.slideId && state.layoutId && state.columnId) {
+            duplicateColumn(state.slideId, state.layoutId, state.columnId);
+            closeMenu()
+        }
+    }
+
+    const handleAlignColumnTop = () => {
+        if (state.slideId && state.layoutId && state.columnId) {
+            alignColumnTop(state.slideId, state.layoutId, state.columnId);
+            closeMenu()
+        }
+    }
+
+    const handleAlignColumnCenter = () => {
+        if (state.slideId && state.layoutId && state.columnId) {
+            alignColumnCenter(state.slideId, state.layoutId, state.columnId);
+            closeMenu()
+        }
+    }
+
+    const handleAlignColumnBottom = () => {
+        if (state.slideId && state.layoutId && state.columnId) {
+            alignColumnBottom(state.slideId, state.layoutId, state.columnId);
+            closeMenu()
+        }
+    }
+
+    const handleDeleteColumn = () => {
+        if (state.slideId && state.layoutId && state.columnId) {
+            deleteColumn(state.slideId, state.layoutId, state.columnId);
+            closeMenu()
+        }
+    }
+
+
     if (!state.isOpen || !position) {
         return null;
     }
@@ -164,14 +252,44 @@ const SlideMenu: React.FC = () => {
                 return (
                     <>
                         <MenuItem 
-                            icon={<MoveIcon />} 
-                            label="Move" 
-                            onClick={closeMenu} 
+                            icon={<AddColumnLeftIcon />} 
+                            label="Добавить столбец слева" 
+                            onClick={handleAddColumnLeft} 
                         />
                         <MenuItem 
+                            icon={<AddColumnRightIcon />} 
+                            label="Добавить столбец справа" 
+                            onClick={handleAddColumnRight} 
+                        />
+                        <MenuItem 
+                            icon={<DuplicateIcon />} 
+                            label="Дублировать" 
+                            onClick={handleDuplicateColumn} 
+                        />
+
+                        <MenuItem 
+                            icon={<AlignTopIcon />} 
+                            label="Выровнять по верхнему краю" 
+                            active={cell?.alignment === 'top'}
+                            onClick={handleAlignColumnTop} 
+                        />
+                        <MenuItem 
+                            icon={<AlignCenterIcon />} 
+                            label="Выровнять по центру" 
+                            active={cell?.alignment === 'center'}
+                            onClick={handleAlignColumnCenter} 
+                        />
+                        <MenuItem 
+                            icon={<AlignBottomIcon />} 
+                            label="Выровнять по нижнему краю" 
+                            active={cell?.alignment === 'bottom'}
+                            onClick={handleAlignColumnBottom} 
+                        />
+
+                        <MenuItem 
                             icon={<DeleteIcon />} 
-                            label="Delete" 
-                            onClick={closeMenu} 
+                            label="Удалить столбец" 
+                            onClick={handleDeleteColumn} 
                             className={styles.removeButton} 
                         />
                     </>

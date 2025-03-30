@@ -4,74 +4,77 @@ import { usePresentationStore } from './presentationStore';
 
 // Define history action types
 export type HistoryAction = {
-  type: 'layout' | 'element' | 'presentation' | 'slide'; // type of entity modified
-  description: string; // descriptive info about the action
-  presentationId: string; // which presentation was modified
-  slideId?: string; // which slide was modified (if applicable)
-  layoutId?: string; // which layout was modified (if applicable)
-  elementId?: string; // which element was modified (if applicable)
-  before: any; // state before the change
-  after: any; // state after the change
-  timestamp: number; // when the action happened
-  transactionId?: string; // ID to group related actions
+    type: 'layout' | 'element' | 'presentation' | 'slide' | 'column'; // type of entity modified
+    description: string; // descriptive info about the action
+    presentationId: string; // which presentation was modified
+    slideId?: string; // which slide was modified (if applicable)
+    layoutId?: string; // which layout was modified (if applicable)
+    elementId?: string; // which element was modified (if applicable)
+    columnId?: string; // which column was modified (if applicable)
+    alignment?: 'top' | 'center' | 'bottom'; // which alignment was modified (if applicable)
+    position?: 'left' | 'right'; // which position was modified (if applicable)
+    before: any; // state before the change
+    after: any; // state after the change
+    timestamp: number; // when the action happened
+    transactionId?: string; // ID to group related actions
 };
 
 interface HistoryState {
-  // History stacks by presentation
-  history: {
-    [presentationId: string]: {
-      past: HistoryAction[];
-      future: HistoryAction[];
-    }
-  };
+    // History stacks by presentation
+    history: {
+        [presentationId: string]: {
+            past: HistoryAction[];
+            future: HistoryAction[];
+        }
+    };
 
-  // Track active transactions
-  activeTransactions: {
-    [presentationId: string]: {
-      transactionId: string;
-      actions: Omit<HistoryAction, 'timestamp'>[];
-      description: string;
-    } | null
-  };
+    // Track active transactions
+    activeTransactions: {
+        [presentationId: string]: {
+            transactionId: string;
+            actions: Omit<HistoryAction, 'timestamp'>[];
+            description: string;
+        } | null
+    };
 
-  // Initialize history for a presentation
-  initHistory: (presentationId: string) => void;
+    // Initialize history for a presentation
+    initHistory: (presentationId: string) => void;
 
-  // Record a new action in the history
-  recordAction: (action: Omit<HistoryAction, 'timestamp' | 'transactionId'>) => void;
+    // Record a new action in the history
+    recordAction: (action: Omit<HistoryAction, 'timestamp' | 'transactionId'>) => void;
 
-  // Start a transaction (group of actions that will be treated as one)
-  beginTransaction: (presentationId: string, description: string) => string;
+    // Start a transaction (group of actions that will be treated as one)
+    beginTransaction: (presentationId: string, description: string) => string;
 
-  // Record an action as part of an active transaction
-  recordTransactionAction: (action: Omit<HistoryAction, 'timestamp' | 'transactionId'>) => void;
+    // Record an action as part of an active transaction
+    recordTransactionAction: (action: Omit<HistoryAction, 'timestamp' | 'transactionId'>) => void;
 
-  // Commit all actions in a transaction as a single history entry
-  commitTransaction: (presentationId: string) => void;
+    // Commit all actions in a transaction as a single history entry
+    commitTransaction: (presentationId: string) => void;
 
-  // Discard an active transaction without recording it
-  cancelTransaction: (presentationId: string) => void;
+    // Discard an active transaction without recording it
+    cancelTransaction: (presentationId: string) => void;
 
-  // Undo the last action
-  undo: (presentationId: string) => void;
+    // Undo the last action
+    undo: (presentationId: string) => void;
 
-  // Redo the last undone action
-  redo: (presentationId: string) => void;
+    // Redo the last undone action
+    redo: (presentationId: string) => void;
 
-  // Check if undo is available
-  canUndo: (presentationId: string) => boolean;
+    // Check if undo is available
+    canUndo: (presentationId: string) => boolean;
 
-  // Check if redo is available
-  canRedo: (presentationId: string) => boolean;
+    // Check if redo is available
+    canRedo: (presentationId: string) => boolean;
 
-  // Clear history for a presentation
-  clearHistory: (presentationId: string) => void;
+    // Clear history for a presentation
+    clearHistory: (presentationId: string) => void;
 
-  // Get presentation history
-  getHistory: (presentationId: string) => HistoryAction[];
+    // Get presentation history
+    getHistory: (presentationId: string) => HistoryAction[];
 
-  // Check if there's an active transaction
-  hasActiveTransaction: (presentationId: string) => boolean;
+    // Check if there's an active transaction
+    hasActiveTransaction: (presentationId: string) => boolean;
 }
 
 // Maximum number of actions to keep in history per presentation

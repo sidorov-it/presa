@@ -7,6 +7,9 @@
     /* border-radius: 0.25rem; */
     transition: all 0.2s ease-in-out;
     width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .elementContent {
@@ -170,6 +173,17 @@
     padding: 1rem;
 }
 
+.top {
+    justify-content: flex-start;
+}
+
+.center {
+    justify-content: center;
+}
+
+.bottom {
+    justify-content: flex-end;
+}
 /* Drag and drop styles */
 .dragging {
     opacity: 0.5;

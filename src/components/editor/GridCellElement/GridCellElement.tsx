@@ -609,9 +609,13 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         );
     };
 
+    const alignmentClassName = cell.alignment === 'top' ? styles.top : cell.alignment === 'center' ? styles.center : cell.alignment === 'bottom' ? styles.bottom : '';
+
+    console.log('cell', cell)
+    const className = `${styles.gridCellElement} ${hasMultipleCells ? styles.multiCell : ''} ${hasMultipleCells && !isSlideHovered ? styles.multiCellNoHover : ''}`;
     return (
         <div
-            className={`${styles.gridCellElement} ${hasMultipleCells ? styles.multiCell : ''} ${hasMultipleCells && !isSlideHovered ? styles.multiCellNoHover : ''}`}
+            className={className}
             data-element-id={cell.id}
             // data-layout-id={layoutId}
             data-cell-id={cell.id}
@@ -634,9 +638,9 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 />
             )}
 
-            <div className={styles.gridCell}>
+            <div className={`${styles.gridCell} ${alignmentClassName}`}>
                 <div
-                    className={styles.elementsContainer}
+                    className={`${styles.elementsContainer}`}
                     data-is-multi-cell={hasMultipleCells ? "true" : "false"}
                 >
                     {elements.map((element, idx) => (

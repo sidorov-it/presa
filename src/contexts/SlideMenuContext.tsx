@@ -57,6 +57,19 @@ type SlideMenuContextType = {
     deleteElement: () => void;
     deleteLayout: () => void;
     editElement: () => void;
+
+    addColumnLeft: (slideId: string, layoutId: string, columnId: string) => void;
+    addColumnRight: (slideId: string, layoutId: string, columnId: string) => void;
+    duplicateColumn: (slideId: string, layoutId: string, columnId: string) => void;
+    alignColumnTop: (slideId: string, layoutId: string, columnId: string) => void;
+    alignColumnCenter: (slideId: string, layoutId: string, columnId: string) => void;
+    alignColumnBottom: (slideId: string, layoutId: string, columnId: string) => void;
+    deleteColumn: (slideId: string, layoutId: string, columnId: string) => void;
+
+    getElement: (slideId: string | null, layoutId: string | null, elementId: string | null) => void;
+    getCell: (slideId: string | null, layoutId: string | null, columnId: string | null) => void;
+    getLayout: (slideId: string | null, layoutId: string | null) => void;
+    getSlide: (slideId: string | null) => void;
 };
 
 const SlideMenuContext = createContext<SlideMenuContextType | undefined>(undefined);
@@ -74,6 +87,17 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
         duplicateElement: duplicateElementInStore,
         deleteElement: deleteElementInStore,
         deleteLayout: deleteLayoutInStore,
+        addColumnLeft: addColumnLeftInStore,
+        addColumnRight: addColumnRightInStore,
+        duplicateColumn: duplicateColumnInStore,
+        alignColumnTop: alignColumnTopInStore,
+        alignColumnCenter: alignColumnCenterInStore,
+        alignColumnBottom: alignColumnBottomInStore,
+        deleteColumn: deleteColumnInStore,
+        getElement: getElementInStore,
+        getCell: getCellInStore,
+        getLayout: getLayoutInStore,
+        getSlide: getSlideInStore,
     } = usePresentationStore();
 
     const openMenu = (
@@ -143,6 +167,61 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
         closeMenu();
     };
 
+    const addColumnLeft = (slideId: string, layoutId: string, columnId: string) => {
+        addColumnLeftInStore(presentationId, slideId, layoutId, columnId);
+        closeMenu();
+    };
+
+    const addColumnRight = (slideId: string, layoutId: string, columnId: string) => {
+        addColumnRightInStore(presentationId, slideId, layoutId, columnId);
+        closeMenu();
+    }
+
+    const duplicateColumn = (slideId: string, layoutId: string, columnId: string) => {
+        duplicateColumnInStore(presentationId, slideId, layoutId, columnId);
+        closeMenu();
+    }
+
+    const alignColumnTop = (slideId: string, layoutId: string, columnId: string) => {
+        alignColumnTopInStore(presentationId, slideId, layoutId, columnId);
+        closeMenu();
+    }
+
+    const alignColumnCenter = (slideId: string, layoutId: string, columnId: string) => {
+        alignColumnCenterInStore(presentationId, slideId, layoutId, columnId);
+        closeMenu();
+    }
+
+    const alignColumnBottom = (slideId: string, layoutId: string, columnId: string) => {
+        alignColumnBottomInStore(presentationId, slideId, layoutId, columnId);
+        closeMenu();
+    }
+
+    const deleteColumn = (slideId: string, layoutId: string, columnId: string) => {
+        deleteColumnInStore(presentationId, slideId, layoutId, columnId);
+        closeMenu();
+    }
+
+    const getElement = (slideId: string | null, layoutId: string | null, elementId: string | null) => {
+        if (!slideId || !layoutId || !elementId) return null;
+        return getElementInStore(presentationId, slideId, layoutId, elementId);
+    }
+
+    const getCell = (slideId: string | null, layoutId: string | null, columnId: string | null) => {
+        if (!slideId || !layoutId || !columnId) return null;
+        return getCellInStore(presentationId, slideId, layoutId, columnId);
+    }
+
+    const getLayout = (slideId: string | null, layoutId: string | null) => {
+        if (!slideId || !layoutId) return null;
+        return getLayoutInStore(presentationId, slideId, layoutId);
+    }
+
+    const getSlide = (slideId: string | null) => {
+        if (!slideId) return null;
+        return getSlideInStore(presentationId, slideId);
+    }
+
     return (
         <SlideMenuContext.Provider
             value={{
@@ -155,6 +234,17 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
                 deleteElement,
                 deleteLayout,
                 editElement,
+                addColumnLeft,
+                addColumnRight,
+                duplicateColumn,
+                alignColumnTop,
+                alignColumnCenter,
+                alignColumnBottom,
+                deleteColumn,
+                getElement,
+                getCell,
+                getLayout,
+                getSlide,
             }}
         >
             {children}
