@@ -1,9 +1,21 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useSlideMenu, MenuElementType } from '@/contexts/SlideMenuContext';
+import { useSlideMenu } from '@/contexts/SlideMenuContext';
 import styles from './SlideMenu.module.css';
 import { useEditorStore } from '@/store/editorStore';
 import { getElementMenuComponent } from '@/elements/registry';
-import { usePresentationStore } from '@/store/presentationStore';
+import LayoutMenu from './LayoutMenu';
+import {
+    DuplicateIcon,
+    DeleteIcon,
+    EditIcon,
+    AddColumnLeftIcon,
+    AddColumnRightIcon,
+    AlignTopIcon,
+    AlignCenterIcon,
+    AlignBottomIcon,
+    MergeIcon
+} from '@/components/icons';
+
 // Define menu item types
 interface MenuItemProps {
     icon: React.ReactNode;
@@ -29,55 +41,6 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, label, onClick, className, ac
         </button>
     </li>
 );
-
-// SVG Icons components
-const DuplicateIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2" />
-    </svg>
-);
-
-const DeleteIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-    </svg>
-);
-
-const EditIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-    </svg>
-);
-
-const MoveIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-    </svg>
-);
-
-const AddColumnLeftIcon = () => (
-    <svg aria-hidden="true" focusable="false" data-prefix="far" data-icon="diagram-cells" className="svg-inline--fa fa-diagram-cells fa-fw fa-rotate-270 " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M448 224c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64C28.7 32 0 60.7 0 96v64c0 35.3 28.7 64 64 64l384 0zm16 128v64c0 8.8-7.2 16-16 16l-80 0H144 64c-8.8 0-16-7.2-16-16l0-64c0-8.8 7.2-16 16-16H448c8.8 0 16 7.2 16 16zm48 64V352c0-35.3-28.7-64-64-64L64 288c-35.3 0-64 28.7-64 64v64c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64z"></path></svg>
-);
-
-const AddColumnRightIcon = () => (
-    <svg aria-hidden="true" focusable="false" data-prefix="far" data-icon="diagram-cells" className="svg-inline--fa fa-diagram-cells fa-fw fa-rotate-90 " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M448 224c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64C28.7 32 0 60.7 0 96v64c0 35.3 28.7 64 64 64l384 0zm16 128v64c0 8.8-7.2 16-16 16l-80 0H144 64c-8.8 0-16-7.2-16-16l0-64c0-8.8 7.2-16 16-16H448c8.8 0 16 7.2 16 16zm48 64V352c0-35.3-28.7-64-64-64L64 288c-35.3 0-64 28.7-64 64v64c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64z"></path></svg>
-);
-
-const AlignTopIcon = () => (
-    <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h24v24H0V0z"></path><path d="M8 11h3v10h2V11h3l-4-4-4 4zM4 3v2h16V3H4z"></path></svg>
-)
-
-const AlignCenterIcon = () => (
-    <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h24v24H0V0z"></path><path d="M8 19h3v4h2v-4h3l-4-4-4 4zm8-14h-3V1h-2v4H8l4 4 4-4zM4 11v2h16v-2H4z"></path></svg>
-)
-
-const AlignBottomIcon = () => (
-    <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h24v24H0V0z"></path><path d="M16 13h-3V3h-2v10H8l4 4 4-4zM4 19v2h16v-2H4z"></path></svg>
-)
-
-const MergeIcon = () => (
-    <svg aria-hidden="true" focusable="false" data-prefix="far" data-icon="arrow-up" className="svg-inline--fa fa-arrow-up fa-fw " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="currentColor" d="M209.4 39.4C204.8 34.7 198.6 32 192 32s-12.8 2.7-17.4 7.4l-168 176c-9.2 9.6-8.8 24.8 .8 33.9s24.8 8.8 33.9-.8L168 115.9V456c0 13.3 10.7 24 24 24s24-10.7 24-24V115.9L342.6 248.6c9.2 9.6 24.3 9.9 33.9 .8s9.9-24.3 .8-33.9l-168-176z"></path></svg>
-)
 
 const SlideMenu: React.FC = () => {
     const {
@@ -318,7 +281,7 @@ const SlideMenu: React.FC = () => {
             case 'layout':
                 return (
                     <>
-                        <MenuItem 
+                        {/* <MenuItem 
                             icon={<DuplicateIcon />} 
                             label="Duplicate" 
                             onClick={closeMenu} 
@@ -333,7 +296,8 @@ const SlideMenu: React.FC = () => {
                             label="Delete" 
                             onClick={deleteLayout} 
                             className={styles.removeButton} 
-                        />
+                        /> */}
+                        {/* <LayoutMenu position={position} /> */}
                     </>
                 );
             case 'slide':
@@ -368,6 +332,9 @@ const SlideMenu: React.FC = () => {
         return null;
     }
 
+    if (state.elementType === 'layout' && state.layoutId) {
+        return <LayoutMenu position={position} layoutId={state.layoutId} />
+    }
     return (
         <div
             ref={menuRef}

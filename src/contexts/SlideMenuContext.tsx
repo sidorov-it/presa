@@ -59,10 +59,13 @@ type SlideMenuContextType = {
     getPresentation: () => IPresentation | null | undefined;
 
     duplicateSlide: () => void;
-    duplicateElement: () => void;
     deleteSlide: () => void;
-    deleteElement: () => void;
+    
     deleteLayout: () => void;
+    updateAlignLayout: (layoutId: string, align: 'top' | 'center' | 'bottom') => void;
+
+    duplicateElement: () => void;
+    deleteElement: () => void;
     editElement: () => void;
 
     addColumnLeft: (slideId: string, layoutId: string, columnId: string) => void;
@@ -108,6 +111,7 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
         getSlide: getSlideInStore,
         getPresentation: getPresentationInStore,
         mergeSlideWithPrevious: mergeSlideWithPreviousInStore,
+        updateAlignLayout: updateAlignLayoutInStore,
     } = usePresentationStore();
 
     const openMenu = (
@@ -205,6 +209,11 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
         closeMenu();
     }
 
+    const updateAlignLayout = (layoutId: string, align: 'top' | 'center' | 'bottom') => {
+        updateAlignLayoutInStore(presentationId, layoutId, align);
+        closeMenu();
+    }
+
     const alignColumnTop = (slideId: string, layoutId: string, columnId: string) => {
         alignColumnTopInStore(presentationId, slideId, layoutId, columnId);
         closeMenu();
@@ -270,6 +279,7 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
                 getSlide,
                 getPresentation,
                 mergeSlideWithPrevious,
+                updateAlignLayout,
             }}
         >
             {children}

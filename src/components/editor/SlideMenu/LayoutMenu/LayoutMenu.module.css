@@ -1,0 +1,46 @@
+.layoutMenu {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, calc(-100% - 16px));
+    background-color: #fff;
+    z-index: 1000;
+    /* padding: 10px; */
+    border-radius: 5px;
+
+
+
+    border-radius: 0,75rem;
+    background-color: #fff;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    color: #3c3838;
+}
+
+.layoutMenuButtons {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.layoutMenuButton {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 10px;
+}
+
+.layoutMenuButton:hover {
+    background-color: #f0f0f0;
+}
+
+.layoutMenuButtonSeparator {
+    width: 1px;
+    border-color: #3c3838;
+    border-width: 0px 0px 0px 1px;
+    border-style: solid;
+    opacity: 0.6;
+    margin: 10px 0;
+}
+
+.removeButton {
+    color: #f00;
+}

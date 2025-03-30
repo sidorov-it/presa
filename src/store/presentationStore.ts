@@ -49,6 +49,8 @@ interface PresentationState {
         data: Partial<Layout>,
         deleteIfEmpty?: boolean
     ) => void;
+    updateAlignLayout: (presentationId: string, layoutId: string, alignment: 'top' | 'center' | 'bottom') => void;
+
     findLayoutByElementId: (elementId: string) => Layout | undefined;
     getLayout: (presentationId: string, slideId: string, layoutId: string) => Layout | undefined;
     getCell: (presentationId: string, slideId: string, layoutId: string, cellId: string) => GridCell | undefined;
@@ -705,6 +707,56 @@ export const usePresentationStore = create<PresentationState>()(
                 });
             },
 
+            updateAlignLayout: (presentationId, layoutId, alignment) => {
+                const beforeState = { ...get() };
+
+                const currentPresentation = get().getPresentation(presentationId);
+                if (!currentPresentation) return;
+                
+                set((state) => {
+                    const updatedState = {
+                        presentations: state.presentations.map((presentation) => {
+                            if (presentation.id === presentationId) {
+                                return {
+                                    ...presentation,
+                                    slides: presentation.slides.map((slide) => {
+                                        return {
+                                            ...slide,
+                                            layouts: slide.layouts.map((layout) => {
+                                                if (layout.id === layoutId) {
+                                                    return {
+                                                        ...layout, 
+                                                        gridStructure: {
+                                                            ...layout.gridStructure,
+                                                            rows: layout.gridStructure.rows.map((row) => {
+                                                                return { ...row, cells: row.cells.map((cell) => ({ ...cell, alignment })) };
+                                                            })
+                                                        }
+                                                    };
+                                                }
+                                                return layout;
+                                            }),
+                                        };
+                                    }),
+                                    updatedAt: Date.now(),
+                                };
+                            }
+                            return presentation;
+                        }),
+                    };
+
+                    get().recordAction({
+                        type: 'layout',
+                        description: 'Update align layout',
+                        presentationId,
+                        layoutId,
+                        before: { presentations: beforeState.presentations },
+                        after: updatedState
+                    });
+
+                    return updatedState;
+                });
+            },
             updateAndPotentiallyDeleteLayout: (
                 presentationId,
                 slideId,

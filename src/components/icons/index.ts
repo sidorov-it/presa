@@ -1,0 +1,10 @@
+export { default as DuplicateIcon } from './DuplicateIcon';
+export { default as DeleteIcon } from './DeleteIcon';
+export { default as EditIcon } from './EditIcon';
+export { default as MoveIcon } from './MoveIcon';
+export { default as AddColumnLeftIcon } from './AddColumnLeftIcon';
+export { default as AddColumnRightIcon } from './AddColumnRightIcon';
+export { default as AlignTopIcon } from './AlignTopIcon';
+export { default as AlignCenterIcon } from './AlignCenterIcon';
+export { default as AlignBottomIcon } from './AlignBottomIcon';
+export { default as MergeIcon } from './MergeIcon'; 
