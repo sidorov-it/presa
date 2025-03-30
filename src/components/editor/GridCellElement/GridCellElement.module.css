@@ -103,3 +103,42 @@
 .resizableBorder:hover {
   background-color: rgba(59, 130, 246, 0.3);
 }
+
+.addColumnIcon {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translate(50%, -50%);
+    cursor: pointer;
+    display: inline-flex;
+    appearance: none;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    white-space: nowrap;
+    vertical-align: middle;
+    outline: transparent solid 2px;
+    outline-offset: 2px;
+    line-height: 1.2;
+    font-weight: 600;
+    transition-property: background-color,border-color,color,fill,stroke,opacity,box-shadow,transform;
+    transition-duration: 200ms;
+    height: 1.5rem;
+    min-width: 1.5rem;
+    font-size: .75rem;
+    padding-inline-start: 0.5rem;
+    padding-inline-end: 0.5rem;
+    color: #3c3838;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    background: linear-gradient(180deg, #FFFFFF 0%, #FCF9F5 100%);
+    border-width: 1px;
+    border-style: solid;
+    border-color: #e5e0df;
+    padding: 0px;
+    border-radius: 9999px;
+}
+
+.addColumnIcon:hover {
+    color: #2B0AFF;
+}
+

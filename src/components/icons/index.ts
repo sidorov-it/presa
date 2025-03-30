@@ -7,4 +7,5 @@ export { default as AddColumnRightIcon } from './AddColumnRightIcon';
 export { default as AlignTopIcon } from './AlignTopIcon';
 export { default as AlignCenterIcon } from './AlignCenterIcon';
 export { default as AlignBottomIcon } from './AlignBottomIcon';
-export { default as MergeIcon } from './MergeIcon'; 
+export { default as MergeIcon } from './MergeIcon';
+export { default as PlusIcon } from './PlusIcon';

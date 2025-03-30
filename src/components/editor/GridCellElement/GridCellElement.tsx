@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { RefObject, useRef } from 'react';
-import { GridCell, Element, GridStructure, getPredefinedGridStructures, Layout, TipTapRefs } from '@/types';
+import { GridCell, Element, GridStructure, getPredefinedGridStructures, Layout, TipTapRefs, BaseElement, TextElement } from '@/types';
 import { useDnd } from '@/contexts/DragDropContext';
 import Tiptap from '@/components/tiptap/Tiptap';
 import styles from './GridCellElement.module.css'; // Make sure this exists
@@ -15,7 +15,7 @@ import { getNewElement } from '@/elements/registry';
 import { Editor } from '@tiptap/react';
 import { getColumnWidths } from '../SlideEditor/SlideEditor';
 import DragHandler from '../DragHandler';
-
+import { PlusIcon } from '@/components/icons';
 
 const adjustColumnWidths = (
     columnWidths: string[],
@@ -377,7 +377,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 id: newElementId,
                 type: 'editor' as const,
                 textType: 'heading' as const,
-                content: '',
+                content: contentAfterCursor || '',
                 position: { x: 0, y: 0 },
                 size: { width: 100, height: 100 },
                 style: {},
@@ -529,6 +529,51 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             tiptapRefs.current?.editors[elementId]?.editor.commands.setContent(elementData.content);
         }
     };
+    
+    const handleAddColumn = () => {
+        const presentation = usePresentationStore.getState().getPresentation(presentationId);
+        if (!presentation) return;
+
+        const slide = presentation.slides.find(s => s.id === slideId);
+        if (!slide) return;
+
+        const layout = slide.layouts.find(l => l.id === layoutId);
+        if (!layout) return;
+
+        const updatedLayout = { ...layout };
+        const updatedGridStructure = { ...layout.gridStructure };
+
+        const updatedColumnWidths = getColumnWidths(updatedGridStructure.columns);
+        updatedGridStructure.columns = updatedGridStructure.columns + 1;
+        updatedGridStructure.columnWidths = updatedColumnWidths;
+
+        const newCellId = generateId();
+
+        const newCell: GridCell = {
+            id: newCellId,
+            column: updatedGridStructure.columns,
+            row: 0,
+        }
+
+        const newEditor: TextElement = {
+            id: generateId(),
+            type: 'editor',
+            textType: 'text',
+            content: '',
+            cellId: newCellId,
+            position: { x: 0, y: 0 },
+            size: { width: 100, height: 100 },
+            style: {},
+            zIndex: 0,
+        }
+
+        updatedGridStructure.rows[0].cells.push(newCell);
+        updatedGridStructure.columnWidths = getColumnWidths(updatedGridStructure.columns);
+        updatedLayout.elements.push(newEditor);
+        updatedLayout.gridStructure = updatedGridStructure;
+        updateLayout(presentationId, slideId, layoutId, updatedLayout);
+
+    }
 
     // Render your component's elements
     const renderElement = (element: Element) => {
@@ -600,6 +645,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const alignmentClassName = cell.alignment === 'top' ? styles.top : cell.alignment === 'center' ? styles.center : cell.alignment === 'bottom' ? styles.bottom : '';
 
     const className = `${styles.gridCellElement} ${hasMultipleCells ? styles.multiCell : ''} ${hasMultipleCells && !isSlideHovered ? styles.multiCellNoHover : ''}`;
+
     return (
         <div
             className={className}
@@ -659,6 +705,16 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     />
                 </>
             )}
+
+            {hasMultipleCells && isLastCell && (
+                <div
+                    className={styles.addColumnIcon}
+                    onClick={handleAddColumn}
+                >
+                    <PlusIcon />
+                </div>
+            )}
+
             {/* <div>cellId: {cell.id}</div> */}
         </div>
     );

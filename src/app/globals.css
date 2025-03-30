@@ -417,7 +417,7 @@
       content: '\25B6';
     }
 
-    
+
   }
 
   &.is-open>button::before {
@@ -679,6 +679,13 @@ button[data-type="button"]:hover {
 
 .slash-menu-item.selected {
   background-color: #EFF6FF;
+}
+
+.svg-inline--fa {
+  display: inline-block;
+  height: 1em;
+  overflow: visible;
+  vertical-align: -.125em;
 }
 
 .svg-inline--fa.fa-fw {
