@@ -16,62 +16,6 @@
     padding: 1rem;
 }
 
-.cellWithMultipleCells {
-    padding-inline-start: 1.22rem;
-    padding-inline-end: 1.22rem;
-    border: 1px solid #64748b;
-}
-
-.dragHandle {
-    display: flex;
-    -webkit-box-align: center;
-    align-items: center;
-    -webkit-box-pack: center;
-    justify-content: center;
-    font-weight: 900;
-    font-family: Inter, sans-serif;
-    border-width: 1px;
-    border-style: solid;
-    border-image: initial;
-    border-color: rgba(0, 0, 0, 0.08);
-    color: #806cff;
-    border-radius: 0.125rem;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    font-size: 16px;
-    cursor: pointer;
-    z-index: 22;
-    top: 50%;
-    transform: translateY(-50%);
-    left: -16px;
-    width: 20px;
-    height: 20px;
-
-    /* position: absolute;
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: grab;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    z-index: 20; */
-}
-
-.elementDragHandleMenuOpen {
-    background: #eae7ff !important;
-    backdrop-filter: blur(8px);
-    opacity: 1 !important;
-}
-
-.dragHandleMultipleCells {
-    top: 0px !important;
-    opacity: 1 !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) rotate(90deg) !important;
-}
-
 .gridCellElement {
     position: relative;
     box-sizing: border-box;
@@ -83,56 +27,15 @@
 }
 
 .cellDragHandle {
-    position: absolute;
     top: 0;
     left: 50%;
-    transform: translate(-50%, -50%) rotate(90deg);
-    width: 16px;
-    height: 16px;
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 3px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: grab;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    z-index: 20;
-}
-
-.cellDragHandle::before {
-    content: "⋮";
-    font-size: 10px;
-    line-height: 1;
-    color: #64748b;
 }
 
 /* Individual element drag handle styles */
 .elementDragHandle {
-    position: absolute;
     top: 50%;
     transform: translateY(-50%);
     left: -16px;
-    width: 16px;
-    height: 16px;
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 3px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: grab;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    z-index: 20;
-}
-
-.elementDragHandle::before {
-    content: "⋮";
-    font-size: 10px;
-    line-height: 1;
-    color: #64748b;
 }
 
 .elementWrapper {
@@ -160,10 +63,6 @@
     transition: border-color 0.2s ease-in-out;
 }
 
-.multiCell:hover .cellDragHandle {
-    opacity: 1;
-}
-
 /* Styles for multiple elements in a cell */
 .elementsContainer {
     display: flex;
@@ -189,12 +88,6 @@
     opacity: 0.5;
 }
 
-/* Cell border styles for multi-cell layouts */
-.cellWithBorders {
-  position: relative;
-  border: 1px solid #e2e8f0;
-}
-
 /* Resizable border styles */
 .resizableBorder {
   position: absolute;
@@ -209,50 +102,4 @@
 
 .resizableBorder:hover {
   background-color: rgba(59, 130, 246, 0.3);
-}
-
-/* 3-dot indicator styles */
-.borderIndicator {
-  position: absolute;
-  right: -3px;
-  width: 6px;
-  height: 16px;
-  background-color: #fff;
-  border: 1px solid #e2e8f0;
-  /* border-radius: 3px; */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  z-index: 40;
-  cursor: pointer;
-}
-
-.borderIndicatorTop {
-  top: -8px;
-}
-
-.borderIndicatorLeft {
-  left: -8px;
-  right: auto;
-}
-
-.borderIndicatorRight {
-  right: -8px;
-}
-
-.borderIndicatorBottom {
-  bottom: -8px;
-}
-
-.borderIndicator::before {
-  content: "⋮";
-  font-size: 10px;
-  line-height: 1;
-  color: #64748b;
-}
-
-.cellWithBorders:hover .borderIndicator {
-  opacity: 1;
 }

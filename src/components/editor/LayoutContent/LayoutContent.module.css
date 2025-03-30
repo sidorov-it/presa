@@ -1,0 +1,20 @@
+
+.layoutContent {
+    width: 100%;
+    margin: 1rem 0;
+    display: grid;
+    position: relative;
+    display: grid;
+    position: relative;
+    padding: 1rem;
+
+}
+
+.layout {
+    position: relative;
+}
+
+.layoutDragHandle {
+    top: 16px;
+    left: -0.5rem;
+}

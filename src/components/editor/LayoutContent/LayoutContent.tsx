@@ -3,8 +3,9 @@ import { Layout, GridRow, GridCell, Element, TipTapRefs } from '@/types';
 import { useDnd } from '@/contexts/DragDropContext';
 import { generateGridTemplateAreas, generateGridTemplateColumns } from '@/types';
 import GridCellElement from '../GridCellElement';
-import styles from './SlideEditor.module.css';
+import styles from './LayoutContent.module.css';
 import { useSlideMenu } from '@/contexts/SlideMenuContext';
+import DragHandler from '../DragHandler';
 
 interface LayoutContentProps {
     layout: Layout;
@@ -34,7 +35,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     slideId
 }) => {
     const { state, handleDrop, handleDragStart } = useDnd();
-    const { openMenu, state: { layoutId: menuLayoutId } } = useSlideMenu();
+    const { openMenu, state: { layoutId: menuLayoutId, elementId: menuElementId, columnId: menuColumnId } } = useSlideMenu();
     const [isSlideHovered, setIsSlideHovered] = useState(false);
 
     // Generate CSS grid properties from the grid structure
@@ -70,7 +71,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     return (
         <>
             <div
-                // className={layoutClassName}
+                className={styles.layout}
                 data-layout-id={layout.id}
                 data-is-single-element-layout={isSingleElementSingleCellLayout ? "true" : "false"}
                 onDrop={handleLocalDrop}
@@ -79,19 +80,23 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
             >
                 {/* Layout drag handle */}
                 {layout.elements.length > 1 && (
-                    <div
-                        className={`${styles.layoutDragHandle} ${menuLayoutId === layout.id ? styles.layoutDragHandleMenuOpen : ''}`}
-                        draggable="true"
+                    <DragHandler
+                        className={styles.layoutDragHandle}
+                        slideId={slideId}
+                        isActive={menuLayoutId === layout.id && menuElementId === null && menuColumnId === null}
+                        ariaLabel="Drag this layout"
                         data-layout-drag-handle={layout.id}
-                        onClick={() => openMenu(slideId, null, 'layout', layout.id)}
-                        onDragStart={(e) => {
-                            e.stopPropagation();
-                            handleDragStart(e, layout.elements[0].id, layout.id, layout.elements[0].cellId);
+                        handleClick={() => openMenu(slideId, null, 'layout', layout.id)}
+                        handleKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                openMenu(slideId, null, 'layout', layout.id);
+                            }
                         }}
-                        title="Drag this layout"
+                        handleDragStart={(e) => {
+                            e.preventDefault();
+                        }}
                     />
                 )}
-
                 {layout.gridStructure.rows.map((row: GridRow) => (
                     <div
                         key={row.id}

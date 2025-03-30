@@ -12,10 +12,11 @@ type SlideMenuState = {
     elementType: MenuElementType | null;
     layoutId: string | null;
     columnId: string | null;
+    isTextEditor: boolean;
 };
 
 type SlideMenuAction =
-    | { type: 'OPEN_MENU'; payload: { slideId?: string | null; elementId?: string | null; elementType?: MenuElementType | null; layoutId?: string | null; columnId?: string | null } }
+    | { type: 'OPEN_MENU'; payload: { slideId?: string | null; elementId?: string | null; elementType?: MenuElementType | null; layoutId?: string | null; columnId?: string | null; isTextEditor?: boolean } }
     | { type: 'CLOSE_MENU' };
 
 const initialState: SlideMenuState = {
@@ -25,6 +26,7 @@ const initialState: SlideMenuState = {
     elementType: null,
     layoutId: null,
     columnId: null,
+    isTextEditor: false,
 };
 
 // Reducer for managing slide menu state
@@ -38,6 +40,7 @@ const slideMenuReducer = (state: SlideMenuState, action: SlideMenuAction): Slide
                 elementType: action.payload.elementType ?? null,
                 layoutId: action.payload.layoutId ?? null,
                 columnId: action.payload.columnId ?? null,
+                isTextEditor: action.payload.isTextEditor ?? false,
             };
         case 'CLOSE_MENU':
             return initialState;
@@ -49,7 +52,7 @@ const slideMenuReducer = (state: SlideMenuState, action: SlideMenuAction): Slide
 // Create context
 type SlideMenuContextType = {
     state: SlideMenuState;
-    openMenu: (slideId?: string | null, elementId?: string | null, elementType?: MenuElementType | null, layoutId?: string | null, columnId?: string | null) => void;
+    openMenu: (slideId?: string | null, elementId?: string | null, elementType?: MenuElementType | null, layoutId?: string | null, columnId?: string | null, isTextEditor?: boolean) => void;
     closeMenu: () => void;
     duplicateSlide: () => void;
     duplicateElement: () => void;
@@ -105,7 +108,8 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
         elementId?: string | null, 
         elementType?: MenuElementType | null,
         layoutId?: string | null,
-        columnId?: string | null
+        columnId?: string | null,
+        isTextEditor?: boolean
     ) => {
         dispatch({ 
             type: 'OPEN_MENU', 
@@ -114,7 +118,8 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
                 elementId, 
                 elementType,
                 layoutId,
-                columnId
+                columnId,
+                isTextEditor
             } 
         });
     };

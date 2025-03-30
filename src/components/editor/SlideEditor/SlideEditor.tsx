@@ -6,10 +6,11 @@ import React, { useState, useRef, RefObject } from 'react';
 import { EditorElement, getPredefinedGridStructures, Layout, Slide, TipTapRefs } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import styles from './SlideEditor.module.css';
-import LayoutContent from './LayoutContent';
+import LayoutContent from '../LayoutContent/LayoutContent';
 import { useSlideMenu } from '@/contexts/SlideMenuContext';
 import { generateId } from '@/utils/id';
 import { DragDropTransactionHelper } from '@/contexts/DragDropTransactionHelper';
+import DragHandler from '../DragHandler';
 
 interface SlideEditorProps {
     slide: Slide;
@@ -39,7 +40,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
     const editorRef = useRef<HTMLDivElement>(null);
     const [isSelected, setIsSelected] = useState(false);
-    const { openMenu, state: { slideId: menuSlideId, elementId: menuElementId } } = useSlideMenu();
+    const { openMenu, state: { slideId: menuSlideId, elementId: menuElementId, layoutId: menuLayoutId } } = useSlideMenu();
 
     const { addSlide } = usePresentationStore();
 
@@ -118,7 +119,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         return className;
     };
 
-    const slideMenuOpen = menuSlideId === slide.id && menuElementId === null;
+    const slideMenuOpen = menuSlideId === slide.id && menuElementId === null && menuLayoutId === null;
 
     const handleSlideClick = (e: React.MouseEvent) => {
         const rect = editorRef.current?.getBoundingClientRect();
@@ -187,20 +188,22 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     onClick={() => { }}
                 >
                     {(isSelected || slideMenuOpen) && (
-                        <div
-                            className={`${styles.slideDragHandle} ${slideMenuOpen ? styles.slideDragHandleMenuOpen : ''}`}
+                        <DragHandler
+                            className={styles.slideDragHandle}
+                            slideId={slide.id}
+                            isActive={slideMenuOpen}
+                            ariaLabel="Открыть меню слайда"
                             data-slide-drag-handle={slide.id}
-                            aria-label="Открыть меню слайда"
-                            // tabIndex={0}
-                            onClick={handleOpenSlideMenu}
-                            onKeyDown={(e) => {
+                            handleClick={handleOpenSlideMenu}
+                            handleKeyDown={(e) => {
                                 if (e.key === 'Enter' || e.key === ' ') {
                                     handleOpenSlideMenu(e as unknown as React.MouseEvent<HTMLDivElement>);
                                 }
                             }}
-                        >
-                            ⋮
-                        </div>
+                            handleDragStart={(e) => {
+                                e.preventDefault();
+                            }}
+                        />
                     )}
 
                     <div className="relative w-full h-full p-8" data-slide-id={slide.id} onClick={handleSlideClick}>

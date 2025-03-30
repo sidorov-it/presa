@@ -38,15 +38,6 @@
     pointer-events: auto;
 }
 
-.slideContent {
-    position: relative;
-    padding-top: 0.25rem;
-    cursor: pointer;
-    user-select: none;
-    transition-property: background-color,border-color,color,fill,stroke,opacity,box-shadow,transform;
-    transition-duration: 200ms;
-}
-
 .slidePreviewContainer {
     display: flex;
     box-shadow: 0 0 0 1px #e5e0df;

@@ -1,0 +1,33 @@
+
+.dragHandle {
+    position: absolute;
+
+    width: 18px;
+    height: 25px;
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    font-weight: 900;
+    font-family: Inter, sans-serif;
+    border-width: 1px;
+    border-style: solid;
+    border-image: initial;
+    border-color: rgba(0, 0, 0, 0.08);
+    color: #806cff;
+    border-radius: 0.125rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 22;
+}
+
+.active {
+    background: #eae7ff;
+    backdrop-filter: blur(8px);
+}
+
+.horizontal {
+    transform: rotate(90deg);
+}

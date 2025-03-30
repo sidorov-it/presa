@@ -14,6 +14,7 @@ import { useSlideMenu } from '@/contexts/SlideMenuContext';
 import { getNewElement } from '@/elements/registry';
 import { Editor } from '@tiptap/react';
 import { getColumnWidths } from '../SlideEditor/SlideEditor';
+import DragHandler from '../DragHandler';
 
 
 const adjustColumnWidths = (
@@ -140,7 +141,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 }) => {
     const { handleDragStart } = useDnd();
 
-    const { openMenu, state: { elementId: menuElementId, columnId: menuColumnId } } = useSlideMenu();
+    const { openMenu, state: { elementId: menuElementId, columnId: menuColumnId, isTextEditor } } = useSlideMenu();
     const { showMenu, setActiveEditor } = useEditorStore();
 
     const { beginTransaction, recordTransactionAction, commitTransaction } = useHistoryStore();
@@ -155,6 +156,11 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const editorRef = useRef<HTMLDivElement>(null);
 
     const { updateElement, updateLayout } = usePresentationStore();
+
+    const handleMenuClick = (elementId: string, type: 'element' | 'column' | 'layout' | 'slide', activeEditor?: Editor) => {
+        setActiveEditor(activeEditor ?? null)
+        openMenu(slideId, elementId, type, layoutId, cell.id, !!activeEditor);
+    }
 
     const getEditorContent = (element: Element): string => {
         switch (element.type) {
@@ -532,11 +538,13 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 data-element-id={element.id}
             >
                 <div key={element.id} className={styles.elementWrapper}>
-                    <div
-                        className={`${styles.elementDragHandle} ${menuElementId === element.id ? styles.elementDragHandleMenuOpen : ''}`}
-                        draggable="true"
+                    <DragHandler
+                        className={styles.elementDragHandle}
+                        slideId={slideId}
+                        isActive={menuElementId === element.id}
                         data-element-drag-handle={element.id}
-                        onClick={(e) => {
+                        ariaLabel="Drag this element"
+                        handleClick={(e) => {
                             // Open the SlideMenu for element actions
                             const editor = tiptapRefs.current?.editors[element.id]?.editor;
 
@@ -544,49 +552,29 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                                 if (editor.getText().length > 0) {
                                     setActiveEditor(editor);
                                     editor.chain().focus().selectAll().run();
+                                    handleMenuClick(element.id, 'element', editor);
+                                    // openMenu(slideId, element.id, 'element');
                                 } else {
                                     return;
                                 }
                             }
                             else {
-                                openMenu(slideId, element.id, 'element');
+                                handleMenuClick(element.id, 'element');
+                                // openMenu(slideId, element.id, 'element');
                              }
-
-                            // Also show the BubbleMenu for formatting
-                            // const editor = tiptapRefs.current?.editors[element.id]?.editor;
-                            // if (editor) {
-                            //     setActiveEditor(editor);
-
-                            //     // Get the element's textType for the BubbleMenu
-                            //     // First try to get it directly from the element
-                            //     // let elementTextType = (element as any).textType;
-
-
-                            //     // // If no textType is found, try to determine it from the content
-                            //     // if (!elementTextType) {
-                            //     //     const content = (element as any).content || '';
-                            //     //     if (content.includes('<h1>') || content.includes('<h2>') || content.includes('<h3>')) {
-                            //     //         elementTextType = 'heading';
-                            //     //     } else if (content.includes('<table>')) {
-                            //     //         elementTextType = 'table';
-                            //     //     } else if (content.includes('<ul>') || content.includes('<ol>')) {
-                            //     //         elementTextType = 'list';
-                            //     //     } else if (content.includes('<blockquote>')) {
-                            //     //         elementTextType = 'quote';
-                            //     //     } else {
-                            //     //         elementTextType = 'text';
-                            //     //     }
-                            //     // }
-
-                            //     showMenu(e.currentTarget, element.type);
-                            // }
                         }}
-                        onDragStart={(e) => {
+                        handleKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                handleMenuClick(element.id, 'element');
+                                // openMenu(slideId, element.id, 'element');
+                            }
+                        }}
+                        handleDragStart={(e) => {
                             e.stopPropagation();
                             handleDragStart(e, element.id, layoutId, element.cellId);
                         }}
-                        title="Drag this element"
                     />
+
                     <Tiptap
                         key={element.id}
                         elementId={element.id}
@@ -611,7 +599,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     const alignmentClassName = cell.alignment === 'top' ? styles.top : cell.alignment === 'center' ? styles.center : cell.alignment === 'bottom' ? styles.bottom : '';
 
-    console.log('cell', cell)
     const className = `${styles.gridCellElement} ${hasMultipleCells ? styles.multiCell : ''} ${hasMultipleCells && !isSlideHovered ? styles.multiCellNoHover : ''}`;
     return (
         <div
@@ -625,16 +612,23 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         >
             {/* Drag handle for the entire cell */}
             {hasMultipleCells && (
-                <div
-                    className={`${styles.cellDragHandle} ${menuColumnId === cell.id ? styles.cellDragHandleMenuOpen : ''}`}
-                    draggable="true"
+                <DragHandler
+                    slideId={slideId}
+                    isActive={menuColumnId === cell.id && !menuElementId}
+                    ariaLabel="Drag this cell"
+                    className={styles.cellDragHandle}
                     data-column-drag-handle={cell.id}
-                    onClick={() => openMenu(slideId, null, 'column', layoutId, cell.id)}
-                    onDragStart={(e) => {
+                    handleClick={() => openMenu(slideId, null, 'column', layoutId, cell.id)}
+                    handleKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            openMenu(slideId, null, 'column', layoutId, cell.id);
+                        }
+                    }}
+                    handleDragStart={(e) => {
                         e.stopPropagation();
                         handleDragStart(e, '', layoutId, cell.id);
                     }}
-                    title="Drag this cell"
+                    horizontal={true}
                 />
             )}
 

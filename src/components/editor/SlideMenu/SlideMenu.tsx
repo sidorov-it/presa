@@ -99,7 +99,7 @@ const SlideMenu: React.FC = () => {
         getSlide
     } = useSlideMenu();
 
-    const { activeElementType } = useEditorStore();
+    const { activeElementType, activeEditor } = useEditorStore();
 
     const element = getElement(state.slideId, state.layoutId, state.elementId);
     const cell = getCell(state.slideId, state.layoutId, state.columnId);
@@ -110,7 +110,7 @@ const SlideMenu: React.FC = () => {
 
     const menuRef = useRef<HTMLDivElement>(null);
     const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
-    const activeEditor = useEditorStore((state) => state.activeEditor);
+    // const activeEditor = useEditorStore((state) => state.activeEditor);
 
     // Close the menu when clicking outside of it
     useEffect(() => {
@@ -335,6 +335,9 @@ const SlideMenu: React.FC = () => {
         }
     };
 
+    if (state.isTextEditor) {
+        return null;
+    }
 
     return (
         <div
