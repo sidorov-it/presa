@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, CSSProperties } from 'react';
 import { useSlideMenu } from '@/contexts/SlideMenuContext';
 import styles from './SlideMenu.module.css';
 import { useEditorStore } from '@/store/editorStore';
@@ -33,10 +33,10 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, label, onClick, className, ac
             aria-label={label}
             tabIndex={0}
             onKeyDown={(e) => e.key === 'Enter' && onClick()}
+            title={label}
         >
-            <div className="flex items-center">
-                <span className="mr-2">{icon}</span>
-                <span>{label}</span>
+            <div className="flex items-center justify-center">
+                {icon}
             </div>
         </button>
     </li>
@@ -87,7 +87,7 @@ const SlideMenu: React.FC = () => {
     const MenuComponent = activeElementType ? getElementMenuComponent(activeElementType) : null;
 
     const menuRef = useRef<HTMLDivElement>(null);
-    const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
+    const [position, setPosition] = useState<{ x: number; y: number; rect: DOMRect } | null>(null);
     // const activeEditor = useEditorStore((state) => state.activeEditor);
 
     
@@ -133,7 +133,7 @@ const SlideMenu: React.FC = () => {
             
             if (dragElement) {
                 const rect = dragElement.getBoundingClientRect();
-                setPosition({ x: rect.left, y: rect.top + window.scrollY });
+                setPosition({ x: rect.left, y: rect.top + window.scrollY, rect: rect });
             }
         }
 
@@ -166,21 +166,18 @@ const SlideMenu: React.FC = () => {
     const handleAlignColumnTop = () => {
         if (state.slideId && state.layoutId && state.columnId) {
             alignColumnTop(state.slideId, state.layoutId, state.columnId);
-            closeMenu()
         }
     }
 
     const handleAlignColumnCenter = () => {
         if (state.slideId && state.layoutId && state.columnId) {
             alignColumnCenter(state.slideId, state.layoutId, state.columnId);
-            closeMenu()
         }
     }
 
     const handleAlignColumnBottom = () => {
         if (state.slideId && state.layoutId && state.columnId) {
             alignColumnBottom(state.slideId, state.layoutId, state.columnId);
-            closeMenu()
         }
     }
 
@@ -201,13 +198,6 @@ const SlideMenu: React.FC = () => {
     if (!state.isOpen || !position) {
         return null;
     }
-
-    const menuStyle = {
-        position: 'absolute' as const,
-        left: `${position.x}px`,
-        top: `${position.y + 40}px`,
-        zIndex: 1000,
-    };
 
     // Render different menu items based on element type
     const renderMenuItems = () => {
@@ -329,6 +319,45 @@ const SlideMenu: React.FC = () => {
         }
     };
 
+    const getMenuPosition = () => {
+        if (!position) {
+            return {
+                left: 0,
+                top: 0,
+            };
+        }
+
+        switch (state.elementType) {
+            case 'slide':
+            case 'column': {
+                const left = position.rect.left + position.rect.width / 2;
+                return {
+                    left: left,
+                    top: position.y - 40 - 20,
+                    position: 'center'
+                };
+            }
+            
+            default:
+                return {
+                    left: position?.x,
+                    top: position?.y,
+                };
+        }
+    }
+
+    const menuPosition = getMenuPosition();
+    const menuStyle: CSSProperties = {
+        position: 'absolute' as const,
+        left: `${menuPosition.left}px`,
+        top: `${menuPosition.top}px`,
+        zIndex: 1000,
+    };
+
+    if (menuPosition.position === 'center') {
+        menuStyle.transform = 'translateX(-50%)';
+    }
+
     if (state.isTextEditor) {
         return null;
     }
@@ -342,7 +371,7 @@ const SlideMenu: React.FC = () => {
             className={`${styles.slideMenu}`}
             style={menuStyle}
         >
-            <ul className="divide-y divide-gray-100">
+            <ul className="flex items-center space-x-1">
                 {MenuComponent ? <MenuComponent
                     editor={activeEditor}
                 /> : renderMenuItems()}

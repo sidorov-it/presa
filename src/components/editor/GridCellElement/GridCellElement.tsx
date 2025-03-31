@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { RefObject, useRef } from 'react';
+import React, { RefObject, useRef, useState } from 'react';
 import { GridCell, Element, GridStructure, getPredefinedGridStructures, Layout, TipTapRefs, BaseElement, TextElement } from '@/types';
 import { useDnd } from '@/contexts/DragDropContext';
 import Tiptap from '@/components/tiptap/Tiptap';
@@ -120,7 +120,7 @@ interface GridCellElementProps {
     layoutId: string;
     index: number;
     hasMultipleCells: boolean;
-    isSlideHovered: boolean;
+    isLayoutHovered: boolean;
     isLastCell: boolean;
     tiptapRefs: RefObject<TipTapRefs>;
     onSelect: (element: Element) => void;
@@ -134,18 +134,21 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     slideId,
     layoutId,
     hasMultipleCells,
-    isSlideHovered,
+    isLayoutHovered,
     tiptapRefs,
     onSelect,
     isLastCell
 }) => {
     const { handleDragStart } = useDnd();
 
-    const { openMenu, state: { elementId: menuElementId, columnId: menuColumnId, isTextEditor } } = useSlideMenu();
-    const { showMenu, setActiveEditor } = useEditorStore();
+    const { openMenu, state: { elementId: menuElementId, columnId: menuColumnId } } = useSlideMenu();
+    const { setActiveEditor, getActiveEditorId } = useEditorStore();
 
-    const { beginTransaction, recordTransactionAction, commitTransaction } = useHistoryStore();
+    const activeEditorId = getActiveEditorId();
+    const { beginTransaction, commitTransaction } = useHistoryStore();
 
+    const [elementIsHovered, setElementIsHovered] = useState(false);
+    const [cellIsHovered, setCellIsHovered] = useState(false);
     const dragHandleRef = useRef<HTMLDivElement>(null);
     const resizeBorderRef = useRef<HTMLDivElement>(null);
     const startXRef = useRef(0);
@@ -529,7 +532,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             tiptapRefs.current?.editors[elementId]?.editor.commands.setContent(elementData.content);
         }
     };
-    
+
     const handleAddColumn = () => {
         const presentation = usePresentationStore.getState().getPresentation(presentationId);
         if (!presentation) return;
@@ -572,7 +575,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         updatedLayout.elements.push(newEditor);
         updatedLayout.gridStructure = updatedGridStructure;
         updateLayout(presentationId, slideId, layoutId, updatedLayout);
-
     }
 
     // Render your component's elements
@@ -581,44 +583,50 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             <div
                 className={styles.elementContent}
                 data-element-id={element.id}
+                onMouseEnter={(ev) => {
+                    setElementIsHovered(true)
+                }}
+                onMouseLeave={(ev) => {
+                    setElementIsHovered(false)
+                }}
             >
                 <div key={element.id} className={styles.elementWrapper}>
-                    <DragHandler
-                        className={styles.elementDragHandle}
-                        slideId={slideId}
-                        isActive={menuElementId === element.id}
-                        data-element-drag-handle={element.id}
-                        ariaLabel="Drag this element"
-                        handleClick={(e) => {
-                            // Open the SlideMenu for element actions
-                            const editor = tiptapRefs.current?.editors[element.id]?.editor;
+                    {(menuElementId === element.id || activeEditorId === element.id) && (
+                        <DragHandler
+                            className={styles.elementDragHandle}
+                            slideId={slideId}
+                            isActive={menuElementId === element.id}
+                            data-element-drag-handle={element.id}
+                            ariaLabel="Drag this element"
+                            handleClick={(e) => {
+                                // Open the SlideMenu for element actions
+                                const editor = tiptapRefs.current?.editors[element.id]?.editor;
 
-                            if (element.type === 'editor' && editor) {
-                                if (editor.getText().length > 0) {
-                                    setActiveEditor(editor);
-                                    editor.chain().focus().selectAll().run();
-                                    handleMenuClick(element.id, 'element', editor);
-                                    // openMenu(slideId, element.id, 'element');
-                                } else {
-                                    return;
+                                if (element.type === 'editor' && editor) {
+                                    if (editor.getText().length > 0) {
+                                        setActiveEditor(editor);
+                                        editor.chain().focus().selectAll().run();
+                                        handleMenuClick(element.id, 'element', editor);
+                                    } else {
+                                        return;
+                                    }
                                 }
-                            }
-                            else {
-                                handleMenuClick(element.id, 'element');
-                                // openMenu(slideId, element.id, 'element');
-                            }
-                        }}
-                        handleKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                                handleMenuClick(element.id, 'element');
-                                // openMenu(slideId, element.id, 'element');
-                            }
-                        }}
-                        handleDragStart={(e) => {
-                            e.stopPropagation();
-                            handleDragStart(e, element.id, layoutId, element.cellId);
-                        }}
-                    />
+                                else {
+                                    handleMenuClick(element.id, 'element');
+                                }
+                            }}
+                            handleKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    handleMenuClick(element.id, 'element');
+                                    // openMenu(slideId, element.id, 'element');
+                                }
+                            }}
+                            handleDragStart={(e) => {
+                                e.stopPropagation();
+                                handleDragStart(e, element.id, layoutId, element.cellId);
+                            }}
+                        />
+                    )}
 
                     <Tiptap
                         key={element.id}
@@ -644,7 +652,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     const alignmentClassName = cell.alignment === 'top' ? styles.top : cell.alignment === 'center' ? styles.center : cell.alignment === 'bottom' ? styles.bottom : '';
 
-    const className = `${styles.gridCellElement} ${hasMultipleCells ? styles.multiCell : ''} ${hasMultipleCells && !isSlideHovered ? styles.multiCellNoHover : ''}`;
+    const className = `${styles.gridCellElement} ${hasMultipleCells ? styles.multiCell : ''} ${hasMultipleCells && !isLayoutHovered ? styles.multiCellNoHover : ''}`;
 
     return (
         <div
@@ -654,10 +662,12 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             data-cell-id={cell.id}
             data-cell="true"
             data-is-multi-cell={hasMultipleCells ? "true" : "false"}
+            onMouseEnter={() => setCellIsHovered(true)}
+            onMouseLeave={() => setCellIsHovered(false)}
             ref={editorRef}
         >
             {/* Drag handle for the entire cell */}
-            {hasMultipleCells && (
+            {(hasMultipleCells && (menuColumnId === cell.id || cellIsHovered)) && (
                 <DragHandler
                     slideId={slideId}
                     isActive={menuColumnId === cell.id && !menuElementId}

@@ -9,12 +9,41 @@
 }
 
 .slideWrapper {
-    border-radius: 150px;
+    border-radius: 0.6em;
     max-width: calc(64.5em / 1);
     width: calc(64.5em / 1);
     background-color: #fff;
     box-sizing: border-box;
     position: relative;
+}
+
+.slideContent {
+    position: relative; 
+    border-radius: 0.6em; 
+    width: 100%; 
+    cursor: text; 
+}
+
+.slideBorder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.slideBorderSelected {
+    position: absolute;
+    inset: 0px;
+    outline: 2px solid rgba(66, 153, 225, 0.6);
+    box-shadow: 0 0 0 0.0625em #E5E0DF,0 0.25em 0.375em -0.0625em rgba(0, 0, 0, 0.1),0 0.125em 0.25em -0.0625em rgba(0, 0, 0, 0.06);
+    backdrop-filter: none;
+    background-color: #fff;
+    border-radius: 0.6em;
+}
+
+.slideContentSelected {
+    border: 2px solid #000;
 }
 
 .slideSelected::after {

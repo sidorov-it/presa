@@ -36,7 +36,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
 }) => {
     const { state, handleDrop, handleDragStart } = useDnd();
     const { openMenu, state: { layoutId: menuLayoutId, elementId: menuElementId, columnId: menuColumnId } } = useSlideMenu();
-    const [isSlideHovered, setIsSlideHovered] = useState(false);
+    const [isLayoutHovered, setIsLayoutHovered] = useState(false);
 
     // Generate CSS grid properties from the grid structure
     const gridTemplateAreas = generateGridTemplateAreas(layout.gridStructure);
@@ -75,11 +75,11 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 data-layout-id={layout.id}
                 data-is-single-element-layout={isSingleElementSingleCellLayout ? "true" : "false"}
                 onDrop={handleLocalDrop}
-                onMouseEnter={() => setIsSlideHovered(true)}
-                onMouseLeave={() => setIsSlideHovered(false)}
+                onMouseEnter={() => setIsLayoutHovered(true)}
+                onMouseLeave={() => setIsLayoutHovered(false)}
             >
                 {/* Layout drag handle */}
-                {layout.elements.length > 1 && (
+                {layout.elements.length > 1 && isLayoutHovered && (
                     <DragHandler
                         className={styles.layoutDragHandle}
                         slideId={slideId}
@@ -129,7 +129,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                                     layoutId={layout.id}
                                     index={cellIndex}
                                     hasMultipleCells={hasMultipleCellsInRow}
-                                    isSlideHovered={isSlideHovered}
+                                    isLayoutHovered={isLayoutHovered}
                                     isLastCell={isLastCell}
                                     onSelect={(element) => onSelectElement(element.id)}
                                     onDelete={(element) => onDeleteElement(layout.id, element.id)}

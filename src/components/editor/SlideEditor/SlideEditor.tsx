@@ -40,6 +40,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
     const editorRef = useRef<HTMLDivElement>(null);
     const [isSelected, setIsSelected] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
+
     const { openMenu, state: { slideId: menuSlideId, elementId: menuElementId, layoutId: menuLayoutId } } = useSlideMenu();
 
     const { addSlide } = usePresentationStore();
@@ -121,6 +123,23 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     const slideMenuOpen = menuSlideId === slide.id && menuElementId === null && menuLayoutId === null;
 
+    const handleSlideWrapperClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setIsSelected(true);
+
+        const handleDocumentClick = (event: MouseEvent) => {
+            if (event.target instanceof HTMLElement && !event.target.closest('[data-slide-id]') && event.target.getAttribute('data-slide-drag-handle') !== slide.id) {
+                setIsSelected(false);
+                document.removeEventListener('click', handleDocumentClick);
+            }
+        }
+        document.addEventListener('click', handleDocumentClick);
+
+        return () => {
+            document.removeEventListener('click', handleDocumentClick);
+        }
+    }
+
     const handleSlideClick = (e: React.MouseEvent) => {
         const rect = editorRef.current?.getBoundingClientRect();
         if (rect) {
@@ -170,24 +189,26 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     return (
         <div
             className={styles.slide}
+            onClick={handleSlideWrapperClick}
             onMouseEnter={() => {
-                setIsSelected(true);
+                setIsHovered(true);
             }}
             onMouseLeave={() => {
-                setIsSelected(false);
+                setIsHovered(false);
             }}
         >
             <div className={getSlideClassName()}>
+                <div className={`${styles.slideBorder} ${(isSelected || slideMenuOpen || isHovered) ? styles.slideBorderSelected : ''}`} />
                 <div
                     ref={editorRef}
-                    className={`relative min-h-20 w-full rounded-3xl cursor-text`}
+                    className={`${styles.slideContent}`}
                     style={{
                         ...slide.style,
                         ...getBackgroundStyle(),
                     }}
                     onClick={() => { }}
                 >
-                    {(isSelected || slideMenuOpen) && (
+                    {(isSelected || slideMenuOpen || isHovered) && (
                         <DragHandler
                             className={styles.slideDragHandle}
                             slideId={slide.id}
