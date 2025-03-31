@@ -121,6 +121,7 @@ interface GridCellElementProps {
     index: number;
     hasMultipleCells: boolean;
     isLayoutHovered: boolean;
+    isLayoutSelected: boolean;
     isLastCell: boolean;
     tiptapRefs: RefObject<TipTapRefs>;
     onSelect: (element: Element) => void;
@@ -135,6 +136,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     layoutId,
     hasMultipleCells,
     isLayoutHovered,
+    isLayoutSelected,
     tiptapRefs,
     onSelect,
     isLastCell
@@ -395,7 +397,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
             updateLayout(presentationId, slideId, layoutId, layout);
 
-            console.log('tiptapRefs.current', tiptapRefs.current, newElementId)
             setTimeout(() => {
                 tiptapRefs.current?.editors[newElementId]?.focus();
             }, 10)

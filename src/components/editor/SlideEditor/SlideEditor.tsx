@@ -201,7 +201,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             }}
         >
             <div className={getSlideClassName()}>
-                <div className={`${styles.slideBorder} ${(isSelected || slideMenuOpen || isHovered) ? styles.slideBorderSelected : ''}`} />
+                <div className={`${styles.slideBorder} ${((isSelected || isHovered) && !slideMenuOpen) ? styles.slideBorderSelected : ''} ${slideMenuOpen ? styles.slideBorderMenuOpen : ''}`} />
                 <div
                     ref={editorRef}
                     className={`${styles.slideContent}`}
@@ -244,7 +244,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                         ))}
                     </div>
 
-                    <div className={`${styles.slideDivider} ${isSelected ? styles.slideDividerHovered : ''}`}>
+                    <div className={`${styles.slideDivider} ${isSelected || isHovered ? styles.slideDividerHovered : ''}`}>
                         <div className={styles.buttons}>
                             <button
                                 className={styles.slideDividerButton}

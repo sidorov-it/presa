@@ -91,7 +91,7 @@
   position: absolute;
   top: 0;
   right: -3px;
-  width: 6px;
+  width: 4px;
   height: 100%;
   cursor: col-resize;
   z-index: 30;
@@ -99,7 +99,7 @@
 }
 
 .resizableBorder:hover {
-  background-color: rgba(59, 130, 246, 0.3);
+  background-color: #806cff;
 }
 
 .addColumnIcon {
@@ -137,6 +137,6 @@
 }
 
 .addColumnIcon:hover {
-    color: #2B0AFF;
+    color: #806cff;
 }
 

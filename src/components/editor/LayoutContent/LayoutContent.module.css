@@ -18,3 +18,13 @@
     top: 16px;
     left: -0.5rem;
 }
+
+.layoutSelected {
+    border: 2px solid #806cff;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 1;
+}

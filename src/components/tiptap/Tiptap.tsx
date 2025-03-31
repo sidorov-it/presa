@@ -222,8 +222,6 @@ const getExtensions = (
             if (!contentBeforeCursor && !contentAfterCursor) return;
             const htmlBeforeCursor = generateHTML(contentBeforeCursor!, getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement))
             const htmlAfterCursor = generateHTML(contentAfterCursor!, getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement))
-            console.log('htmlAfterCursor', htmlAfterCursor)
-            console.log('htmlBeforeCursor', htmlBeforeCursor)
             onEnterPressed(htmlBeforeCursor, htmlAfterCursor)
         }, (isEmpty) => {
             onBackspacePressed(isEmpty)
@@ -293,7 +291,7 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
         extensions: getExtensions(
             onEnterPressed,
             onBackspacePressed,
-            placeholder,
+            'Введите текст или / для выбора готового шаблона',
             onAddElement,
             presentationId,
             slideId,

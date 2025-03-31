@@ -55,7 +55,6 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     });
 
     // Remove layout drag class logic - we'll use global indicator now
-    const layoutClassName = styles.layoutContent;
 
     const handleLocalDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -79,6 +78,9 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
         }));
     };
 
+    const isSelected = menuLayoutId === layout.id && menuElementId === null && menuColumnId === null;
+    const layoutClassName = styles.layoutContent;
+
     return (
         <>
             <div
@@ -89,12 +91,14 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 onMouseEnter={() => setIsLayoutHovered(true)}
                 onMouseLeave={() => setIsLayoutHovered(false)}
             >
+                {isSelected && <div className={styles.layoutSelected} />}
+
                 {/* Layout drag handle */}
-                {layout.elements.length > 1 && isLayoutHovered && (
+                {layout.elements.length > 1 && (isLayoutHovered || isSelected) && (
                     <DragHandler
                         className={styles.layoutDragHandle}
                         slideId={slideId}
-                        isActive={menuLayoutId === layout.id && menuElementId === null && menuColumnId === null}
+                        isActive={isSelected}
                         ariaLabel="Drag this layout"
                         data-layout-drag-handle={layout.id}
                         handleClick={() => openMenu(slideId, null, 'layout', layout.id)}
@@ -125,6 +129,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                             const elementsIds = elements.map(element => element.id);
 
                             const key = `${cellId}-${simpleHash(JSON.stringify(elementsIds))}`;
+
                             return (
                                 <GridCellElement
                                     key={key}
@@ -139,6 +144,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                                     index={cellIndex}
                                     hasMultipleCells={hasMultipleCellsInRow}
                                     isLayoutHovered={isLayoutHovered}
+                                    isLayoutSelected={isSelected}
                                     isLastCell={isLastCell}
                                     onSelect={(element) => onSelectElement(element.id)}
                                     onDelete={(element) => onDeleteElement(layout.id, element.id)}
