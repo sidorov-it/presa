@@ -116,11 +116,14 @@ const getExtensions = (
         // Списки задач
         TaskList.configure({
             HTMLAttributes: {
-                class: 'task-list',
+                class: 'task-list [&>li]:flex [&>li]:items-start [&>li]:gap-2 list-none pl-0',
             },
         }),
         TaskItem.configure({
             nested: true,
+            HTMLAttributes: {
+                class: 'flex items-start gap-2 list-none',
+            },
         }),
 
         Link.configure({
@@ -246,7 +249,6 @@ const getExtensions = (
         // Плейсхолдер
         Placeholder.configure({
             placeholder,
-            emptyEditorClass: 'is-editor-empty',
         }),
         ButtonNode,
         Details.configure({

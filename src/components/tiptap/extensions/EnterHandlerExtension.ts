@@ -20,6 +20,7 @@ export const EnterHandlerExtension = (onEnterPressed: (contentBeforeCursor?: JSO
                     while (depth > 0) {
                         if (currentNode.type.name === 'listItem' || 
                             currentNode.type.name === 'bulletList' || 
+                            currentNode.type.name === 'taskList' ||
                             currentNode.type.name === 'orderedList') {
                             isInList = true
                             break

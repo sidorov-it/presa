@@ -703,3 +703,8 @@ button[data-type="button"]:hover {
 .fa-rotate-180 {
   transform: rotate(180deg);
 }
+
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  font-size: 1.25rem !important; /* This is equivalent to text-sm */
+}
