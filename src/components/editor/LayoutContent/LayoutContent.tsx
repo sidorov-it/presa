@@ -67,6 +67,17 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     const isSingleElementSingleCellLayout = layout.elements.length === 1 &&
         layout.gridStructure.rows.length === 1 &&
         layout.gridStructure.rows[0].cells.length === 1;
+        
+    const handleLayoutDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+        handleDragStart(e, "", layout.id);
+        
+        e.dataTransfer.setData('application/json', JSON.stringify({
+            type: 'layout',
+            layoutId: layout.id,
+            slideId: slideId
+        }));
+    };
 
     return (
         <>
@@ -92,9 +103,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                                 openMenu(slideId, null, 'layout', layout.id);
                             }
                         }}
-                        handleDragStart={(e) => {
-                            e.preventDefault();
-                        }}
+                        handleDragStart={handleLayoutDragStart}
                     />
                 )}
                 {layout.gridStructure.rows.map((row: GridRow) => (
@@ -143,6 +152,4 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     );
 };
 
-// Remove the DropIndicator component - we'll use our global one
-
-export default LayoutContent; 
+export default LayoutContent;

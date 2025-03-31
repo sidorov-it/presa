@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
-import { BaseElement, GridCell, IPresentation, Layout, Slide } from '@/types';
+import { BaseElement, GridCell, IPresentation, Layout, LayoutType, Slide } from '@/types';
 
 // Define menu element types
 export type MenuElementType = 'element' | 'column' | 'layout' | 'slide';
@@ -63,7 +63,9 @@ type SlideMenuContextType = {
     
     deleteLayout: () => void;
     updateAlignLayout: (layoutId: string, align: 'top' | 'center' | 'bottom') => void;
-
+    
+    changeTemplate: (template: LayoutType) => void;
+    
     duplicateElement: () => void;
     deleteElement: () => void;
     editElement: () => void;
@@ -112,6 +114,7 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
         getPresentation: getPresentationInStore,
         mergeSlideWithPrevious: mergeSlideWithPreviousInStore,
         updateAlignLayout: updateAlignLayoutInStore,
+        changeTemplate: changeTemplateInStore,
     } = usePresentationStore();
 
     const openMenu = (
@@ -213,6 +216,12 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
         updateAlignLayoutInStore(presentationId, layoutId, align);
     }
 
+    const changeTemplate = (template: LayoutType) => {
+        if (state.slideId && state.layoutId) {
+            changeTemplateInStore(presentationId, state.slideId, state.layoutId, template);
+        }
+    }
+
     const alignColumnTop = (slideId: string, layoutId: string, columnId: string) => {
         alignColumnTopInStore(presentationId, slideId, layoutId, columnId);
     }
@@ -276,6 +285,7 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
                 getPresentation,
                 mergeSlideWithPrevious,
                 updateAlignLayout,
+                changeTemplate
             }}
         >
             {children}

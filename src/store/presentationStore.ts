@@ -17,6 +17,7 @@ import { generateId } from '@/utils/id';
 import { HistoryAction, useHistoryStore } from './historyStore';
 import { create } from 'zustand';
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
+import { getNewEditorElement } from '@/elements/registry';
 
 interface PresentationState {
     presentations: IPresentation[];
@@ -70,6 +71,8 @@ interface PresentationState {
     alignColumnBottom: (presentationId: string, slideId: string, layoutId: string, columnId: string) => void;
     alignColumn: (presentationId: string, slideId: string, layoutId: string, columnId: string, alignment: 'top' | 'center' | 'bottom') => void;
     deleteColumn: (presentationId: string, slideId: string, layoutId: string, columnId: string) => void;
+
+    changeTemplate: (presentationId: string, slideId: string, layoutId: string, template: LayoutType) => void;
 
     mergeSlideWithPrevious: (presentationId: string, slideId: string) => void;
 
@@ -1440,6 +1443,218 @@ export const usePresentationStore = create<PresentationState>()(
                 });
             },
 
+
+            changeTemplate: (presentationId: string, slideId: string, layoutId: string, template: LayoutType) => {
+                const beforeState = { ...get() };
+
+                let newColumnsCount;
+                let newColumnsWidths;
+
+                switch (template) {
+                    case 'two-columns-right':
+                        newColumnsCount = 2;
+                        newColumnsWidths = ['34%', '66%'];
+                        break;
+                    case 'two-columns-left':
+                        newColumnsCount = 2;
+                        newColumnsWidths = ['66%', '34%'];
+                        break;
+                    case 'two-columns-equal':
+                        newColumnsCount = 2;
+                        newColumnsWidths = getColumnWidths(newColumnsCount);
+                        break;
+
+                    case 'three-columns':
+                        newColumnsCount = 3;
+                        newColumnsWidths = getColumnWidths(newColumnsCount);
+                        break;
+                    case 'four-columns':
+                        newColumnsCount = 4;
+                        newColumnsWidths = getColumnWidths(newColumnsCount);
+                        break;
+                    default:
+                        return;
+                }
+
+                const layout = get().getLayout(presentationId, slideId, layoutId);
+                if (!layout) return;
+
+                const updatedGridStructure = { ...layout.gridStructure };
+                updatedGridStructure.columnWidths = newColumnsWidths;
+
+                const currentColumnsCount = updatedGridStructure.columns;
+
+                if (currentColumnsCount > newColumnsCount) {
+                    const strippedColumns = updatedGridStructure.rows[0].cells.slice(newColumnsCount, updatedGridStructure.rows[0].cells.length);
+                    const updatedColumns = updatedGridStructure.rows[0].cells.slice(0, newColumnsCount);
+
+                    const lastColumn = updatedColumns[updatedColumns.length - 1];
+
+                    updatedGridStructure.columns = newColumnsCount;
+
+                    const updatedElements = layout.elements.map((element) => {
+                        if (strippedColumns.some((column) => column.id === element.cellId)) {
+                            return {
+                                ...element,
+                                cellId: lastColumn.id,
+                            };
+                        }
+                        return element;
+                    });
+
+                    updatedGridStructure.rows[0].cells = updatedColumns;
+
+                    set((state) => {
+                        const updatedState = {
+                            presentations: state.presentations.map((presentation) => {
+                                if (presentation.id === presentationId) {
+                                    return {
+                                        ...presentation,
+                                        slides: presentation.slides.map((slide) => {
+                                            if (slide.id === slideId) {
+                                                return {
+                                                    ...slide,
+                                                    layouts: slide.layouts.map((layout) => {
+                                                        if (layout.id === layoutId) {
+                                                            return {
+                                                                ...layout,
+                                                                elements: updatedElements,
+                                                                gridStructure: updatedGridStructure,
+                                                            };
+                                                        }
+                                                        return layout;
+                                                    }),
+                                                };
+                                            }
+                                            return slide;
+                                        }),
+                                    };
+                                }
+                                return presentation;
+                            }),
+                        };
+
+                        get().recordAction({
+                            type: 'layout',
+                            description: 'Change template',
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            before: { presentations: beforeState.presentations },
+                            after: updatedState
+                        });
+
+                        return updatedState;
+                    });
+
+                } else if (currentColumnsCount < newColumnsCount) {
+                    updatedGridStructure.columns = newColumnsCount;
+
+                    const newElements: BaseElement[] = [];
+
+                    const newCells: GridCell[] = new Array(newColumnsCount - currentColumnsCount).fill(null).map((_, index) => {
+                        const cellId = generateId();
+
+                        const newEditor = getNewEditorElement(cellId);
+                        newElements.push(newEditor as BaseElement);
+
+                        return {
+                            id: cellId,
+                            row: 0,
+                            column: currentColumnsCount + index,
+                            elements: [],
+                        };
+                    });
+
+                    updatedGridStructure.rows[0].cells = updatedGridStructure.rows[0].cells.concat(newCells);
+                    const updatedElements = layout.elements.concat(newElements);
+
+                    set((state) => {
+                        const updatedState = {
+                            presentations: state.presentations.map((presentation) => {
+                                if (presentation.id === presentationId) {
+                                    return {
+                                        ...presentation,
+                                        slides: presentation.slides.map((slide) => {
+                                            if (slide.id === slideId) {
+                                                return {
+                                                    ...slide,
+                                                    layouts: slide.layouts.map((layout) => {
+                                                        if (layout.id === layoutId) {
+                                                            return {
+                                                                ...layout,
+                                                                gridStructure: updatedGridStructure,
+                                                                elements: updatedElements,
+                                                            };
+                                                        }
+                                                        return layout;
+                                                    }),
+                                                };
+                                            }
+                                            return slide;
+                                        }),
+                                    };
+                                }
+                                return presentation;
+                            }),
+                        };
+
+                        get().recordAction({
+                            type: 'layout',
+                            description: 'Change template',
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            before: { presentations: beforeState.presentations },
+                            after: updatedState
+                        });
+
+                        return updatedState;
+                    });
+                } else {
+                    set((state) => {
+                        const updatedState = {
+                            presentations: state.presentations.map((presentation) => {
+                                if (presentation.id === presentationId) {
+                                    return {
+                                        ...presentation,
+                                        slides: presentation.slides.map((slide) => {
+                                            if (slide.id === slideId) {
+                                                return {
+                                                    ...slide,
+                                                    layouts: slide.layouts.map((layout) => {
+                                                        if (layout.id === layoutId) {
+                                                            return {
+                                                                ...layout,
+                                                                gridStructure: updatedGridStructure,
+                                                            };
+                                                        }
+                                                        return layout;
+                                                    }),
+                                                };
+                                            }
+                                            return slide;
+                                        }),
+                                    };
+                                }
+                                return presentation;
+                            }),
+                        };
+
+                        get().recordAction({
+                            type: 'layout',
+                            description: 'Change template',
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            before: { presentations: beforeState.presentations },
+                            after: updatedState
+                        });
+
+                        return updatedState;
+                    });
+                }
+            },
 
             // Undo/Redo operations - delegate to history store
             undo: (presentationId: string) => {

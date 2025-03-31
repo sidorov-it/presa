@@ -948,7 +948,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         targetElement: BaseElement,
         targetSlide: Slide,
         position: Position
-        }) => {
+    }) => {
         if (position === 'left' || position === 'right') {
             // Change the position of source cell
             const updatedElements = [...targetLayout.elements];
@@ -1257,8 +1257,9 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
     const processLayoutDrop = () => {
         const isSourceElementInSlide = prevStateRef.current.source.layoutId && (prevStateRef.current.source.elementId || prevStateRef.current.source.cellId);
         const isNewElement = !!prevStateRef.current.newElement.id;
+        const isSourceLayoutOnly = prevStateRef.current.source.layoutId && !prevStateRef.current.source.elementId && !prevStateRef.current.source.cellId;
 
-        if (!prevStateRef.current.indicators.layoutIndicator || !prevStateRef.current.indicators.layoutPosition || !prevStateRef.current.target.layoutId || (!isSourceElementInSlide && !isNewElement)) {
+        if (!prevStateRef.current.indicators.layoutIndicator || !prevStateRef.current.indicators.layoutPosition || !prevStateRef.current.target.layoutId || (!isSourceElementInSlide && !isNewElement && !isSourceLayoutOnly)) {
             return;
         }
 
@@ -1275,13 +1276,81 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 targetSlide,
                 position: prevStateRef.current.indicators.layoutPosition,
                 elementTypeId: prevStateRef.current.newElement.id,
-            })
+            });
             return;
-        } else {
+        } else if (isSourceLayoutOnly) {
+            // Handle layout-to-layout dragging
             if (!prevStateRef.current.source.layoutId) {
                 return;
             }
-        
+
+            const sourceLayout = getLayout(prevStateRef.current.source.layoutId);
+            const targetLayout = getLayout(prevStateRef.current.indicators.layoutIndicator);
+
+            if (!sourceLayout || !targetLayout) {
+                return;
+            }
+
+            const targetSlide = getLayoutSlide(prevStateRef.current.target.layoutId);
+            const sourceSlide = getLayoutSlide(prevStateRef.current.source.layoutId);
+
+            if (!targetSlide || !sourceSlide) return;
+
+            // Check if we're reordering layouts (moving a layout to another position)
+            if (prevStateRef.current.indicators.layoutPosition === 'top' || prevStateRef.current.indicators.layoutPosition === 'bottom') {
+                // Don't do anything if source and target are the same and target's position is right after the source
+                if (sourceLayout.id === targetLayout.id) {
+                    return;
+                }
+
+                // Remove the source layout from its current position
+                const sourceIndex = sourceSlide.layouts.findIndex(l => l.id === sourceLayout.id);
+                if (sourceIndex === -1) return;
+
+                const sourceLayouts = [...sourceSlide.layouts];
+                const [movedLayout] = sourceLayouts.splice(sourceIndex, 1);
+
+                const targetLayouts = [...targetSlide.layouts];
+
+                // If source and target slides are different, update the source slide
+                if (sourceSlide.id !== targetSlide.id) {
+                    DragDropTransactionHelper.updateSlide(presentationId, sourceSlide.id, {
+                        ...sourceSlide,
+                        layouts: sourceLayouts
+                    });
+                } else {
+                    targetLayouts.splice(sourceIndex, 1);
+                }
+
+                // Add the layout to the target position
+                const targetIndex = targetSlide.layouts.findIndex(l => l.id === targetLayout.id);
+                if (targetIndex === -1) return;
+
+                const insertPosition = prevStateRef.current.indicators.layoutPosition === 'top' ? targetIndex : targetIndex + 1;
+
+                // If source and target slides are the same, and the source index is before the target index,
+                // we need to adjust the insert position
+                let adjustedInsertPosition = insertPosition;
+                if (sourceSlide.id === targetSlide.id && sourceIndex < insertPosition) {
+                    adjustedInsertPosition -= 1;
+                }
+
+                targetLayouts.splice(adjustedInsertPosition, 0, movedLayout);
+
+                // Update the target slide
+                DragDropTransactionHelper.updateSlide(presentationId, targetSlide.id, {
+                    ...targetSlide,
+                    layouts: targetLayouts
+                });
+
+                return;
+            }
+        } else if (isSourceElementInSlide) {
+            // Original code for element dragging
+            if (!prevStateRef.current.source.layoutId) {
+                return;
+            }
+
             const sourceLayout = getLayout(prevStateRef.current.source.layoutId);
             const targetLayout = getLayout(prevStateRef.current.indicators.layoutIndicator);
 
@@ -1649,7 +1718,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                         sourceSlide: sourceSlide!
                     })
                 } else if (prevStateRef.current.source.cellId) {
-                    processMoveCellToCellToOtherLayout({
+                    processMoveCellToCellInOtherLayout({
                         sourceLayout,
                         targetLayout,
                         targetGridStructure,
@@ -1661,7 +1730,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         }
     }
 
-    const processAddElementToSiblingCell= ({
+    const processAddElementToSiblingCell = ({
         targetLayout,
         targetSlide,
         elementTypeId,
@@ -1715,7 +1784,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         });
     }
 
-    const processMoveCellToCellToOtherLayout = ({
+    const processMoveCellToCellInOtherLayout = ({
         sourceLayout,
         targetLayout,
         targetGridStructure,

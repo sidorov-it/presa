@@ -9,3 +9,8 @@ export { default as AlignCenterIcon } from './AlignCenterIcon';
 export { default as AlignBottomIcon } from './AlignBottomIcon';
 export { default as MergeIcon } from './MergeIcon';
 export { default as PlusIcon } from './PlusIcon';
+export { default as TwoColumnsIcon } from './TwoColumnsIcon';
+export { default as TwoColumnsLeftIcon } from './TwoColumnsLeftIcon';
+export { default as TwoColumnsRightIcon } from './TwoColumnsRightIcon';
+export { default as ThreeColumnsIcon } from './ThreeColumnsIcon';
+export { default as FourColumnsIcon } from './FourColumnsIcon'; 

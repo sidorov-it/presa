@@ -183,6 +183,9 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
         DragDropTransactionHelper.addLayout(presentationId, slide.id, newLayout, slide.layouts.length);
 
+        setTimeout(() => {
+            document.dispatchEvent(new CustomEvent('focus_editor', { bubbles: true, cancelable: true, detail: { editorId: editorElement.id } }));
+        }, 100);
         // addLayout(presentationId, slide.id, newLayout);
     };
 

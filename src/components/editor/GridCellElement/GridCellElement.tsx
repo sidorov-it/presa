@@ -591,7 +591,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 }}
             >
                 <div key={element.id} className={styles.elementWrapper}>
-                    {(menuElementId === element.id || activeEditorId === element.id) && (
+                    {(menuElementId === element.id || activeEditorId === element.id || elementIsHovered) && (
                         <DragHandler
                             className={styles.elementDragHandle}
                             slideId={slideId}

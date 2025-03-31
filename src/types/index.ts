@@ -19,7 +19,9 @@ export type TextElementType =
 
 export type LayoutType =
     | 'single-column'
-    | 'two-columns'
+    | 'two-columns-right'
+    | 'two-columns-left'
+    | 'two-columns-equal'
     | 'three-columns'
     | 'four-columns'
     | 'image-text'

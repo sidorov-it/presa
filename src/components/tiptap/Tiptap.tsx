@@ -330,8 +330,18 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
 
     useEffect(() => {
         if (editor) {
-            console.log('initialContent', initialContent)
             editor.commands.setContent(initialContent);
+        }
+    }, [editor])
+
+    useEffect(() => {
+        if (editor) {
+            document.addEventListener('focus_editor', (e: CustomEvent) => {
+                if (e.detail.editorId === elementId) {
+                    editor.commands.focus();
+                    setActiveEditor(editor, elementId);
+                }
+            })
         }
     }, [editor])
 

@@ -412,6 +412,21 @@ export const elementsRegistry: Category[] = [
 
 ]
 
+export const getNewEditorElement = (cellId: string): TextElement => {
+    const newEditor: TextElement = {
+        id: generateId(),
+        type: 'editor',
+        textType: 'text',
+        content: '',
+        cellId,
+        position: { x: 0, y: 0 },
+        size: { width: 100, height: 100 },
+        style: {},
+        zIndex: 0,
+    }
+
+    return newEditor;
+}
 
 export const getElementMenuComponent = (type: string): React.ComponentType<any> | undefined => {
     const elementConfig = elementsRegistry
