@@ -13,6 +13,9 @@ export interface IUser {
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
   presentationIds: string[];
+  emailPreferences?: {
+    updates?: boolean;
+  };
 }
 
 const UserSchema = new mongoose.Schema<IUser>(
@@ -47,6 +50,12 @@ const UserSchema = new mongoose.Schema<IUser>(
         presentationIds: {
             type: [String],
             default: [],
+        },
+        emailPreferences: {
+            type: mongoose.Schema.Types.Mixed,
+            default: {
+                updates: true,
+            },
         },
     },
     {

@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { FaUser, FaLock, FaGlobe, FaBell, FaPalette } from 'react-icons/fa';
+import { FaUser, FaLock, FaEnvelope } from 'react-icons/fa';
 import { Heading } from "@/components/ui/heading"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/Button"
 import { Save } from "lucide-react"
+import { toast } from "sonner"
 
 // export const metadata = {
 //     title: "Settings",
@@ -14,42 +15,235 @@ import { Save } from "lucide-react"
 // }
 
 const SettingsPage = () => {
-    const { data: session } = useSession();
-    const [activeTab, setActiveTab] = useState('profile');
+    const { data: session, update } = useSession();
     const [name, setName] = useState(session?.user?.name || '');
-    const [email, setEmail] = useState(session?.user?.email || '');
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [emailUpdates, setEmailUpdates] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
-    const [saveSuccess, setSaveSuccess] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const checkAuthentication = async () => {
+        try {
+            console.log('Checking authentication status...');
+            const authResponse = await fetch('/api/auth/check');
+            const authData = await authResponse.json();
+            console.log('Authentication check result:', authData);
+            
+            if (!authData.authenticated) {
+                console.error('User not authenticated properly');
+                toast.error('Authentication error. Please sign in again.');
+                return false;
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('Authentication check error:', error);
+            toast.error('Authentication error. Please try again.');
+            return false;
+        }
+    };
+
+    // Load user preferences
+    useEffect(() => {
+        const fetchUserPreferences = async () => {
+            const isAuthenticated = await checkAuthentication();
+            if (!isAuthenticated) return;
+            
+            try {
+                console.log('Fetching user preferences...');
+                const response = await fetch('/api/user/preferences');
+                console.log('Preferences response status:', response.status);
+                
+                if (response.status === 401) {
+                    console.log('User not authenticated, cannot fetch preferences');
+                    setIsLoading(false);
+                    return;
+                }
+                
+                const data = await response.json();
+                console.log('Preferences data:', data);
+                
+                if (response.ok) {
+                    if (data.preferences?.emailPreferences?.updates !== undefined) {
+                        setEmailUpdates(data.preferences.emailPreferences.updates);
+                        console.log('Setting email updates to:', data.preferences.emailPreferences.updates);
+                    } else {
+                        console.log('No email preferences found in response, using default');
+                        setEmailUpdates(true);
+                    }
+                } else {
+                    console.error('Error fetching preferences:', data.message);
+                    toast.error('Failed to load preferences');
+                }
+            } catch (error) {
+                console.error('Error fetching preferences:', error);
+                toast.error('Failed to load preferences');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (session?.user) {
+            console.log('Session is available, user ID:', session.user.id, 'name:', session.user.name);
+            fetchUserPreferences();
+            setName(session.user.name || '');
+        } else {
+            console.log('No session available');
+            setIsLoading(false);
+        }
+    }, [session]);
 
     const handleSaveProfile = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSaving(true);
-        setSaveSuccess(false);
+        console.log('Saving profile with name:', name);
+        console.log('User session ID:', session?.user?.id);
 
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 800));
-    
-        // In a real app, this would call your API to update the user's profile
-        setIsSaving(false);
-        setSaveSuccess(true);
+        // Check authentication before proceeding
+        const isAuthenticated = await checkAuthentication();
+        if (!isAuthenticated) {
+            setIsSaving(false);
+            return;
+        }
 
-        // Clear success message after 3 seconds
-        setTimeout(() => {
-            setSaveSuccess(false);
-        }, 3000);
+        try {
+            console.log('Making API request to /api/user/profile');
+            const response = await fetch('/api/user/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name }),
+            });
+            console.log('Profile update response status:', response.status);
+
+            const data = await response.json();
+            console.log('Profile update response data:', data);
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to update profile');
+            }
+            
+            // Update the session to reflect the name change
+            console.log('Updating session with new name');
+            await update({ name });
+            console.log('Session updated successfully');
+            
+            // Refresh the page to ensure session state is updated everywhere
+            window.location.reload();
+            
+            toast.success("Profile updated successfully");
+        } catch (error) {
+            console.error('Profile update error complete details:', error);
+            toast.error(error instanceof Error ? error.message : "Failed to update profile");
+        } finally {
+            setIsSaving(false);
+        }
     };
 
-    const handleSaveSettings = () => {
-        // TODO: Implement settings save functionality
-    }
+    const handleChangePassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        if (newPassword !== confirmPassword) {
+            toast.error("New passwords don't match");
+            return;
+        }
+        
+        if (newPassword.length < 8) {
+            toast.error("Password must be at least 8 characters");
+            return;
+        }
+        
+        setIsSaving(true);
+        
+        // Check authentication before proceeding
+        const isAuthenticated = await checkAuthentication();
+        if (!isAuthenticated) {
+            setIsSaving(false);
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/user/password', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    currentPassword, 
+                    newPassword 
+                }),
+            });
 
-    const tabs = [
-        { id: 'profile', label: 'Profile', icon: <FaUser /> },
-        { id: 'security', label: 'Security', icon: <FaLock /> },
-        { id: 'appearance', label: 'Appearance', icon: <FaPalette /> },
-        { id: 'notifications', label: 'Notifications', icon: <FaBell /> },
-        { id: 'language', label: 'Language', icon: <FaGlobe /> },
-    ];
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to change password');
+            }
+            
+            toast.success("Password changed successfully");
+            
+            // Reset password fields
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Failed to change password");
+            console.error(error);
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleEmailPreferences = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSaving(true);
+        
+        // Check authentication before proceeding
+        const isAuthenticated = await checkAuthentication();
+        if (!isAuthenticated) {
+            setIsSaving(false);
+            return;
+        }
+        
+        console.log('Saving email preferences, updates set to:', emailUpdates);
+        
+        try {
+            const response = await fetch('/api/user/preferences', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    emailUpdates 
+                }),
+            });
+
+            const data = await response.json();
+            console.log('Email preferences response:', response.status, data);
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to update preferences');
+            }
+            
+            toast.success("Email preferences updated");
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Failed to update preferences");
+            console.error('Email preferences error:', error);
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 flex justify-center items-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -67,75 +261,129 @@ const SettingsPage = () => {
                         <CardDescription>Update your personal information</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <label htmlFor="name" className="text-sm font-medium">
-                                Full Name
-                            </label>
-                            <input
-                                type="text"
-                                id="name"
-                                className="w-full px-3 py-2 border rounded-md"
-                                placeholder="John Doe"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label htmlFor="email" className="text-sm font-medium">
-                                Email Address
-                            </label>
-                            <input
-                                type="email"
-                                id="email"
-                                className="w-full px-3 py-2 border rounded-md"
-                                placeholder="john@example.com"
-                            />
-                        </div>
+                        <form onSubmit={handleSaveProfile} className="space-y-4">
+                            <div className="space-y-2">
+                                <label htmlFor="name" className="text-sm font-medium">
+                                    Full Name
+                                </label>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    className="w-full px-3 py-2 border rounded-md"
+                                    placeholder="John Doe"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label htmlFor="email" className="text-sm font-medium">
+                                    Email Address
+                                </label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    value={session?.user?.email || ''}
+                                    className="w-full px-3 py-2 border rounded-md bg-gray-50"
+                                    readOnly
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    Your email address cannot be changed
+                                </p>
+                            </div>
+                            <Button type="submit" disabled={isSaving}>
+                                {isSaving ? 'Saving...' : 'Save Profile'}
+                            </Button>
+                        </form>
                     </CardContent>
                 </Card>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Preferences</CardTitle>
-                        <CardDescription>Customize your presentation settings</CardDescription>
+                        <CardTitle>Change Password</CardTitle>
+                        <CardDescription>Update your account password</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <div className="space-y-0.5">
-                                <label className="text-sm font-medium">Dark Mode</label>
-                                <p className="text-sm text-muted-foreground">
-                                    Enable dark mode for the application
-                                </p>
-                            </div>
-                            <div className="flex items-center space-x-2">
+                        <form onSubmit={handleChangePassword} className="space-y-4">
+                            <div className="space-y-2">
+                                <label htmlFor="currentPassword" className="text-sm font-medium">
+                                    Current Password
+                                </label>
                                 <input
-                                    type="checkbox"
-                                    id="darkMode"
-                                    className="w-6 h-6"
+                                    type="password"
+                                    id="currentPassword"
+                                    value={currentPassword}
+                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                    className="w-full px-3 py-2 border rounded-md"
+                                    required
                                 />
                             </div>
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <div className="space-y-0.5">
-                                <label className="text-sm font-medium">Auto Save</label>
-                                <p className="text-sm text-muted-foreground">
-                                    Automatically save presentations while editing
-                                </p>
-                            </div>
-                            <div className="flex items-center space-x-2">
+                            <div className="space-y-2">
+                                <label htmlFor="newPassword" className="text-sm font-medium">
+                                    New Password
+                                </label>
                                 <input
-                                    type="checkbox"
-                                    id="autoSave"
-                                    className="w-6 h-6"
-                                    defaultChecked
+                                    type="password"
+                                    id="newPassword"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    className="w-full px-3 py-2 border rounded-md"
+                                    required
+                                    minLength={8}
                                 />
                             </div>
-                        </div>
+                            <div className="space-y-2">
+                                <label htmlFor="confirmPassword" className="text-sm font-medium">
+                                    Confirm New Password
+                                </label>
+                                <input
+                                    type="password"
+                                    id="confirmPassword"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className="w-full px-3 py-2 border rounded-md"
+                                    required
+                                />
+                            </div>
+                            <Button type="submit" disabled={isSaving}>
+                                {isSaving ? 'Changing...' : 'Change Password'}
+                            </Button>
+                        </form>
                     </CardContent>
-                    <CardFooter>
-                        <Button onClick={handleSaveSettings} className="ml-auto">
-                            <Save className="mr-2 h-4 w-4" />
-                            Save Changes
-                        </Button>
-                    </CardFooter>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Email Preferences</CardTitle>
+                        <CardDescription>Manage notification settings</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <form onSubmit={handleEmailPreferences} className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <div className="space-y-0.5">
+                                    <label htmlFor="emailUpdates" className="text-sm font-medium">Updates and Announcements</label>
+                                    <p className="text-sm text-muted-foreground">
+                                        Receive emails about product updates and announcements
+                                    </p>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <input
+                                        type="checkbox"
+                                        id="emailUpdates"
+                                        checked={emailUpdates}
+                                        onChange={(e) => {
+                                            const newValue = e.target.checked;
+                                            console.log('Checkbox toggled to:', newValue);
+                                            setEmailUpdates(newValue);
+                                        }}
+                                        className="w-6 h-6"
+                                    />
+                                </div>
+                            </div>
+                            <Button type="submit" disabled={isSaving} className="mt-4">
+                                {isSaving ? 'Saving...' : 'Save Preferences'}
+                            </Button>
+                        </form>
+                    </CardContent>
                 </Card>
             </div>
         </div>

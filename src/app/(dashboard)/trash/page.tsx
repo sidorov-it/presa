@@ -9,7 +9,7 @@ interface DeletedPresentation {
     id: string;
     title: string;
     deletedAt: string;
-    slides: number;
+    slides: unknown[];
 }
 
 export default function TrashPage() {
@@ -143,7 +143,7 @@ export default function TrashPage() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {presentation.slides} slides
+                                        {presentation.slides.length} slides
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <button 
