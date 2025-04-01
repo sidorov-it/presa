@@ -8,12 +8,10 @@ import { useSession } from 'next-auth/react';
 import Editor from '@/components/editor/Editor/Editor';
 import { IPresentation } from '@/types';
 import UndoRedoControls from '@/components/UndoRedoControls';
-import Button from '@/components/ui/Button';
 import SaveStatus from '@/components/ui/SaveStatus';
 
 export default function PresentationEditorPage() {
     const params = useParams();
-
 
     const { id } = params;
     const { data: session, status } = useSession();

@@ -1,6 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { Heading } from "@/components/ui/heading"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Plus } from "lucide-react"
 
 // Sample theme data
 const THEMES = [
@@ -48,7 +52,12 @@ const THEMES = [
     },
 ];
 
-export default function ThemesPage() {
+// export const metadata = {
+//     title: "Themes",
+//     description: "Customize your presentation themes"
+// }
+
+const ThemesPage = () => {
     const [activeTheme, setActiveTheme] = useState<string | null>(null);
 
     const handleThemeSelect = (themeId: string) => {
@@ -56,54 +65,50 @@ export default function ThemesPage() {
     // In a real app, you would save the selected theme to the user's preferences
     };
 
+    const handleCreateTheme = () => {
+        // TODO: Implement theme creation
+    }
+
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">Themes</h1>
-                <p className="text-gray-600 mt-2">
-          Choose a theme for your presentations
-                </p>
+        <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+            <div className="flex items-center justify-between">
+                <Heading
+                    title="Themes"
+                    description="Customize your presentation themes"
+                />
+                <Button onClick={handleCreateTheme}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    New Theme
+                </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {THEMES.map((theme) => (
-                    <div 
+                    <Card 
                         key={theme.id}
-                        className={`bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow ${
+                        className={`hover:shadow-lg transition-shadow cursor-pointer ${
                             activeTheme === theme.id ? 'ring-2 ring-blue-500' : ''
                         }`}
                         onClick={() => handleThemeSelect(theme.id)}
                     >
-                        <div className={`h-32 ${theme.previewBg} flex items-center justify-center text-white`}>
-                            <div className="text-center">
-                                <span className="block text-xl font-bold">{theme.name}</span>
-                                <span className="text-sm opacity-80">Theme Preview</span>
-                            </div>
-                        </div>
-            
-                        <div className="p-4">
-                            <h3 className="font-medium text-lg mb-1">{theme.name}</h3>
-                            <p className="text-sm text-gray-500 mb-2">
-                                {theme.description}
-                            </p>
-
-                            <div className="mt-3 flex items-center justify-between">
-                                <div className="flex items-center">
-                                    <div 
-                                        className="w-5 h-5 rounded-full mr-2" 
-                                        style={{ backgroundColor: theme.primaryColor }}
-                                    ></div>
-                                    <span className="text-xs text-gray-500">Primary Color</span>
+                        <CardHeader>
+                            <CardTitle>{theme.name}</CardTitle>
+                            <CardDescription>{theme.description}</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="aspect-video bg-white rounded-md border-2 border-gray-200 p-4">
+                                <div className={`h-2 ${theme.previewBg} rounded mb-2`} />
+                                <div className="space-y-2">
+                                    <div className="w-full h-1 bg-gray-100 rounded" />
+                                    <div className="w-full h-1 bg-gray-100 rounded" />
                                 </div>
-                
-                                {activeTheme === theme.id && (
-                                    <span className="text-xs font-medium text-blue-600">Active</span>
-                                )}
                             </div>
-                        </div>
-                    </div>
+                        </CardContent>
+                    </Card>
                 ))}
             </div>
         </div>
-    );
-} 
+    )
+}
+
+export default ThemesPage 

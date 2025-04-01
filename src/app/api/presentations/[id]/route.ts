@@ -6,10 +6,8 @@ import { authOptions } from '../../auth/[...nextauth]/route';
 import { ObjectId } from 'mongodb';
 
 // Get a specific presentation
-export async function GET(
-    req: NextRequest,
-    { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     try {
         const session = await getServerSession(authOptions);
         

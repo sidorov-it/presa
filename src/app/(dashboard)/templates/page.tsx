@@ -3,6 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
+import { Heading } from "@/components/ui/heading"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/Button"
+import { Plus } from "lucide-react"
 
 // Sample template data
 const TEMPLATES = [
@@ -50,7 +54,12 @@ const TEMPLATES = [
     },
 ];
 
-export default function TemplatesPage() {
+// export const metadata = {
+//     title: "Templates",
+//     description: "Manage your presentation templates"
+// }
+
+const TemplatesPage = () => {
     const router = useRouter();
     const { createPresentation } = usePresentationStore();
     const [isLoading, setIsLoading] = useState(false);
@@ -69,13 +78,21 @@ export default function TemplatesPage() {
         setIsLoading(false);
     };
 
+    const handleCreateTemplate = () => {
+        // TODO: Implement template creation
+    }
+
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">Templates</h1>
-                <p className="text-gray-600 mt-2">
-          Choose a template to start your presentation
-                </p>
+        <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+            <div className="flex items-center justify-between">
+                <Heading
+                    title="Templates"
+                    description="Manage your presentation templates"
+                />
+                <Button onClick={handleCreateTemplate}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    New Template
+                </Button>
             </div>
 
             {isLoading ? (
@@ -83,34 +100,26 @@ export default function TemplatesPage() {
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     {TEMPLATES.map((template) => (
-                        <div 
+                        <Card 
                             key={template.id}
-                            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                            className="hover:shadow-lg transition-shadow cursor-pointer"
                             onClick={() => handleTemplateSelect(template.id)}
                         >
-                            <div className="h-48 bg-gray-200 flex items-center justify-center">
-                                {/* In a real app, you would use actual template preview images */}
-                                <div className="text-gray-400 text-center px-4">
-                                    <span className="block text-lg font-medium">{template.title}</span>
-                                    <span className="text-sm">Preview image</span>
-                                </div>
-                            </div>
-              
-                            <div className="p-4">
-                                <h3 className="font-medium text-lg mb-1">{template.title}</h3>
-                                <p className="text-sm text-gray-500 mb-2">
-                                    {template.description}
-                                </p>
-                                <div className="text-xs text-gray-400">
-                                    {template.slides} slides
-                                </div>
-                            </div>
-                        </div>
+                            <CardHeader>
+                                <CardTitle>{template.title}</CardTitle>
+                                <CardDescription>{template.description}</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="aspect-video bg-gray-100 rounded-md"></div>
+                            </CardContent>
+                        </Card>
                     ))}
                 </div>
             )}
         </div>
     );
-} 
+}
+
+export default TemplatesPage 

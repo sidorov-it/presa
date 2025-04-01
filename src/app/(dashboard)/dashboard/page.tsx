@@ -53,18 +53,18 @@ export default function DashboardPage() {
     }, [presentations]);
 
     // Close menu when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                setActiveMenu(null);
-            }
-        };
+    // useEffect(() => {
+    //     const handleClickOutside = (event: MouseEvent) => {
+    //         if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+    //             setActiveMenu(null);
+    //         }
+    //     };
 
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
+    //     document.addEventListener('mousedown', handleClickOutside);
+    //     return () => {
+    //         document.removeEventListener('mousedown', handleClickOutside);
+    //     };
+    // }, []);
 
     // Handle creating an empty presentation
     const handleCreateEmptyPresentation = async () => {
@@ -223,6 +223,9 @@ export default function DashboardPage() {
         setAiPrompt(example);
     };
 
+
+    console.log('activeMenu', activeMenu)
+    console.log('showDeleteModal', showDeleteModal  )
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
@@ -294,7 +297,7 @@ export default function DashboardPage() {
                                     </div>
                                     <p className="text-sm text-gray-500">
                                         {typeof presentation.slides === 'number' ? presentation.slides : 
-                                        Array.isArray(presentation.slides) ? presentation.slides.length : 0} slides • {new Date(presentation.updatedAt).toLocaleDateString()}
+                                            Array.isArray(presentation.slides) ? presentation.slides.length : 0} slides • {new Date(presentation.updatedAt).toLocaleDateString()}
                                     </p>
                                 </div>
 
