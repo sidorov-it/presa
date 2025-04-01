@@ -45,7 +45,9 @@ interface PresentationState {
     recordAction: (action: Omit<HistoryAction, 'timestamp' | 'transactionId'>) => void;
 
     // Работа с презентациями
-    createPresentation: (title: string) => string;
+    createPresentation: (title: string) => Promise<string>;
+    loadPresentation: (id: string) => Promise<IPresentation | null>;
+    loadPresentationsList: () => Promise<void>;
     updatePresentation: (id: string, data: Partial<IPresentation>) => void;
     deletePresentation: (id: string) => void;
     getPresentation: (id: string) => IPresentation | undefined;
@@ -169,47 +171,94 @@ export const usePresentationStore = create<PresentationState>()(
                 }
             },
             // Методы для работы с презентациями
-            createPresentation: (title: string) => {
-                const id = uuidv4();
-                const now = Date.now();
+            createPresentation: async (title: string) => {
+                try {
+                    set({ isLoading: true });
 
-                const newPresentation: IPresentation = {
-                    id,
-                    title,
-                    slides: [],
-                    createdAt: now,
-                    updatedAt: now,
-                };
+                    const response = await fetch('/api/presentations', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ title }),
+                    });
 
-                // Capture the state before the operation
-                const beforeState = { ...get() };
+                    if (!response.ok) {
+                        throw new Error('Failed to create presentation');
+                    }
 
-                set((state) => ({
-                    presentations: [...state.presentations, newPresentation],
-                }));
+                    const { presentation } = await response.json();
 
-                // Initialize history for the new presentation
-                useHistoryStore.getState().initHistory(id);
+                    set((state) => ({
+                        presentations: [...state.presentations, presentation],
+                    }));
 
-                // Capture the state after the operation
-                const afterState = { ...get() };
+                    // Инициализируем историю для новой презентации
+                    useHistoryStore.getState().initHistory(presentation.id);
 
-                // Record this action with the entire store state
-                get().recordAction({
-                    type: 'presentation',
-                    description: 'Create presentation',
-                    presentationId: id,
-                    before: { presentations: beforeState.presentations },
-                    after: afterState
-                });
+                    return presentation.id;
+                } catch (error) {
+                    console.error('Error creating presentation:', error);
+                    set({ error: 'Failed to create presentation' });
+                    throw error;
+                } finally {
+                    set({ isLoading: false });
+                }
+            },
 
-                // Добавляем первый слайд по умолчанию
-                get().addSlide(id, 0);
+            loadPresentationsList: async () => {
+                try {
+                    set({ isLoading: true, error: null });
 
-                // Save the new presentation
-                get().saveChanges(id);
+                    const response = await fetch('/api/presentations');
+                    if (!response.ok) {
+                        throw new Error('Failed to load presentations');
+                    }
 
-                return id;
+                    const { presentations } = await response.json();
+
+                    set({ 
+                        presentations,
+                        isLoading: false 
+                    });
+                } catch (error) {
+                    console.error('Error loading presentations:', error);
+                    set({ 
+                        error: 'Failed to load presentations',
+                        isLoading: false 
+                    });
+                }
+            },
+
+            loadPresentation: async (id: string) => {
+                try {
+                    set({ isLoading: true });
+
+                    const response = await fetch(`/api/presentations/${id}`);
+                    if (!response.ok) {
+                        throw new Error('Failed to load presentation');
+                    }
+
+                    const { presentation } = await response.json();
+
+                    set((state) => ({
+                        presentations: [
+                            ...state.presentations.filter(p => p.id !== id),
+                            presentation
+                        ],
+                    }));
+
+                    // Инициализируем историю для загруженной презентации
+                    useHistoryStore.getState().initHistory(presentation.id);
+
+                    return presentation;
+                } catch (error) {
+                    console.error('Error loading presentation:', error);
+                    set({ error: 'Failed to load presentation' });
+                    throw error;
+                } finally {
+                    set({ isLoading: false });
+                }
             },
 
             updatePresentation: (id, data) => {

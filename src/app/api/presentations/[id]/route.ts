@@ -12,34 +12,40 @@ export async function GET(
 ) {
     try {
         const session = await getServerSession(authOptions);
-    
+        
         if (!session?.user) {
             return NextResponse.json(
                 { message: 'Unauthorized' },
                 { status: 401 }
             );
         }
-    
+        
         const userId = session.user.id;
         const presentationId = params.id;
-    
-        // Connect to the database
+
+        // Validate ObjectId
+        if (!ObjectId.isValid(presentationId)) {
+            return NextResponse.json(
+                { message: 'Invalid presentation ID' },
+                { status: 400 }
+            );
+        }
+
         await connectToDatabase();
-    
-        // Find presentation with this ID that belongs to the user
+        
         const presentation = await Presentation.findOne({ 
             _id: presentationId,
             userId,
             isDeleted: false
         });
-    
+        
         if (!presentation) {
             return NextResponse.json(
                 { message: 'Presentation not found' },
                 { status: 404 }
             );
         }
-    
+        
         return NextResponse.json({
             presentation: presentation.toJSON(),
         });
@@ -53,10 +59,8 @@ export async function GET(
 }
 
 // Update a presentation
-export async function PUT(
-    req: NextRequest,
-    { params }: { params: { id: string } }
-) {
+export async function PUT(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     try {
         const session = await getServerSession(authOptions);
     
@@ -112,10 +116,8 @@ export async function PUT(
 }
 
 // Delete a presentation (soft delete)
-export async function DELETE(
-    req: NextRequest,
-    { params }: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     try {
         const session = await getServerSession(authOptions);
     
@@ -156,6 +158,44 @@ export async function DELETE(
         });
     } catch (error) {
         console.error('Delete presentation error:', error);
+        return NextResponse.json(
+            { message: 'Internal server error' },
+            { status: 500 }
+        );
+    }
+}
+
+export async function POST(req: NextRequest) {
+    try {
+        const session = await getServerSession(authOptions);
+        
+        if (!session?.user) {
+            return NextResponse.json(
+                { message: 'Unauthorized' },
+                { status: 401 }
+            );
+        }
+        
+        const userId = session.user.id;
+        const { title } = await req.json();
+        
+        await connectToDatabase();
+        
+        const presentation = await Presentation.create({
+            title,
+            description: '',
+            slides: [],
+            userId,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+        });
+        
+        return NextResponse.json({
+            message: 'Presentation created successfully',
+            presentation: presentation.toJSON(),
+        });
+    } catch (error) {
+        console.error('Create presentation error:', error);
         return NextResponse.json(
             { message: 'Internal server error' },
             { status: 500 }

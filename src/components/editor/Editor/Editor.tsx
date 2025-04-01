@@ -11,15 +11,17 @@ import UndoRedoControls from '@/components/UndoRedoControls';
 import { Slide } from '@/types';
 import SlideMenu from '../SlideMenu/SlideMenu';
 import SaveStatus from '@/components/ui/SaveStatus';
+import { useRouter } from 'next/navigation';
 
 interface EditorProps {
     presentationId: string;
 }
 
 const Editor: React.FC<EditorProps> = ({ presentationId }) => {
-    const { getPresentation, addSlide, savingStatus } = usePresentationStore();
+    const { getPresentation, addSlide, savingStatus, createPresentation } = usePresentationStore();
     const [activeSlideId, setActiveSlideId] = useState<string | null>(null);
     const [showPreview, setShowPreview] = useState(false);
+    const router = useRouter();
 
     const presentation = getPresentation(presentationId);
 
@@ -55,41 +57,19 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
         setShowPreview(!showPreview);
     };
 
+    const handleCreateEmpty = async () => {
+        try {
+            const presentationId = await createPresentation('Untitled Presentation');
+            router.push(`/editor/${presentationId}`);
+        } catch (error) {
+            console.error('Failed to create presentation:', error);
+        }
+    };
+
     return (
         <DndProvider presentationId={presentationId}>
             <SlideMenuProvider presentationId={presentationId}>
                 <div className="min-h-screen flex flex-col bg-[#f6f4f4]">
-                    <header className="bg-white border-b border-gray-200 p-4">
-                        <div className="container mx-auto flex justify-between items-center">
-                            <div className="flex items-center gap-4">
-                                <h1 className="text-2xl font-bold text-blue-600">Presa</h1>
-                                <SaveStatus status={savingStatus} />
-                            </div>
-
-                            <div className="flex items-center space-x-4">
-                                <UndoRedoControls presentationId={presentationId} />
-                                
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={handlePreviewToggle}
-                                    aria-label={showPreview ? 'Выйти из режима просмотра' : 'Предпросмотр презентации'}
-                                >
-                                    {showPreview ? 'Редактировать' : 'Просмотр'}
-                                </Button>
-
-                                <Button
-                                    variant="primary"
-                                    size="sm"
-                                    onClick={() => { }}
-                                    aria-label="Экспортировать презентацию"
-                                >
-                                    Экспорт
-                                </Button>
-                            </div>
-                        </div>
-                    </header>
-
                     <SlidesList
                         slides={presentation.slides}
                         activeSlideId={activeSlideId}

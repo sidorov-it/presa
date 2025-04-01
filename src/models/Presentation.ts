@@ -1,15 +1,41 @@
 import mongoose from 'mongoose';
-import { IPresentation } from '@/types';
+import { ObjectId } from 'mongodb';
+import { IPresentation, Slide } from '@/types';
 
 // Extended for MongoDB
 interface MongoPresentation extends Omit<IPresentation, 'id'> {
+  _id: string;
   userId: string;
   isDeleted: boolean;
   deletedAt?: Date;
 }
 
+const SlideSchema = new mongoose.Schema({
+    id: {
+        type: String,
+        required: true,
+        validate: {
+            validator: (v: string) => ObjectId.isValid(v),
+            message: 'Invalid ObjectId'
+        }
+    },
+    layouts: {
+        type: mongoose.Schema.Types.Mixed,
+        default: []
+    }
+});
+
 const PresentationSchema = new mongoose.Schema<MongoPresentation>(
     {
+        _id: {
+            type: String,
+            required: true,
+            validate: {
+                validator: (v: string) => ObjectId.isValid(v),
+                message: 'Invalid ObjectId'
+            },
+            default: () => new ObjectId().toString()
+        },
         title: {
             type: String,
             required: [true, 'Please provide a title'],
@@ -18,7 +44,7 @@ const PresentationSchema = new mongoose.Schema<MongoPresentation>(
             type: String,
         },
         slides: {
-            type: mongoose.Schema.Types.Mixed,
+            type: [SlideSchema],
             required: true,
             default: [],
         },
