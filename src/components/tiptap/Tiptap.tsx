@@ -80,65 +80,65 @@ const getExtensions = (
         editorRefs: React.RefObject<HTMLDivElement>[];
     }>
 ) => [
-        // Базовый набор расширений
-        StarterKit.configure({
-            dropcursor: false,
-            heading: {
-                levels: [1, 2, 3, 4, 5]
-            },
-            bulletList: {
-                keepMarks: true,
-                keepAttributes: false,
-            },
-            orderedList: {
-                keepMarks: true,
-                keepAttributes: false,
-            },
-        }),
-        TextStyle,
-        Color,
-        Underline,
-        TextAlign.configure({
-            types: ['heading', 'paragraph'],
-        }),
-        Strike,
-        // Таблицы
-        Table.configure({
-            resizable: true,
-            HTMLAttributes: {
-                class: 'tiptap-table',
-            },
-        }),
-        TableRow,
-        TableHeader,
-        TableCell,
+    // Базовый набор расширений
+    StarterKit.configure({
+        dropcursor: false,
+        heading: {
+            levels: [1, 2, 3, 4, 5]
+        },
+        bulletList: {
+            keepMarks: true,
+            keepAttributes: false,
+        },
+        orderedList: {
+            keepMarks: true,
+            keepAttributes: false,
+        },
+    }),
+    TextStyle,
+    Color,
+    Underline,
+    TextAlign.configure({
+        types: ['heading', 'paragraph'],
+    }),
+    Strike,
+    // Таблицы
+    Table.configure({
+        resizable: true,
+        HTMLAttributes: {
+            class: 'tiptap-table',
+        },
+    }),
+    TableRow,
+    TableHeader,
+    TableCell,
 
-        // Списки задач
-        TaskList.configure({
-            HTMLAttributes: {
-                class: 'task-list [&>li]:flex [&>li]:items-start [&>li]:gap-2 list-none pl-0',
-            },
-        }),
-        TaskItem.configure({
-            nested: true,
-            HTMLAttributes: {
-                class: 'flex items-start gap-2 list-none',
-            },
-        }),
+    // Списки задач
+    TaskList.configure({
+        HTMLAttributes: {
+            class: 'task-list [&>li]:flex [&>li]:items-start [&>li]:gap-2 list-none pl-0',
+        },
+    }),
+    TaskItem.configure({
+        nested: true,
+        HTMLAttributes: {
+            class: 'flex items-start gap-2 list-none',
+        },
+    }),
 
-        Link.configure({
-            openOnClick: false,
-            autolink: true,
-            defaultProtocol: 'https',
-            protocols: ['http', 'https'],
-            isAllowedUri: (url, ctx) => {
-              try {
+    Link.configure({
+        openOnClick: false,
+        autolink: true,
+        defaultProtocol: 'https',
+        protocols: ['http', 'https'],
+        isAllowedUri: (url, ctx) => {
+            try {
                 // construct URL
                 const parsedUrl = url.includes(':') ? new URL(url) : new URL(`${ctx.defaultProtocol}://${url}`)
     
                 // use default validation
                 if (!ctx.defaultValidate(parsedUrl.href)) {
-                  return false
+                    return false
                 }
     
                 // disallowed protocols
@@ -146,14 +146,14 @@ const getExtensions = (
                 const protocol = parsedUrl.protocol.replace(':', '')
     
                 if (disallowedProtocols.includes(protocol)) {
-                  return false
+                    return false
                 }
     
                 // only allow protocols specified in ctx.protocols
                 const allowedProtocols = ctx.protocols.map(p => (typeof p === 'string' ? p : p.scheme))
     
                 if (!allowedProtocols.includes(protocol)) {
-                  return false
+                    return false
                 }
     
                 // disallowed domains
@@ -161,17 +161,17 @@ const getExtensions = (
                 const domain = parsedUrl.hostname
     
                 if (disallowedDomains.includes(domain)) {
-                  return false
+                    return false
                 }
     
                 // all checks have passed
                 return true
-              } catch {
+            } catch {
                 return false
-              }
-            },
-            shouldAutoLink: url => {
-              try {
+            }
+        },
+        shouldAutoLink: url => {
+            try {
                 // construct URL
                 const parsedUrl = url.includes(':') ? new URL(url) : new URL(`https://${url}`)
     
@@ -180,94 +180,94 @@ const getExtensions = (
                 const domain = parsedUrl.hostname
     
                 return !disallowedDomains.includes(domain)
-              } catch {
+            } catch {
                 return false
-              }
-            },
+            }
+        },
     
-          }),
-        // BubbleMenu.configure({
-        //     element: document.querySelector('.menu'),
-        //   }),
+    }),
+    // BubbleMenu.configure({
+    //     element: document.querySelector('.menu'),
+    //   }),
 
 
-        // Интерактивные элементы
-        Extension.create({
-            name: 'interactiveElements',
-            addGlobalAttributes() {
-                return [
-                    {
-                        types: ['paragraph'],
-                        attributes: {
-                            'data-type': {
-                                default: null,
-                                parseHTML: element => element.getAttribute('data-type'),
-                                renderHTML: attributes => {
-                                    if (!attributes['data-type']) return {};
-                                    return {
-                                        'data-type': attributes['data-type'],
-                                        class: attributes['data-type'] === 'button'
-                                            ? 'interactive-button'
-                                            : 'toggle-wrapper'
-                                    };
-                                },
+    // Интерактивные элементы
+    Extension.create({
+        name: 'interactiveElements',
+        addGlobalAttributes() {
+            return [
+                {
+                    types: ['paragraph'],
+                    attributes: {
+                        'data-type': {
+                            default: null,
+                            parseHTML: element => element.getAttribute('data-type'),
+                            renderHTML: attributes => {
+                                if (!attributes['data-type']) return {};
+                                return {
+                                    'data-type': attributes['data-type'],
+                                    class: attributes['data-type'] === 'button'
+                                        ? 'interactive-button'
+                                        : 'toggle-wrapper'
+                                };
                             },
                         },
                     },
-                ];
-            },
-        }),
+                },
+            ];
+        },
+    }),
 
-        // Предотвращение дропа извне
-        PreventDropExtension,
+    // Предотвращение дропа извне
+    PreventDropExtension,
 
-        EnterHandlerExtension((contentBeforeCursor, contentAfterCursor) => {
-            if (!contentBeforeCursor && !contentAfterCursor) return;
-            const htmlBeforeCursor = generateHTML(contentBeforeCursor!, getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement))
-            const htmlAfterCursor = generateHTML(contentAfterCursor!, getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement))
-            onEnterPressed(htmlBeforeCursor, htmlAfterCursor)
-        }, (isEmpty) => {
-            onBackspacePressed(isEmpty)
-        }),
+    EnterHandlerExtension((contentBeforeCursor, contentAfterCursor) => {
+        if (!contentBeforeCursor && !contentAfterCursor) return;
+        const htmlBeforeCursor = generateHTML(contentBeforeCursor!, getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement))
+        const htmlAfterCursor = generateHTML(contentAfterCursor!, getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement))
+        onEnterPressed(htmlBeforeCursor, htmlAfterCursor)
+    }, (isEmpty) => {
+        onBackspacePressed(isEmpty)
+    }),
 
-        // Slash command
-        SlashCommandExtension.configure({
-            onAddElement: onAddElement || (() => { }),
-        }),
+    // Slash command
+    SlashCommandExtension.configure({
+        onAddElement: onAddElement || (() => { }),
+    }),
 
-        // Arrow key navigation between editors
-        ...(presentationId && slideId && layoutId && elementId && tiptapRefs ? [
-            ArrowNavigationExtension(
-                presentationId,
-                slideId,
-                layoutId,
-                elementId,
-                tiptapRefs
-            )
-        ] : []),
+    // Arrow key navigation between editors
+    ...(presentationId && slideId && layoutId && elementId && tiptapRefs ? [
+        ArrowNavigationExtension(
+            presentationId,
+            slideId,
+            layoutId,
+            elementId,
+            tiptapRefs
+        )
+    ] : []),
 
-        // Плейсхолдер
-        Placeholder.configure({
-            placeholder,
-        }),
-        ButtonNode,
-        Details.configure({
-            persist: true,
-            HTMLAttributes: {
-              class: 'details',
-            },
-        }),
-        DetailsSummary,
-        DetailsContent,
-        // Добавляем блоки разных типов
-        BoxNode,
-        NoteBoxNode,
-        InfoBoxNode,
-        WarningBoxNode,
-        CautionBoxNode,
-        SuccessBoxNode,
-        QuestionBoxNode,
-    ]
+    // Плейсхолдер
+    Placeholder.configure({
+        placeholder,
+    }),
+    ButtonNode,
+    Details.configure({
+        persist: true,
+        HTMLAttributes: {
+            class: 'details',
+        },
+    }),
+    DetailsSummary,
+    DetailsContent,
+    // Добавляем блоки разных типов
+    BoxNode,
+    NoteBoxNode,
+    InfoBoxNode,
+    WarningBoxNode,
+    CautionBoxNode,
+    SuccessBoxNode,
+    QuestionBoxNode,
+]
 
 const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
     initialContent = '',

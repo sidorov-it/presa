@@ -10,13 +10,14 @@ import DragDropIndicator from '@/components/DragDropIndicator';
 import UndoRedoControls from '@/components/UndoRedoControls';
 import { Slide } from '@/types';
 import SlideMenu from '../SlideMenu/SlideMenu';
+import SaveStatus from '@/components/ui/SaveStatus';
 
 interface EditorProps {
     presentationId: string;
 }
 
 const Editor: React.FC<EditorProps> = ({ presentationId }) => {
-    const { getPresentation, addSlide } = usePresentationStore();
+    const { getPresentation, addSlide, savingStatus } = usePresentationStore();
     const [activeSlideId, setActiveSlideId] = useState<string | null>(null);
     const [showPreview, setShowPreview] = useState(false);
 
@@ -60,7 +61,10 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
                 <div className="min-h-screen flex flex-col bg-[#f6f4f4]">
                     <header className="bg-white border-b border-gray-200 p-4">
                         <div className="container mx-auto flex justify-between items-center">
-                            <h1 className="text-2xl font-bold text-blue-600">Presa</h1>
+                            <div className="flex items-center gap-4">
+                                <h1 className="text-2xl font-bold text-blue-600">Presa</h1>
+                                <SaveStatus status={savingStatus} />
+                            </div>
 
                             <div className="flex items-center space-x-4">
                                 <UndoRedoControls presentationId={presentationId} />

@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from 'uuid';
 import {
     IPresentation,
@@ -19,8 +18,29 @@ import { create } from 'zustand';
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 import { getNewEditorElement } from '@/elements/registry';
 
+// Add debounce utility for auto-save
+const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: number) => {
+    let timeout: ReturnType<typeof setTimeout> | null = null;
+    
+    return (...args: Parameters<F>): Promise<ReturnType<F>> => {
+        return new Promise(resolve => {
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+            
+            timeout = setTimeout(() => {
+                resolve(func(...args));
+            }, waitFor);
+        });
+    };
+};
+
 interface PresentationState {
     presentations: IPresentation[];
+    isLoading: boolean;
+    isSaving: boolean;
+    savingStatus: 'idle' | 'saving' | 'saved' | 'error';
+    error: string | null;
 
     recordAction: (action: Omit<HistoryAction, 'timestamp' | 'transactionId'>) => void;
 
@@ -30,6 +50,7 @@ interface PresentationState {
     deletePresentation: (id: string) => void;
     getPresentation: (id: string) => IPresentation | undefined;
     setFullState: (state: { presentations: IPresentation[] }) => void;
+    saveChanges: (id: string) => Promise<void>;
 
     // Работа со слайдами
     addSlide: (presentationId: string, index?: number) => string;
@@ -88,6 +109,54 @@ export const usePresentationStore = create<PresentationState>()(
     devtools(
         (set, get) => ({
             presentations: [],
+            isLoading: false,
+            isSaving: false,
+            savingStatus: 'idle',
+            error: null,
+
+            // Debounced function to save presentation changes to backend
+            saveChanges: debounce(async (id: string) => {
+                const presentation = get().getPresentation(id);
+                if (!presentation) return;
+
+                try {
+                    set({ isSaving: true, savingStatus: 'saving' });
+                    
+                    // Prepare data for API
+                    const data = {
+                        title: presentation.title,
+                        description: presentation.description,
+                        slides: presentation.slides,
+                    };
+                    
+                    // Send the update to the server
+                    const response = await fetch(`/api/presentations/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to update presentation');
+                    }
+
+                    set({ isSaving: false, savingStatus: 'saved' });
+
+                    // Reset status after a short delay
+                    setTimeout(() => {
+                        set({ savingStatus: 'idle' });
+                    }, 2000);
+                } catch (error) {
+                    console.error('Error updating presentation:', error);
+                    set({
+                        error: 'Failed to save changes',
+                        isSaving: false,
+                        savingStatus: 'error'
+                    });
+                }
+            }, 1000), // 1 second debounce
 
             recordAction: (action: Omit<HistoryAction, 'timestamp' | 'transactionId'>) => {
                 const historyStore = useHistoryStore.getState();
@@ -137,6 +206,9 @@ export const usePresentationStore = create<PresentationState>()(
                 // Добавляем первый слайд по умолчанию
                 get().addSlide(id, 0);
 
+                // Save the new presentation
+                get().saveChanges(id);
+
                 return id;
             },
 
@@ -165,6 +237,9 @@ export const usePresentationStore = create<PresentationState>()(
 
                     return updatedState;
                 });
+
+                // Save changes automatically
+                get().saveChanges(id);
             },
 
             deletePresentation: (id) => {
@@ -182,7 +257,6 @@ export const usePresentationStore = create<PresentationState>()(
             getPresentation: (id) => {
                 return get().presentations.find((presentation) => presentation.id === id);
             },
-
 
             // Методы для работы со слайдами
             addSlide: (presentationId, index = 0) => {
@@ -256,6 +330,9 @@ export const usePresentationStore = create<PresentationState>()(
                     return updatedState;
                 });
 
+                // Add auto-save after completing the operation
+                get().saveChanges(presentationId);
+
                 return slideId;
             },
 
@@ -296,6 +373,9 @@ export const usePresentationStore = create<PresentationState>()(
 
                     return updatedState;
                 });
+
+                // Add auto-save after updating
+                get().saveChanges(presentationId);
             },
 
             deleteSlide: (presentationId, slideId) => {
@@ -332,6 +412,9 @@ export const usePresentationStore = create<PresentationState>()(
 
                     return updatedState;
                 });
+
+                // Add auto-save after deleting
+                get().saveChanges(presentationId);
             },
 
             duplicateSlide: (presentationId, slideId) => {
@@ -395,6 +478,9 @@ export const usePresentationStore = create<PresentationState>()(
                     return updatedState;
                 });
 
+                // Add auto-save after duplicating
+                get().saveChanges(presentationId);
+
                 return newSlideId;
             },
 
@@ -456,7 +542,6 @@ export const usePresentationStore = create<PresentationState>()(
                 });
             },
 
-
             reorderSlides: (presentationId, startIndex, endIndex) => {
                 const beforeState = { ...get() };
 
@@ -493,6 +578,9 @@ export const usePresentationStore = create<PresentationState>()(
 
                     return updatedState;
                 });
+
+                // Add auto-save after reordering
+                get().saveChanges(presentationId);
             },
 
             getSlide: (presentationId, slideId) => {
@@ -605,6 +693,9 @@ export const usePresentationStore = create<PresentationState>()(
                     return updatedState;
                 });
 
+                // Add auto-save after adding layout
+                get().saveChanges(presentationId);
+
                 return layoutId;
             },
 
@@ -660,6 +751,8 @@ export const usePresentationStore = create<PresentationState>()(
                     return updatedState;
                 });
 
+                // Add auto-save after updating layout
+                get().saveChanges(presentationId);
             },
 
             deleteLayout: (presentationId, slideId, layoutId) => {
@@ -708,6 +801,9 @@ export const usePresentationStore = create<PresentationState>()(
 
                     return updatedState;
                 });
+
+                // Add auto-save after deleting layout
+                get().saveChanges(presentationId);
             },
 
             updateAlignLayout: (presentationId, layoutId, alignment) => {
@@ -841,6 +937,9 @@ export const usePresentationStore = create<PresentationState>()(
 
                     return updatedState;
                 });
+
+                // Add auto-save after updating layout
+                get().saveChanges(presentationId);
             },
 
             findLayoutByElementId: (elementId) => {
@@ -924,6 +1023,9 @@ export const usePresentationStore = create<PresentationState>()(
 
                     return updatedState;
                 });
+
+                // Add auto-save after adding element
+                get().saveChanges(presentationId);
 
                 return elementId;
             },
@@ -1103,6 +1205,9 @@ export const usePresentationStore = create<PresentationState>()(
                     });
                     return updatedState;
                 });
+
+                // Add auto-save after updating element
+                get().saveChanges(presentationId);
             },
 
             deleteElement: (presentationId, slideId, layoutId, elementId) => {
@@ -1165,6 +1270,9 @@ export const usePresentationStore = create<PresentationState>()(
                     });
                     return updatedState;
                 });
+
+                // Add auto-save after deleting element
+                get().saveChanges(presentationId);
             },
 
 

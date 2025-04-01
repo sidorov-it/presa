@@ -7,11 +7,11 @@ import { LayoutType } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 // Import column layout icons from the local icons folder
 import { 
-  TwoColumnsIcon,
-  TwoColumnsLeftIcon,
-  TwoColumnsRightIcon,
-  ThreeColumnsIcon,
-  FourColumnsIcon
+    TwoColumnsIcon,
+    TwoColumnsLeftIcon,
+    TwoColumnsRightIcon,
+    ThreeColumnsIcon,
+    FourColumnsIcon
 } from '@/components/icons';
 
 export default function LayoutMenu({
