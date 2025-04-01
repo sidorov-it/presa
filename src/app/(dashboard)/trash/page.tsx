@@ -3,53 +3,88 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { FaTrashRestore, FaTrashAlt, FaRegClock } from 'react-icons/fa';
+import { toast } from 'sonner';
 
-// Sample deleted presentations
-const SAMPLE_DELETED = [
-    {
-        id: 'del-001',
-        title: 'Q4 Business Review',
-        deletedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
-        slides: 12,
-    },
-    {
-        id: 'del-002',
-        title: 'Marketing Strategy 2023',
-        deletedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5), // 5 days ago
-        slides: 8,
-    },
-    {
-        id: 'del-003',
-        title: 'Project Roadmap',
-        deletedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1), // 1 day ago
-        slides: 15,
-    },
-];
+interface DeletedPresentation {
+    id: string;
+    title: string;
+    deletedAt: string;
+    slides: number;
+}
 
 export default function TrashPage() {
     const { data: session } = useSession();
-    const [deletedPresentations, setDeletedPresentations] = useState(SAMPLE_DELETED);
+    const [deletedPresentations, setDeletedPresentations] = useState<DeletedPresentation[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-    // Simulate API call
-        setTimeout(() => {
-            setIsLoading(false);
-        }, 500);
+        const loadDeletedPresentations = async () => {
+            try {
+                const response = await fetch('/api/presentations/trash');
+                if (!response.ok) {
+                    throw new Error('Failed to load deleted presentations');
+                }
+                const data = await response.json();
+                setDeletedPresentations(data.presentations);
+            } catch (error) {
+                console.error('Error loading deleted presentations:', error);
+                toast.error('Failed to load deleted presentations');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadDeletedPresentations();
     }, []);
 
-    const handleRestore = (id: string) => {
-        setDeletedPresentations(prev => prev.filter(p => p.id !== id));
-    };
+    const handleRestore = async (id: string) => {
+        try {
+            const response = await fetch('/api/presentations/trash', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id }),
+            });
 
-    const handleDelete = (id: string) => {
-        if (window.confirm('Permanently delete this presentation?')) {
+            if (!response.ok) {
+                throw new Error('Failed to restore presentation');
+            }
+
             setDeletedPresentations(prev => prev.filter(p => p.id !== id));
+            toast.success('Presentation restored successfully');
+        } catch (error) {
+            console.error('Error restoring presentation:', error);
+            toast.error('Failed to restore presentation');
         }
     };
 
-    const formatRelativeTime = (date: Date) => {
-        const diffDays = Math.floor((new Date().getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+    const handleDelete = async (id: string) => {
+        if (!window.confirm('Are you sure you want to permanently delete this presentation? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/presentations/trash?id=${id}`, {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to delete presentation');
+            }
+
+            setDeletedPresentations(prev => prev.filter(p => p.id !== id));
+            toast.success('Presentation permanently deleted');
+        } catch (error) {
+            console.error('Error deleting presentation:', error);
+            toast.error('Failed to delete presentation');
+        }
+    };
+
+    const formatRelativeTime = (dateString: string) => {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
         return diffDays === 0 ? 'Today' : diffDays === 1 ? 'Yesterday' : `${diffDays} days ago`;
     };
 
@@ -58,7 +93,7 @@ export default function TrashPage() {
             <div className="mb-6">
                 <h1 className="text-2xl font-bold text-gray-800">Trash</h1>
                 <p className="text-gray-600 mt-2">
-          Deleted presentations are kept for 30 days before being permanently removed
+                    Deleted presentations are kept for 30 days before being permanently removed
                 </p>
             </div>
 
@@ -73,7 +108,7 @@ export default function TrashPage() {
                     </div>
                     <h2 className="text-xl font-semibold text-gray-700 mb-2">Your trash is empty</h2>
                     <p className="text-gray-500">
-            Deleted presentations will appear here
+                        Deleted presentations will appear here
                     </p>
                 </div>
             ) : (
@@ -82,16 +117,16 @@ export default function TrashPage() {
                         <thead className="bg-gray-50">
                             <tr>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Presentation
+                                    Presentation
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Deleted
+                                    Deleted
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Slides
+                                    Slides
                                 </th>
                                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-                  Actions
+                                    Actions
                                 </th>
                             </tr>
                         </thead>
@@ -116,14 +151,14 @@ export default function TrashPage() {
                                             className="text-blue-600 hover:text-blue-900 mr-4"
                                         >
                                             <FaTrashRestore className="inline mr-1" />
-                      Restore
+                                            Restore
                                         </button>
                                         <button 
                                             onClick={() => handleDelete(presentation.id)}
                                             className="text-red-600 hover:text-red-900"
                                         >
                                             <FaTrashAlt className="inline mr-1" />
-                      Delete
+                                            Delete
                                         </button>
                                     </td>
                                 </tr>
