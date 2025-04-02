@@ -10,7 +10,7 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
         '--primary-accent': theme.colors.primaryAccent,
         '--heading-color': theme.colors.headingColor,
         '--text-color': theme.colors.textColor,
-        '--card-background': theme.colors.cardBackground,
+        '--card-background': theme.colors.slideBackground,
         '--page-background': theme.colors.pageBackground,
         '--heading-font': theme.typography.headingFont,
         '--heading-weight': theme.typography.headingWeight,

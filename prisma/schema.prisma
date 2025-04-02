@@ -53,7 +53,7 @@ type ThemeColors {
   textColor          String
 
   // Background Colors
-  cardBackground     String
+  slideBackground     String
   pageBackground     String
 }
 

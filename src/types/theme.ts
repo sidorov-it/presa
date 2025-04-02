@@ -8,7 +8,7 @@ export type ThemeColors = {
   textColor: string;
 
   // Background Colors
-  cardBackground: string;
+  slideBackground: string;
   pageBackground: string;
 };
 

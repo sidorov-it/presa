@@ -23,7 +23,7 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
             secondaryAccents: ['#60a5fa', '#93c5fd', '#bfdbfe'],
             headingColor: '#1f2937',
             textColor: '#4b5563',
-            cardBackground: '#ffffff',
+            slideBackground: '#ffffff',
             pageBackground: '#f3f4f6',
         },
         typography: {

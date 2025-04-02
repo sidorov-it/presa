@@ -102,14 +102,14 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                             <div className="flex gap-2">
                                 <Input
                                     type="color"
-                                    value={theme.colors.cardBackground}
-                                    onChange={(e) => handleColorsChange({ cardBackground: e.target.value })}
+                                    value={theme.colors.slideBackground}
+                                    onChange={(e) => handleColorsChange({ slideBackground: e.target.value })}
                                     className="w-12 h-10 p-1"
                                 />
                                 <Input
                                     type="text"
-                                    value={theme.colors.cardBackground}
-                                    onChange={(e) => handleColorsChange({ cardBackground: e.target.value })}
+                                    value={theme.colors.slideBackground}
+                                    onChange={(e) => handleColorsChange({ slideBackground: e.target.value })}
                                     className="flex-1"
                                 />
                             </div>
