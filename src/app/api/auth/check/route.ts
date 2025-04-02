@@ -1,18 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
         const session = await getServerSession(authOptions);
-        
+
         if (!session?.user) {
             return NextResponse.json({
                 authenticated: false,
                 message: 'Not authenticated'
             });
         }
-        
+
         return NextResponse.json({
             authenticated: true,
             user: {
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     } catch (error) {
         console.error('Authentication check error:', error);
         return NextResponse.json(
-            { 
+            {
                 authenticated: false,
                 message: 'Error checking authentication',
                 error: error instanceof Error ? error.message : 'Unknown error'
@@ -33,4 +33,4 @@ export async function GET(req: NextRequest) {
             { status: 500 }
         );
     }
-} 
+}

@@ -390,4 +390,4 @@ export const useHistoryStore = create<HistoryState>()(
             enabled: true
         }
     )
-); 
+);

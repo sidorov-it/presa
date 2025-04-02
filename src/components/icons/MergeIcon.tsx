@@ -6,4 +6,4 @@ const MergeIcon: React.FC = () => (
     </svg>
 );
 
-export default MergeIcon; 
+export default MergeIcon;

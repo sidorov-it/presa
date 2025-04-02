@@ -1,6 +1,6 @@
 import { Extension } from '@tiptap/core';
 import Suggestion, { SuggestionProps } from '@tiptap/suggestion';
-import tippy, { Instance as TippyInstance, Props } from 'tippy.js';
+import tippy, { Instance as TippyInstance } from 'tippy.js';
 import { elementsRegistry } from '@/elements/registry';
 import { PluginKey } from '@tiptap/pm/state';
 import 'tippy.js/dist/tippy.css';
@@ -300,7 +300,7 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
                                 }
                             });
                         },
-                        
+
                         onUpdate: (props) => {
                             commandsList = new CommandsList(props, this.options.onAddElement);
 
@@ -328,6 +328,7 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
                         },
                     };
                 },
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 command: ({ editor, range, props }) => {
                     // Delete the slash command input
                     // editor
@@ -341,4 +342,4 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
             }),
         ];
     },
-}); 
+});

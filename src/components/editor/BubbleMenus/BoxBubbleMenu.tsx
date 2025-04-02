@@ -37,7 +37,7 @@ const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ editor }) => {
 
         // Replace the current node with the new box type
         editor.chain().focus().clearContent().run();
-        
+
         // Insert with the new box type
         let newContent = '';
         switch (boxType) {
@@ -66,7 +66,7 @@ const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ editor }) => {
                 newContent = `<div data-type="box" class="box">${wrappedContent}</div>`;
                 break;
         }
-        
+
         editor.chain().focus().insertContent(newContent).run();
     };
 
@@ -213,4 +213,4 @@ const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ editor }) => {
     );
 };
 
-export default BoxBubbleMenu; 
+export default BoxBubbleMenu;

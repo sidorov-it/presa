@@ -47,4 +47,4 @@ const QuoteBubbleMenu: React.FC<BubbleMenuProps> = ({ editor }) => {
     );
 };
 
-export default QuoteBubbleMenu; 
+export default QuoteBubbleMenu;

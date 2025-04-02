@@ -7,4 +7,4 @@ const AlignTopIcon: React.FC = () => (
     </svg>
 );
 
-export default AlignTopIcon; 
+export default AlignTopIcon;

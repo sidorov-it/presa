@@ -3,7 +3,7 @@
 
 import { EditorContent } from '@tiptap/react'
 import { useEditor } from '@tiptap/react'
-import { useCallback, useEffect, RefObject, forwardRef, useImperativeHandle } from 'react'
+import { useCallback, useEffect, RefObject } from 'react'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import TaskList from '@tiptap/extension-task-list'
@@ -21,15 +21,15 @@ import { Extension, generateHTML } from '@tiptap/core'
 import { useEditorStore } from '@/store/editorStore'
 import styles from './Tiptap.module.css'
 import { SlashCommandExtension, PreventDropExtension, EnterHandlerExtension, ArrowNavigationExtension, EditorWithMethods } from './extensions/index'
-import { 
-    ButtonNode, 
-    BoxNode, 
-    NoteBoxNode, 
-    InfoBoxNode, 
-    WarningBoxNode, 
-    CautionBoxNode, 
-    SuccessBoxNode, 
-    QuestionBoxNode 
+import {
+    ButtonNode,
+    BoxNode,
+    NoteBoxNode,
+    InfoBoxNode,
+    WarningBoxNode,
+    CautionBoxNode,
+    SuccessBoxNode,
+    QuestionBoxNode
 } from './nodes'
 import { TipTapRefs } from '@/types';
 import CommonBubbleMenu from './CommonBubbleMenu';
@@ -135,35 +135,35 @@ const getExtensions = (
             try {
                 // construct URL
                 const parsedUrl = url.includes(':') ? new URL(url) : new URL(`${ctx.defaultProtocol}://${url}`)
-    
+
                 // use default validation
                 if (!ctx.defaultValidate(parsedUrl.href)) {
                     return false
                 }
-    
+
                 // disallowed protocols
                 const disallowedProtocols = ['ftp', 'file', 'mailto']
                 const protocol = parsedUrl.protocol.replace(':', '')
-    
+
                 if (disallowedProtocols.includes(protocol)) {
                     return false
                 }
-    
+
                 // only allow protocols specified in ctx.protocols
                 const allowedProtocols = ctx.protocols.map(p => (typeof p === 'string' ? p : p.scheme))
-    
+
                 if (!allowedProtocols.includes(protocol)) {
                     return false
                 }
-    
+
                 // disallowed domains
                 const disallowedDomains = ['example-phishing.com', 'malicious-site.net']
                 const domain = parsedUrl.hostname
-    
+
                 if (disallowedDomains.includes(domain)) {
                     return false
                 }
-    
+
                 // all checks have passed
                 return true
             } catch {
@@ -174,17 +174,17 @@ const getExtensions = (
             try {
                 // construct URL
                 const parsedUrl = url.includes(':') ? new URL(url) : new URL(`https://${url}`)
-    
+
                 // only auto-link if the domain is not in the disallowed list
                 const disallowedDomains = ['example-no-autolink.com', 'another-no-autolink.com']
                 const domain = parsedUrl.hostname
-    
+
                 return !disallowedDomains.includes(domain)
             } catch {
                 return false
             }
         },
-    
+
     }),
     // BubbleMenu.configure({
     //     element: document.querySelector('.menu'),
@@ -269,7 +269,7 @@ const getExtensions = (
     QuestionBoxNode,
 ]
 
-const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
+const Tiptap = ({
     initialContent = '',
     onEnterPressed = () => { },
     onBackspacePressed = () => { },
@@ -277,7 +277,6 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
     onContentChange = () => { },
     onBlur = () => { },
     id = '',
-    placeholder = '',
     customBubbleMenuTrigger,
     onAddElement,
     presentationId,
@@ -285,8 +284,8 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
     layoutId,
     tiptapRefs,
     elementId,
-}, ref) => {
-    // Use the global editor store instead of local state
+
+}: TiptapProps) => {    // Use the global editor store instead of local state
     const { setActiveEditor, showMenu } = useEditorStore();
 
     const editor = useEditor({
@@ -336,14 +335,21 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
 
     useEffect(() => {
         if (editor) {
-            document.addEventListener('focus_editor', (e: CustomEvent) => {
-                if (e.detail.editorId === elementId) {
+            const handleFocusEditor = (e: Event) => {
+                const customEvent = e as CustomEvent;
+                if (customEvent.detail && customEvent.detail.editorId === elementId) {
                     editor.commands.focus();
                     setActiveEditor(editor, elementId);
                 }
-            })
+            };
+
+            document.addEventListener('focus_editor', handleFocusEditor);
+
+            return () => {
+                document.removeEventListener('focus_editor', handleFocusEditor);
+            };
         }
-    }, [editor])
+    }, [editor, elementId, setActiveEditor])
 
     // Метод для программного фокуса на редакторе
     const focus = useCallback((position: 'start' | 'end' = 'end') => {
@@ -444,10 +450,10 @@ const Tiptap = forwardRef<TiptapRef, TiptapProps>(({
                 )}
             </div>
 
-            
+
         </div>
     )
-})
+}
 
 Tiptap.displayName = 'Tiptap';
 

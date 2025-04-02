@@ -33,60 +33,62 @@ export default function ResetPasswordPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token }),
             });
-      
+
             if (!response.ok) {
                 setIsInvalidToken(true);
             }
         } catch (error) {
+            console.error('Token verification error:', error);
             setIsInvalidToken(true);
         }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-    
+
         if (!password || !confirmPassword) {
             setError('Please fill in all fields');
             return;
         }
-    
+
         if (password !== confirmPassword) {
             setError('Passwords do not match');
             return;
         }
-    
+
         if (password.length < 8) {
             setError('Password must be at least 8 characters long');
             return;
         }
-    
+
         try {
             setIsLoading(true);
             setError('');
-      
+
             const response = await fetch('/api/auth/reset-password', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token, password }),
             });
-      
+
             const data = await response.json();
-      
+
             if (!response.ok) {
                 setError(data.message || 'Failed to reset password');
                 setIsLoading(false);
                 return;
             }
-      
+
             // Success
             setIsSuccess(true);
             setIsLoading(false);
-      
+
             // Redirect to login after 3 seconds
             setTimeout(() => {
                 router.push('/login');
             }, 3000);
         } catch (error) {
+            console.error('Password reset error:', error);
             setError('Something went wrong. Please try again.');
             setIsLoading(false);
         }
@@ -121,7 +123,7 @@ export default function ResetPasswordPage() {
             Enter your new password below
                     </p>
                 </div>
-        
+
                 {isSuccess ? (
                     <div className="bg-green-50 p-4 rounded-md">
                         <div className="flex">
@@ -189,4 +191,4 @@ export default function ResetPasswordPage() {
             </div>
         </div>
     );
-} 
+}

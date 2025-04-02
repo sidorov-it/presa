@@ -3,25 +3,24 @@ import { connectToDatabase } from '@/lib/mongodb';
 import User from '@/models/User';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import bcrypt from 'bcrypt';
 
 // Change user password
 export async function PUT(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
         console.log('PUT /api/user/password - Session:', session?.user ? 'Authenticated' : 'Not authenticated');
-    
+
         if (!session?.user) {
             return NextResponse.json(
                 { message: 'Unauthorized' },
                 { status: 401 }
             );
         }
-    
+
         const userId = session.user.id;
         const { currentPassword, newPassword } = await req.json();
         console.log('PUT /api/user/password - UserId:', userId, 'Password change request received');
-    
+
         if (!currentPassword || !newPassword) {
             return NextResponse.json(
                 { message: 'Current password and new password are required' },
@@ -35,11 +34,11 @@ export async function PUT(req: NextRequest) {
                 { status: 400 }
             );
         }
-    
+
         // Connect to the database
         await connectToDatabase();
         console.log('PUT /api/user/password - Database connected');
-    
+
         // Find user
         console.log('PUT /api/user/password - Looking up user with ID:', userId);
         const user = await User.findOne({ _id: userId });
@@ -50,51 +49,51 @@ export async function PUT(req: NextRequest) {
             console.log('PUT /api/user/password - User not found by ID, trying email lookup');
             const userByEmail = await User.findOne({ email: session.user.email });
             console.log('PUT /api/user/password - User found by email:', !!userByEmail);
-            
+
             if (!userByEmail) {
                 return NextResponse.json(
                     { message: 'User not found' },
                     { status: 404 }
                 );
             }
-            
+
             // Verify current password
             const isPasswordValid = await userByEmail.comparePassword(currentPassword);
             console.log('PUT /api/user/password - Password valid:', isPasswordValid);
-            
+
             if (!isPasswordValid) {
                 return NextResponse.json(
                     { message: 'Current password is incorrect' },
                     { status: 400 }
                 );
             }
-        
+
             // Update password
             userByEmail.password = newPassword;
             await userByEmail.save();
             console.log('PUT /api/user/password - Password updated by email lookup');
-        
+
             return NextResponse.json({
                 message: 'Password changed successfully'
             });
         }
-    
+
         // Verify current password
         const isPasswordValid = await user.comparePassword(currentPassword);
         console.log('PUT /api/user/password - Password valid:', isPasswordValid);
-        
+
         if (!isPasswordValid) {
             return NextResponse.json(
                 { message: 'Current password is incorrect' },
                 { status: 400 }
             );
         }
-    
+
         // Update password
         user.password = newPassword;
         await user.save();
         console.log('PUT /api/user/password - Password updated successfully');
-    
+
         return NextResponse.json({
             message: 'Password changed successfully'
         });
@@ -105,4 +104,4 @@ export async function PUT(req: NextRequest) {
             { status: 500 }
         );
     }
-} 
+}

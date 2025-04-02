@@ -7,17 +7,17 @@ import Presentation from '@/models/Presentation';
 export async function POST(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
-    
+
         if (!session?.user) {
             return NextResponse.json(
                 { message: 'Unauthorized' },
                 { status: 401 }
             );
         }
-    
+
         const userId = session.user.id;
         const { prompt, numSlides, language } = await req.json();
-    
+
         // Validate inputs
         if (!prompt) {
             return NextResponse.json(
@@ -25,20 +25,20 @@ export async function POST(req: NextRequest) {
                 { status: 400 }
             );
         }
-    
+
         if (!numSlides || numSlides < 1 || numSlides > 20) {
             return NextResponse.json(
                 { message: 'Number of slides must be between 1 and 20' },
                 { status: 400 }
             );
         }
-    
+
         // Here you would call your AI service to generate the presentation
         // For now, we'll create a placeholder presentation
-    
+
         // Connect to the database
         await connectToDatabase();
-    
+
         // Create a new presentation
         const presentation = new Presentation({
             title: `AI Presentation - ${new Date().toLocaleDateString()}`,
@@ -68,12 +68,12 @@ export async function POST(req: NextRequest) {
             createdAt: Date.now(),
             updatedAt: Date.now(),
         });
-    
+
         await presentation.save();
-    
+
         // TODO: In a real implementation, you would send the prompt to your AI service
         // and then update the presentation with the generated content
-    
+
         return NextResponse.json({
             message: 'Presentation created with AI',
             presentationId: presentation._id,
@@ -85,4 +85,4 @@ export async function POST(req: NextRequest) {
             { status: 500 }
         );
     }
-} 
+}

@@ -8,4 +8,4 @@ const ThreeColumnsIcon: React.FC = () => (
     </svg>
 );
 
-export default ThreeColumnsIcon; 
+export default ThreeColumnsIcon;

@@ -4,9 +4,8 @@ import { useSlideMenu } from '@/contexts/SlideMenuContext';
 import { useEffect, useState } from 'react';
 import MenuButton from '../MenuButton';
 import { LayoutType } from '@/types';
-import { usePresentationStore } from '@/store/presentationStore';
 // Import column layout icons from the local icons folder
-import { 
+import {
     TwoColumnsIcon,
     TwoColumnsLeftIcon,
     TwoColumnsRightIcon,
@@ -22,15 +21,15 @@ export default function LayoutMenu({
 }) {
     const { state, updateAlignLayout, deleteLayout, closeMenu, getLayout, changeTemplate } = useSlideMenu();
     const [isTemplateDropdownOpen, setIsTemplateDropdownOpen] = useState(false);
-    
+
     // Get current layout type
-    const layout = state.slideId && state.layoutId ? 
+    const layout = state.slideId && state.layoutId ?
         getLayout(state.slideId, state.layoutId) : null;
-    
+
     const currentLayoutType = layout?.type || 'custom';
-    
+
     // Function to get display name for layout type
-    const getLayoutTypeName = (type: LayoutType): string => {
+    const getLayoutTypeName = (): string => {
         switch (layout?.gridStructure.columns) {
             case 1: return '1 столбец';
             case 2: return '2 столбца';
@@ -49,7 +48,7 @@ export default function LayoutMenu({
             }
             closeMenu();
         };
-  
+
         document.addEventListener('click', handleClickOutside);
         return () => {
             document.removeEventListener('click', handleClickOutside);
@@ -94,16 +93,16 @@ export default function LayoutMenu({
         }}>
             <div className={styles.layoutMenuButtons}>
                 <div className={styles.templateDropdown}>
-                    <button 
+                    <button
                         className={styles.templateDropdownButton}
                         onClick={() => setIsTemplateDropdownOpen(!isTemplateDropdownOpen)}
                     >
                         {getLayoutTypeName(currentLayoutType)} {isTemplateDropdownOpen ? '▲' : '▼'}
                     </button>
-                    
+
                     {isTemplateDropdownOpen && (
                         <div className={styles.templateDropdownMenu}>
-                            <button 
+                            <button
                                 className={`${styles.templateOption} ${currentLayoutType === 'two-columns-equal' ? styles.active : ''}`}
                                 onClick={() => handleChangeTemplate('two-columns-equal')}
                             >
@@ -112,7 +111,7 @@ export default function LayoutMenu({
                                 </div>
                                 <span>2 столбца - равные</span>
                             </button>
-                            <button 
+                            <button
                                 className={`${styles.templateOption} ${currentLayoutType === 'two-columns-left' ? styles.active : ''}`}
                                 onClick={() => handleChangeTemplate('two-columns-left')}
                             >
@@ -121,7 +120,7 @@ export default function LayoutMenu({
                                 </div>
                                 <span>2 столбца - слева</span>
                             </button>
-                            <button 
+                            <button
                                 className={`${styles.templateOption} ${currentLayoutType === 'two-columns-right' ? styles.active : ''}`}
                                 onClick={() => handleChangeTemplate('two-columns-right')}
                             >
@@ -130,7 +129,7 @@ export default function LayoutMenu({
                                 </div>
                                 <span>2 столбца - справа</span>
                             </button>
-                            <button 
+                            <button
                                 className={`${styles.templateOption} ${currentLayoutType === 'three-columns' ? styles.active : ''}`}
                                 onClick={() => handleChangeTemplate('three-columns')}
                             >
@@ -139,7 +138,7 @@ export default function LayoutMenu({
                                 </div>
                                 <span>3 столбца</span>
                             </button>
-                            <button 
+                            <button
                                 className={`${styles.templateOption} ${currentLayoutType === 'four-columns' ? styles.active : ''}`}
                                 onClick={() => handleChangeTemplate('four-columns')}
                             >

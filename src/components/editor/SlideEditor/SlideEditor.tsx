@@ -231,7 +231,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     )}
 
                     <div className="relative w-full h-full p-8" data-slide-id={slide.id} onClick={handleSlideClick}>
-                        {slide.layouts.map((layout, index) => (
+                        {slide.layouts.map((layout: Layout) => (
                             <LayoutContent
                                 key={layout.id}
                                 layout={layout}
@@ -257,11 +257,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     </div>
                 </div>
             </div>
-            
+
             {/* The SlideMenu component will render itself when the menu is open */}
             {/* <SlideMenu /> */}
         </div>
     );
 };
 
-export default SlideEditor; 
+export default SlideEditor;

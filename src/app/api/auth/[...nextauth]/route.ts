@@ -17,19 +17,19 @@ export const authOptions: NextAuthOptions = {
                 }
 
                 await connectToDatabase();
-        
+
                 const user = await User.findOne({ email: credentials.email });
-        
+
                 if (!user) {
                     return null;
                 }
-        
+
                 const isPasswordMatch = await user.comparePassword(credentials.password);
-        
+
                 if (!isPasswordMatch) {
                     return null;
                 }
-        
+
                 return {
                     id: user._id.toString(),
                     email: user.email,
@@ -49,12 +49,12 @@ export const authOptions: NextAuthOptions = {
                 token.id = user.id;
                 token.role = user.role;
             }
-            
+
             // Handle session updates
             if (trigger === "update" && session?.name) {
                 token.name = session.name;
             }
-            
+
             return token;
         },
         async session({ session, token }) {
@@ -76,4 +76,4 @@ export const authOptions: NextAuthOptions = {
 
 const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST }; 
+export { handler as GET, handler as POST };

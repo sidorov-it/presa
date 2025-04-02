@@ -69,12 +69,12 @@ const TemplatesPage = () => {
         // Create a new presentation based on the template
         // In a real app, you would fetch the template details from an API
         const template = TEMPLATES.find(t => t.id === templateId);
-    
+
         if (template) {
             const presentationId = createPresentation(template.title);
             router.push(`/docs/${presentationId}`);
         }
-    
+
         setIsLoading(false);
     };
 
@@ -102,7 +102,7 @@ const TemplatesPage = () => {
             ) : (
                 <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     {TEMPLATES.map((template) => (
-                        <Card 
+                        <Card
                             key={template.id}
                             className="hover:shadow-lg transition-shadow cursor-pointer"
                             onClick={() => handleTemplateSelect(template.id)}
@@ -122,4 +122,4 @@ const TemplatesPage = () => {
     );
 }
 
-export default TemplatesPage 
+export default TemplatesPage

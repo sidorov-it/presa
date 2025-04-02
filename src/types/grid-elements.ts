@@ -74,13 +74,13 @@ export interface GridButtonElement extends GridElement {
 }
 
 // Объединенный тип элемента
-export type GridElementType = 
-    | GridTextElement 
+export type GridElementType =
+    | GridTextElement
     | GridEditorElement
-    | GridListElement 
-    | GridImageElement 
-    | GridDividerElement 
-    | GridIconElement 
-    | GridVideoElement 
-    | GridChartElement 
-    | GridButtonElement; 
+    | GridListElement
+    | GridImageElement
+    | GridDividerElement
+    | GridIconElement
+    | GridVideoElement
+    | GridChartElement
+    | GridButtonElement;

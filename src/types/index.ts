@@ -1,7 +1,5 @@
 import { EditorWithMethods } from "@/components/tiptap/extensions/ArrowNavigationExtension";
 import { generateId } from "@/utils/id";
-import { Editor } from "@tiptap/react";
-import { RefObject } from "react";
 import { IconType } from "react-icons/lib";
 
 export type TextElementType =

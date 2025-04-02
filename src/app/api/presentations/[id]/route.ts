@@ -10,14 +10,14 @@ export async function GET(req: NextRequest, props: { params: Promise<{ id: strin
     const params = await props.params;
     try {
         const session = await getServerSession(authOptions);
-        
+
         if (!session?.user) {
             return NextResponse.json(
                 { message: 'Unauthorized' },
                 { status: 401 }
             );
         }
-        
+
         const userId = session.user.id;
         const presentationId = params.id;
 
@@ -30,20 +30,20 @@ export async function GET(req: NextRequest, props: { params: Promise<{ id: strin
         }
 
         await connectToDatabase();
-        
-        const presentation = await Presentation.findOne({ 
+
+        const presentation = await Presentation.findOne({
             _id: presentationId,
             userId,
             isDeleted: false
         });
-        
+
         if (!presentation) {
             return NextResponse.json(
                 { message: 'Presentation not found' },
                 { status: 404 }
             );
         }
-        
+
         return NextResponse.json({
             presentation: presentation.toJSON(),
         });
@@ -61,45 +61,45 @@ export async function PUT(req: NextRequest, props: { params: Promise<{ id: strin
     const params = await props.params;
     try {
         const session = await getServerSession(authOptions);
-    
+
         if (!session?.user) {
             return NextResponse.json(
                 { message: 'Unauthorized' },
                 { status: 401 }
             );
         }
-    
+
         const userId = session.user.id;
         const presentationId = params.id;
         const updateData = await req.json();
-    
+
         // Connect to the database
         await connectToDatabase();
-    
+
         // Find presentation with this ID that belongs to the user
-        const presentation = await Presentation.findOne({ 
+        const presentation = await Presentation.findOne({
             _id: new ObjectId(presentationId),
             userId,
             isDeleted: false
         });
-    
+
         if (!presentation) {
             return NextResponse.json(
                 { message: 'Presentation not found' },
                 { status: 404 }
             );
         }
-    
+
         // Update the presentation
         Object.keys(updateData).forEach(key => {
             if (key !== '_id' && key !== 'userId' && key !== 'isDeleted') {
                 presentation[key] = updateData[key];
             }
         });
-    
+
         presentation.updatedAt = Date.now();
         await presentation.save();
-    
+
         return NextResponse.json({
             message: 'Presentation updated successfully',
             presentation: presentation.toJSON(),
@@ -118,39 +118,39 @@ export async function DELETE(req: NextRequest, props: { params: Promise<{ id: st
     const params = await props.params;
     try {
         const session = await getServerSession(authOptions);
-    
+
         if (!session?.user) {
             return NextResponse.json(
                 { message: 'Unauthorized' },
                 { status: 401 }
             );
         }
-    
+
         const userId = session.user.id;
         const presentationId = params.id;
-    
+
         // Connect to the database
         await connectToDatabase();
-    
+
         // Find presentation with this ID that belongs to the user
-        const presentation = await Presentation.findOne({ 
+        const presentation = await Presentation.findOne({
             _id: presentationId,
             userId,
             isDeleted: false
         });
-    
+
         if (!presentation) {
             return NextResponse.json(
                 { message: 'Presentation not found' },
                 { status: 404 }
             );
         }
-    
+
         // Soft delete the presentation
         presentation.isDeleted = true;
         presentation.deletedAt = new Date();
         await presentation.save();
-    
+
         return NextResponse.json({
             message: 'Presentation moved to trash successfully',
         });
@@ -166,19 +166,19 @@ export async function DELETE(req: NextRequest, props: { params: Promise<{ id: st
 export async function POST(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
-        
+
         if (!session?.user) {
             return NextResponse.json(
                 { message: 'Unauthorized' },
                 { status: 401 }
             );
         }
-        
+
         const userId = session.user.id;
         const { title } = await req.json();
-        
+
         await connectToDatabase();
-        
+
         const presentation = await Presentation.create({
             title,
             description: '',
@@ -187,7 +187,7 @@ export async function POST(req: NextRequest) {
             createdAt: Date.now(),
             updatedAt: Date.now(),
         });
-        
+
         return NextResponse.json({
             message: 'Presentation created successfully',
             presentation: presentation.toJSON(),
@@ -199,4 +199,4 @@ export async function POST(req: NextRequest) {
             { status: 500 }
         );
     }
-} 
+}

@@ -92,7 +92,7 @@ export const ColorPicker = ({ editor, className }: { editor: Editor; className?:
                             />
                         ))}
                     </div>
-          
+
                     <div className={styles.customColorSection}>
                         <div className={styles.colorPickerLabel}>Выбрать цвет:</div>
                         <div className={styles.colorPickerControls}>
@@ -102,7 +102,7 @@ export const ColorPicker = ({ editor, className }: { editor: Editor; className?:
                                 onChange={handleCustomColorChange}
                                 className={styles.colorInput}
                             />
-                            <button 
+                            <button
                                 onClick={handleCustomColorSelect}
                                 className={styles.applyColorButton}
                             >
@@ -114,4 +114,4 @@ export const ColorPicker = ({ editor, className }: { editor: Editor; className?:
             )}
         </div>
     );
-}; 
+};

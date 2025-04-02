@@ -7,4 +7,4 @@ const AlignBottomIcon: React.FC = () => (
     </svg>
 );
 
-export default AlignBottomIcon; 
+export default AlignBottomIcon;

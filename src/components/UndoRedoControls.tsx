@@ -32,10 +32,10 @@ const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, cla
                 e.preventDefault();
                 handleUndo();
             }
-            
+
             // Redo: Ctrl+Y or Ctrl+Shift+Z or Command+Shift+Z
             if (
-                ((e.ctrlKey || e.metaKey) && e.key === 'y') || 
+                ((e.ctrlKey || e.metaKey) && e.key === 'y') ||
                 ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z')
             ) {
                 e.preventDefault();
@@ -83,4 +83,4 @@ const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, cla
     );
 };
 
-export default UndoRedoControls; 
+export default UndoRedoControls;

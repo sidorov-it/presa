@@ -46,13 +46,13 @@ export async function POST(req: NextRequest) {
 
         // Return success response (without sensitive data)
         return NextResponse.json(
-            { 
+            {
                 message: 'User registered successfully',
                 user: {
                     id: new ObjectId(user._id),
                     name: user.name,
                     email: user.email,
-                } 
+                }
             },
             { status: 201 }
         );
@@ -63,4 +63,4 @@ export async function POST(req: NextRequest) {
             { status: 500 }
         );
     }
-} 
+}

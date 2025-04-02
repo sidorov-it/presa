@@ -245,4 +245,4 @@ const DropIndicator = () => {
     return <div className="drop-indicator" style={styles} />;
 };
 
-export default DropIndicator; 
+export default DropIndicator;

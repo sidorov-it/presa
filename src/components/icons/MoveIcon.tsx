@@ -6,4 +6,4 @@ const MoveIcon: React.FC = () => (
     </svg>
 );
 
-export default MoveIcon; 
+export default MoveIcon;

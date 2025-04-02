@@ -6,4 +6,4 @@ const DuplicateIcon: React.FC = () => (
     </svg>
 );
 
-export default DuplicateIcon; 
+export default DuplicateIcon;

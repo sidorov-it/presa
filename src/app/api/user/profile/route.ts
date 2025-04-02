@@ -5,32 +5,32 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 // Get user profile
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
         const session = await getServerSession(authOptions);
-    
+
         if (!session?.user) {
             return NextResponse.json(
                 { message: 'Unauthorized' },
                 { status: 401 }
             );
         }
-    
+
         const userId = session.user.id;
-    
+
         // Connect to the database
         await connectToDatabase();
-    
+
         // Find user
         const user = await User.findById(userId).select('name email image role');
-    
+
         if (!user) {
             return NextResponse.json(
                 { message: 'User not found' },
                 { status: 404 }
             );
         }
-    
+
         return NextResponse.json({
             user: {
                 id: user._id.toString(),
@@ -54,29 +54,29 @@ export async function PUT(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
         console.log('PUT /api/user/profile - Session:', session?.user ? 'Authenticated' : 'Not authenticated');
-    
+
         if (!session?.user) {
             return NextResponse.json(
                 { message: 'Unauthorized' },
                 { status: 401 }
             );
         }
-    
+
         const userId = session.user.id;
         const { name } = await req.json();
         console.log('PUT /api/user/profile - UserId:', userId, 'New name:', name);
-    
+
         if (!name || typeof name !== 'string') {
             return NextResponse.json(
                 { message: 'Name is required' },
                 { status: 400 }
             );
         }
-    
+
         // Connect to the database
         await connectToDatabase();
         console.log('PUT /api/user/profile - Database connected');
-    
+
         // Find user and update
         console.log('PUT /api/user/profile - Looking up user with ID:', userId);
         const user = await User.findOne({ _id: userId });
@@ -87,19 +87,19 @@ export async function PUT(req: NextRequest) {
             console.log('PUT /api/user/profile - User not found by ID, trying email lookup');
             const userByEmail = await User.findOne({ email: session.user.email });
             console.log('PUT /api/user/profile - User found by email:', !!userByEmail);
-            
+
             if (!userByEmail) {
                 return NextResponse.json(
                     { message: 'User not found' },
                     { status: 404 }
                 );
             }
-            
+
             // Update user's name
             userByEmail.name = name;
             await userByEmail.save();
             console.log('PUT /api/user/profile - User updated by email lookup');
-            
+
             return NextResponse.json({
                 message: 'Profile updated successfully',
                 user: {
@@ -111,12 +111,12 @@ export async function PUT(req: NextRequest) {
                 }
             });
         }
-    
+
         // Update user's name
         user.name = name;
         await user.save();
         console.log('PUT /api/user/profile - User updated successfully');
-    
+
         return NextResponse.json({
             message: 'Profile updated successfully',
             user: {
@@ -134,4 +134,4 @@ export async function PUT(req: NextRequest) {
             { status: 500 }
         );
     }
-} 
+}

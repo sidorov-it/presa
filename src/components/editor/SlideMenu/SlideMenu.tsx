@@ -50,7 +50,6 @@ const SlideMenu: React.FC = () => {
         deleteSlide,
         duplicateElement,
         deleteElement,
-        deleteLayout,
         editElement,
 
         addColumnLeft,
@@ -60,9 +59,7 @@ const SlideMenu: React.FC = () => {
         alignColumnCenter,
         alignColumnBottom,
         deleteColumn,
-        getElement,
         getCell,
-        getLayout,
         getSlide,
         getPresentation,
         mergeSlideWithPrevious,
@@ -71,11 +68,8 @@ const SlideMenu: React.FC = () => {
     const { activeElementType, activeEditor } = useEditorStore();
 
     const presentation = getPresentation()
-    const element = getElement(state.slideId, state.layoutId, state.elementId);
     const cell = getCell(state.slideId, state.layoutId, state.columnId);
-    const layout = getLayout(state.slideId, state.layoutId);
-    const slide = getSlide(state.slideId);
-    
+
     let slideIndex = 0;
     if (state.elementType === 'slide') {
         const slide = getSlide(state.slideId);
@@ -90,7 +84,7 @@ const SlideMenu: React.FC = () => {
     const [position, setPosition] = useState<{ x: number; y: number; rect: DOMRect } | null>(null);
     // const activeEditor = useEditorStore((state) => state.activeEditor);
 
-    
+
     // Close the menu when clicking outside of it
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -115,7 +109,7 @@ const SlideMenu: React.FC = () => {
             if (!slide) return;
 
             let dragElement = null;
-            
+
             // Find the appropriate drag handle based on element type
             if (state.elementType === 'element' && state.elementId) {
                 dragElement = slide.querySelector(`[data-element-drag-handle="${state.elementId}"]`);
@@ -126,11 +120,11 @@ const SlideMenu: React.FC = () => {
             } else if (state.elementType === 'slide') {
                 dragElement = document.querySelector(`[data-slide-drag-handle="${state.slideId}"]`);
             }
-            
+
             if (!dragElement) {
                 dragElement = document.querySelector(`[data-slide-drag-handle="${state.slideId}"]`);
             }
-            
+
             if (dragElement) {
                 const rect = dragElement.getBoundingClientRect();
                 setPosition({ x: rect.left, y: rect.top + window.scrollY, rect: rect });
@@ -205,88 +199,88 @@ const SlideMenu: React.FC = () => {
             case 'element':
                 return (
                     <>
-                        <MenuItem 
-                            icon={<EditIcon />} 
-                            label="Edit" 
-                            onClick={editElement} 
+                        <MenuItem
+                            icon={<EditIcon />}
+                            label="Edit"
+                            onClick={editElement}
                         />
-                        <MenuItem 
-                            icon={<DuplicateIcon />} 
-                            label="Duplicate" 
-                            onClick={duplicateElement} 
+                        <MenuItem
+                            icon={<DuplicateIcon />}
+                            label="Duplicate"
+                            onClick={duplicateElement}
                         />
-                        <MenuItem 
-                            icon={<DeleteIcon />} 
-                            label="Delete" 
-                            onClick={deleteElement} 
-                            className={styles.removeButton} 
+                        <MenuItem
+                            icon={<DeleteIcon />}
+                            label="Delete"
+                            onClick={deleteElement}
+                            className={styles.removeButton}
                         />
                     </>
                 );
             case 'column':
                 return (
                     <>
-                        <MenuItem 
-                            icon={<AddColumnLeftIcon />} 
-                            label="Добавить столбец слева" 
-                            onClick={handleAddColumnLeft} 
+                        <MenuItem
+                            icon={<AddColumnLeftIcon />}
+                            label="Добавить столбец слева"
+                            onClick={handleAddColumnLeft}
                         />
-                        <MenuItem 
-                            icon={<AddColumnRightIcon />} 
-                            label="Добавить столбец справа" 
-                            onClick={handleAddColumnRight} 
+                        <MenuItem
+                            icon={<AddColumnRightIcon />}
+                            label="Добавить столбец справа"
+                            onClick={handleAddColumnRight}
                         />
-                        <MenuItem 
-                            icon={<DuplicateIcon />} 
-                            label="Дублировать" 
-                            onClick={handleDuplicateColumn} 
+                        <MenuItem
+                            icon={<DuplicateIcon />}
+                            label="Дублировать"
+                            onClick={handleDuplicateColumn}
                         />
 
-                        <MenuItem 
-                            icon={<AlignTopIcon />} 
-                            label="Выровнять по верхнему краю" 
+                        <MenuItem
+                            icon={<AlignTopIcon />}
+                            label="Выровнять по верхнему краю"
                             active={cell?.alignment === 'top'}
-                            onClick={handleAlignColumnTop} 
+                            onClick={handleAlignColumnTop}
                         />
-                        <MenuItem 
-                            icon={<AlignCenterIcon />} 
-                            label="Выровнять по центру" 
+                        <MenuItem
+                            icon={<AlignCenterIcon />}
+                            label="Выровнять по центру"
                             active={cell?.alignment === 'center'}
-                            onClick={handleAlignColumnCenter} 
+                            onClick={handleAlignColumnCenter}
                         />
-                        <MenuItem 
-                            icon={<AlignBottomIcon />} 
-                            label="Выровнять по нижнему краю" 
+                        <MenuItem
+                            icon={<AlignBottomIcon />}
+                            label="Выровнять по нижнему краю"
                             active={cell?.alignment === 'bottom'}
-                            onClick={handleAlignColumnBottom} 
+                            onClick={handleAlignColumnBottom}
                         />
 
-                        <MenuItem 
-                            icon={<DeleteIcon />} 
-                            label="Удалить столбец" 
-                            onClick={handleDeleteColumn} 
-                            className={styles.removeButton} 
+                        <MenuItem
+                            icon={<DeleteIcon />}
+                            label="Удалить столбец"
+                            onClick={handleDeleteColumn}
+                            className={styles.removeButton}
                         />
                     </>
                 );
             case 'layout':
                 return (
                     <>
-                        {/* <MenuItem 
-                            icon={<DuplicateIcon />} 
-                            label="Duplicate" 
-                            onClick={closeMenu} 
+                        {/* <MenuItem
+                            icon={<DuplicateIcon />}
+                            label="Duplicate"
+                            onClick={closeMenu}
                         />
-                        <MenuItem 
-                            icon={<MoveIcon />} 
-                            label="Move" 
-                            onClick={closeMenu} 
+                        <MenuItem
+                            icon={<MoveIcon />}
+                            label="Move"
+                            onClick={closeMenu}
                         />
-                        <MenuItem 
-                            icon={<DeleteIcon />} 
-                            label="Delete" 
-                            onClick={deleteLayout} 
-                            className={styles.removeButton} 
+                        <MenuItem
+                            icon={<DeleteIcon />}
+                            label="Delete"
+                            onClick={deleteLayout}
+                            className={styles.removeButton}
                         /> */}
                         {/* <LayoutMenu position={position} /> */}
                     </>
@@ -294,23 +288,23 @@ const SlideMenu: React.FC = () => {
             case 'slide':
                 return (
                     <>
-                        <MenuItem 
-                            icon={<DuplicateIcon />} 
-                            label="Duplicate" 
-                            onClick={duplicateSlide} 
+                        <MenuItem
+                            icon={<DuplicateIcon />}
+                            label="Duplicate"
+                            onClick={duplicateSlide}
                         />
                         {slideIndex > 0 && (
-                            <MenuItem 
-                                icon={<MergeIcon />} 
-                                label="Merge" 
-                                onClick={handleMergeSlide} 
+                            <MenuItem
+                                icon={<MergeIcon />}
+                                label="Merge"
+                                onClick={handleMergeSlide}
                             />
                         )}
-                        <MenuItem 
-                            icon={<DeleteIcon />} 
-                            label="Delete" 
-                            onClick={deleteSlide} 
-                            className={styles.removeButton} 
+                        <MenuItem
+                            icon={<DeleteIcon />}
+                            label="Delete"
+                            onClick={deleteSlide}
+                            className={styles.removeButton}
                         />
                     </>
                 );
@@ -337,7 +331,7 @@ const SlideMenu: React.FC = () => {
                     position: 'center'
                 };
             }
-            
+
             default:
                 return {
                     left: position?.x,
@@ -380,4 +374,4 @@ const SlideMenu: React.FC = () => {
     );
 };
 
-export default SlideMenu; 
+export default SlideMenu;

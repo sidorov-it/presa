@@ -1,19 +1,24 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
 import { FaPlus, FaMagic, FaEllipsisV, FaPencilAlt, FaCopy, FaTrash } from 'react-icons/fa';
 import { IPresentation } from '@/types';
+import { pluralize } from '@/utils/helpers';
+
+type PresentationInfo = IPresentation & {
+    slidesCount: number;
+}
 
 export default function DashboardPage() {
     const { data: session } = useSession();
     const router = useRouter();
     const { presentations, createPresentation, loadPresentationsList, deletePresentation } = usePresentationStore();
     const [showAIModal, setShowAIModal] = useState(false);
-    const [userPresentations, setUserPresentations] = useState<IPresentation[]>([]);
+    const [userPresentations, setUserPresentations] = useState<PresentationInfo[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isGenerating, setIsGenerating] = useState(false);
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
@@ -22,7 +27,7 @@ export default function DashboardPage() {
     const [newTitle, setNewTitle] = useState('');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [presentationToDelete, setPresentationToDelete] = useState<string | null>(null);
-    
+
     const menuRef = useRef<HTMLDivElement>(null);
 
     // AI form state
@@ -92,14 +97,19 @@ export default function DashboardPage() {
     const handleDuplicate = async (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
         setActiveMenu(null);
-        
+
         try {
             setIsLoading(true);
-            const presentation = presentations.find(p => p.id === id);
-            if (presentation) {
-                const duplicateId = await createPresentation(`${presentation.title} (Копия)`);
-                // After duplication, it will already be in the presentations list due to loadPresentationsList
+            const response = await fetch(`/api/presentations/${id}/duplicate`, {
+                method: 'POST',
+            });
+
+            if (!response.ok) {
+                throw new Error('Не удалось дублировать презентацию');
             }
+
+            // Refresh presentations list
+            await loadPresentationsList();
         } catch (error) {
             console.error('Не удалось дублировать презентацию:', error);
         } finally {
@@ -122,7 +132,7 @@ export default function DashboardPage() {
     // Handle the rename action
     const handleRename = async () => {
         if (!presentationToRename || !newTitle.trim()) return;
-        
+
         try {
             const response = await fetch(`/api/presentations/${presentationToRename}`, {
                 method: 'PUT',
@@ -157,7 +167,7 @@ export default function DashboardPage() {
     // Handle the delete action
     const handleDelete = async () => {
         if (!presentationToDelete) return;
-        
+
         try {
             const response = await fetch(`/api/presentations/${presentationToDelete}`, {
                 method: 'DELETE',
@@ -279,7 +289,7 @@ export default function DashboardPage() {
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {userPresentations.map((presentation) => (
-                        <div 
+                        <div
                             key={presentation.id}
                             onClick={() => handleOpenPresentation(presentation.id)}
                             className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
@@ -289,7 +299,7 @@ export default function DashboardPage() {
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <span className="text-gray-500 font-medium">Предпросмотр</span>
                                 </div>
-                                
+
                                 {/* Action menu button */}
                                 <button
                                     onClick={(e) => toggleMenu(presentation.id, e)}
@@ -297,10 +307,10 @@ export default function DashboardPage() {
                                 >
                                     <FaEllipsisV />
                                 </button>
-                                
+
                                 {/* Action menu */}
                                 {activeMenu === presentation.id && (
-                                    <div 
+                                    <div
                                         ref={menuRef}
                                         className="absolute top-10 right-2 bg-white rounded-md shadow-lg z-10"
                                     >
@@ -333,7 +343,7 @@ export default function DashboardPage() {
                             <div className="p-4">
                                 <h3 className="font-medium text-gray-800 mb-1 truncate">{presentation.title}</h3>
                                 <p className="text-sm text-gray-500">
-                                    {presentation.slides?.length || 0} слайдов
+                                    {pluralize(presentation.slidesCount, ['слайд', 'слайда', 'слайдов'])}
                                 </p>
                             </div>
                         </div>
@@ -347,7 +357,7 @@ export default function DashboardPage() {
                     <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
                         <div className="p-6">
                             <h2 className="text-xl font-bold text-gray-800 mb-4">Создать презентацию с помощью ИИ</h2>
-                            
+
                             <form onSubmit={handleAISubmit}>
                                 <div className="mb-4">
                                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -361,7 +371,7 @@ export default function DashboardPage() {
                                         rows={4}
                                     />
                                 </div>
-                                
+
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                                     <div>
                                         <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -391,7 +401,7 @@ export default function DashboardPage() {
                                         </select>
                                     </div>
                                 </div>
-                                
+
                                 <div className="mb-6">
                                     <p className="text-sm text-gray-600 mb-2">Примеры запросов:</p>
                                     <div className="flex flex-wrap gap-2">
@@ -418,13 +428,13 @@ export default function DashboardPage() {
                                         </button>
                                     </div>
                                 </div>
-                                
+
                                 {aiError && (
                                     <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
                                         {aiError}
                                     </div>
                                 )}
-                                
+
                                 <div className="flex justify-end space-x-4">
                                     <button
                                         type="button"
@@ -454,7 +464,7 @@ export default function DashboardPage() {
                     </div>
                 </div>
             )}
-            
+
             {/* Rename Modal */}
             {showRenameModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -488,7 +498,7 @@ export default function DashboardPage() {
                     </div>
                 </div>
             )}
-            
+
             {/* Delete Confirmation Modal */}
             {showDeleteModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -518,4 +528,4 @@ export default function DashboardPage() {
             )}
         </div>
     );
-} 
+}

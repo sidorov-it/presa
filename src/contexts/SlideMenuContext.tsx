@@ -60,12 +60,12 @@ type SlideMenuContextType = {
 
     duplicateSlide: () => void;
     deleteSlide: () => void;
-    
+
     deleteLayout: () => void;
     updateAlignLayout: (layoutId: string, align: 'top' | 'center' | 'bottom') => void;
-    
+
     changeTemplate: (template: LayoutType) => void;
-    
+
     duplicateElement: () => void;
     deleteElement: () => void;
     editElement: () => void;
@@ -118,23 +118,23 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
     } = usePresentationStore();
 
     const openMenu = (
-        slideId?: string | null, 
-        elementId?: string | null, 
+        slideId?: string | null,
+        elementId?: string | null,
         elementType?: MenuElementType | null,
         layoutId?: string | null,
         columnId?: string | null,
         isTextEditor?: boolean
     ) => {
-        dispatch({ 
-            type: 'OPEN_MENU', 
-            payload: { 
-                slideId, 
-                elementId, 
+        dispatch({
+            type: 'OPEN_MENU',
+            payload: {
+                slideId,
+                elementId,
                 elementType,
                 layoutId,
                 columnId,
                 isTextEditor
-            } 
+            }
         });
     };
 

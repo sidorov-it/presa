@@ -224,4 +224,4 @@ export const DragDropTransactionHelper = {
             after: afterState
         });
     }
-}; 
+};

@@ -80,4 +80,4 @@ const TableBubbleMenu: React.FC<BubbleMenuProps> = ({ editor }) => {
     );
 };
 
-export default TableBubbleMenu; 
+export default TableBubbleMenu;

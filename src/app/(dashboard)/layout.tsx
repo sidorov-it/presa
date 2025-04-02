@@ -4,14 +4,14 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { 
-    FaChalkboard, 
-    FaHome, 
-    FaPalette, 
-    FaTrash, 
-    FaCog, 
-    FaCreditCard, 
-    FaSignOutAlt, 
+import {
+    FaChalkboard,
+    FaHome,
+    FaPalette,
+    FaTrash,
+    FaCog,
+    FaCreditCard,
+    FaSignOutAlt,
     FaBars,
     FaTimes
 } from 'react-icons/fa';
@@ -26,35 +26,35 @@ export default function DashboardLayout({
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const menuItems = [
-        { 
-            label: 'Мои презентации', 
-            path: '/dashboard', 
-            icon: <FaHome size={20} /> 
+        {
+            label: 'Мои презентации',
+            path: '/dashboard',
+            icon: <FaHome size={20} />
         },
-        { 
-            label: 'Шаблоны', 
-            path: '/templates', 
-            icon: <FaChalkboard size={20} /> 
+        {
+            label: 'Шаблоны',
+            path: '/templates',
+            icon: <FaChalkboard size={20} />
         },
-        { 
-            label: 'Темы', 
-            path: '/themes', 
-            icon: <FaPalette size={20} /> 
+        {
+            label: 'Темы',
+            path: '/themes',
+            icon: <FaPalette size={20} />
         },
-        { 
-            label: 'Корзина', 
-            path: '/trash', 
-            icon: <FaTrash size={20} /> 
+        {
+            label: 'Корзина',
+            path: '/trash',
+            icon: <FaTrash size={20} />
         },
-        { 
-            label: 'Настройки', 
-            path: '/settings', 
-            icon: <FaCog size={20} /> 
+        {
+            label: 'Настройки',
+            path: '/settings',
+            icon: <FaCog size={20} />
         },
-        { 
-            label: 'Оплата', 
-            path: '/payment', 
-            icon: <FaCreditCard size={20} /> 
+        {
+            label: 'Оплата',
+            path: '/payment',
+            icon: <FaCreditCard size={20} />
         },
     ];
 
@@ -70,7 +70,7 @@ export default function DashboardLayout({
         <div className="min-h-screen bg-gray-50 flex">
             {/* Mobile sidebar toggle */}
             <div className="lg:hidden fixed top-4 left-4 z-20">
-                <button 
+                <button
                     onClick={toggleSidebar}
                     className="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none"
                 >
@@ -79,7 +79,7 @@ export default function DashboardLayout({
             </div>
 
             {/* Sidebar */}
-            <div 
+            <div
                 className={`${
                     sidebarOpen ? 'translate-x-0' : '-translate-x-full'
                 } lg:translate-x-0 fixed inset-y-0 left-0 z-10 w-64 transition duration-300 transform bg-gray-800 overflow-y-auto lg:static lg:inset-0`}
@@ -106,8 +106,8 @@ export default function DashboardLayout({
                     {menuItems.map((item) => {
                         const isActive = pathname === item.path;
                         return (
-                            <Link 
-                                key={item.path} 
+                            <Link
+                                key={item.path}
                                 href={item.path}
                                 className={`flex items-center px-6 py-3 text-gray-100 hover:bg-gray-700 ${
                                     isActive ? 'bg-gray-700' : ''
@@ -119,7 +119,7 @@ export default function DashboardLayout({
                         );
                     })}
 
-                    <button 
+                    <button
                         onClick={handleSignOut}
                         className="flex items-center px-6 py-3 mt-10 text-gray-100 hover:bg-gray-700 w-full"
                     >
@@ -137,4 +137,4 @@ export default function DashboardLayout({
             </div>
         </div>
     );
-} 
+}

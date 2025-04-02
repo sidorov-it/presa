@@ -14,7 +14,7 @@ export const LinkEditor = ({ editor, className }: { editor: Editor; className?: 
         if (isOpen && editor.isActive('link')) {
             const attrs = editor.getAttributes('link');
             setUrl(attrs.href || '');
-      
+
             // Фокус на поле ввода и выделение текста для удобства редактирования
             setTimeout(() => {
                 if (inputRef.current) {
@@ -55,7 +55,7 @@ export const LinkEditor = ({ editor, className }: { editor: Editor; className?: 
             if (!/^https?:\/\//i.test(formattedUrl) && !/^mailto:/i.test(formattedUrl)) {
                 formattedUrl = `https://${formattedUrl}`;
             }
-      
+
             editor.chain().focus().setLink({ href: formattedUrl }).run();
         }
         setIsOpen(false);
@@ -103,16 +103,16 @@ export const LinkEditor = ({ editor, className }: { editor: Editor; className?: 
                             aria-label="URL ссылки"
                         />
                         <div className={styles.linkActions}>
-                            <button 
-                                onClick={applyLink} 
+                            <button
+                                onClick={applyLink}
                                 className={styles.applyButton}
                                 disabled={!url.trim()}
                             >
                 Применить
                             </button>
                             {editor.isActive('link') && (
-                                <button 
-                                    onClick={removeLink} 
+                                <button
+                                    onClick={removeLink}
                                     className={styles.removeButton}
                                     aria-label="Удалить ссылку"
                                 >
@@ -125,4 +125,4 @@ export const LinkEditor = ({ editor, className }: { editor: Editor; className?: 
             )}
         </div>
     );
-}; 
+};

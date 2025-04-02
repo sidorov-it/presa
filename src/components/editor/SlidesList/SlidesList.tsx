@@ -1,7 +1,7 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useState, useEffect, useRef } from 'react';
 import { Slide } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
-import styles from './SlidesList.module.css';
 
 interface SlidesListProps {
     slides: Slide[];
@@ -37,39 +37,6 @@ const SlidesList: React.FC<SlidesListProps> = ({
             </div>
         );
     }
-
-    const handleDuplicate = (
-        e: React.MouseEvent<HTMLButtonElement>,
-        presentationId: string,
-        slideId: string
-    ) => {
-        e.stopPropagation();
-        const newSlideId = duplicateSlide(presentationId, slideId);
-        onSlideSelect(newSlideId);
-    };
-
-    const handleDelete = (
-        e: React.MouseEvent<HTMLButtonElement>,
-        presentationId: string,
-        slideId: string
-    ) => {
-        e.stopPropagation();
-        deleteSlide(presentationId, slideId);
-
-        // Если удалили активный слайд, выбираем первый доступный
-        if (activeSlideId === slideId && slides.length > 1) {
-            const nextSlideIndex = slides.findIndex((slide) => slide.id === slideId) - 1;
-            const nextSlide = slides[nextSlideIndex >= 0 ? nextSlideIndex : 0];
-            if (nextSlide && nextSlide.id !== slideId) {
-                onSlideSelect(nextSlide.id);
-            } else if (slides.length > 1) {
-                const alternativeSlide = slides.find((slide) => slide.id !== slideId);
-                if (alternativeSlide) {
-                    onSlideSelect(alternativeSlide.id);
-                }
-            }
-        }
-    };
 
     // Collapsed view - just show the expand button
     if (isCollapsed) {
@@ -107,7 +74,7 @@ const SlidesList: React.FC<SlidesListProps> = ({
 
     // Expanded view with the list of slides
     return (
-        <div 
+        <div
             className="absolute left-0 top-0 h-full bg-white shadow-md w-64 z-30 transition-all duration-300 ease-in-out flex flex-col"
         >
             <div className="flex justify-between items-center p-2 border-b border-gray-200">
@@ -187,8 +154,8 @@ const SlidesList: React.FC<SlidesListProps> = ({
                     </svg>
                 </button>
             </div>
-            
-            <div 
+
+            <div
                 ref={panelRef}
                 className="flex-1 overflow-y-auto flex flex-col items-center justify-center"
             >
@@ -206,7 +173,7 @@ const SlidesList: React.FC<SlidesListProps> = ({
                                     ${index === slides.length - 1 ? 'border-b-0' : ''}
                                 `}
                                 onClick={() => onSlideSelect(slide.id)}
-                                tabIndex={0}
+                                // tabIndex={0}
                                 aria-label={`Слайд ${index + 1}: ${slide.title}`}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter' || e.key === ' ') {
@@ -238,4 +205,4 @@ const SlidesList: React.FC<SlidesListProps> = ({
     );
 };
 
-export default SlidesList; 
+export default SlidesList;

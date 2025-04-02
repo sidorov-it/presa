@@ -84,7 +84,7 @@ const ThemesPage = () => {
 
             <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {THEMES.map((theme) => (
-                    <Card 
+                    <Card
                         key={theme.id}
                         className={`hover:shadow-lg transition-shadow cursor-pointer ${
                             activeTheme === theme.id ? 'ring-2 ring-blue-500' : ''
@@ -111,4 +111,4 @@ const ThemesPage = () => {
     )
 }
 
-export default ThemesPage 
+export default ThemesPage

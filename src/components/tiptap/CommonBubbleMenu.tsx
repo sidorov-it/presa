@@ -20,7 +20,6 @@ import {
 } from "react-icons/bi";
 import { Level } from "@tiptap/extension-heading";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { useEditorStore } from "@/store/editorStore";
 import { useSlideMenu } from "@/contexts/SlideMenuContext";
 
 export default function CommonBubbleMenu({
@@ -117,6 +116,7 @@ export default function CommonBubbleMenu({
                 },
             }}
             updateDelay={0}
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             shouldShow={({ editor, view, state, oldState, from, to }) => {
                 if (from !== to) {
                     return true;

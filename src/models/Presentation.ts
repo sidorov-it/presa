@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { ObjectId } from 'mongodb';
-import { IPresentation, Slide } from '@/types';
+import { IPresentation } from '@/types';
 
 // Extended for MongoDB
 interface MongoPresentation extends Omit<IPresentation, 'id'> {
@@ -14,10 +14,6 @@ const SlideSchema = new mongoose.Schema({
     id: {
         type: String,
         required: true,
-        validate: {
-            validator: (v: string) => ObjectId.isValid(v),
-            message: 'Invalid ObjectId'
-        }
     },
     layouts: {
         type: mongoose.Schema.Types.Mixed,
@@ -84,4 +80,4 @@ PresentationSchema.set('toJSON', {
     },
 });
 
-export default mongoose.models.Presentation || mongoose.model<MongoPresentation>('Presentation', PresentationSchema); 
+export default mongoose.models.Presentation || mongoose.model<MongoPresentation>('Presentation', PresentationSchema);

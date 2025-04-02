@@ -9,22 +9,22 @@ import { ObjectId } from 'mongodb';
 export async function GET(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
-        
+
         if (!session?.user) {
             return NextResponse.json(
                 { message: 'Unauthorized' },
                 { status: 401 }
             );
         }
-        
+
         const userId = session.user.id;
-        
+
         await connectToDatabase();
-        
+
         // Find deleted presentations that belong to the user
         const presentations = await Presentation.find(
             { userId, isDeleted: true },
-            { 
+            {
                 title: 1,
                 description: 1,
                 createdAt: 1,
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
                 slides: { $size: "$slides" }
             }
         ).sort({ deletedAt: -1 });
-        
+
         return NextResponse.json({
             presentations: presentations.map(p => p.toJSON())
         });
@@ -50,44 +50,44 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
-        
+
         if (!session?.user) {
             return NextResponse.json(
                 { message: 'Unauthorized' },
                 { status: 401 }
             );
         }
-        
+
         const userId = session.user.id;
         const { id } = await req.json();
-        
+
         if (!id || !ObjectId.isValid(id)) {
             return NextResponse.json(
                 { message: 'Invalid presentation ID' },
                 { status: 400 }
             );
         }
-        
+
         await connectToDatabase();
-        
+
         // Find and restore the presentation
         const presentation = await Presentation.findOne({
             _id: id,
             userId,
             isDeleted: true
         });
-        
+
         if (!presentation) {
             return NextResponse.json(
                 { message: 'Presentation not found' },
                 { status: 404 }
             );
         }
-        
+
         presentation.isDeleted = false;
         presentation.deletedAt = undefined;
         await presentation.save();
-        
+
         return NextResponse.json({
             message: 'Presentation restored successfully',
             presentation: presentation.toJSON()
@@ -105,42 +105,42 @@ export async function PUT(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
-        
+
         if (!session?.user) {
             return NextResponse.json(
                 { message: 'Unauthorized' },
                 { status: 401 }
             );
         }
-        
+
         const { searchParams } = new URL(req.url);
         const id = searchParams.get('id');
-        
+
         if (!id || !ObjectId.isValid(id)) {
             return NextResponse.json(
                 { message: 'Invalid presentation ID' },
                 { status: 400 }
             );
         }
-        
+
         const userId = session.user.id;
-        
+
         await connectToDatabase();
-        
+
         // Find and permanently delete the presentation
         const result = await Presentation.deleteOne({
             _id: id,
             userId,
             isDeleted: true
         });
-        
+
         if (result.deletedCount === 0) {
             return NextResponse.json(
                 { message: 'Presentation not found' },
                 { status: 404 }
             );
         }
-        
+
         return NextResponse.json({
             message: 'Presentation permanently deleted'
         });
@@ -151,4 +151,4 @@ export async function DELETE(req: NextRequest) {
             { status: 500 }
         );
     }
-} 
+}

@@ -16,10 +16,10 @@ export const EnterHandlerExtension = (onEnterPressed: (contentBeforeCursor?: JSO
                     let isInList = false
                     let currentNode = $head.parent
                     let depth = $head.depth
-                    
+
                     while (depth > 0) {
-                        if (currentNode.type.name === 'listItem' || 
-                            currentNode.type.name === 'bulletList' || 
+                        if (currentNode.type.name === 'listItem' ||
+                            currentNode.type.name === 'bulletList' ||
                             currentNode.type.name === 'taskList' ||
                             currentNode.type.name === 'orderedList') {
                             isInList = true

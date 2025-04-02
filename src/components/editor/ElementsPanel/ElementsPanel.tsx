@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useCallback, useState } from 'react';
 import { elementsRegistry } from '@/elements/registry';
 import styles from './ElementsPanel.module.css';
@@ -18,7 +20,7 @@ interface PopupMenuProps {
     slideId: string;
 }
 
-const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, presentationId, slideId }) => {
+const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose }) => {
     // Обработчики для drag-n-drop
     const { handleNewElementDragStart } = useDnd();
 
@@ -163,4 +165,4 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ presentationId, slideId }
     );
 };
 
-export default ElementsPanel; 
+export default ElementsPanel;

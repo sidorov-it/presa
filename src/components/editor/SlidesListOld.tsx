@@ -175,4 +175,4 @@ const SlidesList: React.FC<SlidesListProps> = ({
     );
 };
 
-export default SlidesList; 
+export default SlidesList;

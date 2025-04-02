@@ -66,11 +66,11 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     const isSingleElementSingleCellLayout = layout.elements.length === 1 &&
         layout.gridStructure.rows.length === 1 &&
         layout.gridStructure.rows[0].cells.length === 1;
-        
+
     const handleLayoutDragStart = (e: React.DragEvent<HTMLDivElement>) => {
         e.stopPropagation();
         handleDragStart(e, "", layout.id);
-        
+
         e.dataTransfer.setData('application/json', JSON.stringify({
             type: 'layout',
             layoutId: layout.id,

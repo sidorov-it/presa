@@ -6,4 +6,4 @@ const AddColumnRightIcon: React.FC = () => (
     </svg>
 );
 
-export default AddColumnRightIcon; 
+export default AddColumnRightIcon;

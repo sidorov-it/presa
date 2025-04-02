@@ -187,4 +187,4 @@ export const QuestionBoxNode = Node.create({
     renderHTML({ HTMLAttributes }) {
         return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'question-box' }), 0]
     }
-}) 
+})

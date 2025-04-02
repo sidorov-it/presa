@@ -69,4 +69,4 @@ const ListBubbleMenu: React.FC<BubbleMenuProps> = ({ editor }) => {
     );
 };
 
-export default ListBubbleMenu; 
+export default ListBubbleMenu;

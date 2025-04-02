@@ -2,15 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import SlidesList from '@/components/editor/SlidesList';
 import ElementsPanel from '@/components/editor/ElementsPanel/ElementsPanel';
-import Button from '@/components/ui/Button';
 import { DndProvider } from '@/contexts/DragDropContext';
 import { SlideMenuProvider } from '@/contexts/SlideMenuContext';
 import Presentation from '../Presentation';
 import DragDropIndicator from '@/components/DragDropIndicator';
-import UndoRedoControls from '@/components/UndoRedoControls';
 import { Slide } from '@/types';
 import SlideMenu from '../SlideMenu/SlideMenu';
-import SaveStatus from '@/components/ui/SaveStatus';
 import { useRouter } from 'next/navigation';
 
 interface EditorProps {
@@ -104,4 +101,4 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
     );
 };
 
-export default Editor; 
+export default Editor;

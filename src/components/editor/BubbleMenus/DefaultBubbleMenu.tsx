@@ -36,4 +36,4 @@ const DefaultBubbleMenu: React.FC<BubbleMenuProps> = ({ editor }) => {
     );
 };
 
-export default DefaultBubbleMenu; 
+export default DefaultBubbleMenu;

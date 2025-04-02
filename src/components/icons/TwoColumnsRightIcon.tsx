@@ -7,4 +7,4 @@ const TwoColumnsRightIcon: React.FC = () => (
     </svg>
 );
 
-export default TwoColumnsRightIcon; 
+export default TwoColumnsRightIcon;

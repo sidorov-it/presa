@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { FaCheck, FaCreditCard, FaPaypal } from 'react-icons/fa';
 import { Heading } from "@/components/ui/heading"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/Button"
@@ -76,15 +75,15 @@ const PaymentPage = () => {
         if (planId === 'free') {
             return; // No payment needed for free plan
         }
-    
+
         setIsProcessing(true);
-    
+
         // Simulate payment processing
         await new Promise(resolve => setTimeout(resolve, 1500));
-    
+
         // In a real app, this would call your payment API
         setIsProcessing(false);
-    
+
         alert(`Спасибо за подписку на тариф ${planId}!`);
     };
 
@@ -219,4 +218,4 @@ const PaymentPage = () => {
     )
 }
 
-export default PaymentPage 
+export default PaymentPage

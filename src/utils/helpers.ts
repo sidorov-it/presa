@@ -77,4 +77,20 @@ export const delay = (ms: number): Promise<void> => {
  */
 export const capitalize = (str: string): string => {
     return str.charAt(0).toUpperCase() + str.slice(1);
-}; 
+};
+
+/**
+ * Возвращает правильную форму слова в зависимости от количества
+ * @param count количество
+ * @param forms массив с формами слова
+ * @returns правильная форма слова
+ */
+export const pluralize = (count: number = 0, forms: [string, string, string]): string => {
+    const cases = [2, 0, 1, 1, 1, 2];
+    const index = 
+        count % 100 > 4 && count % 100 < 20 
+            ? 2 
+            : cases[Math.min(count % 10, 5)];
+    return `${count} ${forms[index]}`;
+}
+

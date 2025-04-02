@@ -7,4 +7,4 @@ const AlignCenterIcon: React.FC = () => (
     </svg>
 );
 
-export default AlignCenterIcon; 
+export default AlignCenterIcon;

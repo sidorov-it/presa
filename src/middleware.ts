@@ -4,27 +4,27 @@ import { NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
-  
+
     // Define which paths are public (no auth needed)
     const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password'];
     const isPublicPath = publicPaths.some(pp => path === pp || path.startsWith(pp));
-  
+
     // Get the token
     const token = await getToken({
         req: request,
         secret: process.env.NEXTAUTH_SECRET,
     });
-  
+
     // If it's a public path and user is logged in, redirect to dashboard
     if (isPublicPath && token) {
         return NextResponse.redirect(new URL('/dashboard', request.url));
     }
-  
+
     // If it's not a public path and no token, redirect to login
     if (!isPublicPath && !token) {
         return NextResponse.redirect(new URL('/login', request.url));
     }
-  
+
     return NextResponse.next();
 }
 
@@ -44,4 +44,4 @@ export const config = {
         '/themes',
         '/payment',
     ],
-}; 
+};

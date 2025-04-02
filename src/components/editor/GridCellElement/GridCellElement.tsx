@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { RefObject, useRef, useState } from 'react';
-import { GridCell, Element, GridStructure, getPredefinedGridStructures, Layout, TipTapRefs, BaseElement, TextElement } from '@/types';
+import { GridCell, Element, GridStructure, getPredefinedGridStructures, Layout, TipTapRefs, TextElement } from '@/types';
 import { useDnd } from '@/contexts/DragDropContext';
 import Tiptap from '@/components/tiptap/Tiptap';
 import styles from './GridCellElement.module.css'; // Make sure this exists
@@ -136,7 +136,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     layoutId,
     hasMultipleCells,
     isLayoutHovered,
-    isLayoutSelected,
     tiptapRefs,
     onSelect,
     isLastCell
@@ -180,7 +179,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         }
     };
 
-    const handleBackspacePressed = (element: Element, isEmpty: boolean) => {
+    const handleBackspacePressed = (element: Element) => {
         const presentation = usePresentationStore.getState().getPresentation(presentationId);
         if (!presentation) return;
 
@@ -190,7 +189,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         const layout = slide.layouts.find(l => l.id === layoutId);
         if (!layout) return;
 
-        const cell = layout.gridStructure.rows.find(r => r.cells.find(c => c.id === element.cellId));
 
         const elementsInCell = layout.elements.filter(e => e.cellId === element.cellId);
 
@@ -584,10 +582,10 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             <div
                 className={styles.elementContent}
                 data-element-id={element.id}
-                onMouseEnter={(ev) => {
+                onMouseEnter={() => {
                     setElementIsHovered(true)
                 }}
-                onMouseLeave={(ev) => {
+                onMouseLeave={() => {
                     setElementIsHovered(false)
                 }}
             >
@@ -599,7 +597,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                             isActive={menuElementId === element.id}
                             data-element-drag-handle={element.id}
                             ariaLabel="Drag this element"
-                            handleClick={(e) => {
+                            handleClick={() => {
                                 // Open the SlideMenu for element actions
                                 const editor = tiptapRefs.current?.editors[element.id]?.editor;
 
@@ -636,7 +634,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                         id={element.cellId}
                         initialContent={getEditorContent(element)}
                         onEnterPressed={handleEnterPressed(element)}
-                        onBackspacePressed={(isEmpty: boolean) => handleBackspacePressed(element, isEmpty)}
+                        onBackspacePressed={() => handleBackspacePressed(element)}
                         onFocus={() => onSelect(element)}
                         onContentChange={handleEditorContentChange(element.id)}
                         onBlur={() => { }}
@@ -731,4 +729,4 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     );
 };
 
-export default GridCellElement; 
+export default GridCellElement;

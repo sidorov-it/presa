@@ -4,9 +4,9 @@ import DropIndicator from './DropIndicator';
 
 const DragDropIndicator = () => {
     const { isDragging } = useDnd();
-  
+
     if (!isDragging()) return null;
-  
+
     return (
         <Portal>
             <DropIndicator />
@@ -14,4 +14,4 @@ const DragDropIndicator = () => {
     );
 };
 
-export default DragDropIndicator; 
+export default DragDropIndicator;

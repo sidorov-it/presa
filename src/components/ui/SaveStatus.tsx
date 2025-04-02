@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiSave, FiCheck, FiAlertCircle } from 'react-icons/fi';
+import { FiCheck, FiAlertCircle } from 'react-icons/fi';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 interface SaveStatusProps {
@@ -35,4 +35,4 @@ const SaveStatus: React.FC<SaveStatusProps> = ({ status }) => {
     );
 };
 
-export default SaveStatus; 
+export default SaveStatus;

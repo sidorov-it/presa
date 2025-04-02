@@ -2,11 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { FaUser, FaLock, FaEnvelope } from 'react-icons/fa';
 import { Heading } from "@/components/ui/heading"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/Button"
-import { Save } from "lucide-react"
 import { toast } from "sonner"
 
 // export const metadata = {
@@ -30,13 +28,13 @@ const SettingsPage = () => {
             const authResponse = await fetch('/api/auth/check');
             const authData = await authResponse.json();
             console.log('Authentication check result:', authData);
-            
+
             if (!authData.authenticated) {
                 console.error('User not authenticated properly');
                 toast.error('Authentication error. Please sign in again.');
                 return false;
             }
-            
+
             return true;
         } catch (error) {
             console.error('Authentication check error:', error);
@@ -50,21 +48,21 @@ const SettingsPage = () => {
         const fetchUserPreferences = async () => {
             const isAuthenticated = await checkAuthentication();
             if (!isAuthenticated) return;
-            
+
             try {
                 console.log('Fetching user preferences...');
                 const response = await fetch('/api/user/preferences');
                 console.log('Preferences response status:', response.status);
-                
+
                 if (response.status === 401) {
                     console.log('User not authenticated, cannot fetch preferences');
                     setIsLoading(false);
                     return;
                 }
-                
+
                 const data = await response.json();
                 console.log('Preferences data:', data);
-                
+
                 if (response.ok) {
                     if (data.preferences?.emailPreferences?.updates !== undefined) {
                         setEmailUpdates(data.preferences.emailPreferences.updates);
@@ -125,15 +123,15 @@ const SettingsPage = () => {
             if (!response.ok) {
                 throw new Error(data.message || 'Failed to update profile');
             }
-            
+
             // Update the session to reflect the name change
             console.log('Updating session with new name');
             await update({ name });
             console.log('Session updated successfully');
-            
+
             // Refresh the page to ensure session state is updated everywhere
             window.location.reload();
-            
+
             toast.success("Profile updated successfully");
         } catch (error) {
             console.error('Profile update error complete details:', error);
@@ -145,35 +143,35 @@ const SettingsPage = () => {
 
     const handleChangePassword = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (newPassword !== confirmPassword) {
             toast.error("New passwords don't match");
             return;
         }
-        
+
         if (newPassword.length < 8) {
             toast.error("Password must be at least 8 characters");
             return;
         }
-        
+
         setIsSaving(true);
-        
+
         // Check authentication before proceeding
         const isAuthenticated = await checkAuthentication();
         if (!isAuthenticated) {
             setIsSaving(false);
             return;
         }
-        
+
         try {
             const response = await fetch('/api/user/password', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ 
-                    currentPassword, 
-                    newPassword 
+                body: JSON.stringify({
+                    currentPassword,
+                    newPassword
                 }),
             });
 
@@ -182,9 +180,9 @@ const SettingsPage = () => {
             if (!response.ok) {
                 throw new Error(data.message || 'Failed to change password');
             }
-            
+
             toast.success("Password changed successfully");
-            
+
             // Reset password fields
             setCurrentPassword('');
             setNewPassword('');
@@ -200,24 +198,24 @@ const SettingsPage = () => {
     const handleEmailPreferences = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSaving(true);
-        
+
         // Check authentication before proceeding
         const isAuthenticated = await checkAuthentication();
         if (!isAuthenticated) {
             setIsSaving(false);
             return;
         }
-        
+
         console.log('Saving email preferences, updates set to:', emailUpdates);
-        
+
         try {
             const response = await fetch('/api/user/preferences', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ 
-                    emailUpdates 
+                body: JSON.stringify({
+                    emailUpdates
                 }),
             });
 
@@ -227,7 +225,7 @@ const SettingsPage = () => {
             if (!response.ok) {
                 throw new Error(data.message || 'Failed to update preferences');
             }
-            
+
             toast.success("Email preferences updated");
         } catch (error) {
             toast.error(error instanceof Error ? error.message : "Failed to update preferences");
@@ -390,4 +388,4 @@ const SettingsPage = () => {
     )
 }
 
-export default SettingsPage 
+export default SettingsPage

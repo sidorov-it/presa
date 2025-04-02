@@ -6,4 +6,4 @@ const EditIcon: React.FC = () => (
     </svg>
 );
 
-export default EditIcon; 
+export default EditIcon;

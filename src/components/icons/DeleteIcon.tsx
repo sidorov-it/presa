@@ -6,4 +6,4 @@ const DeleteIcon: React.FC = () => (
     </svg>
 );
 
-export default DeleteIcon; 
+export default DeleteIcon;

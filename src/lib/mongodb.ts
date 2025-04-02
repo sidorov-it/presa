@@ -44,4 +44,4 @@ export async function connectToDatabase() {
     }
 
     return cached.conn;
-} 
+}

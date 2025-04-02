@@ -9,7 +9,7 @@ interface BubbleMenuProps {
 
 const HeadingBubbleMenu: React.FC<BubbleMenuProps> = ({ editor }) => {
     const handleBold = () => {
-        editor.chain().focus().toggleBold().run();editor.isActive
+        editor.chain().focus().toggleBold().run();
     };
 
     const handleItalic = () => {
@@ -58,4 +58,4 @@ const HeadingBubbleMenu: React.FC<BubbleMenuProps> = ({ editor }) => {
     );
 };
 
-export default HeadingBubbleMenu; 
+export default HeadingBubbleMenu;

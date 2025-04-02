@@ -14,4 +14,4 @@ export function Heading({ title, description }: HeadingProps) {
             )}
         </div>
     )
-} 
+}

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import styles from './DragHandler.module.css';
 
 export default function DragHandler({
-    slideId,
     isActive,
     ariaLabel,
     className,
@@ -23,7 +22,7 @@ export default function DragHandler({
     [key: string]: any,
 }) {
     const [isVisible, setIsVisible] = useState(false);
-    
+
     // Когда компонент монтируется, задерживаем установку видимости,
     // чтобы CSS-анимация сработала
     useEffect(() => {
@@ -31,10 +30,10 @@ export default function DragHandler({
         const timer = setTimeout(() => {
             setIsVisible(true);
         }, 10);
-        
+
         return () => clearTimeout(timer);
     }, []);
-    
+
     return (
         <div
             className={`${styles.dragHandle} ${isActive ? styles.active : ''} ${className} ${horizontal ? styles.horizontal : ''} ${isVisible ? styles.visible : ''}`}
@@ -43,10 +42,10 @@ export default function DragHandler({
             onClick={handleClick}
             onKeyDown={handleKeyDown}
             onDragStart={handleDragStart}
-            style={{ 
+            style={{
                 ...props.style,
             }}
-            {...props}
+            // {...props}
         >
             ⋮
         </div>

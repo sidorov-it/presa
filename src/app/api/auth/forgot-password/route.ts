@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
 
         // Find the user
         const user = await User.findOne({ email });
-    
+
         // For security reasons, return success even if user is not found
         // This prevents enumeration attacks
         if (!user) {
@@ -43,14 +43,14 @@ export async function POST(req: NextRequest) {
         // In a real application, you would send an email with a link to reset the password
         // For this example, we'll just return the token in the response
         // TODO: Replace with actual email sending in production
-    
+
         return NextResponse.json(
-            { 
+            {
                 message: 'If a user with that email exists, a password reset link has been sent.',
                 // Include token in development only
-                ...(process.env.NODE_ENV === 'development' && { 
-                    token: resetToken, 
-                    resetUrl: `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}` 
+                ...(process.env.NODE_ENV === 'development' && {
+                    token: resetToken,
+                    resetUrl: `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`
                 })
             },
             { status: 200 }
@@ -62,4 +62,4 @@ export async function POST(req: NextRequest) {
             { status: 500 }
         );
     }
-} 
+}

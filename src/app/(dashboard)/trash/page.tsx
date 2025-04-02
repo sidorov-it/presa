@@ -4,12 +4,13 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { FaTrashRestore, FaTrashAlt, FaRegClock } from 'react-icons/fa';
 import { toast } from 'sonner';
+import { pluralize } from '@/utils/helpers';
 
 interface DeletedPresentation {
     id: string;
     title: string;
     deletedAt: string;
-    slides: unknown[];
+    slidesCount: number;
 }
 
 export default function TrashPage() {
@@ -143,17 +144,17 @@ export default function TrashPage() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {presentation.slides.length} слайдов
+                                        {pluralize(presentation.slidesCount, ['слайд', 'слайда', 'слайдов'])}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button 
+                                        <button
                                             onClick={() => handleRestore(presentation.id)}
                                             className="text-blue-600 hover:text-blue-900 mr-4"
                                         >
                                             <FaTrashRestore className="inline mr-1" />
                                             Восстановить
                                         </button>
-                                        <button 
+                                        <button
                                             onClick={() => handleDelete(presentation.id)}
                                             className="text-red-600 hover:text-red-900"
                                         >
@@ -169,4 +170,4 @@ export default function TrashPage() {
             )}
         </div>
     );
-} 
+}
