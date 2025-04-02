@@ -343,7 +343,7 @@ export default function DashboardPage() {
                             <div className="p-4">
                                 <h3 className="font-medium text-gray-800 mb-1 truncate">{presentation.title}</h3>
                                 <p className="text-sm text-gray-500">
-                                    {pluralize(presentation.slidesCount, ['слайд', 'слайда', 'слайдов'])}
+                                    {pluralize(presentation.slides.length, ['слайд', 'слайда', 'слайдов'])}
                                 </p>
                             </div>
                         </div>

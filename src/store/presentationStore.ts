@@ -179,7 +179,7 @@ export const usePresentationStore = create<PresentationState>()(
                         throw new Error('Failed to load presentations');
                     }
 
-                    const { presentations } = await response.json();
+                    const presentations = await response.json();
 
                     set({
                         presentations,
@@ -203,7 +203,7 @@ export const usePresentationStore = create<PresentationState>()(
                         throw new Error('Failed to load presentation');
                     }
 
-                    const { presentation } = await response.json();
+                    const presentation = await response.json();
 
                     set((state) => ({
                         presentations: [

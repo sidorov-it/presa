@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
-import User from '@/models/User';
+import { prisma } from '@/lib/prisma';
 
 export async function POST(req: NextRequest) {
     try {
-    // Parse the request body
+        // Parse the request body
         const { token } = await req.json();
 
         // Validate the input
@@ -15,13 +14,14 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        // Connect to the database
-        await connectToDatabase();
-
         // Find user with this token and token not expired
-        const user = await User.findOne({
-            resetPasswordToken: token,
-            resetPasswordExpires: { $gt: new Date() },
+        const user = await prisma.user.findFirst({
+            where: {
+                resetPasswordToken: token,
+                resetPasswordExpires: {
+                    gt: new Date()
+                }
+            }
         });
 
         if (!user) {

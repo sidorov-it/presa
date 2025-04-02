@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
-import Presentation from '@/models/Presentation';
+import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../auth/[...nextauth]/route';
-import { ObjectId } from 'mongodb';
 
 export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
@@ -20,21 +18,13 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
         const userId = session.user.id;
         const presentationId = params.id;
 
-        // Validate ObjectId
-        if (!ObjectId.isValid(presentationId)) {
-            return NextResponse.json(
-                { message: 'Invalid presentation ID' },
-                { status: 400 }
-            );
-        }
-
-        await connectToDatabase();
-
         // Find the original presentation
-        const originalPresentation = await Presentation.findOne({
-            _id: presentationId,
-            userId,
-            isDeleted: false
+        const originalPresentation = await prisma.presentation.findFirst({
+            where: {
+                id: presentationId,
+                userId,
+                isDeleted: false
+            }
         });
 
         if (!originalPresentation) {
@@ -44,20 +34,15 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
             );
         }
 
-        // Create a deep copy of the presentation
-        const presentationData = originalPresentation.toObject();
-        delete presentationData._id; // Remove the original ID
-        delete presentationData.createdAt;
-        delete presentationData.updatedAt;
-
-        // Create new IDs for all slides and their elements
-        const newSlides = presentationData.slides.map((slide: any) => {
-            const newSlideId = new ObjectId().toString();
+        // Create a deep copy of the slides data
+        const slidesData = originalPresentation.slides as any;
+        const newSlides = slidesData.map((slide: any) => {
+            const newSlideId = crypto.randomUUID();
             const newLayouts = slide.layouts.map((layout: any) => {
-                const newLayoutId = new ObjectId().toString();
+                const newLayoutId = crypto.randomUUID();
                 const newElements = layout.elements.map((element: any) => ({
                     ...element,
-                    id: new ObjectId().toString(),
+                    id: crypto.randomUUID(),
                 }));
                 return {
                     ...layout,
@@ -72,20 +57,20 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
             };
         });
 
-        // Create the new presentation with a new string ID
-        const newPresentation = await Presentation.create({
-            ...presentationData,
-            _id: new ObjectId().toString(), // Explicitly set string ID
-            title: `${presentationData.title} (Копия)`,
-            slides: newSlides,
-            userId,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
+        // Create the new presentation using Prisma
+        const newPresentation = await prisma.presentation.create({
+            data: {
+                title: `${originalPresentation.title} (Копия)`,
+                description: originalPresentation.description,
+                slides: newSlides,
+                userId: userId,
+                isDeleted: false,
+            }
         });
 
         return NextResponse.json({
             message: 'Presentation duplicated successfully',
-            presentation: newPresentation.toJSON(),
+            presentation: newPresentation,
         });
     } catch (error) {
         console.error('Duplicate presentation error:', error);
@@ -94,4 +79,4 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
             { status: 500 }
         );
     }
-} 
+}

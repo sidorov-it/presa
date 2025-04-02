@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
-import User from '@/models/User';
+import { prisma } from '@/lib/prisma';
+import { hashPassword } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
     try {
-    // Parse the request body
+        // Parse the request body
         const { token, password } = await req.json();
 
         // Validate the input
@@ -22,13 +22,14 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        // Connect to the database
-        await connectToDatabase();
-
         // Find user with this token and token not expired
-        const user = await User.findOne({
-            resetPasswordToken: token,
-            resetPasswordExpires: { $gt: new Date() },
+        const user = await prisma.user.findFirst({
+            where: {
+                resetPasswordToken: token,
+                resetPasswordExpires: {
+                    gt: new Date()
+                }
+            }
         });
 
         if (!user) {
@@ -38,11 +39,18 @@ export async function POST(req: NextRequest) {
             );
         }
 
+        // Hash the new password
+        const hashedPassword = await hashPassword(password);
+
         // Update user's password and clear reset token fields
-        user.password = password;
-        user.resetPasswordToken = undefined;
-        user.resetPasswordExpires = undefined;
-        await user.save();
+        await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                password: hashedPassword,
+                resetPasswordToken: null,
+                resetPasswordExpires: null
+            }
+        });
 
         return NextResponse.json(
             { message: 'Password reset successful' },

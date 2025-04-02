@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
-import User from '@/models/User';
-import { ObjectId } from 'mongodb';
+import { prisma } from '@/lib/prisma';
+import { hashPassword } from '@/lib/auth';
+
 export async function POST(req: NextRequest) {
     try {
-    // Parse the request body
+        // Parse the request body
         const { name, email, password } = await req.json();
 
         // Validate the input
@@ -22,11 +22,11 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        // Connect to the database
-        await connectToDatabase();
-
         // Check if user already exists
-        const existingUser = await User.findOne({ email });
+        const existingUser = await prisma.user.findUnique({
+            where: { email }
+        });
+
         if (existingUser) {
             return NextResponse.json(
                 { message: 'User with this email already exists' },
@@ -34,22 +34,26 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        // Create new user
-        const user = new User({
-            name,
-            email,
-            password,
-            isVerified: true, // For simplicity, we're setting users as verified by default
-        });
+        // Hash the password
+        const hashedPassword = await hashPassword(password);
 
-        await user.save();
+        // Create new user
+        const user = await prisma.user.create({
+            data: {
+                name,
+                email,
+                password: hashedPassword,
+                isVerified: true, // For simplicity, we're setting users as verified by default
+                emailPreferences: { updates: true }
+            }
+        });
 
         // Return success response (without sensitive data)
         return NextResponse.json(
             {
                 message: 'User registered successfully',
                 user: {
-                    id: new ObjectId(user._id),
+                    id: user.id,
                     name: user.name,
                     email: user.email,
                 }

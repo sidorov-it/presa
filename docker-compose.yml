@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  # MongoDB service configured as a replica set
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    environment:
+      - MONGO_INITDB_DATABASE=presa3
+    healthcheck:
+      test: mongosh --eval "try { rs.status().ok } catch (e) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27017'}]}).ok }" --quiet
+      interval: 5s
+      timeout: 30s
+      retries: 5
+      start_period: 10s
+    networks:
+      - mongodb-network
+
+networks:
+  mongodb-network:
+    driver: bridge
+
+volumes:
+  mongodb_data: 

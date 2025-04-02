@@ -1,7 +1,7 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { connectToDatabase } from '@/lib/mongodb';
-import User from '@/models/User';
+import { prisma } from '@/lib/prisma';
+import { comparePassword } from '@/lib/auth';
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -16,22 +16,22 @@ export const authOptions: NextAuthOptions = {
                     return null;
                 }
 
-                await connectToDatabase();
-
-                const user = await User.findOne({ email: credentials.email });
+                const user = await prisma.user.findUnique({
+                    where: { email: credentials.email }
+                });
 
                 if (!user) {
                     return null;
                 }
 
-                const isPasswordMatch = await user.comparePassword(credentials.password);
+                const isPasswordMatch = await comparePassword(credentials.password, user.password);
 
                 if (!isPasswordMatch) {
                     return null;
                 }
 
                 return {
-                    id: user._id.toString(),
+                    id: user.id,
                     email: user.email,
                     name: user.name,
                     image: user.image,
@@ -43,37 +43,27 @@ export const authOptions: NextAuthOptions = {
     session: {
         strategy: 'jwt',
     },
+    pages: {
+        signIn: '/auth/signin',
+        error: '/auth/error',
+    },
     callbacks: {
-        async jwt({ token, user, trigger, session }) {
+        async jwt({ token, user }) {
             if (user) {
                 token.id = user.id;
                 token.role = user.role;
             }
-
-            // Handle session updates
-            if (trigger === "update" && session?.name) {
-                token.name = session.name;
-            }
-
             return token;
         },
         async session({ session, token }) {
             if (session.user) {
                 session.user.id = token.id as string;
                 session.user.role = token.role as string;
-                session.user.name = token.name as string;
             }
             return session;
         },
     },
-    pages: {
-        signIn: '/login',
-        error: '/login',
-        newUser: '/register',
-    },
-    secret: process.env.NEXTAUTH_SECRET,
 };
 
 const handler = NextAuth(authOptions);
-
 export { handler as GET, handler as POST };

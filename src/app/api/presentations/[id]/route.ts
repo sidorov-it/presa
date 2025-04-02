@@ -1,115 +1,68 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
-import Presentation from '@/models/Presentation';
+import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
-import { ObjectId } from 'mongodb';
 import { generateId } from '@/utils/id';
 import { getNewEditorElement } from '@/elements/registry';
-import { Layout } from '@/types';
+import { parsePresentation, stringifyJsonField } from '@/utils/json';
+
 // Get a specific presentation
-export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
-    const params = await props.params;
+export async function GET(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+) {
     try {
-        const session = await getServerSession(authOptions);
+        const id = params.id;
 
-        if (!session?.user) {
-            return NextResponse.json(
-                { message: 'Unauthorized' },
-                { status: 401 }
-            );
-        }
-
-        const userId = session.user.id;
-        const presentationId = params.id;
-
-        // Validate ObjectId
-        if (!ObjectId.isValid(presentationId)) {
-            return NextResponse.json(
-                { message: 'Invalid presentation ID' },
-                { status: 400 }
-            );
-        }
-
-        await connectToDatabase();
-
-        const presentation = await Presentation.findOne({
-            _id: presentationId,
-            userId,
-            isDeleted: false
+        const presentation = await prisma.presentation.findUnique({
+            where: { id },
         });
 
         if (!presentation) {
             return NextResponse.json(
-                { message: 'Presentation not found' },
+                { error: 'Presentation not found' },
                 { status: 404 }
             );
         }
 
-        return NextResponse.json({
-            presentation: presentation.toJSON(),
-        });
+        // Use the utility function to parse the slides JSON
+        return NextResponse.json(parsePresentation(presentation));
     } catch (error) {
-        console.error('Get presentation error:', error);
+        console.error('Error fetching presentation:', error);
         return NextResponse.json(
-            { message: 'Internal server error' },
+            { error: 'Error fetching presentation' },
             { status: 500 }
         );
     }
 }
 
 // Update a presentation
-export async function PUT(req: NextRequest, props: { params: Promise<{ id: string }> }) {
-    const params = await props.params;
+export async function PUT(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+) {
     try {
-        const session = await getServerSession(authOptions);
+        const id = params.id;
+        const data = await request.json();
+        
+        // Try to update using the helper function that avoids transactions
+        const { id: _id, ...updateData } = {
+            ...data,
+            updatedAt: new Date(),
+            slides: data.slides ? stringifyJsonField(data.slides) : undefined,
+        };
 
-        if (!session?.user) {
-            return NextResponse.json(
-                { message: 'Unauthorized' },
-                { status: 401 }
-            );
-        }
-
-        const userId = session.user.id;
-        const presentationId = params.id;
-        const updateData = await req.json();
-
-        // Connect to the database
-        await connectToDatabase();
-
-        // Find presentation with this ID that belongs to the user
-        const presentation = await Presentation.findOne({
-            _id: new ObjectId(presentationId),
-            userId,
-            isDeleted: false
+        const presentation = await prisma.presentation.update({
+            where: { id },
+            data: updateData,
         });
 
-        if (!presentation) {
-            return NextResponse.json(
-                { message: 'Presentation not found' },
-                { status: 404 }
-            );
-        }
-
-        // Update the presentation
-        Object.keys(updateData).forEach(key => {
-            if (key !== '_id' && key !== 'userId' && key !== 'isDeleted') {
-                presentation[key] = updateData[key];
-            }
-        });
-
-        presentation.updatedAt = Date.now();
-        await presentation.save();
-
-        return NextResponse.json({
-            message: 'Presentation updated successfully',
-            presentation: presentation.toJSON(),
-        });
+        // Use the utility function to parse the slides JSON in the response
+        return NextResponse.json(parsePresentation(presentation));
     } catch (error) {
-        console.error('Update presentation error:', error);
+        console.error('Error updating presentation:', error);
         return NextResponse.json(
-            { message: 'Internal server error' },
+            { error: 'Error updating presentation' },
             { status: 500 }
         );
     }
@@ -131,14 +84,13 @@ export async function DELETE(req: NextRequest, props: { params: Promise<{ id: st
         const userId = session.user.id;
         const presentationId = params.id;
 
-        // Connect to the database
-        await connectToDatabase();
-
         // Find presentation with this ID that belongs to the user
-        const presentation = await Presentation.findOne({
-            _id: presentationId,
-            userId,
-            isDeleted: false
+        const presentation = await prisma.presentation.findFirst({
+            where: {
+                id: presentationId,
+                userId: userId,
+                isDeleted: false
+            }
         });
 
         if (!presentation) {
@@ -149,9 +101,13 @@ export async function DELETE(req: NextRequest, props: { params: Promise<{ id: st
         }
 
         // Soft delete the presentation
-        presentation.isDeleted = true;
-        presentation.deletedAt = new Date();
-        await presentation.save();
+        await prisma.presentation.update({
+            where: { id: presentationId },
+            data: {
+                isDeleted: true,
+                deletedAt: new Date()
+            }
+        });
 
         return NextResponse.json({
             message: 'Presentation moved to trash successfully',
@@ -179,46 +135,50 @@ export async function POST(req: NextRequest) {
         const userId = session.user.id;
         const { title } = await req.json();
 
-        await connectToDatabase();
-
-        const newElement = getNewEditorElement(generateId());
-        const cellId = generateId();
-
-        const presentation = await Presentation.create({
-            title,
-            description: '',
-            slides: [{
+        // Create slide structure
+        const slideData = {
+            id: generateId(),
+            layouts: [{
                 id: generateId(),
-                layouts: [{
-                    id: generateId(),
-                    type: 'single-column',
-                    elements: [{
-                        ...newElement,
-                        cellId
-                    }],
-                    gridStructure: {
-                        rows: [{
+                type: 'single-column',
+                elements: [{
+                    ...getNewEditorElement(generateId()),
+                    cellId: generateId()
+                }],
+                gridStructure: {
+                    rows: [{
+                        id: generateId(),
+                        cells: [{
                             id: generateId(),
-                            cells: [{
-                                id: cellId,
-                                row: 0,
-                                column: 0,
-                            }]
-                        }],
-                        columns: 1,
-                        columnWidths: ['100%']
-                    },
-                    style: {}
-                } as Layout]
-            }],
-            userId,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
+                            row: 0,
+                            column: 0,
+                        }]
+                    }],
+                    columns: 1,
+                    columnWidths: ['100%']
+                },
+                style: {}
+            }]
+        };
+
+        // Create presentation
+        const presentation = await prisma.presentation.create({
+            data: {
+                title,
+                description: '',
+                slides: JSON.stringify([slideData]),
+                userId,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            }
         });
 
         return NextResponse.json({
             message: 'Presentation created successfully',
-            presentation: presentation.toJSON(),
+            presentation: {
+                ...presentation,
+                slides: JSON.parse(presentation.slides as string)
+            },
         });
     } catch (error) {
         console.error('Create presentation error:', error);

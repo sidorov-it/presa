@@ -64,9 +64,9 @@ const SettingsPage = () => {
                 console.log('Preferences data:', data);
 
                 if (response.ok) {
-                    if (data.preferences?.emailPreferences?.updates !== undefined) {
-                        setEmailUpdates(data.preferences.emailPreferences.updates);
-                        console.log('Setting email updates to:', data.preferences.emailPreferences.updates);
+                    if (data.emailUpdates !== undefined) {
+                        setEmailUpdates(data.emailUpdates);
+                        console.log('Setting email updates to:', data.emailUpdates);
                     } else {
                         console.log('No email preferences found in response, using default');
                         setEmailUpdates(true);

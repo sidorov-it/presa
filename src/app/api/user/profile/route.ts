@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
-import User from '@/models/User';
+import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
@@ -18,11 +17,17 @@ export async function GET() {
 
         const userId = session.user.id;
 
-        // Connect to the database
-        await connectToDatabase();
-
         // Find user
-        const user = await User.findById(userId).select('name email image role');
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                image: true,
+                role: true
+            }
+        });
 
         if (!user) {
             return NextResponse.json(
@@ -33,7 +38,7 @@ export async function GET() {
 
         return NextResponse.json({
             user: {
-                id: user._id.toString(),
+                id: user.id,
                 name: user.name,
                 email: user.email,
                 image: user.image,
@@ -73,19 +78,33 @@ export async function PUT(req: NextRequest) {
             );
         }
 
-        // Connect to the database
-        await connectToDatabase();
-        console.log('PUT /api/user/profile - Database connected');
-
         // Find user and update
         console.log('PUT /api/user/profile - Looking up user with ID:', userId);
-        const user = await User.findOne({ _id: userId });
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                image: true,
+                role: true
+            }
+        });
         console.log('PUT /api/user/profile - User found by ID:', !!user);
 
         if (!user) {
             // Try alternative lookup by email as fallback
             console.log('PUT /api/user/profile - User not found by ID, trying email lookup');
-            const userByEmail = await User.findOne({ email: session.user.email });
+            const userByEmail = await prisma.user.findUnique({
+                where: { email: session.user.email },
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    image: true,
+                    role: true
+                }
+            });
             console.log('PUT /api/user/profile - User found by email:', !!userByEmail);
 
             if (!userByEmail) {
@@ -96,35 +115,57 @@ export async function PUT(req: NextRequest) {
             }
 
             // Update user's name
-            userByEmail.name = name;
-            await userByEmail.save();
+            const updatedUser = await prisma.user.update({
+                where: { id: userByEmail.id },
+                data: {
+                    name: name
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    image: true,
+                    role: true
+                }
+            });
             console.log('PUT /api/user/profile - User updated by email lookup');
 
             return NextResponse.json({
                 message: 'Profile updated successfully',
                 user: {
-                    id: userByEmail._id.toString(),
-                    name: userByEmail.name,
-                    email: userByEmail.email,
-                    image: userByEmail.image,
-                    role: userByEmail.role
+                    id: updatedUser.id,
+                    name: updatedUser.name,
+                    email: updatedUser.email,
+                    image: updatedUser.image,
+                    role: updatedUser.role
                 }
             });
         }
 
         // Update user's name
-        user.name = name;
-        await user.save();
+        const updatedUser = await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                name: name
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                image: true,
+                role: true
+            }
+        });
         console.log('PUT /api/user/profile - User updated successfully');
 
         return NextResponse.json({
             message: 'Profile updated successfully',
             user: {
-                id: user._id.toString(),
-                name: user.name,
-                email: user.email,
-                image: user.image,
-                role: user.role
+                id: updatedUser.id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                image: updatedUser.image,
+                role: updatedUser.role
             }
         });
     } catch (error) {

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
-import User from '@/models/User';
 import crypto from 'crypto';
+import { prisma } from '@/lib/prisma';
 
 export async function POST(req: NextRequest) {
     try {
@@ -16,11 +15,8 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        // Connect to the database
-        await connectToDatabase();
-
         // Find the user
-        const user = await User.findOne({ email });
+        const user = await prisma.user.findUnique({ where: { email } });
 
         // For security reasons, return success even if user is not found
         // This prevents enumeration attacks
@@ -38,7 +34,7 @@ export async function POST(req: NextRequest) {
         // Save token to user document
         user.resetPasswordToken = resetToken;
         user.resetPasswordExpires = new Date(resetTokenExpiry);
-        await user.save();
+        await prisma.user.update({ where: { id: user.id }, data: { resetPasswordToken: resetToken, resetPasswordExpires: new Date(resetTokenExpiry) } });
 
         // In a real application, you would send an email with a link to reset the password
         // For this example, we'll just return the token in the response

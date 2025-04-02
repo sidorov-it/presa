@@ -58,9 +58,6 @@ export default function PresentationEditorPage() {
         );
     }
 
-    console.log('Editor', Editor)
-    console.log('id', id)
-
     return (
         <div className="min-h-screen flex flex-col">
             {/* <header className="bg-white border-b border-gray-200 py-2 px-4">

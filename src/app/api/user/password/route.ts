@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
-import User from '@/models/User';
 import { getServerSession } from 'next-auth/next';
+import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import bcrypt from 'bcryptjs';
+import { comparePassword, hashPassword } from '@/lib/auth';
 
 // Change user password
 export async function PUT(req: NextRequest) {
@@ -35,19 +36,15 @@ export async function PUT(req: NextRequest) {
             );
         }
 
-        // Connect to the database
-        await connectToDatabase();
-        console.log('PUT /api/user/password - Database connected');
-
         // Find user
         console.log('PUT /api/user/password - Looking up user with ID:', userId);
-        const user = await User.findOne({ _id: userId });
+        const user = await prisma.user.findUnique({ where: { id: userId } });
         console.log('PUT /api/user/password - User found by ID:', !!user);
 
         if (!user) {
             // Try alternative lookup by email as fallback
             console.log('PUT /api/user/password - User not found by ID, trying email lookup');
-            const userByEmail = await User.findOne({ email: session.user.email });
+            const userByEmail = await prisma.user.findUnique({ where: { email: session.user.email } });
             console.log('PUT /api/user/password - User found by email:', !!userByEmail);
 
             if (!userByEmail) {
@@ -58,7 +55,7 @@ export async function PUT(req: NextRequest) {
             }
 
             // Verify current password
-            const isPasswordValid = await userByEmail.comparePassword(currentPassword);
+            const isPasswordValid = await comparePassword(currentPassword, userByEmail.password);
             console.log('PUT /api/user/password - Password valid:', isPasswordValid);
 
             if (!isPasswordValid) {
@@ -70,7 +67,7 @@ export async function PUT(req: NextRequest) {
 
             // Update password
             userByEmail.password = newPassword;
-            await userByEmail.save();
+            await prisma.user.update({ where: { id: userByEmail.id }, data: { password: newPassword } });
             console.log('PUT /api/user/password - Password updated by email lookup');
 
             return NextResponse.json({
@@ -79,7 +76,7 @@ export async function PUT(req: NextRequest) {
         }
 
         // Verify current password
-        const isPasswordValid = await user.comparePassword(currentPassword);
+        const isPasswordValid = await comparePassword(currentPassword, user.password);
         console.log('PUT /api/user/password - Password valid:', isPasswordValid);
 
         if (!isPasswordValid) {
@@ -90,8 +87,8 @@ export async function PUT(req: NextRequest) {
         }
 
         // Update password
-        user.password = newPassword;
-        await user.save();
+        user.password = await hashPassword(newPassword);
+        await prisma.user.update({ where: { id: user.id }, data: { password: newPassword } });
         console.log('PUT /api/user/password - Password updated successfully');
 
         return NextResponse.json({

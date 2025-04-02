@@ -10,7 +10,7 @@ interface DeletedPresentation {
     id: string;
     title: string;
     deletedAt: string;
-    slidesCount: number;
+    slides: any[];
 }
 
 export default function TrashPage() {
@@ -26,7 +26,7 @@ export default function TrashPage() {
                     throw new Error('Не удалось загрузить удаленные презентации');
                 }
                 const data = await response.json();
-                setDeletedPresentations(data.presentations);
+                setDeletedPresentations(data);
             } catch (error) {
                 console.error('Ошибка при загрузке удаленных презентаций:', error);
                 toast.error('Не удалось загрузить удаленные презентации');
@@ -144,7 +144,7 @@ export default function TrashPage() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {pluralize(presentation.slidesCount, ['слайд', 'слайда', 'слайдов'])}
+                                        {pluralize(presentation.slides.length, ['слайд', 'слайда', 'слайдов'])}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <button
