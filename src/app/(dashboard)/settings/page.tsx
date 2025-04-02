@@ -14,7 +14,7 @@ import { toast } from "sonner"
 
 const SettingsPage = () => {
     const { data: session, update } = useSession();
-    const [name, setName] = useState(session?.user?.name || '');
+    const [name, setName] = useState('');
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -42,6 +42,13 @@ const SettingsPage = () => {
             return false;
         }
     };
+
+    // Update name whenever session changes
+    useEffect(() => {
+        if (session?.user?.name) {
+            setName(session.user.name);
+        }
+    }, [session?.user?.name]);
 
     // Load user preferences
     useEffect(() => {
@@ -86,7 +93,6 @@ const SettingsPage = () => {
         if (session?.user) {
             console.log('Session is available, user ID:', session.user.id, 'name:', session.user.name);
             fetchUserPreferences();
-            setName(session.user.name || '');
         } else {
             console.log('No session available');
             setIsLoading(false);
@@ -126,11 +132,10 @@ const SettingsPage = () => {
 
             // Update the session to reflect the name change
             console.log('Updating session with new name');
-            await update({ name });
+            await update({
+                user: { name }
+            });
             console.log('Session updated successfully');
-
-            // Refresh the page to ensure session state is updated everywhere
-            window.location.reload();
 
             toast.success("Profile updated successfully");
         } catch (error) {
