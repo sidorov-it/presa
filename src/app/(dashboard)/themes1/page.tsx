@@ -73,12 +73,12 @@ const ThemesPage = () => {
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
             <div className="flex items-center justify-between">
                 <Heading
-                    title="Themes"
-                    description="Customize your presentation themes"
+                    title="Темы"
+                    description="Настройте темы ваших презентаций"
                 />
                 <Button onClick={handleCreateTheme}>
                     <Plus className="mr-2 h-4 w-4" />
-                    New Theme
+                    Новая тема
                 </Button>
             </div>
 

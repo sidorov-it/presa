@@ -31,9 +31,9 @@ export default function ThemesPage() {
     };
 
     return (
-        <div className="container mx-auto py-8">
+        <div className="container mx-auto flex-1 space-y-4 p-4 md:p-8 pt-6">
             <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold">Themes</h1>
+                <h1 className="text-3xl font-bold">Темы</h1>
                 <Link href="/themes/new">
                     <Button>
                         <Plus className="w-4 h-4 mr-2" />

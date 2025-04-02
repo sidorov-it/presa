@@ -82,13 +82,18 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
     };
 
     return (
-        <div className="min-h-screen bg-background p-6">
+        <div className="min-h-screen bg-background p-6 flex-1 space-y-4 p-4 md:p-8 pt-6">
             <div className="mb-6 flex justify-between items-center">
                 <h1 className="text-3xl font-bold">
                     {params.action === 'new' ? 'Новая тема' : 'Редактировать тему'}
                 </h1>
-                <Button onClick={handleSave}>Сохранить тему</Button>
+                <div className="flex gap-2">
+                    <Button onClick={handleSave}>Сохранить</Button>
+                    <Button onClick={() => router.push('/themes')}>Отменить</Button>
+                </div>
             </div>
+
+
 
             <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-6">

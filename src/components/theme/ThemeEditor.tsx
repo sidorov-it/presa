@@ -36,15 +36,15 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
         <div className="w-full">
             <Tabs defaultValue="colors" className="w-full">
                 <TabsList className="w-full grid grid-cols-3 mb-4">
-                    <TabsTrigger value="colors">Colors</TabsTrigger>
-                    <TabsTrigger value="typography">Typography</TabsTrigger>
-                    <TabsTrigger value="design">Design</TabsTrigger>
+                    <TabsTrigger value="colors">Цвета</TabsTrigger>
+                    <TabsTrigger value="typography">Шрифты</TabsTrigger>
+                    <TabsTrigger value="design">Дизайн</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="colors">
                     <div className="space-y-4">
                         <div className="space-y-2">
-                            <Label>Primary Accent Color</Label>
+                            <Label>Основной акцент</Label>
                             <div className="flex gap-2">
                                 <Input
                                     type="color"
@@ -62,7 +62,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Heading Color</Label>
+                            <Label>Цвет заголовков</Label>
                             <div className="flex gap-2">
                                 <Input
                                     type="color"
@@ -80,7 +80,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Text Color</Label>
+                            <Label>Цвет текста</Label>
                             <div className="flex gap-2">
                                 <Input
                                     type="color"
@@ -98,7 +98,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Card Background</Label>
+                            <Label>Фон слайда</Label>
                             <div className="flex gap-2">
                                 <Input
                                     type="color"
@@ -116,7 +116,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Page Background</Label>
+                            <Label>Фон страницы</Label>
                             <div className="flex gap-2">
                                 <Input
                                     type="color"
@@ -138,7 +138,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                 <TabsContent value="typography">
                     <div className="space-y-6">
                         <div className="space-y-2">
-                            <Label>Heading Font</Label>
+                            <Label>Шрифт заголовков</Label>
                             <Select
                                 value={theme.typography.headingFont}
                                 onValueChange={(value) => handleTypographyChange({ headingFont: value })}
@@ -156,7 +156,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Heading Weight: {theme.typography.headingWeight}</Label>
+                            <Label>Толщина заголовков: {theme.typography.headingWeight}</Label>
                             <Slider
                                 value={[theme.typography.headingWeight]}
                                 onValueChange={([value]) => handleTypographyChange({ headingWeight: value })}
@@ -168,7 +168,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Body Font</Label>
+                            <Label>Шрифт текста</Label>
                             <Select
                                 value={theme.typography.bodyFont}
                                 onValueChange={(value) => handleTypographyChange({ bodyFont: value })}
@@ -186,7 +186,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Body Weight: {theme.typography.bodyWeight}</Label>
+                            <Label>Толщина текста: {theme.typography.bodyWeight}</Label>
                             <Slider
                                 value={[theme.typography.bodyWeight]}
                                 onValueChange={([value]) => handleTypographyChange({ bodyWeight: value })}
@@ -202,7 +202,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                 <TabsContent value="design">
                     <div className="space-y-6">
                         <div className="space-y-2">
-                            <Label>Slide Border Radius</Label>
+                            <Label>Радиус границы слайда</Label>
                             <Input
                                 type="text"
                                 value={theme.design.slide.borderRadius}
@@ -214,7 +214,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Block Opacity: {Math.round(theme.design.blocks.opacity * 100)}%</Label>
+                            <Label>Прозрачность блоков: {Math.round(theme.design.blocks.opacity * 100)}%</Label>
                             <Slider
                                 value={[theme.design.blocks.opacity * 100]}
                                 onValueChange={([value]) => handleDesignChange({
@@ -228,7 +228,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Border Width</Label>
+                            <Label>Ширина границы</Label>
                             <Select
                                 value={theme.design.blocks.borderWidth}
                                 onValueChange={(value) => handleDesignChange({
@@ -248,7 +248,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Button Shape</Label>
+                            <Label>Форма кнопки</Label>
                             <Select
                                 value={theme.design.buttons.buttonShape}
                                 onValueChange={(value) => handleDesignChange({
