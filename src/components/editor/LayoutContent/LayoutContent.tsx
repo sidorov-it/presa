@@ -84,7 +84,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     return (
         <>
             <div
-                className={`${styles.layout} themed-block`}
+                className={`${styles.layout}`}
                 data-layout-id={layout.id}
                 data-is-single-element-layout={isSingleElementSingleCellLayout ? "true" : "false"}
                 onDrop={handleLocalDrop}
@@ -115,14 +115,14 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                         key={row.id}
                         data-layout-id={layout.id}
                         data-row-id={row.id}
-                        className={`${layoutClassName} themed-block`}
+                        className={`${layoutClassName}`}
                         style={{
                             gridTemplateAreas,
                             gridTemplateColumns,
-                            backgroundColor: 'var(--block-background)',
-                            opacity: 'var(--block-opacity)',
-                            borderWidth: 'var(--block-border-width)',
-                            boxShadow: 'var(--block-shadow)',
+                            // backgroundColor: 'var(--block-background)',
+                            // opacity: 'var(--block-opacity)',
+                            // borderWidth: 'var(--block-border-width)',
+                            // boxShadow: 'var(--block-shadow)',
                         }}
                     >
                         {row.cells.map((cell: GridCell, cellIndex: number) => {

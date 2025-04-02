@@ -66,7 +66,7 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
     return (
         <DndProvider presentationId={presentationId}>
             <SlideMenuProvider presentationId={presentationId}>
-                <div className="min-h-screen flex flex-col bg-[#f6f4f4]">
+                <div className="min-h-screen flex flex-col ">
                     <SlidesList
                         slides={presentation.slides}
                         activeSlideId={activeSlideId}

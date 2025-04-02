@@ -417,7 +417,7 @@ const Tiptap = ({
     }, [editor, setActiveEditor]);
 
     return (
-        <div className="relative w-full themed-block" data-editor-id={id}>
+        <div className="relative w-full" data-editor-id={id}>
             {/* <FloatingMenu editor={editor} tippyOptions={{ duration: 100 }}>
         <div className="bg-white shadow-lg rounded-md p-2 flex gap-2">
           <button

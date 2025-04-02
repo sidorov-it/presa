@@ -191,7 +191,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     return (
         <div
-            className={`${styles.slide} themed-block`}
+            className={`${styles.slide} `}
             onClick={handleSlideWrapperClick}
             onMouseEnter={() => {
                 setIsHovered(true);
@@ -200,18 +200,18 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 setIsHovered(false);
             }}
         >
-            <div className={`${getSlideClassName()} themed-card`}>
+            <div className={`${getSlideClassName()} themed-slide`}>
                 <div className={`${styles.slideBorder} ${((isSelected || isHovered) && !slideMenuOpen) ? styles.slideBorderSelected : ''} ${slideMenuOpen ? styles.slideBorderMenuOpen : ''}`} />
                 <div
                     ref={editorRef}
                     className={`${styles.slideContent} themed-card`}
                     style={{
-                        ...slide.style,
-                        ...getBackgroundStyle(),
-                        borderRadius: 'var(--slide-border-radius)',
-                        boxShadow: 'var(--slide-shadow)',
-                        border: 'var(--slide-border)',
-                        borderColor: 'var(--slide-border-color)',
+                        // ...slide.style,
+                        // ...getBackgroundStyle(),
+                        // borderRadius: 'var(--slide-border-radius)',
+                        // boxShadow: 'var(--slide-shadow)',
+                        // border: 'var(--slide-border)',
+                        // borderColor: 'var(--slide-border-color)',
                     }}
                     onClick={() => { }}
                 >

@@ -589,7 +589,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     setElementIsHovered(false)
                 }}
             >
-                <div key={element.id} className={`${styles.elementWrapper} themed-block`}>
+                <div key={element.id} className={`${styles.elementWrapper}`}>
                     {(menuElementId === element.id || activeEditorId === element.id || elementIsHovered) && (
                         <DragHandler
                             className={styles.elementDragHandle}
@@ -655,7 +655,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     return (
         <div
-            className={`${className} themed-block`}
+            className={`${className}`}
             data-element-id={cell.id}
             // data-layout-id={layoutId}
             data-cell-id={cell.id}
@@ -687,7 +687,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 />
             )}
 
-            <div className={`${styles.gridCell} ${alignmentClassName} themed-block`}>
+            <div className={`${styles.gridCell} ${alignmentClassName}`}>
                 <div
                     className={`${styles.elementsContainer} themed-text`}
                     data-is-multi-cell={hasMultipleCells ? "true" : "false"}

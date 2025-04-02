@@ -78,7 +78,11 @@
   text-decoration: underline;
 }
 
-.themed-card {
+.themed-page {
+  background-color: var(--page-background);
+}
+
+.themed-slide {
   background-color: var(--slide-background);
   border-radius: var(--slide-border-radius);
   box-shadow: var(--slide-shadow);
@@ -87,7 +91,7 @@
 
 .themed-block {
   background-color: var(--block-background);
-  opacity: var(--block-opacity);
+  /* opacity: var(--block-opacity); */
   border-width: var(--block-border-width);
   box-shadow: var(--block-shadow);
   padding: 1rem;

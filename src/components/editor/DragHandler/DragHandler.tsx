@@ -45,7 +45,7 @@ export default function DragHandler({
             style={{
                 ...props.style,
             }}
-            // {...props}
+            {...props}
         >
             ⋮
         </div>
