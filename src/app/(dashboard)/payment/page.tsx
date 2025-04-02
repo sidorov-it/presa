@@ -12,50 +12,50 @@ import { Check } from "lucide-react"
 const PLANS = [
     {
         id: 'free',
-        name: 'Free',
+        name: 'Бесплатный',
         price: 0,
-        billing: 'forever',
+        billing: 'навсегда',
         features: [
-            'Up to 3 presentations',
-            'Basic templates',
-            'Export to PDF',
-            'Community support',
+            'До 3 презентаций',
+            'Базовые шаблоны',
+            'Экспорт в PDF',
+            'Поддержка сообщества',
         ],
         limitations: [
-            'No AI generation',
-            'Limited to 20 slides per presentation',
-            'Standard themes only',
+            'Без генерации ИИ',
+            'Ограничение до 20 слайдов на презентацию',
+            'Только стандартные темы',
         ],
     },
     {
         id: 'pro',
-        name: 'Pro',
+        name: 'Профессиональный',
         price: 9.99,
-        billing: 'monthly',
+        billing: 'ежемесячно',
         popular: true,
         features: [
-            'Unlimited presentations',
-            'AI-powered content generation',
-            'All templates and themes',
-            'Export to PDF, PPTX',
-            'Priority email support',
-            'No watermarks',
+            'Неограниченное количество презентаций',
+            'Генерация контента с помощью ИИ',
+            'Все шаблоны и темы',
+            'Экспорт в PDF, PPTX',
+            'Приоритетная поддержка по email',
+            'Без водяных знаков',
         ],
         limitations: [],
     },
     {
         id: 'enterprise',
-        name: 'Enterprise',
+        name: 'Корпоративный',
         price: 29.99,
-        billing: 'monthly',
+        billing: 'ежемесячно',
         features: [
-            'Everything in Pro',
-            'Team collaboration',
-            'Advanced analytics',
-            'Custom branding',
-            'Dedicated account manager',
-            'API access',
-            'SSO authentication',
+            'Все возможности Профессионального тарифа',
+            'Командное сотрудничество',
+            'Расширенная аналитика',
+            'Индивидуальный брендинг',
+            'Выделенный менеджер аккаунта',
+            'Доступ к API',
+            'SSO аутентификация',
         ],
         limitations: [],
     },
@@ -85,15 +85,15 @@ const PaymentPage = () => {
         // In a real app, this would call your payment API
         setIsProcessing(false);
     
-        alert(`Thank you for subscribing to the ${planId} plan!`);
+        alert(`Спасибо за подписку на тариф ${planId}!`);
     };
 
     return (
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
             <div className="flex items-center justify-between">
                 <Heading
-                    title="Subscription Plans"
-                    description="Choose the perfect plan for your needs"
+                    title="Тарифные планы"
+                    description="Выберите идеальный план для ваших нужд"
                 />
             </div>
 
@@ -101,26 +101,26 @@ const PaymentPage = () => {
                 {/* Free Plan */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Free</CardTitle>
-                        <CardDescription>Perfect for getting started</CardDescription>
+                        <CardTitle>Бесплатный</CardTitle>
+                        <CardDescription>Идеально для начала работы</CardDescription>
                         <div className="mt-4">
-                            <span className="text-3xl font-bold">$0</span>
-                            <span className="text-muted-foreground">/month</span>
+                            <span className="text-3xl font-bold">0₽</span>
+                            <span className="text-muted-foreground">/месяц</span>
                         </div>
                     </CardHeader>
                     <CardContent>
                         <ul className="space-y-2">
                             <li className="flex items-center">
                                 <Check className="mr-2 h-4 w-4 text-green-500" />
-                                <span>3 presentations</span>
+                                <span>3 презентации</span>
                             </li>
                             <li className="flex items-center">
                                 <Check className="mr-2 h-4 w-4 text-green-500" />
-                                <span>Basic templates</span>
+                                <span>Базовые шаблоны</span>
                             </li>
                             <li className="flex items-center">
                                 <Check className="mr-2 h-4 w-4 text-green-500" />
-                                <span>Export to PDF</span>
+                                <span>Экспорт в PDF</span>
                             </li>
                         </ul>
                     </CardContent>
@@ -130,7 +130,7 @@ const PaymentPage = () => {
                             className="w-full"
                             onClick={() => handleSubscribe("free")}
                         >
-                            Get Started
+                            Начать
                         </Button>
                     </CardFooter>
                 </Card>
@@ -138,30 +138,30 @@ const PaymentPage = () => {
                 {/* Pro Plan */}
                 <Card className="border-2 border-primary">
                     <CardHeader>
-                        <CardTitle>Pro</CardTitle>
-                        <CardDescription>Best for professionals</CardDescription>
+                        <CardTitle>Профессиональный</CardTitle>
+                        <CardDescription>Лучший для профессионалов</CardDescription>
                         <div className="mt-4">
-                            <span className="text-3xl font-bold">$15</span>
-                            <span className="text-muted-foreground">/month</span>
+                            <span className="text-3xl font-bold">999₽</span>
+                            <span className="text-muted-foreground">/месяц</span>
                         </div>
                     </CardHeader>
                     <CardContent>
                         <ul className="space-y-2">
                             <li className="flex items-center">
                                 <Check className="mr-2 h-4 w-4 text-green-500" />
-                                <span>Unlimited presentations</span>
+                                <span>Неограниченное количество презентаций</span>
                             </li>
                             <li className="flex items-center">
                                 <Check className="mr-2 h-4 w-4 text-green-500" />
-                                <span>Premium templates</span>
+                                <span>Премиум шаблоны</span>
                             </li>
                             <li className="flex items-center">
                                 <Check className="mr-2 h-4 w-4 text-green-500" />
-                                <span>Custom branding</span>
+                                <span>Индивидуальный брендинг</span>
                             </li>
                             <li className="flex items-center">
                                 <Check className="mr-2 h-4 w-4 text-green-500" />
-                                <span>Priority support</span>
+                                <span>Приоритетная поддержка</span>
                             </li>
                         </ul>
                     </CardContent>
@@ -170,7 +170,7 @@ const PaymentPage = () => {
                             className="w-full"
                             onClick={() => handleSubscribe("pro")}
                         >
-                            Subscribe to Pro
+                            Подписаться
                         </Button>
                     </CardFooter>
                 </Card>
@@ -178,29 +178,29 @@ const PaymentPage = () => {
                 {/* Enterprise Plan */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Enterprise</CardTitle>
-                        <CardDescription>For large organizations</CardDescription>
+                        <CardTitle>Корпоративный</CardTitle>
+                        <CardDescription>Для крупных организаций</CardDescription>
                         <div className="mt-4">
-                            <span className="text-3xl font-bold">Custom</span>
+                            <span className="text-3xl font-bold">Индивидуально</span>
                         </div>
                     </CardHeader>
                     <CardContent>
                         <ul className="space-y-2">
                             <li className="flex items-center">
                                 <Check className="mr-2 h-4 w-4 text-green-500" />
-                                <span>Everything in Pro</span>
+                                <span>Все возможности Профессионального тарифа</span>
                             </li>
                             <li className="flex items-center">
                                 <Check className="mr-2 h-4 w-4 text-green-500" />
-                                <span>Custom integrations</span>
+                                <span>Индивидуальные интеграции</span>
                             </li>
                             <li className="flex items-center">
                                 <Check className="mr-2 h-4 w-4 text-green-500" />
-                                <span>Dedicated support</span>
+                                <span>Выделенная поддержка</span>
                             </li>
                             <li className="flex items-center">
                                 <Check className="mr-2 h-4 w-4 text-green-500" />
-                                <span>SLA agreement</span>
+                                <span>SLA соглашение</span>
                             </li>
                         </ul>
                     </CardContent>
@@ -210,7 +210,7 @@ const PaymentPage = () => {
                             className="w-full"
                             onClick={() => handleSubscribe("enterprise")}
                         >
-                            Contact Sales
+                            Связаться с отделом продаж
                         </Button>
                     </CardFooter>
                 </Card>

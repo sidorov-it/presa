@@ -249,22 +249,22 @@ const SettingsPage = () => {
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
             <div className="flex items-center justify-between">
                 <Heading
-                    title="Settings"
-                    description="Manage your account settings and preferences"
+                    title="Настройки"
+                    description="Управление настройками учетной записи и предпочтениями"
                 />
             </div>
 
             <div className="grid gap-4 grid-cols-1">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Profile Settings</CardTitle>
-                        <CardDescription>Update your personal information</CardDescription>
+                        <CardTitle>Настройки профиля</CardTitle>
+                        <CardDescription>Обновление персональной информации</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <form onSubmit={handleSaveProfile} className="space-y-4">
                             <div className="space-y-2">
                                 <label htmlFor="name" className="text-sm font-medium">
-                                    Full Name
+                                    Имя
                                 </label>
                                 <input
                                     type="text"
@@ -277,7 +277,7 @@ const SettingsPage = () => {
                             </div>
                             <div className="space-y-2">
                                 <label htmlFor="email" className="text-sm font-medium">
-                                    Email Address
+                                    Email
                                 </label>
                                 <input
                                     type="email"
@@ -287,11 +287,11 @@ const SettingsPage = () => {
                                     readOnly
                                 />
                                 <p className="text-xs text-muted-foreground">
-                                    Your email address cannot be changed
+                                    Адрес электронной почты не может быть изменен
                                 </p>
                             </div>
                             <Button type="submit" disabled={isSaving}>
-                                {isSaving ? 'Saving...' : 'Save Profile'}
+                                {isSaving ? 'Сохранение...' : 'Сохранить профиль'}
                             </Button>
                         </form>
                     </CardContent>
@@ -299,14 +299,14 @@ const SettingsPage = () => {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Change Password</CardTitle>
-                        <CardDescription>Update your account password</CardDescription>
+                        <CardTitle>Изменение пароля</CardTitle>
+                        <CardDescription>Обновление пароля учетной записи</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <form onSubmit={handleChangePassword} className="space-y-4">
                             <div className="space-y-2">
                                 <label htmlFor="currentPassword" className="text-sm font-medium">
-                                    Current Password
+                                    Текущий пароль
                                 </label>
                                 <input
                                     type="password"
@@ -319,7 +319,7 @@ const SettingsPage = () => {
                             </div>
                             <div className="space-y-2">
                                 <label htmlFor="newPassword" className="text-sm font-medium">
-                                    New Password
+                                    Новый пароль
                                 </label>
                                 <input
                                     type="password"
@@ -333,7 +333,7 @@ const SettingsPage = () => {
                             </div>
                             <div className="space-y-2">
                                 <label htmlFor="confirmPassword" className="text-sm font-medium">
-                                    Confirm New Password
+                                    Подтвердить новый пароль
                                 </label>
                                 <input
                                     type="password"
@@ -345,7 +345,7 @@ const SettingsPage = () => {
                                 />
                             </div>
                             <Button type="submit" disabled={isSaving}>
-                                {isSaving ? 'Changing...' : 'Change Password'}
+                                {isSaving ? 'Изменение...' : 'Изменить пароль'}
                             </Button>
                         </form>
                     </CardContent>
@@ -353,16 +353,16 @@ const SettingsPage = () => {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Email Preferences</CardTitle>
-                        <CardDescription>Manage notification settings</CardDescription>
+                        <CardTitle>Настройки электронной почты</CardTitle>
+                        <CardDescription>Управление настройками уведомлений</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <form onSubmit={handleEmailPreferences} className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="space-y-0.5">
-                                    <label htmlFor="emailUpdates" className="text-sm font-medium">Updates and Announcements</label>
+                                    <label htmlFor="emailUpdates" className="text-sm font-medium">Обновления и уведомления</label>
                                     <p className="text-sm text-muted-foreground">
-                                        Receive emails about product updates and announcements
+                                        Получать электронные письма о продуктовых обновлениях и уведомлениях
                                     </p>
                                 </div>
                                 <div className="flex items-center space-x-2">
@@ -380,7 +380,7 @@ const SettingsPage = () => {
                                 </div>
                             </div>
                             <Button type="submit" disabled={isSaving} className="mt-4">
-                                {isSaving ? 'Saving...' : 'Save Preferences'}
+                                {isSaving ? 'Сохранение...' : 'Сохранить настройки'}
                             </Button>
                         </form>
                     </CardContent>

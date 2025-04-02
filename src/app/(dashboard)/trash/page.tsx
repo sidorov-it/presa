@@ -22,13 +22,13 @@ export default function TrashPage() {
             try {
                 const response = await fetch('/api/presentations/trash');
                 if (!response.ok) {
-                    throw new Error('Failed to load deleted presentations');
+                    throw new Error('Не удалось загрузить удаленные презентации');
                 }
                 const data = await response.json();
                 setDeletedPresentations(data.presentations);
             } catch (error) {
-                console.error('Error loading deleted presentations:', error);
-                toast.error('Failed to load deleted presentations');
+                console.error('Ошибка при загрузке удаленных презентаций:', error);
+                toast.error('Не удалось загрузить удаленные презентации');
             } finally {
                 setIsLoading(false);
             }
@@ -48,19 +48,19 @@ export default function TrashPage() {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to restore presentation');
+                throw new Error('Не удалось восстановить презентацию');
             }
 
             setDeletedPresentations(prev => prev.filter(p => p.id !== id));
-            toast.success('Presentation restored successfully');
+            toast.success('Презентация успешно восстановлена');
         } catch (error) {
-            console.error('Error restoring presentation:', error);
-            toast.error('Failed to restore presentation');
+            console.error('Ошибка при восстановлении презентации:', error);
+            toast.error('Не удалось восстановить презентацию');
         }
     };
 
     const handleDelete = async (id: string) => {
-        if (!window.confirm('Are you sure you want to permanently delete this presentation? This action cannot be undone.')) {
+        if (!window.confirm('Вы уверены, что хотите навсегда удалить эту презентацию? Это действие нельзя отменить.')) {
             return;
         }
 
@@ -70,14 +70,14 @@ export default function TrashPage() {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to delete presentation');
+                throw new Error('Не удалось удалить презентацию');
             }
 
             setDeletedPresentations(prev => prev.filter(p => p.id !== id));
-            toast.success('Presentation permanently deleted');
+            toast.success('Презентация окончательно удалена');
         } catch (error) {
-            console.error('Error deleting presentation:', error);
-            toast.error('Failed to delete presentation');
+            console.error('Ошибка при удалении презентации:', error);
+            toast.error('Не удалось удалить презентацию');
         }
     };
 
@@ -85,15 +85,15 @@ export default function TrashPage() {
         const date = new Date(dateString);
         const now = new Date();
         const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-        return diffDays === 0 ? 'Today' : diffDays === 1 ? 'Yesterday' : `${diffDays} days ago`;
+        return diffDays === 0 ? 'Сегодня' : diffDays === 1 ? 'Вчера' : `${diffDays} дней назад`;
     };
 
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">Trash</h1>
+                <h1 className="text-2xl font-bold text-gray-800">Корзина</h1>
                 <p className="text-gray-600 mt-2">
-                    Deleted presentations are kept for 30 days before being permanently removed
+                    Удаленные презентации хранятся 30 дней перед окончательным удалением
                 </p>
             </div>
 
@@ -106,9 +106,9 @@ export default function TrashPage() {
                     <div className="mb-4 flex justify-center">
                         <FaTrashAlt className="text-gray-400 text-4xl" />
                     </div>
-                    <h2 className="text-xl font-semibold text-gray-700 mb-2">Your trash is empty</h2>
+                    <h2 className="text-xl font-semibold text-gray-700 mb-2">Ваша корзина пуста</h2>
                     <p className="text-gray-500">
-                        Deleted presentations will appear here
+                        Здесь будут отображаться удаленные презентации
                     </p>
                 </div>
             ) : (
@@ -117,16 +117,16 @@ export default function TrashPage() {
                         <thead className="bg-gray-50">
                             <tr>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                    Presentation
+                                    Презентация
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                    Deleted
+                                    Удалено
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                    Slides
+                                    Слайды
                                 </th>
                                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-                                    Actions
+                                    Действия
                                 </th>
                             </tr>
                         </thead>
@@ -143,7 +143,7 @@ export default function TrashPage() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {presentation.slides.length} slides
+                                        {presentation.slides.length} слайдов
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <button 
@@ -151,14 +151,14 @@ export default function TrashPage() {
                                             className="text-blue-600 hover:text-blue-900 mr-4"
                                         >
                                             <FaTrashRestore className="inline mr-1" />
-                                            Restore
+                                            Восстановить
                                         </button>
                                         <button 
                                             onClick={() => handleDelete(presentation.id)}
                                             className="text-red-600 hover:text-red-900"
                                         >
                                             <FaTrashAlt className="inline mr-1" />
-                                            Delete
+                                            Удалить
                                         </button>
                                     </td>
                                 </tr>

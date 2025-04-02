@@ -27,32 +27,32 @@ export default function DashboardLayout({
 
     const menuItems = [
         { 
-            label: 'My Presentations', 
+            label: 'Мои презентации', 
             path: '/dashboard', 
             icon: <FaHome size={20} /> 
         },
         { 
-            label: 'Templates', 
+            label: 'Шаблоны', 
             path: '/templates', 
             icon: <FaChalkboard size={20} /> 
         },
         { 
-            label: 'Themes', 
+            label: 'Темы', 
             path: '/themes', 
             icon: <FaPalette size={20} /> 
         },
         { 
-            label: 'Trash', 
+            label: 'Корзина', 
             path: '/trash', 
             icon: <FaTrash size={20} /> 
         },
         { 
-            label: 'Settings', 
+            label: 'Настройки', 
             path: '/settings', 
             icon: <FaCog size={20} /> 
         },
         { 
-            label: 'Payment', 
+            label: 'Оплата', 
             path: '/payment', 
             icon: <FaCreditCard size={20} /> 
         },
@@ -124,7 +124,7 @@ export default function DashboardLayout({
                         className="flex items-center px-6 py-3 mt-10 text-gray-100 hover:bg-gray-700 w-full"
                     >
                         <span className="mr-3"><FaSignOutAlt size={20} /></span>
-                        <span>Sign Out</span>
+                        <span>Выйти</span>
                     </button>
                 </nav>
             </div>

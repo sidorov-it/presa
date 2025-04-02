@@ -28,7 +28,7 @@ export default function DashboardPage() {
     // AI form state
     const [aiPrompt, setAiPrompt] = useState('');
     const [numSlides, setNumSlides] = useState(5);
-    const [language, setLanguage] = useState('en');
+    const [language, setLanguage] = useState('ru');
     const [aiError, setAiError] = useState('');
 
     // Fetch user's presentations from the database
@@ -38,7 +38,7 @@ export default function DashboardPage() {
                 setIsLoading(true);
                 await loadPresentationsList();
             } catch (error) {
-                console.error('Failed to load presentations:', error);
+                console.error('Не удалось загрузить презентации:', error);
             } finally {
                 setIsLoading(false);
             }
@@ -68,7 +68,7 @@ export default function DashboardPage() {
 
     // Handle creating an empty presentation
     const handleCreateEmptyPresentation = async () => {
-        const presentationId = await createPresentation('New Presentation');
+        const presentationId = await createPresentation('Новая презентация');
         router.push(`/docs/${presentationId}`);
     };
 
@@ -97,11 +97,11 @@ export default function DashboardPage() {
             setIsLoading(true);
             const presentation = presentations.find(p => p.id === id);
             if (presentation) {
-                const duplicateId = await createPresentation(`${presentation.title} (Copy)`);
+                const duplicateId = await createPresentation(`${presentation.title} (Копия)`);
                 // After duplication, it will already be in the presentations list due to loadPresentationsList
             }
         } catch (error) {
-            console.error('Failed to duplicate presentation:', error);
+            console.error('Не удалось дублировать презентацию:', error);
         } finally {
             setIsLoading(false);
         }
@@ -133,7 +133,7 @@ export default function DashboardPage() {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to rename presentation');
+                throw new Error('Не удалось переименовать презентацию');
             }
 
             // Refresh presentations list
@@ -142,7 +142,7 @@ export default function DashboardPage() {
             setPresentationToRename(null);
             setNewTitle('');
         } catch (error) {
-            console.error('Error renaming presentation:', error);
+            console.error('Ошибка при переименовании презентации:', error);
         }
     };
 
@@ -164,7 +164,7 @@ export default function DashboardPage() {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to delete presentation');
+                throw new Error('Не удалось удалить презентацию');
             }
 
             // Remove from local state
@@ -172,7 +172,7 @@ export default function DashboardPage() {
             setShowDeleteModal(false);
             setPresentationToDelete(null);
         } catch (error) {
-            console.error('Error deleting presentation:', error);
+            console.error('Ошибка при удалении презентации:', error);
         }
     };
 
@@ -181,7 +181,7 @@ export default function DashboardPage() {
         e.preventDefault();
 
         if (!aiPrompt.trim()) {
-            setAiError('Please enter a prompt');
+            setAiError('Пожалуйста, введите запрос');
             return;
         }
 
@@ -204,15 +204,15 @@ export default function DashboardPage() {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || 'Failed to create presentation');
+                throw new Error(data.message || 'Не удалось создать презентацию');
             }
 
             // Close modal and navigate to the new presentation
             setShowAIModal(false);
             router.push(`/docs/${data.presentationId}`);
         } catch (error) {
-            console.error('AI generation error:', error);
-            setAiError(error instanceof Error ? error.message : 'An error occurred');
+            console.error('Ошибка генерации с ИИ:', error);
+            setAiError(error instanceof Error ? error.message : 'Произошла ошибка');
         } finally {
             setIsGenerating(false);
         }
@@ -229,294 +229,289 @@ export default function DashboardPage() {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">My Presentations</h1>
+                <h1 className="text-2xl font-bold text-gray-800">Мои презентации</h1>
                 <div className="mt-4 md:mt-0 space-x-4 flex">
                     <button
                         onClick={handleCreateWithAI}
                         className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                     >
                         <FaMagic className="mr-2" />
-                        Create with AI
+                        Создать с ИИ
                     </button>
                     <button
                         onClick={handleCreateEmptyPresentation}
                         className="flex items-center px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition-colors"
                     >
                         <FaPlus className="mr-2" />
-                        Create Empty
+                        Создать пустую
                     </button>
                 </div>
             </div>
 
+            {/* Presentations grid */}
             {isLoading ? (
                 <div className="flex justify-center items-center h-64">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                 </div>
-            ) : presentations.length === 0 ? (
+            ) : userPresentations.length === 0 ? (
                 <div className="bg-white rounded-lg shadow-md p-8 text-center">
-                    <h2 className="text-xl font-semibold text-gray-700 mb-4">You haven&apos;t created any presentations yet</h2>
-                    <p className="text-gray-500 mb-6">Create your first presentation to get started</p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                    <h2 className="text-xl font-semibold text-gray-700 mb-4">У вас еще нет презентаций</h2>
+                    <p className="text-gray-500 mb-6">
+                        Создайте свою первую презентацию, используя шаблон или начните с нуля
+                    </p>
+                    <div className="flex flex-col sm:flex-row justify-center gap-4">
                         <button
                             onClick={handleCreateWithAI}
-                            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors w-full sm:w-auto"
+                            className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                         >
                             <FaMagic className="mr-2" />
-                            Create with AI
+                            Создать с ИИ
                         </button>
                         <button
                             onClick={handleCreateEmptyPresentation}
-                            className="flex items-center px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition-colors w-full sm:w-auto"
+                            className="flex items-center justify-center px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition-colors"
                         >
                             <FaPlus className="mr-2" />
-                            Create Empty
+                            Создать пустую
                         </button>
                     </div>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {presentations.map((presentation) => (
-                        <div
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {userPresentations.map((presentation) => (
+                        <div 
                             key={presentation.id}
-                            className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
+                            onClick={() => handleOpenPresentation(presentation.id)}
+                            className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
                         >
-                            <div
-                                className="h-40 bg-gray-200 flex items-center justify-center cursor-pointer"
-                                onClick={() => handleOpenPresentation(presentation.id)}
-                            >
-                                <span className="text-gray-500">Preview</span>
-                            </div>
-
-                            <div className="p-4 flex items-center justify-between">
-                                <div>
-                                    <div
-                                        className="font-medium text-lg cursor-pointer hover:text-blue-600"
-                                        onClick={() => handleOpenPresentation(presentation.id)}
-                                    >
-                                        {presentation.title}
-                                    </div>
-                                    <p className="text-sm text-gray-500">
-                                        {typeof presentation.slides === 'number' ? presentation.slides : 
-                                            Array.isArray(presentation.slides) ? presentation.slides.length : 0} slides • {new Date(presentation.updatedAt).toLocaleDateString()}
-                                    </p>
+                            <div className="h-40 bg-gray-200 relative">
+                                {/* Slide preview would go here */}
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <span className="text-gray-500 font-medium">Предпросмотр</span>
                                 </div>
-
-                                <div className="relative" ref={menuRef}>
-                                    <button 
-                                        className="p-2 text-gray-500 hover:text-gray-700"
-                                        onClick={(e) => toggleMenu(presentation.id, e)}
+                                
+                                {/* Action menu button */}
+                                <button
+                                    onClick={(e) => toggleMenu(presentation.id, e)}
+                                    className="absolute top-2 right-2 p-2 text-gray-600 hover:bg-gray-300 rounded-full"
+                                >
+                                    <FaEllipsisV />
+                                </button>
+                                
+                                {/* Action menu */}
+                                {activeMenu === presentation.id && (
+                                    <div 
+                                        ref={menuRef}
+                                        className="absolute top-10 right-2 bg-white rounded-md shadow-lg z-10"
                                     >
-                                        <FaEllipsisV />
-                                    </button>
-                                    
-                                    {activeMenu === presentation.id && (
-                                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 py-1">
+                                        <div className="py-1">
                                             <button
-                                                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                                onClick={(e) => handleDuplicate(presentation.id, e)}
-                                            >
-                                                <FaCopy className="mr-2" />
-                                                Duplicate
-                                            </button>
-                                            <button
-                                                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                                 onClick={(e) => handleRenameClick(presentation.id, e)}
+                                                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                             >
                                                 <FaPencilAlt className="mr-2" />
-                                                Rename
+                                                Переименовать
                                             </button>
                                             <button
-                                                className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                                                onClick={(e) => handleDuplicate(presentation.id, e)}
+                                                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                            >
+                                                <FaCopy className="mr-2" />
+                                                Дублировать
+                                            </button>
+                                            <button
                                                 onClick={(e) => handleDeleteClick(presentation.id, e)}
+                                                className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
                                             >
                                                 <FaTrash className="mr-2" />
-                                                Delete
+                                                Удалить
                                             </button>
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="p-4">
+                                <h3 className="font-medium text-gray-800 mb-1 truncate">{presentation.title}</h3>
+                                <p className="text-sm text-gray-500">
+                                    {presentation.slides?.length || 0} слайдов
+                                </p>
                             </div>
                         </div>
                     ))}
                 </div>
             )}
 
-            {/* AI Creation Modal */}
+            {/* AI Modal */}
             {showAIModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-md">
-                        <h2 className="text-xl font-bold mb-4">Create Presentation with AI</h2>
-
-                        <form className="space-y-4" onSubmit={handleAISubmit}>
-                            <div>
-                                <label htmlFor="numSlides" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Number of slides
-                                </label>
-                                <input
-                                    id="numSlides"
-                                    type="number"
-                                    min="1"
-                                    max="20"
-                                    value={numSlides}
-                                    onChange={(e) => setNumSlides(Number(e.target.value))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor="language" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Language
-                                </label>
-                                <select
-                                    id="language"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                                    value={language}
-                                    onChange={(e) => setLanguage(e.target.value)}
-                                >
-                                    <option value="en">English</option>
-                                    <option value="ru">Russian</option>
-                                    <option value="es">Spanish</option>
-                                    <option value="fr">French</option>
-                                    <option value="de">German</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label htmlFor="aiPrompt" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Enter your prompt
-                                </label>
-                                <textarea
-                                    id="aiPrompt"
-                                    rows={4}
-                                    value={aiPrompt}
-                                    onChange={(e) => setAiPrompt(e.target.value)}
-                                    placeholder="Describe what you want in your presentation..."
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                                />
-                            </div>
-
-                            {aiError && (
-                                <div className="text-red-500 text-sm">{aiError}</div>
-                            )}
-
-                            <div>
-                                <p className="text-sm text-gray-700 mb-2">Examples:</p>
-                                <div className="space-y-2">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
+                        <div className="p-6">
+                            <h2 className="text-xl font-bold text-gray-800 mb-4">Создать презентацию с помощью ИИ</h2>
+                            
+                            <form onSubmit={handleAISubmit}>
+                                <div className="mb-4">
+                                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                                        Опишите, о чем должна быть ваша презентация
+                                    </label>
+                                    <textarea
+                                        value={aiPrompt}
+                                        onChange={(e) => setAiPrompt(e.target.value)}
+                                        placeholder="Например: Презентация о влиянии искусственного интеллекта на образование"
+                                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        rows={4}
+                                    />
+                                </div>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                    <div>
+                                        <label className="block text-gray-700 text-sm font-bold mb-2">
+                                            Количество слайдов
+                                        </label>
+                                        <select
+                                            value={numSlides}
+                                            onChange={(e) => setNumSlides(Number(e.target.value))}
+                                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        >
+                                            {[3, 5, 7, 10, 15].map(num => (
+                                                <option key={num} value={num}>{num}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-gray-700 text-sm font-bold mb-2">
+                                            Язык
+                                        </label>
+                                        <select
+                                            value={language}
+                                            onChange={(e) => setLanguage(e.target.value)}
+                                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        >
+                                            <option value="ru">Русский</option>
+                                            <option value="en">Английский</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div className="mb-6">
+                                    <p className="text-sm text-gray-600 mb-2">Примеры запросов:</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => handleExampleClick("Презентация о влиянии искусственного интеллекта на образование")}
+                                            className="text-xs bg-gray-100 hover:bg-gray-200 rounded-full px-3 py-1"
+                                        >
+                                            Влияние ИИ на образование
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleExampleClick("Маркетинговая стратегия для нового мобильного приложения")}
+                                            className="text-xs bg-gray-100 hover:bg-gray-200 rounded-full px-3 py-1"
+                                        >
+                                            Маркетинговая стратегия
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleExampleClick("Бизнес-план для стартапа в сфере электронной коммерции")}
+                                            className="text-xs bg-gray-100 hover:bg-gray-200 rounded-full px-3 py-1"
+                                        >
+                                            Бизнес-план
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                {aiError && (
+                                    <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
+                                        {aiError}
+                                    </div>
+                                )}
+                                
+                                <div className="flex justify-end space-x-4">
                                     <button
                                         type="button"
-                                        className="px-2 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md"
-                                        onClick={() => handleExampleClick("A presentation about climate change and its effects")}
+                                        onClick={() => setShowAIModal(false)}
+                                        className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                                     >
-                                        A presentation about climate change and its effects
+                                        Отмена
                                     </button>
                                     <button
-                                        type="button"
-                                        className="px-2 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md"
-                                        onClick={() => handleExampleClick("Quarterly business review for a tech startup")}
+                                        type="submit"
+                                        disabled={isGenerating}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300"
                                     >
-                                        Quarterly business review for a tech startup
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="px-2 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md"
-                                        onClick={() => handleExampleClick("Educational slides about the solar system for children")}
-                                    >
-                                        Educational slides about the solar system for children
+                                        {isGenerating ? (
+                                            <span className="flex items-center">
+                                                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                                Генерация...
+                                            </span>
+                                        ) : "Создать"}
                                     </button>
                                 </div>
-                            </div>
-
-                            <div className="flex justify-end space-x-3 pt-4">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowAIModal(false)}
-                                    className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isGenerating}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400"
-                                >
-                                    {isGenerating ? 'Creating...' : 'Create'}
-                                </button>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
                 </div>
             )}
-
+            
             {/* Rename Modal */}
             {showRenameModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-md">
-                        <h2 className="text-xl font-bold mb-4">Rename Presentation</h2>
-                        <div className="space-y-4">
-                            <div>
-                                <label htmlFor="presentationTitle" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Title
-                                </label>
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+                        <div className="p-6">
+                            <h2 className="text-xl font-bold text-gray-800 mb-4">Переименовать презентацию</h2>
+                            <div className="mb-4">
                                 <input
-                                    id="presentationTitle"
                                     type="text"
                                     value={newTitle}
                                     onChange={(e) => setNewTitle(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                                    placeholder="Enter new title"
+                                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="Название презентации"
                                 />
                             </div>
-                            <div className="flex justify-end space-x-3 pt-4">
+                            <div className="flex justify-end space-x-4">
                                 <button
-                                    type="button"
-                                    onClick={() => {
-                                        setShowRenameModal(false);
-                                        setPresentationToRename(null);
-                                    }}
-                                    className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+                                    onClick={() => setShowRenameModal(false)}
+                                    className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                                 >
-                                    Cancel
+                                    Отмена
                                 </button>
                                 <button
-                                    type="button"
                                     onClick={handleRename}
-                                    disabled={!newTitle.trim()}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                                 >
-                                    Save
+                                    Сохранить
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
             )}
-
+            
             {/* Delete Confirmation Modal */}
             {showDeleteModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-md">
-                        <h2 className="text-xl font-bold mb-4">Delete Presentation</h2>
-                        <p className="text-gray-600 mb-6">
-                            Are you sure you want to delete this presentation? This action cannot be undone.
-                        </p>
-                        <div className="flex justify-end space-x-3">
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setShowDeleteModal(false);
-                                    setPresentationToDelete(null);
-                                }}
-                                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleDelete}
-                                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                            >
-                                Delete
-                            </button>
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+                        <div className="p-6">
+                            <h2 className="text-xl font-bold text-gray-800 mb-2">Удалить презентацию?</h2>
+                            <p className="text-gray-600 mb-6">
+                                Презентация будет перемещена в корзину и доступна для восстановления в течение 30 дней.
+                            </p>
+                            <div className="flex justify-end space-x-4">
+                                <button
+                                    onClick={() => setShowDeleteModal(false)}
+                                    className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                                >
+                                    Отмена
+                                </button>
+                                <button
+                                    onClick={handleDelete}
+                                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                                >
+                                    Удалить
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
