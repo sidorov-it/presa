@@ -84,9 +84,9 @@ export default function ThemeEditorPage({ params }: { params: { action: string }
         <div className="min-h-screen bg-background p-6">
             <div className="mb-6 flex justify-between items-center">
                 <h1 className="text-3xl font-bold">
-                    {params.action === 'new' ? 'Create New Theme' : 'Edit Theme'}
+                    {params.action === 'new' ? 'Новая тема' : 'Редактировать тему'}
                 </h1>
-                <Button onClick={handleSave}>Save Theme</Button>
+                <Button onClick={handleSave}>Сохранить тему</Button>
             </div>
 
             <div className="grid grid-cols-2 gap-6">

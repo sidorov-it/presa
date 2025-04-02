@@ -43,14 +43,72 @@ model Presentation {
   updatedAt   DateTime  @updatedAt
 }
 
+type ThemeColors {
+  // Accent Colors
+  primaryAccent      String
+  secondaryAccents   String[]
+
+  // Text Colors
+  headingColor       String
+  textColor          String
+
+  // Background Colors
+  cardBackground     String
+  pageBackground     String
+}
+
+type ThemeTypography {
+  // Headings
+  headingFont        String
+  headingWeight      Float
+  headingColor       String
+
+  // Body Text
+  bodyFont           String
+  bodyWeight         Float
+  bodyColor          String
+}
+
+type ThemeSlide {
+  borderRadius       String
+  shadow             String
+  border             String
+  borderColor        String
+  imageShape         String
+}
+
+type ThemeBlocks {
+  backgroundColor    String
+  opacity            Float
+  borderWidth        String
+  shadow             String
+}
+
+type ThemeButtons {
+  buttonColor        String
+  buttonShape        String
+  linkColor          String
+}
+
+type ThemeDesign {
+  // Slide Design
+  slide              ThemeSlide
+  
+  // Blocks and Content
+  blocks             ThemeBlocks
+  
+  // Buttons and Links
+  buttons            ThemeButtons
+}
+
 model Theme {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String?
   logo        String?
-  colors      Json
-  typography  Json
-  design      Json
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  colors      ThemeColors
+  typography  ThemeTypography
+  design      ThemeDesign
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
 } 

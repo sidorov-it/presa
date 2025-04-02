@@ -37,7 +37,7 @@ export default function ThemesPage() {
                 <Link href="/themes/new">
                     <Button>
                         <Plus className="w-4 h-4 mr-2" />
-                        Create New Theme
+                        Новая тема
                     </Button>
                 </Link>
             </div>

@@ -29,7 +29,7 @@ export async function POST(request: Request) {
         // Insert all new themes
         const createdThemes = await prisma.theme.createMany({
             data: themes.map((theme: Theme) => ({
-                id: theme.id,
+                // id: theme.id,
                 name: theme.name,
                 description: theme.description,
                 logo: theme.logo,
