@@ -30,7 +30,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     document.documentElement.style.setProperty('--primary-accent', theme.colors.primaryAccent);
     document.documentElement.style.setProperty('--heading-color', theme.colors.headingColor);
     document.documentElement.style.setProperty('--text-color', theme.colors.textColor);
-    document.documentElement.style.setProperty('--card-background', theme.colors.slideBackground);
+    document.documentElement.style.setProperty('--slide-background', theme.colors.slideBackground);
     document.documentElement.style.setProperty('--page-background', theme.colors.pageBackground);
     
     document.documentElement.style.setProperty('--heading-font', `'${theme.typography.headingFont}', sans-serif`);

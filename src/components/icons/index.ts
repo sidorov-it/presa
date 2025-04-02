@@ -14,3 +14,4 @@ export { default as TwoColumnsLeftIcon } from './TwoColumnsLeftIcon';
 export { default as TwoColumnsRightIcon } from './TwoColumnsRightIcon';
 export { default as ThreeColumnsIcon } from './ThreeColumnsIcon';
 export { default as FourColumnsIcon } from './FourColumnsIcon';
+export { default as ThemeIcon } from './ThemeIcon';

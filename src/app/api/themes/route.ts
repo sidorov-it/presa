@@ -22,9 +22,6 @@ export async function POST(request: Request) {
     try {
         const { id: _id, ...theme } = await request.json();
 
-        // Delete all existing themes
-        await prisma.theme.deleteMany();
-
         // Insert all new themes
         const createdTheme = await prisma.theme.create({
             data: {

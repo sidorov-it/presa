@@ -9,6 +9,11 @@ import Editor from '@/components/editor/Editor/Editor';
 import { IPresentation } from '@/types';
 import UndoRedoControls from '@/components/UndoRedoControls';
 import SaveStatus from '@/components/ui/SaveStatus';
+import { ThemeIcon } from '@/components/icons';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
+import { useThemeStore } from '@/store/themeStore';
+import { Theme } from '@/types/theme';
+import { cn } from '@/lib/utils';
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -20,8 +25,11 @@ export default function PresentationEditorPage() {
     const [notFound, setNotFound] = useState(false);
 
     const { savingStatus } = usePresentationStore();
+    const { themes, loadThemes, currentTheme, setCurrentTheme, getDefaultTheme } = useThemeStore();
+    const [isThemePopoverOpen, setIsThemePopoverOpen] = useState(false);
 
     const [presentation, setPresentation] = useState<IPresentation | null>(null);
+    
     useEffect(() => {
         if (status === 'loading') return;
 
@@ -34,12 +42,28 @@ export default function PresentationEditorPage() {
                 setPresentation(loadedPresentation);
             }
             setIsLoading(false);
-
         };
 
         load();
-
     }, [id, loadPresentation, status]);
+
+    useEffect(() => {
+        // Load available themes
+        loadThemes().catch((error) => {
+            console.error('Failed to load themes:', error);
+        });
+    }, [loadThemes]);
+
+    const handleThemeChange = (theme: Theme) => {
+        setCurrentTheme(theme);
+        setIsThemePopoverOpen(false);
+    };
+
+    const handleSetDefaultTheme = () => {
+        const defaultTheme = getDefaultTheme();
+        setCurrentTheme(defaultTheme);
+        setIsThemePopoverOpen(false);
+    };
 
     if (isLoading) {
         return (
@@ -80,6 +104,69 @@ export default function PresentationEditorPage() {
                     </div>
 
                     <div className="flex items-center space-x-4">
+                        <Popover open={isThemePopoverOpen} onOpenChange={setIsThemePopoverOpen}>
+                            <PopoverTrigger asChild>
+                                <div className="flex items-center gap-2 cursor-pointer">
+                                    <ThemeIcon />
+                                    <span>Тема</span>
+                                </div>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-72 p-3">
+                                <div className="space-y-2">
+                                    <h3 className="text-sm font-medium">Выберите тему</h3>
+                                    <div className="grid gap-2">
+                                        {/* Default Theme Option */}
+                                        <div 
+                                            className={cn(
+                                                "flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-100 border-b pb-3",
+                                                (!currentTheme || currentTheme.name === 'Default Theme') && "bg-blue-50 ring-1 ring-blue-200"
+                                            )}
+                                            onClick={handleSetDefaultTheme}
+                                        >
+                                            <div 
+                                                className="w-5 h-5 rounded-full mr-2"
+                                                style={{ backgroundColor: '#3b82f6' }}
+                                            />
+                                            <span className="font-medium">Стандартная тема</span>
+                                            <span className="ml-auto text-xs text-gray-500">По умолчанию</span>
+                                        </div>
+                                        
+                                        {/* Custom Themes */}
+                                        {themes.length > 0 ? (
+                                            themes.map((theme) => (
+                                                <div
+                                                    key={theme.id}
+                                                    className={cn(
+                                                        "flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-100",
+                                                        currentTheme?.id === theme.id && "bg-blue-50 ring-1 ring-blue-200"
+                                                    )}
+                                                    onClick={() => handleThemeChange(theme)}
+                                                >
+                                                    <div 
+                                                        className="w-5 h-5 rounded-full mr-2"
+                                                        style={{ backgroundColor: theme.colors.primaryAccent }}
+                                                    />
+                                                    <span>{theme.name}</span>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="text-sm text-gray-500 p-2">
+                                                Нет доступных пользовательских тем
+                                            </div>
+                                        )}
+                                        <div className="pt-2 mt-2 border-t border-gray-200">
+                                            <a 
+                                                href="/themes" 
+                                                className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
+                                            >
+                                                Управление темами
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                        <div className="">Просмотр</div>
                         <UndoRedoControls presentationId={presentation.id} />
 
                         <div className="flex items-center space-x-2">

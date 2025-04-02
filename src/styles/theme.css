@@ -3,7 +3,7 @@
   --primary-accent: #3b82f6;
   --heading-color: #1f2937;
   --text-color: #4b5563;
-  --card-background: #ffffff;
+  --slide-background: #ffffff;
   --page-background: #f3f4f6;
   
   --heading-font: 'Inter', sans-serif;
@@ -79,7 +79,7 @@
 }
 
 .themed-card {
-  background-color: var(--card-background);
+  background-color: var(--slide-background);
   border-radius: var(--slide-border-radius);
   box-shadow: var(--slide-shadow);
   border: var(--slide-border) var(--slide-border-color);

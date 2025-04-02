@@ -304,7 +304,7 @@ const Tiptap = ({
         // autofocus: autoFocus,
         editorProps: {
             attributes: {
-                class: `${styles.editor} custom-tiptap-editor no-dropcursor`,
+                class: `${styles.editor} custom-tiptap-editor no-dropcursor themed-text`,
             },
         },
         immediatelyRender: true,
@@ -417,7 +417,7 @@ const Tiptap = ({
     }, [editor, setActiveEditor]);
 
     return (
-        <div className="relative w-full" data-editor-id={id}>
+        <div className="relative w-full themed-block" data-editor-id={id}>
             {/* <FloatingMenu editor={editor} tippyOptions={{ duration: 100 }}>
         <div className="bg-white shadow-lg rounded-md p-2 flex gap-2">
           <button
@@ -445,7 +445,7 @@ const Tiptap = ({
                 {editor && (
                     <EditorContent
                         editor={editor}
-                        className="cursor-text w-full focus:outline-none"
+                        className="cursor-text w-full focus:outline-none themed-text"
                     />
                 )}
             </div>

@@ -580,7 +580,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const renderElement = (element: Element) => {
         return (
             <div
-                className={styles.elementContent}
+                className={`${styles.elementContent} themed-text`}
                 data-element-id={element.id}
                 onMouseEnter={() => {
                     setElementIsHovered(true)
@@ -589,7 +589,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     setElementIsHovered(false)
                 }}
             >
-                <div key={element.id} className={styles.elementWrapper}>
+                <div key={element.id} className={`${styles.elementWrapper} themed-block`}>
                     {(menuElementId === element.id || activeEditorId === element.id || elementIsHovered) && (
                         <DragHandler
                             className={styles.elementDragHandle}
@@ -655,7 +655,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     return (
         <div
-            className={className}
+            className={`${className} themed-block`}
             data-element-id={cell.id}
             // data-layout-id={layoutId}
             data-cell-id={cell.id}
@@ -687,9 +687,9 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 />
             )}
 
-            <div className={`${styles.gridCell} ${alignmentClassName}`}>
+            <div className={`${styles.gridCell} ${alignmentClassName} themed-block`}>
                 <div
-                    className={`${styles.elementsContainer}`}
+                    className={`${styles.elementsContainer} themed-text`}
                     data-is-multi-cell={hasMultipleCells ? "true" : "false"}
                 >
                     {elements.map((element, idx) => (
@@ -717,7 +717,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
             {hasMultipleCells && isLastCell && (
                 <div
-                    className={styles.addColumnIcon}
+                    className={`${styles.addColumnIcon} themed-button`}
                     onClick={handleAddColumn}
                 >
                     <PlusIcon />

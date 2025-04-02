@@ -191,7 +191,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     return (
         <div
-            className={styles.slide}
+            className={`${styles.slide} themed-block`}
             onClick={handleSlideWrapperClick}
             onMouseEnter={() => {
                 setIsHovered(true);
@@ -200,14 +200,18 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 setIsHovered(false);
             }}
         >
-            <div className={getSlideClassName()}>
+            <div className={`${getSlideClassName()} themed-card`}>
                 <div className={`${styles.slideBorder} ${((isSelected || isHovered) && !slideMenuOpen) ? styles.slideBorderSelected : ''} ${slideMenuOpen ? styles.slideBorderMenuOpen : ''}`} />
                 <div
                     ref={editorRef}
-                    className={`${styles.slideContent}`}
+                    className={`${styles.slideContent} themed-card`}
                     style={{
                         ...slide.style,
                         ...getBackgroundStyle(),
+                        borderRadius: 'var(--slide-border-radius)',
+                        boxShadow: 'var(--slide-shadow)',
+                        border: 'var(--slide-border)',
+                        borderColor: 'var(--slide-border-color)',
                     }}
                     onClick={() => { }}
                 >
@@ -230,7 +234,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                         />
                     )}
 
-                    <div className="relative w-full h-full p-8" data-slide-id={slide.id} onClick={handleSlideClick}>
+                    <div className="relative w-full h-full p-8 themed-text" data-slide-id={slide.id} onClick={handleSlideClick}>
                         {slide.layouts.map((layout: Layout) => (
                             <LayoutContent
                                 key={layout.id}
@@ -247,7 +251,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     <div className={`${styles.slideDivider} ${isSelected || isHovered ? styles.slideDividerHovered : ''}`}>
                         <div className={styles.buttons}>
                             <button
-                                className={styles.slideDividerButton}
+                                className={`${styles.slideDividerButton} themed-button`}
                                 onClick={handleAddSlideAfter}
                                 aria-label="Добавить слайд"
                             >
