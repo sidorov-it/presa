@@ -40,7 +40,7 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ id: s
     try {
         const id = params.id;
         const data = await request.json();
-        
+
         // Try to update using the helper function that avoids transactions
         const { id: _id, ...updateData } = {
             ...data,

@@ -27,7 +27,7 @@ export function stringifyJsonField(data: unknown): string {
  */
 export function parsePresentation<T extends { slides: unknown }>(presentation: T): T {
     if (!presentation) return presentation;
-    
+
     return {
         ...presentation,
         slides: parseJsonField(presentation.slides)
@@ -51,4 +51,4 @@ export function parsePresentations<T extends { slides: unknown }>(presentations:
 export function getSlidesCount(slidesData: unknown): number {
     const slides = parseJsonField<unknown[]>(slidesData);
     return Array.isArray(slides) ? slides.length : 0;
-} 
+}

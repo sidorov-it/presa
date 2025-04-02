@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
                 userId
             });
 
-            return NextResponse.json({ 
+            return NextResponse.json({
                 presentation: {
                     ...presentation,
                     slides: slidesData
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
             });
         } catch (err) {
             console.error('Error with direct MongoDB method, falling back to Prisma:', err);
-            
+
             // Fall back to regular Prisma method
             const presentation = await prisma.presentation.create({
                 data: {
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
                 },
             });
 
-            return NextResponse.json({ 
+            return NextResponse.json({
                 presentation: {
                     ...presentation,
                     slides: slidesData

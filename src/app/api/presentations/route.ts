@@ -5,7 +5,6 @@ import { authOptions } from '../auth/[...nextauth]/route';
 import { generateId } from '@/utils/id';
 import { getNewEditorElement } from '@/elements/registry';
 import { parsePresentations, stringifyJsonField } from '@/utils/json';
-import { createPresentationWithoutTransaction } from '@/utils/mongodb-helpers';
 
 // Get list of presentations for a user (lightweight version for dashboard)
 export async function GET() {

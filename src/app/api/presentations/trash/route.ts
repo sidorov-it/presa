@@ -40,8 +40,8 @@ export async function PUT(request: NextRequest) {
             );
         }
 
-        return NextResponse.json({ 
-            message: 'Presentation restored successfully' 
+        return NextResponse.json({
+            message: 'Presentation restored successfully'
         });
     } catch (error) {
         console.error('Error restoring presentation:', error);

@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import bcrypt from 'bcryptjs';
 import { comparePassword, hashPassword } from '@/lib/auth';
 
 // Change user password

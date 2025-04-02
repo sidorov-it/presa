@@ -22,10 +22,10 @@ export async function GET() {
 export async function POST(request: Request) {
     try {
         const themes = await request.json();
-        
+
         // Delete all existing themes
         await prisma.theme.deleteMany();
-        
+
         // Insert all new themes
         const createdThemes = await prisma.theme.createMany({
             data: themes.map((theme: Theme) => ({

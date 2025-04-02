@@ -54,12 +54,12 @@ export const authOptions: NextAuthOptions = {
                 token.role = user.role;
                 token.name = user.name;
             }
-            
+
             // Update the name in the token when session is updated
             if (trigger === 'update' && session?.user?.name) {
                 token.name = session.user.name;
             }
-            
+
             return token;
         },
         async session({ session, token }) {

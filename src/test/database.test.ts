@@ -62,7 +62,7 @@ describe('Database Operations', () => {
                 title: testPresentation.title
             }
         });
-        
+
         await prisma.user.deleteMany({
             where: {
                 email: testUser.email
@@ -73,7 +73,7 @@ describe('Database Operations', () => {
         const user = await prisma.user.create({
             data: testUser
         });
-        
+
         userId = user.id;
     });
 
@@ -87,13 +87,13 @@ describe('Database Operations', () => {
                 }
             });
         }
-        
+
         await prisma.user.delete({
             where: {
                 id: userId
             }
         });
-        
+
         await prisma.$disconnect();
     });
 
@@ -107,16 +107,16 @@ describe('Database Operations', () => {
                 slides: JSON.stringify(testPresentation.slides)
             }
         });
-        
+
         presentationId = presentation.id;
-        
+
         // Verify the presentation was created
         expect(presentation).toBeDefined();
         expect(presentation.title).toBe(testPresentation.title);
-        
+
         // Verify slides were stored as JSON string
         expect(typeof presentation.slides).toBe('string');
-        
+
         // Parse the slides and verify the structure
         const parsedSlides = JSON.parse(presentation.slides as string);
         expect(Array.isArray(parsedSlides)).toBe(true);
@@ -131,15 +131,15 @@ describe('Database Operations', () => {
                 id: presentationId
             }
         });
-        
+
         expect(presentation).toBeDefined();
-        
+
         // Parse slides for manipulation
         const slides = JSON.parse(presentation!.slides as string);
-        
+
         // Modify slides
         slides[0].layouts[0].elements[0].content = 'Updated content';
-        
+
         // Update presentation with modified slides
         const updatedPresentation = await prisma.presentation.update({
             where: {
@@ -149,9 +149,9 @@ describe('Database Operations', () => {
                 slides: JSON.stringify(slides)
             }
         });
-        
+
         // Verify update
         const updatedSlides = JSON.parse(updatedPresentation.slides as string);
         expect(updatedSlides[0].layouts[0].elements[0].content).toBe('Updated content');
     });
-}); 
+});
