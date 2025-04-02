@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/Label';
 import { Slider } from '@/components/ui/Slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
 import { Theme, ThemeColors, ThemeTypography, ThemeDesign } from '@/types/theme';
+import { ColorPicker } from '@/components/ui/ColorPicker/ColorPicker';
 
 interface ThemeEditorProps {
   theme: Theme;
@@ -45,92 +46,42 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <Label>Основной акцент</Label>
-                            <div className="flex gap-2">
-                                <Input
-                                    type="color"
-                                    value={theme.colors.primaryAccent}
-                                    onChange={(e) => handleColorsChange({ primaryAccent: e.target.value })}
-                                    className="w-12 h-10 p-1"
-                                />
-                                <Input
-                                    type="text"
-                                    value={theme.colors.primaryAccent}
-                                    onChange={(e) => handleColorsChange({ primaryAccent: e.target.value })}
-                                    className="flex-1"
-                                />
-                            </div>
+                            <ColorPicker
+                                value={theme.colors.primaryAccent}
+                                onChange={(value) => handleColorsChange({ primaryAccent: value })}
+                            />
                         </div>
 
                         <div className="space-y-2">
                             <Label>Цвет заголовков</Label>
-                            <div className="flex gap-2">
-                                <Input
-                                    type="color"
-                                    value={theme.colors.headingColor}
-                                    onChange={(e) => handleColorsChange({ headingColor: e.target.value })}
-                                    className="w-12 h-10 p-1"
-                                />
-                                <Input
-                                    type="text"
-                                    value={theme.colors.headingColor}
-                                    onChange={(e) => handleColorsChange({ headingColor: e.target.value })}
-                                    className="flex-1"
-                                />
-                            </div>
+                            <ColorPicker
+                                value={theme.colors.headingColor}
+                                onChange={(value) => handleColorsChange({ headingColor: value })}
+                            />
                         </div>
 
                         <div className="space-y-2">
                             <Label>Цвет текста</Label>
-                            <div className="flex gap-2">
-                                <Input
-                                    type="color"
-                                    value={theme.colors.textColor}
-                                    onChange={(e) => handleColorsChange({ textColor: e.target.value })}
-                                    className="w-12 h-10 p-1"
-                                />
-                                <Input
-                                    type="text"
-                                    value={theme.colors.textColor}
-                                    onChange={(e) => handleColorsChange({ textColor: e.target.value })}
-                                    className="flex-1"
-                                />
-                            </div>
+                            <ColorPicker
+                                value={theme.colors.textColor}
+                                onChange={(value) => handleColorsChange({ textColor: value })}
+                            />
                         </div>
 
                         <div className="space-y-2">
                             <Label>Фон слайда</Label>
-                            <div className="flex gap-2">
-                                <Input
-                                    type="color"
-                                    value={theme.colors.slideBackground}
-                                    onChange={(e) => handleColorsChange({ slideBackground: e.target.value })}
-                                    className="w-12 h-10 p-1"
-                                />
-                                <Input
-                                    type="text"
-                                    value={theme.colors.slideBackground}
-                                    onChange={(e) => handleColorsChange({ slideBackground: e.target.value })}
-                                    className="flex-1"
-                                />
-                            </div>
+                            <ColorPicker
+                                value={theme.colors.slideBackground}
+                                onChange={(value) => handleColorsChange({ slideBackground: value })}
+                            />
                         </div>
 
                         <div className="space-y-2">
                             <Label>Фон страницы</Label>
-                            <div className="flex gap-2">
-                                <Input
-                                    type="color"
-                                    value={theme.colors.pageBackground}
-                                    onChange={(e) => handleColorsChange({ pageBackground: e.target.value })}
-                                    className="w-12 h-10 p-1"
-                                />
-                                <Input
-                                    type="text"
-                                    value={theme.colors.pageBackground}
-                                    onChange={(e) => handleColorsChange({ pageBackground: e.target.value })}
-                                    className="flex-1"
-                                />
-                            </div>
+                            <ColorPicker
+                                value={theme.colors.pageBackground}
+                                onChange={(value) => handleColorsChange({ pageBackground: value })}
+                            />
                         </div>
                     </div>
                 </TabsContent>

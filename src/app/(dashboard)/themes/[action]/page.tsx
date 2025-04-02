@@ -8,6 +8,8 @@ import { Theme } from '@/types/theme';
 import { useThemeStore } from '@/store/themeStore';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
+import { Input } from '@/components/ui/Input';
+import { Label } from '@/components/ui/Label';
 
 export default function ThemeEditorPage(props: { params: Promise<{ action: string }> }) {
     const params = use(props.params);
@@ -93,11 +95,19 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
                 </div>
             </div>
 
-
-
             <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-6">
                     <div className="p-6 bg-card rounded-lg shadow-sm">
+                        <div className="mb-4">
+                            <Label htmlFor="theme-name" className="mb-2 block">Название темы</Label>
+                            <Input 
+                                id="theme-name"
+                                value={theme.name}
+                                onChange={(e) => setTheme({...theme, name: e.target.value})}
+                                placeholder="Введите название темы"
+                                className="w-full"
+                            />
+                        </div>
                         <ThemeEditor theme={theme} onThemeChange={setTheme} />
                     </div>
                 </div>

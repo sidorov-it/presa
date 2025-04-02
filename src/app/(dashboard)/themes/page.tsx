@@ -54,7 +54,7 @@ export default function ThemesPage() {
                         <CardContent>
                             <div className="flex justify-end gap-2">
                                 <Link href={`/themes/${theme.id}`}>
-                                    <Button variant="outline">Edit</Button>
+                                    <Button variant="outline">Редактировать</Button>
                                 </Link>
                                 <Button
                                     variant="destructive"
