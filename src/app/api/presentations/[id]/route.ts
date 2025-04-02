@@ -4,7 +4,9 @@ import Presentation from '@/models/Presentation';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
 import { ObjectId } from 'mongodb';
-
+import { generateId } from '@/utils/id';
+import { getNewEditorElement } from '@/elements/registry';
+import { Layout } from '@/types';
 // Get a specific presentation
 export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
@@ -179,10 +181,36 @@ export async function POST(req: NextRequest) {
 
         await connectToDatabase();
 
+        const newElement = getNewEditorElement(generateId());
+        const cellId = generateId();
+
         const presentation = await Presentation.create({
             title,
             description: '',
-            slides: [],
+            slides: [{
+                id: generateId(),
+                layouts: [{
+                    id: generateId(),
+                    type: 'single-column',
+                    elements: [{
+                        ...newElement,
+                        cellId
+                    }],
+                    gridStructure: {
+                        rows: [{
+                            id: generateId(),
+                            cells: [{
+                                id: cellId,
+                                row: 0,
+                                column: 0,
+                            }]
+                        }],
+                        columns: 1,
+                        columnWidths: ['100%']
+                    },
+                    style: {}
+                } as Layout]
+            }],
             userId,
             createdAt: Date.now(),
             updatedAt: Date.now(),

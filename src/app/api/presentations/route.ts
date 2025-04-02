@@ -3,7 +3,9 @@ import { connectToDatabase } from '@/lib/mongodb';
 import Presentation from '@/models/Presentation';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/route';
-import { ObjectId } from 'mongodb';
+import { Layout } from '@/types';
+import { generateId } from '@/utils/id';
+import { getNewEditorElement } from '@/elements/registry';
 
 // Get list of presentations for a user (lightweight version for dashboard)
 export async function GET() {
@@ -79,16 +81,35 @@ export async function POST(req: NextRequest) {
 
         await connectToDatabase();
 
-        // Создаем ID для первого слайда
-        const firstSlideId = new ObjectId().toString();
+        const newElement = getNewEditorElement(generateId());
+        const cellId = generateId();
 
-        // Создаем презентацию с первым слайдом
         const presentation = await Presentation.create({
             title,
             description: '',
             slides: [{
-                id: firstSlideId,
-                layouts: []
+                id: generateId(),
+                layouts: [{
+                    id: generateId(),
+                    type: 'single-column',
+                    elements: [{
+                        ...newElement,
+                        cellId
+                    }],
+                    gridStructure: {
+                        rows: [{
+                            id: generateId(),
+                            cells: [{
+                                id: cellId,
+                                row: 0,
+                                column: 0,
+                            }]
+                        }],
+                        columns: 1,
+                        columnWidths: ['100%']
+                    },
+                    style: {}
+                } as Layout]
             }],
             userId,
             createdAt: Date.now(),
