@@ -15,8 +15,7 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
     const params = use(props.params);
     const router = useRouter();
     const { addTheme, updateTheme, themes } = useThemeStore();
-    const [theme, setTheme] = useState<Theme>({
-        id: '',
+    const [theme, setTheme] = useState<Omit<Theme, 'id'>>({
         name: '',
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -70,7 +69,8 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
     const handleSave = async () => {
         try {
             if (params.action === 'new') {
-                await addTheme({ ...theme, id: crypto.randomUUID() });
+                // const { id, ...themeWithoutId } = theme;
+                await addTheme(theme);
                 toast.success('Theme created successfully');
             } else {
                 await updateTheme(theme);

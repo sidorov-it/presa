@@ -20,12 +20,12 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
-        const { id: _id, ...theme } = await request.json();
+        const theme = await request.json();
 
-        // Insert all new themes
+        // Create a new theme
         const createdTheme = await prisma.theme.create({
             data: {
-                ...theme,
+                name: theme.name,
                 colors: {
                     set: theme.colors,
                 },
@@ -39,11 +39,11 @@ export async function POST(request: Request) {
             },
         });
 
-        return NextResponse.json({ success: true, theme: createdTheme });
+        return NextResponse.json(createdTheme, { status: 201 });
     } catch (error) {
-        console.error('Failed to save themes:', error);
+        console.error('Failed to create theme:', error);
         return NextResponse.json(
-            { error: 'Failed to save themes' },
+            { error: 'Failed to create theme' },
             { status: 500 }
         );
     }

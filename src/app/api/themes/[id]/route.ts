@@ -63,4 +63,52 @@ export async function DELETE(
       { status: 500 }
     );
   }
+}
+
+export async function PUT(
+  request: Request,
+  { params }: { params: Params }
+) {
+  try {
+    const { id } = params;
+    const theme = await request.json();
+
+    // Verify the theme exists
+    const existingTheme = await prisma.theme.findUnique({
+      where: { id },
+    });
+
+    if (!existingTheme) {
+      return NextResponse.json(
+        { error: 'Theme not found' },
+        { status: 404 }
+      );
+    }
+
+    // Update the theme
+    const updatedTheme = await prisma.theme.update({
+      where: { id },
+      data: {
+        name: theme.name,
+        colors: {
+          set: theme.colors,
+        },
+        typography: {
+          set: theme.typography,
+        },
+        design: {
+          set: theme.design,
+        },
+        updatedAt: new Date(),
+      },
+    });
+
+    return NextResponse.json(updatedTheme);
+  } catch (error) {
+    console.error('Failed to update theme:', error);
+    return NextResponse.json(
+      { error: 'Failed to update theme' },
+      { status: 500 }
+    );
+  }
 } 

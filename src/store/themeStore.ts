@@ -6,11 +6,10 @@ interface ThemeState {
   themes: Theme[];
   currentTheme: Theme | null;
   setCurrentTheme: (theme: Theme) => void;
-  addTheme: (theme: Theme) => Promise<void>;
+  addTheme: (theme: Omit<Theme, 'id'>) => Promise<void>;
   updateTheme: (theme: Theme) => Promise<void>;
   deleteTheme: (themeId: string) => Promise<void>;
   loadThemes: () => Promise<void>;
-  saveThemes: () => Promise<void>;
   getDefaultTheme: () => Theme;
 }
 
@@ -52,8 +51,8 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
 
     updateTheme: async (theme) => {
         try {
-            const response = await fetch('/api/themes', {
-                method: 'POST',
+            const response = await fetch(`/api/themes/${theme.id}`, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -110,28 +109,6 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
             set({ themes });
         } catch (error) {
             console.error('Failed to load themes:', error);
-            throw error;
-        }
-    },
-
-    saveThemes: async () => {
-        try {
-            const response = await fetch('/api/themes', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(get().themes),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to save themes');
-            }
-            
-            const savedThemes = await response.json();
-            set({ themes: savedThemes });
-        } catch (error) {
-            console.error('Failed to save themes:', error);
             throw error;
         }
     },
