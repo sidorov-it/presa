@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { ThemeEditor } from '@/components/theme/ThemeEditor';
 import { ThemePreview } from '@/components/theme/ThemePreview';
@@ -9,7 +9,8 @@ import { useThemeStore } from '@/store/themeStore';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
 
-export default function ThemeEditorPage({ params }: { params: { action: string } }) {
+export default function ThemeEditorPage(props: { params: Promise<{ action: string }> }) {
+    const params = use(props.params);
     const router = useRouter();
     const { addTheme, updateTheme, themes } = useThemeStore();
     const [theme, setTheme] = useState<Theme>({

@@ -7,10 +7,8 @@ import { getNewEditorElement } from '@/elements/registry';
 import { parsePresentation, stringifyJsonField } from '@/utils/json';
 
 // Get a specific presentation
-export async function GET(
-    request: NextRequest,
-    { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     try {
         const id = params.id;
 
@@ -37,10 +35,8 @@ export async function GET(
 }
 
 // Update a presentation
-export async function PUT(
-    request: NextRequest,
-    { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     try {
         const id = params.id;
         const data = await request.json();
