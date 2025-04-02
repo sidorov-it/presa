@@ -1,5 +1,6 @@
 import { Theme } from '@/types/theme';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ThemedHeading, ThemedText, ThemedButton, ThemedLink, ThemedCard, ThemedBlock } from './ThemedComponents';
 
 interface ThemePreviewProps {
   theme: Theme;
@@ -42,93 +43,34 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
 
     return (
         <div className="w-full max-w-4xl mx-auto p-6" style={previewStyle}>
-            <Card className="mb-6">
-                <CardHeader>
-                    <CardTitle style={{
-                        fontFamily: `var(--heading-font)`,
-                        fontWeight: 'var(--heading-weight)',
-                        color: 'var(--heading-color)'
-                    }}>
-            Sample Heading
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p style={{
-                        fontFamily: `var(--body-font)`,
-                        fontWeight: 'var(--body-weight)',
-                        color: 'var(--text-color)'
-                    }}>
-            This is a sample paragraph to demonstrate how the theme's typography and colors will look in your presentation.
-                    </p>
-                    <div className="mt-4 space-y-4">
-                        <button
-                            className="px-4 py-2 text-white"
-                            style={{
-                                backgroundColor: 'var(--button-color)',
-                                borderRadius: getButtonBorderRadius(),
-                            }}
-                        >
-              Sample Button
-                        </button>
-                        <a
-                            href="#"
-                            className="block"
-                            style={{ color: 'var(--link-color)' }}
-                        >
-              Sample Link
-                        </a>
+            <ThemedCard className="mb-6">
+                <ThemedHeading as="h2" className="mb-3">Sample Heading</ThemedHeading>
+                <ThemedText className="mb-4">
+                    This is a sample paragraph to demonstrate how the theme's typography and colors will look in your presentation.
+                </ThemedText>
+                <div className="mt-4 space-y-4">
+                    <ThemedButton variant={theme.design.buttons.buttonShape as "rounded" | "pill" | "square"}>
+                        Sample Button
+                    </ThemedButton>
+                    <div className="mt-2">
+                        <ThemedLink href="#">Sample Link</ThemedLink>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+            </ThemedCard>
 
-            <div
-                className="p-6 mb-6"
-                style={{
-                    backgroundColor: 'var(--block-background)',
-                    opacity: 'var(--block-opacity)',
-                    borderWidth: 'var(--block-border-width)',
-                    boxShadow: 'var(--block-shadow)',
-                }}
-            >
-                <h3 style={{
-                    fontFamily: `var(--heading-font)`,
-                    fontWeight: 'var(--heading-weight)',
-                    color: 'var(--heading-color)'
-                }}>
-          Content Block
-                </h3>
-                <p style={{
-                    fontFamily: `var(--body-font)`,
-                    fontWeight: 'var(--body-weight)',
-                    color: 'var(--text-color)'
-                }}>
-          This is a sample content block to demonstrate how blocks will look in your presentation.
-                </p>
-            </div>
+            <ThemedBlock className="mb-6">
+                <ThemedHeading as="h3" className="mb-2">Content Block</ThemedHeading>
+                <ThemedText>
+                    This is a sample content block to demonstrate how blocks will look in your presentation.
+                </ThemedText>
+            </ThemedBlock>
 
-            <div
-                className="p-6"
-                style={{
-                    borderRadius: 'var(--slide-border-radius)',
-                    boxShadow: 'var(--slide-shadow)',
-                    border: 'var(--slide-border) solid var(--slide-border-color)',
-                }}
-            >
-                <h3 style={{
-                    fontFamily: `var(--heading-font)`,
-                    fontWeight: 'var(--heading-weight)',
-                    color: 'var(--heading-color)'
-                }}>
-          Slide Preview
-                </h3>
-                <p style={{
-                    fontFamily: `var(--body-font)`,
-                    fontWeight: 'var(--body-weight)',
-                    color: 'var(--text-color)'
-                }}>
-          This is how a slide will look with your theme applied.
-                </p>
-            </div>
+            <ThemedCard className="border">
+                <ThemedHeading as="h3" className="mb-2">Slide Preview</ThemedHeading>
+                <ThemedText>
+                    This is how a slide will look with your theme applied.
+                </ThemedText>
+            </ThemedCard>
         </div>
     );
 };

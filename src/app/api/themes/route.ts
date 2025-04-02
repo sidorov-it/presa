@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { Theme } from '@/types/theme';
 import { prisma } from '@/lib/prisma';
 
 export async function GET() {
@@ -21,27 +20,29 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
-        const themes = await request.json();
+        const { id: _id, ...theme } = await request.json();
 
         // Delete all existing themes
         await prisma.theme.deleteMany();
 
         // Insert all new themes
-        const createdThemes = await prisma.theme.createMany({
-            data: themes.map((theme: Theme) => ({
-                // id: theme.id,
-                name: theme.name,
-                description: theme.description,
-                logo: theme.logo,
-                colors: theme.colors,
-                typography: theme.typography,
-                design: theme.design,
-                createdAt: theme.createdAt,
-                updatedAt: theme.updatedAt,
-            })),
+        const createdTheme = await prisma.theme.create({
+            data: {
+                ...theme,
+                colors: {
+                    set: theme.colors,
+                },
+                typography: {
+                    set: theme.typography,
+                },
+                design: {
+                    set: theme.design,
+                },
+                logo: null,
+            },
         });
 
-        return NextResponse.json({ success: true, count: createdThemes.count });
+        return NextResponse.json({ success: true, theme: createdTheme });
     } catch (error) {
         console.error('Failed to save themes:', error);
         return NextResponse.json(
