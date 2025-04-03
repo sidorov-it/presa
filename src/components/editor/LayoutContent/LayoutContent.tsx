@@ -149,7 +149,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                         key={row.id}
                         data-layout-id={layout.id}
                         data-row-id={row.id}
-                        className={`${layoutClassName}`}
+                        className={`${layoutClassName} ${hasMultipleCellsInRow ? styles.multiCellLayout : ''}`}
                         style={{
                             gridTemplateAreas,
                             gridTemplateColumns,

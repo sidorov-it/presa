@@ -1,9 +1,9 @@
 .gridCell {
     position: relative;
-    min-height: 40px;
+    /* min-height: 40px; */
     height: fit-content;
     cursor: text;
-    padding: 0.5rem 0;
+    /* padding: 0.5rem 0; */
     /* border-radius: 0.25rem; */
     /* transition: all 0.2s ease-in-out; */
     width: 100%;
@@ -13,7 +13,10 @@
 }
 
 .elementContent {
-    padding: 1rem;
+    /* padding: 1rem; */
+    margin: var(--block-margin) 0;
+    /* padding-inline-start: var(--grid-padding);
+    padding-inline-end: var(--grid-padding); */
 }
 
 .gridCellElement {
@@ -35,7 +38,7 @@
 .elementDragHandle {
     top: 50%;
     transform: translateY(-50%);
-    left: -16px;
+    left: -20px;
 }
 
 .elementWrapper {
@@ -54,6 +57,8 @@
 .multiCell {
     border: 1px solid #e5e0df;
     box-sizing: border-box;
+    padding-inline-start: var(--grid-padding);
+    padding-inline-end: var(--grid-padding);
 }
 
 .multiCellNoHover {
@@ -67,7 +72,7 @@
     flex-direction: column;
     width: 100%;
     position: relative;
-    padding: 1rem;
+    /* padding: 1rem; */
 }
 
 .top {

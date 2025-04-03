@@ -201,7 +201,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                         />
                     )}
 
-                    <div className="relative w-full h-full p-8 themed-text" data-slide-id={slide.id} onClick={handleSlideClick}>
+                    <div className={`${styles.slideContainer} themed-card`} data-slide-id={slide.id} onClick={handleSlideClick}>
                         {memoizedLayouts.map((layout: Layout) => (
                             <LayoutContent
                                 key={layout.id}

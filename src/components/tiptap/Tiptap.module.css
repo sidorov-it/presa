@@ -5,5 +5,5 @@
 
 .editor {
   @apply p-2 w-full relative cursor-text;
-  min-height: 40px;
+  /* min-height: 40px; */
 }

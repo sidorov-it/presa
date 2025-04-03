@@ -33,6 +33,15 @@
     --ring: 221.2 83.2% 53.3%;
 
     --radius: 0.5rem;
+
+    --block-margin: 1.125rem;;
+    --grid-padding: 1.22em;
+
+    --card-font-scale: 1;
+
+    --card-inner-padding-x: calc(3.5em / var(--card-font-scale, 1));
+    --card-inner-padding-y: calc(2.75em / var(--card-font-scale, 1));
+    --card-inner-padding: var(--card-inner-padding-y) var(--card-inner-padding-x);
   }
 
   .dark {
@@ -372,8 +381,8 @@
 
 
 .ProseMirror {
-  padding: 0.5rem;
-  min-height: 40px;
+  padding: 0 !important;
+  min-height: inherit;
   outline: none;
   cursor: text;
   width: 100%;

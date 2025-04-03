@@ -437,7 +437,7 @@ const Tiptap = ({
         </div>
       </FloatingMenu> */}
             <CommonBubbleMenu editor={editor} />
-            <div className="tiptap-editor-wrapper w-full min-h-[40px]">
+            <div className="tiptap-editor-wrapper w-full">
                 {editor && (
                     <EditorContent
                         editor={editor}

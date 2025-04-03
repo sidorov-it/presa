@@ -407,6 +407,9 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         } as Partial<Element>);
     };
 
+    // Store animation frame ID for cancellation
+    const animationFrameIdRef = useRef<number | null>(null);
+
     // Handle resize start
     const handleResizeStart = (e: React.MouseEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -435,85 +438,101 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     // Handle resize move
     const handleResizeMove = (e: MouseEvent) => {
-        // Get the current layout
-        if (!startWidthRef.current) return;
-        const presentation = usePresentationStore.getState().getPresentation(presentationId);
-        if (!presentation) return;
-
-        const slide = presentation.slides.find(s => s.id === slideId);
-        if (!slide) return;
-
-        const layout = slide.layouts.find(l => l.id === layoutId);
-        if (!layout || !layout.gridStructure) return;
-
-        const cell = layout.gridStructure.rows[0].cells.find(c => c.id === resizebleElementRef.current);
-        if (!cell) return;
-
-        if (!editorRef.current?.parentElement) {
-            return;
+        // Cancel any existing animation frame to prevent multiple updates in same paint cycle
+        if (animationFrameIdRef.current !== null) {
+            cancelAnimationFrame(animationFrameIdRef.current);
         }
 
-        // Get the slide editor dimensions
-        const slideEditorRect = editorRef.current.parentElement.getBoundingClientRect();
-        if (!slideEditorRect) return;
+        // Use requestAnimationFrame for smoother animation
+        animationFrameIdRef.current = requestAnimationFrame(() => {
+            if (!startWidthRef.current) return;
+            const presentation = usePresentationStore.getState().getPresentation(presentationId);
+            if (!presentation) return;
 
-        // Calculate the total width of the container
-        const padding = 16;
-        const totalWidth = editorRef.current.parentElement.offsetWidth - padding * 2;
+            const slide = presentation.slides.find(s => s.id === slideId);
+            if (!slide) return;
 
-        // Calculate the new width based on mouse position
-        const currentX = e.clientX - slideEditorRect.left;
-        const deltaX = currentX - startXRef.current;
-        const newWidth = Math.max(0, startWidthRef.current + deltaX);
+            const layout = slide.layouts.find(l => l.id === layoutId);
+            if (!layout || !layout.gridStructure) return;
 
-        // Calculate the new width as a percentage of the total width
-        const newWidthPercentage = (newWidth / totalWidth) * 100;
+            const cell = layout.gridStructure.rows[0].cells.find(c => c.id === resizebleElementRef.current);
+            if (!cell) return;
 
-        // Get the number of columns in the grid
-        const columns = layout.gridStructure.columns;
+            if (!editorRef.current?.parentElement) {
+                return;
+            }
 
-        // Initialize columnWidths with percentages if they're in fr format or don't exist
-        const columnWidths = layout.gridStructure.columnWidths || Array(columns).fill(`${(100 / columns).toFixed(2)}%`);
+            // Get the slide editor dimensions
+            const slideEditorRect = editorRef.current.parentElement.getBoundingClientRect();
+            if (!slideEditorRect) return;
 
-        // Get the current column index (0-based)
-        const currentColumnIndex = cell.column - 1;
+            // Calculate the total width of the container
+            const padding = 16;
+            const totalWidth = editorRef.current.parentElement.offsetWidth - padding * 2;
 
-        // Calculate the maximum allowed width for this cell
-        // This ensures we don't exceed 100% total width
-        const otherColumnsMinWidth = (columns - 1) * 15; // All other columns at minimum 15%
-        const maxAllowedWidth = 100 - otherColumnsMinWidth;
+            // Calculate the new width based on mouse position
+            const currentX = e.clientX - slideEditorRect.left;
+            const deltaX = currentX - startXRef.current;
+            const newWidth = Math.max(0, startWidthRef.current + deltaX);
 
-        // Convert to proportion (0-1) for the adjustColumnWidths function
-        const newWidthPart = Math.min(maxAllowedWidth, Math.max(15, newWidthPercentage)) / 100;
+            // Calculate the new width as a percentage of the total width
+            const newWidthPercentage = (newWidth / totalWidth) * 100;
 
-        // Calculate the new column widths
-        const newColumnWidths = adjustColumnWidths(
-            columnWidths,
-            currentColumnIndex,
-            newWidthPart,
-            isLastCell,
-            columns
-        );
+            // Get the number of columns in the grid
+            const columns = layout.gridStructure.columns;
 
-        // Update the layout's grid structure with the new column widths
-        const updatedGridStructure = {
-            ...layout.gridStructure,
-            columnWidths: newColumnWidths
-        };
+            // Initialize columnWidths with percentages if they're in fr format or don't exist
+            const columnWidths = layout.gridStructure.columnWidths || Array(columns).fill(`${(100 / columns).toFixed(2)}%`);
 
-        // Update the layout in the store
-        updateLayout(presentationId, slideId, layoutId, {
-            gridStructure: updatedGridStructure
+            // Get the current column index (0-based)
+            const currentColumnIndex = cell.column - 1;
+
+            // Calculate the maximum allowed width for this cell
+            // This ensures we don't exceed 100% total width
+            const otherColumnsMinWidth = (columns - 1) * 15; // All other columns at minimum 15%
+            const maxAllowedWidth = 100 - otherColumnsMinWidth;
+
+            // Convert to proportion (0-1) for the adjustColumnWidths function
+            const newWidthPart = Math.min(maxAllowedWidth, Math.max(15, newWidthPercentage)) / 100;
+
+            // Calculate the new column widths
+            const newColumnWidths = adjustColumnWidths(
+                columnWidths,
+                currentColumnIndex,
+                newWidthPart,
+                isLastCell,
+                columns
+            );
+
+            // Update the layout's grid structure with the new column widths
+            const updatedGridStructure = {
+                ...layout.gridStructure,
+                columnWidths: newColumnWidths
+            };
+
+            // Update the layout in the store
+            updateLayout(presentationId, slideId, layoutId, {
+                gridStructure: updatedGridStructure
+            });
         });
     };
 
     // Handle resize end
     const handleResizeEnd = () => {
+        // Cancel any pending animation frame
+        if (animationFrameIdRef.current !== null) {
+            cancelAnimationFrame(animationFrameIdRef.current);
+            animationFrameIdRef.current = null;
+        }
+
         startWidthRef.current = null;
         resizebleElementRef.current = null;
 
         document.removeEventListener('mousemove', handleResizeMove);
         document.removeEventListener('mouseup', handleResizeEnd);
+        
+        // Remove resize class from body
+        document.body.classList.remove('resizing');
     };
 
     // Handler for adding new elements via slash command
