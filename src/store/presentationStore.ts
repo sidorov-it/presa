@@ -40,6 +40,9 @@ interface PresentationState {
     setFullState: (state: { presentations: IPresentation[] }) => void;
     saveChanges: (id: string) => Promise<void>;
 
+    // Theme management
+    setTheme: (presentationId: string, themeId: string | null) => void;
+
     // Работа со слайдами
     addSlide: (presentationId: string, index?: number) => string;
     updateSlide: (presentationId: string, slideId: string, data: Partial<Slide>) => void;
@@ -1831,6 +1834,33 @@ export const usePresentationStore = create<PresentationState>()(
                 if (state && Array.isArray(state.presentations)) {
                     set({ presentations: JSON.parse(JSON.stringify(state.presentations)) });
                 }
+            },
+
+            setTheme: (presentationId, themeId) => {
+                const beforeState = { ...get() };
+                
+                set((state) => {
+                    const updatedState = {
+                        presentations: state.presentations.map((presentation) =>
+                            presentation.id === presentationId
+                                ? { ...presentation, themeId, updatedAt: Date.now() }
+                                : presentation
+                        ),
+                    };
+                    
+                    get().recordAction({
+                        type: 'presentation',
+                        description: 'Update presentation theme',
+                        presentationId,
+                        before: { presentations: beforeState.presentations },
+                        after: updatedState
+                    });
+                    
+                    return updatedState;
+                });
+                
+                // Save changes automatically
+                get().saveChanges(presentationId);
             },
         }),
         {

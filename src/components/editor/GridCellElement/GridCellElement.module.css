@@ -102,6 +102,16 @@
   background-color: var(--control-stroke, #806cff);
 }
 
+
+/* Resizable border dark mode */
+:global(.dark-theme) .resizableBorder {
+    background-color: transparent !important;
+}
+  
+:global(.dark-theme) .resizableBorder:hover {
+    background-color: white !important;
+}
+
 .addColumnIcon {
     position: absolute;
     top: 50%;

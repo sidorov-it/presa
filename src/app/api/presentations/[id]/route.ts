@@ -42,7 +42,7 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ id: s
         const data = await request.json();
 
         // Try to update using the helper function that avoids transactions
-        const { id: _id, ...updateData } = {
+        const { id: _id, userId: _userId, ...updateData } = {
             ...data,
             updatedAt: new Date(),
             slides: data.slides ? stringifyJsonField(data.slides) : undefined,

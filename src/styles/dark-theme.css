@@ -97,14 +97,6 @@
   border-color: white !important;
 }
 
-/* Resizable border dark mode */
-.dark-theme .resizableBorder {
-  background-color: rgba(0, 0, 0, 0.5) !important;
-}
-
-.dark-theme .resizableBorder:hover {
-  background-color: white !important;
-}
 
 /* Slide border selection in dark mode */
 .dark-theme .slideBorderSelected,

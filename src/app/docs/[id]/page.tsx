@@ -20,7 +20,7 @@ export default function PresentationEditorPage() {
 
     const { id } = params;
     const { data: session, status } = useSession();
-    const { loadPresentation } = usePresentationStore();
+    const { loadPresentation, setTheme } = usePresentationStore();
     const [isLoading, setIsLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
 
@@ -29,7 +29,7 @@ export default function PresentationEditorPage() {
     const [isThemePopoverOpen, setIsThemePopoverOpen] = useState(false);
 
     const [presentation, setPresentation] = useState<IPresentation | null>(null);
-    
+
     useEffect(() => {
         if (status === 'loading') return;
 
@@ -40,12 +40,24 @@ export default function PresentationEditorPage() {
                 setNotFound(true);
             } else {
                 setPresentation(loadedPresentation);
+
+                // Apply saved theme if it exists
+                if (loadedPresentation.themeId) {
+                    loadThemes().then(() => {
+                        const savedTheme = themes.find(theme => theme.id === loadedPresentation.themeId);
+                        if (savedTheme) {
+                            setCurrentTheme(savedTheme);
+                        }
+                    }).catch(console.error);
+                }
             }
             setIsLoading(false);
         };
 
-        load();
-    }, [id, loadPresentation, status]);
+        if (!presentation) {
+            load();
+        }
+    }, [id, loadPresentation, status, loadThemes, themes, setCurrentTheme, presentation]);
 
     useEffect(() => {
         // Load available themes
@@ -56,12 +68,24 @@ export default function PresentationEditorPage() {
 
     const handleThemeChange = (theme: Theme) => {
         setCurrentTheme(theme);
+
+        // Save theme to presentation
+        if (presentation) {
+            setTheme(presentation.id, theme.id);
+        }
+
         setIsThemePopoverOpen(false);
     };
 
     const handleSetDefaultTheme = () => {
         const defaultTheme = getDefaultTheme();
         setCurrentTheme(defaultTheme);
+
+        // Remove theme from presentation (set to null)
+        if (presentation) {
+            setTheme(presentation.id, null);
+        }
+
         setIsThemePopoverOpen(false);
     };
 
@@ -116,21 +140,21 @@ export default function PresentationEditorPage() {
                                     <h3 className="text-sm font-medium">Выберите тему</h3>
                                     <div className="grid gap-2">
                                         {/* Default Theme Option */}
-                                        <div 
+                                        <div
                                             className={cn(
                                                 "flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-100 border-b pb-3",
                                                 (!currentTheme || currentTheme.name === 'Default Theme') && "bg-blue-50 ring-1 ring-blue-200"
                                             )}
                                             onClick={handleSetDefaultTheme}
                                         >
-                                            <div 
+                                            <div
                                                 className="w-5 h-5 rounded-full mr-2"
                                                 style={{ backgroundColor: '#3b82f6' }}
                                             />
                                             <span className="font-medium">Стандартная тема</span>
                                             <span className="ml-auto text-xs text-gray-500">По умолчанию</span>
                                         </div>
-                                        
+
                                         {/* Custom Themes */}
                                         {themes.length > 0 ? (
                                             themes.map((theme) => (
@@ -142,7 +166,7 @@ export default function PresentationEditorPage() {
                                                     )}
                                                     onClick={() => handleThemeChange(theme)}
                                                 >
-                                                    <div 
+                                                    <div
                                                         className="w-5 h-5 rounded-full mr-2"
                                                         style={{ backgroundColor: theme.colors.primaryAccent }}
                                                     />
@@ -155,8 +179,8 @@ export default function PresentationEditorPage() {
                                             </div>
                                         )}
                                         <div className="pt-2 mt-2 border-t border-gray-200">
-                                            <a 
-                                                href="/themes" 
+                                            <a
+                                                href="/themes"
                                                 className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
                                             >
                                                 Управление темами

@@ -493,6 +493,7 @@ export interface IPresentation {
     title: string;
     description?: string;
     slides: Slide[];
+    themeId?: string | null;
     createdAt: number;
     updatedAt: number;
 }
