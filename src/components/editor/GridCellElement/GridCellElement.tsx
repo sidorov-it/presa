@@ -595,7 +595,9 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                             className={styles.elementDragHandle}
                             slideId={slideId}
                             isActive={menuElementId === element.id}
-                            data-element-drag-handle={element.id}
+                            dataAttributes={{
+                                'data-element-drag-handle': element.id,
+                            }}
                             ariaLabel="Drag this element"
                             handleClick={() => {
                                 // Open the SlideMenu for element actions
@@ -672,7 +674,9 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     isActive={menuColumnId === cell.id && !menuElementId}
                     ariaLabel="Drag this cell"
                     className={styles.cellDragHandle}
-                    data-column-drag-handle={cell.id}
+                    dataAttributes={{
+                        'data-column-drag-handle': cell.id,
+                    }}
                     handleClick={() => openMenu(slideId, null, 'column', layoutId, cell.id)}
                     handleKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {

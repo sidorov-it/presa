@@ -324,7 +324,7 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
                                 popup = null;
                             }
 
-                            commandsList.destroy();
+                            commandsList?.destroy();
                         },
                     };
                 },

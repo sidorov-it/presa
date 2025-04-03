@@ -8,17 +8,14 @@ import Presentation from '../Presentation';
 import DragDropIndicator from '@/components/DragDropIndicator';
 import { Slide } from '@/types';
 import SlideMenu from '../SlideMenu/SlideMenu';
-import { useRouter } from 'next/navigation';
 
 interface EditorProps {
     presentationId: string;
 }
 
 const Editor: React.FC<EditorProps> = ({ presentationId }) => {
-    const { getPresentation, addSlide, savingStatus, createPresentation } = usePresentationStore();
+    const { getPresentation } = usePresentationStore();
     const [activeSlideId, setActiveSlideId] = useState<string | null>(null);
-    const [showPreview, setShowPreview] = useState(false);
-    const router = useRouter();
 
     const presentation = getPresentation(presentationId);
 
@@ -41,10 +38,12 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
         (slide: Slide) => slide.id === activeSlideId
     );
 
-    const handleSlideSelect = (slideId: string) => {
+    const handleSlideSelect = (slideId: string, scroll: boolean = false) => {
         setActiveSlideId(slideId);
 
-        document.querySelector(`[data-slide-id="${slideId}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (scroll) {
+            document.querySelector(`[data-slide-id="${slideId}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
     };
 
     return (
@@ -67,7 +66,7 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
                         />
 
                         {/* Панель инструментов */}
-                        {!showPreview && activeSlide && (
+                        {activeSlide && (
                             // <div className="w-80 bg-white border-l border-gray-200 overflow-y-auto">
                             <ElementsPanel
                                 presentationId={presentationId}

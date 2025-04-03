@@ -10,7 +10,7 @@ export default function DragHandler({
     handleKeyDown,
     handleDragStart,
     horizontal = false,
-    ...props
+    dataAttributes,
 }: {
     slideId: string,
     isActive: boolean,
@@ -20,7 +20,9 @@ export default function DragHandler({
     handleKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => void,
     handleDragStart: (e: React.DragEvent<HTMLDivElement>) => void,
     horizontal?: boolean,
-    [key: string]: any,
+    dataAttributes?: {
+        [key: string]: string,
+    },
 }) {
     const [isVisible, setIsVisible] = useState(false);
     const { isDarkMode } = useTheme();
@@ -44,7 +46,6 @@ export default function DragHandler({
             onKeyDown={handleKeyDown}
             onDragStart={handleDragStart}
             style={{
-                ...props.style,
                 // Apply inline styles for dark mode
                 ...(isDarkMode && {
                     borderColor: 'white',
@@ -57,7 +58,7 @@ export default function DragHandler({
                     borderColor: 'white'
                 })
             }}
-            {...props}
+            {...dataAttributes}
         >
             ⋮
         </div>

@@ -5,7 +5,7 @@ import styles from './SlidesList.module.css';
 interface SlidesListProps {
     slides: Slide[];
     activeSlideId: string | null;
-    onSlideSelect: (slideId: string) => void;
+    onSlideSelect: (slideId: string, scroll: boolean) => void;
 }
 
 const SlidesList: React.FC<SlidesListProps> = ({
@@ -153,6 +153,8 @@ const SlidesList: React.FC<SlidesListProps> = ({
                     {slides.map((slide, index) => {
                         const isActive = slide.id === activeSlideId;
 
+                        const content = slide.layouts[0].elements[0].content.replace(/<[^>]*>/g, '').trim();
+
                         return (
                             <div
                                 key={slide.id}
@@ -162,13 +164,13 @@ const SlidesList: React.FC<SlidesListProps> = ({
                                     ${isActive ? 'bg-blue-50' : 'hover:bg-gray-50'}
                                     ${index === slides.length - 1 ? 'border-b-0' : ''}
                                 `}
-                                onClick={() => onSlideSelect(slide.id)}
+                                onClick={() => onSlideSelect(slide.id, true)}
                                 // tabIndex={0}
                                 aria-label={`Слайд ${index + 1}: ${slide.title}`}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter' || e.key === ' ') {
                                         e.preventDefault();
-                                        onSlideSelect(slide.id);
+                                        onSlideSelect(slide.id, true);
                                     }
                                 }}
                             >
@@ -178,7 +180,7 @@ const SlidesList: React.FC<SlidesListProps> = ({
                                             {index + 1}
                                         </div> */}
                                         <div className="flex-1">
-                                            <p className="text-sm truncate max-w-[120px]">{slide.title || `Слайд ${index + 1}`}</p>
+                                            <p className="text-sm truncate max-w-[120px]">{content || `Слайд ${index + 1}`}</p>
                                             {/* Placeholder for future preview */}
                                             <div className="hidden w-full h-16 bg-gray-50 rounded mt-1.5 border border-gray-100 flex items-center justify-center">
                                                 <span className="text-xs text-gray-400">Предпросмотр</span>

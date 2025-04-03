@@ -328,17 +328,11 @@ const SlideMenu: React.FC = () => {
         const menuHeight = 46; // Estimated menu height
 
         let left = position.x;
-        let top = position.y + position.rect.height + 5;
+        const top = position.y - menuHeight - 5;
 
         // Check right edge
         if (left + menuWidth > window.innerWidth) {
             left = window.innerWidth - menuWidth - 10;
-        }
-
-        // Check bottom edge
-        if (top + menuHeight > window.innerHeight) {
-            // Place menu above the element if it would go off bottom of screen
-            top = position.y - menuHeight - 5;
         }
 
         return { left, top };

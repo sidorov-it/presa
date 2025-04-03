@@ -16,7 +16,6 @@ import TextStyle from '@tiptap/extension-text-style'
 import { Color } from '@tiptap/extension-color'
 import Underline from '@tiptap/extension-underline'
 import TextAlign from '@tiptap/extension-text-align'
-import Strike from '@tiptap/extension-strike'
 import { Extension, generateHTML } from '@tiptap/core'
 import { useEditorStore } from '@/store/editorStore'
 import styles from './Tiptap.module.css'
@@ -101,7 +100,6 @@ const getExtensions = (
     TextAlign.configure({
         types: ['heading', 'paragraph'],
     }),
-    Strike,
     // Таблицы
     Table.configure({
         resizable: true,
@@ -230,11 +228,6 @@ const getExtensions = (
         onBackspacePressed(isEmpty)
     }),
 
-    // Slash command
-    SlashCommandExtension.configure({
-        onAddElement: onAddElement || (() => { }),
-    }),
-
     // Arrow key navigation between editors
     ...(presentationId && slideId && layoutId && elementId && tiptapRefs ? [
         ArrowNavigationExtension(
@@ -245,7 +238,10 @@ const getExtensions = (
             tiptapRefs
         )
     ] : []),
-
+    // Slash command
+    SlashCommandExtension.configure({
+        onAddElement: onAddElement || (() => { }),
+    }),
     // Плейсхолдер
     Placeholder.configure({
         placeholder,

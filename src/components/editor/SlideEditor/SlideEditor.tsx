@@ -94,6 +94,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const handleOpenSlideMenu = (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
         openMenu(slide.id, null, 'slide');
+        handleSelectSlide(slide.id);
     };
 
     // Определяем классы для слайда
@@ -208,7 +209,9 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                             slideId={slide.id}
                             isActive={slideMenuOpen}
                             ariaLabel="Открыть меню слайда"
-                            data-slide-drag-handle={slide.id}
+                            dataAttributes={{
+                                'data-slide-drag-handle': slide.id,
+                            }}
                             handleClick={handleOpenSlideMenu}
                             handleKeyDown={(e) => {
                                 if (e.key === 'Enter' || e.key === ' ') {

@@ -100,7 +100,9 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                         slideId={slideId}
                         isActive={isSelected}
                         ariaLabel="Drag this layout"
-                        data-layout-drag-handle={layout.id}
+                        dataAttributes={{
+                            'data-layout-drag-handle': layout.id,
+                        }}
                         handleClick={() => openMenu(slideId, null, 'layout', layout.id)}
                         handleKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
