@@ -6,7 +6,6 @@ import GridCellElement from '../GridCellElement';
 import styles from './LayoutContent.module.css';
 import { useSlideMenu } from '@/contexts/SlideMenuContext';
 import DragHandler from '../DragHandler';
-import { usePresentationStore } from '@/store/presentationStore';
 
 interface LayoutContentProps {
     layout: Layout;
@@ -39,25 +38,22 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     const { state, handleDrop, handleDragStart } = useDnd();
     const { openMenu, state: { layoutId: menuLayoutId, elementId: menuElementId, columnId: menuColumnId } } = useSlideMenu();
     const [isLayoutHovered, setIsLayoutHovered] = useState(false);
-    
-    // Subscribe to version changes to ensure we re-render when needed
-    const storeVersion = usePresentationStore(state => state.version);
 
     // Memoize grid properties to prevent recalculations
     const gridTemplateAreas = useMemo(() =>
         generateGridTemplateAreas(layout.gridStructure),
-        [layout.gridStructure]
+    [layout.gridStructure]
     );
-    
+
     const gridTemplateColumns = useMemo(() =>
         generateGridTemplateColumns(layout.gridStructure),
-        [layout.gridStructure]
+    [layout.gridStructure]
     );
 
     // Memoize layout properties
     const hasMultipleCellsInRow = useMemo(() =>
         layout.gridStructure.rows.some(row => row.cells.length > 1),
-        [layout.gridStructure.rows]
+    [layout.gridStructure.rows]
     );
 
     // Memoize cell elements grouping
@@ -83,7 +79,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
         layout.elements.length === 1 &&
         layout.gridStructure.rows.length === 1 &&
         layout.gridStructure.rows[0].cells.length === 1,
-        [layout.elements.length, layout.gridStructure.rows]
+    [layout.elements.length, layout.gridStructure.rows]
     );
 
     const handleLayoutDragStart = useCallback((e: React.DragEvent<HTMLDivElement>) => {
@@ -99,7 +95,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
 
     const handleOpenMenu = useCallback(() =>
         openMenu(slideId, null, 'layout', layout.id),
-        [openMenu, slideId, layout.id]
+    [openMenu, slideId, layout.id]
     );
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -130,9 +126,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 {isSelected && <div className={styles.layoutSelected} />}
 
                 {/* Layout drag handle */}
-                {layout.elements.length > 1
-                    && (isLayoutHovered || isSelected) 
-                    && (
+                {layout.elements.length > 1 && (isLayoutHovered || isSelected) && (
                     <DragHandler
                         className={styles.layoutDragHandle}
                         slideId={slideId}
@@ -196,7 +190,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
 // Force the component to update when the store changes
 export default memo(LayoutContent, (prevProps, nextProps) => {
     // Only re-render if layout changes
-    return prevProps.layout === nextProps.layout && 
+    return prevProps.layout === nextProps.layout &&
            prevProps.slideId === nextProps.slideId &&
            prevProps.presentationId === nextProps.presentationId;
 });

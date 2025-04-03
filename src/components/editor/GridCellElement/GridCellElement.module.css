@@ -115,7 +115,7 @@
   background-color: var(--control-background, transparent);
 }
 
-.resizableBorder:hover {
+.resizableBorderDragged, .resizableBorder:hover {
   background-color: var(--control-stroke, #806cff);
 }
 

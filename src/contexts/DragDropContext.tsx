@@ -196,19 +196,16 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         dispatch1(action);
     };
 
-    // Import required functions from your store
-    const {
-        getPresentation,
-    } = usePresentationStore();
+    const presentation = usePresentationStore(state => state.presentations.find(p => p.id === presentationId));
 
     const getLayoutSlide = (layoutId: string) => {
-        const slide = getPresentation(presentationId)?.slides.find(slide => slide.layouts.find(l => l.id === layoutId));
+        const slide = presentation?.slides.find(slide => slide.layouts.find(l => l.id === layoutId));
         if (!slide) return undefined;
         return slide;
     };
 
     const getLayout = (layoutId: string): Layout | undefined => {
-        const slide = getPresentation(presentationId)?.slides.find(slide => slide.layouts.find(l => l.id === layoutId));
+        const slide = presentation?.slides.find(slide => slide.layouts.find(l => l.id === layoutId));
 
         if (!slide) return undefined;
         return slide.layouts.find(l => l.id === layoutId);

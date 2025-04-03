@@ -6,36 +6,15 @@ import { DndProvider } from '@/contexts/DragDropContext';
 import { SlideMenuProvider } from '@/contexts/SlideMenuContext';
 import Presentation from '../Presentation';
 import DragDropIndicator from '@/components/DragDropIndicator';
-import { Slide, PresentationState } from '@/types';
+import { Slide } from '@/types';
 import SlideMenu from '../SlideMenu/SlideMenu';
 
 interface EditorProps {
     presentationId: string;
 }
 
-interface PresentationData {
-    slideIds: string[];
-    presentationExists: boolean;
-}
-
-const emptySlideIds: string[] = [];
-const emptyPresentationExists = false;
-
 const Editor: React.FC<EditorProps> = ({ presentationId }) => {
     const [activeSlideId, setActiveSlideId] = useState<string | null>(null);
-
-    // Get only the necessary data from the store using a memoized selector factory
-    const presentationSelector = useCallback(
-        (state: PresentationState) => {
-            const presentation = state.presentations.find(p => p.id === presentationId);
-
-            return {
-                slideIds: presentation ? presentation.slides.map(slide => slide.id) : emptySlideIds,
-                presentationExists: !!presentation
-            };
-        },
-        [presentationId]
-    );
 
     const slideIds = usePresentationStore.getState().getSlideIds(presentationId);
     const presentationExists = usePresentationStore.getState().checkPresentationExists(presentationId);
@@ -59,9 +38,8 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
     ), []);
 
     // Memoize the active slide
-    const activeSlide = useMemo(() => 
-        activeSlideId ? slideGetter(activeSlideId) : null,
-    [activeSlideId, slideGetter]);
+    const activeSlide = useMemo(() => activeSlideId ? slideGetter(activeSlideId) : null,
+        [activeSlideId, slideGetter]);
 
     // Handle slide selection
     const handleSlideSelect = useCallback((slideId: string, scroll: boolean = false) => {
@@ -80,7 +58,7 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
     }, [slideIds, activeSlideId]);
 
     // Memoize the slide data for the SlidesList
-    const slidesData = useMemo(() => 
+    const slidesData = useMemo(() =>
         slideIds.map(id => slideGetter(id)).filter(Boolean) as Slide[],
     [slideIds, slideGetter]);
 

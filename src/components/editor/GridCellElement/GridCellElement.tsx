@@ -150,6 +150,8 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const activeEditorId = getActiveEditorId();
     const { beginTransaction, commitTransaction } = useHistoryStore();
 
+    const [isResizing, setIsResizing] = useState(false);
+
     const [elementIsHovered, setElementIsHovered] = useState(false);
     const [cellIsHovered, setCellIsHovered] = useState(false);
     const dragHandleRef = useRef<HTMLDivElement>(null);
@@ -434,6 +436,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         document.addEventListener('mousemove', handleResizeMove);
         document.addEventListener('mouseup', handleResizeEnd);
 
+        setIsResizing(true);
         // Add a class to the body to indicate resizing is in progress
         // document.body.classList.add('resizing');
     };
@@ -533,6 +536,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         document.removeEventListener('mousemove', handleResizeMove);
         document.removeEventListener('mouseup', handleResizeEnd);
 
+        setIsResizing(false);
         // Remove resize class from body
         // document.body.classList.remove('resizing');
     };
@@ -734,7 +738,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 <>
                     <div
                         ref={resizeBorderRef}
-                        className={styles.resizableBorder}
+                        className={`${styles.resizableBorder} ${isResizing ? styles.resizableBorderDragged : ''}`}
                         onMouseDown={handleResizeStart}
                     />
                 </>
