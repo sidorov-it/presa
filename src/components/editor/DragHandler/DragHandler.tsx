@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from './DragHandler.module.css';
+import { useTheme } from '@/components/providers/ThemeProvider';
 
 export default function DragHandler({
     isActive,
@@ -22,11 +23,11 @@ export default function DragHandler({
     [key: string]: any,
 }) {
     const [isVisible, setIsVisible] = useState(false);
+    const { isDarkMode } = useTheme();
 
-    // Когда компонент монтируется, задерживаем установку видимости,
-    // чтобы CSS-анимация сработала
+    // When component mounts, delay setting visibility to trigger CSS animation
     useEffect(() => {
-        // Минимальная задержка для того, чтобы DOM успел создаться
+        // Minimal delay to ensure DOM has been created
         const timer = setTimeout(() => {
             setIsVisible(true);
         }, 10);
@@ -44,6 +45,17 @@ export default function DragHandler({
             onDragStart={handleDragStart}
             style={{
                 ...props.style,
+                // Apply inline styles for dark mode
+                ...(isDarkMode && {
+                    borderColor: 'white',
+                    color: 'white',
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+                }),
+                ...(isDarkMode && isActive && {
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    color: 'white',
+                    borderColor: 'white'
+                })
             }}
             {...props}
         >

@@ -95,11 +95,11 @@
   height: 100%;
   cursor: col-resize;
   z-index: 30;
-  background-color: transparent;
+  background-color: var(--control-background, transparent);
 }
 
 .resizableBorder:hover {
-  background-color: #806cff;
+  background-color: var(--control-stroke, #806cff);
 }
 
 .addColumnIcon {

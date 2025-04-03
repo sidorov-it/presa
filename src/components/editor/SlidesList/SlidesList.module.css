@@ -1,15 +1,35 @@
 .leftPanel {
-    display: flex;
-    flex-direction: column;
-    pointer-events: none;
-    position: absolute;
-    top: 3.5rem;
-    bottom: 0.5rem;
-    -webkit-box-pack: center;
-    justify-content: center;
-    color: #3c3838;
-    left: 0.5rem;
-    z-index: 100;
+    display: flex; 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    z-index: 30; 
+    flex-direction: column; 
+    width: 16rem; 
+    height: 100%; 
+    background-color: #ffffff; 
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms; 
+    transition-duration: 300ms; 
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); 
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
+}
+
+:global(.dark-theme) .leftPanel {
+    background-color: var(--header-bg);
+}
+
+.slide {
+    display: flex; 
+    padding: 0.625rem; 
+    justify-content: space-between; 
+    align-items: center; 
+}
+
+:global(.dark-theme) .slide {
+    background-color: var(--panel-bg);
+    border-color: var(--panel-border);
 }
 
 .container {

@@ -73,7 +73,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose }) => {
                         {categoryData.elements!.map(element => (
                             <div
                                 key={element.id}
-                                className="border border-gray-200 rounded-lg p-2 hover:border-blue-500 cursor-grab bg-white"
+                                className={`${styles.elementItem}`}
                                 draggable
                                 onDragStart={(e) => handleDragStart(e, element)}
                                 aria-label={element.label}
@@ -91,7 +91,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose }) => {
 
     return (
         <div className={styles.popupMenu}>
-            <div className="bg-white rounded-lg shadow-lg p-4 w-80">
+            <div className={styles.popupMenuContent}>
                 <div className="flex justify-between items-center mb-3">
                     <h3 className="text-sm font-semibold text-gray-900">
                         {elementsRegistry.find(cat => cat.id === category)?.label}
@@ -130,7 +130,7 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ presentationId, slideId }
 
     return (
         <div className={styles.elementsPanel}>
-            <div className="bg-white rounded-lg shadow-lg py-2 px-1">
+            <div className={styles.elementsPanelContent}>
                 <div className="space-y-3">
                     {elementsRegistry.map((category) => (
                         <div key={category.id} className="relative group">

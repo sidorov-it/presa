@@ -67,7 +67,7 @@ export const ColorPicker = ({ editor, className }: { editor: Editor; className?:
     };
 
     return (
-        <div className={styles.colorPickerContainer} ref={colorPickerRef}>
+        <div className={`${styles.colorPickerContainer} light-theme-only`} ref={colorPickerRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={`${className || ""} ${styles.colorButton}`}
@@ -80,7 +80,7 @@ export const ColorPicker = ({ editor, className }: { editor: Editor; className?:
             </button>
 
             {isOpen && (
-                <div className={styles.colorPopover}>
+                <div className={`${styles.colorPopover} light-theme-only`}>
                     <div className={styles.colorGrid}>
                         {COLOR_PRESETS.map((color) => (
                             <button
@@ -106,7 +106,7 @@ export const ColorPicker = ({ editor, className }: { editor: Editor; className?:
                                 onClick={handleCustomColorSelect}
                                 className={styles.applyColorButton}
                             >
-                Применить
+                                Применить
                             </button>
                         </div>
                     </div>

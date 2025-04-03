@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Slide } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
-
+import styles from './SlidesList.module.css';
 interface SlidesListProps {
     slides: Slide[];
     activeSlideId: string | null;
@@ -75,7 +75,7 @@ const SlidesList: React.FC<SlidesListProps> = ({
     // Expanded view with the list of slides
     return (
         <div
-            className="absolute left-0 top-0 h-full bg-white shadow-md w-64 z-30 transition-all duration-300 ease-in-out flex flex-col"
+            className={styles.leftPanel}
         >
             <div className="flex justify-between items-center p-2 border-b border-gray-200">
                 <div className="flex items-center space-x-1">
@@ -182,11 +182,11 @@ const SlidesList: React.FC<SlidesListProps> = ({
                                     }
                                 }}
                             >
-                                <div className="p-2.5 flex items-center justify-between">
+                                <div className={styles.slide}>
                                     <div className="flex items-center">
-                                        <div className="w-6 h-6 flex items-center justify-center text-xs text-gray-800 bg-gray-100 rounded-full mr-2.5">
+                                        {/* <div className="w-6 h-6 flex items-center justify-center text-xs text-gray-800 bg-gray-100 rounded-full mr-2.5">
                                             {index + 1}
-                                        </div>
+                                        </div> */}
                                         <div className="flex-1">
                                             <p className="text-sm truncate max-w-[120px]">{slide.title || `Слайд ${index + 1}`}</p>
                                             {/* Placeholder for future preview */}

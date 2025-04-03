@@ -1,0 +1,191 @@
+/* Dark theme styles */
+.dark-theme {
+  /* Header */
+  --header-bg: #272525;
+  --header-text: #ffffff;
+  
+  /* Panels and UI components */
+  --panel-bg: #2a2a2a;
+  --panel-border: #444;
+  --card-bg: #333;
+  --input-bg: #444;
+  --input-text: #fff;
+  
+  /* Text colors */
+  --primary-text: #ffffff;
+  --secondary-text: #cccccc;
+  --tertiary-text: #999999;
+  
+  /* Control elements */
+  --control-stroke: #ffffff;
+  --control-icon: #ffffff;
+  --control-background: rgba(0, 0, 0, 0.5);
+  
+  /* Buttons and interactive elements */
+  --button-bg: #444;
+  --button-text: #fff;
+  --button-hover: #555;
+}
+
+/* Header and navigation */
+.dark-theme header,
+.dark-theme nav {
+  background-color: var(--header-bg);
+  color: var(--header-text);
+}
+
+/* Panels (slide list, elements panel, etc.) */
+.dark-theme .panel,
+.dark-theme aside {
+  background-color: var(--panel-bg);
+  border-color: var(--panel-border);
+  color: var(--primary-text);
+}
+
+/* Cards and content containers */
+.dark-theme .card {
+  background-color: var(--card-bg);
+  border-color: var(--panel-border);
+  color: var(--primary-text);
+}
+
+/* Inputs and form elements */
+.dark-theme input,
+.dark-theme select,
+.dark-theme textarea {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border-color: var(--panel-border);
+}
+
+/* Buttons */
+.dark-theme button:not([class*="themed-"]) {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+}
+
+.dark-theme button:not([class*="themed-"]):hover {
+  background-color: var(--button-hover);
+}
+
+/* Text elements */
+.dark-theme h1,
+.dark-theme h2,
+.dark-theme h3,
+.dark-theme h4,
+.dark-theme h5,
+.dark-theme h6 {
+  color: var(--primary-text);
+}
+
+.dark-theme p,
+.dark-theme span,
+.dark-theme div {
+  color: var(--secondary-text);
+}
+
+/* DragHandler dark mode styles */
+.dark-theme .dragHandle {
+  border-color: white !important;
+  color: white !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark-theme .dragHandle.active {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  color: white !important;
+  border-color: white !important;
+}
+
+/* Resizable border dark mode */
+.dark-theme .resizableBorder {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark-theme .resizableBorder:hover {
+  background-color: white !important;
+}
+
+/* Slide border selection in dark mode */
+.dark-theme .slideBorderSelected,
+.dark-theme .slideBorderMenuOpen {
+  outline-color: white !important;
+}
+
+/* Add Items panel in dark mode */
+.dark-theme .elementsPanel {
+  background-color: var(--panel-bg);
+  color: var(--primary-text);
+}
+
+/* Slide list in dark mode */
+.dark-theme .slidesList {
+  background-color: var(--panel-bg);
+  color: var(--primary-text);
+}
+
+/* Slide thumbnails in dark mode */
+.dark-theme .slideThumbnail {
+  border-color: var(--panel-border);
+}
+
+.dark-theme .slideThumbnail.active {
+  border-color: white;
+}
+
+/* Bubble menu always stays light themed */
+.light-theme-only,
+.light-theme-only *,
+.slideMenu,
+.slideMenu * {
+  background-color: white !important;
+  color: #333 !important;
+  border-color: #e0e0e0 !important;
+}
+
+.light-theme-only button,
+.slideMenu button {
+  background-color: transparent !important;
+  color: #333 !important;
+}
+
+.light-theme-only button:hover,
+.slideMenu button:hover {
+  background-color: #f5f5f5 !important;
+}
+
+.light-theme-only button.active,
+.slideMenu button.active {
+  background-color: #ebebeb !important;
+  color: #333 !important;
+}
+
+/* Override tippy.js light theme */
+.tippy-box[data-theme~='light'] {
+  color: #333 !important;
+  background-color: white !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.tippy-box[data-theme~='light'] .tippy-content {
+  color: #333 !important;
+}
+
+.tippy-box[data-theme~='light'][data-placement^='top'] > .tippy-arrow::before {
+  border-top-color: white !important;
+}
+
+/* Ensure color picker overlays stay light */
+.dark-theme .colorPickerDropdown,
+.dark-theme .headingDropdown,
+.dark-theme .linkEditorForm {
+  background-color: white !important;
+  color: #333 !important;
+  border-color: #e0e0e0 !important;
+}
+
+.dark-theme .colorPickerDropdown *,
+.dark-theme .headingDropdown *,
+.dark-theme .linkEditorForm * {
+  color: #333 !important;
+} 

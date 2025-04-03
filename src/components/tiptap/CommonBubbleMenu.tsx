@@ -87,6 +87,14 @@ export default function CommonBubbleMenu({
         editor.chain().focus().clearNodes().unsetAllMarks().run();
     };
 
+    // Force light theme styles for bubble menu
+    const lightThemeStyle = {
+        backgroundColor: 'white',
+        color: '#333',
+        borderColor: '#e0e0e0',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+    };
+
     return (
         <BubbleMenu
             editor={editor}
@@ -126,7 +134,7 @@ export default function CommonBubbleMenu({
                 return false;
             }}
         >
-            <div className={styles.bubbleMenu}>
+            <div className={`${styles.bubbleMenu} light-theme-only`} style={lightThemeStyle}>
                 <div className={styles.headingSelector} ref={headingMenuRef}>
                     <button
                         className={`${styles.button} ${styles.headingButton}`}
@@ -139,12 +147,13 @@ export default function CommonBubbleMenu({
                     </button>
 
                     {isHeadingMenuOpen && (
-                        <div className={styles.headingDropdown}>
+                        <div className={styles.headingDropdown} style={lightThemeStyle}>
                             {headingLevels.map((item) => (
                                 <button
                                     key={item.level}
                                     onClick={() => handleHeadingChange(item.level)}
                                     className={`${styles.headingOption} ${getCurrentHeadingLevel() === item.level ? styles.activeHeading : ''}`}
+                                    style={{ color: '#333' }}
                                 >
                                     {item.label}
                                 </button>

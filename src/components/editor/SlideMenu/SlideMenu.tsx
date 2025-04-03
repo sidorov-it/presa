@@ -84,6 +84,13 @@ const SlideMenu: React.FC = () => {
     const [position, setPosition] = useState<{ x: number; y: number; rect: DOMRect } | null>(null);
     // const activeEditor = useEditorStore((state) => state.activeEditor);
 
+    // Custom light theme styles
+    const lightThemeStyle = {
+        backgroundColor: 'white',
+        color: '#333',
+        borderColor: '#e2e8f0',
+        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+    };
 
     // Close the menu when clicking outside of it
     useEffect(() => {
@@ -313,44 +320,38 @@ const SlideMenu: React.FC = () => {
         }
     };
 
+    // Calculate menu position so it doesn't go off-screen
     const getMenuPosition = () => {
-        if (!position) {
-            return {
-                left: 0,
-                top: 0,
-            };
+        if (!position) return { left: 0, top: 0 };
+
+        const menuWidth = 250; // Estimated menu width
+        const menuHeight = 250; // Estimated menu height
+        
+        let left = position.x;
+        let top = position.y + position.rect.height + 5;
+
+        // Check right edge
+        if (left + menuWidth > window.innerWidth) {
+            left = window.innerWidth - menuWidth - 10;
         }
 
-        switch (state.elementType) {
-            case 'slide':
-            case 'column': {
-                const left = position.rect.left + position.rect.width / 2;
-                return {
-                    left: left,
-                    top: position.y - 40 - 20,
-                    position: 'center'
-                };
-            }
-
-            default:
-                return {
-                    left: position?.x,
-                    top: position?.y,
-                };
+        // Check bottom edge
+        if (top + menuHeight > window.innerHeight) {
+            // Place menu above the element if it would go off bottom of screen
+            top = position.y - menuHeight - 5;
         }
-    }
 
-    const menuPosition = getMenuPosition();
-    const menuStyle: CSSProperties = {
-        position: 'absolute' as const,
-        left: `${menuPosition.left}px`,
-        top: `${menuPosition.top}px`,
-        zIndex: 1000,
+        return { left, top };
     };
 
-    if (menuPosition.position === 'center') {
-        menuStyle.transform = 'translateX(-50%)';
-    }
+    const menuPosition = getMenuPosition();
+    const menuStyle = {
+        position: 'absolute' as CSSProperties['position'],
+        left: `${menuPosition.left}px`,
+        top: `${menuPosition.top}px`,
+        ...lightThemeStyle,  // Apply light theme styles inline
+        zIndex: 1000,
+    };
 
     if (state.isTextEditor) {
         return null;
@@ -362,13 +363,21 @@ const SlideMenu: React.FC = () => {
     return (
         <div
             ref={menuRef}
-            className={`${styles.slideMenu}`}
+            className={`${styles.slideMenu} light-theme-only`}
             style={menuStyle}
         >
             <ul className="flex items-center space-x-1">
-                {MenuComponent ? <MenuComponent
-                    editor={activeEditor}
-                /> : renderMenuItems()}
+                {MenuComponent ? (
+                    <MenuComponent
+                        slideId={state.slideId}
+                        layoutId={state.layoutId}
+                        columnId={state.columnId}
+                        elementId={state.elementId}
+                        editor={activeEditor}
+                    />
+                ) : (
+                    renderMenuItems()
+                )}
             </ul>
         </div>
     );

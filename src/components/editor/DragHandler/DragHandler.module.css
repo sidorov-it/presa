@@ -13,8 +13,9 @@
     border-width: 1px;
     border-style: solid;
     border-image: initial;
-    border-color: rgba(0, 0, 0, 0.08);
-    color: #806cff;
+    border-color: var(--control-stroke, rgba(0, 0, 0, 0.08));
+    color: var(--control-icon, #806cff);
+    background-color: var(--control-background, transparent);
     border-radius: 0.125rem;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     font-size: 16px;
@@ -28,8 +29,10 @@
 }
 
 .active {
-    background: #eae7ff;
+    background: var(--control-background, #eae7ff);
     backdrop-filter: blur(8px);
+    color: var(--control-icon, #806cff);
+    border-color: var(--control-stroke, rgba(0, 0, 0, 0.08));
 }
 
 .horizontal {

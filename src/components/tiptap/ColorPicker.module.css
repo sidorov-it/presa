@@ -8,7 +8,7 @@
   top: 100%;
   left: 0;
   padding: 8px;
-  background-color: white;
+  background-color: white !important;
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   grid-template-columns: repeat(5, 1fr);
@@ -53,12 +53,14 @@
   top: 100%;
   left: 0;
   z-index: 30;
-  background: white;
+  background: white !important;
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   padding: 12px;
   width: 250px;
   margin-top: 5px;
+  color: #333 !important;
+  border: 1px solid #e0e0e0 !important;
 }
 
 .colorGrid {
@@ -85,12 +87,13 @@
 .customColorSection {
   border-top: 1px solid #eee;
   padding-top: 12px;
+  color: #333 !important;
 }
 
 .colorPickerLabel {
   font-size: 12px;
   margin-bottom: 8px;
-  color: #555;
+  color: #555 !important;
 }
 
 .colorPickerControls {
@@ -103,21 +106,22 @@
   width: 40px;
   height: 30px;
   padding: 0;
-  border: 1px solid #ddd;
+  border: 1px solid #ddd !important;
   border-radius: 4px;
   cursor: pointer;
 }
 
 .applyColorButton {
-  background-color: #f0f2f5;
-  border: 1px solid #ddd;
+  background-color: #f0f2f5 !important;
+  border: 1px solid #ddd !important;
   border-radius: 4px;
   padding: 4px 8px;
   font-size: 12px;
   cursor: pointer;
   transition: background-color 0.2s;
+  color: #333 !important;
 }
 
 .applyColorButton:hover {
-  background-color: #e6e8ea;
+  background-color: #e6e8ea !important;
 } 

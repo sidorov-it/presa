@@ -1,12 +1,14 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, ReactNode, useState } from 'react';
 import { Theme } from '@/types/theme';
 import { useThemeStore } from '@/store/themeStore';
+import { isColorDark } from '@/context/ThemeContext';
 
 interface ThemeContextType {
   currentTheme: Theme | null;
   setTheme: (theme: Theme) => void;
+  isDarkMode: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -25,6 +27,7 @@ interface ThemeProviderProps {
 
 export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   const { currentTheme, setCurrentTheme, getDefaultTheme, loadThemes } = useThemeStore();
+  const [isDarkMode, setIsDarkMode] = useState(false);
   
   const applyThemeToDOM = (theme: Theme) => {
     document.documentElement.style.setProperty('--primary-accent', theme.colors.primaryAccent);
@@ -54,6 +57,22 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     document.documentElement.style.setProperty('--button-color', theme.design.buttons.buttonColor);
     document.documentElement.style.setProperty('--button-shape', theme.design.buttons.buttonShape);
     document.documentElement.style.setProperty('--link-color', theme.design.buttons.linkColor);
+    
+    // Check if the slide background is dark
+    const isDark = isColorDark(theme.colors.slideBackground);
+    setIsDarkMode(isDark);
+    
+    // Set control variables based on darkness
+    document.documentElement.style.setProperty('--control-stroke', isDark ? 'white' : 'rgba(0, 0, 0, 0.2)');
+    document.documentElement.style.setProperty('--control-icon', isDark ? 'white' : 'rgba(0, 0, 0, 0.6)');
+    document.documentElement.style.setProperty('--control-background', isDark ? 'rgba(0, 0, 0, 0.5)' : 'transparent');
+    
+    // Apply dark theme class to body if needed
+    if (isDark) {
+      document.body.classList.add('dark-theme');
+    } else {
+      document.body.classList.remove('dark-theme');
+    }
   };
   
   // Load themes when the provider is initialized
@@ -77,6 +96,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   const value = {
     currentTheme,
     setTheme: setCurrentTheme,
+    isDarkMode
   };
   
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

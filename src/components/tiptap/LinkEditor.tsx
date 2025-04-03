@@ -79,7 +79,7 @@ export const LinkEditor = ({ editor, className }: { editor: Editor; className?: 
     };
 
     return (
-        <div className={styles.linkEditorContainer} ref={linkEditorRef}>
+        <div className={`${styles.linkEditorContainer} light-theme-only`} ref={linkEditorRef}>
             <button
                 onClick={toggleLinkEditor}
                 className={`${className || ""} ${editor.isActive('link') ? styles.active : ""}`}
@@ -90,7 +90,7 @@ export const LinkEditor = ({ editor, className }: { editor: Editor; className?: 
             </button>
 
             {isOpen && (
-                <div className={styles.linkPopover}>
+                <div className={`${styles.linkPopover} light-theme-only`}>
                     <div className={styles.linkForm}>
                         <input
                             ref={inputRef}
@@ -108,7 +108,7 @@ export const LinkEditor = ({ editor, className }: { editor: Editor; className?: 
                                 className={styles.applyButton}
                                 disabled={!url.trim()}
                             >
-                Применить
+                                Применить
                             </button>
                             {editor.isActive('link') && (
                                 <button
