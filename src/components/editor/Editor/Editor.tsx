@@ -41,26 +41,10 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
         (slide: Slide) => slide.id === activeSlideId
     );
 
-    const handleAddSlide = () => {
-        const newSlideId = addSlide(presentationId);
-        setActiveSlideId(newSlideId);
-    };
-
     const handleSlideSelect = (slideId: string) => {
         setActiveSlideId(slideId);
-    };
 
-    const handlePreviewToggle = () => {
-        setShowPreview(!showPreview);
-    };
-
-    const handleCreateEmpty = async () => {
-        try {
-            const presentationId = await createPresentation('Untitled Presentation');
-            router.push(`/editor/${presentationId}`);
-        } catch (error) {
-            console.error('Failed to create presentation:', error);
-        }
+        document.querySelector(`[data-slide-id="${slideId}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     };
 
     return (

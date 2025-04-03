@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { Slide } from '@/types';
-import { usePresentationStore } from '@/store/presentationStore';
 import styles from './SlidesList.module.css';
 interface SlidesListProps {
     slides: Slide[];
@@ -15,16 +14,7 @@ const SlidesList: React.FC<SlidesListProps> = ({
     onSlideSelect,
 }) => {
     const [isCollapsed, setIsCollapsed] = useState(true);
-    const { duplicateSlide, deleteSlide } = usePresentationStore();
     const panelRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        // Ensure active slide is visible in the scrollable container
-        if (activeSlideId && panelRef.current) {
-            const activeSlideElement = panelRef.current.querySelector(`[data-slide-id="${activeSlideId}"]`);
-            activeSlideElement?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-    }, [activeSlideId]);
 
     const handleToggleCollapse = () => {
         setIsCollapsed(prev => !prev);
@@ -166,7 +156,7 @@ const SlidesList: React.FC<SlidesListProps> = ({
                         return (
                             <div
                                 key={slide.id}
-                                data-slide-id={slide.id}
+                                // data-slide-id={slide.id}
                                 className={`
                                     border-b border-gray-200 cursor-pointer transition-all
                                     ${isActive ? 'bg-blue-50' : 'hover:bg-gray-50'}

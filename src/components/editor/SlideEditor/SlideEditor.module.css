@@ -118,6 +118,11 @@
     border-color: #f7f3f2;
 }
 
+:global(.dark-theme) .slideDividerButton {
+    background: var(--header-bg, #222);
+    color: #fff;
+}
+
 .buttons {
     display: inline-flex;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
