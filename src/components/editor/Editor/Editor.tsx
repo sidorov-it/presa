@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import SlidesList from '@/components/editor/SlidesList';
 import ElementsPanel from '@/components/editor/ElementsPanel/ElementsPanel';
@@ -6,73 +6,112 @@ import { DndProvider } from '@/contexts/DragDropContext';
 import { SlideMenuProvider } from '@/contexts/SlideMenuContext';
 import Presentation from '../Presentation';
 import DragDropIndicator from '@/components/DragDropIndicator';
-import { Slide } from '@/types';
+import { Slide, PresentationState } from '@/types';
 import SlideMenu from '../SlideMenu/SlideMenu';
 
 interface EditorProps {
     presentationId: string;
 }
 
+interface PresentationData {
+    slideIds: string[];
+    presentationExists: boolean;
+}
+
+const emptySlideIds: string[] = [];
+const emptyPresentationExists = false;
+
 const Editor: React.FC<EditorProps> = ({ presentationId }) => {
-    const { getPresentation } = usePresentationStore();
     const [activeSlideId, setActiveSlideId] = useState<string | null>(null);
 
-    const presentation = getPresentation(presentationId);
+    // Get only the necessary data from the store using a memoized selector factory
+    const presentationSelector = useCallback(
+        (state: PresentationState) => {
+            const presentation = state.presentations.find(p => p.id === presentationId);
 
-    useEffect(() => {
-        // Выбираем первый слайд по умолчанию, если есть слайды
-        if (presentation && presentation.slides.length > 0 && !activeSlideId) {
-            setActiveSlideId(presentation.slides[0].id);
-        }
-    }, [presentation, activeSlideId]);
-
-    if (!presentation) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <p className="text-lg text-gray-500">Презентация не найдена</p>
-            </div>
-        );
-    }
-
-    const activeSlide = presentation.slides.find(
-        (slide: Slide) => slide.id === activeSlideId
+            return {
+                slideIds: presentation ? presentation.slides.map(slide => slide.id) : emptySlideIds,
+                presentationExists: !!presentation
+            };
+        },
+        [presentationId]
     );
 
-    const handleSlideSelect = (slideId: string, scroll: boolean = false) => {
+    const slideIds = usePresentationStore.getState().getSlideIds(presentationId);
+    const presentationExists = usePresentationStore.getState().checkPresentationExists(presentationId);
+
+    // const slideIds = presentation ? presentation.slides.map(slide => slide.id) : [];
+    // const presentationExists = !!presentation;
+
+    // Create a memoized slide getter function
+    const slideGetter = useCallback(
+        (slideId: string) => {
+            return usePresentationStore.getState().getSlide(presentationId, slideId);
+        },
+        [presentationId]
+    );
+
+    // Memoize not found UI
+    const notFoundUI = useMemo(() => (
+        <div className="min-h-screen flex items-center justify-center">
+            <p className="text-lg text-gray-500">Презентация не найдена</p>
+        </div>
+    ), []);
+
+    // Memoize the active slide
+    const activeSlide = useMemo(() => 
+        activeSlideId ? slideGetter(activeSlideId) : null,
+    [activeSlideId, slideGetter]);
+
+    // Handle slide selection
+    const handleSlideSelect = useCallback((slideId: string, scroll: boolean = false) => {
         setActiveSlideId(slideId);
 
         if (scroll) {
             document.querySelector(`[data-slide-id="${slideId}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        // Set the first slide as active by default if there are slides
+        if (slideIds.length > 0 && !activeSlideId) {
+            setActiveSlideId(slideIds[0]);
+        }
+    }, [slideIds, activeSlideId]);
+
+    // Memoize the slide data for the SlidesList
+    const slidesData = useMemo(() => 
+        slideIds.map(id => slideGetter(id)).filter(Boolean) as Slide[],
+    [slideIds, slideGetter]);
+
+    if (!presentationExists) {
+        return notFoundUI;
+    }
 
     return (
         <DndProvider presentationId={presentationId}>
             <SlideMenuProvider presentationId={presentationId}>
-                <div className="min-h-screen flex flex-col ">
+                <div className="min-h-screen flex flex-col">
                     <SlidesList
-                        slides={presentation.slides}
+                        slides={slidesData}
                         activeSlideId={activeSlideId}
                         onSlideSelect={handleSlideSelect}
                     />
 
-                    <div className="">
-                        {/* Основная область редактирования */}
+                    <div>
+                        {/* Main editing area */}
                         <Presentation
-                            presentation={presentation}
                             presentationId={presentationId}
                             activeSlideId={activeSlideId}
                             onSlideSelect={handleSlideSelect}
                         />
 
-                        {/* Панель инструментов */}
+                        {/* Tools panel */}
                         {activeSlide && (
-                            // <div className="w-80 bg-white border-l border-gray-200 overflow-y-auto">
                             <ElementsPanel
                                 presentationId={presentationId}
                                 slideId={activeSlide.id}
                             />
-                            // </div>
                         )}
                     </div>
                     <SlideMenu />
@@ -84,4 +123,4 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
     );
 };
 
-export default Editor;
+export default React.memo(Editor);

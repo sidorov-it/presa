@@ -2,8 +2,8 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 'use client'
 
-import React, { useState, useRef, RefObject } from 'react';
-import { EditorElement, getPredefinedGridStructures, Layout, Slide, TipTapRefs } from '@/types';
+import React, { useState, useRef, RefObject, useCallback, memo, useMemo } from 'react';
+import { EditorElement, getPredefinedGridStructures, Layout, Slide, TipTapRefs, PresentationState } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import styles from './SlideEditor.module.css';
 import LayoutContent from '../LayoutContent/LayoutContent';
@@ -39,95 +39,75 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 }) => {
     const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
     const editorRef = useRef<HTMLDivElement>(null);
-    // const [isSelected, setIsSelected] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
 
+    // Use selector that only gets the specific needed function using a factory
+    const addSlideSelector = useCallback((state: PresentationState) => state.addSlide, []);
+    const addSlide = usePresentationStore(addSlideSelector);
+    
     const { openMenu, state: { slideId: menuSlideId, elementId: menuElementId, layoutId: menuLayoutId } } = useSlideMenu();
 
-    const { addSlide } = usePresentationStore();
-
-    // Обработчик для выбора элемента
-    const handleSelectElement = (elementId: string) => {
+    // Memoize handlers to prevent re-renders
+    const handleSelectElement = useCallback((elementId: string) => {
         setSelectedElementId(elementId);
-    };
+    }, []);
 
-    // Обработчик для удаления элемента
-    const handleDeleteElement = (layoutId: string, elementId: string) => {
+    const handleDeleteElement = useCallback((layoutId: string, elementId: string) => {
+        // Use getState to access the store without subscribing to it
         usePresentationStore.getState().deleteElement(presentationId, slide.id, layoutId, elementId);
         if (selectedElementId === elementId) {
             setSelectedElementId(null);
         }
-    };
+    }, [presentationId, slide.id, selectedElementId]);
 
-    // Обработчик для добавления нового слайда после текущего
-    const handleAddSlideAfter = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleAddSlideAfter = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
 
-        // Получаем презентацию из хранилища
-        const presentation = usePresentationStore.getState().getPresentation(presentationId);
+        // Create a selector to get just the slide index
+        const getSlideIndex = usePresentationStore.getState().getSlideIndex;
+        const slideIndex = getSlideIndex(presentationId, slide.id);
+        
+        if (slideIndex !== -1) {
+            const newSlideIndex = slideIndex + 1;
+            addSlide(presentationId, newSlideIndex);
+        }
+    }, [presentationId, slide.id, addSlide]);
 
-        if (!presentation) return;
-
-        // Находим индекс текущего слайда
-        const currentSlideIndex = presentation.slides.findIndex((s: Slide) => s.id === slide.id);
-
-        if (currentSlideIndex === -1) return;
-
-        const newSlideIndex = presentation.slides.findIndex((s: Slide) => s.id === slide.id) + 1;
-
-        // Добавляем новый слайд
-        addSlide(presentationId, newSlideIndex);
-
-        // Перемещаем новый слайд на позицию после текущего
-
-        // usePresentationStore.getState().reorderSlides(
-        //     presentationId,
-        //     newSlideIndex,
-        //     currentSlideIndex + 1
-        // );
-
-        // Выбираем новый слайд
-        // handleSelectSlide(newSlideId);
-    };
-
-    // Обработчик для открытия меню слайда
-    const handleOpenSlideMenu = (e: React.MouseEvent<HTMLDivElement>) => {
+    const handleOpenSlideMenu = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
         openMenu(slide.id, null, 'slide');
         handleSelectSlide(slide.id);
-    };
+    }, [slide.id, openMenu, handleSelectSlide]);
 
-    // Определяем классы для слайда
-    const getSlideClassName = () => {
+    const getSlideClassName = useCallback(() => {
         let className = styles.slideWrapper;
-
         if (isSelected) {
             className += ` ${styles.slideSelected}`;
         }
-
         return className;
-    };
+    }, [isSelected]);
 
     const slideMenuOpen = menuSlideId === slide.id && menuElementId === null && menuLayoutId === null;
 
-    const handleSlideWrapperClick = (e: React.MouseEvent) => {
+    const handleSlideWrapperClick = useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
-        // setIsSelected(true);
         handleSelectSlide(slide.id);
+        
         const handleDocumentClick = (event: MouseEvent) => {
-            if (event.target instanceof HTMLElement && !event.target.closest('[data-slide-id]') && event.target.getAttribute('data-slide-drag-handle') !== slide.id) {
-                // setIsSelected(false);
+            if (event.target instanceof HTMLElement && 
+                !event.target.closest('[data-slide-id]') && 
+                event.target.getAttribute('data-slide-drag-handle') !== slide.id) {
                 document.removeEventListener('click', handleDocumentClick);
             }
-        }
+        };
+        
         document.addEventListener('click', handleDocumentClick);
-
         return () => {
             document.removeEventListener('click', handleDocumentClick);
-        }
-    }
+        };
+    }, [slide.id, handleSelectSlide]);
 
-    const handleSlideClick = (e: React.MouseEvent) => {
+    const handleSlideClick = useCallback((e: React.MouseEvent) => {
         const rect = editorRef.current?.getBoundingClientRect();
         if (rect) {
             const positionY = e.clientY - (rect.top ?? 0);
@@ -138,14 +118,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 createDefaultLayout();
             }
         }
-    };
+    }, []);
 
-    // Создание макета по умолчанию с одним редактором
-    const createDefaultLayout = () => {
-        // Создаем новый макет с одной ячейкой
-
+    // Create default layout with a single editor
+    const createDefaultLayout = useCallback(() => {
         const gridStructure = getPredefinedGridStructures('single-column');
-
         const cellId = gridStructure.rows[0].cells[0].id;
 
         const editorElement: EditorElement = {
@@ -167,41 +144,41 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             gridStructure
         };
 
-
         DragDropTransactionHelper.addLayout(presentationId, slide.id, newLayout, slide.layouts.length);
 
         setTimeout(() => {
-            document.dispatchEvent(new CustomEvent('focus_editor', { bubbles: true, cancelable: true, detail: { editorId: editorElement.id } }));
+            document.dispatchEvent(new CustomEvent('focus_editor', {
+                bubbles: true,
+                cancelable: true,
+                detail: { editorId: editorElement.id }
+            }));
         }, 100);
-        // addLayout(presentationId, slide.id, newLayout);
-    };
+    }, [presentationId, slide.id]);
+
+    // Memoize layouts to prevent unnecessary re-renders
+    const memoizedLayouts = useMemo(() => slide.layouts, [slide.layouts]);
 
     return (
         <div
-            className={`${styles.slide} `}
+            className={`${styles.slide}`}
             onClick={handleSlideWrapperClick}
-            onMouseEnter={() => {
-                setIsHovered(true);
-            }}
-            onMouseLeave={() => {
-                setIsHovered(false);
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            role="button"
+            tabIndex={0}
+            aria-label={`Slide ${slide.id}`}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    handleSlideWrapperClick(e as unknown as React.MouseEvent);
+                }
             }}
         >
             <div className={`${getSlideClassName()} themed-slide`}>
                 <div className={`${styles.slideBorder} ${isSelected || isHovered ? styles.slideBorderMenuOpen : ''}`} />
-                {/* <div className={`${styles.slideBorder} ${((isSelected || isHovered) && !slideMenuOpen) ? styles.slideBorderSelected : ''} ${slideMenuOpen ? styles.slideBorderMenuOpen : ''}`} /> */}
                 <div
                     ref={editorRef}
                     className={`${styles.slideContent} themed-card`}
-                    style={{
-                        // ...slide.style,
-                        // ...getBackgroundStyle(),
-                        // borderRadius: 'var(--slide-border-radius)',
-                        // boxShadow: 'var(--slide-shadow)',
-                        // border: 'var(--slide-border)',
-                        // borderColor: 'var(--slide-border-color)',
-                    }}
-                    onClick={() => { }}
+                    style={{}}
                 >
                     {(isSelected || slideMenuOpen || isHovered) && (
                         <DragHandler
@@ -225,7 +202,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     )}
 
                     <div className="relative w-full h-full p-8 themed-text" data-slide-id={slide.id} onClick={handleSlideClick}>
-                        {slide.layouts.map((layout: Layout) => (
+                        {memoizedLayouts.map((layout: Layout) => (
                             <LayoutContent
                                 key={layout.id}
                                 layout={layout}
@@ -251,11 +228,22 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     </div>
                 </div>
             </div>
-
-            {/* The SlideMenu component will render itself when the menu is open */}
-            {/* <SlideMenu /> */}
         </div>
     );
 };
 
-export default SlideEditor;
+// Enhanced memo comparison to perform deep comparison of relevant slide properties
+export default memo(SlideEditor, (prevProps, nextProps) => {
+    // Deep compare the slide layouts to ensure we only re-render when layouts change
+    const prevLayouts = prevProps.slide.layouts;
+    const nextLayouts = nextProps.slide.layouts;
+    
+    const layoutsEqual = prevLayouts.length === nextLayouts.length && 
+                         prevLayouts.every((layout, index) => 
+                            JSON.stringify(layout) === JSON.stringify(nextLayouts[index]));
+    
+    return layoutsEqual &&
+           prevProps.isSelected === nextProps.isSelected &&
+           prevProps.presentationId === nextProps.presentationId &&
+           prevProps.slide.id === nextProps.slide.id;
+});

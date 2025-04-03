@@ -1,63 +1,101 @@
-import { IPresentation, Slide, TipTapRefs } from "@/types";
+import { TipTapRefs, PresentationState } from "@/types";
 import SlideEditor from "../SlideEditor";
-import { useRef } from "react";
+import { useRef, memo, useCallback } from "react";
+import { usePresentationStore } from '@/store/presentationStore';
+import { useShallow } from 'zustand/react/shallow'
 
-export default function Presentation(
-    {
-        presentation,
-        presentationId,
-        activeSlideId,
-        onSlideSelect
-    }:
-    {
-        presentation: IPresentation,
-        presentationId: string, activeSlideId: string | null,
-        onSlideSelect: (slideId: string) => void
-    }
-) {
-    // const { state } = useDnd();
+interface PresentationProps {
+    presentationId: string;
+    activeSlideId: string | null;
+    onSlideSelect: (slideId: string) => void;
+}
 
+// Create a SlideEditorWrapper component to handle rendering individual slides
+const SlideEditorWrapper = memo(({
+    slideId,
+    presentationId,
+    isSelected,
+    onSlideSelect,
+    tiptapRefs
+}: {
+    slideId: string;
+    presentationId: string;
+    isSelected: boolean;
+    onSlideSelect: (slideId: string) => void;
+    tiptapRefs: React.RefObject<TipTapRefs>;
+}) => {
+    // Get only the specific slide data this component needs
+    // Use a selector factory to avoid creating new functions on each render
+    // const slideSelector = useCallback(
+    //     (state: PresentationState) => {
+    //         const presentation = state.presentations.find(p => p.id === presentationId);
+    //         if (!presentation) return null;
+    //         return presentation.slides.find(s => s.id === slideId) || null;
+    //     },
+    //     [presentationId, slideId]
+    // );
+
+    const slide = usePresentationStore(useShallow((state: PresentationState) => {
+        const presentation = state.presentations.find(p => p.id === presentationId);
+        if (!presentation) return null;
+        return presentation.slides.find(s => s.id === slideId) || null;
+    }));
+
+    if (!slide) return null;
+
+    return (
+        <SlideEditor
+            tiptapRefs={tiptapRefs}
+            slide={slide}
+            presentationId={presentationId}
+            handleSelectSlide={onSlideSelect}
+            isSelected={isSelected}
+        />
+    );
+});
+
+SlideEditorWrapper.displayName = 'SlideEditorWrapper';
+
+function Presentation({
+    presentationId,
+    activeSlideId,
+    onSlideSelect
+}: PresentationProps) {
+    // Store editor references to avoid recreation
     const tiptapRefs = useRef<TipTapRefs>({
         editors: {},
         editorRefs: []
     });
 
-    return (
-        <div className="">
-            {/* <div className="w-full p-4 bg-white rounded-lg shadow-sm mb-4">
-                <table className="w-full table-auto">
-                    <thead>
-                        <tr className="bg-gray-50">
-                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Field</th>
-                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Value</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {Object.entries(state).map(([key, value]) => (
-                            <tr key={key} className="border-b border-gray-200 hover:bg-gray-50">
-                                <td className="px-4 py-2 text-sm text-gray-700 font-medium">{key}</td>
-                                <td className="px-4 py-2 text-sm text-gray-500">
-                                    {typeof value === 'object'
-                                        ? JSON.stringify(value, null, 2)
-                                        : value.toString()}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div> */}
+    // Get only the slide IDs instead of full slide data
+    // Use a selector factory to avoid creating a new function on each render
+    const slideIdsSelector = useCallback(
+        (state: PresentationState) => {
+            const presentation = state.presentations.find(p => p.id === presentationId);
+            return presentation ? presentation.slides.map(slide => slide.id) : [];
+        },
+        [presentationId]
+    );
 
-            {presentation.slides.map((slide: Slide) => (
-                <SlideEditor
-                    key={slide.id}
-                    tiptapRefs={tiptapRefs}
-                    slide={slide}
+    const slideIds = usePresentationStore(useShallow((state: PresentationState) => {
+        const presentation = state.presentations.find(p => p.id === presentationId);
+        return presentation ? presentation.slides.map(slide => slide.id) : [];
+    }));
+
+    return (
+        <div className="w-full">
+            {slideIds.map(slideId => (
+                <SlideEditorWrapper
+                    key={slideId}
+                    slideId={slideId}
                     presentationId={presentationId}
-                    handleSelectSlide={onSlideSelect}
-                    isSelected={activeSlideId === slide.id}
+                    isSelected={activeSlideId === slideId}
+                    onSlideSelect={onSlideSelect}
+                    tiptapRefs={tiptapRefs}
                 />
             ))}
         </div>
-
     );
 }
+
+export default memo(Presentation);

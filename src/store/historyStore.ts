@@ -230,7 +230,6 @@ export const useHistoryStore = create<HistoryState>()(
             },
 
             recordAction: (action) => {
-                console.debug('recordAction', action);
                 const presentationId = action.presentationId;
 
                 // If there's an active transaction, add to it

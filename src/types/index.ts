@@ -1,6 +1,7 @@
 import { EditorWithMethods } from "@/components/tiptap/extensions/ArrowNavigationExtension";
 import { generateId } from "@/utils/id";
 import { IconType } from "react-icons/lib";
+import { HistoryAction } from "@/store/historyStore";
 
 export type TextElementType =
     | 'text'
@@ -538,4 +539,39 @@ export type Category = {
 export type TipTapRefs = {
     editors: Record<string, EditorWithMethods>;
     editorRefs: React.RefObject<HTMLDivElement>[];
+}
+
+// PresentationState interface for typing Zustand store selectors
+export interface PresentationState {
+    presentations: IPresentation[];
+    isLoading: boolean;
+    isSaving: boolean;
+    savingStatus: 'idle' | 'saving' | 'saved' | 'error';
+    error: string | null;
+    version: number;
+    incrementVersion: () => void;
+    
+    recordAction: (action: Omit<HistoryAction, 'timestamp' | 'transactionId'>) => void;
+    
+    // Presentations
+    createPresentation: (title: string) => Promise<string>;
+    loadPresentation: (id: string) => Promise<IPresentation | null>;
+    loadPresentationsList: () => Promise<void>;
+    updatePresentation: (id: string, data: Partial<IPresentation>) => void;
+    deletePresentation: (id: string) => void;
+    getPresentation: (id: string) => IPresentation | undefined;
+    setFullState: (state: { presentations: IPresentation[] }) => void;
+    saveChanges: (id: string) => Promise<void>;
+    
+    // Theme management
+    setTheme: (presentationId: string, themeId: string | null) => void;
+    
+    // Slides
+    addSlide: (presentationId: string, index?: number) => string;
+    updateSlide: (presentationId: string, slideId: string, data: Partial<Slide>) => void;
+    deleteSlide: (presentationId: string, slideId: string) => void;
+    duplicateSlide: (presentationId: string, slideId: string) => string;
+    reorderSlides: (presentationId: string, startIndex: number, endIndex: number) => void;
+    getSlide: (presentationId: string, slideId: string) => Slide | undefined;
+    getSlideIndex: (presentationId: string, slideId: string) => number;
 }

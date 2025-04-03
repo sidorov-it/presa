@@ -1,14 +1,84 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, memo, useCallback } from 'react';
 import { Slide } from '@/types';
 import styles from './SlidesList.module.css';
+
+// Memoized individual slide component to prevent unnecessary re-renders
+const SlideItem = memo(({
+    slide,
+    index,
+    isActive,
+    isLastSlide,
+    onSlideSelect
+}: {
+    slide: Slide;
+    index: number;
+    isActive: boolean;
+    isLastSlide: boolean;
+    onSlideSelect: (slideId: string, scroll: boolean) => void;
+}) => {
+    // Extract text content from the first element if available
+    const getSlideTitle = useCallback(() => {
+        if (!slide.layouts.length || !slide.layouts[0].elements.length) {
+            return `Слайд ${index + 1}`;
+        }
+        
+        const firstElement = slide.layouts[0].elements[0];
+        
+        if ('content' in firstElement && typeof firstElement.content === 'string') {
+            return firstElement.content.replace(/<[^>]*>/g, '').trim() || `Слайд ${index + 1}`;
+        }
+        
+        return `Слайд ${index + 1}`;
+    }, [slide, index]);
+
+    const slideTitle = getSlideTitle();
+    
+    const handleItemClick = useCallback(() => {
+        onSlideSelect(slide.id, true);
+    }, [slide.id, onSlideSelect]);
+
+    const handleItemKeyDown = useCallback((e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onSlideSelect(slide.id, true);
+        }
+    }, [slide.id, onSlideSelect]);
+
+    return (
+        <div
+            className={`
+                border-b border-gray-200 cursor-pointer transition-all
+                ${isActive ? 'bg-blue-50' : 'hover:bg-gray-50'}
+                ${isLastSlide ? 'border-b-0' : ''}
+            `}
+            onClick={handleItemClick}
+            aria-label={`Слайд ${index + 1}: ${slideTitle}`}
+            onKeyDown={handleItemKeyDown}
+        >
+            <div className={styles.slide}>
+                <div className="flex items-center">
+                    <div className="flex-1">
+                        <p className="text-sm truncate max-w-[120px]">{slideTitle}</p>
+                        <div className="hidden w-full h-16 bg-gray-50 rounded mt-1.5 border border-gray-100 flex items-center justify-center">
+                            <span className="text-xs text-gray-400">Предпросмотр</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+});
+
+SlideItem.displayName = 'SlideItem';
+
 interface SlidesListProps {
     slides: Slide[];
     activeSlideId: string | null;
     onSlideSelect: (slideId: string, scroll: boolean) => void;
 }
 
-const SlidesList: React.FC<SlidesListProps> = ({
+const SlidesList: React.FC<SlidesListProps> = memo(({
     slides,
     activeSlideId,
     onSlideSelect,
@@ -16,9 +86,23 @@ const SlidesList: React.FC<SlidesListProps> = ({
     const [isCollapsed, setIsCollapsed] = useState(true);
     const panelRef = useRef<HTMLDivElement>(null);
 
-    const handleToggleCollapse = () => {
+    const handleToggleCollapse = useCallback(() => {
         setIsCollapsed(prev => !prev);
-    };
+    }, []);
+
+    const handleExpandKeyDown = useCallback((e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleToggleCollapse();
+        }
+    }, [handleToggleCollapse]);
+
+    const handleCollapseKeyDown = useCallback((e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleToggleCollapse();
+        }
+    }, [handleToggleCollapse]);
 
     if (slides.length === 0) {
         return (
@@ -37,12 +121,7 @@ const SlidesList: React.FC<SlidesListProps> = ({
                     onClick={handleToggleCollapse}
                     aria-label="Развернуть панель слайдов"
                     tabIndex={0}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            handleToggleCollapse();
-                        }
-                    }}
+                    onKeyDown={handleExpandKeyDown}
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -64,9 +143,7 @@ const SlidesList: React.FC<SlidesListProps> = ({
 
     // Expanded view with the list of slides
     return (
-        <div
-            className={styles.leftPanel}
-        >
+        <div className={styles.leftPanel}>
             <div className="flex justify-between items-center p-2 border-b border-gray-200">
                 <div className="flex items-center space-x-1">
                     <button
@@ -121,12 +198,7 @@ const SlidesList: React.FC<SlidesListProps> = ({
                     onClick={handleToggleCollapse}
                     aria-label="Свернуть панель слайдов"
                     tabIndex={0}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            handleToggleCollapse();
-                        }
-                    }}
+                    onKeyDown={handleCollapseKeyDown}
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -150,51 +222,22 @@ const SlidesList: React.FC<SlidesListProps> = ({
                 className="flex-1 overflow-y-auto flex flex-col items-center justify-center"
             >
                 <div className="w-full max-w-[220px] mx-auto bg-white shadow-sm rounded-md border border-gray-200 overflow-hidden">
-                    {slides.map((slide, index) => {
-                        const isActive = slide.id === activeSlideId;
-
-                        const content = slide.layouts[0].elements[0].content.replace(/<[^>]*>/g, '').trim();
-
-                        return (
-                            <div
-                                key={slide.id}
-                                // data-slide-id={slide.id}
-                                className={`
-                                    border-b border-gray-200 cursor-pointer transition-all
-                                    ${isActive ? 'bg-blue-50' : 'hover:bg-gray-50'}
-                                    ${index === slides.length - 1 ? 'border-b-0' : ''}
-                                `}
-                                onClick={() => onSlideSelect(slide.id, true)}
-                                // tabIndex={0}
-                                aria-label={`Слайд ${index + 1}: ${slide.title}`}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' || e.key === ' ') {
-                                        e.preventDefault();
-                                        onSlideSelect(slide.id, true);
-                                    }
-                                }}
-                            >
-                                <div className={styles.slide}>
-                                    <div className="flex items-center">
-                                        {/* <div className="w-6 h-6 flex items-center justify-center text-xs text-gray-800 bg-gray-100 rounded-full mr-2.5">
-                                            {index + 1}
-                                        </div> */}
-                                        <div className="flex-1">
-                                            <p className="text-sm truncate max-w-[120px]">{content || `Слайд ${index + 1}`}</p>
-                                            {/* Placeholder for future preview */}
-                                            <div className="hidden w-full h-16 bg-gray-50 rounded mt-1.5 border border-gray-100 flex items-center justify-center">
-                                                <span className="text-xs text-gray-400">Предпросмотр</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })}
+                    {slides.map((slide, index) => (
+                        <SlideItem
+                            key={slide.id}
+                            slide={slide}
+                            index={index}
+                            isActive={slide.id === activeSlideId}
+                            isLastSlide={index === slides.length - 1}
+                            onSlideSelect={onSlideSelect}
+                        />
+                    ))}
                 </div>
             </div>
         </div>
     );
-};
+});
+
+SlidesList.displayName = 'SlidesList';
 
 export default SlidesList;

@@ -1,4 +1,4 @@
-import React, { RefObject, useState } from 'react';
+import React, { RefObject, useState, useCallback, useMemo, memo } from 'react';
 import { Layout, GridRow, GridCell, Element, TipTapRefs } from '@/types';
 import { useDnd } from '@/contexts/DragDropContext';
 import { generateGridTemplateAreas, generateGridTemplateColumns } from '@/types';
@@ -6,6 +6,7 @@ import GridCellElement from '../GridCellElement';
 import styles from './LayoutContent.module.css';
 import { useSlideMenu } from '@/contexts/SlideMenuContext';
 import DragHandler from '../DragHandler';
+import { usePresentationStore } from '@/store/presentationStore';
 
 interface LayoutContentProps {
     layout: Layout;
@@ -16,6 +17,7 @@ interface LayoutContentProps {
     slideId: string;
 }
 
+// Pure function outside component to avoid recreation
 function simpleHash(str: string) {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -37,37 +39,54 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     const { state, handleDrop, handleDragStart } = useDnd();
     const { openMenu, state: { layoutId: menuLayoutId, elementId: menuElementId, columnId: menuColumnId } } = useSlideMenu();
     const [isLayoutHovered, setIsLayoutHovered] = useState(false);
+    
+    // Subscribe to version changes to ensure we re-render when needed
+    const storeVersion = usePresentationStore(state => state.version);
 
-    // Generate CSS grid properties from the grid structure
-    const gridTemplateAreas = generateGridTemplateAreas(layout.gridStructure);
-    const gridTemplateColumns = generateGridTemplateColumns(layout.gridStructure);
+    // Memoize grid properties to prevent recalculations
+    const gridTemplateAreas = useMemo(() =>
+        generateGridTemplateAreas(layout.gridStructure),
+        [layout.gridStructure]
+    );
+    
+    const gridTemplateColumns = useMemo(() =>
+        generateGridTemplateColumns(layout.gridStructure),
+        [layout.gridStructure]
+    );
 
-    // Check if the layout has multiple cells in a row
-    const hasMultipleCellsInRow = layout.gridStructure.rows.some(row => row.cells.length > 1);
+    // Memoize layout properties
+    const hasMultipleCellsInRow = useMemo(() =>
+        layout.gridStructure.rows.some(row => row.cells.length > 1),
+        [layout.gridStructure.rows]
+    );
 
-    // Group elements by cell
-    const cellElements: Record<string, Element[]> = {};
-    layout.elements.forEach(element => {
-        if (!cellElements[element.cellId]) {
-            cellElements[element.cellId] = [];
-        }
-        cellElements[element.cellId].push(element as Element);
-    });
+    // Memoize cell elements grouping
+    const cellElements = useMemo(() => {
+        const elements: Record<string, Element[]> = {};
+        layout.elements.forEach(element => {
+            if (!elements[element.cellId]) {
+                elements[element.cellId] = [];
+            }
+            elements[element.cellId].push(element as Element);
+        });
+        return elements;
+    }, [layout.elements]);
 
-    // Remove layout drag class logic - we'll use global indicator now
-
-    const handleLocalDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    const handleLocalDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation(); // Prevent propagation to avoid double triggering with global handler
         handleDrop(e);
-    };
+    }, [handleDrop]);
 
     // Detect if this is a layout with a single element in a single cell
-    const isSingleElementSingleCellLayout = layout.elements.length === 1 &&
+    const isSingleElementSingleCellLayout = useMemo(() =>
+        layout.elements.length === 1 &&
         layout.gridStructure.rows.length === 1 &&
-        layout.gridStructure.rows[0].cells.length === 1;
+        layout.gridStructure.rows[0].cells.length === 1,
+        [layout.elements.length, layout.gridStructure.rows]
+    );
 
-    const handleLayoutDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+    const handleLayoutDragStart = useCallback((e: React.DragEvent<HTMLDivElement>) => {
         e.stopPropagation();
         handleDragStart(e, "", layout.id);
 
@@ -76,10 +95,24 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
             layoutId: layout.id,
             slideId: slideId
         }));
-    };
+    }, [handleDragStart, layout.id, slideId]);
+
+    const handleOpenMenu = useCallback(() =>
+        openMenu(slideId, null, 'layout', layout.id),
+        [openMenu, slideId, layout.id]
+    );
+
+    const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            openMenu(slideId, null, 'layout', layout.id);
+        }
+    }, [openMenu, slideId, layout.id]);
 
     const isSelected = menuLayoutId === layout.id && menuElementId === null && menuColumnId === null;
     const layoutClassName = styles.layoutContent;
+
+    const handleMouseEnter = useCallback(() => setIsLayoutHovered(true), []);
+    const handleMouseLeave = useCallback(() => setIsLayoutHovered(false), []);
 
     return (
         <>
@@ -88,8 +121,11 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 data-layout-id={layout.id}
                 data-is-single-element-layout={isSingleElementSingleCellLayout ? "true" : "false"}
                 onDrop={handleLocalDrop}
-                onMouseEnter={() => setIsLayoutHovered(true)}
-                onMouseLeave={() => setIsLayoutHovered(false)}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+                role="region"
+                aria-label={`Layout ${layout.id}`}
+                tabIndex={0}
             >
                 {isSelected && <div className={styles.layoutSelected} />}
 
@@ -103,12 +139,8 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                         dataAttributes={{
                             'data-layout-drag-handle': layout.id,
                         }}
-                        handleClick={() => openMenu(slideId, null, 'layout', layout.id)}
-                        handleKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                                openMenu(slideId, null, 'layout', layout.id);
-                            }
-                        }}
+                        handleClick={handleOpenMenu}
+                        handleKeyDown={handleKeyDown}
                         handleDragStart={handleLayoutDragStart}
                     />
                 )}
@@ -121,10 +153,6 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                         style={{
                             gridTemplateAreas,
                             gridTemplateColumns,
-                            // backgroundColor: 'var(--block-background)',
-                            // opacity: 'var(--block-opacity)',
-                            // borderWidth: 'var(--block-border-width)',
-                            // boxShadow: 'var(--block-shadow)',
                         }}
                     >
                         {row.cells.map((cell: GridCell, cellIndex: number) => {
@@ -133,7 +161,6 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                             const isLastCell = cellIndex === row.cells.length - 1;
 
                             const elementsIds = elements.map(element => element.id);
-
                             const key = `${cellId}-${simpleHash(JSON.stringify(elementsIds))}`;
 
                             return (
@@ -164,4 +191,10 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     );
 };
 
-export default LayoutContent;
+// Force the component to update when the store changes
+export default memo(LayoutContent, (prevProps, nextProps) => {
+    // Only re-render if layout changes
+    return prevProps.layout === nextProps.layout && 
+           prevProps.slideId === nextProps.slideId &&
+           prevProps.presentationId === nextProps.presentationId;
+});
