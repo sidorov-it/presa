@@ -3,8 +3,17 @@ import SlideEditor from "../SlideEditor";
 import { useRef } from "react";
 
 export default function Presentation(
-    { presentation, presentationId, activeSlideId, handleSlideSelect }:
-        { presentation: IPresentation, presentationId: string, activeSlideId: string | null, handleSlideSelect: (slideId: string) => void }
+    {
+        presentation,
+        presentationId,
+        activeSlideId,
+        onSlideSelect
+    }:
+    {
+        presentation: IPresentation,
+        presentationId: string, activeSlideId: string | null,
+        onSlideSelect: (slideId: string) => void
+    }
 ) {
     // const { state } = useDnd();
 
@@ -44,7 +53,7 @@ export default function Presentation(
                     tiptapRefs={tiptapRefs}
                     slide={slide}
                     presentationId={presentationId}
-                    handleSelectSlide={handleSlideSelect}
+                    handleSelectSlide={onSlideSelect}
                     isSelected={activeSlideId === slide.id}
                 />
             ))}

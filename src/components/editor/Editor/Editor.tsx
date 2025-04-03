@@ -44,7 +44,7 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
     const handleSlideSelect = (slideId: string) => {
         setActiveSlideId(slideId);
 
-        document.querySelector(`[data-slide-id="${slideId}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        document.querySelector(`[data-slide-id="${slideId}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     };
 
     return (
@@ -63,7 +63,7 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
                             presentation={presentation}
                             presentationId={presentationId}
                             activeSlideId={activeSlideId}
-                            handleSlideSelect={handleSlideSelect}
+                            onSlideSelect={handleSlideSelect}
                         />
 
                         {/* Панель инструментов */}

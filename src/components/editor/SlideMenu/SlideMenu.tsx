@@ -325,8 +325,8 @@ const SlideMenu: React.FC = () => {
         if (!position) return { left: 0, top: 0 };
 
         const menuWidth = 250; // Estimated menu width
-        const menuHeight = 250; // Estimated menu height
-        
+        const menuHeight = 46; // Estimated menu height
+
         let left = position.x;
         let top = position.y + position.rect.height + 5;
 

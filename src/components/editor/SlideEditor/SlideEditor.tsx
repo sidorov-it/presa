@@ -34,12 +34,12 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     slide,
     tiptapRefs,
     presentationId,
-    // handleSelectSlide,
-    // isSelected,
+    handleSelectSlide,
+    isSelected,
 }) => {
     const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
     const editorRef = useRef<HTMLDivElement>(null);
-    const [isSelected, setIsSelected] = useState(false);
+    // const [isSelected, setIsSelected] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
 
     const { openMenu, state: { slideId: menuSlideId, elementId: menuElementId, layoutId: menuLayoutId } } = useSlideMenu();
@@ -96,20 +96,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         openMenu(slide.id, null, 'slide');
     };
 
-    // Получаем стиль фона слайда
-    const getBackgroundStyle = () => {
-        if (slide.background?.type === 'color') {
-            return { backgroundColor: slide.background.value };
-        } else if (slide.background?.type === 'image') {
-            return {
-                backgroundImage: `url(${slide.background.value})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-            };
-        }
-        return {};
-    };
-
     // Определяем классы для слайда
     const getSlideClassName = () => {
         let className = styles.slideWrapper;
@@ -125,11 +111,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     const handleSlideWrapperClick = (e: React.MouseEvent) => {
         e.stopPropagation();
-        setIsSelected(true);
-
+        // setIsSelected(true);
+        handleSelectSlide(slide.id);
         const handleDocumentClick = (event: MouseEvent) => {
             if (event.target instanceof HTMLElement && !event.target.closest('[data-slide-id]') && event.target.getAttribute('data-slide-drag-handle') !== slide.id) {
-                setIsSelected(false);
+                // setIsSelected(false);
                 document.removeEventListener('click', handleDocumentClick);
             }
         }
@@ -201,7 +187,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             }}
         >
             <div className={`${getSlideClassName()} themed-slide`}>
-                <div className={`${styles.slideBorder} ${((isSelected || isHovered) && !slideMenuOpen) ? styles.slideBorderSelected : ''} ${slideMenuOpen ? styles.slideBorderMenuOpen : ''}`} />
+                <div className={`${styles.slideBorder} ${isSelected || isHovered ? styles.slideBorderMenuOpen : ''}`} />
+                {/* <div className={`${styles.slideBorder} ${((isSelected || isHovered) && !slideMenuOpen) ? styles.slideBorderSelected : ''} ${slideMenuOpen ? styles.slideBorderMenuOpen : ''}`} /> */}
                 <div
                     ref={editorRef}
                     className={`${styles.slideContent} themed-card`}
