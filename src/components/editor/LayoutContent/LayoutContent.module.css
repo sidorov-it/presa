@@ -16,20 +16,33 @@
 
 .layout {
     position: relative;
+    padding-left: 25px;
+    margin-left: -25px;
+}
+
+.layout::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -47px; /* -22px - 25px to match the left position of layoutDragHandle */
+    width: 47px;
+    height: 100%;
+    z-index: 21;
 }
 
 .layoutDragHandle {
     /* top: 16px;
     left: -0.5rem; */
     top: 0;
-    left: calc(-22px - 25px);
+    left: -20px;
+    
 }
 
 .layoutSelected {
     border: 2px solid #806cff;
     position: absolute;
     top: 0;
-    left: -22px;
+    left: 2px;
     right: 22px;
     bottom: 0;
     z-index: 1;

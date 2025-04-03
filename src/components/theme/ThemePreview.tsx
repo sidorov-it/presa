@@ -70,7 +70,7 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
         // Control styles based on background darkness
         '--control-stroke': isDark ? 'white' : 'rgba(0, 0, 0, 0.2)',
         '--control-icon': isDark ? 'white' : 'rgba(0, 0, 0, 0.6)',
-        '--control-background': isDark ? 'rgba(0, 0, 0, 0.5)' : 'transparent',
+        '--control-background': isDark ? 'rgba(0, 0, 0, 0.5)' : '#fff',
     } as React.CSSProperties;
 
     const getButtonBorderRadius = () => {

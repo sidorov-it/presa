@@ -30,7 +30,7 @@
 }
 
 .cellDragHandle {
-    top: 0;
+    top: -13px;
     left: 50%;
 }
 

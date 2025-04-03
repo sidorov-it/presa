@@ -123,6 +123,7 @@ interface GridCellElementProps {
     isLayoutHovered: boolean;
     isLayoutSelected: boolean;
     isLastCell: boolean;
+    slideIsSelected: boolean;
     tiptapRefs: RefObject<TipTapRefs>;
     onSelect: (element: Element) => void;
     onDelete: (element: Element) => void;
@@ -138,7 +139,8 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     isLayoutHovered,
     tiptapRefs,
     onSelect,
-    isLastCell
+    isLastCell,
+    slideIsSelected
 }) => {
     const { handleDragStart } = useDnd();
 
@@ -433,7 +435,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         document.addEventListener('mouseup', handleResizeEnd);
 
         // Add a class to the body to indicate resizing is in progress
-        document.body.classList.add('resizing');
+        // document.body.classList.add('resizing');
     };
 
     // Handle resize move
@@ -530,9 +532,9 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
         document.removeEventListener('mousemove', handleResizeMove);
         document.removeEventListener('mouseup', handleResizeEnd);
-        
+
         // Remove resize class from body
-        document.body.classList.remove('resizing');
+        // document.body.classList.remove('resizing');
     };
 
     // Handler for adding new elements via slash command
@@ -738,7 +740,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 </>
             )}
 
-            {hasMultipleCells && isLastCell && (
+            {hasMultipleCells && isLastCell && elementIsHovered && !slideIsSelected && (
                 <div
                     className={`${styles.addColumnIcon} themed-button`}
                     onClick={handleAddColumn}

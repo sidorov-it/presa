@@ -130,7 +130,9 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 {isSelected && <div className={styles.layoutSelected} />}
 
                 {/* Layout drag handle */}
-                {layout.elements.length > 1 && (isLayoutHovered || isSelected) && (
+                {layout.elements.length > 1
+                    && (isLayoutHovered || isSelected) 
+                    && (
                     <DragHandler
                         className={styles.layoutDragHandle}
                         slideId={slideId}
