@@ -1,0 +1,36 @@
+.elementContent {
+    margin: var(--block-margin) 0;
+}
+
+.elementWrapper {
+    position: relative;
+    padding-bottom: 8px;
+    padding-left: 20px;
+    margin-left: -20px;
+}
+
+.elementWrapper:last-child {
+    padding-bottom: 0;
+}
+
+.elementWrapper:hover .elementDragHandle {
+    opacity: 1;
+}
+
+.elementWrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -20px;
+    width: 20px;
+    height: 100%;
+    z-index: 21;
+}
+
+
+/* Individual element drag handle styles */
+.elementDragHandle {
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0px;
+}

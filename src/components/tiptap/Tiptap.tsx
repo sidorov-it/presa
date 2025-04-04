@@ -282,8 +282,6 @@ const Tiptap = ({
     elementId,
 
 }: TiptapProps) => {    // Use the global editor store instead of local state
-    const { setActiveEditor, showMenu } = useEditorStore();
-
     const editor = useEditor({
         extensions: getExtensions(
             onEnterPressed,
@@ -315,7 +313,7 @@ const Tiptap = ({
         onFocus: () => {
             onFocus();
             // Set this editor as the active editor in the store
-            setActiveEditor(editor, elementId);
+            useEditorStore.getState().setActiveEditor(editor, elementId);
         },
         onUpdate: ({ editor }) => {
             const html = editor.getHTML();
@@ -335,7 +333,7 @@ const Tiptap = ({
                 const customEvent = e as CustomEvent;
                 if (customEvent.detail && customEvent.detail.editorId === elementId) {
                     editor.commands.focus();
-                    setActiveEditor(editor, elementId);
+                    useEditorStore.getState().setActiveEditor(editor, elementId);
                 }
             };
 
@@ -345,7 +343,7 @@ const Tiptap = ({
                 document.removeEventListener('focus_editor', handleFocusEditor);
             };
         }
-    }, [editor, elementId, setActiveEditor])
+    }, [editor, elementId])
 
     // Метод для программного фокуса на редакторе
     const focus = useCallback((position: 'start' | 'end' = 'end') => {
@@ -383,8 +381,8 @@ const Tiptap = ({
                 e.stopPropagation();
 
                 // Use the global store to show the menu
-                setActiveEditor(editor);
-                showMenu(customBubbleMenuTrigger.current as HTMLElement);
+                useEditorStore.getState().setActiveEditor(editor);
+                useEditorStore.getState().showMenu(customBubbleMenuTrigger.current as HTMLElement);
 
                 // Focus the editor to ensure commands work
                 editor.commands.focus();
@@ -400,17 +398,17 @@ const Tiptap = ({
                 triggerElement.removeEventListener('click', handleTriggerClick);
             };
         }
-    }, [customBubbleMenuTrigger, editor, setActiveEditor, showMenu]);
+    }, [customBubbleMenuTrigger, editor]);
 
     // Update the active editor in the store when the editor changes
     useEffect(() => {
         if (editor) {
             return () => {
                 // Clean up when component unmounts
-                setActiveEditor(null);
+                useEditorStore.getState().setActiveEditor(null);
             };
         }
-    }, [editor, setActiveEditor]);
+    }, [editor]);
 
     return (
         <div className="relative w-full" data-editor-id={id}>

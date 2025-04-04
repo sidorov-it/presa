@@ -21,6 +21,8 @@ import {
 import { Level } from "@tiptap/extension-heading";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useSlideMenu } from "@/contexts/SlideMenuContext";
+import { EditorView } from "@tiptap/pm/view";
+import { EditorState } from "@tiptap/pm/state";
 
 export default function CommonBubbleMenu({
     editor,
@@ -29,7 +31,7 @@ export default function CommonBubbleMenu({
 }) {
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
-    const { closeMenu } = useSlideMenu();
+    const { closeMenu, state: { isOpen } } = useSlideMenu();
 
     const headingLevels = [
         { label: "Текст", level: 0 },
@@ -43,14 +45,14 @@ export default function CommonBubbleMenu({
     ];
 
     // Определение текущего уровня заголовка
-    const getCurrentHeadingLevel = () => {
+    const getCurrentHeadingLevel = useCallback(() => {
         for (let i = 1; i <= 5; i++) {
             if (editor.isActive('heading', { level: i })) {
                 return i;
             }
         }
         return 0; // Параграф (обычный текст)
-    };
+    }, [editor]);
 
     // Закрытие выпадающего меню при клике вне его
     useEffect(() => {
@@ -66,7 +68,7 @@ export default function CommonBubbleMenu({
         };
     }, []);
 
-    const handleHeadingChange = (level: number) => {
+    const handleHeadingChange = useCallback((level: number) => {
         if (level === 0) {
             editor.chain().focus().setParagraph().run();
             // } else if (level === 6) {
@@ -77,15 +79,15 @@ export default function CommonBubbleMenu({
             editor.chain().focus().setHeading({ level: level as Level }).run();
         }
         setIsHeadingMenuOpen(false);
-    };
+    }, [editor]);
 
     const handleAlignment = useCallback((align: 'left' | 'center' | 'right' | 'justify') => {
         editor.chain().focus().setTextAlign(align).run();
     }, [editor]);
 
-    const handleClearStyles = () => {
+    const handleClearStyles = useCallback(() => {
         editor.chain().focus().clearNodes().unsetAllMarks().run();
-    };
+    }, [editor]);
 
     // Force light theme styles for bubble menu
     const lightThemeStyle = {
@@ -95,6 +97,19 @@ export default function CommonBubbleMenu({
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
     };
 
+
+    const shouldShow = useCallback(({ editor, view, state, oldState, from, to }: { editor: Editor; view: EditorView; state: EditorState; oldState?: EditorState | null; from: number; to: number }) => {
+        if (from !== to && view.focused) {
+            return true;
+        }
+
+        if (isOpen) {
+            closeMenu();
+        }
+
+        return false;
+    }, [isOpen, closeMenu]);
+    
     return (
         <BubbleMenu
             editor={editor}
@@ -124,15 +139,7 @@ export default function CommonBubbleMenu({
                 },
             }}
             updateDelay={0}
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            shouldShow={({ editor, view, state, oldState, from, to }) => {
-                if (from !== to) {
-                    return true;
-                }
-
-                closeMenu();
-                return false;
-            }}
+            shouldShow={shouldShow}
         >
             <div className={`${styles.bubbleMenu} light-theme-only`} style={lightThemeStyle}>
                 <div className={styles.headingSelector} ref={headingMenuRef}>

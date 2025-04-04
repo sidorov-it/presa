@@ -183,6 +183,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                                     isLayoutHovered={isLayoutHovered}
                                     isLayoutSelected={isSelected}
                                     isLastCell={isLastCell}
+                                    slideIsSelected={false}
                                     onSelect={(element) => onSelectElement(element.id)}
                                     onDelete={(element) => onDeleteElement(layout.id, element.id)}
                                 />

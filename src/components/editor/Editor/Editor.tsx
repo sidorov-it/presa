@@ -56,10 +56,10 @@ const EditorContent: React.FC<{
 const Editor: React.FC<EditorProps> = ({ presentationId }) => {
     const [activeSlideId, setActiveSlideId] = useState<string | null>(null);
 
-    const { getSlideIds, checkPresentationExists } = usePresentationStore();
+    // const { getSlideIds, checkPresentationExists } = usePresentationStore();
     // Use specific selectors to only subscribe to needed state
-    const slideIds = useMemo(() => getSlideIds(presentationId), [getSlideIds, presentationId]);
-    const presentationExists = useMemo(() => checkPresentationExists(presentationId), [checkPresentationExists, presentationId]);
+    const slideIds = useMemo(() => usePresentationStore.getState().getSlideIds(presentationId), []);
+    const presentationExists = useMemo(() => usePresentationStore.getState().checkPresentationExists(presentationId), []);
 
     // Memoize not found UI
     const notFoundUI = useMemo(() => (

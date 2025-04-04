@@ -193,22 +193,23 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
     const [state, dispatch] = useReducer(dndReducer, initialState);
 
     // Use a selector to only get the specific presentation data needed
-    const presentation = usePresentationStore(state =>
-        state.presentations.find(p => p.id === presentationId)
-    );
+    // const { getPresentation } = usePresentationStore();
 
     // Memoize these helper functions to prevent recreation on each render
     const getLayoutSlide = useCallback((layoutId: string) => {
+        const presentation = usePresentationStore.getState().getPresentation(presentationId);
         if (!presentation) return undefined;
         return presentation.slides.find(slide => slide.layouts.find(l => l.id === layoutId));
-    }, [presentation]);
+    }, [presentationId]);
 
     const getLayout = useCallback((layoutId: string): Layout | undefined => {
+        const presentation = usePresentationStore.getState().getPresentation(presentationId);
+
         if (!presentation) return undefined;
         const slide = presentation.slides.find(slide => slide.layouts.find(l => l.id === layoutId));
         if (!slide) return undefined;
         return slide.layouts.find(l => l.id === layoutId);
-    }, [presentation]);
+    }, []);
 
     const getElement = useCallback((elementId: string, layoutId: string): BaseElement | undefined => {
         const layout = getLayout(layoutId);
@@ -225,41 +226,41 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
     // Basic handler functions with useCallback to prevent recreating on each render
     const startDrag = useCallback((elementId: string | null, layoutId: string, cellId?: string) => {
         dispatch({ type: 'START_DRAG', payload: { elementId, layoutId, cellId } });
-    }, [dispatch]);
+    }, []);
 
     const setDropTarget = useCallback((target: DropTarget) => {
         dispatch({ type: 'SET_DROP_TARGET', payload: target });
-    }, [dispatch]);
+    }, []);
 
     const setElementIndicator = useCallback((elementId: string | null, position: Position | null) => {
         dispatch({ type: 'SET_ELEMENT_INDICATOR', payload: { elementId, position } });
-    }, [dispatch]);
+    }, []);
 
     const setCellIndicator = useCallback((cellId: string | null, position: Position | null) => {
         dispatch({ type: 'SET_CELL_INDICATOR', payload: { cellId, position } });
-    }, [dispatch]);
+    }, []);
 
     const setLayoutIndicator = useCallback((layoutId: string | null, position: Position | null) => {
         dispatch({ type: 'SET_LAYOUT_INDICATOR', payload: { layoutId, position } });
-    }, [dispatch]);
+    }, []);
 
     const setSlideIndicator = useCallback((slideId: string | null) => {
         dispatch({ type: 'SET_SLIDE_INDICATOR', payload: slideId });
-    }, [dispatch]);
+    }, []);
 
     const completeDrop = useCallback(() => {
         dispatch({ type: 'COMPLETE_DROP' });
-    }, [dispatch]);
+    }, []);
 
     const cancelDrag = useCallback(() => {
         dispatch({ type: 'CANCEL_DRAG' });
-    }, [dispatch]);
+    }, []);
 
     const isDragging = useCallback(() => state.dragState === 'dragging', [state.dragState]);
 
     const setReadyToDrop = useCallback((isReady: boolean) => {
         dispatch({ type: 'SET_READY_TO_DROP', payload: isReady });
-    }, [dispatch]);
+    }, []);
 
     // Event handlers with useCallback
     const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, elementId: string | null, layoutId: string, cellId?: string) => {
@@ -277,7 +278,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
     const handleNewElementDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, id: string, defaultProps: any) => {
         e.stopPropagation();
         dispatch({ type: 'START_DRAG_MENU_ITEM', payload: { id, defaultProps } });
-    }, [dispatch]);
+    }, []);
 
     const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -2105,6 +2106,11 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             {children}
         </DndContext.Provider>
     );
+};
+
+export const useHandleDragStart = () => {
+    const { handleDragStart } = useDnd();
+    return handleDragStart;
 };
 
 // Custom hook for using the DnD context
