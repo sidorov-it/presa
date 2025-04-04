@@ -4,7 +4,7 @@ import { useDnd } from '@/contexts/DragDropContext';
 import { generateGridTemplateAreas, generateGridTemplateColumns } from '@/types';
 import GridCellElement from '../GridCellElement';
 import styles from './LayoutContent.module.css';
-import { useSlideMenu } from '@/contexts/SlideMenuContext';
+import { useSlideMenu, useSlideMenuActions, useSlideMenuSelectedLayout, useSlideMenuSelectedElement, useSlideMenuSelectedColumn } from '@/contexts/SlideMenuContext';
 import DragHandler from '../DragHandler';
 
 interface LayoutContentProps {
@@ -36,7 +36,15 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     slideId
 }) => {
     const { state, handleDrop, handleDragStart } = useDnd();
-    const { openMenu, state: { layoutId: menuLayoutId, elementId: menuElementId, columnId: menuColumnId } } = useSlideMenu();
+
+    // Use optimized selector hooks instead of full context
+    const { openMenu } = useSlideMenuActions();
+    
+    // Get only the needed state from SlideMenu
+    const menuLayoutId = useSlideMenuSelectedLayout();
+    const menuElementId = useSlideMenuSelectedElement();
+    const menuColumnId = useSlideMenuSelectedColumn();
+    
     const [isLayoutHovered, setIsLayoutHovered] = useState(false);
 
     // Memoize grid properties to prevent recalculations

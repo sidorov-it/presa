@@ -145,9 +145,10 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const { handleDragStart } = useDnd();
 
     const { openMenu, state: { elementId: menuElementId, columnId: menuColumnId } } = useSlideMenu();
-    const { setActiveEditor, getActiveEditorId } = useEditorStore();
+    const activeEditorId = useEditorStore(state => state.getActiveEditorId());
+    const { setActiveEditor } = useEditorStore();
 
-    const activeEditorId = getActiveEditorId();
+    // const activeEditorId = getActiveEditorId();
     const { beginTransaction, commitTransaction } = useHistoryStore();
 
     const [isResizing, setIsResizing] = useState(false);

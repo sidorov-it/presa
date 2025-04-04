@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, ReactNode, useMemo } from 'react';
+import React, { createContext, useContext, useReducer, ReactNode, useMemo, useCallback } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { BaseElement, GridCell, IPresentation, Layout, LayoutType, Slide } from '@/types';
 
@@ -359,7 +359,54 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
     );
 };
 
-// Custom hook for using the context
+// Custom hooks for using specific parts of the context to prevent unnecessary re-renders
+type UseSlideMenuStateSelector<T> = (state: SlideMenuState) => T;
+
+// Base hook that allows selection of specific state parts
+const useSlideMenuState = <T,>(selector: UseSlideMenuStateSelector<T>): T => {
+    const context = useContext(SlideMenuContext);
+    if (!context) {
+        throw new Error('useSlideMenuState must be used within a SlideMenuProvider');
+    }
+    
+    // Use useMemo to prevent unnecessary recalculations
+    return useMemo(() => selector(context.state), [selector, context.state]);
+};
+
+// Specific selectors for common use cases
+export const useSlideMenuIsOpen = () => useSlideMenuState(state => state.isOpen);
+export const useSlideMenuSelectedSlide = () => useSlideMenuState(state => state.slideId);
+export const useSlideMenuSelectedElement = () => useSlideMenuState(state => state.elementId);
+export const useSlideMenuSelectedLayout = () => useSlideMenuState(state => state.layoutId);
+export const useSlideMenuSelectedColumn = () => useSlideMenuState(state => state.columnId);
+
+// Hook for checking if a specific slide has its menu open
+export const useSlideMenuCheckOpen = (slideId: string) => {
+    const context = useContext(SlideMenuContext);
+    if (!context) {
+        throw new Error('useSlideMenuCheckOpen must be used within a SlideMenuProvider');
+    }
+    
+    return useMemo(
+        () => context.checkSlideMenuIsOpen(slideId),
+        [context.state.slideId, context.state.elementId, context.state.layoutId, slideId]
+    );
+};
+
+// Hook for menu actions only (without state subscription)
+export const useSlideMenuActions = () => {
+    const context = useContext(SlideMenuContext);
+    if (!context) {
+        throw new Error('useSlideMenuActions must be used within a SlideMenuProvider');
+    }
+    
+    return useMemo(() => {
+        const { state, ...actions } = context;
+        return actions;
+    }, [context]);
+};
+
+// Main hook for backward compatibility - but now developers should prefer the more specific hooks
 export const useSlideMenu = () => {
     const context = useContext(SlideMenuContext);
     if (!context) {
