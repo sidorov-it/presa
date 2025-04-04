@@ -4,6 +4,7 @@ import { parsePresentation } from '@/utils/json';
 import SlideViewer from '@/components/viewer/SlideViewer';
 import { Theme } from '@/types/theme';
 import { Slide } from '@/types';
+import { ThemeProvider } from '@/components/providers/ThemeProvider';
 
 // Define metadata for the page
 export const generateMetadata = async (props: { params: Promise<{ id: string }> }) => {
@@ -46,64 +47,80 @@ export default async function PresentationView(props: { params: Promise<{ id: st
 
         // Parse the presentation data
         presentation = parsePresentation(presentationData);
+        
+        console.log("Presentation themeId:", presentation.themeId);
 
         // Fetch theme if available
         if (presentation.themeId) {
-            const themeData = await prisma.theme.findUnique({
-                where: { id: presentation.themeId }
-            });
+            try {
+                // Directly fetch the theme using raw Prisma client to get full structure
+                const themeData = await prisma.theme.findUnique({
+                    where: { id: presentation.themeId }
+                });
 
-            if (themeData) {
-                theme = {
-                    id: themeData.id,
-                    name: themeData.name,
-                    colors: themeData.colors,
-                    typography: themeData.typography,
-                    // design: themeData.design,
-                    // logo: themeData.logo,
-                    // description: themeData.description,
-                    createdAt: themeData.createdAt,
-                    updatedAt: themeData.updatedAt,
-                };
+                console.log("Theme data from DB:", JSON.stringify(themeData, null, 2));
+
+                if (themeData) {
+                    // Convert to proper Theme type with correct structure
+                    theme = {
+                        id: themeData.id,
+                        name: themeData.name,
+                        description: themeData.description || undefined,
+                        logo: themeData.logo || undefined,
+                        colors: themeData.colors,
+                        typography: {
+                            ...themeData.typography,
+                            // Ensure numbers are parsed correctly
+                            headingWeight: Number(themeData.typography.headingWeight),
+                            bodyWeight: Number(themeData.typography.bodyWeight)
+                        },
+                        design: {
+                            slide: themeData.design.slide,
+                            blocks: {
+                                ...themeData.design.blocks,
+                                // Ensure numbers are parsed correctly
+                                opacity: Number(themeData.design.blocks.opacity)
+                            },
+                            buttons: themeData.design.buttons
+                        },
+                        createdAt: themeData.createdAt,
+                        updatedAt: themeData.updatedAt
+                    };
+                    
+                    console.log("Theme object created:", theme.name);
+                    console.log("Theme structure validation:", {
+                        hasColors: !!theme.colors,
+                        hasTypography: !!theme.typography,
+                        hasDesign: !!theme.design,
+                        hasSlide: theme.design && !!theme.design.slide,
+                        hasBlocks: theme.design && !!theme.design.blocks,
+                        hasButtons: theme.design && !!theme.design.buttons
+                    });
+                } else {
+                    console.log("Theme not found in database");
+                }
+            } catch (themeError) {
+                console.error("Error fetching theme:", themeError);
             }
+        } else {
+            console.log("No themeId in presentation");
         }
     } catch (error) {
         console.error('Failed to load presentation:', error);
         notFound();
     }
 
-    // Generate CSS variables for theme
-    const getThemeStyles = () => {
-        if (!theme) return '';
-
-        const cssVars = [];
-
-        // Add color variables
-        if (theme.colors) {
-            Object.entries(theme.colors).forEach(([key, value]) => {
-                cssVars.push(`--${key}: ${value};`);
-            });
-        }
-
-        // Add font variables
-        if (theme.fonts) {
-            Object.entries(theme.fonts).forEach(([key, value]) => {
-                cssVars.push(`--${key}: ${value};`);
-            });
-        }
-
-        return cssVars.join(' ');
-    };
-
     return (
-        <div className="min-h-screen w-full py-10 px-4 themed-page" style={{ ...(theme ? { style: getThemeStyles() } : {}) }}>
-            <div className="max-w-6xl mx-auto space-y-20">
-                {presentation.slides.map((slide: Slide, index: number) => (
-                    <div key={slide.id} id={`slide-${index + 1}`} className="scroll-mt-10">
-                        <SlideViewer slide={slide} />
-                    </div>
-                ))}
+        <ThemeProvider initialTheme={theme}>
+            <div className="min-h-screen w-full py-10 px-4 themed-page">
+                <div className="max-w-6xl mx-auto space-y-20">
+                    {presentation.slides.map((slide: Slide, index: number) => (
+                        <div key={slide.id} id={`slide-${index + 1}`} className="scroll-mt-10">
+                            <SlideViewer slide={slide} />
+                        </div>
+                    ))}
+                </div>
             </div>
-        </div>
+        </ThemeProvider>
     );
 }

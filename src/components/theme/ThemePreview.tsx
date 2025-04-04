@@ -1,5 +1,4 @@
 import { Theme } from '@/types/theme';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ThemedHeading, ThemedText, ThemedButton, ThemedLink, ThemedCard, ThemedBlock } from './ThemedComponents';
 import { useEffect } from 'react';
 import { useTheme } from '@/context/ThemeContext';
@@ -10,12 +9,12 @@ interface ThemePreviewProps {
 
 export const ThemePreview = ({ theme }: ThemePreviewProps) => {
     const { setTheme, isDarkMode } = useTheme();
-    
+
     // Update the global theme context whenever the theme changes
     useEffect(() => {
         setTheme(theme);
     }, [theme, setTheme]);
-    
+
     const previewStyle = {
         // Base colors
         '--primary-accent': theme.colors.primaryAccent,
@@ -23,30 +22,30 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
         '--text-color': theme.colors.textColor,
         '--slide-background': theme.colors.slideBackground,
         '--page-background': theme.colors.pageBackground,
-        
+
         // Typography
         '--heading-font': theme.typography.headingFont,
         '--heading-weight': theme.typography.headingWeight,
         '--body-font': theme.typography.bodyFont,
         '--body-weight': theme.typography.bodyWeight,
-        
+
         // Slide design
         '--slide-border-radius': theme.design.slide.borderRadius,
         '--slide-shadow': theme.design.slide.shadow,
         '--slide-border': theme.design.slide.border,
         '--slide-border-color': theme.design.slide.borderColor,
-        
+
         // Block design
         '--block-background': theme.design.blocks.backgroundColor,
         '--block-opacity': theme.design.blocks.opacity,
         '--block-border-width': theme.design.blocks.borderWidth,
         '--block-shadow': theme.design.blocks.shadow,
-        
+
         // Button and link design
         '--button-color': theme.design.buttons.buttonColor,
         '--button-shape': theme.design.buttons.buttonShape,
         '--link-color': theme.design.buttons.linkColor,
-        
+
         // No need to set control variables here as they're set by ThemeProvider.tsx
     } as React.CSSProperties;
 

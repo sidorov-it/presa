@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, ReactNode, useState } from
 import { Theme } from '@/types/theme';
 import { useThemeStore } from '@/store/themeStore';
 import { isColorDark } from '@/context/ThemeContext';
+import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
 
 interface ThemeContextType {
   currentTheme: Theme | null;
@@ -23,11 +24,13 @@ export const useTheme = () => {
 
 interface ThemeProviderProps {
   children: ReactNode;
+  initialTheme?: Theme | null;
 }
 
-export const ThemeProvider = ({ children }: ThemeProviderProps) => {
-    const { currentTheme, setCurrentTheme, getDefaultTheme, loadThemes } = useThemeStore();
+export const ThemeProvider = ({ children, initialTheme }: ThemeProviderProps) => {
+    const { currentTheme: storeTheme, setCurrentTheme, getDefaultTheme, loadThemes } = useThemeStore();
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [currentTheme, setCurrentThemeState] = useState<Theme | null>(initialTheme || storeTheme || null);
 
     const applyThemeToDOM = (theme: Theme) => {
         // Base colors
@@ -80,6 +83,21 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
         }
     };
 
+    // Set theme function that updates both the state and the store
+    const setTheme = (theme: Theme) => {
+        console.log("ThemeProvider: Setting theme", theme.name);
+        setCurrentThemeState(theme);
+        setCurrentTheme(theme); // Update zustand store
+    };
+
+    // Handle initialTheme when it's provided
+    useEffect(() => {
+        if (initialTheme) {
+            console.log("ThemeProvider: Using initialTheme", initialTheme.name);
+            setCurrentThemeState(initialTheme);
+        }
+    }, [initialTheme]);
+
     // Load themes when the provider is initialized
     useEffect(() => {
         loadThemes().catch(error => {
@@ -88,21 +106,32 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     }, [loadThemes]);
 
     useEffect(() => {
-    // Apply theme when currentTheme changes
+        // Apply theme when currentTheme changes
         if (currentTheme) {
             applyThemeToDOM(currentTheme);
+        } else if (storeTheme) {
+            // Use store theme as fallback
+            applyThemeToDOM(storeTheme);
+            setCurrentThemeState(storeTheme);
         } else {
             // Apply default theme if no theme is selected
             const defaultTheme = getDefaultTheme();
             applyThemeToDOM(defaultTheme);
+            setCurrentThemeState(defaultTheme);
         }
-    }, [currentTheme, getDefaultTheme]);
+    }, [currentTheme, storeTheme, getDefaultTheme]);
 
     const value = {
         currentTheme,
-        setTheme: setCurrentTheme,
+        setTheme,
         isDarkMode
     };
 
-    return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+    return (
+        <ThemeContext.Provider value={value}>
+            {/* Use ThemeStylesApplier to apply the theme directly */}
+            <ThemeStylesApplier theme={currentTheme} />
+            {children}
+        </ThemeContext.Provider>
+    );
 };

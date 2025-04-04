@@ -46,7 +46,7 @@ export const useTheme = () => useContext(ThemeContext);
 
 interface ThemeProviderProps {
     children: ReactNode;
-    initialTheme?: Theme;
+    initialTheme?: Theme | null;
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, initialTheme }) => {

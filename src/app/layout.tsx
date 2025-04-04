@@ -23,9 +23,7 @@ export default function RootLayout({
         <html lang="en">
             <body className={`${inter.className} bg-gray-50 text-gray-900 min-h-screen`}>
                 <NextAuthProvider>
-                    <ThemeProvider>
-                        {children}
-                    </ThemeProvider>
+                    {children}
                 </NextAuthProvider>
                 <Toaster />
             </body>
