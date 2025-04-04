@@ -1,6 +1,6 @@
 import { TipTapRefs, PresentationState } from "@/types";
 import SlideEditor from "../SlideEditor";
-import { useRef, memo, useCallback } from "react";
+import { useRef, memo } from "react";
 import { usePresentationStore } from '@/store/presentationStore';
 import { useShallow } from 'zustand/react/shallow'
 
@@ -69,13 +69,13 @@ function Presentation({
 
     // Get only the slide IDs instead of full slide data
     // Use a selector factory to avoid creating a new function on each render
-    const slideIdsSelector = useCallback(
-        (state: PresentationState) => {
-            const presentation = state.presentations.find(p => p.id === presentationId);
-            return presentation ? presentation.slides.map(slide => slide.id) : [];
-        },
-        [presentationId]
-    );
+    // const slideIdsSelector = useCallback(
+    //     (state: PresentationState) => {
+    //         const presentation = state.presentations.find(p => p.id === presentationId);
+    //         return presentation ? presentation.slides.map(slide => slide.id) : [];
+    //     },
+    //     [presentationId]
+    // );
 
     const slideIds = usePresentationStore(useShallow((state: PresentationState) => {
         const presentation = state.presentations.find(p => p.id === presentationId);

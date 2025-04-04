@@ -6,29 +6,60 @@ import { DndProvider } from '@/contexts/DragDropContext';
 import { SlideMenuProvider } from '@/contexts/SlideMenuContext';
 import Presentation from '../Presentation';
 import DragDropIndicator from '@/components/DragDropIndicator';
-import { Slide } from '@/types';
 import SlideMenu from '../SlideMenu/SlideMenu';
 
 interface EditorProps {
     presentationId: string;
 }
 
+// Separate content component that only re-renders when its specific props change
+const EditorContent: React.FC<{
+    presentationId: string;
+    activeSlideId: string | null;
+    onSlideSelect: (slideId: string, scroll?: boolean) => void;
+}> = React.memo(({
+    presentationId,
+    activeSlideId,
+    onSlideSelect,
+}) => {
+    return (
+        <div className="min-h-screen flex flex-col">
+            <SlidesList
+                presentationId={presentationId}
+                activeSlideId={activeSlideId}
+                onSlideSelect={onSlideSelect}
+            />
+
+            <div>
+                {/* Main editing area */}
+                <Presentation
+                    presentationId={presentationId}
+                    activeSlideId={activeSlideId}
+                    onSlideSelect={onSlideSelect}
+                />
+
+                {/* Tools panel */}
+                {activeSlideId && (
+                    <ElementsPanel
+                        presentationId={presentationId}
+                        slideId={activeSlideId}
+                    />
+                )}
+            </div>
+            <SlideMenu />
+            {/* Global drag-drop indicator */}
+            <DragDropIndicator />
+        </div>
+    );
+});
+
 const Editor: React.FC<EditorProps> = ({ presentationId }) => {
     const [activeSlideId, setActiveSlideId] = useState<string | null>(null);
 
-    const slideIds = usePresentationStore.getState().getSlideIds(presentationId);
-    const presentationExists = usePresentationStore.getState().checkPresentationExists(presentationId);
-
-    // const slideIds = presentation ? presentation.slides.map(slide => slide.id) : [];
-    // const presentationExists = !!presentation;
-
-    // Create a memoized slide getter function
-    const slideGetter = useCallback(
-        (slideId: string) => {
-            return usePresentationStore.getState().getSlide(presentationId, slideId);
-        },
-        [presentationId]
-    );
+    const { getSlideIds, checkPresentationExists } = usePresentationStore();
+    // Use specific selectors to only subscribe to needed state
+    const slideIds = useMemo(() => getSlideIds(presentationId), [getSlideIds, presentationId]);
+    const presentationExists = useMemo(() => checkPresentationExists(presentationId), [checkPresentationExists, presentationId]);
 
     // Memoize not found UI
     const notFoundUI = useMemo(() => (
@@ -37,16 +68,15 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
         </div>
     ), []);
 
-    // Memoize the active slide
-    const activeSlide = useMemo(() => activeSlideId ? slideGetter(activeSlideId) : null,
-        [activeSlideId, slideGetter]);
-
-    // Handle slide selection
+    // Handle slide selection with useCallback
     const handleSlideSelect = useCallback((slideId: string, scroll: boolean = false) => {
         setActiveSlideId(slideId);
 
         if (scroll) {
-            document.querySelector(`[data-slide-id="${slideId}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            document.querySelector(`[data-slide-id="${slideId}"]`)?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
         }
     }, []);
 
@@ -57,11 +87,6 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
         }
     }, [slideIds, activeSlideId]);
 
-    // Memoize the slide data for the SlidesList
-    const slidesData = useMemo(() =>
-        slideIds.map(id => slideGetter(id)).filter(Boolean) as Slide[],
-    [slideIds, slideGetter]);
-
     if (!presentationExists) {
         return notFoundUI;
     }
@@ -69,36 +94,16 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
     return (
         <DndProvider presentationId={presentationId}>
             <SlideMenuProvider presentationId={presentationId}>
-                <div className="min-h-screen flex flex-col">
-                    <SlidesList
-                        slides={slidesData}
-                        activeSlideId={activeSlideId}
-                        onSlideSelect={handleSlideSelect}
-                    />
-
-                    <div>
-                        {/* Main editing area */}
-                        <Presentation
-                            presentationId={presentationId}
-                            activeSlideId={activeSlideId}
-                            onSlideSelect={handleSlideSelect}
-                        />
-
-                        {/* Tools panel */}
-                        {activeSlide && (
-                            <ElementsPanel
-                                presentationId={presentationId}
-                                slideId={activeSlide.id}
-                            />
-                        )}
-                    </div>
-                    <SlideMenu />
-                    {/* Global drag-drop indicator */}
-                    <DragDropIndicator />
-                </div>
+                <EditorContent
+                    presentationId={presentationId}
+                    activeSlideId={activeSlideId}
+                    onSlideSelect={handleSlideSelect}
+                />
             </SlideMenuProvider>
         </DndProvider>
     );
 };
+
+EditorContent.displayName = 'EditorContent';
 
 export default React.memo(Editor);

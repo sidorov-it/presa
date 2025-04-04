@@ -2,6 +2,7 @@
 import React, { useState, useRef, memo, useCallback } from 'react';
 import { Slide } from '@/types';
 import styles from './SlidesList.module.css';
+import { usePresentationStore } from '@/store/presentationStore';
 
 // Memoized individual slide component to prevent unnecessary re-renders
 const SlideItem = memo(({
@@ -22,18 +23,18 @@ const SlideItem = memo(({
         if (!slide.layouts.length || !slide.layouts[0].elements.length) {
             return `Слайд ${index + 1}`;
         }
-        
+
         const firstElement = slide.layouts[0].elements[0];
-        
+
         if ('content' in firstElement && typeof firstElement.content === 'string') {
             return firstElement.content.replace(/<[^>]*>/g, '').trim() || `Слайд ${index + 1}`;
         }
-        
+
         return `Слайд ${index + 1}`;
     }, [slide, index]);
 
     const slideTitle = getSlideTitle();
-    
+
     const handleItemClick = useCallback(() => {
         onSlideSelect(slide.id, true);
     }, [slide.id, onSlideSelect]);
@@ -73,18 +74,21 @@ const SlideItem = memo(({
 SlideItem.displayName = 'SlideItem';
 
 interface SlidesListProps {
-    slides: Slide[];
+    presentationId: string;
     activeSlideId: string | null;
     onSlideSelect: (slideId: string, scroll: boolean) => void;
 }
 
 const SlidesList: React.FC<SlidesListProps> = memo(({
-    slides,
+    presentationId,
     activeSlideId,
     onSlideSelect,
 }) => {
     const [isCollapsed, setIsCollapsed] = useState(true);
     const panelRef = useRef<HTMLDivElement>(null);
+
+    const { getPresentation } = usePresentationStore();
+    const slides = getPresentation(presentationId)?.slides || [];
 
     const handleToggleCollapse = useCallback(() => {
         setIsCollapsed(prev => !prev);
