@@ -44,8 +44,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     // Use selector that only gets the specific needed function using a factory
     const addSlideSelector = useCallback((state: PresentationState) => state.addSlide, []);
     const addSlide = usePresentationStore(addSlideSelector);
-    
-    const { openMenu, state: { slideId: menuSlideId, elementId: menuElementId, layoutId: menuLayoutId } } = useSlideMenu();
+
+    const { openMenu, checkSlideMenuIsOpen } = useSlideMenu();
 
     // Memoize handlers to prevent re-renders
     const handleSelectElement = useCallback((elementId: string) => {
@@ -66,7 +66,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         // Create a selector to get just the slide index
         const getSlideIndex = usePresentationStore.getState().getSlideIndex;
         const slideIndex = getSlideIndex(presentationId, slide.id);
-        
+
         if (slideIndex !== -1) {
             const newSlideIndex = slideIndex + 1;
             addSlide(presentationId, newSlideIndex);
@@ -87,20 +87,20 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         return className;
     }, [isSelected]);
 
-    const slideMenuOpen = menuSlideId === slide.id && menuElementId === null && menuLayoutId === null;
+    const slideMenuOpen = checkSlideMenuIsOpen(slide.id);
 
     const handleSlideWrapperClick = useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
         handleSelectSlide(slide.id);
-        
+
         const handleDocumentClick = (event: MouseEvent) => {
-            if (event.target instanceof HTMLElement && 
-                !event.target.closest('[data-slide-id]') && 
+            if (event.target instanceof HTMLElement &&
+                !event.target.closest('[data-slide-id]') &&
                 event.target.getAttribute('data-slide-drag-handle') !== slide.id) {
                 document.removeEventListener('click', handleDocumentClick);
             }
         };
-        
+
         document.addEventListener('click', handleDocumentClick);
         return () => {
             document.removeEventListener('click', handleDocumentClick);
@@ -237,11 +237,11 @@ export default memo(SlideEditor, (prevProps, nextProps) => {
     // Deep compare the slide layouts to ensure we only re-render when layouts change
     const prevLayouts = prevProps.slide.layouts;
     const nextLayouts = nextProps.slide.layouts;
-    
-    const layoutsEqual = prevLayouts.length === nextLayouts.length && 
-                         prevLayouts.every((layout, index) => 
-                            JSON.stringify(layout) === JSON.stringify(nextLayouts[index]));
-    
+
+    const layoutsEqual = prevLayouts.length === nextLayouts.length &&
+                         prevLayouts.every((layout, index) =>
+                             JSON.stringify(layout) === JSON.stringify(nextLayouts[index]));
+
     return layoutsEqual &&
            prevProps.isSelected === nextProps.isSelected &&
            prevProps.presentationId === nextProps.presentationId &&

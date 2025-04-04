@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, ReactNode, useMemo } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { BaseElement, GridCell, IPresentation, Layout, LayoutType, Slide } from '@/types';
 
@@ -56,6 +56,7 @@ type SlideMenuContextType = {
     openMenu: (slideId?: string | null, elementId?: string | null, elementType?: MenuElementType | null, layoutId?: string | null, columnId?: string | null, isTextEditor?: boolean) => void;
     closeMenu: () => void;
 
+    checkSlideMenuIsOpen: (slideId: string | null) => boolean;
     getPresentation: () => IPresentation | null | undefined;
 
     duplicateSlide: () => void;
@@ -117,177 +118,242 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
         changeTemplate: changeTemplateInStore,
     } = usePresentationStore();
 
-    const openMenu = (
-        slideId?: string | null,
-        elementId?: string | null,
-        elementType?: MenuElementType | null,
-        layoutId?: string | null,
-        columnId?: string | null,
-        isTextEditor?: boolean
-    ) => {
-        dispatch({
-            type: 'OPEN_MENU',
-            payload: {
-                slideId,
-                elementId,
-                elementType,
-                layoutId,
-                columnId,
-                isTextEditor
+    // Menu control functions
+    const menuControlFunctions = useMemo(() => {
+        const openMenu = (
+            slideId?: string | null,
+            elementId?: string | null,
+            elementType?: MenuElementType | null,
+            layoutId?: string | null,
+            columnId?: string | null,
+            isTextEditor?: boolean
+        ) => {
+            dispatch({
+                type: 'OPEN_MENU',
+                payload: {
+                    slideId,
+                    elementId,
+                    elementType,
+                    layoutId,
+                    columnId,
+                    isTextEditor
+                }
+            });
+        };
+
+        const closeMenu = () => {
+            dispatch({ type: 'CLOSE_MENU' });
+        };
+
+        const checkSlideMenuIsOpen = (slideId: string | null) => {
+            return state.slideId === slideId && state.elementId === null && state.layoutId === null;
+        };
+
+        const getPresentation = () => {
+            return getPresentationInStore(presentationId);
+        };
+
+        return {
+            openMenu,
+            closeMenu,
+            checkSlideMenuIsOpen,
+            getPresentation
+        };
+    }, [dispatch, state.slideId, state.elementId, state.layoutId, getPresentationInStore, presentationId]);
+
+    // Slide functions
+    const slideFunctions = useMemo(() => {
+        const duplicateSlide = () => {
+            if (state.slideId) {
+                duplicateSlideInStore(presentationId, state.slideId);
+                menuControlFunctions.closeMenu();
             }
-        });
-    };
+        };
 
-    const getPresentation = () => {
-        return getPresentationInStore(presentationId);
-    };
-
-    const closeMenu = () => {
-        dispatch({ type: 'CLOSE_MENU' });
-    };
-
-    const duplicateSlide = () => {
-        if (state.slideId) {
-            duplicateSlideInStore(presentationId, state.slideId);
-            closeMenu();
-        }
-    };
-
-    const mergeSlideWithPrevious = () => {
-        if (state.slideId) {
-            mergeSlideWithPreviousInStore(presentationId, state.slideId);
-            closeMenu();
-        }
-    }
-
-    const deleteSlide = () => {
-        if (state.slideId) {
-            deleteSlideInStore(presentationId, state.slideId);
-            closeMenu();
-        }
-    };
-
-    const duplicateElement = () => {
-        if (state.slideId && state.elementId) {
-            duplicateElementInStore(presentationId, state.slideId, state.elementId);
-            closeMenu();
-        }
-    };
-
-    const deleteElement = () => {
-        if (state.slideId && state.elementId) {
-            const layout = findLayoutByElementId(state.elementId);
-            if (layout) {
-                deleteElementInStore(presentationId, state.slideId, layout.id, state.elementId);
-                closeMenu();
+        const deleteSlide = () => {
+            if (state.slideId) {
+                deleteSlideInStore(presentationId, state.slideId);
+                menuControlFunctions.closeMenu();
             }
-        }
-    };
+        };
 
-    const deleteLayout = () => {
-        if (state.slideId && state.layoutId) {
-            deleteLayoutInStore(presentationId, state.slideId, state.layoutId);
-            closeMenu();
-        }
-    };
+        const mergeSlideWithPrevious = () => {
+            if (state.slideId) {
+                mergeSlideWithPreviousInStore(presentationId, state.slideId);
+                menuControlFunctions.closeMenu();
+            }
+        };
 
-    const editElement = () => {
-        // This will be implemented later when we have element editing functionality
-        // For now it just closes the menu
-        closeMenu();
-    };
+        return {
+            duplicateSlide,
+            deleteSlide,
+            mergeSlideWithPrevious
+        };
+    }, [state.slideId, duplicateSlideInStore, deleteSlideInStore, mergeSlideWithPreviousInStore, presentationId, menuControlFunctions.closeMenu]);
 
-    const addColumnLeft = (slideId: string, layoutId: string, columnId: string) => {
-        addColumnLeftInStore(presentationId, slideId, layoutId, columnId);
-        closeMenu();
-    };
+    // Element functions
+    const elementFunctions = useMemo(() => {
+        const duplicateElement = () => {
+            if (state.slideId && state.elementId) {
+                duplicateElementInStore(presentationId, state.slideId, state.elementId);
+                menuControlFunctions.closeMenu();
+            }
+        };
 
-    const addColumnRight = (slideId: string, layoutId: string, columnId: string) => {
-        addColumnRightInStore(presentationId, slideId, layoutId, columnId);
-        closeMenu();
-    }
+        const deleteElement = () => {
+            if (state.slideId && state.elementId) {
+                const layout = findLayoutByElementId(state.elementId);
+                if (layout) {
+                    deleteElementInStore(presentationId, state.slideId, layout.id, state.elementId);
+                    menuControlFunctions.closeMenu();
+                }
+            }
+        };
 
-    const duplicateColumn = (slideId: string, layoutId: string, columnId: string) => {
-        duplicateColumnInStore(presentationId, slideId, layoutId, columnId);
-        closeMenu();
-    }
+        const editElement = () => {
+            // This will be implemented later when we have element editing functionality
+            // For now it just closes the menu
+            menuControlFunctions.closeMenu();
+        };
 
-    const updateAlignLayout = (layoutId: string, align: 'top' | 'center' | 'bottom') => {
-        updateAlignLayoutInStore(presentationId, layoutId, align);
-    }
+        return {
+            duplicateElement,
+            deleteElement,
+            editElement
+        };
+    }, [state.slideId, state.elementId, duplicateElementInStore, deleteElementInStore, findLayoutByElementId, presentationId, menuControlFunctions.closeMenu]);
 
-    const changeTemplate = (template: LayoutType) => {
-        if (state.slideId && state.layoutId) {
-            changeTemplateInStore(presentationId, state.slideId, state.layoutId, template);
-        }
-    }
+    // Layout functions
+    const layoutFunctions = useMemo(() => {
+        const deleteLayout = () => {
+            if (state.slideId && state.layoutId) {
+                deleteLayoutInStore(presentationId, state.slideId, state.layoutId);
+                menuControlFunctions.closeMenu();
+            }
+        };
 
-    const alignColumnTop = (slideId: string, layoutId: string, columnId: string) => {
-        alignColumnTopInStore(presentationId, slideId, layoutId, columnId);
-    }
+        const updateAlignLayout = (layoutId: string, align: 'top' | 'center' | 'bottom') => {
+            updateAlignLayoutInStore(presentationId, layoutId, align);
+        };
 
-    const alignColumnCenter = (slideId: string, layoutId: string, columnId: string) => {
-        alignColumnCenterInStore(presentationId, slideId, layoutId, columnId);
-    }
+        const changeTemplate = (template: LayoutType) => {
+            if (state.slideId && state.layoutId) {
+                changeTemplateInStore(presentationId, state.slideId, state.layoutId, template);
+            }
+        };
 
-    const alignColumnBottom = (slideId: string, layoutId: string, columnId: string) => {
-        alignColumnBottomInStore(presentationId, slideId, layoutId, columnId);
-    }
+        return {
+            deleteLayout,
+            updateAlignLayout,
+            changeTemplate
+        };
+    }, [state.slideId, state.layoutId, deleteLayoutInStore, updateAlignLayoutInStore, changeTemplateInStore, presentationId, menuControlFunctions.closeMenu]);
 
-    const deleteColumn = (slideId: string, layoutId: string, columnId: string) => {
-        deleteColumnInStore(presentationId, slideId, layoutId, columnId);
-        closeMenu();
-    }
+    // Column functions
+    const columnFunctions = useMemo(() => {
+        const addColumnLeft = (slideId: string, layoutId: string, columnId: string) => {
+            addColumnLeftInStore(presentationId, slideId, layoutId, columnId);
+            menuControlFunctions.closeMenu();
+        };
 
-    const getElement = (slideId: string | null, layoutId: string | null, elementId: string | null) => {
-        if (!slideId || !layoutId || !elementId) return null;
-        return getElementInStore(presentationId, slideId, layoutId, elementId);
-    }
+        const addColumnRight = (slideId: string, layoutId: string, columnId: string) => {
+            addColumnRightInStore(presentationId, slideId, layoutId, columnId);
+            menuControlFunctions.closeMenu();
+        };
 
-    const getCell = (slideId: string | null, layoutId: string | null, columnId: string | null) => {
-        if (!slideId || !layoutId || !columnId) return null;
-        return getCellInStore(presentationId, slideId, layoutId, columnId);
-    }
+        const duplicateColumn = (slideId: string, layoutId: string, columnId: string) => {
+            duplicateColumnInStore(presentationId, slideId, layoutId, columnId);
+            menuControlFunctions.closeMenu();
+        };
 
-    const getLayout = (slideId: string | null, layoutId: string | null) => {
-        if (!slideId || !layoutId) return null;
-        return getLayoutInStore(presentationId, slideId, layoutId);
-    }
+        const alignColumnTop = (slideId: string, layoutId: string, columnId: string) => {
+            alignColumnTopInStore(presentationId, slideId, layoutId, columnId);
+        };
 
-    const getSlide = (slideId: string | null) => {
-        if (!slideId) return null;
-        return getSlideInStore(presentationId, slideId);
-    }
+        const alignColumnCenter = (slideId: string, layoutId: string, columnId: string) => {
+            alignColumnCenterInStore(presentationId, slideId, layoutId, columnId);
+        };
+
+        const alignColumnBottom = (slideId: string, layoutId: string, columnId: string) => {
+            alignColumnBottomInStore(presentationId, slideId, layoutId, columnId);
+        };
+
+        const deleteColumn = (slideId: string, layoutId: string, columnId: string) => {
+            deleteColumnInStore(presentationId, slideId, layoutId, columnId);
+            menuControlFunctions.closeMenu();
+        };
+
+        return {
+            addColumnLeft,
+            addColumnRight,
+            duplicateColumn,
+            alignColumnTop,
+            alignColumnCenter,
+            alignColumnBottom,
+            deleteColumn
+        };
+    }, [
+        addColumnLeftInStore,
+        addColumnRightInStore,
+        duplicateColumnInStore,
+        alignColumnTopInStore,
+        alignColumnCenterInStore,
+        alignColumnBottomInStore,
+        deleteColumnInStore,
+        presentationId,
+        menuControlFunctions.closeMenu
+    ]);
+
+    // Getter functions
+    const getterFunctions = useMemo(() => {
+        const getElement = (slideId: string | null, layoutId: string | null, elementId: string | null) => {
+            if (!slideId || !layoutId || !elementId) return null;
+            return getElementInStore(presentationId, slideId, layoutId, elementId);
+        };
+
+        const getCell = (slideId: string | null, layoutId: string | null, columnId: string | null) => {
+            if (!slideId || !layoutId || !columnId) return null;
+            return getCellInStore(presentationId, slideId, layoutId, columnId);
+        };
+
+        const getLayout = (slideId: string | null, layoutId: string | null) => {
+            if (!slideId || !layoutId) return null;
+            return getLayoutInStore(presentationId, slideId, layoutId);
+        };
+
+        const getSlide = (slideId: string | null) => {
+            if (!slideId) return null;
+            return getSlideInStore(presentationId, slideId);
+        };
+
+        return {
+            getElement,
+            getCell,
+            getLayout,
+            getSlide
+        };
+    }, [getElementInStore, getCellInStore, getLayoutInStore, getSlideInStore, presentationId]);
+
+    const contextValue = useMemo(() => ({
+        state,
+        ...menuControlFunctions,
+        ...slideFunctions,
+        ...elementFunctions,
+        ...layoutFunctions,
+        ...columnFunctions,
+        ...getterFunctions
+    }), [
+        state,
+        menuControlFunctions,
+        slideFunctions,
+        elementFunctions,
+        layoutFunctions,
+        columnFunctions,
+        getterFunctions
+    ]);
 
     return (
-        <SlideMenuContext.Provider
-            value={{
-                state,
-                openMenu,
-                closeMenu,
-                duplicateSlide,
-                deleteSlide,
-                duplicateElement,
-                deleteElement,
-                deleteLayout,
-                editElement,
-                addColumnLeft,
-                addColumnRight,
-                duplicateColumn,
-                alignColumnTop,
-                alignColumnCenter,
-                alignColumnBottom,
-                deleteColumn,
-                getElement,
-                getCell,
-                getLayout,
-                getSlide,
-                getPresentation,
-                mergeSlideWithPrevious,
-                updateAlignLayout,
-                changeTemplate
-            }}
-        >
+        <SlideMenuContext.Provider value={contextValue}>
             {children}
         </SlideMenuContext.Provider>
     );
