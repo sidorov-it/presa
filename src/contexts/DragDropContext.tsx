@@ -173,7 +173,6 @@ type DndContextType = {
     cancelDrag: () => void;
     handleDragStart: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string, cellId?: string) => void;
     handleNewElementDragStart: (e: React.DragEvent<HTMLDivElement>, elementId: string, defaultProps: any) => void;
-    handleDrop: (e: React.DragEvent<HTMLDivElement>) => void;
     isDragging: () => boolean;
     getElement: (elementId: string, layoutId: string) => BaseElement | undefined;
     getLayout: (layoutId: string) => Layout | undefined;
@@ -280,14 +279,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         dispatch({ type: 'START_DRAG_MENU_ITEM', payload: { id, defaultProps } });
     }, []);
 
-    const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
-        // Logic moved to document-level handler
-    }, []);
-
     // Centralized drag over handling with document-level listeners
-
     const processAddElementToCell = useCallback(({
         element,
         targetLayout,
@@ -1176,7 +1168,6 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 return;
             }
         } else if (isSourceElementInSlide) {
-            // Original code for element dragging
             if (!prevStateRef.current.source.layoutId) {
                 return;
             }
@@ -1187,6 +1178,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             if (!sourceLayout || !targetLayout) {
                 return;
             }
+
             const targetSlide = getLayoutSlide(prevStateRef.current.target.layoutId);
             const sourceSlide = getLayoutSlide(prevStateRef.current.source.layoutId);
             if (!targetSlide || !sourceSlide) return;
@@ -1204,91 +1196,6 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 // Case 3: cell move by 1 element
                 if (position === 'left' || position === 'right') {
                     console.warn('processLayoutDrop: position is left or right');
-                    // // создаём новую ячейку
-                    // // обновляем cellId у элемента
-                    // // обновляем columnWidths в целевой gridStructure
-                    // // обновляем elements в целевой layout
-                    // // обновляем cells в целевой gridStructure
-                    // // удаляеми сходную сетку
-
-                    // // будем создавать новую ячейку в целевой сетке. считаем новое количество колонок
-                    // const newColumnCount = targetGridStructure.columns + 1;
-                    // // считаем новые ширины колонок
-                    // const newColumnWidths = getColumnWidths(newColumnCount);
-                    // // определяем позицию новой ячейки
-                    // const newCellPosition = position === 'left' ? 0 : 1;
-
-                    // const newCellId = generateId();
-                    // const newCell = {
-                    //     id: newCellId,
-                    //     column: newCellPosition + 1,
-                    //     row: 1,
-                    // };
-
-                    // const updatedDraggedElement: BaseElement = {
-                    //     ...draggedElement,
-                    //     cellId: newCellId
-                    // };
-
-                    // const updatedTargetLayoutElements = [...targetLayout.elements];
-                    // updatedTargetLayoutElements.splice(newCellPosition, 0, updatedDraggedElement);
-
-                    // targetGridStructure.rows[0].cells.splice(newCellPosition, 0, newCell);
-
-                    // targetGridStructure.rows[0].cells.forEach((c: GridCell) => {
-                    //     if (c.column >= newCellPosition && c.id !== newCellId) {
-                    //         c.column = c.column + 1;
-                    //     }
-                    // })
-                    // targetGridStructure.rows[0].cells.sort((a: GridCell, b: GridCell) => a.column - b.column);
-
-                    // // Update target layout
-                    // DragDropTransactionHelper.updateLayout(presentationId, targetSlide.id, targetLayout.id, {
-                    //     gridStructure: {
-                    //         ...targetGridStructure,
-                    //         // rows: [{
-                    //         //     ...targetLayout.gridStructure.rows[0],
-                    //         //     cells: position === 'left' ? [newCell, ...targetLayout.gridStructure.rows[0].cells] : [...targetLayout.gridStructure.rows[0].cells, newCell]
-                    //         // }],
-                    //         columnWidths: newColumnWidths,
-                    //         columns: newColumnCount
-                    //     },
-                    //     elements: updatedTargetLayoutElements,
-                    // });
-
-                    // if (sourceLayout.elements.length === 1) {
-                    //     if (sourceSlide.layouts.length === 1) {
-                    //         DragDropTransactionHelper.deleteSlide(presentationId, sourceSlide.id);
-                    //     } else {
-                    //         DragDropTransactionHelper.deleteLayout(presentationId, sourceSlide.id, sourceLayout.id);
-                    //     }
-                    // } else {
-                    //     const updatedElements = sourceLayout.elements.filter(e => e.id !== draggedElement.id);
-                    //     const elementsInCell = updatedElements.filter(e => e.cellId === draggedElement.cellId);
-
-                    //     if (elementsInCell.length === 0) {
-                    //         const updatedCells = sourceLayout.gridStructure.rows[0].cells.filter(c => c.id !== draggedElement.cellId);
-                    //         const updatedColumnWidthsSourceLayout = getColumnWidths(sourceLayout.gridStructure.columns - 1);
-
-                    //         DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
-                    //             gridStructure: {
-                    //                 ...sourceLayout.gridStructure,
-                    //                 columns: sourceLayout.gridStructure.columns - 1,
-                    //                 rows: [{
-                    //                     ...sourceLayout.gridStructure.rows[0],
-                    //                     cells: updatedCells
-                    //                 }],
-                    //                 columnWidths: updatedColumnWidthsSourceLayout
-                    //             },
-                    //             elements: updatedElements
-                    //         });
-                    //     } else {
-                    //         DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
-                    //             elements: updatedElements
-                    //         });
-                    //     }
-                    //     // Delete source cell
-                    // }
                 }
                 // Case 3.2: top/bottom
                 else if (position === 'top' || position === 'bottom') {
@@ -1305,25 +1212,37 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                         // элемент 1. переносим на новую позицию
                         const indexSourceLayout = sourceSlide.layouts.findIndex(l => l.id === sourceLayout.id);
                         const sourceLayouts = JSON.parse(JSON.stringify(sourceSlide.layouts));
-
                         sourceLayouts.splice(indexSourceLayout, 1);
 
-                        const targetLayouts = JSON.parse(JSON.stringify(targetSlide.layouts));
+                        if (sourceSlide.id === targetSlide.id) {
+                            // переносим на новую позицию в одном слайде
+                            const indexTargetLayout = sourceLayouts.findIndex((l: Layout) => l.id === targetLayout.id);
+                            const targetIndex = position === 'top' ? indexTargetLayout : indexTargetLayout + 1;
+                            sourceLayouts.splice(targetIndex, 0, sourceLayout);
 
-                        const indexTargetLayout = targetLayouts.findIndex((l: Layout) => l.id === targetLayout.id);
-                        const targetIndex = position === 'top' ? indexTargetLayout : indexTargetLayout + 1;
-                        targetLayouts.splice(targetIndex, 0, sourceLayout);
+                            DragDropTransactionHelper.updateSlide(presentationId, targetSlide.id, {
+                                ...targetSlide,
+                                layouts: sourceLayouts
+                            });
+                        } else {
+                            // переносим на новую позицию в другом слайде
+                            const targetLayouts = JSON.parse(JSON.stringify(targetSlide.layouts));
 
-                        DragDropTransactionHelper.updateSlide(presentationId, targetSlide.id, {
-                            ...targetSlide,
-                            layouts: targetLayouts
-                        });
+                            const indexTargetLayout = targetLayouts.findIndex((l: Layout) => l.id === targetLayout.id);
+                            const targetIndex = position === 'top' ? indexTargetLayout : indexTargetLayout + 1;
+                            targetLayouts.splice(targetIndex, 0, sourceLayout);
 
-                        if (sourceSlide.id !== targetSlide.id) {
-                            if (sourceSlide.layouts.length === 0) {
-                                DragDropTransactionHelper.deleteSlide(presentationId, sourceSlide.id);
-                            } else {
-                                DragDropTransactionHelper.deleteLayout(presentationId, sourceSlide.id, sourceLayout.id);
+                            DragDropTransactionHelper.updateSlide(presentationId, targetSlide.id, {
+                                ...targetSlide,
+                                layouts: targetLayouts
+                            });
+
+                            if (sourceSlide.id !== targetSlide.id) {
+                                if (sourceLayouts.length === 0) {
+                                    DragDropTransactionHelper.deleteSlide(presentationId, sourceSlide.id);
+                                } else {
+                                    DragDropTransactionHelper.deleteLayout(presentationId, sourceSlide.id, sourceLayout.id);
+                                }
                             }
                         }
                     } else {
@@ -2071,7 +1990,6 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         cancelDrag,
         handleDragStart,
         handleNewElementDragStart,
-        handleDrop,
         isDragging,
         getElement,
         getLayout,
@@ -2091,7 +2009,6 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         cancelDrag,
         handleDragStart,
         handleNewElementDragStart,
-        handleDrop,
         isDragging,
         getElement,
         getLayout,

@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 'use client'
 
-import React, { useState, useRef, RefObject, useCallback, memo, useMemo } from 'react';
+import React, { useState, useRef, RefObject, useCallback, memo } from 'react';
 import { EditorElement, getPredefinedGridStructures, Layout, Slide, TipTapRefs, PresentationState } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import styles from './SlideEditor.module.css';
@@ -155,9 +155,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         }, 100);
     }, [presentationId, slide.id]);
 
-    // Memoize layouts to prevent unnecessary re-renders
-    const memoizedLayouts = useMemo(() => slide.layouts, [slide.layouts]);
-
     return (
         <div
             className={`${styles.slide}`}
@@ -202,7 +199,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     )}
 
                     <div className={`${styles.slideContainer} themed-card`} data-slide-id={slide.id} onClick={handleSlideClick}>
-                        {memoizedLayouts.map((layout: Layout) => (
+                        {slide.layouts.map((layout: Layout) => (
                             <LayoutContent
                                 key={layout.id}
                                 layout={layout}

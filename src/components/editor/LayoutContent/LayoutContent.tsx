@@ -76,11 +76,11 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
         return elements;
     }, [layout.elements]);
 
-    const handleLocalDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        e.stopPropagation(); // Prevent propagation to avoid double triggering with global handler
-        handleDrop(e);
-    }, [handleDrop]);
+    // const handleLocalDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    //     e.preventDefault();
+    //     e.stopPropagation(); // Prevent propagation to avoid double triggering with global handler
+    //     handleDrop(e);
+    // }, [handleDrop]);
 
     // Detect if this is a layout with a single element in a single cell
     const isSingleElementSingleCellLayout = useMemo(() =>
@@ -124,7 +124,6 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 className={`${styles.layout}`}
                 data-layout-id={layout.id}
                 data-is-single-element-layout={isSingleElementSingleCellLayout ? "true" : "false"}
-                onDrop={handleLocalDrop}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
                 role="region"
