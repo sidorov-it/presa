@@ -4,7 +4,7 @@ import { useDnd } from '@/contexts/DragDropContext';
 import { generateGridTemplateAreas, generateGridTemplateColumns } from '@/types';
 import GridCellElement from '../GridCellElement';
 import styles from './LayoutContent.module.css';
-import { useSlideMenu, useSlideMenuActions, useSlideMenuSelectedLayout, useSlideMenuSelectedElement, useSlideMenuSelectedColumn } from '@/contexts/SlideMenuContext';
+import { useSlideMenuActions, useSlideMenuSelectedLayout, useSlideMenuSelectedElement, useSlideMenuSelectedColumn } from '@/contexts/SlideMenuContext';
 import DragHandler from '../DragHandler';
 
 interface LayoutContentProps {
@@ -35,16 +35,16 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     presentationId,
     slideId
 }) => {
-    const { state, handleDrop, handleDragStart } = useDnd();
+    const { state, handleDragStart } = useDnd();
 
     // Use optimized selector hooks instead of full context
     const { openMenu } = useSlideMenuActions();
-    
+
     // Get only the needed state from SlideMenu
     const menuLayoutId = useSlideMenuSelectedLayout();
     const menuElementId = useSlideMenuSelectedElement();
     const menuColumnId = useSlideMenuSelectedColumn();
-    
+
     const [isLayoutHovered, setIsLayoutHovered] = useState(false);
 
     // Memoize grid properties to prevent recalculations
@@ -128,7 +128,6 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 onMouseLeave={handleMouseLeave}
                 role="region"
                 aria-label={`Layout ${layout.id}`}
-                tabIndex={0}
             >
                 {isSelected && <div className={styles.layoutSelected} />}
 
@@ -199,6 +198,6 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
 export default memo(LayoutContent, (prevProps, nextProps) => {
     // Only re-render if layout changes
     return prevProps.layout === nextProps.layout &&
-           prevProps.slideId === nextProps.slideId &&
-           prevProps.presentationId === nextProps.presentationId;
+        prevProps.slideId === nextProps.slideId &&
+        prevProps.presentationId === nextProps.presentationId;
 });

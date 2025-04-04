@@ -5,10 +5,8 @@ interface Params {
   id: string;
 }
 
-export async function GET(
-  request: Request,
-  { params }: { params: Params }
-) {
+export async function GET(request: Request, props: { params: Promise<Params> }) {
+  const params = await props.params;
   try {
     const { id } = params;
 
@@ -33,10 +31,8 @@ export async function GET(
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: Params }
-) {
+export async function DELETE(request: Request, props: { params: Promise<Params> }) {
+  const params = await props.params;
   try {
     const { id } = params;
 
@@ -65,10 +61,8 @@ export async function DELETE(
   }
 }
 
-export async function PUT(
-  request: Request,
-  { params }: { params: Params }
-) {
+export async function PUT(request: Request, props: { params: Promise<Params> }) {
+  const params = await props.params;
   try {
     const { id } = params;
     const theme = await request.json();

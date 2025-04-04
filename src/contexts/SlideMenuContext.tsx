@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, ReactNode, useMemo, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, ReactNode, useMemo } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { BaseElement, GridCell, IPresentation, Layout, LayoutType, Slide } from '@/types';
 
@@ -368,7 +368,7 @@ const useSlideMenuState = <T,>(selector: UseSlideMenuStateSelector<T>): T => {
     if (!context) {
         throw new Error('useSlideMenuState must be used within a SlideMenuProvider');
     }
-    
+
     // Use useMemo to prevent unnecessary recalculations
     return useMemo(() => selector(context.state), [selector, context.state]);
 };
@@ -386,7 +386,7 @@ export const useSlideMenuCheckOpen = (slideId: string) => {
     if (!context) {
         throw new Error('useSlideMenuCheckOpen must be used within a SlideMenuProvider');
     }
-    
+
     return useMemo(
         () => context.checkSlideMenuIsOpen(slideId),
         [context.state.slideId, context.state.elementId, context.state.layoutId, slideId]
@@ -399,7 +399,7 @@ export const useSlideMenuActions = () => {
     if (!context) {
         throw new Error('useSlideMenuActions must be used within a SlideMenuProvider');
     }
-    
+
     return useMemo(() => {
         const { state, ...actions } = context;
         return actions;

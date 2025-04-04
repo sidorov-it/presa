@@ -15,6 +15,7 @@ import { useThemeStore } from '@/store/themeStore';
 import { Theme } from '@/types/theme';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { FaEye } from 'react-icons/fa';
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -97,6 +98,13 @@ export default function PresentationEditorPage() {
 
         setIsThemePopoverOpen(false);
     }, [presentation, getDefaultTheme, setCurrentTheme, setTheme]);
+
+    // Function to navigate to view mode
+    const handleViewPresentation = useCallback(() => {
+        if (presentation) {
+            window.open(`/view/${presentation.id}`, '_blank');
+        }
+    }, [presentation]);
 
     // Memoize the loading and not found UI to prevent re-renders
     const loadingUI = useMemo(() => (
@@ -205,7 +213,16 @@ export default function PresentationEditorPage() {
                                 </div>
                             </PopoverContent>
                         </Popover>
-                        <div className="">Просмотр</div>
+                        
+                        <button
+                            onClick={handleViewPresentation}
+                            className="flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
+                            aria-label="View presentation"
+                        >
+                            <FaEye size={16} />
+                            <span className="text-sm font-medium">Просмотр</span>
+                        </button>
+                        
                         <UndoRedoControls presentationId={presentation.id} />
 
                         <div className="flex items-center space-x-2">

@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
-import { FaPlus, FaMagic, FaEllipsisV, FaPencilAlt, FaCopy, FaTrash } from 'react-icons/fa';
+import { FaPlus, FaMagic, FaEllipsisV, FaPencilAlt, FaCopy, FaTrash, FaEye } from 'react-icons/fa';
 import { IPresentation } from '@/types';
 import { pluralize } from '@/utils/helpers';
 
@@ -85,6 +85,13 @@ export default function DashboardPage() {
     // Handle opening a presentation
     const handleOpenPresentation = (presentationId: string) => {
         router.push(`/docs/${presentationId}`);
+    };
+
+    // Handle opening a presentation in view mode
+    const handleViewPresentation = (presentationId: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setActiveMenu(null);
+        router.push(`/view/${presentationId}`);
     };
 
     // Toggle menu visibility
@@ -315,6 +322,13 @@ export default function DashboardPage() {
                                         className="absolute top-10 right-2 bg-white rounded-md shadow-lg z-10"
                                     >
                                         <div className="py-1">
+                                            <button
+                                                onClick={(e) => handleViewPresentation(presentation.id, e)}
+                                                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                            >
+                                                <FaEye className="mr-2" />
+                                                Просмотр
+                                            </button>
                                             <button
                                                 onClick={(e) => handleRenameClick(presentation.id, e)}
                                                 className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
