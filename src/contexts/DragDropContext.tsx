@@ -1644,17 +1644,24 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             const distanceFromLeft = e.clientX - rect.left;
             const distanceFromRight = rect.right - e.clientX;
 
-            // Find minimum distance
+            // Increase detection area by adding a threshold for top/bottom
+            const threshold = rect.height * 0.25; // Use 25% of element height as threshold
+            
+            // Find minimum distance with threshold applied for top and bottom
             let minDistance: number;
             let position: Position | null = null;
 
             if (isSingleCellLayout) {
                 // All sides are valid targets for single-cell layouts
-                minDistance = Math.min(distanceFromTop, distanceFromBottom, distanceFromLeft, distanceFromRight);
+                // Apply threshold to top and bottom distances
+                const adjustedDistanceFromTop = distanceFromTop < threshold ? 0 : distanceFromTop;
+                const adjustedDistanceFromBottom = distanceFromBottom < threshold ? 0 : distanceFromBottom;
+                
+                minDistance = Math.min(adjustedDistanceFromTop, adjustedDistanceFromBottom, distanceFromLeft, distanceFromRight);
 
-                if (minDistance === distanceFromTop) {
+                if (minDistance === adjustedDistanceFromTop || distanceFromTop < threshold) {
                     position = 'top';
-                } else if (minDistance === distanceFromBottom) {
+                } else if (minDistance === adjustedDistanceFromBottom || distanceFromBottom < threshold) {
                     position = 'bottom';
                 } else if (minDistance === distanceFromLeft) {
                     position = 'left';
@@ -1663,11 +1670,15 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 }
             } else {
                 // For multi-cell layouts, only top/bottom are valid for elements
-                minDistance = Math.min(distanceFromTop, distanceFromBottom);
+                // Apply threshold to top and bottom distances
+                const adjustedDistanceFromTop = distanceFromTop < threshold ? 0 : distanceFromTop;
+                const adjustedDistanceFromBottom = distanceFromBottom < threshold ? 0 : distanceFromBottom;
+                
+                minDistance = Math.min(adjustedDistanceFromTop, adjustedDistanceFromBottom);
 
-                if (minDistance === distanceFromTop) {
+                if (minDistance === adjustedDistanceFromTop || distanceFromTop < threshold) {
                     position = 'top';
-                } else if (minDistance === distanceFromBottom) {
+                } else if (minDistance === adjustedDistanceFromBottom || distanceFromBottom < threshold) {
                     position = 'bottom';
                 }
             }
@@ -1851,19 +1862,34 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             const distanceFromLeft = e.clientX - rect.left;
             const distanceFromRight = rect.right - e.clientX;
 
-            // Find minimum distance
-            const minDistance = Math.min(distanceFromTop, distanceFromBottom, distanceFromLeft, distanceFromRight);
+            // Increase detection area with threshold
+            const verticalThreshold = rect.height * 0.25; // 25% of height for top/bottom
+            const horizontalThreshold = rect.width * 0.15; // 15% of width for left/right
+            
+            // Adjust distances with thresholds
+            const adjustedDistanceFromTop = distanceFromTop < verticalThreshold ? 0 : distanceFromTop;
+            const adjustedDistanceFromBottom = distanceFromBottom < verticalThreshold ? 0 : distanceFromBottom;
+            const adjustedDistanceFromLeft = distanceFromLeft < horizontalThreshold ? 0 : distanceFromLeft;
+            const adjustedDistanceFromRight = distanceFromRight < horizontalThreshold ? 0 : distanceFromRight;
+
+            // Find minimum distance with thresholds applied
+            const minDistance = Math.min(
+                adjustedDistanceFromTop, 
+                adjustedDistanceFromBottom, 
+                adjustedDistanceFromLeft, 
+                adjustedDistanceFromRight
+            );
 
             // Determine position based on closest edge
             let position: Position | null = null;
 
-            if (minDistance === distanceFromTop) {
+            if (minDistance === adjustedDistanceFromTop || distanceFromTop < verticalThreshold) {
                 position = 'top';
-            } else if (minDistance === distanceFromBottom) {
+            } else if (minDistance === adjustedDistanceFromBottom || distanceFromBottom < verticalThreshold) {
                 position = 'bottom';
-            } else if (minDistance === distanceFromLeft) {
+            } else if (minDistance === adjustedDistanceFromLeft || distanceFromLeft < horizontalThreshold) {
                 position = 'left';
-            } else if (minDistance === distanceFromRight) {
+            } else if (minDistance === adjustedDistanceFromRight || distanceFromRight < horizontalThreshold) {
                 position = 'right';
             }
 
@@ -1872,6 +1898,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     prevStateRef.current.indicators.layoutPosition === position)) {
                 return;
             }
+
             // Only update if position is valid and state changed
 
             if (position === 'left' || position === 'right') {

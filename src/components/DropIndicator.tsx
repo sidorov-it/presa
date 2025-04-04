@@ -163,8 +163,8 @@ const DropIndicator = () => {
 
     // Generate styles based on position and context
     const getIndicatorStyles = () => {
-        // Different thicknesses for different indicator types
-        const thickness = type === 'element' ? 2 : type === 'cell' ? 3 : 3;
+        // Increase thickness for better visibility
+        const thickness = type === 'element' ? 3 : type === 'cell' ? 4 : 4;
 
         const offset = 0;
         let styles: React.CSSProperties = {
@@ -209,7 +209,6 @@ const DropIndicator = () => {
                 ...styles,
                 left: targetRect.left,
                 top: targetRect.top,
-                // top: targetRect.top + 8,
                 width: targetRect.width,
                 height: thickness,
                 backgroundColor: color,
@@ -218,7 +217,6 @@ const DropIndicator = () => {
             styles = {
                 ...styles,
                 left: targetRect.left,
-                // top: targetRect.bottom + 8 - thickness,
                 top: targetRect.bottom - thickness,
                 width: targetRect.width,
                 height: thickness,
