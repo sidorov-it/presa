@@ -65,7 +65,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
         // Set control variables based on darkness
         document.documentElement.style.setProperty('--control-stroke', isDark ? 'white' : 'rgba(0, 0, 0, 0.2)');
         document.documentElement.style.setProperty('--control-icon', isDark ? 'white' : 'rgba(0, 0, 0, 0.6)');
-        document.documentElement.style.setProperty('--control-background', isDark ? 'rgba(0, 0, 0, 0.5)' : '#fff');
+        document.documentElement.style.setProperty('--control-background', isDark ? 'rgba(0, 0, 0, 0.5)' : 'transparent');
 
         // Apply dark theme class to body if needed
         if (isDark) {

@@ -70,19 +70,8 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
         // Control styles based on background darkness
         '--control-stroke': isDark ? 'white' : 'rgba(0, 0, 0, 0.2)',
         '--control-icon': isDark ? 'white' : 'rgba(0, 0, 0, 0.6)',
-        '--control-background': isDark ? 'rgba(0, 0, 0, 0.5)' : '#fff',
+        '--control-background': isDark ? 'rgba(0, 0, 0, 0.5)' : 'transparent',
     } as React.CSSProperties;
-
-    const getButtonBorderRadius = () => {
-        switch (theme.design.buttons.buttonShape) {
-            case 'pill':
-                return '9999px';
-            case 'rounded':
-                return '8px';
-            default:
-                return '0';
-        }
-    };
 
     return (
         <div className="w-full max-w-4xl mx-auto p-6" style={previewStyle}>
