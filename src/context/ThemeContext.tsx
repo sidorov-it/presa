@@ -58,11 +58,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, initialT
         const isDark = isColorDark(theme.colors.slideBackground);
         setIsDarkMode(isDark);
         
-        // Set CSS variables on document root
-        document.documentElement.style.setProperty('--control-stroke', isDark ? 'white' : 'rgba(0, 0, 0, 0.2)');
-        document.documentElement.style.setProperty('--control-icon', isDark ? 'white' : 'rgba(0, 0, 0, 0.6)');
-        document.documentElement.style.setProperty('--control-background', isDark ? 'rgba(0, 0, 0, 0.5)' : 'transparent');
-        
+        // Note: CSS variables are now set in the main ThemeProvider component
         // Toggle dark-theme class on body
         if (isDark) {
             document.body.classList.add('dark-theme');

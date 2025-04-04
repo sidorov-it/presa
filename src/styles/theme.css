@@ -25,7 +25,7 @@
   --button-shape: rounded;
   --link-color: #2563eb;
   
-  /* Control styles */
+  /* Control styles - default values, but will be set dynamically in ThemeProvider.tsx */
   --control-stroke: rgba(0, 0, 0, 0.2);
   --control-icon: rgba(0, 0, 0, 0.6);
   --control-background: transparent;

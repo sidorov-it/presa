@@ -16,10 +16,7 @@
   --secondary-text: #cccccc;
   --tertiary-text: #999999;
   
-  /* Control elements */
-  --control-stroke: #ffffff;
-  --control-icon: #ffffff;
-  --control-background: rgba(0, 0, 0, 0.5);
+  /* Control elements - removed as they're now set dynamically in ThemeProvider.tsx */
   
   /* Buttons and interactive elements */
   --button-bg: #444;

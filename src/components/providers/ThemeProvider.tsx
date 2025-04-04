@@ -30,22 +30,26 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     const [isDarkMode, setIsDarkMode] = useState(false);
 
     const applyThemeToDOM = (theme: Theme) => {
+        // Base colors
         document.documentElement.style.setProperty('--primary-accent', theme.colors.primaryAccent);
         document.documentElement.style.setProperty('--heading-color', theme.colors.headingColor);
         document.documentElement.style.setProperty('--text-color', theme.colors.textColor);
         document.documentElement.style.setProperty('--slide-background', theme.colors.slideBackground);
         document.documentElement.style.setProperty('--page-background', theme.colors.pageBackground);
 
+        // Typography
         document.documentElement.style.setProperty('--heading-font', `'${theme.typography.headingFont}', sans-serif`);
         document.documentElement.style.setProperty('--heading-weight', theme.typography.headingWeight.toString());
         document.documentElement.style.setProperty('--body-font', `'${theme.typography.bodyFont}', sans-serif`);
         document.documentElement.style.setProperty('--body-weight', theme.typography.bodyWeight.toString());
 
+        // Slide design
         document.documentElement.style.setProperty('--slide-border-radius', theme.design.slide.borderRadius);
         document.documentElement.style.setProperty('--slide-shadow', theme.design.slide.shadow);
         document.documentElement.style.setProperty('--slide-border', theme.design.slide.border);
         document.documentElement.style.setProperty('--slide-border-color', theme.design.slide.borderColor);
 
+        // Block design
         document.documentElement.style.setProperty('--block-background', theme.design.blocks.backgroundColor);
         document.documentElement.style.setProperty('--block-opacity', theme.design.blocks.opacity.toString());
         document.documentElement.style.setProperty('--block-border-width',
@@ -54,20 +58,21 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
                     theme.design.blocks.borderWidth === 'thick' ? '4px' : '0');
         document.documentElement.style.setProperty('--block-shadow', theme.design.blocks.shadow);
 
+        // Button and link design
         document.documentElement.style.setProperty('--button-color', theme.design.buttons.buttonColor);
         document.documentElement.style.setProperty('--button-shape', theme.design.buttons.buttonShape);
         document.documentElement.style.setProperty('--link-color', theme.design.buttons.linkColor);
 
-        // Check if the slide background is dark
+        // Check if the slide background is dark and set control variables accordingly
         const isDark = isColorDark(theme.colors.slideBackground);
         setIsDarkMode(isDark);
 
-        // Set control variables based on darkness
+        // Control variables - the single place these should be set dynamically
         document.documentElement.style.setProperty('--control-stroke', isDark ? 'white' : 'rgba(0, 0, 0, 0.2)');
         document.documentElement.style.setProperty('--control-icon', isDark ? 'white' : 'rgba(0, 0, 0, 0.6)');
         document.documentElement.style.setProperty('--control-background', isDark ? 'rgba(0, 0, 0, 0.5)' : 'transparent');
 
-        // Apply dark theme class to body if needed
+        // Toggle dark-theme class on body for additional theme-specific styles
         if (isDark) {
             document.body.classList.add('dark-theme');
         } else {

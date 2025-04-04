@@ -2,44 +2,14 @@ import { Theme } from '@/types/theme';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ThemedHeading, ThemedText, ThemedButton, ThemedLink, ThemedCard, ThemedBlock } from './ThemedComponents';
 import { useEffect } from 'react';
-import { useTheme, isColorDark } from '@/context/ThemeContext';
-
-// Utility function to determine if a color is dark
-const isColorDark = (color: string): boolean => {
-    // Handle hex colors
-    if (color.startsWith('#')) {
-        const hex = color.replace('#', '');
-        const r = parseInt(hex.substring(0, 2), 16);
-        const g = parseInt(hex.substring(2, 4), 16);
-        const b = parseInt(hex.substring(4, 6), 16);
-        // Calculate perceived brightness using YIQ formula
-        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        return brightness < 128;
-    }
-    
-    // Handle rgb/rgba colors
-    if (color.startsWith('rgb')) {
-        const rgbValues = color.match(/\d+/g);
-        if (rgbValues && rgbValues.length >= 3) {
-            const r = parseInt(rgbValues[0]);
-            const g = parseInt(rgbValues[1]);
-            const b = parseInt(rgbValues[2]);
-            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-            return brightness < 128;
-        }
-    }
-    
-    // Default to false for other color formats
-    return false;
-};
+import { useTheme } from '@/context/ThemeContext';
 
 interface ThemePreviewProps {
   theme: Theme;
 }
 
 export const ThemePreview = ({ theme }: ThemePreviewProps) => {
-    const { setTheme } = useTheme();
-    const isDark = isColorDark(theme.colors.slideBackground);
+    const { setTheme, isDarkMode } = useTheme();
     
     // Update the global theme context whenever the theme changes
     useEffect(() => {
@@ -47,30 +17,37 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
     }, [theme, setTheme]);
     
     const previewStyle = {
+        // Base colors
         '--primary-accent': theme.colors.primaryAccent,
         '--heading-color': theme.colors.headingColor,
         '--text-color': theme.colors.textColor,
         '--slide-background': theme.colors.slideBackground,
         '--page-background': theme.colors.pageBackground,
+        
+        // Typography
         '--heading-font': theme.typography.headingFont,
         '--heading-weight': theme.typography.headingWeight,
         '--body-font': theme.typography.bodyFont,
         '--body-weight': theme.typography.bodyWeight,
+        
+        // Slide design
         '--slide-border-radius': theme.design.slide.borderRadius,
         '--slide-shadow': theme.design.slide.shadow,
         '--slide-border': theme.design.slide.border,
         '--slide-border-color': theme.design.slide.borderColor,
+        
+        // Block design
         '--block-background': theme.design.blocks.backgroundColor,
         '--block-opacity': theme.design.blocks.opacity,
         '--block-border-width': theme.design.blocks.borderWidth,
         '--block-shadow': theme.design.blocks.shadow,
+        
+        // Button and link design
         '--button-color': theme.design.buttons.buttonColor,
         '--button-shape': theme.design.buttons.buttonShape,
         '--link-color': theme.design.buttons.linkColor,
-        // Control styles based on background darkness
-        '--control-stroke': isDark ? 'white' : 'rgba(0, 0, 0, 0.2)',
-        '--control-icon': isDark ? 'white' : 'rgba(0, 0, 0, 0.6)',
-        '--control-background': isDark ? 'rgba(0, 0, 0, 0.5)' : 'transparent',
+        
+        // No need to set control variables here as they're set by ThemeProvider.tsx
     } as React.CSSProperties;
 
     return (
