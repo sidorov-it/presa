@@ -96,6 +96,13 @@ export const ThemeProvider = ({ children, initialTheme }: ThemeProviderProps) =>
             console.log("ThemeProvider: Using initialTheme", initialTheme.name);
             setCurrentThemeState(initialTheme);
         }
+
+        return () => {
+            const defaultTheme = getDefaultTheme();
+
+            applyThemeToDOM(defaultTheme);
+            setCurrentThemeState(defaultTheme);
+        }
     }, [initialTheme]);
 
     // Load themes when the provider is initialized
