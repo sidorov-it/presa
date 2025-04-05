@@ -1,7 +1,7 @@
 import { Extension, JSONContent } from '@tiptap/core'
 
 // Создаем расширение для обработки нажатия Enter и Backspace
-export const EnterHandlerExtension = (onEnterPressed: (contentBeforeCursor?: JSONContent, contentAfterCursor?: JSONContent) => void, onBackspacePressed: (isEmpty: boolean) => void) => {
+export const EnterHandlerExtension = (onEnterPressed: (contentBeforeCursor?: JSONContent, contentAfterCursor?: JSONContent) => void, onBackspacePressed: (isEmpty: boolean, content: string) => void) => {
     return Extension.create({
         name: 'enterHandler',
         addKeyboardShortcuts() {
@@ -63,18 +63,28 @@ export const EnterHandlerExtension = (onEnterPressed: (contentBeforeCursor?: JSO
                 'Backspace': ({ editor }) => {
                     const { state } = editor
                     const { selection } = state
-                    const { empty, $head } = selection
+                    const { empty: emptySelection, $head } = selection
 
                     // Check if cursor is at start and document is empty
                     const isAtStart = $head.pos === 1
+                    const textContent = state.doc.textContent;
+
                     const isEmpty = state.doc.textContent.trim() === ''
 
-                    if (empty && isAtStart && isEmpty) {
-                        onBackspacePressed(true)
-                        return true
+                    if (!emptySelection || !isAtStart) {
+                        return false
                     }
 
-                    return false
+
+                    // if (isAtStart && !isEmpty) {
+                    //     onBackspacePressed(false, true)
+                    // }
+                    // if (emptySelection && isAtStart && isEmpty) {
+                    onBackspacePressed(isEmpty, textContent)
+                    return true
+                    // }
+
+                    // return false
                 },
             }
         },

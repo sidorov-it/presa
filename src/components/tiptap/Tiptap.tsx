@@ -67,7 +67,7 @@ export interface TiptapRef {
 // Определяем массив расширений
 const getExtensions = (
     onEnterPressed: (contentBeforeCursor?: string, contentAfterCursor?: string) => void,
-    onBackspacePressed: (isEmpty: boolean) => void,
+    onBackspacePressed: (isEmpty: boolean, textContent: string) => void,
     placeholder: string,
     onAddElement?: (type: string) => void,
     presentationId?: string,
@@ -225,8 +225,8 @@ const getExtensions = (
         const htmlBeforeCursor = generateHTML(contentBeforeCursor!, getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement))
         const htmlAfterCursor = generateHTML(contentAfterCursor!, getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement))
         onEnterPressed(htmlBeforeCursor, htmlAfterCursor)
-    }, (isEmpty) => {
-        onBackspacePressed(isEmpty)
+    }, (isEmpty, textContent) => {
+        onBackspacePressed(isEmpty, textContent)
     }),
 
     // Arrow key navigation between editors
@@ -281,8 +281,7 @@ const Tiptap = ({
     layoutId,
     tiptapRefs,
     elementId,
-
-}: TiptapProps) => {    // Use the global editor store instead of local state
+}: TiptapProps) => {
     const editor = useEditor({
         extensions: getExtensions(
             onEnterPressed,
@@ -296,7 +295,6 @@ const Tiptap = ({
             tiptapRefs
         ),
         content: initialContent,
-        // autofocus: autoFocus,
         editorProps: {
             attributes: {
                 class: `${styles.editor} custom-tiptap-editor no-dropcursor themed-text`,
@@ -305,7 +303,6 @@ const Tiptap = ({
         immediatelyRender: true,
         onContentError: (error) => {
             console.log('contentError', error)
-
             return false;
         },
         onBlur: () => {
@@ -313,7 +310,6 @@ const Tiptap = ({
         },
         onFocus: () => {
             onFocus();
-            // Set this editor as the active editor in the store
             useEditorStore.getState().setActiveEditor(editor, elementId);
         },
         onUpdate: ({ editor, transaction }) => {
@@ -323,11 +319,16 @@ const Tiptap = ({
         },
     })
 
+    // Update editor content when initialContent changes (including undo/redo operations)
     useEffect(() => {
-        if (editor) {
-            editor.commands.setContent(initialContent);
+        if (editor && initialContent) {
+            const currentContent = editor.getHTML();
+            // Only update if content actually changed to avoid cursor position issues
+            if (currentContent !== initialContent) {
+                editor.commands.setContent(initialContent, false, { isHistoryUpdate: true });
+            }
         }
-    }, [editor])
+    }, [editor, initialContent])
 
     useEffect(() => {
         if (editor) {

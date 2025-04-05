@@ -112,22 +112,8 @@ export const ElementContent = ({
                 layouts: updatedLayouts
             });
 
-            // useHistoryStore.getState().commitTransaction(presentationId);
-            // const updatedCurrentElements = layout.elements.map(el => {
-            // if (el.id === element.id) {
-            //     return {
-            //         ...el,
-            //         content: contentBeforeCursor || ''
-            //     }
-            // }
-            // return el;
-            // })
+            useHistoryStore.getState().commitTransaction(presentationId);
 
-            // usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, {
-            //     elements: updatedCurrentElements
-            // });
-
-            // Set the element to focus in the editor store
             useEditorStore.getState().setElementToFocus(
                 firstNewEditorId,
                 newLayoutId,
@@ -135,7 +121,7 @@ export const ElementContent = ({
             );
 
             setTimeout(() => {
-                tiptapRefs.current?.editors[firstNewEditorId]?.focus();
+                tiptapRefs.current?.editors[firstNewEditorId]?.editor.commands.focus('start');
             }, 10);
 
         } else {
@@ -173,6 +159,10 @@ export const ElementContent = ({
 
     const handleEditorContentChange = useCallback((elementId: string) => (content: string, isEnterPress?: boolean) => {
         // If this update was triggered by Enter key, don't create a new history entry
+        if (isEnterPress) {
+            useHistoryStore.getState().beginTransaction(presentationId, 'add new layout');
+        }
+
         usePresentationStore.getState().updateElement(presentationId, slideId, layoutId, elementId, {
             content: content
         } as Partial<Element>, !isEnterPress); // Pass false to prevent creating new history entry if isEnterPress is true
@@ -180,7 +170,7 @@ export const ElementContent = ({
 
 
 
-    const handleBackspacePressed = useCallback((element: Element) => () => {
+    const handleBackspacePressed = useCallback((element: Element) => (isEmpty: boolean, textContent: string) => {
         const presentation = usePresentationStore.getState().getPresentation(presentationId);
         if (!presentation) return;
 
@@ -228,9 +218,6 @@ export const ElementContent = ({
                 updateSlide(presentationId, previousSlide.id, {
                     layouts: previousSlideLayouts
                 });
-                // usePresentationStore.getState().updateSlide(presentationId, slideId, {
-                //     layouts: updatedLayouts
-                // });
             } else {
                 const updatedLayouts = [...slide.layouts];
                 updatedLayouts.splice(layoutIndex, 1);
@@ -240,7 +227,7 @@ export const ElementContent = ({
             }
         }
         // backspace не в первой строке -> удаляем layout
-        else if (elementsInCell.length === 1 && !isMultiCellRow && layoutIndex !== 0 && slide.layouts.length > 1) {
+        else if (elementsInCell.length === 1 && !isMultiCellRow && layoutIndex !== 0 && slide.layouts.length > 1 && isEmpty) {
             usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
         }
         // backspace в единственном элементе в ячейке с несколькими ячейками -> удаляем всю ячейку
@@ -264,14 +251,62 @@ export const ElementContent = ({
         }
         // backspace в первом элементе в ячейке с несколькими элементами -> удаляем первый элемент. ставим фокус на следующем
         else if (isMultiCellRow && elementsInCell.length >= 1) {
-            const updatedLayout = { ...layout };
-            const updatedElements = updatedLayout.elements.filter(e => e.id !== element.id);
-            updatedLayout.elements = updatedElements;
-            usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
+            const elementIndex = elementsInCell.findIndex(el => el.id === element.id);
+            if (elementIndex === 0 && !isEmpty) {
+                return;
+            } else if (elementIndex > 0) {
+                const previousElement = elementsInCell[elementIndex - 1];
+                const editorToUpdate = tiptapRefs.current?.editors[previousElement.id];
+
+                if (editorToUpdate) {
+                    const oldContentSize = editorToUpdate.editor.state.doc.content.size - 1;
+
+                    editorToUpdate.editor.chain().focus('end').insertContent(textContent).run();
+
+                    usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, element.id);
+
+                    setTimeout(() => {
+                        const updatedEditor = tiptapRefs.current?.editors[previousElement.id];
+                        updatedEditor?.editor.commands.focus(oldContentSize);
+                    }, 10);
+
+                } else {
+                    console.warn(`Editor instance ${previousElement.id} not found in tiptapRefs. Cannot merge content programmatically.`);
+                }
+            } else {
+                const updatedLayout = { ...layout };
+                const updatedElements = updatedLayout.elements.filter(e => e.id !== element.id);
+                updatedLayout.elements = updatedElements;
+                usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
+            }
         }
         // удаление единственного элемента на слайде. удаляем весь слайд
-        else if (elementsInCell.length === 1 && layout.elements.length === 1) {
+        else if (elementsInCell.length === 1 && layout.elements.length === 1 && isEmpty) {
             usePresentationStore.getState().deleteSlide(presentationId, slideId);
+        } else if (elementsInCell.length === 1 && layout.elements.length === 1) {
+            // объединяем контент с контентом предыдущего редактора
+            const previousLayout = slide.layouts[layoutIndex - 1];
+
+            if (previousLayout.gridStructure.columns === 1) {
+                const elementInPreviousLayout = previousLayout.elements[0];
+                const editorToUpdate = tiptapRefs.current?.editors[elementInPreviousLayout.id];
+
+                if (editorToUpdate) {
+                    const oldContentSize = editorToUpdate.editor.state.doc.content.size - 1;
+
+                    editorToUpdate.editor.chain().focus('end').insertContent(textContent).run();
+
+                    usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+
+                    setTimeout(() => {
+                        const updatedEditor = tiptapRefs.current?.editors[elementInPreviousLayout.id];
+                        updatedEditor?.editor.commands.focus(oldContentSize);
+                    }, 10);
+
+                } else {
+                    console.warn(`Editor instance ${elementInPreviousLayout.id} not found in tiptapRefs. Cannot merge content programmatically.`);
+                }
+            }
         }
     }, [slideId, layoutId]);
 

@@ -1281,6 +1281,17 @@ export const usePresentationStore = create<PresentationState>()(
                             before: { presentations: beforeState.presentations },
                             after: updatedState
                         });
+                    } else {
+                        useHistoryStore.getState().recordTransactionAction({
+                            type: 'element',
+                            description: 'Update element',
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            elementId,
+                            before: { presentations: beforeState.presentations },
+                            after: updatedState
+                        });
                     }
 
                     return updatedState;
