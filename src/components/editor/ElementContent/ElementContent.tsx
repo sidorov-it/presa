@@ -112,7 +112,7 @@ export const ElementContent = ({
                 layouts: updatedLayouts
             });
 
-            useHistoryStore.getState().commitTransaction(presentationId);
+            // useHistoryStore.getState().commitTransaction(presentationId);
             // const updatedCurrentElements = layout.elements.map(el => {
             // if (el.id === element.id) {
             //     return {
@@ -171,10 +171,11 @@ export const ElementContent = ({
         }
     }, [slideId, layoutId]);
 
-    const handleEditorContentChange = useCallback((elementId: string) => (content: string) => {
+    const handleEditorContentChange = useCallback((elementId: string) => (content: string, isEnterPress?: boolean) => {
+        // If this update was triggered by Enter key, don't create a new history entry
         usePresentationStore.getState().updateElement(presentationId, slideId, layoutId, elementId, {
             content: content
-        } as Partial<Element>);
+        } as Partial<Element>, !isEnterPress); // Pass false to prevent creating new history entry if isEnterPress is true
     }, [slideId, layoutId, presentationId]);
 
 

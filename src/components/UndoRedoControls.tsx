@@ -13,12 +13,16 @@ const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, cla
     const canRedoOperation = canRedo(presentationId);
 
     const handleUndo = () => {
+        console.log('UndoRedoControls: handleUndo');
+        console.log('canUndoOperation', canUndoOperation);
         if (canUndoOperation) {
             undo(presentationId);
         }
     };
 
     const handleRedo = () => {
+        console.log('UndoRedoControls: handleRedo');
+        console.log('canRedoOperation', canRedoOperation);
         if (canRedoOperation) {
             redo(presentationId);
         }

@@ -17,9 +17,33 @@ import {
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 import { getNewEditorElement } from '@/elements/registry';
 import debounce from 'lodash/debounce';
+import { generateId } from '@/utils/id';
 
-// Helper function to generate string IDs
-const generateId = () => Math.random().toString(36).substring(2, 15);
+function deepDiff(obj1, obj2) {
+    const result = {};
+
+    for (const key in obj1) {
+        if (!(key in obj2)) {
+            result[key] = { onlyInObj1: obj1[key] };
+        } else if (typeof obj1[key] === 'object' && obj1[key] !== null && typeof obj2[key] === 'object' && obj2[key] !== null) {
+            const nestedDiff = deepDiff(obj1[key], obj2[key]);
+            if (Object.keys(nestedDiff).length > 0) {
+                result[key] = nestedDiff;
+            }
+        } else if (obj1[key] !== obj2[key]) {
+            result[key] = { obj1: obj1[key], obj2: obj2[key] };
+        }
+    }
+
+    for (const key in obj2) {
+        if (!(key in obj1)) {
+            result[key] = { onlyInObj2: obj2[key] };
+        }
+    }
+
+    return result;
+}
+
 
 interface PresentationState {
     presentations: IPresentation[];
@@ -77,7 +101,7 @@ interface PresentationState {
     // Работа с элементами
     getElement: (presentationId: string, slideId: string, layoutId: string, elementId: string) => BaseElement | undefined;
     addElement: (presentationId: string, slideId: string, layoutId: string, element: Omit<BaseElement, 'id'>) => string;
-    updateElement: (presentationId: string, slideId: string, layoutId: string, elementId: string, data: Partial<BaseElement>) => void;
+    updateElement: (presentationId: string, slideId: string, layoutId: string, elementId: string, data: Partial<BaseElement>, createHistoryEntry?: boolean) => void;
     deleteElement: (presentationId: string, slideId: string, layoutId: string, elementId: string) => void;
     duplicateElement: (presentationId: string, slideId: string, elementId: string) => void;
     addColumn: (presentationId: string, slideId: string, layoutId: string, columnIndex: number) => void;
@@ -1199,7 +1223,7 @@ export const usePresentationStore = create<PresentationState>()(
                     return updatedState;
                 })
             },
-            updateElement: (presentationId, slideId, layoutId, elementId, data) => {
+            updateElement: (presentationId, slideId, layoutId, elementId, data, createHistoryEntry = true) => {
                 const beforeState = { ...get() };
 
                 const currentPresentation = get().getPresentation(presentationId);
@@ -1246,16 +1270,19 @@ export const usePresentationStore = create<PresentationState>()(
                         }),
                     };
 
-                    get().recordAction({
-                        type: 'element',
-                        description: 'Update element',
-                        presentationId,
-                        slideId,
-                        layoutId,
-                        elementId,
-                        before: { presentations: beforeState.presentations },
-                        after: updatedState
-                    });
+                    if (createHistoryEntry) {
+                        get().recordAction({
+                            type: 'element',
+                            description: 'Update element',
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            elementId,
+                            before: { presentations: beforeState.presentations },
+                            after: updatedState
+                        });
+                    }
+
                     return updatedState;
                 });
 
@@ -1881,6 +1908,16 @@ export const usePresentationStore = create<PresentationState>()(
 
             setFullState: (state: { presentations: IPresentation[] }) => {
                 // Direct setter for presentations array used by undo/redo operations
+
+                console.log('presentationStore: setFullState');
+                console.log('state', state);
+
+                const diff1 = deepDiff(get().presentations, state.presentations);
+                console.log('diff1', diff1);
+
+                const diff2 = deepDiff(state.presentations, get().presentations);
+                console.log('diff2', diff2);
+
                 if (state && Array.isArray(state.presentations)) {
                     set({ presentations: JSON.parse(JSON.stringify(state.presentations)) });
                 }

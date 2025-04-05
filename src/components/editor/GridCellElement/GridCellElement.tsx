@@ -124,8 +124,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     const { openMenu, state: { elementId: menuElementId, columnId: menuColumnId } } = useSlideMenu();
 
-
-    console.log('menuElementId', menuElementId);
     const handleDragStart = useHandleDragStart();
 
     const [elementIsHovered, setElementIsHovered] = useState(false);

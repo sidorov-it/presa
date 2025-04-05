@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { Theme } from '@/types/theme';
+import { resetThemeStyles } from '@/utils/themeUtils';
 
 // Utility function to determine if a color is dark
 const isColorDark = (color: string): boolean => {
@@ -138,7 +139,12 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
 
         // Clean up function
         return () => {
-            // If needed, you could reset styles here when component unmounts
+            // Use the utility function to reset theme styles on unmount
+            resetThemeStyles();
+            
+            // Reset the applied theme reference
+            appliedThemeRef.current = null;
+            console.log("ThemeStylesApplier: Theme reset to defaults on unmount");
         };
     }, [theme]);
 

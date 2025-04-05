@@ -47,6 +47,7 @@ export const EnterHandlerExtension = (onEnterPressed: (contentBeforeCursor?: JSO
                         // Delete the content after cursor in current editor
                         editor
                             .chain()
+                            .setMeta('handleEnter', true)
                             .focus()
                             .deleteRange({ from: cursorPos, to: state.doc.content.size })
                             .run()

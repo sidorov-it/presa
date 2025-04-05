@@ -5,6 +5,7 @@ import { Theme } from '@/types/theme';
 import { useThemeStore } from '@/store/themeStore';
 import { isColorDark } from '@/context/ThemeContext';
 import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
+import { resetThemeStyles } from '@/utils/themeUtils';
 
 interface ThemeContextType {
   currentTheme: Theme | null;
@@ -97,11 +98,17 @@ export const ThemeProvider = ({ children, initialTheme }: ThemeProviderProps) =>
             setCurrentThemeState(initialTheme);
         }
 
+        // Return cleanup function to reset everything when component unmounts
         return () => {
-            const defaultTheme = getDefaultTheme();
+            console.log("ThemeProvider: Cleaning up on unmount");
 
-            applyThemeToDOM(defaultTheme);
-            setCurrentThemeState(defaultTheme);
+            // Use utility function to reset theme styles
+            resetThemeStyles();
+
+            // Don't update state in cleanup as it can cause infinite loops
+            // const defaultTheme = getDefaultTheme();
+            // setCurrentThemeState(defaultTheme);
+            // setCurrentTheme(defaultTheme);
         }
     }, [initialTheme]);
 

@@ -44,7 +44,7 @@ interface TiptapProps {
     onBackspacePressed?: (isEmpty: boolean) => void;
     onFocus?: () => void;
     onBlur?: () => void;
-    onContentChange?: (content: string) => void;
+    onContentChange?: (content: string, isEnterPress?: boolean) => void;
     autoFocus?: boolean;
     id?: string;
     placeholder?: string;
@@ -82,6 +82,7 @@ const getExtensions = (
     // Базовый набор расширений
     StarterKit.configure({
         dropcursor: false,
+        history: false,
         heading: {
             levels: [1, 2, 3, 4, 5]
         },
@@ -315,9 +316,10 @@ const Tiptap = ({
             // Set this editor as the active editor in the store
             useEditorStore.getState().setActiveEditor(editor, elementId);
         },
-        onUpdate: ({ editor }) => {
+        onUpdate: ({ editor, transaction }) => {
             const html = editor.getHTML();
-            onContentChange(html);
+            const isEnterPress = transaction.getMeta('handleEnter');
+            onContentChange(html, isEnterPress);
         },
     })
 

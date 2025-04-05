@@ -2,6 +2,32 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { usePresentationStore } from './presentationStore';
 
+
+function deepDiff(obj1, obj2) {
+    const result = {};
+
+    for (const key in obj1) {
+        if (!(key in obj2)) {
+            result[key] = { onlyInObj1: obj1[key] };
+        } else if (typeof obj1[key] === 'object' && obj1[key] !== null && typeof obj2[key] === 'object' && obj2[key] !== null) {
+            const nestedDiff = deepDiff(obj1[key], obj2[key]);
+            if (Object.keys(nestedDiff).length > 0) {
+                result[key] = nestedDiff;
+            }
+        } else if (obj1[key] !== obj2[key]) {
+            result[key] = { obj1: obj1[key], obj2: obj2[key] };
+        }
+    }
+
+    for (const key in obj2) {
+        if (!(key in obj1)) {
+            result[key] = { onlyInObj2: obj2[key] };
+        }
+    }
+
+    return result;
+}
+
 // Define history action types
 export type HistoryAction = {
     type: 'layout' | 'element' | 'presentation' | 'slide' | 'column'; // type of entity modified
@@ -169,7 +195,11 @@ export const useHistoryStore = create<HistoryState>()(
                                 [presentationId]: null
                             }
                         }
-                        console.debug('commit transaction', state, updatedState);
+
+                        const diff1 = deepDiff(state.get, updatedState);
+                        console.log('diff1', diff1);
+
+                        console.debug('commit transaction', diff1, state, updatedState);
                         return updatedState;
                     });
                     return;
@@ -230,10 +260,21 @@ export const useHistoryStore = create<HistoryState>()(
             },
 
             recordAction: (action) => {
+                console.log('Recording Action:', {
+                    type: action.type,
+                    description: action.description,
+                    presentationId: action.presentationId,
+                    slideId: action.slideId,
+                    elementId: action.elementId,
+                    before: JSON.stringify(action.before),
+                    after: JSON.stringify(action.after)
+                });
+
                 const presentationId = action.presentationId;
 
                 // If there's an active transaction, add to it
                 if (get().activeTransactions[presentationId]) {
+                    console.log('Action is part of an active transaction');
                     get().recordTransactionAction(action);
                     return;
                 }
@@ -273,6 +314,7 @@ export const useHistoryStore = create<HistoryState>()(
             undo: (presentationId: string) => {
                 // If there's an active transaction, cancel it
                 if (get().activeTransactions[presentationId]) {
+                    console.log('Cancelling active transaction before undo');
                     get().cancelTransaction(presentationId);
                 }
 
@@ -282,16 +324,28 @@ export const useHistoryStore = create<HistoryState>()(
                     const presentationHistory = state.history[presentationId];
 
                     if (!presentationHistory || presentationHistory.past.length === 0) {
+                        console.log('Nothing to undo for presentation:', presentationId);
                         return state; // Nothing to undo
                     }
 
                     // Get the last action from past
                     const lastAction = presentationHistory.past[presentationHistory.past.length - 1];
+                    console.log('Undoing Action:', {
+                        type: lastAction.type,
+                        description: lastAction.description,
+                        presentationId: lastAction.presentationId,
+                        slideId: lastAction.slideId,
+                        elementId: lastAction.elementId,
+                        before: JSON.stringify(lastAction.before),
+                        after: JSON.stringify(lastAction.after)
+                    });
+
                     const newPast = presentationHistory.past.slice(0, -1);
                     const newFuture = [lastAction, ...presentationHistory.future];
 
                     // Restore the entire state to what it was before this action
                     if (lastAction.before && typeof lastAction.before === 'object') {
+                        console.log('Restoring state to:', lastAction.before);
                         // Directly restore the full state
                         presentationStore.setFullState(lastAction.before);
                     }

@@ -5,6 +5,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
+import { useThemeStore } from '@/store/themeStore';
+import { resetThemeStyles } from '@/utils/themeUtils';
 import { FaPlus, FaMagic, FaEllipsisV, FaPencilAlt, FaCopy, FaTrash, FaEye } from 'react-icons/fa';
 import { IPresentation } from '@/types';
 import { pluralize } from '@/utils/helpers';
@@ -17,6 +19,7 @@ export default function DashboardPage() {
     const { data: session } = useSession();
     const router = useRouter();
     const { presentations, createPresentation, loadPresentationsList, deletePresentation } = usePresentationStore();
+    const { setCurrentTheme } = useThemeStore();
     const [showAIModal, setShowAIModal] = useState(false);
     const [userPresentations, setUserPresentations] = useState<PresentationInfo[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -57,22 +60,11 @@ export default function DashboardPage() {
         setUserPresentations(presentations);
     }, [presentations]);
 
-    // Close menu when clicking outside
-    // useEffect(() => {
-    //     const handleClickOutside = (event: MouseEvent) => {
-    //         if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-    //             setActiveMenu(null);
-    //         }
-    //     };
-
-    //     document.addEventListener('mousedown', handleClickOutside);
-    //     return () => {
-    //         document.removeEventListener('mousedown', handleClickOutside);
-    //     };
-    // }, []);
-
     // Handle creating an empty presentation
     const handleCreateEmptyPresentation = async () => {
+        setCurrentTheme(null);
+        resetThemeStyles();
+
         const presentationId = await createPresentation('Новая презентация');
         router.push(`/docs/${presentationId}`);
     };

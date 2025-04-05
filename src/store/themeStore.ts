@@ -5,7 +5,7 @@ import { createNewTheme, DEFAULT_THEME } from '@/constants/defaultTheme';
 interface ThemeState {
   themes: Theme[];
   currentTheme: Theme | null;
-  setCurrentTheme: (theme: Theme) => void;
+  setCurrentTheme: (theme: Theme | null) => void;
   addTheme: (theme: Omit<Theme, 'id'>) => Promise<void>;
   updateTheme: (theme: Theme) => Promise<void>;
   deleteTheme: (themeId: string) => Promise<void>;
