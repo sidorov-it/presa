@@ -8,7 +8,7 @@ interface ThemePreviewProps {
 }
 
 export const ThemePreview = ({ theme }: ThemePreviewProps) => {
-    const { setTheme, isDarkMode } = useTheme();
+    const { setTheme } = useTheme();
 
     // Update the global theme context whenever the theme changes
     useEffect(() => {

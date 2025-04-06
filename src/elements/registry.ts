@@ -1,18 +1,28 @@
 import { generateId } from '@/utils/id'
-import { type Category, ElementConfig, TextElement, TextElementType } from '@/types'
+import { BaseElement, EditorElement, type Category } from '@/types'
 import { FaFont, FaTable, FaList, FaBox, FaImage, FaVideo, FaRegChartBar, FaUpload, FaLink, FaQrcode, FaQuoteLeft, FaToggleOn } from 'react-icons/fa'
 import editorsDefaultContent from './textEditor/defaultContent';
 
 // Define components for the BubbleMenu
-import HeadingBubbleMenu from '@/components/editor/BubbleMenus/HeadingBubbleMenu';
-import QuoteBubbleMenu from '@/components/editor/BubbleMenus/QuoteBubbleMenu';
-import TableBubbleMenu from '@/components/editor/BubbleMenus/TableBubbleMenu';
-import ListBubbleMenu from '@/components/editor/BubbleMenus/ListBubbleMenu';
-import BoxBubbleMenu from '@/components/editor/BubbleMenus/BoxBubbleMenu';
-import ButtonBubbleMenu from '@/components/editor/BubbleMenus/ButtonBubbleMenu';
-import DefaultBubbleMenu from '@/components/editor/BubbleMenus/DefaultBubbleMenu';
+import HeadingBubbleMenu from '@/components/editor/Menus/BubbleMenus/HeadingBubbleMenu';
+import QuoteBubbleMenu from '@/components/editor/Menus/BubbleMenus/QuoteBubbleMenu';
+import TableBubbleMenu from '@/components/editor/Menus/BubbleMenus/TableBubbleMenu';
+import ListBubbleMenu from '@/components/editor/Menus/BubbleMenus/ListBubbleMenu';
+import BoxBubbleMenu from '@/components/editor/Menus/BubbleMenus/BoxBubbleMenu';
+import DefaultBubbleMenu from '@/components/editor/Menus/BubbleMenus/DefaultBubbleMenu';
+import ButtonMenu from '@/components/editor/Menus/ButtonMenu';
 
-export const getNewElement = (type: string): Omit<TextElement, 'cellId'> => {
+// Define component type enum to better categorize elements by their structure
+export enum ComponentStructureType {
+  // Pure text editor without wrapper
+  TEXT_EDITOR = 'text_editor',
+  // Text editor with wrapper (like box, summary, etc.)
+  WRAPPED_TEXT_EDITOR = 'wrapped_text_editor',
+  // Custom component without text editor
+  CUSTOM_COMPONENT = 'custom_component'
+}
+
+export const getNewElement = (type: string): Omit<BaseElement, 'cellId'> | null => {
     // Find the element configuration in the registry
     const elementConfig = elementsRegistry
         .flatMap(category =>
@@ -20,38 +30,26 @@ export const getNewElement = (type: string): Omit<TextElement, 'cellId'> => {
                 ? category.subCategories.flatMap(sub => sub.elements)
                 : category.elements
         )
-        .find(element => element?.id === type);
+        .find(element => element?.elementTypeId === type);
+
+    if (!elementConfig) {
+        throw new Error(`Element with type ${type} not found in registry`);
+    }
 
     // Base properties for all elements
     const baseElement = {
         id: generateId(8),
-        type: 'editor' as TextElementType, // Cast to TextElementType to fix type error
-        textType: type as 'text' | 'heading' | 'paragraph', // Cast to valid textType
+        // type: elementConfig?.type as string, // Cast to TextElementType to fix type error
+        // тип текста. не нуженЮ
+        textType: (elementConfig?.defaultProps?.textType as 'text' | 'heading' | 'paragraph') || 'text', // Cast to valid textType with fallback
         content: elementConfig?.defaultProps?.content ?? '',
-        position: { x: 0, y: 0 },
-        size: { width: 300, height: 100 }, // Increased default width for better text editing
-        style: {},
-        zIndex: 1,
+        componentStructure: elementConfig?.componentStructure || ComponentStructureType.TEXT_EDITOR,
+        hasTextEditor: elementConfig?.hasTextEditor,
+        elementTypeId: elementConfig?.elementTypeId,
     };
 
-    // // Merge with specific properties based on element type
-    // if (type.includes('heading')) {
-    //     return {
-    //         ...baseElement,
-    //         textType: 'heading',
-    //         level: elementConfig?.defaultProps?.level ?? 1
-    //     };
-    // }
-
-    // if (type === 'quote') {
-    //     return {
-    //         ...baseElement,
-    //         textType: 'quote'
-    //     };
-    // }
-
     // Return default text element for other types
-    return baseElement;
+    return baseElement as Omit<BaseElement, 'cellId'>;
 }
 
 export const elementsRegistry: Category[] = [
@@ -66,50 +64,75 @@ export const elementsRegistry: Category[] = [
                 // Icon: FaFont,
                 elements: [
                     {
-                        id: 'title',
-                        type: 'editor',
+                        elementTypeId: 'text',
+                        // type: ContainerType.EDITOR,
+                        label: 'Текст',
+                        Icon: FaFont,
+                        // Define structure and menu type for component
+                        componentStructure: ComponentStructureType.TEXT_EDITOR,
+                        hasTextEditor: true,
+                        MenuComponent: HeadingBubbleMenu,
+                        defaultProps: { textType: 'text', content: '' }
+                    },
+
+                    {
+                        elementTypeId: 'title',
+                        // type: ContainerType.EDITOR,
                         label: 'Заголовок',
                         Icon: FaFont,
+                        // Define structure and menu type for component
+                        componentStructure: ComponentStructureType.TEXT_EDITOR,
+                        hasTextEditor: true,
                         MenuComponent: HeadingBubbleMenu,
                         defaultProps: { textType: 'heading', level: 1, content: editorsDefaultContent.title }
                     },
                     {
-                        id: 'heading-1',
-                        type: 'editor',
+                        elementTypeId: 'heading-1',
+                        // type: ContainerType.EDITOR,
                         label: 'Подзаголовок 1',
                         Icon: FaFont,
+                        componentStructure: ComponentStructureType.TEXT_EDITOR,
+                        hasTextEditor: true,
                         MenuComponent: HeadingBubbleMenu,
                         defaultProps: { textType: 'heading', level: 2, content: editorsDefaultContent.heading1 }
                     },
                     {
-                        id: 'heading-2',
-                        type: 'editor',
+                        elementTypeId: 'heading-2',
+                        // type: ContainerType.EDITOR,
                         label: 'Подзаголовок 2',
                         Icon: FaFont,
+                        componentStructure: ComponentStructureType.TEXT_EDITOR,
+                        hasTextEditor: true,
                         MenuComponent: HeadingBubbleMenu,
                         defaultProps: { textType: 'heading', level: 3, content: editorsDefaultContent.heading2 }
                     },
                     {
-                        id: 'heading-3',
-                        type: 'editor',
+                        elementTypeId: 'heading-3',
+                        // type: ContainerType.EDITOR,
                         label: 'Подзаголовок 3',
                         Icon: FaFont,
+                        componentStructure: ComponentStructureType.TEXT_EDITOR,
+                        hasTextEditor: true,
                         MenuComponent: HeadingBubbleMenu,
                         defaultProps: { textType: 'heading', level: 4, content: editorsDefaultContent.heading3 }
                     },
                     {
-                        id: 'heading-4',
-                        type: 'editor',
+                        elementTypeId: 'heading-4',
+                        // type: ContainerType.EDITOR,
                         label: 'Подзаголовок 4',
                         Icon: FaFont,
+                        componentStructure: ComponentStructureType.TEXT_EDITOR,
+                        hasTextEditor: true,
                         MenuComponent: HeadingBubbleMenu,
                         defaultProps: { textType: 'heading', level: 5, content: editorsDefaultContent.heading4 }
                     },
                     {
-                        id: 'quote',
-                        type: 'editor',
+                        elementTypeId: 'quote',
+                        // type: ContainerType.EDITOR,
                         label: 'Цитата',
                         Icon: FaQuoteLeft,
+                        componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
+                        hasTextEditor: true,
                         MenuComponent: QuoteBubbleMenu,
                         defaultProps: { textType: 'quote', content: editorsDefaultContent.quote }
                     },
@@ -120,10 +143,12 @@ export const elementsRegistry: Category[] = [
                 label: 'Таблицы',
                 elements: [
                     {
-                        id: 'table-2x2',
-                        type: 'table',
+                        elementTypeId: 'table-2x2',
+                        // type: ContainerType.TABLE,
                         label: 'Таблица 2x2',
                         Icon: FaTable,
+                        componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
+                        hasTextEditor: true,
                         MenuComponent: TableBubbleMenu,
                         defaultProps: {
                             textType: 'table',
@@ -131,10 +156,12 @@ export const elementsRegistry: Category[] = [
                         }
                     },
                     {
-                        id: 'table-3x3',
-                        type: 'table',
+                        elementTypeId: 'table-3x3',
+                        // type: ContainerType.TABLE,
                         label: 'Таблица 3x3',
                         Icon: FaTable,
+                        componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
+                        hasTextEditor: true,
                         MenuComponent: TableBubbleMenu,
                         defaultProps: {
                             textType: 'table',
@@ -142,10 +169,12 @@ export const elementsRegistry: Category[] = [
                         }
                     },
                     {
-                        id: 'table-4x4',
-                        type: 'table',
+                        elementTypeId: 'table-4x4',
+                        // type: ContainerType.TABLE,
                         label: 'Таблица 4x4',
                         Icon: FaTable,
+                        componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
+                        hasTextEditor: true,
                         MenuComponent: TableBubbleMenu,
                         defaultProps: {
                             textType: 'table',
@@ -159,34 +188,37 @@ export const elementsRegistry: Category[] = [
                 label: 'Списки',
                 // Icon: FaList,
                 elements: [
-                    // Bullet list
-                    // Numered
-                    // Todo
                     {
-                        id: 'bullet-list',
-                        type: 'editor',
+                        elementTypeId: 'bullet-list',
+                        // type: ContainerType.EDITOR,
                         label: 'Список',
                         Icon: FaList,
+                        componentStructure: ComponentStructureType.TEXT_EDITOR,
+                        hasTextEditor: true,
                         MenuComponent: ListBubbleMenu,
                         defaultProps: {
                             content: editorsDefaultContent.lists
                         }
                     },
                     {
-                        id: 'numered-list',
-                        type: 'editor',
+                        elementTypeId: 'numered-list',
+                        // type: ContainerType.EDITOR,
                         label: 'Нумерованный список',
                         Icon: FaList,
+                        componentStructure: ComponentStructureType.TEXT_EDITOR,
+                        hasTextEditor: true,
                         MenuComponent: ListBubbleMenu,
                         defaultProps: {
                             content: editorsDefaultContent.numeredList
                         }
                     },
                     {
-                        id: 'todo-list',
-                        type: 'editor',
+                        elementTypeId: 'todo-list',
+                        // type: ContainerType.EDITOR,
                         label: 'Список задач',
                         Icon: FaList,
+                        componentStructure: ComponentStructureType.TEXT_EDITOR,
+                        hasTextEditor: true,
                         MenuComponent: ListBubbleMenu,
                         defaultProps: {
                             content: editorsDefaultContent.todoList
@@ -199,10 +231,12 @@ export const elementsRegistry: Category[] = [
                 label: 'Блоки',
                 elements: [
                     {
-                        id: 'box',
-                        type: 'editor',
+                        elementTypeId: 'box',
+                        // type: ContainerType.EDITOR,
                         label: 'Блок',
                         Icon: FaBox,
+                        componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
+                        hasTextEditor: true,
                         MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'box',
@@ -210,10 +244,12 @@ export const elementsRegistry: Category[] = [
                         }
                     },
                     {
-                        id: 'note-box',
-                        type: 'editor',
+                        elementTypeId: 'note-box',
+                        // type: ContainerType.EDITOR,
                         label: 'Блок с заметкой',
                         Icon: FaBox,
+                        componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
+                        hasTextEditor: true,
                         MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'note-box',
@@ -221,10 +257,12 @@ export const elementsRegistry: Category[] = [
                         }
                     },
                     {
-                        id: 'info-box',
-                        type: 'editor',
+                        elementTypeId: 'info-box',
+                        // type: ContainerType.EDITOR,
                         label: 'Блок с информацией',
                         Icon: FaBox,
+                        componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
+                        hasTextEditor: true,
                         MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'info-box',
@@ -232,10 +270,12 @@ export const elementsRegistry: Category[] = [
                         }
                     },
                     {
-                        id: 'warning-box',
-                        type: 'editor',
+                        elementTypeId: 'warning-box',
+                        // type: ContainerType.EDITOR,
                         label: 'Блок с предупреждением',
                         Icon: FaBox,
+                        componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
+                        hasTextEditor: true,
                         MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'warning-box',
@@ -243,10 +283,12 @@ export const elementsRegistry: Category[] = [
                         }
                     },
                     {
-                        id: 'caution-box',
-                        type: 'editor',
+                        elementTypeId: 'caution-box',
+                        // type: ContainerType.EDITOR,
                         label: 'Блок с предостережением',
                         Icon: FaBox,
+                        componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
+                        hasTextEditor: true,
                         MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'caution-box',
@@ -254,10 +296,12 @@ export const elementsRegistry: Category[] = [
                         }
                     },
                     {
-                        id: 'success-box',
-                        type: 'editor',
+                        elementTypeId: 'success-box',
+                        // type: ContainerType.EDITOR,
                         label: 'Блок с успехом',
                         Icon: FaBox,
+                        componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
+                        hasTextEditor: true,
                         MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'success-box',
@@ -265,10 +309,12 @@ export const elementsRegistry: Category[] = [
                         }
                     },
                     {
-                        id: 'question-box',
-                        type: 'editor',
+                        elementTypeId: 'question-box',
+                        // type: ContainerType.EDITOR,
                         label: 'Блок с вопросом',
                         Icon: FaBox,
+                        componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
+                        hasTextEditor: true,
                         MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'question-box',
@@ -282,21 +328,28 @@ export const elementsRegistry: Category[] = [
                 label: 'Интерактивные элементы',
                 elements: [
                     {
-                        id: 'button',
-                        type: 'editor',
+                        elementTypeId: 'button',
+                        // type: ContainerType.EDITOR,
                         label: 'Кнопка',
                         Icon: FaBox,
-                        MenuComponent: ButtonBubbleMenu,
+                        componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
+                        hasTextEditor: true,
+                        // Custom menu specifically for buttons
+                        MenuComponent: ButtonMenu,
+                        // Indicates this has a special config with limited text formatting
+                        hasLimitedTextFormatting: true,
                         defaultProps: {
                             textType: 'button',
                             content: editorsDefaultContent.button
                         }
                     },
                     {
-                        id: 'toggle',
-                        type: 'editor',
+                        elementTypeId: 'toggle',
+                        // type: ContainerType.EDITOR,
                         label: 'Переключатель',
                         Icon: FaToggleOn,
+                        componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
+                        hasTextEditor: true,
                         MenuComponent: DefaultBubbleMenu,
                         defaultProps: {
                             textType: 'details',
@@ -315,28 +368,34 @@ export const elementsRegistry: Category[] = [
         elements: [
             // Upload
             {
-                id: 'upload',
-                type: 'element',
+                elementTypeId: 'upload',
+                // type: ContainerType.ELEMENT,
                 label: 'Загрузка изображения',
                 Icon: FaUpload,
+                componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
+                hasTextEditor: false,
                 MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
             // Link
             {
-                id: 'link',
-                type: 'element',
+                elementTypeId: 'link',
+                // type: ContainerType.ELEMENT,
                 label: 'Ссылка',
                 Icon: FaLink,
+                componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
+                hasTextEditor: false,
                 MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
             // QR
             {
-                id: 'qr',
-                type: 'element',
+                elementTypeId: 'qr',
+                // type: ContainerType.ELEMENT,
                 label: 'QR-код',
                 Icon: FaQrcode,
+                componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
+                hasTextEditor: false,
                 MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
@@ -348,10 +407,12 @@ export const elementsRegistry: Category[] = [
         Icon: FaVideo,
         elements: [
             {
-                id: 'video',
-                type: 'element',
+                elementTypeId: 'video',
+                // type: ContainerType.ELEMENT,
                 label: 'Видео',
                 Icon: FaVideo,
+                componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
+                hasTextEditor: false,
                 MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             }
@@ -364,82 +425,132 @@ export const elementsRegistry: Category[] = [
         elements: [
             // Column chart
             {
-                id: 'column-chart',
-                type: 'element',
+                elementTypeId: 'column-chart',
+                // type: ContainerType.ELEMENT,
                 label: 'Столбчатая диаграмма',
                 Icon: FaRegChartBar,
+                componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
+                hasTextEditor: false,
                 MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
             // Bar chart
             {
-                id: 'bar-chart',
-                type: 'element',
+                elementTypeId: 'bar-chart',
+                // type: ContainerType.ELEMENT,
                 label: 'Столбчатая диаграмма',
                 Icon: FaRegChartBar,
+                componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
+                hasTextEditor: false,
                 MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
             // Line chart
             {
-                id: 'line-chart',
-                type: 'element',
+                elementTypeId: 'line-chart',
+                // type: ContainerType.ELEMENT,
                 label: 'Линейная диаграмма',
                 Icon: FaRegChartBar,
+                componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
+                hasTextEditor: false,
                 MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
             // Pie chart
             {
-                id: 'pie-chart',
-                type: 'element',
+                elementTypeId: 'pie-chart',
+                // type: ContainerType.ELEMENT,
                 label: 'Круговая диаграмма',
                 Icon: FaRegChartBar,
+                componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
+                hasTextEditor: false,
                 MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
             // Donut  chart
             {
-                id: 'donut-chart',
-                type: 'element',
+                elementTypeId: 'donut-chart',
+                // type: ContainerType.ELEMENT,
                 label: 'Кольцевая диаграмма',
                 Icon: FaRegChartBar,
+                componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
+                hasTextEditor: false,
                 MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
         ]
     }
-
 ]
 
-export const getNewEditorElement = (cellId: string): TextElement => {
-    const newEditor: TextElement = {
-        id: generateId(),
-        type: 'editor',
-        textType: 'text',
-        content: '',
-        cellId,
-        position: { x: 0, y: 0 },
-        size: { width: 100, height: 100 },
-        style: {},
-        zIndex: 0,
-    }
-
-    return newEditor;
-}
-
-export const getElementMenuComponent = (type: string): React.ComponentType<any> | undefined => {
+// Helper to get appropriate menu based on element and context
+export const getElementMenuComponent = (elementId: string): React.ComponentType<any> | undefined => {
     const elementConfig = elementsRegistry
         .flatMap(category =>
             category.subCategories
                 ? category.subCategories.flatMap(sub => sub.elements)
                 : category.elements
         )
-        .find(element => element?.type === type);
+        .find(element => element?.elementTypeId === elementId);
 
     return elementConfig?.MenuComponent;
 }
 
-// export const getElementsByCategory = (category: string): ElementConfig[] => {
-//   return elementRegistry.filter(element => element.category === category)
-// }
+const emptyTextElement = elementsRegistry.flatMap(category =>
+    category.subCategories
+        ? category.subCategories.flatMap(sub => sub.elements)
+        : category.elements
+).find(element => element?.elementTypeId === 'text');
+
+export const getNewEditorElement = (cellId: string, content?: string): EditorElement => {
+    const newEditor: EditorElement = {
+        id: generateId(),
+        // textType: 'text',
+        content: content || '',
+        cellId,
+        elementTypeId: emptyTextElement!.elementTypeId,
+        // type: emptyTextElement!.type as any,
+        componentStructure: emptyTextElement!.componentStructure,
+        hasTextEditor: true,
+    }
+
+    return newEditor;
+}
+
+// Check if an element has text editing capabilities
+export const hasTextEditor = (elementId: string): boolean => {
+    const elementConfig = elementsRegistry
+        .flatMap(category =>
+            category.subCategories
+                ? category.subCategories.flatMap(sub => sub.elements)
+                : category.elements
+        )
+        .find(element => element?.elementTypeId === elementId);
+
+    return elementConfig?.hasTextEditor ?? false;
+}
+
+// Check if element uses limited text formatting (like button)
+export const hasLimitedTextFormatting = (elementId: string): boolean => {
+    const elementConfig = elementsRegistry
+        .flatMap(category =>
+            category.subCategories
+                ? category.subCategories.flatMap(sub => sub.elements)
+                : category.elements
+        )
+        .find(element => element?.elementTypeId === elementId);
+
+    return elementConfig?.hasLimitedTextFormatting ?? false;
+}
+
+// Get component structure type
+export const getComponentStructureType = (elementId: string): ComponentStructureType | undefined => {
+    const elementConfig = elementsRegistry
+        .flatMap(category =>
+            category.subCategories
+                ? category.subCategories.flatMap(sub => sub.elements)
+                : category.elements
+        )
+        .find(element => element?.elementTypeId === elementId);
+
+    return elementConfig?.componentStructure;
+}

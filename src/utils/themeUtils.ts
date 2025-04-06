@@ -8,7 +8,7 @@ import { DEFAULT_THEME } from '@/constants/defaultTheme';
  */
 export const resetThemeStyles = (): void => {
     console.log("ThemeUtils: Resetting theme styles to defaults");
-    
+
     // Base colors
     document.documentElement.style.setProperty('--primary-accent', DEFAULT_THEME.colors.primaryAccent);
     document.documentElement.style.setProperty('--heading-color', DEFAULT_THEME.colors.headingColor);
@@ -31,12 +31,12 @@ export const resetThemeStyles = (): void => {
     // Block design
     document.documentElement.style.setProperty('--block-background', DEFAULT_THEME.design.blocks.backgroundColor);
     document.documentElement.style.setProperty('--block-opacity', DEFAULT_THEME.design.blocks.opacity.toString());
-    
+
     // Handle block border width with proper indentation
     const blockBorderWidth = DEFAULT_THEME.design.blocks.borderWidth === 'thin' ? '1px' :
-                            DEFAULT_THEME.design.blocks.borderWidth === 'medium' ? '2px' :
-                            DEFAULT_THEME.design.blocks.borderWidth === 'thick' ? '4px' : '0';
-                            
+        DEFAULT_THEME.design.blocks.borderWidth === 'medium' ? '2px' :
+            DEFAULT_THEME.design.blocks.borderWidth === 'thick' ? '4px' : '0';
+
     document.documentElement.style.setProperty('--block-border-width', blockBorderWidth);
     document.documentElement.style.setProperty('--block-shadow', DEFAULT_THEME.design.blocks.shadow);
 
@@ -52,4 +52,4 @@ export const resetThemeStyles = (): void => {
 
     // Remove the dark-theme class from body
     document.body.classList.remove('dark-theme');
-}; 
+};

@@ -22,4 +22,4 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
     );
 };
 
-export default PresentationViewer; 
+export default PresentationViewer;

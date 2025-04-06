@@ -21,4 +21,4 @@ const SlideViewer = ({ slide }: SlideViewerProps) => {
     );
 };
 
-export default SlideViewer; 
+export default SlideViewer;

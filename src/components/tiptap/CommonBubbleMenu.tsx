@@ -98,7 +98,9 @@ export default function CommonBubbleMenu({
     };
 
 
-    const shouldShow = useCallback(({ editor, view, state, oldState, from, to }: { editor: Editor; view: EditorView; state: EditorState; oldState?: EditorState | null; from: number; to: number }) => {
+    const shouldShow = useCallback(({ editor: _editor, view, state: _state, oldState: _oldState, from, to }: { editor: Editor; view: EditorView; state: EditorState; oldState?: EditorState | null; from: number; to: number }) => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         if (from !== to && view.focused) {
             return true;
         }
@@ -109,7 +111,7 @@ export default function CommonBubbleMenu({
 
         return false;
     }, [isOpen, closeMenu]);
-    
+
     return (
         <BubbleMenu
             editor={editor}

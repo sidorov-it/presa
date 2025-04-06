@@ -41,7 +41,7 @@ import DetailsSummary from '@tiptap-pro/extension-details-summary'
 interface TiptapProps {
     initialContent?: string;
     onEnterPressed?: (content?: any) => void;
-    onBackspacePressed?: (isEmpty: boolean) => void;
+    onBackspacePressed?: (isEmpty: boolean, textContent: string) => void;
     onFocus?: () => void;
     onBlur?: () => void;
     onContentChange?: (content: string, isEnterPress?: boolean) => void;

@@ -10,12 +10,14 @@ import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
+import { generateId } from '@/utils/id';
 
 export default function ThemeEditorPage(props: { params: Promise<{ action: string }> }) {
     const params = use(props.params);
     const router = useRouter();
     const { addTheme, updateTheme, themes } = useThemeStore();
-    const [theme, setTheme] = useState<Omit<Theme, 'id'>>({
+    const [theme, setTheme] = useState<Theme>({
+        id: generateId(),
         name: '',
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -100,7 +102,7 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
                     <div className="p-6 bg-card rounded-lg shadow-sm">
                         <div className="mb-4">
                             <Label htmlFor="theme-name" className="mb-2 block">Название темы</Label>
-                            <Input 
+                            <Input
                                 id="theme-name"
                                 value={theme.name}
                                 onChange={(e) => setTheme({...theme, name: e.target.value})}

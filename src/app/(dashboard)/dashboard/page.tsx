@@ -2,7 +2,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
 import { useThemeStore } from '@/store/themeStore';
@@ -11,17 +10,13 @@ import { FaPlus, FaMagic, FaEllipsisV, FaPencilAlt, FaCopy, FaTrash, FaEye } fro
 import { IPresentation } from '@/types';
 import { pluralize } from '@/utils/helpers';
 
-type PresentationInfo = IPresentation & {
-    slidesCount: number;
-}
-
 export default function DashboardPage() {
-    const { data: session } = useSession();
+    // const { data: session } = useSession();
     const router = useRouter();
     const { presentations, createPresentation, loadPresentationsList, deletePresentation } = usePresentationStore();
     const { setCurrentTheme } = useThemeStore();
     const [showAIModal, setShowAIModal] = useState(false);
-    const [userPresentations, setUserPresentations] = useState<PresentationInfo[]>([]);
+    const [userPresentations, setUserPresentations] = useState<IPresentation[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isGenerating, setIsGenerating] = useState(false);
     const [activeMenu, setActiveMenu] = useState<string | null>(null);

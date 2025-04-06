@@ -47,7 +47,7 @@ export default async function PresentationView(props: { params: Promise<{ id: st
 
         // Parse the presentation data
         presentation = parsePresentation(presentationData);
-        
+
         console.log("Presentation themeId:", presentation.themeId);
 
         // Fetch theme if available
@@ -86,7 +86,7 @@ export default async function PresentationView(props: { params: Promise<{ id: st
                         createdAt: themeData.createdAt,
                         updatedAt: themeData.updatedAt
                     };
-                    
+
                     console.log("Theme object created:", theme.name);
                     console.log("Theme structure validation:", {
                         hasColors: !!theme.colors,

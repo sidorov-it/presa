@@ -7,43 +7,17 @@ import {
     Layout,
     Element,
     GridStructure,
-    EditorElement,
     LayoutType,
-    TextElementType,
     BaseElement,
     GridCell,
-    getPredefinedGridStructures
+    getPredefinedGridStructures,
+    EditorElement,
 } from '@/types';
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
-import { getNewEditorElement } from '@/elements/registry';
+import { ComponentStructureType, getNewEditorElement } from '@/elements/registry';
 import debounce from 'lodash/debounce';
 import { generateId } from '@/utils/id';
-
-function deepDiff(obj1, obj2) {
-    const result = {};
-
-    for (const key in obj1) {
-        if (!(key in obj2)) {
-            result[key] = { onlyInObj1: obj1[key] };
-        } else if (typeof obj1[key] === 'object' && obj1[key] !== null && typeof obj2[key] === 'object' && obj2[key] !== null) {
-            const nestedDiff = deepDiff(obj1[key], obj2[key]);
-            if (Object.keys(nestedDiff).length > 0) {
-                result[key] = nestedDiff;
-            }
-        } else if (obj1[key] !== obj2[key]) {
-            result[key] = { obj1: obj1[key], obj2: obj2[key] };
-        }
-    }
-
-    for (const key in obj2) {
-        if (!(key in obj1)) {
-            result[key] = { onlyInObj2: obj2[key] };
-        }
-    }
-
-    return result;
-}
-
+import deepDiff from '@/utils/deepDiff';
 
 interface PresentationState {
     presentations: IPresentation[];
@@ -329,16 +303,7 @@ export const usePresentationStore = create<PresentationState>()(
 
                 // Create editor elements for each cell
                 const elements: EditorElement[] = defaultLayoutGridStructure.rows.map(row => {
-                    return row.cells.map(cell => ({
-                        id: generateId(),
-                        type: 'editor' as const,
-                        content: '',
-                        position: { x: 0, y: 0 },
-                        size: { width: 100, height: 100 },
-                        style: {},
-                        zIndex: 0,
-                        cellId: cell.id,
-                    }))
+                    return row.cells.map(cell => getNewEditorElement(cell.id))
                 }).flat();
 
                 const layout: Layout = {
@@ -698,17 +663,7 @@ export const usePresentationStore = create<PresentationState>()(
 
                     // Создаем элементы для каждой ячейки сетки
                     const elements: EditorElement[] = gridStructure.rows.map(row =>
-                        row.cells.map(cell => ({
-                            id: generateId(),
-                            type: 'editor' as const,
-                            content: '',
-                            position: { x: 0, y: 0 },
-                            size: { width: 100, height: 100 },
-                            style: { fontSize: '16px', color: '#333333' },
-                            zIndex: 1,
-                            placeholder: 'Введите текст...',
-                            cellId: cell.id,
-                        }))
+                        row.cells.map(cell => getNewEditorElement(cell.id))
                     ).flat();
 
                     newLayout = {
@@ -1108,11 +1063,10 @@ export const usePresentationStore = create<PresentationState>()(
                 const newElement: BaseElement = {
                     ...elementData as BaseElement,
                     id: elementId,
-                    type: 'text' as TextElementType,
-                    position: elementData.position || { x: 0, y: 0 },
-                    size: elementData.size || { width: 100, height: 100 },
-                    style: elementData.style || {},
-                    zIndex: elementData.zIndex || 0,
+                    // type: 'text' as TextElementType,
+                    componentStructure: elementData.componentStructure || ComponentStructureType.TEXT_EDITOR,
+                    hasTextEditor: elementData.hasTextEditor || true,
+                    elementTypeId: elementData.elementTypeId || '',
                     cellId: elementData.cellId || '',
                 };
 
@@ -1190,18 +1144,7 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentElement = currentLayout.elements.find(element => element.id === elementId);
                 if (!currentElement) return;
 
-                const newElementId = generateId();
-
-                const newElement: BaseElement = {
-                    ...currentElement,
-                    id: newElementId,
-                    type: currentElement.type as TextElementType,
-                    position: currentElement.position || { x: 0, y: 0 },
-                    size: currentElement.size || { width: 100, height: 100 },
-                    style: currentElement.style || {},
-                    zIndex: currentElement.zIndex || 0,
-                    cellId: currentElement.cellId || '',
-                };
+                const newElement = getNewEditorElement(currentElement.cellId);
 
                 set((state) => {
                     let updatedState;
@@ -1483,25 +1426,13 @@ export const usePresentationStore = create<PresentationState>()(
                         ...element,
                         id: generateId(),
                         cellId: newColumnId,
-                        type: element.type,
-                        position: { x: 0, y: 0 },
-                        size: { width: 100, height: 100 },
-                        style: {},
-                        zIndex: element.zIndex || 0,
                     } as BaseElement));
                     updatedElements = [...currentLayout.elements, ...updatedNewElements];
                 } else {
-                    const newElement: BaseElement = {
-                        id: generateId(),
-                        type: 'text' as TextElementType,
-                        position: { x: 0, y: 0 },
-                        size: { width: 100, height: 100 },
-                        style: {},
-                        zIndex: 0,
-                        cellId: newColumnId,
-                    };
+                    const newElement = getNewEditorElement(newColumnId);
                     updatedElements = [...currentLayout.elements, newElement];
                 }
+
 
                 const updatedSlide = {
                     ...currentSlide,

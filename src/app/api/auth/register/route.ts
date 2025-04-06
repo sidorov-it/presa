@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
                 email,
                 password: hashedPassword,
                 isVerified: true, // For simplicity, we're setting users as verified by default
-                emailPreferences: { updates: true }
+                emailPreferences: { emailUpdates: true }
             }
         });
 

@@ -3,14 +3,14 @@
 'use client'
 
 import React, { useState, useRef, RefObject, useCallback, memo } from 'react';
-import { EditorElement, getPredefinedGridStructures, Layout, Slide, TipTapRefs, PresentationState } from '@/types';
+import { getPredefinedGridStructures, Layout, Slide, TipTapRefs, PresentationState } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import styles from './SlideEditor.module.css';
 import LayoutContent from '../LayoutContent/LayoutContent';
 import { useSlideMenu } from '@/contexts/SlideMenuContext';
-import { generateId } from '@/utils/id';
 import { DragDropTransactionHelper } from '@/contexts/DragDropTransactionHelper';
 import DragHandler from '../DragHandler';
+import { getNewEditorElement } from '@/elements/registry';
 
 interface SlideEditorProps {
     slide: Slide;
@@ -75,7 +75,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     const handleOpenSlideMenu = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
-        openMenu(slide.id, null, 'slide');
+        openMenu({
+            slideId: slide.id,
+            elementId: null,
+            elementType: 'slide'
+        });
         handleSelectSlide(slide.id);
     }, [slide.id, openMenu, handleSelectSlide]);
 
@@ -125,17 +129,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         const gridStructure = getPredefinedGridStructures('single-column');
         const cellId = gridStructure.rows[0].cells[0].id;
 
-        const editorElement: EditorElement = {
-            id: generateId(8),
-            type: 'editor',
-            content: '',
-            position: { x: 0, y: 0 },
-            size: { width: 100, height: 40 },
-            style: { fontSize: '16px', color: '#333333' },
-            zIndex: 1,
-            placeholder: '',
-            cellId
-        };
+        const editorElement = getNewEditorElement(cellId);
 
         const newLayout: Omit<Layout, 'id'> = {
             type: 'single-column',

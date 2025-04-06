@@ -1,6 +1,8 @@
-import { generateGridTemplateAreas, generateGridTemplateColumns, Layout } from '@/types';
+import { generateGridTemplateAreas, Layout } from '@/types';
 import ElementViewer from './ElementViewer';
 import { useMemo } from 'react';
+import { ViewerElement } from '@/types/elements';
+import { type Element } from '@/types';
 
 interface LayoutViewerProps {
     layout: Layout;
@@ -23,12 +25,6 @@ const LayoutViewer = ({ layout, slideId }: LayoutViewerProps) => {
         generateGridTemplateAreas(layout.gridStructure),
     [layout.gridStructure]
     );
-
-    const gridTemplateColumns = useMemo(() =>
-        generateGridTemplateColumns(layout.gridStructure),
-    [layout.gridStructure]
-    );
-
 
     return (
         <div
@@ -59,7 +55,7 @@ const LayoutViewer = ({ layout, slideId }: LayoutViewerProps) => {
                                 {cellElements.map(element => (
                                     <ElementViewer
                                         key={element.id}
-                                        element={element}
+                                        element={element as Element & ViewerElement}
                                         slideId={slideId}
                                         layoutId={layout.id}
                                     />

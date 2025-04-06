@@ -1,18 +1,19 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { RefObject, useCallback, useRef, useState } from 'react';
-import { GridCell, Element, TipTapRefs, TextElement, TextElementType } from '@/types';
+import { GridCell, Element, TipTapRefs } from '@/types';
 import { useHandleDragStart } from '@/contexts/DragDropContext';
 import styles from './GridCellElement.module.css';
 import { usePresentationStore } from '@/store/presentationStore';
 import { generateId } from '@/utils/id';
 import { useEditorStore } from '@/store/editorStore';
-import { useSlideMenu } from '@/contexts/SlideMenuContext';
+import { MenuElementType, useSlideMenu } from '@/contexts/SlideMenuContext';
 import { Editor } from '@tiptap/react';
 import { getColumnWidths } from '../SlideEditor/SlideEditor';
 import DragHandler from '../DragHandler';
 import { PlusIcon } from '@/components/icons';
 import { ElementContent } from '../ElementContent/ElementContent';
+import { ComponentStructureType, getNewEditorElement } from '@/elements/registry';
 
 const adjustColumnWidths = (
     columnWidths: string[],
@@ -68,7 +69,7 @@ const adjustColumnWidths = (
             return sum;
         }, 0);
 
-        const maxCurrentCellWidth = 100 - totalOtherCellsWidth - 15; 
+        const maxCurrentCellWidth = 100 - totalOtherCellsWidth - 15;
         newColumnWidths[currentColumnIndex] = `${Math.min(newWidthPercentage, maxCurrentCellWidth).toFixed(2)}%`;
     } else {
         newColumnWidths[neighborIndex] = `${neighborNewWidth.toFixed(2)}%`;
@@ -122,7 +123,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     slideIsSelected
 }) => {
 
-    const { openMenu, state: { elementId: menuElementId, columnId: menuColumnId } } = useSlideMenu();
+    const { openMenu, state: { elementId: menuElementId, columnId: menuColumnId, componentStructure: menuComponentStructure } } = useSlideMenu();
 
     const handleDragStart = useHandleDragStart();
 
@@ -140,9 +141,16 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const resizebleElementRef = useRef<string | null>(null);
 
     const editorRef = useRef<HTMLDivElement>(null)
-    const handleMenuClick = useCallback((elementId: string, type: 'element' | 'column' | 'layout' | 'slide', activeEditor?: Editor) => {
-        useEditorStore.getState().setActiveEditor(activeEditor ?? null)
-        openMenu(slideId, elementId, type, layoutId, cell.id, !!activeEditor);
+    const handleMenuClick = useCallback((menuData: { elementId: string, elementType: MenuElementType, componentStructure?: ComponentStructureType, activeEditor?: Editor }) => {
+        useEditorStore.getState().setActiveEditor(menuData.activeEditor ?? null)
+        openMenu({
+            slideId,
+            elementId: menuData.elementId,
+            elementType: menuData.elementType,
+            layoutId,
+            isTextEditor: !!menuData.activeEditor,
+            componentStructure: menuData.componentStructure
+        });
     }, [slideId, layoutId, cell.id]);
 
     const animationFrameIdRef = useRef<number | null>(null);
@@ -273,17 +281,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             row: 0,
         }
 
-        const newEditor: TextElement = {
-            id: generateId(),
-            type: 'editor',
-            textType: 'text',
-            content: '',
-            cellId: newCellId,
-            position: { x: 0, y: 0 },
-            size: { width: 100, height: 100 },
-            style: {},
-            zIndex: 0,
-        }
+        const newEditor = getNewEditorElement(newCellId);
 
         updatedGridStructure.rows[0].cells.push(newCell);
         updatedGridStructure.columnWidths = getColumnWidths(updatedGridStructure.columns);
@@ -292,32 +290,39 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
     }, [slideId, layoutId, presentationId]);
 
-    const handleClickElementDragHandle = useCallback((elementId: string, elementType: TextElementType) => (e: any) => {
-        const editor = tiptapRefs.current?.editors[elementId]?.editor;
+    const handleClickElementDragHandle = useCallback((element: Element) => (e: any) => {
+        const editor = tiptapRefs.current?.editors[element.id]?.editor;
 
-        if (elementType === 'editor' && editor) {
+        if (element.hasTextEditor && editor && element.componentStructure === ComponentStructureType.TEXT_EDITOR) {
             if (editor.getText().length > 0) {
                 useEditorStore.getState().setActiveEditor(editor);
                 editor.chain().focus().selectAll().run();
-                handleMenuClick(elementId, 'element', editor);
+                handleMenuClick({
+                    elementId: element.id,
+                    elementType: 'editor',
+                    activeEditor: editor
+                });
             } else {
                 return;
             }
-        }
-        else {
-            handleMenuClick(elementId, 'element');
+        } else {
+            handleMenuClick({
+                elementId: element.id,
+                elementType: 'element',
+                componentStructure: element.componentStructure
+            });
         }
     }, []);
 
-    const handleKeyDownElementDragHandle = useCallback((elementId: string, elementType: TextElementType) => (e: any) => {
+    const handleKeyDownElementDragHandle = useCallback((element: Element) => (e: any) => {
         if (e.key === 'Enter' || e.key === ' ') {
-            handleClickElementDragHandle(elementId, elementType)(e);
+            handleClickElementDragHandle(element)(e);
         }
     }, [handleClickElementDragHandle]);
 
-    const handleDragStartElementDragHandle = useCallback((elementId: string, elementType: TextElementType, cellId: string) => (e: any) => {
+    const handleDragStartElementDragHandle = useCallback((element: Element) => (e: any) => {
         e.stopPropagation();
-        handleDragStart(e, elementId, layoutId, cellId);
+        handleDragStart(e, element.id, layoutId, element.cellId);
     }, [handleDragStart, layoutId]);
 
     const alignmentClassName = cell.alignment === 'top' ? styles.top : cell.alignment === 'center' ? styles.center : cell.alignment === 'bottom' ? styles.bottom : '';
@@ -325,7 +330,13 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const className = `${styles.gridCellElement} ${hasMultipleCells ? styles.multiCell : ''} ${hasMultipleCells && !isLayoutHovered ? styles.multiCellNoHover : ''}`;
 
     const handleClickCellDragHandle = useCallback(() => {
-        openMenu(slideId, null, 'column', layoutId, cell.id);
+        openMenu({
+            slideId,
+            elementId: null,
+            elementType: 'column',
+            layoutId,
+            columnId: cell.id
+        });
     }, [slideId, layoutId, cell.id]);
 
 

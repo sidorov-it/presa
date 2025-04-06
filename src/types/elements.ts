@@ -56,4 +56,4 @@ export type ViewerElement = {
     alt?: string;
     content?: string;
     shapeType?: string;
-} 
+}

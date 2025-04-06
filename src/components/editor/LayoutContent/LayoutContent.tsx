@@ -102,13 +102,23 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     }, [handleDragStart, layout.id, slideId]);
 
     const handleOpenMenu = useCallback(() =>
-        openMenu(slideId, null, 'layout', layout.id),
+        openMenu({
+            slideId,
+            elementId: null,
+            elementType: 'layout',
+            layoutId: layout.id
+        }),
     [openMenu, slideId, layout.id]
     );
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
         if (e.key === 'Enter' || e.key === ' ') {
-            openMenu(slideId, null, 'layout', layout.id);
+            openMenu({
+                slideId,
+                elementId: null,
+                elementType: 'layout',
+                layoutId: layout.id
+            });
         }
     }, [openMenu, slideId, layout.id]);
 

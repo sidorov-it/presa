@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { Theme } from '@/types/theme';
-import { createNewTheme, DEFAULT_THEME } from '@/constants/defaultTheme';
+import { createNewTheme } from '@/constants/defaultTheme';
 
 interface ThemeState {
   themes: Theme[];
@@ -89,7 +89,7 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
             // Update local state after successful deletion
             const filteredThemes = get().themes.filter((t) => t.id !== themeId);
             set({ themes: filteredThemes });
-            
+
             if (get().currentTheme?.id === themeId) {
                 set({ currentTheme: null });
             }

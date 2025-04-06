@@ -31,8 +31,8 @@ export default function DashboardLayout({
     useEffect(() => {
         // If the previous path contained '/edit' or '/docs' and the current one doesn't
         // we're navigating away from an editor page
-        if (previousPath 
-            && (previousPath.includes('/edit') || previousPath.includes('/docs')) 
+        if (previousPath
+            && (previousPath.includes('/edit') || previousPath.includes('/docs'))
             && !pathname.includes('/edit') && !pathname.includes('/docs')) {
             console.log('Navigating away from editor page, resetting theme styles');
             resetThemeStyles();

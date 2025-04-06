@@ -6,103 +6,103 @@ interface Params {
 }
 
 export async function GET(request: Request, props: { params: Promise<Params> }) {
-  const params = await props.params;
-  try {
-    const { id } = params;
+    const params = await props.params;
+    try {
+        const { id } = params;
 
-    const theme = await prisma.theme.findUnique({
-      where: { id },
-    });
+        const theme = await prisma.theme.findUnique({
+            where: { id },
+        });
 
-    if (!theme) {
-      return NextResponse.json(
-        { error: 'Theme not found' },
-        { status: 404 }
-      );
+        if (!theme) {
+            return NextResponse.json(
+                { error: 'Theme not found' },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json(theme);
+    } catch (error) {
+        console.error('Failed to fetch theme:', error);
+        return NextResponse.json(
+            { error: 'Failed to fetch theme' },
+            { status: 500 }
+        );
     }
-
-    return NextResponse.json(theme);
-  } catch (error) {
-    console.error('Failed to fetch theme:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch theme' },
-      { status: 500 }
-    );
-  }
 }
 
 export async function DELETE(request: Request, props: { params: Promise<Params> }) {
-  const params = await props.params;
-  try {
-    const { id } = params;
+    const params = await props.params;
+    try {
+        const { id } = params;
 
-    const theme = await prisma.theme.findUnique({
-      where: { id },
-    });
+        const theme = await prisma.theme.findUnique({
+            where: { id },
+        });
 
-    if (!theme) {
-      return NextResponse.json(
-        { error: 'Theme not found' },
-        { status: 404 }
-      );
+        if (!theme) {
+            return NextResponse.json(
+                { error: 'Theme not found' },
+                { status: 404 }
+            );
+        }
+
+        await prisma.theme.delete({
+            where: { id },
+        });
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error('Failed to delete theme:', error);
+        return NextResponse.json(
+            { error: 'Failed to delete theme' },
+            { status: 500 }
+        );
     }
-
-    await prisma.theme.delete({
-      where: { id },
-    });
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Failed to delete theme:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete theme' },
-      { status: 500 }
-    );
-  }
 }
 
 export async function PUT(request: Request, props: { params: Promise<Params> }) {
-  const params = await props.params;
-  try {
-    const { id } = params;
-    const theme = await request.json();
+    const params = await props.params;
+    try {
+        const { id } = params;
+        const theme = await request.json();
 
-    // Verify the theme exists
-    const existingTheme = await prisma.theme.findUnique({
-      where: { id },
-    });
+        // Verify the theme exists
+        const existingTheme = await prisma.theme.findUnique({
+            where: { id },
+        });
 
-    if (!existingTheme) {
-      return NextResponse.json(
-        { error: 'Theme not found' },
-        { status: 404 }
-      );
+        if (!existingTheme) {
+            return NextResponse.json(
+                { error: 'Theme not found' },
+                { status: 404 }
+            );
+        }
+
+        // Update the theme
+        const updatedTheme = await prisma.theme.update({
+            where: { id },
+            data: {
+                name: theme.name,
+                colors: {
+                    set: theme.colors,
+                },
+                typography: {
+                    set: theme.typography,
+                },
+                design: {
+                    set: theme.design,
+                },
+                updatedAt: new Date(),
+            },
+        });
+
+        return NextResponse.json(updatedTheme);
+    } catch (error) {
+        console.error('Failed to update theme:', error);
+        return NextResponse.json(
+            { error: 'Failed to update theme' },
+            { status: 500 }
+        );
     }
-
-    // Update the theme
-    const updatedTheme = await prisma.theme.update({
-      where: { id },
-      data: {
-        name: theme.name,
-        colors: {
-          set: theme.colors,
-        },
-        typography: {
-          set: theme.typography,
-        },
-        design: {
-          set: theme.design,
-        },
-        updatedAt: new Date(),
-      },
-    });
-
-    return NextResponse.json(updatedTheme);
-  } catch (error) {
-    console.error('Failed to update theme:', error);
-    return NextResponse.json(
-      { error: 'Failed to update theme' },
-      { status: 500 }
-    );
-  }
-} 
+}

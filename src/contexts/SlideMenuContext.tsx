@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useReducer, ReactNode, useMemo } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { BaseElement, GridCell, IPresentation, Layout, LayoutType, Slide } from '@/types';
+import { ComponentStructureType } from '@/elements/registry';
 
 // Define menu element types
-export type MenuElementType = 'element' | 'column' | 'layout' | 'slide';
+export type MenuElementType = 'element' | 'column' | 'layout' | 'slide' | 'editor';
 
 // Define slide menu state types
 type SlideMenuState = {
@@ -14,10 +15,11 @@ type SlideMenuState = {
     layoutId: string | null;
     columnId: string | null;
     isTextEditor: boolean;
+    componentStructure: ComponentStructureType | null;
 };
 
 type SlideMenuAction =
-    | { type: 'OPEN_MENU'; payload: { slideId?: string | null; elementId?: string | null; elementType?: MenuElementType | null; layoutId?: string | null; columnId?: string | null; isTextEditor?: boolean } }
+    | { type: 'OPEN_MENU'; payload: { slideId?: string | null; elementId?: string | null; elementType?: MenuElementType | null; layoutId?: string | null; columnId?: string | null; isTextEditor?: boolean; componentStructure?: ComponentStructureType | null } }
     | { type: 'CLOSE_MENU' };
 
 const initialState: SlideMenuState = {
@@ -28,6 +30,7 @@ const initialState: SlideMenuState = {
     layoutId: null,
     columnId: null,
     isTextEditor: false,
+    componentStructure: null,
 };
 
 // Reducer for managing slide menu state
@@ -42,6 +45,7 @@ const slideMenuReducer = (state: SlideMenuState, action: SlideMenuAction): Slide
                 layoutId: action.payload.layoutId ?? null,
                 columnId: action.payload.columnId ?? null,
                 isTextEditor: action.payload.isTextEditor ?? false,
+                componentStructure: action.payload.componentStructure ?? null,
             };
         case 'CLOSE_MENU':
             return initialState;
@@ -53,7 +57,7 @@ const slideMenuReducer = (state: SlideMenuState, action: SlideMenuAction): Slide
 // Create context
 type SlideMenuContextType = {
     state: SlideMenuState;
-    openMenu: (slideId?: string | null, elementId?: string | null, elementType?: MenuElementType | null, layoutId?: string | null, columnId?: string | null, isTextEditor?: boolean) => void;
+    openMenu: (menuData: { slideId?: string | null, elementId?: string | null, elementType?: MenuElementType | null, layoutId?: string | null, columnId?: string | null, isTextEditor?: boolean, componentStructure?: ComponentStructureType | null }) => void;
     closeMenu: () => void;
 
     checkSlideMenuIsOpen: (slideId: string | null) => boolean;
@@ -120,14 +124,23 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
 
     // Menu control functions
     const menuControlFunctions = useMemo(() => {
-        const openMenu = (
+        const openMenu = ({
+            slideId,
+            elementId,
+            elementType,
+            layoutId,
+            columnId,
+            isTextEditor,
+            componentStructure
+        }: {
             slideId?: string | null,
             elementId?: string | null,
             elementType?: MenuElementType | null,
             layoutId?: string | null,
             columnId?: string | null,
-            isTextEditor?: boolean
-        ) => {
+            isTextEditor?: boolean,
+            componentStructure?: ComponentStructureType | null
+        }) => {
             dispatch({
                 type: 'OPEN_MENU',
                 payload: {
@@ -136,7 +149,8 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
                     elementType,
                     layoutId,
                     columnId,
-                    isTextEditor
+                    isTextEditor,
+                    componentStructure
                 }
             });
         };
@@ -401,7 +415,7 @@ export const useSlideMenuActions = () => {
     }
 
     return useMemo(() => {
-        const { state, ...actions } = context;
+        const { state: _state, ...actions } = context;
         return actions;
     }, [context]);
 };

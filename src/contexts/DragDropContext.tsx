@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useReducer, ReactNode, useEffect, useMemo, useCallback } from 'react';
 import deepEqual from 'deep-equal';
-import { BaseElement, GridCell, GridStructure, Layout, Slide, TextElement } from '@/types';
+import { BaseElement, GridCell, GridStructure, Layout, Slide } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import { generateId } from '@/utils/id';
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 import { DragDropTransactionHelper } from './DragDropTransactionHelper';
 import { DndState, DndAction, DropTarget, Position } from '@/types/DragDropTypes';
-import { getNewElement } from '@/elements/registry';
+import { getNewEditorElement, getNewElement } from '@/elements/registry';
 
 const initialState: DndState = {
     dragState: 'idle',
@@ -350,17 +350,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
         const updatedElements = position === 'top' ? [...updatedSourceElements, ...updatedLayoutElements] : [...updatedLayoutElements, ...updatedSourceElements];
 
-        const editor: TextElement = {
-            id: generateId(8),
-            type: 'editor',
-            textType: 'text',
-            content: '',
-            position: { x: 0, y: 0 },
-            size: { width: 100, height: 100 },
-            cellId: draggedCell.id,
-            style: {},
-            zIndex: 1,
-        }
+        const editor = getNewEditorElement(draggedCell.id);
 
         updatedElements.push(editor);
 
@@ -406,17 +396,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
         const updatedSourceLayoutElements = sourceLayout.elements.filter(e => e.cellId !== draggedCell.id);
 
-        const editor: TextElement = {
-            id: generateId(8),
-            type: 'editor',
-            textType: 'text',
-            content: '',
-            position: { x: 0, y: 0 },
-            size: { width: 100, height: 100 },
-            cellId: draggedCell.id,
-            style: {},
-            zIndex: 1,
-        }
+        const editor = getNewEditorElement(draggedCell.id);
 
         updatedSourceLayoutElements.push(editor);
 
@@ -460,17 +440,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             updatedTargetElements.splice(targetIndex, 0, updatedElement);
 
             if (elementsInSourceCell.length === 0) {
-                const editor: TextElement = {
-                    id: generateId(8),
-                    type: 'editor',
-                    textType: 'text',
-                    content: '',
-                    position: { x: 0, y: 0 },
-                    size: { width: 100, height: 100 },
-                    cellId: draggedElement.cellId,
-                    style: {},
-                    zIndex: 1,
-                }
+                const editor = getNewEditorElement(draggedElement.cellId);
 
                 updatedTargetElements.push(editor);
             }
@@ -503,17 +473,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     DragDropTransactionHelper.deleteLayout(presentationId, sourceSlide.id, sourceLayout.id);
                 }
             } else if (elementsInSourceCell.length === 0 && sourceLayout.gridStructure.columns > 1) {
-                const editor: TextElement = {
-                    id: generateId(8),
-                    type: 'editor',
-                    textType: 'text',
-                    content: '',
-                    position: { x: 0, y: 0 },
-                    size: { width: 100, height: 100 },
-                    cellId: draggedElement.cellId,
-                    style: {},
-                    zIndex: 1,
-                }
+                const editor = getNewEditorElement(draggedElement.cellId);
 
                 updatedSourceElements.push(editor);
                 DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
@@ -762,17 +722,8 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
         const elementsInSourceCell = updatedSourceElements.filter(e => e.cellId === sourceElement.cellId);
         if (elementsInSourceCell.length === 0) {
-            const editor: TextElement = {
-                id: generateId(8),
-                type: 'editor',
-                content: '',
-                position: { x: 0, y: 0 },
-                size: { width: 100, height: 100 },
-                style: { fontSize: '16px', color: '#333333' },
-                zIndex: 1,
-                cellId: sourceElement.cellId,
-                textType: 'text',
-            };
+            const editor = getNewEditorElement(sourceElement.cellId);
+
             updatedSourceElements.push(editor);
         }
 
@@ -834,17 +785,8 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
         const elementsInCell = updatedElements.filter(e => e.cellId === sourceElement.cellId);
         if (elementsInCell.length === 0) {
-            const editor: TextElement = {
-                id: generateId(8),
-                type: 'editor',
-                content: '',
-                position: { x: 0, y: 0 },
-                size: { width: 100, height: 100 },
-                style: { fontSize: '16px', color: '#333333' },
-                zIndex: 1,
-                cellId: sourceElement.cellId,
-                textType: 'text',
-            };
+            const editor = getNewEditorElement(sourceElement.cellId);
+
             updatedElements.push(editor);
         }
 
@@ -1256,17 +1198,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                             // обновляем elements в target layout
                             const updatedSourceElements = sourceLayout.elements.filter(e => e.id !== draggedElement.id);
 
-                            const editor: TextElement = {
-                                id: generateId(8),
-                                type: 'editor',
-                                textType: 'text',
-                                content: '',
-                                position: { x: 0, y: 0 },
-                                size: { width: 100, height: 100 },
-                                cellId: draggedElement.cellId,
-                                style: {},
-                                zIndex: 1,
-                            }
+                            const editor = getNewEditorElement(draggedElement.cellId);
 
                             updatedSourceElements.push(editor);
 
@@ -1646,7 +1578,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
             // Increase detection area by adding a threshold for top/bottom
             const threshold = rect.height * 0.25; // Use 25% of element height as threshold
-            
+
             // Find minimum distance with threshold applied for top and bottom
             let minDistance: number;
             let position: Position | null = null;
@@ -1656,7 +1588,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 // Apply threshold to top and bottom distances
                 const adjustedDistanceFromTop = distanceFromTop < threshold ? 0 : distanceFromTop;
                 const adjustedDistanceFromBottom = distanceFromBottom < threshold ? 0 : distanceFromBottom;
-                
+
                 minDistance = Math.min(adjustedDistanceFromTop, adjustedDistanceFromBottom, distanceFromLeft, distanceFromRight);
 
                 if (minDistance === adjustedDistanceFromTop || distanceFromTop < threshold) {
@@ -1673,7 +1605,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 // Apply threshold to top and bottom distances
                 const adjustedDistanceFromTop = distanceFromTop < threshold ? 0 : distanceFromTop;
                 const adjustedDistanceFromBottom = distanceFromBottom < threshold ? 0 : distanceFromBottom;
-                
+
                 minDistance = Math.min(adjustedDistanceFromTop, adjustedDistanceFromBottom);
 
                 if (minDistance === adjustedDistanceFromTop || distanceFromTop < threshold) {
@@ -1865,7 +1797,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             // Increase detection area with threshold
             const verticalThreshold = rect.height * 0.25; // 25% of height for top/bottom
             const horizontalThreshold = rect.width * 0.15; // 15% of width for left/right
-            
+
             // Adjust distances with thresholds
             const adjustedDistanceFromTop = distanceFromTop < verticalThreshold ? 0 : distanceFromTop;
             const adjustedDistanceFromBottom = distanceFromBottom < verticalThreshold ? 0 : distanceFromBottom;
@@ -1874,9 +1806,9 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
             // Find minimum distance with thresholds applied
             const minDistance = Math.min(
-                adjustedDistanceFromTop, 
-                adjustedDistanceFromBottom, 
-                adjustedDistanceFromLeft, 
+                adjustedDistanceFromTop,
+                adjustedDistanceFromBottom,
+                adjustedDistanceFromLeft,
                 adjustedDistanceFromRight
             );
 

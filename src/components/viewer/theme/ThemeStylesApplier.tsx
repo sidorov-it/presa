@@ -16,7 +16,7 @@ const isColorDark = (color: string): boolean => {
         const brightness = (r * 299 + g * 587 + b * 114) / 1000;
         return brightness < 128;
     }
-    
+
     // Handle rgb/rgba colors
     if (color.startsWith('rgb')) {
         const rgbValues = color.match(/\d+/g);
@@ -28,7 +28,7 @@ const isColorDark = (color: string): boolean => {
             return brightness < 128;
         }
     }
-    
+
     // Default to false for other color formats
     return false;
 };
@@ -56,7 +56,7 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
         }
 
         console.log("ThemeStylesApplier: Applying theme", theme.name);
-        
+
         // Check if theme structure is complete
         if (!theme.colors || !theme.typography || !theme.design) {
             console.error("ThemeStylesApplier: Theme is missing required properties", {
@@ -64,12 +64,12 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
                 hasTypography: !!theme.typography,
                 hasDesign: !!theme.design
             });
-            
+
             // Print the theme object for debugging
             console.log("Theme object:", JSON.stringify(theme, null, 2));
             return;
         }
-        
+
         // Further validate theme structure
         if (!theme.design.slide || !theme.design.blocks || !theme.design.buttons) {
             console.error("ThemeStylesApplier: Theme design is missing required properties", {
@@ -141,7 +141,7 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
         return () => {
             // Use the utility function to reset theme styles on unmount
             resetThemeStyles();
-            
+
             // Reset the applied theme reference
             appliedThemeRef.current = null;
             console.log("ThemeStylesApplier: Theme reset to defaults on unmount");
@@ -152,4 +152,4 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
     return null;
 };
 
-export default ThemeStylesApplier; 
+export default ThemeStylesApplier;

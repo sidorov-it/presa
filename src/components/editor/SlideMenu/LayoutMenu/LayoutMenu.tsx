@@ -97,7 +97,7 @@ export default function LayoutMenu({
                         className={styles.templateDropdownButton}
                         onClick={() => setIsTemplateDropdownOpen(!isTemplateDropdownOpen)}
                     >
-                        {getLayoutTypeName(currentLayoutType)} {isTemplateDropdownOpen ? '▲' : '▼'}
+                        {getLayoutTypeName()} {isTemplateDropdownOpen ? '▲' : '▼'}
                     </button>
 
                     {isTemplateDropdownOpen && (

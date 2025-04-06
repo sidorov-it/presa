@@ -5,6 +5,7 @@ import { elementsRegistry, getNewElement } from '@/elements/registry';
 import styles from './ElementsPanel.module.css';
 import { useDnd } from '@/contexts/DragDropContext';
 import { usePresentationStore } from '@/store/presentationStore';
+import { BaseElement } from '@/types';
 
 interface ElementsPanelProps {
     presentationId: string;
@@ -39,7 +40,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
         const handleButtonClick = (category: string) => {
             console.log(category);
             const newElement = getNewElement(category);
-            usePresentationStore.getState().addLayoutWithElement(presentationId, slideId, newElement);
+            usePresentationStore.getState().addLayoutWithElement(presentationId, slideId, newElement as unknown as BaseElement);
         };
 
         return (
@@ -55,12 +56,12 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
                                 <div className="grid grid-cols-3 gap-2">
                                     {subCategory.elements.map(element => (
                                         <div
-                                            key={element.id}
+                                            key={element.elementTypeId}
                                             className={`${styles.elementItem}`}
                                             draggable
                                             onDragStart={(e) => handleDragStart(e, element)}
                                             aria-label={`${subCategory.label}: ${element.label}`}
-                                            onClick={() => handleButtonClick(element.id)}
+                                            onClick={() => handleButtonClick(element.elementTypeId)}
                                         >
                                             {element.Icon && <element.Icon />}
                                             <div className="text-xs text-center text-gray-800">{element.label}</div>
@@ -75,7 +76,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
                     <div className="grid grid-cols-3 gap-2">
                         {categoryData.elements!.map(element => (
                             <div
-                                key={element.id}
+                                key={element.elementTypeId}
                                 className={`${styles.elementItem}`}
                                 draggable
                                 onDragStart={(e) => handleDragStart(e, element)}

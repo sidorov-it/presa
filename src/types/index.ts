@@ -2,19 +2,61 @@ import { EditorWithMethods } from "@/components/tiptap/extensions/ArrowNavigatio
 import { generateId } from "@/utils/id";
 import { IconType } from "react-icons/lib";
 import { HistoryAction } from "@/store/historyStore";
+import { ComponentStructureType } from "@/elements/registry";
 
-export type TextElementType =
-    | 'text'
-    | 'heading'
-    | 'paragraph'
-    | 'list'
-    | 'image'
-    | 'divider'
-    | 'icon'
-    | 'video'
-    | 'chart'
-    | 'button'
-    | 'editor';
+// This enum represents the core element types in the system
+export enum ElementType {
+    // Basic elements
+    // TEXT = 'text',
+    // HEADING = 'heading',
+    // PARAGRAPH = 'paragraph',
+    // LIST = 'list',
+    // QUOTE = 'quote',
+
+    // Media elements
+    IMAGE = 'image',
+    VIDEO = 'video',
+
+    // UI elements
+    // DIVIDER = 'divider',
+    // BUTTON = 'button',
+    // TOGGLE = 'toggle',
+    // ICON = 'icon',
+    // BOX = 'box',
+
+    // Data visualization
+    CHART = 'chart',
+    // TABLE = 'table',
+
+    // Special elements
+    EDITOR = 'editor'
+}
+
+// This defines the content container type (elements can be placed in editors, tables, layouts, etc.)
+// export enum ContainerType {
+//     EDITOR = 'editor',
+//     TABLE = 'table',
+//     ELEMENT = 'element',
+//     LAYOUT = 'layout',
+//     SLIDE = 'slide'
+// }
+
+// Legacy type for backward compatibility - consider migrating away from this
+// export type TextElementType =
+//     | 'text'
+//     | 'heading'
+//     | 'paragraph'
+//     | 'list'
+//     | 'image'
+//     | 'divider'
+//     | 'icon'
+//     | 'video'
+//     | 'chart'
+//     | 'button'
+//     | 'editor';
+
+// Legacy type for backward compatibility - consider migrating away from this
+// export type ELEMENT_TYPE = 'editor' | 'element' | 'layout' | 'slide' | 'table';
 
 export type LayoutType =
     | 'single-column'
@@ -68,7 +110,7 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 ],
                 columnWidths: ['100%']
             };
-        case 'two-columns':
+        case 'two-columns-equal':
             return {
                 columns: 2,
                 rows: [
@@ -232,33 +274,32 @@ export interface Style {
 // Базовый интерфейс для всех элементов
 export interface BaseElement {
     id: string;
-    type: TextElementType;
-    position: Position;
-    size: Size;
-    style: Style;
-    zIndex: number;
+    // type: TextElementType;
     cellId: string;   // Reference to the cell this element belongs to
+    componentStructure: ComponentStructureType;
+    hasTextEditor: boolean;
+    elementTypeId: string;
 }
 
 // Элемент текста
-export interface TextElement extends BaseElement {
-    textType: 'text' | 'heading' | 'paragraph';
-    content: string;
-}
+// export interface TextElement extends BaseElement {
+//     // textType: 'text' | 'heading' | 'paragraph';
+//     content: string;
+// }
 
 // Элемент редактора Tiptap
 export interface EditorElement extends BaseElement {
-    type: 'editor';
+    // type: 'editor';
     content: string;
     placeholder?: string;
 }
 
 // Элемент списка
-export interface ListElement extends BaseElement {
-    type: 'list';
-    items: string[];
-    listType: 'bullet' | 'numbered';
-}
+// export interface ListElement extends BaseElement {
+//     type: 'list';
+//     items: string[];
+//     listType: 'bullet' | 'numbered';
+// }
 
 // Элемент изображения
 export interface ImageElement extends BaseElement {
@@ -268,15 +309,15 @@ export interface ImageElement extends BaseElement {
 }
 
 // Элемент разделителя
-export interface DividerElement extends BaseElement {
-    type: 'divider';
-}
+// export interface DividerElement extends BaseElement {
+//     type: 'divider';
+// }
 
 // Элемент иконки
-export interface IconElement extends BaseElement {
-    type: 'icon';
-    iconName: string;
-}
+// export interface IconElement extends BaseElement {
+//     type: 'icon';
+//     iconName: string;
+// }
 
 // Элемент видео
 export interface VideoElement extends BaseElement {
@@ -305,12 +346,12 @@ export interface ButtonElement extends BaseElement {
 
 // Объединенный тип элемента
 export type Element =
-    | TextElement
+    // | TextElement
     | EditorElement
-    | ListElement
+    // | ListElement
     | ImageElement
-    | DividerElement
-    | IconElement
+    // | DividerElement
+    // | IconElement
     | VideoElement
     | ChartElement
     | ButtonElement;
@@ -499,41 +540,31 @@ export interface IPresentation {
     updatedAt: number;
 }
 
-
-// Element Type Definition
-export type ElementConfig = {
-    id: string;
-    type: string;
-    category: string;
-    label: string;
-    icon?: IconType;
-    defaultProps?: Record<string, any>;
-    MenuComponent?: React.ComponentType<any>;
-}
-
-export type ELEMENT_TYPE = 'editor' |'element' | 'layout' | 'slide' | 'table';
-
-export type ElementType = {
-    id: string;
-    type: ELEMENT_TYPE;
+// Definition for registry element configuration
+export interface ElementConfig {
+    elementTypeId: string;
+    // type: ContainerType | string;
     label: string;
     Icon?: IconType;
     defaultProps?: Record<string, any>;
     MenuComponent?: React.ComponentType<any>;
+    componentStructure: ComponentStructureType;
+    hasTextEditor: boolean;
+    hasLimitedTextFormatting?: boolean;
 }
 
-export type SubCategory = {
+export interface SubCategory {
     id: string;
     label: string;
-    elements: ElementType[];
+    elements: ElementConfig[];
 }
 
-export type Category = {
+export interface Category {
     id: string;
     label: string;
     Icon: IconType;
     subCategories?: SubCategory[];
-    elements?: ElementType[];
+    elements?: ElementConfig[];
 }
 
 export type TipTapRefs = {
@@ -550,9 +581,9 @@ export interface PresentationState {
     error: string | null;
     version: number;
     incrementVersion: () => void;
-    
+
     recordAction: (action: Omit<HistoryAction, 'timestamp' | 'transactionId'>) => void;
-    
+
     // Presentations
     createPresentation: (title: string) => Promise<string>;
     loadPresentation: (id: string) => Promise<IPresentation | null>;
@@ -562,10 +593,10 @@ export interface PresentationState {
     getPresentation: (id: string) => IPresentation | undefined;
     setFullState: (state: { presentations: IPresentation[] }) => void;
     saveChanges: (id: string) => Promise<void>;
-    
+
     // Theme management
     setTheme: (presentationId: string, themeId: string | null) => void;
-    
+
     // Slides
     addSlide: (presentationId: string, index?: number) => string;
     updateSlide: (presentationId: string, slideId: string, data: Partial<Slide>) => void;

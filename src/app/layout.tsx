@@ -4,7 +4,6 @@ import '@/styles/dark-theme.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { NextAuthProvider } from '@/components/providers/NextAuthProvider';
-import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { Toaster } from 'sonner';
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] });

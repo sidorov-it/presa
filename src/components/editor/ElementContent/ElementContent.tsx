@@ -1,14 +1,13 @@
 import Tiptap from '@/components/tiptap/Tiptap';
 import styles from './ElementContent.module.css';
 import DragHandler from '../DragHandler';
-import { GridTextElement } from '@/types/grid-elements';
 import { RefObject, useCallback } from 'react';
-import { Element, GridStructure, getPredefinedGridStructures, Layout, TipTapRefs, TextElementType } from '@/types';
+import { Element, GridStructure, getPredefinedGridStructures, Layout, TipTapRefs, EditorElement } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import { generateId } from '@/utils/id';
 import { useEditorStore } from '@/store/editorStore';
 import { useHistoryStore } from '@/store/historyStore';
-import { getNewElement } from '@/elements/registry';
+import { getNewEditorElement, getNewElement } from '@/elements/registry';
 import { getColumnWidths } from '../SlideEditor/SlideEditor';
 
 export const ElementContent = ({
@@ -32,9 +31,9 @@ export const ElementContent = ({
     menuElementId: string | null;
     // activeEditorId?: string | null;
     elementIsHovered: boolean;
-    handleClickElementDragHandle: (elementId: string, elementType: TextElementType) => (e: any) => void;
-    handleKeyDownElementDragHandle: (elementId: string, elementType: TextElementType) => (e: any) => void;
-    handleDragStartElementDragHandle: (elementId: string, elementType: TextElementType, cellId: string) => (e: any) => void;
+    handleClickElementDragHandle: (element: Element) => (e: any) => void;
+    handleKeyDownElementDragHandle: (element: Element) => (e: any) => void;
+    handleDragStartElementDragHandle: (element: Element) => (e: any) => void;
     onSelect: (element: Element) => void;
     slideId: string;
     tiptapRefs: RefObject<TipTapRefs>;
@@ -68,28 +67,21 @@ export const ElementContent = ({
 
             const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures('single-column');
 
-            const firstNewEditorId = generateId();
-            // ??? выглядит не рабочим
-            const newElements: Element[] = defaultLayoutGridStructure.rows.map(row => {
-                return row.cells.map(cell => ({
-                    id: firstNewEditorId,
-                    type: 'editor' as const,
-                    textType: 'heading' as const,
-                    content: contentAfterCursor || '',
-                    position: { x: 0, y: 0 },
-                    size: { width: 100, height: 100 },
-                    style: {},
-                    zIndex: 0,
-                    cellId: cell.id,
-                }))
-            }).flat();
+            // const firstNewEditorId = generateId();
 
+            const newElement = getNewEditorElement(defaultLayoutGridStructure.rows[0].cells[0].id, contentAfterCursor);
+
+            // const newElements: Element[] = defaultLayoutGridStructure.rows.map(row => {
+            //     return row.cells.map(cell => getNewEditorElement(cell.id))
+            // }).flat();
+
+            const firstNewEditorId = newElement.id;
             const newLayout: Layout = {
                 id: newLayoutId,
                 gridStructure: defaultLayoutGridStructure,
                 type: defaultGridType,
                 style: {},
-                elements: newElements,
+                elements: [newElement],
             }
 
             // Add the new layout to the slide
@@ -123,6 +115,7 @@ export const ElementContent = ({
             useHistoryStore.getState().commitTransaction(presentationId);
 
             setTimeout(() => {
+                console.log('focusing', tiptapRefs.current?.editors[firstNewEditorId]?.editor);
                 tiptapRefs.current?.editors[firstNewEditorId]?.editor.commands.focus('start');
             }, 10);
 
@@ -134,17 +127,7 @@ export const ElementContent = ({
 
             const newElementIndex = layout.elements.findIndex(e => e.id === element.id);
 
-            const newElement: Element = {
-                id: newElementId,
-                type: 'editor' as const,
-                textType: 'heading' as const,
-                content: contentAfterCursor || '',
-                position: { x: 0, y: 0 },
-                size: { width: 100, height: 100 },
-                style: {},
-                zIndex: 0,
-                cellId: cell.id,
-            }
+            const newElement = getNewEditorElement(cell.id, contentAfterCursor);
 
             const updatedElements = [...layout.elements];
             updatedElements.splice(newElementIndex + 1, 0, newElement);
@@ -352,23 +335,20 @@ export const ElementContent = ({
 
             usePresentationStore.getState().updateElement(presentationId, slideId, layoutId, elementId, newElementWithCell as Partial<Element>);
 
-            tiptapRefs.current?.editors[elementId]?.editor.commands.setContent(elementData.content);
+            if (elementData.hasTextEditor) {
+                tiptapRefs.current?.editors[elementId]?.editor.commands.setContent((elementData as EditorElement).content);
+            }
         }
     }, [slideId, layoutId, presentationId]);
 
     const handleSelect = useCallback((element: Element) => () => onSelect(element), [onSelect]);
 
     const getEditorContent = useCallback((element: Element): string => {
-        switch (element.textType) {
-            case 'editor':
-            case 'text':
-            case 'heading':
-            case 'paragraph':
-                // FIXME: этих типов недолжно быть
-                return (element as unknown as GridTextElement).content;
-            default:
-                return `<p>Неподдерживаемый тип элемента: ${element.type}</p>`;
+        if (element.hasTextEditor) {
+            return (element as EditorElement).content;
         }
+
+        return `<p>Неподдерживаемый тип элемента: ${element.elementTypeId}</p>`;
     }, []);
 
     return (
@@ -392,9 +372,9 @@ export const ElementContent = ({
                             'data-element-drag-handle': element.id,
                         }}
                         ariaLabel="Drag this element"
-                        handleClick={handleClickElementDragHandle(element.id, element.type)}
-                        handleKeyDown={handleKeyDownElementDragHandle(element.id, element.type)}
-                        handleDragStart={handleDragStartElementDragHandle(element.id, element.type, element.cellId)}
+                        handleClick={handleClickElementDragHandle(element)}
+                        handleKeyDown={handleKeyDownElementDragHandle(element)}
+                        handleDragStart={handleDragStartElementDragHandle(element)}
                     />
                 )}
 

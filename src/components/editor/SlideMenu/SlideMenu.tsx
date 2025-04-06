@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, CSSProperties } from 'react';
+import React, { useRef, useEffect, useState, CSSProperties, useMemo } from 'react';
 import { useSlideMenu } from '@/contexts/SlideMenuContext';
 import styles from './SlideMenu.module.css';
 import { useEditorStore } from '@/store/editorStore';
@@ -51,7 +51,7 @@ const SlideMenu: React.FC = () => {
         duplicateElement,
         deleteElement,
         editElement,
-
+        getElement,
         addColumnLeft,
         addColumnRight,
         duplicateColumn,
@@ -70,6 +70,8 @@ const SlideMenu: React.FC = () => {
     const presentation = getPresentation()
     const cell = getCell(state.slideId, state.layoutId, state.columnId);
 
+    const element = getElement(state.slideId, state.layoutId, state.elementId);
+
     let slideIndex = 0;
     if (state.elementType === 'slide') {
         const slide = getSlide(state.slideId);
@@ -78,7 +80,12 @@ const SlideMenu: React.FC = () => {
         }
     }
 
-    const MenuComponent = activeElementType ? getElementMenuComponent(activeElementType) : null;
+    const MenuComponent = useMemo(() => {
+        if (element?.elementTypeId) {
+            return getElementMenuComponent(element.elementTypeId);
+        }
+        return null;
+    }, [element?.elementTypeId]);
 
     const menuRef = useRef<HTMLDivElement>(null);
     const [position, setPosition] = useState<{ x: number; y: number; rect: DOMRect } | null>(null);

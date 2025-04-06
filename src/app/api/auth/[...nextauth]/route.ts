@@ -11,6 +11,8 @@ export const authOptions: NextAuthOptions = {
                 email: { label: 'Email', type: 'email' },
                 password: { label: 'Password', type: 'password' },
             },
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
             async authorize(credentials) {
                 if (!credentials?.email || !credentials.password) {
                     return null;

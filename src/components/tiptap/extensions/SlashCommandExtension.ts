@@ -74,7 +74,7 @@ class CommandsList {
         )
             .filter(element => element !== undefined)
             .map(element => ({
-                id: element.id,
+                id: element.elementTypeId,
                 label: element.label,
                 icon: element.Icon ? element.Icon.name : undefined
             }));
@@ -262,7 +262,7 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
                         .filter(element => {
                             if (!query) return true;
                             return (
-                                element.id.toLowerCase().includes(query.toLowerCase()) ||
+                                element.elementTypeId.toLowerCase().includes(query.toLowerCase()) ||
                                 element.label.toLowerCase().includes(query.toLowerCase())
                             );
                         })

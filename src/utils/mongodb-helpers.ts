@@ -23,6 +23,8 @@ export async function createPresentationWithoutTransaction(data: any) {
         const db = (prisma as any)._engine.client.db();
         const result = await db.collection('Presentation').insertOne({
             ...presentationData,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
             _id: presentationData.id || new Prisma.ObjectId().toString(),
             createdAt: new Date(),
             updatedAt: new Date()

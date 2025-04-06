@@ -1,40 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { usePresentationStore } from './presentationStore';
-
-
-function deepDiff(obj1, obj2) {
-    const result = {};
-
-    if (!obj1 && !obj2) {
-        return {}
-    }
-
-    if (!obj1 || !obj2) {
-        console.log("один из объектов nullable")
-        return;
-    }
-    for (const key in obj1) {
-        if (!(key in obj2)) {
-            result[key] = { onlyInObj1: obj1[key] };
-        } else if (typeof obj1[key] === 'object' && obj1[key] !== null && typeof obj2[key] === 'object' && obj2[key] !== null) {
-            const nestedDiff = deepDiff(obj1[key], obj2[key]);
-            if (Object.keys(nestedDiff).length > 0) {
-                result[key] = nestedDiff;
-            }
-        } else if (obj1[key] !== obj2[key]) {
-            result[key] = { obj1: obj1[key], obj2: obj2[key] };
-        }
-    }
-
-    for (const key in obj2) {
-        if (!(key in obj1)) {
-            result[key] = { onlyInObj2: obj2[key] };
-        }
-    }
-
-    return result;
-}
+import deepDiff from '@/utils/deepDiff';
 
 // Define history action types
 export type HistoryAction = {
@@ -206,10 +173,10 @@ export const useHistoryStore = create<HistoryState>()(
                             }
                         }
 
-                        const diff1 = deepDiff(state.get, updatedState);
-                        console.log('diff1', diff1);
+                        // const diff1 = deepDiff(state.get, updatedState);
+                        // console.log('diff1', diff1);
 
-                        console.debug('commit transaction', diff1, state, updatedState);
+                        // console.debug('commit transaction', state, updatedState);
                         return updatedState;
                     });
                     return;

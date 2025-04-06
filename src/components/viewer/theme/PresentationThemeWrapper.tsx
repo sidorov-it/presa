@@ -10,19 +10,19 @@ interface PresentationThemeWrapperProps {
 }
 
 const PresentationThemeWrapper: React.FC<PresentationThemeWrapperProps> = ({ theme, children }) => {
-  return (
-    <>
-      {/* Apply theme styles using the client component */}
-      <ThemeStylesApplier theme={theme} />
-      
-      {/* Render the server components inside */}
-      <div className="min-h-screen w-full py-10 px-4 themed-page">
-        <div className="max-w-6xl mx-auto space-y-20">
-          {children}
-        </div>
-      </div>
-    </>
-  );
+    return (
+        <>
+            {/* Apply theme styles using the client component */}
+            <ThemeStylesApplier theme={theme} />
+
+            {/* Render the server components inside */}
+            <div className="min-h-screen w-full py-10 px-4 themed-page">
+                <div className="max-w-6xl mx-auto space-y-20">
+                    {children}
+                </div>
+            </div>
+        </>
+    );
 };
 
-export default PresentationThemeWrapper; 
+export default PresentationThemeWrapper;

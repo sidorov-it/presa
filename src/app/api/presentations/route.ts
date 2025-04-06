@@ -65,8 +65,8 @@ export async function POST(request: NextRequest) {
         const userId = session.user.id;
         const { title } = await request.json();
 
-        const newElement = getNewEditorElement(generateId());
         const cellId = generateId();
+        const newElement = getNewEditorElement(cellId);
 
         const slideId = generateId();
         const layoutId = generateId();
