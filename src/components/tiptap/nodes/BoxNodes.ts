@@ -17,7 +17,7 @@ export const BoxNode = Node.create({
     parseHTML() {
         return [
             {
-                tag: 'div.box'
+                tag: 'div[data-type="box"]'
             }
         ]
     },
@@ -44,7 +44,7 @@ export const NoteBoxNode = Node.create({
     parseHTML() {
         return [
             {
-                tag: 'div.note-box'
+                tag: 'div[data-type="note-box"]'
             }
         ]
     },
@@ -71,7 +71,7 @@ export const InfoBoxNode = Node.create({
     parseHTML() {
         return [
             {
-                tag: 'div.info-box'
+                tag: 'div[data-type="info-box"]'
             }
         ]
     },
@@ -98,7 +98,7 @@ export const WarningBoxNode = Node.create({
     parseHTML() {
         return [
             {
-                tag: 'div.warning-box'
+                tag: 'div[data-type="warning-box"]'
             }
         ]
     },
@@ -125,7 +125,7 @@ export const CautionBoxNode = Node.create({
     parseHTML() {
         return [
             {
-                tag: 'div.caution-box'
+                tag: 'div[data-type="caution-box"]'
             }
         ]
     },
@@ -152,7 +152,7 @@ export const SuccessBoxNode = Node.create({
     parseHTML() {
         return [
             {
-                tag: 'div.success-box'
+                tag: 'div[data-type="success-box"]'
             }
         ]
     },
@@ -179,7 +179,7 @@ export const QuestionBoxNode = Node.create({
     parseHTML() {
         return [
             {
-                tag: 'div.question-box'
+                tag: 'div[data-type="question-box"]'
             }
         ]
     },

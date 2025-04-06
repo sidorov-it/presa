@@ -325,7 +325,7 @@ const Tiptap = ({
             const currentContent = editor.getHTML();
             // Only update if content actually changed to avoid cursor position issues
             if (currentContent !== initialContent) {
-                editor.commands.setContent(initialContent, false, { isHistoryUpdate: true });
+                editor.commands.setContent(initialContent, false);
             }
         }
     }, [editor, initialContent])

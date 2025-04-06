@@ -359,7 +359,7 @@ export const ElementContent = ({
     const handleSelect = useCallback((element: Element) => () => onSelect(element), [onSelect]);
 
     const getEditorContent = useCallback((element: Element): string => {
-        switch (element.type) {
+        switch (element.textType) {
             case 'editor':
             case 'text':
             case 'heading':
