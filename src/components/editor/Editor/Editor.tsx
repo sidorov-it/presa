@@ -7,6 +7,7 @@ import { SlideMenuProvider } from '@/contexts/SlideMenuContext';
 import Presentation from '../Presentation';
 import DragDropIndicator from '@/components/DragDropIndicator';
 import SlideMenu from '../SlideMenu/SlideMenu';
+// import { useHistoryStore } from '@/store/historyStore';
 
 interface EditorProps {
     presentationId: string;
@@ -94,6 +95,16 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
     return (
         <DndProvider presentationId={presentationId}>
             <SlideMenuProvider presentationId={presentationId}>
+                {/* <button
+                    onClick={() => {
+                        console.log(useHistoryStore.getState().getHistoryDiff(presentationId))
+                    }}
+                >show diff history past</button>
+                <button
+                    onClick={() => {
+                        console.log(useHistoryStore.getState().getHistoryDiff(presentationId, true))
+                    }}
+                >show diff history future</button> */}
                 <EditorContent
                     presentationId={presentationId}
                     activeSlideId={activeSlideId}

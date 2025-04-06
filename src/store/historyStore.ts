@@ -6,6 +6,14 @@ import { usePresentationStore } from './presentationStore';
 function deepDiff(obj1, obj2) {
     const result = {};
 
+    if (!obj1 && !obj2) {
+        return {}
+    }
+
+    if (!obj1 || !obj2) {
+        console.log("один из объектов nullable")
+        return;
+    }
     for (const key in obj1) {
         if (!(key in obj2)) {
             result[key] = { onlyInObj1: obj1[key] };
@@ -98,6 +106,7 @@ interface HistoryState {
 
     // Get presentation history
     getHistory: (presentationId: string) => HistoryAction[];
+    getHistoryDiff: (presentationId: string) => void;
 
     // Check if there's an active transaction
     hasActiveTransaction: (presentationId: string) => boolean;
@@ -147,6 +156,7 @@ export const useHistoryStore = create<HistoryState>()(
 
                 const transactionId = generateTransactionId();
 
+                console.debug('begin transaction', description)
                 set((state) => ({
                     activeTransactions: {
                         ...state.activeTransactions,
@@ -432,6 +442,15 @@ export const useHistoryStore = create<HistoryState>()(
                     return [];
                 }
                 return presentationHistory.past;
+            },
+
+            getHistoryDiff: (presentationId, future = false) => {
+                const presentationHistory = get().history[presentationId];
+
+                const key = future ? 'future' : 'past';
+                presentationHistory[key].forEach(pastState => {
+                    console.log(deepDiff(pastState.before, pastState.after))
+                })
             },
 
             hasActiveTransaction: (presentationId: string) => {

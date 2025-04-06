@@ -45,6 +45,7 @@ export const ElementContent = ({
     const isCurrentEditorActive = useEditorStore(state => state.getActiveEditorId() === element.id);
 
     const handleEnterPressed = useCallback((element: Element) => (contentBeforeCursor?: string, contentAfterCursor?: string) => {
+        // Start transaction at the beginning of the operation
         // Получаем текущий макет
         const presentation = usePresentationStore.getState().getPresentation(presentationId);
         if (!presentation) return;
@@ -68,6 +69,7 @@ export const ElementContent = ({
             const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures('single-column');
 
             const firstNewEditorId = generateId();
+            // ??? выглядит не рабочим
             const newElements: Element[] = defaultLayoutGridStructure.rows.map(row => {
                 return row.cells.map(cell => ({
                     id: firstNewEditorId,
@@ -110,15 +112,15 @@ export const ElementContent = ({
             // Update the slide with the new layouts
             usePresentationStore.getState().updateSlide(presentationId, slideId, {
                 layouts: updatedLayouts
-            });
-
-            useHistoryStore.getState().commitTransaction(presentationId);
+            }, true);
 
             useEditorStore.getState().setElementToFocus(
                 firstNewEditorId,
                 newLayoutId,
                 newLayout.gridStructure.rows[0].cells[0].id
             );
+
+            useHistoryStore.getState().commitTransaction(presentationId);
 
             setTimeout(() => {
                 tiptapRefs.current?.editors[firstNewEditorId]?.editor.commands.focus('start');
@@ -151,6 +153,8 @@ export const ElementContent = ({
 
             usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, layout);
 
+            useHistoryStore.getState().commitTransaction(presentationId);
+
             setTimeout(() => {
                 tiptapRefs.current?.editors[newElementId]?.focus();
             }, 10)
@@ -158,17 +162,18 @@ export const ElementContent = ({
     }, [slideId, layoutId]);
 
     const handleEditorContentChange = useCallback((elementId: string) => (content: string, isEnterPress?: boolean) => {
-        // If this update was triggered by Enter key, don't create a new history entry
         if (isEnterPress) {
-            useHistoryStore.getState().beginTransaction(presentationId, 'add new layout');
+            useHistoryStore.getState().beginTransaction(presentationId, 'update content');
+            usePresentationStore.getState().updateElement(presentationId, slideId, layoutId, elementId, {
+                content: content
+            } as Partial<Element>, true);
+
+        } else {
+            usePresentationStore.getState().updateElement(presentationId, slideId, layoutId, elementId, {
+                content: content
+            } as Partial<Element>, false);
         }
-
-        usePresentationStore.getState().updateElement(presentationId, slideId, layoutId, elementId, {
-            content: content
-        } as Partial<Element>, !isEnterPress); // Pass false to prevent creating new history entry if isEnterPress is true
     }, [slideId, layoutId, presentationId]);
-
-
 
     const handleBackspacePressed = useCallback((element: Element) => (isEmpty: boolean, textContent: string) => {
         const presentation = usePresentationStore.getState().getPresentation(presentationId);
@@ -243,11 +248,36 @@ export const ElementContent = ({
                 }))
                 .sort((a, b) => a.column - b.column);
 
-            updatedLayout.gridStructure.rows[0].cells = updatedCells;
-            updatedLayout.gridStructure.columns = updatedLayout.gridStructure.columns - 1;
-            const updatedColumnWidths = getColumnWidths(updatedLayout.gridStructure.columns);
-            updatedLayout.gridStructure.columnWidths = updatedColumnWidths;
-            usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
+            if (updatedCells.length > 1) {
+                updatedLayout.gridStructure.rows[0].cells = updatedCells;
+                updatedLayout.gridStructure.columns = updatedLayout.gridStructure.columns - 1;
+                const updatedColumnWidths = getColumnWidths(updatedLayout.gridStructure.columns);
+                updatedLayout.gridStructure.columnWidths = updatedColumnWidths;
+                usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
+            } else {
+                layout.elements.forEach((el, index) => {
+                    const newLayoutId = generateId(8);
+
+                    const defaultGridType = 'single-column';
+
+                    const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures('single-column');
+
+                    const cellId = defaultLayoutGridStructure.rows[0].cells[0].id;
+
+                    const newLayout: Layout = {
+                        id: newLayoutId,
+                        gridStructure: defaultLayoutGridStructure,
+                        type: defaultGridType,
+                        style: {},
+                        elements: [{
+                            ...el,
+                            cellId,
+                        }],
+                    }
+                    usePresentationStore.getState().addLayout(presentationId, slideId, newLayout, layoutIndex + index);
+                })
+                usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+            }
         }
         // backspace в первом элементе в ячейке с несколькими элементами -> удаляем первый элемент. ставим фокус на следующем
         else if (isMultiCellRow && elementsInCell.length >= 1) {

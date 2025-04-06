@@ -71,7 +71,7 @@ interface PresentationState {
 
     // Работа со слайдами
     addSlide: (presentationId: string, index?: number) => string;
-    updateSlide: (presentationId: string, slideId: string, data: Partial<Slide>) => void;
+    updateSlide: (presentationId: string, slideId: string, data: Partial<Slide>, forceRecordTransactionAction?: boolean) => void;
     deleteSlide: (presentationId: string, slideId: string) => void;
     duplicateSlide: (presentationId: string, slideId: string) => string;
     reorderSlides: (presentationId: string, startIndex: number, endIndex: number) => void;
@@ -394,7 +394,7 @@ export const usePresentationStore = create<PresentationState>()(
                 return slideId;
             },
 
-            updateSlide: (presentationId, slideId, data) => {
+            updateSlide: (presentationId, slideId, data, forceRecordTransactionAction) => {
                 const beforeState = { ...get() };
 
                 const currentPresentation = get().getPresentation(presentationId);
@@ -419,15 +419,26 @@ export const usePresentationStore = create<PresentationState>()(
                         }),
                     }
 
-                    // Record the action for history
-                    get().recordAction({
-                        type: 'slide',
-                        description: 'Update slide',
-                        presentationId,
-                        slideId,
-                        before: { presentations: beforeState.presentations },
-                        after: updatedState
-                    });
+                    if (forceRecordTransactionAction) {
+                        useHistoryStore.getState().recordTransactionAction({
+                            type: 'element',
+                            description: 'Update slide',
+                            presentationId,
+                            slideId,
+                            before: { presentations: beforeState.presentations },
+                            after: updatedState
+                        });
+
+                    } else {
+                        get().recordAction({
+                            type: 'slide',
+                            description: 'Update slide',
+                            presentationId,
+                            slideId,
+                            before: { presentations: beforeState.presentations },
+                            after: updatedState
+                        });
+                    }
 
                     return updatedState;
                 });
@@ -1271,7 +1282,7 @@ export const usePresentationStore = create<PresentationState>()(
                     };
 
                     if (createHistoryEntry) {
-                        get().recordAction({
+                        useHistoryStore.getState().recordTransactionAction({
                             type: 'element',
                             description: 'Update element',
                             presentationId,
@@ -1281,8 +1292,9 @@ export const usePresentationStore = create<PresentationState>()(
                             before: { presentations: beforeState.presentations },
                             after: updatedState
                         });
+
                     } else {
-                        useHistoryStore.getState().recordTransactionAction({
+                        get().recordAction({
                             type: 'element',
                             description: 'Update element',
                             presentationId,

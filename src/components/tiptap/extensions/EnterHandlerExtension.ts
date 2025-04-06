@@ -45,6 +45,7 @@ export const EnterHandlerExtension = (onEnterPressed: (contentBeforeCursor?: JSO
                     // If there's content after the cursor, pass it to the callback
                     if (contentAfterCursor && contentAfterCursor.content?.length > 0) {
                         // Delete the content after cursor in current editor
+                        // вызывает handleEditorContentChange в ElementContent
                         editor
                             .chain()
                             .setMeta('handleEnter', true)
