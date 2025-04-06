@@ -1,5 +1,5 @@
 import { generateId } from '@/utils/id'
-import { type Category, TextElement, TextElementType } from '@/types'
+import { type Category, ElementConfig, TextElement, TextElementType } from '@/types'
 import { FaFont, FaTable, FaList, FaBox, FaImage, FaVideo, FaRegChartBar, FaUpload, FaLink, FaQrcode, FaQuoteLeft, FaToggleOn } from 'react-icons/fa'
 import editorsDefaultContent from './textEditor/defaultContent';
 
@@ -439,9 +439,6 @@ export const getElementMenuComponent = (type: string): React.ComponentType<any> 
 
     return elementConfig?.MenuComponent;
 }
-// export const getElementConfig = (type: string): ElementConfig | undefined => {
-//   return elementRegistry.find(element => element.type === type)
-// }
 
 // export const getElementsByCategory = (category: string): ElementConfig[] => {
 //   return elementRegistry.filter(element => element.category === category)

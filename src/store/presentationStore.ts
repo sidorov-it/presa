@@ -118,6 +118,8 @@ interface PresentationState {
 
     mergeSlideWithPrevious: (presentationId: string, slideId: string) => void;
 
+    addLayoutWithElement: (presentationId: string, slideId: string, element: BaseElement) => void;
+
     // Undo/Redo operations
     undo: (presentationId: string) => void;
     redo: (presentationId: string) => void;
@@ -775,6 +777,67 @@ export const usePresentationStore = create<PresentationState>()(
                 get().saveChanges(presentationId);
 
                 return layoutId;
+            },
+
+            addLayoutWithElement: (presentationId, slideId, element) => {
+                const beforeState = { ...get() };
+
+                const currentPresentation = get().getPresentation(presentationId);
+                if (!currentPresentation) return;
+
+                const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
+                if (!currentSlide) return;
+
+                set((state) => {
+                    const gridStructure = getPredefinedGridStructures('single-column');
+
+                    const cellId = gridStructure.rows[0].cells[0].id;
+
+                    const updatedState = {
+                        presentations: state.presentations.map((presentation) => {
+                            if (presentation.id === presentationId) {
+                                return {
+                                    ...presentation,
+                                    slides: presentation.slides.map((slide) => {
+                                        if (slide.id === slideId) {
+                                            return {
+                                                ...slide,
+                                                layouts: [...slide.layouts, {
+                                                    id: generateId(),
+                                                    elements: [{
+                                                        ...element,
+                                                        id: generateId(),
+                                                        cellId,
+                                                    }],
+                                                    gridStructure,
+                                                    type: 'single-column' as LayoutType,
+                                                    style: {},
+                                                }],
+                                            };
+                                        }
+                                        return slide;
+                                    }),
+
+                                    updatedAt: Date.now(),
+                                };
+                            }
+                            return presentation;
+                        }),
+                    };
+
+                    get().recordAction({
+                        type: 'layout',
+                        description: 'Add layout with element',
+                        presentationId,
+                        slideId,
+                        before: { presentations: beforeState.presentations },
+                        after: updatedState
+                    });
+
+                    return updatedState;
+                });
+
+                get().saveChanges(presentationId);
             },
 
             updateLayout: (presentationId, slideId, layoutId, data) => {

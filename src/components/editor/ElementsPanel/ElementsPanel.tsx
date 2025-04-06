@@ -1,9 +1,10 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useCallback, useState } from 'react';
-import { elementsRegistry } from '@/elements/registry';
+import { elementsRegistry, getNewElement } from '@/elements/registry';
 import styles from './ElementsPanel.module.css';
 import { useDnd } from '@/contexts/DragDropContext';
+import { usePresentationStore } from '@/store/presentationStore';
 
 interface ElementsPanelProps {
     presentationId: string;
@@ -15,12 +16,12 @@ type CategoryType = 'basic' | 'image' | 'video' | 'charts';
 interface PopupMenuProps {
     isOpen: boolean;
     category: CategoryType | null;
-    onClose: () => void;
     presentationId: string;
     slideId: string;
+    onClose: () => void;
 }
 
-const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose }) => {
+const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideId, presentationId }) => {
     // Обработчики для drag-n-drop
     const { handleNewElementDragStart } = useDnd();
 
@@ -37,6 +38,8 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose }) => {
 
         const handleButtonClick = (category: string) => {
             console.log(category);
+            const newElement = getNewElement(category);
+            usePresentationStore.getState().addLayoutWithElement(presentationId, slideId, newElement);
         };
 
         return (
@@ -57,7 +60,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose }) => {
                                             draggable
                                             onDragStart={(e) => handleDragStart(e, element)}
                                             aria-label={`${subCategory.label}: ${element.label}`}
-                                            onClick={() => handleButtonClick(subCategory.id)}
+                                            onClick={() => handleButtonClick(element.id)}
                                         >
                                             {element.Icon && <element.Icon />}
                                             <div className="text-xs text-center text-gray-800">{element.label}</div>
