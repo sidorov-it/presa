@@ -1,5 +1,5 @@
 import { generateId } from '@/utils/id'
-import { type BaseElement, type EditorElement, type ElementConfig, type Category } from '@/types'
+import { type BaseElement, type EditorElement, type ElementConfig, type Category, ImageElement } from '@/types'
 import { FaFont, FaTable, FaList, FaBox, FaImage, FaVideo, FaRegChartBar, FaUpload, FaLink, FaQrcode, FaQuoteLeft, FaToggleOn } from 'react-icons/fa'
 import editorsDefaultContent from './textEditor/defaultContent';
 
@@ -11,6 +11,9 @@ import ListBubbleMenu from '@/components/editor/Menus/BubbleMenus/ListBubbleMenu
 import BoxBubbleMenu from '@/components/editor/Menus/BubbleMenus/BoxBubbleMenu';
 import DefaultBubbleMenu from '@/components/editor/Menus/BubbleMenus/DefaultBubbleMenu';
 import ButtonMenu from '@/components/editor/Menus/ButtonMenu';
+
+// Import our new Image components
+import { ImageSettings } from './image';
 
 // Define component type enum to better categorize elements by their structure
 export enum ComponentStructureType {
@@ -47,6 +50,17 @@ export const getNewElement = (type: string): Omit<BaseElement, 'cellId'> | null 
         // hasTextEditor: elementConfig?.hasTextEditor,
         elementTypeId: elementConfig?.elementTypeId,
     };
+
+    // Special handling for image elements
+    if (type === 'image') {
+        return {
+            ...baseElement,
+            type: 'image',
+            src: elementConfig?.defaultProps?.src || '',
+            alt: elementConfig?.defaultProps?.alt || '',
+            alignment: elementConfig?.defaultProps?.alignment || 'center',
+        } as Omit<ImageElement, 'cellId'>;
+    }
 
     // Return default text element for other types
     return baseElement as Omit<BaseElement, 'cellId'>;
@@ -351,7 +365,7 @@ export const elementsRegistry: Category[] = [
                         Icon: FaToggleOn,
                         componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
                         hasTextEditor: true,
-                        MenuComponent: DefaultBubbleMenu,
+                        // MenuComponent: DefaultBubbleMenu,
                         defaultProps: {
                             textType: 'details',
                             content: editorsDefaultContent.toggle
@@ -368,16 +382,16 @@ export const elementsRegistry: Category[] = [
         Icon: FaImage,
         elements: [
             // Upload
-            {
-                elementTypeId: 'upload',
-                // type: ContainerType.ELEMENT,
-                label: 'Загрузка изображения',
-                Icon: FaUpload,
-                componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
-                hasTextEditor: false,
-                MenuComponent: DefaultBubbleMenu,
-                defaultProps: { content: '' }
-            },
+            // {
+            //     elementTypeId: 'upload',
+            //     // type: ContainerType.ELEMENT,
+            //     label: 'Загрузка изображения',
+            //     Icon: FaUpload,
+            //     componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
+            //     hasTextEditor: false,
+            //     // MenuComponent: DefaultBubbleMenu,
+            //     defaultProps: { content: '' }
+            // },
             // Link
             {
                 elementTypeId: 'link',
@@ -386,20 +400,20 @@ export const elementsRegistry: Category[] = [
                 Icon: FaLink,
                 componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
                 hasTextEditor: false,
-                MenuComponent: DefaultBubbleMenu,
+                // MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
             // QR
-            {
-                elementTypeId: 'qr',
-                // type: ContainerType.ELEMENT,
-                label: 'QR-код',
-                Icon: FaQrcode,
-                componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
-                hasTextEditor: false,
-                MenuComponent: DefaultBubbleMenu,
-                defaultProps: { content: '' }
-            },
+            // {
+            //     elementTypeId: 'qr',
+            //     // type: ContainerType.ELEMENT,
+            //     label: 'QR-код',
+            //     Icon: FaQrcode,
+            //     componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
+            //     hasTextEditor: false,
+            //     // MenuComponent: DefaultBubbleMenu,
+            //     defaultProps: { content: '' }
+            // },
         ]
     },
     {
@@ -414,7 +428,7 @@ export const elementsRegistry: Category[] = [
                 Icon: FaVideo,
                 componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
                 hasTextEditor: false,
-                MenuComponent: DefaultBubbleMenu,
+                // MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             }
         ]
@@ -432,7 +446,7 @@ export const elementsRegistry: Category[] = [
                 Icon: FaRegChartBar,
                 componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
                 hasTextEditor: false,
-                MenuComponent: DefaultBubbleMenu,
+                // MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
             // Bar chart
@@ -443,7 +457,7 @@ export const elementsRegistry: Category[] = [
                 Icon: FaRegChartBar,
                 componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
                 hasTextEditor: false,
-                MenuComponent: DefaultBubbleMenu,
+                // MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
             // Line chart
@@ -454,7 +468,7 @@ export const elementsRegistry: Category[] = [
                 Icon: FaRegChartBar,
                 componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
                 hasTextEditor: false,
-                MenuComponent: DefaultBubbleMenu,
+                // MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
             // Pie chart
@@ -465,7 +479,7 @@ export const elementsRegistry: Category[] = [
                 Icon: FaRegChartBar,
                 componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
                 hasTextEditor: false,
-                MenuComponent: DefaultBubbleMenu,
+                // MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
             // Donut  chart
@@ -476,9 +490,30 @@ export const elementsRegistry: Category[] = [
                 Icon: FaRegChartBar,
                 componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
                 hasTextEditor: false,
-                MenuComponent: DefaultBubbleMenu,
+                // MenuComponent: DefaultBubbleMenu,
                 defaultProps: { content: '' }
             },
+        ]
+    },
+    {
+        id: 'media',
+        label: 'Медиа',
+        Icon: FaImage,
+        elements: [
+            {
+                elementTypeId: 'image',
+                label: 'Изображение',
+                Icon: FaImage,
+                componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
+                hasTextEditor: false,
+                MenuComponent: ImageSettings,
+                defaultProps: { 
+                    src: '', 
+                    alt: 'Image', 
+                    alignment: 'center'
+                }
+            },
+            // ... other media elements ...
         ]
     }
 ]
@@ -502,7 +537,7 @@ export const getElementMenuComponent = (elementId: string): { MenuComponent: Rea
     }
 
     return {
-        MenuComponent: DefaultBubbleMenu,
+        // MenuComponent: DefaultBubbleMenu,
         menuDirection: 'bottom',
         menuHeight: undefined
     };

@@ -2,13 +2,14 @@ import Tiptap from '@/components/tiptap/Tiptap';
 import styles from './ElementContent.module.css';
 import DragHandler from '../DragHandler';
 import { RefObject, useCallback, useMemo } from 'react';
-import { Element, GridStructure, getPredefinedGridStructures, Layout, TipTapRefs, EditorElement, ElementConfig } from '@/types';
+import { Element, GridStructure, getPredefinedGridStructures, Layout, TipTapRefs, EditorElement, ElementConfig, ImageElement } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import { generateId } from '@/utils/id';
 import { useEditorStore } from '@/store/editorStore';
 import { useHistoryStore } from '@/store/historyStore';
 import { getElementConfig, getNewEditorElement, getNewElement } from '@/elements/registry';
 import { getColumnWidths } from '../SlideEditor/SlideEditor';
+import { Image } from '@/elements/image';
 
 export const ElementContent = ({
     element,
@@ -350,6 +351,37 @@ export const ElementContent = ({
         return `<p>Неподдерживаемый тип элемента: ${element.elementTypeId}</p>`;
     }, []);
 
+    const renderElementContent = useCallback((element: Element) => {
+        if (elementConfig.hasTextEditor) {
+            return (
+                <Tiptap
+                    key={element.id}
+                    elementConfig={elementConfig}
+                    elementId={element.id}
+                    tiptapRefs={tiptapRefs}
+                    id={element.cellId}
+                    initialContent={getEditorContent(element)}
+                    onEnterPressed={handleEnterPressed(element)}
+                    onBackspacePressed={handleBackspacePressed(element)}
+                    onContentChange={handleEditorContentChange(element.id)}
+                    customBubbleMenuTrigger={dragHandleRef}
+                    onAddElement={handleAddElement(element.id)}
+                    presentationId={presentationId}
+                    slideId={slideId}
+                    layoutId={layoutId}
+                />
+            );
+        } else if (element.elementTypeId === 'image') {
+            return <Image element={element as ImageElement} />;
+        }
+
+        return (
+            <div className="p-4 border border-dashed border-gray-300 rounded-md text-gray-500">
+                Unsupported element type: {element.elementTypeId}
+            </div>
+        );
+    }, [dragHandleRef, getEditorContent, handleAddElement, handleBackspacePressed, handleEnterPressed, handleEditorContentChange, layoutId, presentationId, slideId, tiptapRefs]);
+
     return (
         <div
             className={`${styles.elementContent} themed-text`}
@@ -377,21 +409,7 @@ export const ElementContent = ({
                     />
                 )}
 
-                <Tiptap
-                    key={element.id}
-                    elementId={element.id}
-                    tiptapRefs={tiptapRefs}
-                    id={element.cellId}
-                    initialContent={getEditorContent(element)}
-                    onEnterPressed={handleEnterPressed(element)}
-                    onBackspacePressed={handleBackspacePressed(element)}
-                    onContentChange={handleEditorContentChange(element.id)}
-                    customBubbleMenuTrigger={dragHandleRef}
-                    onAddElement={handleAddElement(element.id)}
-                    presentationId={presentationId}
-                    slideId={slideId}
-                    layoutId={layoutId}
-                />
+                {renderElementContent(element)}
             </div>
         </div>
     )

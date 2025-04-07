@@ -300,6 +300,7 @@ export interface ImageElement extends BaseElement {
     type: 'image';
     src: string;
     alt: string;
+    alignment?: 'left' | 'center' | 'right';
 }
 
 // Элемент разделителя

@@ -30,7 +30,7 @@ import {
     SuccessBoxNode,
     QuestionBoxNode
 } from './nodes'
-import { TipTapRefs } from '@/types';
+import { ElementConfig, TipTapRefs } from '@/types';
 import CommonBubbleMenu from './CommonBubbleMenu';
 import Link from '@tiptap/extension-link';
 import Details from '@tiptap-pro/extension-details'
@@ -54,6 +54,7 @@ interface TiptapProps {
     layoutId?: string;
     tiptapRefs: RefObject<TipTapRefs>;
     elementId: string;
+    elementConfig: ElementConfig;
 }
 
 // Define the ref type
@@ -279,6 +280,7 @@ const Tiptap = ({
     layoutId,
     tiptapRefs,
     elementId,
+    elementConfig,
 }: TiptapProps) => {
     const editor = useEditor({
         extensions: getExtensions(
@@ -434,7 +436,7 @@ const Tiptap = ({
           </button>
         </div>
       </FloatingMenu> */}
-            <CommonBubbleMenu editor={editor} />
+            {!elementConfig?.customMenu && <CommonBubbleMenu editor={editor} />}
             <div className="tiptap-editor-wrapper w-full">
                 {editor && (
                     <EditorContent
