@@ -1,0 +1,57 @@
+.dot {
+    position: absolute; 
+    z-index: 20; 
+    border: 2px solid #3b82f6; /* Синяя рамка */
+    border-radius: 2px;
+    width: 8px; 
+    height: 8px; 
+    background-color: white; 
+}
+
+.dotTopLeft {
+    top: 0; 
+    left: 0;
+    transform: translate(-50%, -50%);
+}
+
+.dotTopRight {
+    top: 0; 
+    right: 0; 
+    transform: translate(50%, -50%);
+}
+
+.dotBottomLeft {
+    bottom: 0; 
+    left: 0; 
+    transform: translate(-50%, 50%);
+}
+
+.dotBottomRight {
+    bottom: 0; 
+    right: 0; 
+    transform: translate(50%, 50%);
+}
+
+.dotTopMiddle {
+    top: 0; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
+}
+
+.dotBottomMiddle {
+    bottom: 0; 
+    left: 50%; 
+    transform: translate(-50%, 50%);
+}
+
+.dotLeftMiddle {
+    top: 50%; 
+    left: 0; 
+    transform: translate(-50%, -50%);
+}
+
+.dotRightMiddle {
+    top: 50%; 
+    right: 0; 
+    transform: translate(50%, -50%);
+}

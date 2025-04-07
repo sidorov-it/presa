@@ -4,6 +4,8 @@ import { ImageElement } from '@/types';
 import { default as ImageComponent } from 'next/image'
 import { usePresentationStore } from '@/store/presentationStore';
 
+import styles from './Image.module.css';
+
 interface ImageProps {
   element: ImageElement;
   className?: string;
@@ -11,6 +13,17 @@ interface ImageProps {
   slideId?: string;
   layoutId?: string;
 }
+
+// Типы направлений изменения размера
+type ResizeDirection = 
+  | 'top'
+  | 'right'
+  | 'bottom'
+  | 'left'
+  | 'top-left'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom-right';
 
 const Image: React.FC<ImageProps> = ({ 
   element, 
@@ -25,12 +38,21 @@ const Image: React.FC<ImageProps> = ({
     const containerRef = useRef<HTMLDivElement>(null);
     const [resizing, setResizing] = useState(false);
     const [startWidth, setStartWidth] = useState(0);
+    const [startHeight, setStartHeight] = useState(0);
     const [startX, setStartX] = useState(0);
+    const [startY, setStartY] = useState(0);
+    const [resizeDirection, setResizeDirection] = useState<ResizeDirection | null>(null);
+    const [aspectRatio, setAspectRatio] = useState(1);
 
     const updateElement = usePresentationStore(state => state.updateElement);
 
     const handleImageLoad = () => {
         setIsLoading(false);
+        // Сохраняем соотношение сторон изображения при загрузке
+        if (containerRef.current) {
+            const rect = containerRef.current.getBoundingClientRect();
+            setAspectRatio(rect.width / rect.height);
+        }
     };
 
     const handleImageError = () => {
@@ -57,28 +79,54 @@ const Image: React.FC<ImageProps> = ({
     }, []);
 
     // Handle resize start
-    const handleResizeStart = (e: React.MouseEvent, direction: string) => {
+    const handleResizeStart = (e: React.MouseEvent, direction: ResizeDirection) => {
         e.preventDefault();
         e.stopPropagation();
         setResizing(true);
-        setStartWidth(containerRef.current?.clientWidth || 0);
+        setResizeDirection(direction);
+        
+        if (containerRef.current) {
+            const rect = containerRef.current.getBoundingClientRect();
+            setStartWidth(rect.width);
+            setStartHeight(rect.height);
+            setAspectRatio(rect.width / rect.height);
+        }
+        
         setStartX(e.clientX);
+        setStartY(e.clientY);
     };
 
     // Handle resize movement
     const handleResizeMove = (e: MouseEvent) => {
-        if (!resizing) return;
+        if (!resizing || !resizeDirection || !containerRef.current) return;
         
         const deltaX = e.clientX - startX;
-        const newWidth = startWidth + deltaX;
+        const deltaY = e.clientY - startY;
+        let newWidth = startWidth;
+        let newHeight = startHeight;
+        
+        // Определяем изменение ширины в зависимости от направления
+        if (resizeDirection.includes('right')) {
+            newWidth = startWidth + deltaX;
+        } else if (resizeDirection.includes('left')) {
+            newWidth = startWidth - deltaX;
+        } else if (resizeDirection === 'top' || resizeDirection === 'bottom') {
+            // Для верхней и нижней точек используем изменение по Y
+            // и пересчитываем ширину с учетом соотношения сторон
+            if (resizeDirection === 'top') {
+                newHeight = startHeight - deltaY;
+            } else { // bottom
+                newHeight = startHeight + deltaY;
+            }
+            // Пересчитываем ширину, сохраняя соотношение сторон
+            newWidth = newHeight * aspectRatio;
+        }
         
         // Ensure minimum width (100px)
         const width = Math.max(100, newWidth);
         
         // Update container max-width in the DOM
-        if (containerRef.current) {
-            containerRef.current.style.maxWidth = `${width}px`;
-        }
+        containerRef.current.style.maxWidth = `${width}px`;
     };
 
     // Handle resize end
@@ -86,6 +134,7 @@ const Image: React.FC<ImageProps> = ({
         if (!resizing) return;
         
         setResizing(false);
+        setResizeDirection(null);
         
         // Save the new width to the element data
         if (containerRef.current && presentationId && slideId && layoutId) {
@@ -110,7 +159,27 @@ const Image: React.FC<ImageProps> = ({
             window.removeEventListener('mousemove', handleResizeMove);
             window.removeEventListener('mouseup', handleResizeEnd);
         };
-    }, [resizing]);
+    }, [resizing, resizeDirection]);
+
+    // Get cursor style based on resize direction
+    const getResizeCursor = (direction: ResizeDirection): string => {
+        switch (direction) {
+            case 'top':
+            case 'bottom':
+                return 'ns-resize';
+            case 'left':
+            case 'right':
+                return 'ew-resize';
+            case 'top-left':
+            case 'bottom-right':
+                return 'nwse-resize';
+            case 'top-right':
+            case 'bottom-left':
+                return 'nesw-resize';
+            default:
+                return 'default';
+        }
+    };
 
     // Get alignment style based on element alignment property
     const getAlignmentClass = () => {
@@ -141,7 +210,7 @@ const Image: React.FC<ImageProps> = ({
             className={`relative ${className} ${getAlignmentClass()}`} 
             style={{ 
                 maxWidth: element.width ? `${element.width}px` : '100%',
-                cursor: isSelected ? 'move' : 'pointer'
+                cursor: 'default'
             }}
             onClick={handleClickImage}
         >
@@ -177,19 +246,60 @@ const Image: React.FC<ImageProps> = ({
                     
                     {isSelected && (
                         <>
-                            {/* Resize handle - right */}
+                            {/* Верхняя сторона */}
                             <div 
-                                className="absolute top-0 right-0 bottom-0 w-4 cursor-e-resize z-20"
+                                className={`${styles.dot} ${styles.dotTopMiddle}`}
+                                style={{ cursor: getResizeCursor('top') }}
+                                onMouseDown={(e) => handleResizeStart(e, 'top')}
+                            />
+                            
+                            {/* Правая сторона */}
+                            <div 
+                                className={`${styles.dot} ${styles.dotRightMiddle}`}
+                                style={{ cursor: getResizeCursor('right') }}
                                 onMouseDown={(e) => handleResizeStart(e, 'right')}
                             />
-                            {/* Resize handle - left */}
+                            
+                            {/* Нижняя сторона */}
                             <div 
-                                className="absolute top-0 left-0 bottom-0 w-4 cursor-w-resize z-20"
+                                className={`${styles.dot} ${styles.dotBottomMiddle}`}
+                                style={{ cursor: getResizeCursor('bottom') }}
+                                onMouseDown={(e) => handleResizeStart(e, 'bottom')}
+                            />
+                            
+                            {/* Левая сторона */}
+                            <div 
+                                className={`${styles.dot} ${styles.dotLeftMiddle}`}
+                                style={{ cursor: getResizeCursor('left') }}
                                 onMouseDown={(e) => handleResizeStart(e, 'left')}
                             />
-                            {/* Resize corner handle */}
-                            <div className="absolute bottom-0 right-0 w-6 h-6 bg-blue-500 rounded-full opacity-75 cursor-se-resize z-20"
-                                onMouseDown={(e) => handleResizeStart(e, 'corner')}
+                            
+                            {/* Верхний левый угол */}
+                            <div 
+                                className={`${styles.dot} ${styles.dotTopLeft}`}
+                                style={{ cursor: getResizeCursor('top-left') }}
+                                onMouseDown={(e) => handleResizeStart(e, 'top-left')}
+                            />
+                            
+                            {/* Верхний правый угол */}
+                            <div 
+                                className={`${styles.dot} ${styles.dotTopRight}`}
+                                style={{ cursor: getResizeCursor('top-right') }}
+                                onMouseDown={(e) => handleResizeStart(e, 'top-right')}
+                            />
+                            
+                            {/* Нижний левый угол */}
+                            <div 
+                                className={`${styles.dot} ${styles.dotBottomLeft}`}
+                                style={{ cursor: getResizeCursor('bottom-left') }}
+                                onMouseDown={(e) => handleResizeStart(e, 'bottom-left')}
+                            />
+                            
+                            {/* Нижний правый угол */}
+                            <div 
+                                className={`${styles.dot} ${styles.dotBottomRight}`}
+                                style={{ cursor: getResizeCursor('bottom-right') }}
+                                onMouseDown={(e) => handleResizeStart(e, 'bottom-right')}
                             />
                         </>
                     )}
