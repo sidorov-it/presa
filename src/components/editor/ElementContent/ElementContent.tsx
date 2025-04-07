@@ -372,7 +372,12 @@ export const ElementContent = ({
                 />
             );
         } else if (element.elementTypeId === 'image') {
-            return <Image element={element as ImageElement} />;
+            return <Image 
+                element={element as ImageElement} 
+                presentationId={presentationId}
+                slideId={slideId}
+                layoutId={layoutId}
+            />;
         }
 
         return (

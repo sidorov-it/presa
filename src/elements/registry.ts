@@ -59,6 +59,7 @@ export const getNewElement = (type: string): Omit<BaseElement, 'cellId'> | null 
             src: elementConfig?.defaultProps?.src || '',
             alt: elementConfig?.defaultProps?.alt || '',
             alignment: elementConfig?.defaultProps?.alignment || 'center',
+            width: elementConfig?.defaultProps?.width || undefined,
         } as Omit<ImageElement, 'cellId'>;
     }
 
@@ -510,7 +511,8 @@ export const elementsRegistry: Category[] = [
                 defaultProps: { 
                     src: '', 
                     alt: 'Image', 
-                    alignment: 'center'
+                    alignment: 'center',
+                    width: undefined
                 }
             },
             // ... other media elements ...
@@ -537,7 +539,7 @@ export const getElementMenuComponent = (elementId: string): { MenuComponent: Rea
     }
 
     return {
-        // MenuComponent: DefaultBubbleMenu,
+        MenuComponent: DefaultBubbleMenu,
         menuDirection: 'bottom',
         menuHeight: undefined
     };
