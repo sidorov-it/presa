@@ -3,10 +3,11 @@ import { useState, useEffect } from 'react'
 import FillIcon from './FillIcon'
 import BorderedIcon from './BorderedIcon'
 import { usePresentationStore } from '@/store/presentationStore'
-import { ElementMenuProps, ButtonElement } from '@/types'
+import { ElementMenuProps } from '@/types'
 import { RefObject } from 'react'
 
-interface ButtonMenuProps extends ElementMenuProps {
+interface ButtonMenuProps extends Omit<ElementMenuProps, 'columnId'> {
+    columnId?: string;
     onUpdate: (key: string, value: any) => void;
     onDelete: () => void;
     nodeAttributes: Record<string, any>;
@@ -18,6 +19,7 @@ export default function ButtonMenu({
     layoutId,
     elementId,
     presentationId,
+    columnId,
     onUpdate,
     onDelete,
     nodeAttributes,
@@ -95,7 +97,7 @@ export default function ButtonMenu({
             </div>
 
             {/* Test button */}
-            <button 
+            <button
                 data-element-id={elementId || nodeAttributes.elementId}
                 onClick={handleTestClick}
                 className="px-3 py-2 bg-gray-100 rounded"
@@ -172,7 +174,7 @@ export default function ButtonMenu({
             <div className="flex items-center justify-between gap-2">
                 <span className="text-sm text-gray-700">Цвет</span>
                 <div className="flex items-center bg-gray-100 rounded-md px-2 py-1">
-                    <div 
+                    <div
                         className="w-5 h-5 rounded mr-2"
                         style={{ backgroundColor: color }}
                     />

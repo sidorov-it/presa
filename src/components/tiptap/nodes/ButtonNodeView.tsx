@@ -43,15 +43,15 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
             return null;
         }
         return state.getElement(
-            node.attrs.presentationId,
-            node.attrs.slideId,
-            node.attrs.layoutId,
+            node.attrs.presentationId, 
+            node.attrs.slideId, 
+            node.attrs.layoutId, 
             node.attrs.elementId
         );
     });
 
     console.log('Element from store:', element);
-
+    
     // Получаем идентификаторы из атрибутов или используем заглушки
     const elementId = node.attrs.elementId || 'dummy-id';
 
@@ -62,7 +62,6 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
 
     // Создаем DOM-элемент для портала при монтировании
     useEffect(() => {
-        // Создаем контейнер для портала, если его еще нет
         if (!portalContainerRef.current) {
             const container = document.createElement('div');
             container.className = 'button-menu-portal';
@@ -70,7 +69,6 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
             portalContainerRef.current = container;
         }
 
-        // Удаляем контейнер при размонтировании
         return () => {
             if (portalContainerRef.current) {
                 document.body.removeChild(portalContainerRef.current);
@@ -107,34 +105,112 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
         };
     }, [showMenu, positionMenu]);
 
-    // Простые обработчики для тестирования
-    const handleTestClick = useCallback((e: React.MouseEvent) => {
-        e.stopPropagation(); // Prevent event from bubbling up
-        console.log('ButtonNodeView - Test clicked', {
-            elementId,
-            nodeAttrs: node.attrs,
-            element,
-            hasElementId: 'elementId' in node.attrs
-        });
-    }, [node.attrs, element, elementId]);
-
     const handleToggleMenu = useCallback(() => {
         setShowMenu(prev => !prev);
     }, []);
 
+    // Get button styles based on attributes
+    const getButtonStyles = () => {
+        const { buttonStyle, color, alignment } = node.attrs;
+        const baseStyles = "py-2 px-4 rounded transition-all duration-200 min-w-[100px] hover:brightness-90 ";
+        let alignmentClass = "text-center";
+        
+        // Set alignment
+        if (alignment === 'left') {
+            alignmentClass = "text-left";
+        } else if (alignment === 'right') {
+            alignmentClass = "text-right";
+        }
+        
+        // Set button style (filled or outlined)
+        if (buttonStyle === 'filled') {
+            return {
+                className: `${baseStyles} ${alignmentClass}`,
+                style: {
+                    backgroundColor: color || '#3C3939',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    cursor: node.attrs.link && !showMenu ? 'pointer' : 'text'
+                }
+            };
+        } else {
+            return {
+                className: `${baseStyles} ${alignmentClass} hover:bg-opacity-10`,
+                style: {
+                    backgroundColor: 'transparent',
+                    color: color || '#3C3939',
+                    border: `1px solid ${color || '#3C3939'}`,
+                    cursor: node.attrs.link && !showMenu ? 'pointer' : 'text'
+                }
+            };
+        }
+    };
+
+    // Handle button click - if link is provided, navigate to it
+    const handleButtonClick = useCallback((e: React.MouseEvent) => {
+        const { link } = node.attrs;
+        
+        // If a link exists and there's no menu open, navigate to the link
+        if (link && !showMenu) {
+            e.preventDefault();
+            // Open link in new tab
+            window.open(link, '_blank', 'noopener,noreferrer');
+        } else {
+            // Toggle menu if link is not set or already editing
+            handleToggleMenu();
+        }
+    }, [node.attrs, showMenu, handleToggleMenu]);
+
+    // Determine if button text should be editable
+    const isEditable = !node.attrs.link || showMenu;
+
+    // Get container styles based on alignment
+    const getContainerStyles = () => {
+        const { alignment } = node.attrs;
+        let containerStyle = "w-full flex";
+        
+        // Set alignment for the button container
+        if (alignment === 'left') {
+            containerStyle += " justify-start";
+        } else if (alignment === 'center') {
+            containerStyle += " justify-center";
+        } else if (alignment === 'right') {
+            containerStyle += " justify-end";
+        }
+        
+        return containerStyle;
+    };
+
+    const buttonStyles = getButtonStyles();
+    const containerStyles = getContainerStyles();
+
     return (
         <NodeViewWrapper>
             <div className="relative button-node-wrapper">
-                <button
-                    data-type="button"
-                    data-element-id={elementId}
-                    className="interactive-button"
-                    onClick={handleToggleMenu}
-                >
-                    <div contentEditable={true} suppressContentEditableWarning={true}>
-                        {node.textContent || 'Button text'}
-                    </div>
-                </button>
+                <div className={containerStyles}>
+                    <button
+                        data-type="button"
+                        data-element-id={elementId}
+                        data-has-link={!!node.attrs.link}
+                        className={buttonStyles.className}
+                        style={buttonStyles.style}
+                        onClick={handleButtonClick}
+                        onMouseDown={(e) => {
+                            // Prevent editor selection loss when clicking button
+                            if (!isEditable) {
+                                e.preventDefault();
+                            }
+                        }}
+                    >
+                        <div 
+                            contentEditable={isEditable}
+                            suppressContentEditableWarning={true}
+                            className={isEditable ? 'cursor-text' : 'cursor-pointer'}
+                        >
+                            {node.textContent || 'Button text'}
+                        </div>
+                    </button>
+                </div>
 
                 {/* Рендерим меню через портал */}
                 {showMenu && portalContainerRef.current && createPortal(
@@ -143,6 +219,7 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
                         layoutId={node.attrs.layoutId}
                         elementId={elementId}
                         presentationId={node.attrs.presentationId}
+                        columnId="" // Use an empty string as fallback for columnId
                         onUpdate={handleUpdateAttribute}
                         onDelete={deleteNode}
                         nodeAttributes={node.attrs}
