@@ -1,13 +1,13 @@
 import Tiptap from '@/components/tiptap/Tiptap';
 import styles from './ElementContent.module.css';
 import DragHandler from '../DragHandler';
-import { RefObject, useCallback } from 'react';
-import { Element, GridStructure, getPredefinedGridStructures, Layout, TipTapRefs, EditorElement } from '@/types';
+import { RefObject, useCallback, useMemo } from 'react';
+import { Element, GridStructure, getPredefinedGridStructures, Layout, TipTapRefs, EditorElement, ElementConfig } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import { generateId } from '@/utils/id';
 import { useEditorStore } from '@/store/editorStore';
 import { useHistoryStore } from '@/store/historyStore';
-import { getNewEditorElement, getNewElement } from '@/elements/registry';
+import { getElementConfig, getNewEditorElement, getNewElement } from '@/elements/registry';
 import { getColumnWidths } from '../SlideEditor/SlideEditor';
 
 export const ElementContent = ({
@@ -19,7 +19,6 @@ export const ElementContent = ({
     handleClickElementDragHandle,
     handleKeyDownElementDragHandle,
     handleDragStartElementDragHandle,
-    onSelect,
     slideId,
     tiptapRefs,
     dragHandleRef,
@@ -31,10 +30,9 @@ export const ElementContent = ({
     menuElementId: string | null;
     // activeEditorId?: string | null;
     elementIsHovered: boolean;
-    handleClickElementDragHandle: (element: Element) => (e: any) => void;
-    handleKeyDownElementDragHandle: (element: Element) => (e: any) => void;
+    handleClickElementDragHandle: (element: Element, elementConfig: ElementConfig) => (e: any) => void;
+    handleKeyDownElementDragHandle: (element: Element, elementConfig: ElementConfig) => (e: any) => void;
     handleDragStartElementDragHandle: (element: Element) => (e: any) => void;
-    onSelect: (element: Element) => void;
     slideId: string;
     tiptapRefs: RefObject<TipTapRefs>;
     dragHandleRef: RefObject<HTMLDivElement>;
@@ -42,6 +40,8 @@ export const ElementContent = ({
     layoutId: string;
 }) => {
     const isCurrentEditorActive = useEditorStore(state => state.getActiveEditorId() === element.id);
+
+    const elementConfig = useMemo(() => getElementConfig(element.elementTypeId), [element.elementTypeId]);
 
     const handleEnterPressed = useCallback((element: Element) => (contentBeforeCursor?: string, contentAfterCursor?: string) => {
         // Start transaction at the beginning of the operation
@@ -335,16 +335,15 @@ export const ElementContent = ({
 
             usePresentationStore.getState().updateElement(presentationId, slideId, layoutId, elementId, newElementWithCell as Partial<Element>);
 
-            if (elementData.hasTextEditor) {
+            if (elementConfig.hasTextEditor) {
                 tiptapRefs.current?.editors[elementId]?.editor.commands.setContent((elementData as EditorElement).content);
             }
         }
     }, [slideId, layoutId, presentationId]);
 
-    const handleSelect = useCallback((element: Element) => () => onSelect(element), [onSelect]);
 
     const getEditorContent = useCallback((element: Element): string => {
-        if (element.hasTextEditor) {
+        if (elementConfig.hasTextEditor) {
             return (element as EditorElement).content;
         }
 
@@ -372,8 +371,8 @@ export const ElementContent = ({
                             'data-element-drag-handle': element.id,
                         }}
                         ariaLabel="Drag this element"
-                        handleClick={handleClickElementDragHandle(element)}
-                        handleKeyDown={handleKeyDownElementDragHandle(element)}
+                        handleClick={handleClickElementDragHandle(element, elementConfig)}
+                        handleKeyDown={handleKeyDownElementDragHandle(element, elementConfig)}
                         handleDragStart={handleDragStartElementDragHandle(element)}
                     />
                 )}
@@ -386,7 +385,6 @@ export const ElementContent = ({
                     initialContent={getEditorContent(element)}
                     onEnterPressed={handleEnterPressed(element)}
                     onBackspacePressed={handleBackspacePressed(element)}
-                    onFocus={handleSelect(element)}
                     onContentChange={handleEditorContentChange(element.id)}
                     customBubbleMenuTrigger={dragHandleRef}
                     onAddElement={handleAddElement(element.id)}

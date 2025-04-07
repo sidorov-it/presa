@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, CSSProperties, useMemo } from 'react';
+import React, { useRef, useEffect, useState, CSSProperties, useMemo, useCallback } from 'react';
 import { useSlideMenu } from '@/contexts/SlideMenuContext';
 import styles from './SlideMenu.module.css';
 import { useEditorStore } from '@/store/editorStore';
@@ -65,7 +65,7 @@ const SlideMenu: React.FC = () => {
         mergeSlideWithPrevious,
     } = useSlideMenu();
 
-    const { activeElementType, activeEditor } = useEditorStore();
+    const { activeEditor } = useEditorStore();
 
     const presentation = getPresentation()
     const cell = getCell(state.slideId, state.layoutId, state.columnId);
@@ -80,11 +80,19 @@ const SlideMenu: React.FC = () => {
         }
     }
 
-    const MenuComponent = useMemo(() => {
+    const {
+        MenuComponent,
+        menuDirection,
+        menuHeight
+    } = useMemo(() => {
         if (element?.elementTypeId) {
-            return getElementMenuComponent(element.elementTypeId);
+            return getElementMenuComponent(element.elementTypeId)
         }
-        return null;
+        return {
+            MenuComponent: null,
+            menuDirection: 'bottom',
+            menuHeight: undefined
+        };
     }, [element?.elementTypeId]);
 
     const menuRef = useRef<HTMLDivElement>(null);
@@ -202,6 +210,23 @@ const SlideMenu: React.FC = () => {
             closeMenu();
         }
     }
+
+    const getMenuPosition = useCallback(() => {
+        if (!position) return { left: 0, top: 0 };
+
+        const menuWidth = 250; // Estimated menu width
+        const defaultMenuHeight = 46; // Estimated menu height
+
+        let left = position.x;
+        const top = position.y - defaultMenuHeight - 5;
+
+        // Check right edge
+        if (left + menuWidth > window.innerWidth) {
+            left = window.innerWidth - menuWidth - 10;
+        }
+
+        return { left, top };
+    }, [position]);
 
     if (!state.isOpen || !position) {
         return null;
@@ -328,22 +353,7 @@ const SlideMenu: React.FC = () => {
     };
 
     // Calculate menu position so it doesn't go off-screen
-    const getMenuPosition = () => {
-        if (!position) return { left: 0, top: 0 };
-
-        const menuWidth = 250; // Estimated menu width
-        const menuHeight = 46; // Estimated menu height
-
-        let left = position.x;
-        const top = position.y - menuHeight - 5;
-
-        // Check right edge
-        if (left + menuWidth > window.innerWidth) {
-            left = window.innerWidth - menuWidth - 10;
-        }
-
-        return { left, top };
-    };
+   
 
     const menuPosition = getMenuPosition();
     const menuStyle = {
@@ -374,6 +384,7 @@ const SlideMenu: React.FC = () => {
                         layoutId={state.layoutId}
                         columnId={state.columnId}
                         elementId={state.elementId}
+                        presentationId={presentation!.id}
                         editor={activeEditor}
                     />
                 ) : (

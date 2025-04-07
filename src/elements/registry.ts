@@ -1,5 +1,5 @@
 import { generateId } from '@/utils/id'
-import { BaseElement, EditorElement, type Category } from '@/types'
+import { type BaseElement, type EditorElement, type ElementConfig, type Category } from '@/types'
 import { FaFont, FaTable, FaList, FaBox, FaImage, FaVideo, FaRegChartBar, FaUpload, FaLink, FaQrcode, FaQuoteLeft, FaToggleOn } from 'react-icons/fa'
 import editorsDefaultContent from './textEditor/defaultContent';
 
@@ -43,8 +43,8 @@ export const getNewElement = (type: string): Omit<BaseElement, 'cellId'> | null 
         // тип текста. не нуженЮ
         textType: (elementConfig?.defaultProps?.textType as 'text' | 'heading' | 'paragraph') || 'text', // Cast to valid textType with fallback
         content: elementConfig?.defaultProps?.content ?? '',
-        componentStructure: elementConfig?.componentStructure || ComponentStructureType.TEXT_EDITOR,
-        hasTextEditor: elementConfig?.hasTextEditor,
+        // componentStructure: elementConfig?.componentStructure || ComponentStructureType.TEXT_EDITOR,
+        // hasTextEditor: elementConfig?.hasTextEditor,
         elementTypeId: elementConfig?.elementTypeId,
     };
 
@@ -332,8 +332,9 @@ export const elementsRegistry: Category[] = [
                         // type: ContainerType.EDITOR,
                         label: 'Кнопка',
                         Icon: FaBox,
-                        componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
+                        componentStructure: ComponentStructureType.TEXT_EDITOR,
                         hasTextEditor: true,
+                        customMenu: true,
                         // Custom menu specifically for buttons
                         MenuComponent: ButtonMenu,
                         // Indicates this has a special config with limited text formatting
@@ -483,7 +484,7 @@ export const elementsRegistry: Category[] = [
 ]
 
 // Helper to get appropriate menu based on element and context
-export const getElementMenuComponent = (elementId: string): React.ComponentType<any> | undefined => {
+export const getElementMenuComponent = (elementId: string): { MenuComponent: React.ComponentType<any>, menuDirection: 'bottom' | 'top', menuHeight: number | undefined } => {
     const elementConfig = elementsRegistry
         .flatMap(category =>
             category.subCategories
@@ -492,7 +493,19 @@ export const getElementMenuComponent = (elementId: string): React.ComponentType<
         )
         .find(element => element?.elementTypeId === elementId);
 
-    return elementConfig?.MenuComponent;
+    if (elementConfig?.MenuComponent) {
+        return {
+            MenuComponent: elementConfig.MenuComponent,
+            menuDirection: elementConfig.menuDirection || 'bottom',
+            menuHeight: elementConfig.menuHeight || 0
+        };
+    }
+
+    return {
+        MenuComponent: DefaultBubbleMenu,
+        menuDirection: 'bottom',
+        menuHeight: undefined
+    };
 }
 
 const emptyTextElement = elementsRegistry.flatMap(category =>
@@ -509,8 +522,8 @@ export const getNewEditorElement = (cellId: string, content?: string): EditorEle
         cellId,
         elementTypeId: emptyTextElement!.elementTypeId,
         // type: emptyTextElement!.type as any,
-        componentStructure: emptyTextElement!.componentStructure,
-        hasTextEditor: true,
+        // componentStructure: emptyTextElement!.componentStructure,
+        // hasTextEditor: true,
     }
 
     return newEditor;
@@ -553,4 +566,20 @@ export const getComponentStructureType = (elementId: string): ComponentStructure
         .find(element => element?.elementTypeId === elementId);
 
     return elementConfig?.componentStructure;
+}
+
+export const getElementConfig = (elementId: string): ElementConfig => {
+    const elementConfig = elementsRegistry
+        .flatMap(category =>
+            category.subCategories
+                ? category.subCategories.flatMap(sub => sub.elements)
+                : category.elements
+        )
+        .find(element => element?.elementTypeId === elementId);
+
+    if (!elementConfig) {
+        throw new Error(`Element with type ${elementId} not found in registry`);
+    }
+
+    return elementConfig;
 }

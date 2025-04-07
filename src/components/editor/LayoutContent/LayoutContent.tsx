@@ -9,7 +9,6 @@ import DragHandler from '../DragHandler';
 
 interface LayoutContentProps {
     layout: Layout;
-    onSelectElement: (elementId: string) => void;
     onDeleteElement: (layoutId: string, elementId: string) => void;
     tiptapRefs: RefObject<TipTapRefs>;
     presentationId: string;
@@ -29,7 +28,6 @@ function simpleHash(str: string) {
 
 const LayoutContent: React.FC<LayoutContentProps> = ({
     layout,
-    onSelectElement,
     onDeleteElement,
     tiptapRefs,
     presentationId,
@@ -192,7 +190,6 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                                     isLayoutSelected={isSelected}
                                     isLastCell={isLastCell}
                                     slideIsSelected={false}
-                                    onSelect={(element) => onSelectElement(element.id)}
                                     onDelete={(element) => onDeleteElement(layout.id, element.id)}
                                 />
                             );

@@ -1,4 +1,7 @@
 import { Node, mergeAttributes } from '@tiptap/core'
+import { ReactNodeViewRenderer } from '@tiptap/react'
+import BoxNodeView from './BoxNodeView'
+import ButtonNodeView from './ButtonNodeView'
 
 // Box node
 export const BoxNode = Node.create({
@@ -186,5 +189,9 @@ export const QuestionBoxNode = Node.create({
 
     renderHTML({ HTMLAttributes }) {
         return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'question-box' }), 0]
+    },
+
+    addNodeView() {
+        return ReactNodeViewRenderer(ButtonNodeView)
     }
 })

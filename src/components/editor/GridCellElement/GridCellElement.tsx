@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { RefObject, useCallback, useRef, useState } from 'react';
-import { GridCell, Element, TipTapRefs } from '@/types';
+import { GridCell, Element, TipTapRefs, ElementConfig } from '@/types';
 import { useHandleDragStart } from '@/contexts/DragDropContext';
 import styles from './GridCellElement.module.css';
 import { usePresentationStore } from '@/store/presentationStore';
@@ -105,7 +105,6 @@ interface GridCellElementProps {
     isLastCell: boolean;
     slideIsSelected: boolean;
     tiptapRefs: RefObject<TipTapRefs>;
-    onSelect: (element: Element) => void;
     onDelete: (element: Element) => void;
 }
 
@@ -118,7 +117,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     hasMultipleCells,
     isLayoutHovered,
     tiptapRefs,
-    onSelect,
+    // onSelect,
     isLastCell,
     slideIsSelected
 }) => {
@@ -290,11 +289,13 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
     }, [slideId, layoutId, presentationId]);
 
-    const handleClickElementDragHandle = useCallback((element: Element) => (e: any) => {
+    const handleClickElementDragHandle = useCallback((element: Element, elementConfig: ElementConfig) => (e: any) => {
         const editor = tiptapRefs.current?.editors[element.id]?.editor;
 
-        if (element.hasTextEditor && editor && element.componentStructure === ComponentStructureType.TEXT_EDITOR) {
-            if (editor.getText().length > 0) {
+        if (elementConfig.hasTextEditor && editor && elementConfig.componentStructure === ComponentStructureType.TEXT_EDITOR) {
+            if (elementConfig.customMenu) {
+                editor.chain().focus().run();
+            } else if (editor.getText().length > 0) {
                 useEditorStore.getState().setActiveEditor(editor);
                 editor.chain().focus().selectAll().run();
                 handleMenuClick({
@@ -309,14 +310,14 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             handleMenuClick({
                 elementId: element.id,
                 elementType: 'element',
-                componentStructure: element.componentStructure
+                componentStructure: elementConfig.componentStructure
             });
         }
     }, []);
 
-    const handleKeyDownElementDragHandle = useCallback((element: Element) => (e: any) => {
+    const handleKeyDownElementDragHandle = useCallback((element: Element, elementConfig: ElementConfig) => (e: any) => {
         if (e.key === 'Enter' || e.key === ' ') {
-            handleClickElementDragHandle(element)(e);
+            handleClickElementDragHandle(element, elementConfig)(e);
         }
     }, [handleClickElementDragHandle]);
 
@@ -398,7 +399,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                                 handleClickElementDragHandle={handleClickElementDragHandle}
                                 handleKeyDownElementDragHandle={handleKeyDownElementDragHandle}
                                 handleDragStartElementDragHandle={handleDragStartElementDragHandle}
-                                onSelect={onSelect}
                                 slideId={slideId}
                                 tiptapRefs={tiptapRefs}
                                 dragHandleRef={dragHandleRef}

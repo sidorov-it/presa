@@ -276,16 +276,10 @@ export interface BaseElement {
     id: string;
     // type: TextElementType;
     cellId: string;   // Reference to the cell this element belongs to
-    componentStructure: ComponentStructureType;
-    hasTextEditor: boolean;
+    // componentStructure: ComponentStructureType;
+    // hasTextEditor: boolean;
     elementTypeId: string;
 }
-
-// Элемент текста
-// export interface TextElement extends BaseElement {
-//     // textType: 'text' | 'heading' | 'paragraph';
-//     content: string;
-// }
 
 // Элемент редактора Tiptap
 export interface EditorElement extends BaseElement {
@@ -337,11 +331,10 @@ export interface ChartElement extends BaseElement {
 // Элемент кнопки
 export interface ButtonElement extends BaseElement {
     type: 'button';
-    text: string;
-    action: {
-        type: 'link' | 'slide';
-        target: string; // URL или ID слайда
-    };
+    link: string;
+    buttonStyle: 'filled' | 'outlined';
+    alignment: 'left' | 'center' | 'right';
+    color: string;
 }
 
 // Объединенный тип элемента
@@ -548,9 +541,13 @@ export interface ElementConfig {
     Icon?: IconType;
     defaultProps?: Record<string, any>;
     MenuComponent?: React.ComponentType<any>;
+    menuDirection?: 'bottom' | 'top';
+    menuHeight?: number;
+    openMenuOnFocus?: boolean;
     componentStructure: ComponentStructureType;
     hasTextEditor: boolean;
     hasLimitedTextFormatting?: boolean;
+    customMenu?: boolean;
 }
 
 export interface SubCategory {
@@ -572,37 +569,10 @@ export type TipTapRefs = {
     editorRefs: React.RefObject<HTMLDivElement>[];
 }
 
-// PresentationState interface for typing Zustand store selectors
-export interface PresentationState {
-    presentations: IPresentation[];
-    isLoading: boolean;
-    isSaving: boolean;
-    savingStatus: 'idle' | 'saving' | 'saved' | 'error';
-    error: string | null;
-    version: number;
-    incrementVersion: () => void;
-
-    recordAction: (action: Omit<HistoryAction, 'timestamp' | 'transactionId'>) => void;
-
-    // Presentations
-    createPresentation: (title: string) => Promise<string>;
-    loadPresentation: (id: string) => Promise<IPresentation | null>;
-    loadPresentationsList: () => Promise<void>;
-    updatePresentation: (id: string, data: Partial<IPresentation>) => void;
-    deletePresentation: (id: string) => void;
-    getPresentation: (id: string) => IPresentation | undefined;
-    setFullState: (state: { presentations: IPresentation[] }) => void;
-    saveChanges: (id: string) => Promise<void>;
-
-    // Theme management
-    setTheme: (presentationId: string, themeId: string | null) => void;
-
-    // Slides
-    addSlide: (presentationId: string, index?: number) => string;
-    updateSlide: (presentationId: string, slideId: string, data: Partial<Slide>) => void;
-    deleteSlide: (presentationId: string, slideId: string) => void;
-    duplicateSlide: (presentationId: string, slideId: string) => string;
-    reorderSlides: (presentationId: string, startIndex: number, endIndex: number) => void;
-    getSlide: (presentationId: string, slideId: string) => Slide | undefined;
-    getSlideIndex: (presentationId: string, slideId: string) => number;
+export type ElementMenuProps = {
+    presentationId: string;
+    slideId: string;
+    layoutId: string;
+    columnId: string;
+    elementId: string;
 }

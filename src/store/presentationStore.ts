@@ -19,7 +19,7 @@ import debounce from 'lodash/debounce';
 import { generateId } from '@/utils/id';
 import deepDiff from '@/utils/deepDiff';
 
-interface PresentationState {
+export interface PresentationState {
     presentations: IPresentation[];
     isLoading: boolean;
     isSaving: boolean;
@@ -75,7 +75,7 @@ interface PresentationState {
     // Работа с элементами
     getElement: (presentationId: string, slideId: string, layoutId: string, elementId: string) => BaseElement | undefined;
     addElement: (presentationId: string, slideId: string, layoutId: string, element: Omit<BaseElement, 'id'>) => string;
-    updateElement: (presentationId: string, slideId: string, layoutId: string, elementId: string, data: Partial<BaseElement>, createHistoryEntry?: boolean) => void;
+    updateElement: (presentationId: string, slideId: string, layoutId: string, elementId: string, data: Partial<Element>, createHistoryEntry?: boolean) => void;
     deleteElement: (presentationId: string, slideId: string, layoutId: string, elementId: string) => void;
     duplicateElement: (presentationId: string, slideId: string, elementId: string) => void;
     addColumn: (presentationId: string, slideId: string, layoutId: string, columnIndex: number) => void;
@@ -1064,8 +1064,8 @@ export const usePresentationStore = create<PresentationState>()(
                     ...elementData as BaseElement,
                     id: elementId,
                     // type: 'text' as TextElementType,
-                    componentStructure: elementData.componentStructure || ComponentStructureType.TEXT_EDITOR,
-                    hasTextEditor: elementData.hasTextEditor || true,
+                    // componentStructure: elementData.componentStructure || ComponentStructureType.TEXT_EDITOR,
+                    // hasTextEditor: elementData.hasTextEditor || true,
                     elementTypeId: elementData.elementTypeId || '',
                     cellId: elementData.cellId || '',
                 };

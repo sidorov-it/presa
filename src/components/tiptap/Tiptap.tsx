@@ -42,7 +42,6 @@ interface TiptapProps {
     initialContent?: string;
     onEnterPressed?: (content?: any) => void;
     onBackspacePressed?: (isEmpty: boolean, textContent: string) => void;
-    onFocus?: () => void;
     onBlur?: () => void;
     onContentChange?: (content: string, isEnterPress?: boolean) => void;
     autoFocus?: boolean;
@@ -270,7 +269,6 @@ const Tiptap = ({
     initialContent = '',
     onEnterPressed = () => { },
     onBackspacePressed = () => { },
-    onFocus = () => { },
     onContentChange = () => { },
     onBlur = () => { },
     id = '',
@@ -309,7 +307,6 @@ const Tiptap = ({
             onBlur?.();
         },
         onFocus: () => {
-            onFocus();
             useEditorStore.getState().setActiveEditor(editor, elementId);
         },
         onUpdate: ({ editor, transaction }) => {

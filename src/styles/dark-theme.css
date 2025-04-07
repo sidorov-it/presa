@@ -127,26 +127,26 @@
 .light-theme-only *,
 .slideMenu,
 .slideMenu * {
-  background-color: white !important;
-  color: #333 !important;
+  /* background-color: white !important; */
+  color: #333;
   border-color: #e0e0e0 !important;
 }
 
 .light-theme-only button,
 .slideMenu button {
-  background-color: transparent !important;
-  color: #333 !important;
+  /* background-color: transparent !important; */
+  color: #333;
 }
 
 .light-theme-only button:hover,
 .slideMenu button:hover {
-  background-color: #f5f5f5 !important;
+  /* background-color: #f5f5f5 !important; */
 }
 
 .light-theme-only button.active,
 .slideMenu button.active {
-  background-color: #ebebeb !important;
-  color: #333 !important;
+  /* background-color: #ebebeb !important; */
+  color: #333;
 }
 
 /* Override tippy.js light theme */

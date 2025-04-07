@@ -3,8 +3,8 @@
 'use client'
 
 import React, { useState, useRef, RefObject, useCallback, memo } from 'react';
-import { getPredefinedGridStructures, Layout, Slide, TipTapRefs, PresentationState } from '@/types';
-import { usePresentationStore } from '@/store/presentationStore';
+import { getPredefinedGridStructures, Layout, Slide, TipTapRefs } from '@/types';
+import { PresentationState, usePresentationStore } from '@/store/presentationStore';
 import styles from './SlideEditor.module.css';
 import LayoutContent from '../LayoutContent/LayoutContent';
 import { useSlideMenu } from '@/contexts/SlideMenuContext';
@@ -37,7 +37,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     handleSelectSlide,
     isSelected,
 }) => {
-    const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
     const editorRef = useRef<HTMLDivElement>(null);
     const [isHovered, setIsHovered] = useState(false);
 
@@ -47,18 +46,10 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     const { openMenu, checkSlideMenuIsOpen } = useSlideMenu();
 
-    // Memoize handlers to prevent re-renders
-    const handleSelectElement = useCallback((elementId: string) => {
-        setSelectedElementId(elementId);
-    }, []);
-
     const handleDeleteElement = useCallback((layoutId: string, elementId: string) => {
         // Use getState to access the store without subscribing to it
         usePresentationStore.getState().deleteElement(presentationId, slide.id, layoutId, elementId);
-        if (selectedElementId === elementId) {
-            setSelectedElementId(null);
-        }
-    }, [presentationId, slide.id, selectedElementId]);
+    }, [presentationId, slide.id]);
 
     const handleAddSlideAfter = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
@@ -197,7 +188,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                             <LayoutContent
                                 key={layout.id}
                                 layout={layout}
-                                onSelectElement={handleSelectElement}
                                 onDeleteElement={handleDeleteElement}
                                 tiptapRefs={tiptapRefs}
                                 presentationId={presentationId}
