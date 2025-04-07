@@ -385,7 +385,7 @@ export const ElementContent = ({
                 Unsupported element type: {element.elementTypeId}
             </div>
         );
-    }, [dragHandleRef, getEditorContent, handleAddElement, handleBackspacePressed, handleEnterPressed, handleEditorContentChange, layoutId, presentationId, slideId, tiptapRefs]);
+    }, [elementConfig, tiptapRefs, getEditorContent, handleEnterPressed, handleBackspacePressed, handleEditorContentChange, dragHandleRef, handleAddElement, presentationId, slideId, layoutId]);
 
     return (
         <div

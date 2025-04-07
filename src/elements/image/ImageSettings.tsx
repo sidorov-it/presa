@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { ImageElement } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 
@@ -15,18 +15,8 @@ const ImageSettings: React.FC<ImageSettingsProps> = ({ elementId, presentationId
     const element = usePresentationStore((state) => 
         state.getElement(presentationId, slideId, layoutId, elementId) as ImageElement
     );
-    const [widthInput, setWidthInput] = useState<string>('');
 
     const updateElement = usePresentationStore((state) => state.updateElement);
-
-    // Update input when element changes
-    useEffect(() => {
-        if (element?.width) {
-            setWidthInput(element.width.toString());
-        } else {
-            setWidthInput('');
-        }
-    }, [element]);
 
     const handleSrcChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         updateElement(presentationId, slideId, layoutId, elementId, { src: e.target.value });
@@ -34,22 +24,6 @@ const ImageSettings: React.FC<ImageSettingsProps> = ({ elementId, presentationId
 
     const handleAltChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         updateElement(presentationId, slideId, layoutId, elementId, { alt: e.target.value });
-    };
-
-    const handleWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setWidthInput(e.target.value);
-    };
-
-    const handleWidthBlur = () => {
-        if (widthInput) {
-            const width = parseInt(widthInput, 10);
-            if (!isNaN(width) && width > 0) {
-                updateElement(presentationId, slideId, layoutId, elementId, { width });
-            }
-        } else {
-            // If cleared, reset to auto/100%
-            updateElement(presentationId, slideId, layoutId, elementId, { width: undefined });
-        }
     };
 
     const handleAlignmentChange = (alignment: 'left' | 'center' | 'right') => {
@@ -62,7 +36,7 @@ const ImageSettings: React.FC<ImageSettingsProps> = ({ elementId, presentationId
         <div className="space-y-4 p-4">
             <div className="space-y-2">
                 <label htmlFor="image-url" className="block text-sm font-medium">
-                    Image URL
+                    Адрес изображения
                 </label>
                 <input
                     id="image-url"
@@ -76,7 +50,7 @@ const ImageSettings: React.FC<ImageSettingsProps> = ({ elementId, presentationId
 
             <div className="space-y-2">
                 <label htmlFor="image-alt" className="block text-sm font-medium">
-                    Alt Text
+                    Альтернативный текст
                 </label>
                 <input
                     id="image-alt"
@@ -89,25 +63,8 @@ const ImageSettings: React.FC<ImageSettingsProps> = ({ elementId, presentationId
             </div>
 
             <div className="space-y-2">
-                <label htmlFor="image-width" className="block text-sm font-medium">
-                    Max Width (px)
-                </label>
-                <input
-                    id="image-width"
-                    type="number"
-                    min="50"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    value={widthInput}
-                    onChange={handleWidthChange}
-                    onBlur={handleWidthBlur}
-                    placeholder="Auto (100%)"
-                />
-                <p className="text-xs text-gray-500">Изображение будет адаптироваться под размер контейнера, не превышая указанную ширину</p>
-            </div>
-
-            <div className="space-y-2">
                 <label className="block text-sm font-medium">
-                    Alignment
+                    Выравнивание
                 </label>
                 <div className="flex space-x-2">
                     <button
@@ -118,7 +75,7 @@ const ImageSettings: React.FC<ImageSettingsProps> = ({ elementId, presentationId
                         tabIndex={0}
                         onKeyDown={(e) => e.key === 'Enter' && handleAlignmentChange('left')}
                     >
-                        Left
+                        Слева
                     </button>
                     <button
                         type="button"
@@ -128,7 +85,7 @@ const ImageSettings: React.FC<ImageSettingsProps> = ({ elementId, presentationId
                         tabIndex={0}
                         onKeyDown={(e) => e.key === 'Enter' && handleAlignmentChange('center')}
                     >
-                        Center
+                        По центру
                     </button>
                     <button
                         type="button"
@@ -138,7 +95,7 @@ const ImageSettings: React.FC<ImageSettingsProps> = ({ elementId, presentationId
                         tabIndex={0}
                         onKeyDown={(e) => e.key === 'Enter' && handleAlignmentChange('right')}
                     >
-                        Right
+                        Справа
                     </button>
                 </div>
             </div>
