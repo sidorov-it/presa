@@ -1,7 +1,6 @@
 import { EditorWithMethods } from "@/components/tiptap/extensions/ArrowNavigationExtension";
 import { generateId } from "@/utils/id";
 import { IconType } from "react-icons/lib";
-import { HistoryAction } from "@/store/historyStore";
 import { ComponentStructureType } from "@/elements/registry";
 
 // This enum represents the core element types in the system

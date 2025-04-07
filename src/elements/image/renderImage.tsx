@@ -3,7 +3,7 @@ import { Image } from './index';
 import { ImageElement } from '@/types';
 
 export const renderImageElement = (element: ImageElement, props: any = {}) => {
-  return <Image element={element} {...props} />;
+    return <Image element={element} {...props} />;
 };
 
-export default renderImageElement; 
+export default renderImageElement;

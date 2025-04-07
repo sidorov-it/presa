@@ -353,7 +353,7 @@ const SlideMenu: React.FC = () => {
     };
 
     // Calculate menu position so it doesn't go off-screen
-   
+
 
     const menuPosition = getMenuPosition();
     const menuStyle = {

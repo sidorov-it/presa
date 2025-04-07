@@ -1,6 +1,6 @@
 import { generateId } from '@/utils/id'
 import { type BaseElement, type EditorElement, type ElementConfig, type Category, ImageElement } from '@/types'
-import { FaFont, FaTable, FaList, FaBox, FaImage, FaVideo, FaRegChartBar, FaUpload, FaLink, FaQrcode, FaQuoteLeft, FaToggleOn } from 'react-icons/fa'
+import { FaFont, FaTable, FaList, FaBox, FaImage, FaVideo, FaRegChartBar, FaLink, FaQuoteLeft, FaToggleOn } from 'react-icons/fa'
 import editorsDefaultContent from './textEditor/defaultContent';
 
 // Define components for the BubbleMenu
@@ -508,9 +508,9 @@ export const elementsRegistry: Category[] = [
                 componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
                 hasTextEditor: false,
                 MenuComponent: ImageSettings,
-                defaultProps: { 
-                    src: '', 
-                    alt: 'Image', 
+                defaultProps: {
+                    src: '',
+                    alt: 'Image',
                     alignment: 'center',
                     width: undefined
                 }

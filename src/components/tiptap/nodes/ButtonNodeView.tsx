@@ -95,32 +95,32 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
     useEffect(() => {
         const handleOutsideClick = (e: MouseEvent) => {
             if (!showMenu) return;
-            
+
             // Проверяем, был ли клик вне меню и кнопки
             const clickedElement = e.target as Node;
             const menuElement = menuRef.current;
             const buttonElement = buttonRef.current;
             const wrapperElement = wrapperRef.current;
-            
+
             // Если меню или кнопка не существуют, закрываем меню
             if (!menuElement || !buttonElement) {
                 setShowMenu(false);
                 return;
             }
-            
+
             // Если клик был вне меню, кнопки и обертки компонента - закрываем меню
             const isClickInsideMenu = menuElement.contains(clickedElement);
             const isClickInsideButton = buttonElement.contains(clickedElement);
             const isClickInsideWrapper = wrapperElement && wrapperElement.contains(clickedElement);
-            
+
             if (!isClickInsideMenu && !isClickInsideButton && !isClickInsideWrapper) {
                 setShowMenu(false);
             }
         };
-        
+
         // Добавляем обработчик клика
         document.addEventListener('mousedown', handleOutsideClick);
-        
+
         // Удаляем обработчик при размонтировании
         return () => {
             document.removeEventListener('mousedown', handleOutsideClick);
@@ -134,7 +134,7 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
             // Даем небольшую задержку, чтобы DOM успел обновиться
             setTimeout(positionMenu, 10);
         }
-        
+
         // Обновляем сохраненное значение
         prevAlignmentRef.current = node.attrs.alignment;
     }, [node.attrs.alignment, showMenu, positionMenu]);
@@ -168,7 +168,7 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
     // Create a wrapper for updateAttributes that converts from key/value to a record
     const handleUpdateAttribute = useCallback((key: string, value: any) => {
         updateAttributes({ [key]: value });
-        
+
         // Если обновляется свойство, влияющее на позиционирование, и меню открыто,
         // планируем обновление позиции после рендеринга DOM
         if ((key === 'alignment' || key === 'buttonStyle') && showMenu) {
@@ -217,7 +217,7 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
     // Handle button click - if link is provided, navigate to it
     const handleButtonClick = useCallback(() => {
         const { link } = node.attrs;
-        
+
         if (link && !showMenu) {
             // Если есть ссылка и меню закрыто, открываем ссылку в новой вкладке
             window.open(link, '_blank', 'noopener,noreferrer');
@@ -235,14 +235,14 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
         const { buttonStyle, color, alignment } = node.attrs;
         const baseStyles = "py-2 px-4 rounded transition-all duration-200 min-w-[100px] hover:brightness-90 ";
         let alignmentClass = "text-center";
-        
+
         // Set alignment
         if (alignment === 'left') {
             alignmentClass = "text-left";
         } else if (alignment === 'right') {
             alignmentClass = "text-right";
         }
-        
+
         // Set button style (filled or outlined)
         if (buttonStyle === 'filled') {
             return {
@@ -271,7 +271,7 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
     const getContainerStyles = () => {
         const { alignment } = node.attrs;
         let containerStyle = "w-full flex";
-        
+
         // Set alignment for the button container
         if (alignment === 'left') {
             containerStyle += " justify-start";
@@ -280,7 +280,7 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
         } else if (alignment === 'right') {
             containerStyle += " justify-end";
         }
-        
+
         return containerStyle;
     };
 

@@ -11,13 +11,13 @@ interface ImageSettingsProps {
     onUpdate?: (updates: Partial<ImageElement>) => void;
 }
 
-const ImageSettings: React.FC<ImageSettingsProps> = ({ elementId, presentationId, slideId, layoutId, onUpdate }) => {
-    const element = usePresentationStore((state) => 
+const ImageSettings: React.FC<ImageSettingsProps> = ({ elementId, presentationId, slideId, layoutId }) => {
+    const element = usePresentationStore((state) =>
         state.getElement(presentationId, slideId, layoutId, elementId) as ImageElement
     );
 
     const updateElement = usePresentationStore((state) => state.updateElement);
-
+    const deleteElement = usePresentationStore((state) => state.deleteElement);
     const handleSrcChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         updateElement(presentationId, slideId, layoutId, elementId, { src: e.target.value });
     };
@@ -28,6 +28,15 @@ const ImageSettings: React.FC<ImageSettingsProps> = ({ elementId, presentationId
 
     const handleAlignmentChange = (alignment: 'left' | 'center' | 'right') => {
         updateElement(presentationId, slideId, layoutId, elementId, { alignment });
+    };
+
+
+    const handleDeleteElement = () => {
+        // todo: нужно обработать все кейсы
+        // 1. если это последний элемент на слайде, то нужно удалить слайд
+        // 2. если это элемент в ячейке
+        // 3. и тд
+        deleteElement(presentationId, slideId, layoutId, elementId);
     };
 
     if (!element) return null;
@@ -63,7 +72,7 @@ const ImageSettings: React.FC<ImageSettingsProps> = ({ elementId, presentationId
             </div>
 
             <div className="space-y-2">
-                <label className="block text-sm font-medium">
+                <label htmlFor="image-alignment" className="block text-sm font-medium">
                     Выравнивание
                 </label>
                 <div className="flex space-x-2">
@@ -99,8 +108,21 @@ const ImageSettings: React.FC<ImageSettingsProps> = ({ elementId, presentationId
                     </button>
                 </div>
             </div>
+
+            <div className="space-y-2">
+                <button
+                    type="button"
+                    className="px-4 py-2 border rounded-md bg-red-500 text-white border-red-500"
+                    onClick={() => handleDeleteElement()}
+                    aria-label="Удалить изображение"
+                    tabIndex={0}
+                    onKeyDown={(e) => e.key === 'Enter' && handleDeleteElement()}
+                >
+                    Удалить
+                </button>
+            </div>
         </div>
     );
 };
 
-export default ImageSettings; 
+export default ImageSettings;

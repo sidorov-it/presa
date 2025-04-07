@@ -14,7 +14,7 @@ import {
     EditorElement,
 } from '@/types';
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
-import { ComponentStructureType, getNewEditorElement } from '@/elements/registry';
+import { getNewEditorElement } from '@/elements/registry';
 import debounce from 'lodash/debounce';
 import { generateId } from '@/utils/id';
 import deepDiff from '@/utils/deepDiff';

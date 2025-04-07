@@ -1,6 +1,5 @@
 import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
-import BoxNodeView from './BoxNodeView'
 import ButtonNodeView from './ButtonNodeView'
 
 // Box node
