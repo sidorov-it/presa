@@ -5,6 +5,9 @@ import ButtonMenu from '@/components/editor/Menus/ButtonMenu';
 import { usePresentationStore } from '@/store/presentationStore';
 import { generateId } from '@/utils/id';
 
+const MENU_WIDTH = 300; // Ширина меню в пикселях (должна совпадать с CSS)
+const MARGIN = 16; // Отступ от краев экрана
+
 const ButtonNodeView: React.FC<NodeViewProps> = ({
     node,
     updateAttributes,
@@ -14,9 +17,13 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
     // Создаем контейнер для портала и ссылку на меню
     const menuRef = useRef<HTMLDivElement>(null);
     const portalContainerRef = useRef<HTMLDivElement | null>(null);
+    const buttonRef = useRef<HTMLButtonElement>(null);
 
     // Состояние меню
     const [showMenu, setShowMenu] = useState(false);
+
+    // Сохраняем предыдущее значение alignment для отслеживания изменений
+    const prevAlignmentRef = useRef(node.attrs.alignment);
 
     // Ensure node has a valid elementId
     useEffect(() => {
@@ -27,6 +34,74 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
             updateAttributes({ elementId: newElementId });
         }
     }, [node.attrs.elementId, updateAttributes]);
+
+
+    // Расчет оптимального положения меню относительно кнопки и границ экрана
+    const positionMenu = useCallback(() => {
+        if (!menuRef.current || !showMenu || !buttonRef.current) return;
+
+        const menuElement = menuRef.current;
+        const buttonElement = buttonRef.current;
+
+        const buttonRect = buttonElement.getBoundingClientRect();
+        const menuWidth = MENU_WIDTH;
+        const menuHeight = menuElement.offsetHeight;
+
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        // Расчет позиции по горизонтали (центрирование по кнопке)
+        let left = buttonRect.left + (buttonRect.width / 2) - (menuWidth / 2);
+
+        // Проверка, не выходит ли за правый край
+        if (left + menuWidth + MARGIN > windowWidth) {
+            left = windowWidth - menuWidth - MARGIN;
+        }
+
+        // Проверка, не выходит ли за левый край
+        if (left < MARGIN) {
+            left = MARGIN;
+        }
+
+        // Расчет позиции по вертикали (по умолчанию под кнопкой)
+        let top = buttonRect.bottom + 8; // Небольшой отступ от кнопки
+        let position = 'bottom';
+
+        // Проверка, достаточно ли места снизу
+        if (top + menuHeight + MARGIN > windowHeight) {
+            // Если снизу нет места, показываем меню над кнопкой
+            top = buttonRect.top - menuHeight - 8;
+            position = 'top';
+
+            // Если и сверху недостаточно места, показываем прямо на уровне кнопки
+            if (top < MARGIN) {
+                top = MARGIN;
+                position = 'overlay';
+            }
+        }
+
+        // Применяем позицию к меню
+        menuElement.style.position = 'fixed';
+        menuElement.style.zIndex = '1000';
+        menuElement.style.left = `${left}px`;
+        menuElement.style.top = `${top}px`;
+
+        // Добавляем дата-атрибут для возможного CSS-стилизования в зависимости от позиции
+        menuElement.dataset.position = position;
+
+    }, [showMenu]);
+
+    // Слежение за изменениями атрибутов кнопки
+    useEffect(() => {
+        // Если выравнивание изменилось и меню открыто, пересчитываем позицию
+        if (prevAlignmentRef.current !== node.attrs.alignment && showMenu) {
+            // Даем небольшую задержку, чтобы DOM успел обновиться
+            setTimeout(positionMenu, 10);
+        }
+
+        // Обновляем сохраненное значение
+        prevAlignmentRef.current = node.attrs.alignment;
+    }, [node.attrs.alignment, showMenu, positionMenu]);
 
     // Log all node attributes to help with debugging
     useEffect(() => {
@@ -43,22 +118,29 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
             return null;
         }
         return state.getElement(
-            node.attrs.presentationId, 
-            node.attrs.slideId, 
-            node.attrs.layoutId, 
+            node.attrs.presentationId,
+            node.attrs.slideId,
+            node.attrs.layoutId,
             node.attrs.elementId
         );
     });
 
     console.log('Element from store:', element);
-    
     // Получаем идентификаторы из атрибутов или используем заглушки
     const elementId = node.attrs.elementId || 'dummy-id';
 
     // Create a wrapper for updateAttributes that converts from key/value to a record
     const handleUpdateAttribute = useCallback((key: string, value: any) => {
         updateAttributes({ [key]: value });
-    }, [updateAttributes]);
+
+        // Если обновляется свойство, влияющее на позиционирование, и меню открыто,
+        // планируем обновление позиции после рендеринга DOM
+        if ((key === 'alignment' || key === 'buttonStyle') && showMenu) {
+            requestAnimationFrame(() => {
+                setTimeout(positionMenu, 10);
+            });
+        }
+    }, [updateAttributes, showMenu, positionMenu]);
 
     // Создаем DOM-элемент для портала при монтировании
     useEffect(() => {
@@ -77,24 +159,11 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
         };
     }, []);
 
-    // Функция для позиционирования меню
-    const positionMenu = useCallback(() => {
-        if (!menuRef.current || !showMenu) return;
-
-        const editorView = editor.view;
-        const editorRect = editorView.dom.getBoundingClientRect();
-
-        const menuEl = menuRef.current;
-        menuEl.style.position = 'fixed';
-        menuEl.style.zIndex = '1000';
-        menuEl.style.left = `${editorRect.left + 20}px`;
-        menuEl.style.top = `${editorRect.top + 20}px`;
-    }, [editor, showMenu]);
-
     // Обновляем позицию меню при изменении видимости
     useEffect(() => {
         if (showMenu) {
-            positionMenu();
+            // Даем небольшую задержку, чтобы меню полностью отрендерилось
+            setTimeout(positionMenu, 0);
             window.addEventListener('resize', positionMenu);
             window.addEventListener('scroll', positionMenu);
         }
@@ -114,14 +183,14 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
         const { buttonStyle, color, alignment } = node.attrs;
         const baseStyles = "py-2 px-4 rounded transition-all duration-200 min-w-[100px] hover:brightness-90 ";
         let alignmentClass = "text-center";
-        
+
         // Set alignment
         if (alignment === 'left') {
             alignmentClass = "text-left";
         } else if (alignment === 'right') {
             alignmentClass = "text-right";
         }
-        
+
         // Set button style (filled or outlined)
         if (buttonStyle === 'filled') {
             return {
@@ -147,19 +216,9 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
     };
 
     // Handle button click - if link is provided, navigate to it
-    const handleButtonClick = useCallback((e: React.MouseEvent) => {
-        const { link } = node.attrs;
-        
-        // If a link exists and there's no menu open, navigate to the link
-        if (link && !showMenu) {
-            e.preventDefault();
-            // Open link in new tab
-            window.open(link, '_blank', 'noopener,noreferrer');
-        } else {
-            // Toggle menu if link is not set or already editing
-            handleToggleMenu();
-        }
-    }, [node.attrs, showMenu, handleToggleMenu]);
+    const handleButtonClick = useCallback(() => {
+        handleToggleMenu();
+    }, [handleToggleMenu]);
 
     // Determine if button text should be editable
     const isEditable = !node.attrs.link || showMenu;
@@ -168,7 +227,7 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
     const getContainerStyles = () => {
         const { alignment } = node.attrs;
         let containerStyle = "w-full flex";
-        
+
         // Set alignment for the button container
         if (alignment === 'left') {
             containerStyle += " justify-start";
@@ -177,7 +236,7 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
         } else if (alignment === 'right') {
             containerStyle += " justify-end";
         }
-        
+
         return containerStyle;
     };
 
@@ -189,6 +248,7 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
             <div className="relative button-node-wrapper">
                 <div className={containerStyles}>
                     <button
+                        ref={buttonRef}
                         data-type="button"
                         data-element-id={elementId}
                         data-has-link={!!node.attrs.link}
@@ -202,7 +262,7 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
                             }
                         }}
                     >
-                        <div 
+                        <div
                             contentEditable={isEditable}
                             suppressContentEditableWarning={true}
                             className={isEditable ? 'cursor-text' : 'cursor-pointer'}

@@ -19,6 +19,8 @@ export default function ButtonMenu({
     layoutId,
     elementId,
     presentationId,
+    // columnId не используется, но необходим для типизации
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     columnId,
     onUpdate,
     onDelete,
@@ -44,43 +46,24 @@ export default function ButtonMenu({
         if (key === 'color') {
             setColor(value);
         }
-        
+
         // Обновляем атрибуты ноды через NodeView
         onUpdate(key, value);
-        
+
         // Use the element ID from props or from node attributes as fallback
         const targetElementId = elementId || nodeAttributes.elementId;
-        
+
         if (!targetElementId) {
             console.error('No element ID available for update in ButtonMenu');
             return;
         }
-        
+
         // Обновляем состояние в store
         updateElement(presentationId, slideId, layoutId, targetElementId, { [key]: value });
     }
 
     const handleDelete = () => {
         onDelete();
-    }
-
-    // Для тестирования
-    const handleTestClick = () => {
-        // Use the element ID from props or from node attributes as fallback
-        const targetElementId = elementId || nodeAttributes.elementId;
-        
-        console.log('Button Menu - Element Info:', {
-            elementId,
-            nodeElementId: nodeAttributes.elementId,
-            targetElementId,
-            slideId,
-            layoutId,
-            presentationId,
-            nodeAttributes,
-            storeElement: usePresentationStore.getState().getElement(presentationId, slideId, layoutId, targetElementId),
-            allAttributes: nodeAttributes,
-            color
-        });
     }
 
     return (
@@ -95,15 +78,6 @@ export default function ButtonMenu({
                     className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm"
                 />
             </div>
-
-            {/* Test button */}
-            <button
-                data-element-id={elementId || nodeAttributes.elementId}
-                onClick={handleTestClick}
-                className="px-3 py-2 bg-gray-100 rounded"
-            >
-                Тест ({elementId || nodeAttributes.elementId || 'no-id'})
-            </button>
 
             {/* Style Toggle */}
             <div className="flex items-center justify-between gap-2">
