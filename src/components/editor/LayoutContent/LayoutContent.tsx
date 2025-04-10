@@ -9,6 +9,7 @@ import { generateId } from '@/utils/id';
 import { getNewEditorElement } from '@/elements/registry';
 import { usePresentationStore } from '@/store/presentationStore';
 import { getColumnWidths } from '../SlideEditor/SlideEditor';
+import DragHandler from '../DragHandler';
 
 interface LayoutContentProps {
     layout: Layout;
@@ -37,6 +38,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     slideId
 }) => {
     const { state, handleDragStart } = useDnd();
+    const [isLayoutHovered, setIsLayoutHovered] = useState(false);
 
     // Use optimized selector hooks instead of full context
     const { openMenu } = useSlideMenuActions();
@@ -45,6 +47,9 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     const menuLayoutId = useSlideMenuSelectedLayout();
     const menuElementId = useSlideMenuSelectedElement();
     const menuColumnId = useSlideMenuSelectedColumn();
+
+    const handleMouseEnter = useCallback(() => setIsLayoutHovered(true), []);
+    const handleMouseLeave = useCallback(() => setIsLayoutHovered(false), []);
 
 
     // Memoize grid properties to prevent recalculations
@@ -141,9 +146,25 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 data-is-single-element-layout={isSingleElementSingleCellLayout ? "true" : "false"}
                 role="region"
                 aria-label={`Layout ${layout.id}`}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
             >
                 {isSelected && <div className={styles.layoutSelected} />}
 
+                {layout.elements.length > 1 && (isLayoutHovered || isSelected) && (
+                    <DragHandler
+                        className={styles.layoutDragHandle}
+                        slideId={slideId}
+                        isActive={isSelected}
+                        ariaLabel="Drag this layout"
+                        dataAttributes={{
+                            'data-layout-drag-handle': layout.id,
+                        }}
+                        handleClick={handleOpenMenu}
+                        handleKeyDown={handleKeyDown}
+                        handleDragStart={handleLayoutDragStart}
+                    />
+                )}
                 {layout.gridStructure.rows.map((row: GridRow, rowIndex: number) => {
                     const className = rowIndex % 2 === 0 ? styles.layoutContent : styles.layoutContentEven;
                     return (
@@ -181,12 +202,9 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                                         isLayoutSelected={isSelected}
                                         isLastCell={isLastCell}
                                         slideIsSelected={false}
-                                        // onDelete={onDeleteElement}
                                         isTable={layout.isTable}
                                         rowIndex={rowIndex}
                                         columnIndex={cellIndex}
-                                        // isShowColumnDragHandle={useSelectStore.getState().hoveredColumnIndex === cellIndex && useSelectStore.getState().hoveredRowIndex === rowIndex}
-                                        // handleColumnHover={useSelectStore.getState().hoveredColumnIndex === cellIndex && useSelectStore.getState().hoveredRowIndex === rowIndex ? () => {} : undefined}
                                     />
                                 );
                             })}

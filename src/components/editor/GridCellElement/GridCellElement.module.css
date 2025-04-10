@@ -35,6 +35,7 @@
 }
 
 .columnDragHandle {
+    position: absolute;
     top: 0;
     left: 50%;
     transform: translate(-50%, -50%) rotate(90deg) !important;
@@ -191,12 +192,4 @@
     left: 0;
     z-index: 1;
     transform: translate(-50%, -50%);
-}
-
-.columnDragHandle {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(90deg);
-    pointer-events: none;
 }

@@ -15,6 +15,7 @@ import {
     AlignBottomIcon,
     MergeIcon
 } from '@/components/icons';
+import HeadingSelector from '@/components/settings/HeadingSelector/HeadingSelector';
 
 // Define menu item types
 interface MenuItemProps {
@@ -256,7 +257,7 @@ const SlideMenu: React.FC = () => {
                         />
                     </>
                 );
-            case 'column':
+            case 'cell':
                 return (
                     <>
                         <MenuItem
@@ -345,6 +346,40 @@ const SlideMenu: React.FC = () => {
                             onClick={deleteSlide}
                             className={styles.removeButton}
                         />
+                    </>
+                );
+            case 'row':
+                return (
+                    <>
+                        <HeadingSelector
+                            isHeadingMenuOpen={false}
+                            setIsHeadingMenuOpen={() => { }}
+                            getCurrentHeadingLevel={() => 0}
+                            handleHeadingChange={() => { }}
+                            lightThemeStyle={lightThemeStyle}
+                            // headingLevels={[]}
+                        />
+                        {/* <MenuItem
+                            icon={<Acc />}
+                            label="Добавить строку"
+                            onClick={}
+                        /> */}
+                    </>
+                );
+            case 'column':
+                return (
+                    <>
+                        <MenuItem
+                            icon={<AddColumnLeftIcon />}
+                            label="Добавить столбец слева"
+                            onClick={handleAddColumnLeft}
+                        />
+                        <MenuItem
+                            icon={<AddColumnRightIcon />}
+                            label="Добавить столбец справа"
+                            onClick={handleAddColumnRight}
+                        />
+
                     </>
                 );
             default:

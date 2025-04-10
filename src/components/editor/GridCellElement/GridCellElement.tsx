@@ -109,8 +109,6 @@ interface GridCellElementProps {
     isTable?: boolean;
     rowIndex: number;
     columnIndex: number;
-    // handleColumnHover?: () => void;
-    // isShowColumnDragHandle?: boolean;
 }
 
 const GridCellElement: React.FC<GridCellElementProps> = ({
@@ -123,11 +121,9 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     tiptapRefs,
     isLastCell,
     slideIsSelected,
-    // handleColumnHover,
     isTable = false,
     rowIndex,
     columnIndex
-    // isShowColumnDragHandle = false
 }) => {
     const isHoveredRow = useSelectStore(state => columnIndex === 0 && state.hoveredRowIndex === rowIndex);
     const isHoveredColumn = useSelectStore(state => rowIndex === 0 && state.hoveredColumnIndex === columnIndex);
@@ -344,7 +340,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         openMenu({
             slideId,
             elementId: null,
-            elementType: 'column',
+            elementType: 'cell',
             layoutId,
             columnId: cell.id
         });
@@ -408,30 +404,55 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
     }, [isTable, slideId, layoutId, presentationId]);
 
-    const isLastRow = useCallback(() => {
-        const presentation = usePresentationStore.getState().getPresentation(presentationId);
-        if (!presentation) return false;
+    // const isLastRow = useCallback(() => {
+    //     const presentation = usePresentationStore.getState().getPresentation(presentationId);
+    //     if (!presentation) return false;
 
-        const slide = presentation.slides.find(s => s.id === slideId);
-        if (!slide) return false;
+    //     const slide = presentation.slides.find(s => s.id === slideId);
+    //     if (!slide) return false;
 
-        const layout = slide.layouts.find(l => l.id === layoutId);
-        if (!layout || !layout.gridStructure) return false;
+    //     const layout = slide.layouts.find(l => l.id === layoutId);
+    //     if (!layout || !layout.gridStructure) return false;
 
-        const rowIndex = layout.gridStructure.rows.findIndex(row =>
-            row.cells.some(c => c.id === cell.id)
-        );
+    //     const rowIndex = layout.gridStructure.rows.findIndex(row =>
+    //         row.cells.some(c => c.id === cell.id)
+    //     );
 
-        return rowIndex === layout.gridStructure.rows.length - 1;
-    }, [presentationId, slideId, layoutId, cell.id]);
+    //     return rowIndex === layout.gridStructure.rows.length - 1;
+    // }, [presentationId, slideId, layoutId, cell.id]);
 
-    const [lastRowCell, setLastRowCell] = useState(false);
+    // const [lastRowCell, setLastRowCell] = useState(false);
 
-    useEffect(() => {
-        if (isTable) {
-            setLastRowCell(isLastRow());
-        }
-    }, [isTable, isLastRow]);
+    // useEffect(() => {
+    //     if (isTable) {
+    //         setLastRowCell(isLastRow());
+    //     }
+    // }, [isTable, isLastRow]);
+
+    const handleOpenColumnMenu = useCallback(() => {
+        openMenu({
+            slideId,
+            elementId: null,
+            layoutId,
+            elementType: 'column',
+            columnId: cell.id,
+            tableRowIndex: rowIndex,
+            tableColumnIndex: columnIndex,
+            tableId: layoutId
+        });
+    }, [slideId, layoutId, cell.id, rowIndex, columnIndex]);
+
+    const handleOpenRowMenu = useCallback(() => {
+        openMenu({
+            slideId,
+            elementId: null,
+            layoutId,
+            elementType: 'row',
+            tableRowIndex: rowIndex,
+            tableColumnIndex: columnIndex,
+            tableId: layoutId
+        });
+    }, [slideId, layoutId, cell.id, rowIndex, columnIndex]);
 
     return (
         <div
@@ -454,21 +475,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             }
             ref={editorRef}
         >
-            {/* {isShowColumnDragHandle && (
-                <DragHandler
-                    slideId={slideId}
-                    isActive={menuColumnId === cell.id && !menuElementId}
-                    ariaLabel="Drag this column"
-                    className={styles.columnDragHandle}
-                    dataAttributes={{
-                        'data-column-drag-handle': cell.id,
-                    }}
-                    handleClick={handleClickCellDragHandle}
-                    handleKeyDown={handleKeyDownCellDragHandle}
-                    handleDragStart={handleDragStartCellDragHandle}
-                    horizontal={true}
-                />
-            )} */}
             {!isTable && (hasMultipleCells && (menuColumnId === cell.id || cellIsHovered)) && (
                 <DragHandler
                     slideId={slideId}
@@ -542,7 +548,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     isActive={false}
                     ariaLabel="Drag this row"
                     // dataAttributes={{ 'data-row-drag-handle': row.id }}
-                    handleClick={() => { }}
+                    handleClick={handleOpenRowMenu}
                     handleKeyDown={() => { }}
                     handleDragStart={() => { }}
                 />
@@ -553,8 +559,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     slideId={slideId}
                     isActive={false}
                     ariaLabel="Drag this row"
-                    // dataAttributes={{ 'data-row-drag-handle': row.id }}
-                    handleClick={() => { }}
+                    handleClick={handleOpenColumnMenu}
                     handleKeyDown={() => { }}
                     handleDragStart={() => { }}
                 />

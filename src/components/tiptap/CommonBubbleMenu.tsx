@@ -23,6 +23,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useSlideMenu } from "@/contexts/SlideMenuContext";
 import { EditorView } from "@tiptap/pm/view";
 import { EditorState } from "@tiptap/pm/state";
+import HeadingSelector from "../settings/HeadingSelector/HeadingSelector";
 
 export default function CommonBubbleMenu({
     editor,
@@ -144,7 +145,16 @@ export default function CommonBubbleMenu({
             shouldShow={shouldShow}
         >
             <div className={`${styles.bubbleMenu} light-theme-only`} style={lightThemeStyle}>
-                <div className={styles.headingSelector} ref={headingMenuRef}>
+                <HeadingSelector
+                    headingMenuRef={headingMenuRef}
+                    isHeadingMenuOpen={isHeadingMenuOpen}
+                    setIsHeadingMenuOpen={setIsHeadingMenuOpen}
+                    getCurrentHeadingLevel={getCurrentHeadingLevel}
+                    handleHeadingChange={handleHeadingChange}
+                    lightThemeStyle={lightThemeStyle}
+                    headingLevels={headingLevels}
+                />
+                {/* <div className={styles.headingSelector} ref={headingMenuRef}>
                     <button
                         className={`${styles.button} ${styles.headingButton}`}
                         onClick={() => setIsHeadingMenuOpen(!isHeadingMenuOpen)}
@@ -169,7 +179,7 @@ export default function CommonBubbleMenu({
                             ))}
                         </div>
                     )}
-                </div>
+                </div> */}
 
                 <ColorPicker
                     editor={editor}

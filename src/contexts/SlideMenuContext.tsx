@@ -4,7 +4,7 @@ import { BaseElement, GridCell, IPresentation, Layout, LayoutType, Slide } from 
 import { ComponentStructureType } from '@/elements/registry';
 
 // Define menu element types
-export type MenuElementType = 'element' | 'column' | 'layout' | 'slide' | 'editor';
+export type MenuElementType = 'element' | 'cell' | 'layout' | 'slide' | 'editor' | 'row' | 'table' | 'column';
 
 // Define slide menu state types
 type SlideMenuState = {
@@ -16,10 +16,13 @@ type SlideMenuState = {
     columnId: string | null;
     isTextEditor: boolean;
     componentStructure: ComponentStructureType | null;
+    tableRowIndex: number | null;
+    tableColumnIndex: number | null;
+    tableId: string | null;
 };
 
 type SlideMenuAction =
-    | { type: 'OPEN_MENU'; payload: { slideId?: string | null; elementId?: string | null; elementType?: MenuElementType | null; layoutId?: string | null; columnId?: string | null; isTextEditor?: boolean; componentStructure?: ComponentStructureType | null } }
+    | { type: 'OPEN_MENU'; payload: { slideId?: string | null; elementId?: string | null; elementType?: MenuElementType | null; layoutId?: string | null; columnId?: string | null; isTextEditor?: boolean; componentStructure?: ComponentStructureType | null; tableRowIndex?: number | null; tableColumnIndex?: number | null; tableId?: string | null } }
     | { type: 'CLOSE_MENU' };
 
 const initialState: SlideMenuState = {
@@ -31,6 +34,9 @@ const initialState: SlideMenuState = {
     columnId: null,
     isTextEditor: false,
     componentStructure: null,
+    tableRowIndex: null,
+    tableColumnIndex: null,
+    tableId: null,
 };
 
 // Reducer for managing slide menu state
@@ -46,6 +52,9 @@ const slideMenuReducer = (state: SlideMenuState, action: SlideMenuAction): Slide
                 columnId: action.payload.columnId ?? null,
                 isTextEditor: action.payload.isTextEditor ?? false,
                 componentStructure: action.payload.componentStructure ?? null,
+                tableRowIndex: action.payload.tableRowIndex ?? null,
+                tableColumnIndex: action.payload.tableColumnIndex ?? null,
+                tableId: action.payload.tableId ?? null,
             };
         case 'CLOSE_MENU':
             return initialState;
@@ -57,7 +66,7 @@ const slideMenuReducer = (state: SlideMenuState, action: SlideMenuAction): Slide
 // Create context
 type SlideMenuContextType = {
     state: SlideMenuState;
-    openMenu: (menuData: { slideId?: string | null, elementId?: string | null, elementType?: MenuElementType | null, layoutId?: string | null, columnId?: string | null, isTextEditor?: boolean, componentStructure?: ComponentStructureType | null }) => void;
+    openMenu: (menuData: { slideId?: string | null, elementId?: string | null, elementType?: MenuElementType | null, layoutId?: string | null, columnId?: string | null, isTextEditor?: boolean, componentStructure?: ComponentStructureType | null, tableRowIndex?: number | null, tableColumnIndex?: number | null, tableId?: string | null }) => void;
     closeMenu: () => void;
 
     checkSlideMenuIsOpen: (slideId: string | null) => boolean;
@@ -131,7 +140,10 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
             layoutId,
             columnId,
             isTextEditor,
-            componentStructure
+            componentStructure,
+            tableRowIndex,
+            tableColumnIndex,
+            tableId
         }: {
             slideId?: string | null,
             elementId?: string | null,
@@ -139,7 +151,10 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
             layoutId?: string | null,
             columnId?: string | null,
             isTextEditor?: boolean,
-            componentStructure?: ComponentStructureType | null
+            componentStructure?: ComponentStructureType | null,
+            tableRowIndex?: number | null,
+            tableColumnIndex?: number | null,
+            tableId?: string | null,
         }) => {
             dispatch({
                 type: 'OPEN_MENU',
@@ -150,7 +165,10 @@ export const SlideMenuProvider: React.FC<{ children: ReactNode; presentationId: 
                     layoutId,
                     columnId,
                     isTextEditor,
-                    componentStructure
+                    componentStructure,
+                    tableRowIndex,
+                    tableColumnIndex,
+                    tableId
                 }
             });
         };
