@@ -1259,65 +1259,63 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentElement = currentLayout.elements.find(element => element.id === elementId);
                 if (!currentElement) return;
 
-                set((state) => {
-                    const updatedState = {
-                        presentations: state.presentations.map((presentation) => {
-                            if (presentation.id === presentationId) {
-                                return {
-                                    ...presentation,
-                                    slides: presentation.slides.map((slide) => {
-                                        if (slide.id === slideId) {
-                                            return {
-                                                ...slide,
-                                                layouts: slide.layouts.map((layout) => {
-                                                    if (layout.id === layoutId) {
-                                                        return {
-                                                            ...layout,
-                                                            elements: layout.elements.map((element) =>
-                                                                element.id === elementId ? { ...element, ...data } : element
-                                                            ),
-                                                        };
-                                                    }
-                                                    return layout;
-                                                }),
-                                            };
-                                        }
-                                        return slide;
-                                    }),
-                                    updatedAt: Date.now(),
-                                };
-                            }
-                            return presentation;
-                        }),
-                    };
+                // Directly modify the element in the current state to prevent unnecessary re-renders
+                // Find the presentation, slide, layout, and element by index for direct updates
+                const presentations = get().presentations;
+                const presentationIndex = presentations.findIndex(p => p.id === presentationId);
+                if (presentationIndex === -1) return;
+                
+                const slides = presentations[presentationIndex].slides;
+                const slideIndex = slides.findIndex(s => s.id === slideId);
+                if (slideIndex === -1) return;
+                
+                const layouts = slides[slideIndex].layouts;
+                const layoutIndex = layouts.findIndex(l => l.id === layoutId);
+                if (layoutIndex === -1) return;
+                
+                const elements = layouts[layoutIndex].elements;
+                const elementIndex = elements.findIndex(e => e.id === elementId);
+                if (elementIndex === -1) return;
 
-                    if (createHistoryEntry) {
-                        useHistoryStore.getState().recordTransactionAction({
-                            type: 'element',
-                            description: 'Update element',
-                            presentationId,
-                            slideId,
-                            layoutId,
-                            elementId,
-                            before: { presentations: beforeState.presentations },
-                            after: updatedState
-                        });
+                // Create a copy of the current state for history
+                const newState = { ...get() };
+                
+                // Directly update the element while keeping reference identity of other objects
+                newState.presentations[presentationIndex].slides[slideIndex].layouts[layoutIndex].elements[elementIndex] = {
+                    ...elements[elementIndex],
+                    ...data
+                };
+                
+                // Update the timestamp to trigger auto-save
+                newState.presentations[presentationIndex].updatedAt = Date.now();
+                
+                // Set the new state
+                set(newState);
 
-                    } else {
-                        get().recordAction({
-                            type: 'element',
-                            description: 'Update element',
-                            presentationId,
-                            slideId,
-                            layoutId,
-                            elementId,
-                            before: { presentations: beforeState.presentations },
-                            after: updatedState
-                        });
-                    }
-
-                    return updatedState;
-                });
+                // Record the action in history
+                if (createHistoryEntry) {
+                    useHistoryStore.getState().recordTransactionAction({
+                        type: 'element',
+                        description: 'Update element',
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        elementId,
+                        before: { presentations: beforeState.presentations },
+                        after: { presentations: newState.presentations }
+                    });
+                } else {
+                    get().recordAction({
+                        type: 'element',
+                        description: 'Update element',
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        elementId,
+                        before: { presentations: beforeState.presentations },
+                        after: { presentations: newState.presentations }
+                    });
+                }
 
                 // Add auto-save after updating element
                 get().saveChanges(presentationId);

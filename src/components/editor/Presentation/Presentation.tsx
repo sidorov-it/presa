@@ -1,7 +1,7 @@
-import { TipTapRefs, PresentationState } from "@/types";
+import { TipTapRefs, IPresentation, Slide } from "@/types";
 import SlideEditor from "../SlideEditor";
 import { useRef, memo } from "react";
-import { usePresentationStore } from '@/store/presentationStore';
+import { PresentationState, usePresentationStore } from '@/store/presentationStore';
 import { useShallow } from 'zustand/react/shallow'
 
 interface PresentationProps {
@@ -24,21 +24,10 @@ const SlideEditorWrapper = memo(({
     onSlideSelect: (slideId: string) => void;
     tiptapRefs: React.RefObject<TipTapRefs>;
 }) => {
-    // Get only the specific slide data this component needs
-    // Use a selector factory to avoid creating new functions on each render
-    // const slideSelector = useCallback(
-    //     (state: PresentationState) => {
-    //         const presentation = state.presentations.find(p => p.id === presentationId);
-    //         if (!presentation) return null;
-    //         return presentation.slides.find(s => s.id === slideId) || null;
-    //     },
-    //     [presentationId, slideId]
-    // );
-
     const slide = usePresentationStore(useShallow((state: PresentationState) => {
-        const presentation = state.presentations.find(p => p.id === presentationId);
+        const presentation = state.presentations.find((p: IPresentation) => p.id === presentationId);
         if (!presentation) return null;
-        return presentation.slides.find(s => s.id === slideId) || null;
+        return presentation.slides.find((s: Slide) => s.id === slideId) || null;
     }));
 
     if (!slide) return null;
