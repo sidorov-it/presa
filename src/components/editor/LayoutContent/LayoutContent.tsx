@@ -124,72 +124,11 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     }, [openMenu, slideId, layout.id]);
 
     const handleAddColumn = useCallback(() => {
-        // добавляем columns в gridStructure
-        // пересчитываем ширину колонок
-        // в каждую строку добавляем новую ячейку
-        // в каждую ячейку добавляем новый элемент
-        // обновляем layout в store
-
-        const updatedGridStructure: GridStructure = {
-            ...layout.gridStructure,
-            columns: layout.gridStructure.columns + 1,
-            columnWidths: getColumnWidths(layout.gridStructure.columns + 1)
-        };
-
-        const newElements: Element[] = [];
-
-        updatedGridStructure.rows.forEach((row: GridRow, index: number) => {
-            const cellId = generateId(8);
-            row.cells.push({
-                id: cellId,
-                column: row.cells.length + 1,
-                row: index
-            });
-            const newEditor = getNewEditorElement(cellId);
-            newElements.push({
-                ...newEditor,
-                cellId: cellId,
-            });
-        });
-        const updatedLayout = {
-            ...layout,
-            gridStructure: updatedGridStructure,
-            elements: [...layout.elements, ...newElements]
-        };
-
-        usePresentationStore.getState().updateLayout(presentationId, slideId, layout.id, updatedLayout);
+        usePresentationStore.getState().addColumnToTable(presentationId, slideId, layout.id, layout.gridStructure.columns);
     }, [layout, presentationId, slideId]);
 
     const handleAddRow = useCallback(() => {
-        console.log('add row', layout);
-        const cellsCount = layout.gridStructure.columns;
-        const rowsCount = layout.gridStructure.rows.length;
-
-        const newCells: GridCell[] = Array.from({ length: cellsCount }, (_, i) => ({
-            id: generateId(8),
-            column: i + 1,
-            row: rowsCount + 1
-        }));
-
-        const newElements: Element[] = newCells.map(cell => {
-            const newEditor = getNewEditorElement(cell.id);
-            return {
-                ...newEditor,
-                cellId: cell.id,
-            }
-        });
-
-        usePresentationStore.getState().updateLayout(presentationId, slideId, layout.id, {
-            ...layout,
-            gridStructure: {
-                ...layout.gridStructure,
-                rows: [...layout.gridStructure.rows, {
-                    id: generateId(8),
-                    cells: newCells
-                }]
-            },
-            elements: [...layout.elements, ...newElements]
-        });
+        usePresentationStore.getState().addRowToTable(presentationId, slideId, layout.id, layout.gridStructure.rows.length);
     }, [layout, presentationId, slideId]);
 
     const isSelected = menuLayoutId === layout.id && menuElementId === null && menuColumnId === null;
