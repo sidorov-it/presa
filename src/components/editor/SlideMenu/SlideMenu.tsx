@@ -16,6 +16,8 @@ import {
     MergeIcon
 } from '@/components/icons';
 import HeadingSelector from '@/components/settings/HeadingSelector/HeadingSelector';
+import RowTableMenu from './RowTableMenu/RowTableMenu';
+import ColumnTableMenu from './ColumnTableMenu/ColumnTableMenu';
 
 // Define menu item types
 interface MenuItemProps {
@@ -134,9 +136,13 @@ const SlideMenu: React.FC = () => {
             let dragElement = null;
 
             // Find the appropriate drag handle based on element type
-            if (state.elementType === 'element' && state.elementId) {
+            if (state.elementType === 'row') {
+                dragElement = slide.querySelector(`[data-row-drag-handle="${state.layoutId}-${state.tableRowIndex}"]`);
+            } else if (state.elementType === 'column') {
+                dragElement = slide.querySelector(`[data-column-drag-handle="${state.layoutId}-${state.tableColumnIndex}"]`);
+            } else if (state.elementType === 'element' && state.elementId) {
                 dragElement = slide.querySelector(`[data-element-drag-handle="${state.elementId}"]`);
-            } else if (state.elementType === 'column' && state.columnId) {
+            } else if (state.elementType === 'cell' && state.columnId) {
                 dragElement = slide.querySelector(`[data-column-drag-handle="${state.columnId}"]`);
             } else if (state.elementType === 'layout' && state.layoutId) {
                 dragElement = slide.querySelector(`[data-layout-drag-handle="${state.layoutId}"]`);
@@ -351,36 +357,26 @@ const SlideMenu: React.FC = () => {
             case 'row':
                 return (
                     <>
-                        <HeadingSelector
-                            isHeadingMenuOpen={false}
-                            setIsHeadingMenuOpen={() => { }}
-                            getCurrentHeadingLevel={() => 0}
-                            handleHeadingChange={() => { }}
-                            lightThemeStyle={lightThemeStyle}
-                            // headingLevels={[]}
+                        <RowTableMenu
+                            slideId={state.slideId ?? undefined}
+                            layoutId={state.layoutId ?? undefined}
+                            columnId={state.columnId ?? undefined}
+                            elementId={state.elementId ?? undefined}
+                            presentationId={presentation!.id}
+                            editor={activeEditor ?? undefined}
                         />
-                        {/* <MenuItem
-                            icon={<Acc />}
-                            label="Добавить строку"
-                            onClick={}
-                        /> */}
                     </>
                 );
             case 'column':
                 return (
-                    <>
-                        <MenuItem
-                            icon={<AddColumnLeftIcon />}
-                            label="Добавить столбец слева"
-                            onClick={handleAddColumnLeft}
-                        />
-                        <MenuItem
-                            icon={<AddColumnRightIcon />}
-                            label="Добавить столбец справа"
-                            onClick={handleAddColumnRight}
-                        />
-
-                    </>
+                    <ColumnTableMenu
+                        slideId={state.slideId ?? undefined}
+                        layoutId={state.layoutId ?? undefined}
+                        columnId={state.columnId ?? undefined}
+                        elementId={state.elementId ?? undefined}
+                        presentationId={presentation!.id}
+                        editor={activeEditor ?? undefined}
+                    />
                 );
             default:
                 return null;

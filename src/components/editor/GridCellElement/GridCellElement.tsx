@@ -547,7 +547,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     slideId={slideId}
                     isActive={false}
                     ariaLabel="Drag this row"
-                    // dataAttributes={{ 'data-row-drag-handle': row.id }}
+                    dataAttributes={{ 'data-row-drag-handle': `${layoutId}-${rowIndex}` }}
                     handleClick={handleOpenRowMenu}
                     handleKeyDown={() => { }}
                     handleDragStart={() => { }}
@@ -559,6 +559,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     slideId={slideId}
                     isActive={false}
                     ariaLabel="Drag this row"
+                    dataAttributes={{ 'data-column-drag-handle': `${layoutId}-${columnIndex}` }}
                     handleClick={handleOpenColumnMenu}
                     handleKeyDown={() => { }}
                     handleDragStart={() => { }}
