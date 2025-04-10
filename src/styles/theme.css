@@ -28,7 +28,9 @@
   /* Control styles - default values, but will be set dynamically in ThemeProvider.tsx */
   --control-stroke: rgba(0, 0, 0, 0.2);
   --control-icon: rgba(0, 0, 0, 0.6);
-  --control-background: transparent;
+  --control-background: #ffffff;
+
+  --drag-handle-background: #fff;
 }
 
 /* Apply font imports */

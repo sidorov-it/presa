@@ -1,11 +1,15 @@
 import React, { RefObject, useState, useCallback, useMemo, memo } from 'react';
-import { Layout, GridRow, GridCell, Element, TipTapRefs } from '@/types';
+import { Layout, GridRow, GridCell, Element, TipTapRefs, GridStructure } from '@/types';
 import { useDnd } from '@/contexts/DragDropContext';
 import { generateGridTemplateAreas, generateGridTemplateColumns } from '@/types';
 import GridCellElement from '../GridCellElement';
 import styles from './LayoutContent.module.css';
 import { useSlideMenuActions, useSlideMenuSelectedLayout, useSlideMenuSelectedElement, useSlideMenuSelectedColumn } from '@/contexts/SlideMenuContext';
 import DragHandler from '../DragHandler';
+import { generateId } from '@/utils/id';
+import { getNewEditorElement } from '@/elements/registry';
+import { usePresentationStore } from '@/store/presentationStore';
+import { getColumnWidths } from '../SlideEditor/SlideEditor';
 
 interface LayoutContentProps {
     layout: Layout;
@@ -35,6 +39,10 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
 }) => {
     const { state, handleDragStart } = useDnd();
 
+    const [selectedRow, setSelectedRow] = useState<number | null>(null);
+    const [selectedColumn, setSelectedColumn] = useState<number | null>(null);
+    const [isLayoutHovered, setIsLayoutHovered] = useState(false);
+
     // Use optimized selector hooks instead of full context
     const { openMenu } = useSlideMenuActions();
 
@@ -43,23 +51,22 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     const menuElementId = useSlideMenuSelectedElement();
     const menuColumnId = useSlideMenuSelectedColumn();
 
-    const [isLayoutHovered, setIsLayoutHovered] = useState(false);
 
     // Memoize grid properties to prevent recalculations
     const gridTemplateAreas = useMemo(() =>
         generateGridTemplateAreas(layout.gridStructure),
-    [layout.gridStructure]
+        [layout.gridStructure]
     );
 
     const gridTemplateColumns = useMemo(() =>
         generateGridTemplateColumns(layout.gridStructure),
-    [layout.gridStructure]
+        [layout.gridStructure]
     );
 
     // Memoize layout properties
     const hasMultipleCellsInRow = useMemo(() =>
         layout.gridStructure.rows.some(row => row.cells.length > 1),
-    [layout.gridStructure.rows]
+        [layout.gridStructure.rows]
     );
 
     // Memoize cell elements grouping
@@ -85,9 +92,10 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
         layout.elements.length === 1 &&
         layout.gridStructure.rows.length === 1 &&
         layout.gridStructure.rows[0].cells.length === 1,
-    [layout.elements.length, layout.gridStructure.rows]
+        [layout.elements.length, layout.gridStructure.rows]
     );
 
+    // console.log('columnDragPosition', columnDragPosition)
     const handleLayoutDragStart = useCallback((e: React.DragEvent<HTMLDivElement>) => {
         e.stopPropagation();
         handleDragStart(e, "", layout.id);
@@ -106,7 +114,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
             elementType: 'layout',
             layoutId: layout.id
         }),
-    [openMenu, slideId, layout.id]
+        [openMenu, slideId, layout.id]
     );
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -120,12 +128,87 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
         }
     }, [openMenu, slideId, layout.id]);
 
+    const handleAddColumn = useCallback(() => {
+        // добавляем columns в gridStructure
+        // пересчитываем ширину колонок
+        // в каждую строку добавляем новую ячейку
+        // в каждую ячейку добавляем новый элемент
+        // обновляем layout в store
+
+        const updatedGridStructure: GridStructure = {
+            ...layout.gridStructure,
+            columns: layout.gridStructure.columns + 1,
+            columnWidths: getColumnWidths(layout.gridStructure.columns + 1)
+        };
+
+        const newElements: Element[] = [];
+
+        updatedGridStructure.rows.forEach((row: GridRow, index: number) => {
+            const cellId = generateId(8);
+            row.cells.push({
+                id: cellId,
+                column: row.cells.length + 1,
+                row: index
+            });
+            const newEditor = getNewEditorElement(cellId);
+            newElements.push({
+                ...newEditor,
+                cellId: cellId,
+            });
+        });
+        const updatedLayout = {
+            ...layout,
+            gridStructure: updatedGridStructure,
+            elements: [...layout.elements, ...newElements]
+        };
+
+        usePresentationStore.getState().updateLayout(presentationId, slideId, layout.id, updatedLayout);
+    }, [layout, presentationId, slideId]);
+
+    const handleAddRow = useCallback(() => {
+        console.log('add row', layout);
+        const cellsCount = layout.gridStructure.columns;
+        const rowsCount = layout.gridStructure.rows.length;
+
+        const newCells: GridCell[] = Array.from({ length: cellsCount }, (_, i) => ({
+            id: generateId(8),
+            column: i + 1,
+            row: rowsCount + 1
+        }));
+
+        const newElements: Element[] = newCells.map(cell => {
+            const newEditor = getNewEditorElement(cell.id);
+            return {
+                ...newEditor,
+                cellId: cell.id,
+            }
+        });
+
+        usePresentationStore.getState().updateLayout(presentationId, slideId, layout.id, {
+            ...layout,
+            gridStructure: {
+                ...layout.gridStructure,
+                rows: [...layout.gridStructure.rows, {
+                    id: generateId(8),
+                    cells: newCells
+                }]
+            },
+            elements: [...layout.elements, ...newElements]
+        });
+    }, [layout, presentationId, slideId]);
+
     const isSelected = menuLayoutId === layout.id && menuElementId === null && menuColumnId === null;
-    const layoutClassName = styles.layoutContent;
 
     const handleMouseEnter = useCallback(() => setIsLayoutHovered(true), []);
     const handleMouseLeave = useCallback(() => setIsLayoutHovered(false), []);
 
+    const handleDeleteElement = useCallback((element: Element) => onDeleteElement(layout.id, element.id), [onDeleteElement, layout.id]);
+    const handleColumnHover = useCallback((cellIndex: number) => setSelectedColumn(cellIndex), []);
+
+    const createColumnHoverHandler = useCallback((index: number) => {
+        return () => setSelectedColumn(index);
+    }, []);
+    
     return (
         <>
             <div
@@ -154,49 +237,101 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                         handleDragStart={handleLayoutDragStart}
                     />
                 )}
-                {layout.gridStructure.rows.map((row: GridRow) => (
-                    <div
-                        key={row.id}
-                        data-layout-id={layout.id}
-                        data-row-id={row.id}
-                        className={`${layoutClassName} ${hasMultipleCellsInRow ? styles.multiCellLayout : ''}`}
-                        style={{
-                            gridTemplateAreas,
-                            gridTemplateColumns,
-                        }}
-                    >
-                        {row.cells.map((cell: GridCell, cellIndex: number) => {
-                            const cellId = cell.id;
-                            const elements = cellElements[cellId] || [];
-                            const isLastCell = cellIndex === row.cells.length - 1;
+                {layout.gridStructure.rows.map((row: GridRow, rowIndex: number) => {
+                    const className = rowIndex % 2 === 0 ? styles.layoutContent : styles.layoutContentEven;
+                    return (
+                        <div
+                            key={row.id}
+                            data-layout-id={layout.id}
+                            data-row-id={row.id}
+                            onMouseEnter={() => setSelectedRow(rowIndex)}
+                            onMouseLeave={() => setSelectedRow(null)}
 
-                            const elementsIds = elements.map(element => element.id);
-                            const key = `${cellId}-${simpleHash(JSON.stringify(elementsIds))}`;
-
-                            return (
-                                <GridCellElement
-                                    key={key}
-                                    tiptapRefs={tiptapRefs}
-                                    cell={cell}
-                                    elements={elements}
-                                    dragOverElement={state.indicators.elementIndicator}
-                                    dragOverPosition={state.indicators.elementPosition}
-                                    presentationId={presentationId}
+                            className={`${styles.layoutContent} ${layout.isTable ? styles.tableLayoutContent : ''} ${hasMultipleCellsInRow ? styles.multiCellLayout : ''} ${className}`}
+                            style={{
+                                gridTemplateAreas,
+                                gridTemplateColumns,
+                            }}
+                        >
+                            {selectedRow === rowIndex && (
+                                <DragHandler
+                                    className={styles.tableRowDragHandle}
                                     slideId={slideId}
-                                    layoutId={layout.id}
-                                    index={cellIndex}
-                                    hasMultipleCells={hasMultipleCellsInRow}
-                                    isLayoutHovered={isLayoutHovered}
-                                    isLayoutSelected={isSelected}
-                                    isLastCell={isLastCell}
-                                    slideIsSelected={false}
-                                    onDelete={(element) => onDeleteElement(layout.id, element.id)}
+                                    isActive={isSelected}
+                                    ariaLabel="Drag this layout"
+                                    dataAttributes={{
+                                        'data-layout-drag-handle': layout.id,
+                                    }}
+                                    handleClick={handleOpenMenu}
+                                    handleKeyDown={handleKeyDown}
+                                    handleDragStart={handleLayoutDragStart}
                                 />
-                            );
-                        })}
-                    </div>
-                ))}
+                            )}
+
+                            {row.cells.map((cell: GridCell, cellIndex: number) => {
+                                const cellId = cell.id;
+                                const elements = cellElements[cellId] || [];
+                                const isLastCell = cellIndex === row.cells.length - 1;
+
+                                const elementsIds = elements.map(element => element.id);
+                                const key = `${cellId}-${simpleHash(JSON.stringify(elementsIds))}`;
+
+                                const handleColumnHover = useMemo(
+                                    () => createColumnHoverHandler(cellIndex),
+                                    [createColumnHoverHandler, cellIndex]
+                                );
+                            
+                                return (
+                                    <GridCellElement
+                                        key={key}
+                                        tiptapRefs={tiptapRefs}
+                                        cell={cell}
+                                        elements={elements}
+                                        dragOverElement={state.indicators.elementIndicator}
+                                        dragOverPosition={state.indicators.elementPosition}
+                                        presentationId={presentationId}
+                                        slideId={slideId}
+                                        layoutId={layout.id}
+                                        index={cellIndex}
+                                        hasMultipleCells={hasMultipleCellsInRow}
+                                        // isLayoutHovered={isLayoutHovered}
+                                        isLayoutSelected={isSelected}
+                                        isLastCell={isLastCell}
+                                        slideIsSelected={false}
+                                        onDelete={handleDeleteElement}
+                                        isTable={layout.isTable}
+                                        isShowColumnDragHandle={selectedColumn === cellIndex && rowIndex === 0}
+                                        handleColumnHover={handleColumnHover}
+                                    />
+
+                                );
+                            })}
+                        </div>
+                    )
+                })}
+
+                {layout.isTable && (
+                    <>
+                        <button
+                            className={`${styles.addColumnButton} ${styles.tableButton}`}
+                            onClick={handleAddColumn}
+                        >
+                            +
+                        </button>
+                        <button
+                            className={`${styles.addRowButton} ${styles.tableButton}`}
+                            onClick={handleAddRow}
+                        >
+                            +
+                        </button>
+                    </>
+                )}
+
             </div>
+            <br />
+            <br />
+            <div>selectedRow: {selectedRow}</div>
+            <div>selectedColumn: {selectedColumn}</div>
         </>
     );
 };

@@ -16,7 +16,7 @@
     opacity: 1;
 }
 
-.elementWrapper::before {
+/* .elementWrapper::before {
     content: '';
     position: absolute;
     top: 0;
@@ -24,7 +24,7 @@
     width: 20px;
     height: 100%;
     z-index: 21;
-}
+} */
 
 
 /* Individual element drag handle styles */

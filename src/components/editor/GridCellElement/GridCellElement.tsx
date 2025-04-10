@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { RefObject, useCallback, useRef, useState } from 'react';
+import React, { RefObject, useCallback, useRef, useState, useEffect } from 'react';
 import { GridCell, Element, TipTapRefs, ElementConfig } from '@/types';
 import { useHandleDragStart } from '@/contexts/DragDropContext';
 import styles from './GridCellElement.module.css';
@@ -23,7 +23,6 @@ const adjustColumnWidths = (
     totalColumns: number
 ): string[] => {
     const newColumnWidths = [...columnWidths];
-
 
     const percentValues = columnWidths.map(width => {
         const match = width.match(/^([\d.]+)%$/);
@@ -100,12 +99,15 @@ interface GridCellElementProps {
     layoutId: string;
     index: number;
     hasMultipleCells: boolean;
-    isLayoutHovered: boolean;
+    // isLayoutHovered: boolean;
     isLayoutSelected: boolean;
     isLastCell: boolean;
     slideIsSelected: boolean;
     tiptapRefs: RefObject<TipTapRefs>;
     onDelete: (element: Element) => void;
+    isTable?: boolean;
+    handleColumnHover?: () => void;
+    isShowColumnDragHandle?: boolean;
 }
 
 const GridCellElement: React.FC<GridCellElementProps> = ({
@@ -115,11 +117,12 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     slideId,
     layoutId,
     hasMultipleCells,
-    isLayoutHovered,
     tiptapRefs,
-    // onSelect,
     isLastCell,
-    slideIsSelected
+    slideIsSelected,
+    handleColumnHover,
+    isTable = false,
+    isShowColumnDragHandle = false
 }) => {
 
     const { openMenu, state: { elementId: menuElementId, columnId: menuColumnId, componentStructure: menuComponentStructure } } = useSlideMenu();
@@ -289,7 +292,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
     }, [slideId, layoutId, presentationId]);
 
-    const handleClickElementDragHandle = useCallback((element: Element, elementConfig: ElementConfig) => (e: any) => {
+    const handleClickElementDragHandle = useCallback((element: Element, elementConfig: ElementConfig) => () => {
         const editor = tiptapRefs.current?.editors[element.id]?.editor;
 
         if (elementConfig.hasTextEditor && editor && elementConfig.componentStructure === ComponentStructureType.TEXT_EDITOR) {
@@ -328,7 +331,8 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     const alignmentClassName = cell.alignment === 'top' ? styles.top : cell.alignment === 'center' ? styles.center : cell.alignment === 'bottom' ? styles.bottom : '';
 
-    const className = `${styles.gridCellElement} ${hasMultipleCells ? styles.multiCell : ''} ${hasMultipleCells && !isLayoutHovered ? styles.multiCellNoHover : ''}`;
+    // const className = `${styles.gridCellElement} ${hasMultipleCells ? styles.multiCell : ''} ${hasMultipleCells && !isLayoutHovered ? styles.multiCellNoHover : ''} ${isTable ? styles.tableCell : ''}`;
+    const className = `${styles.gridCellElement} ${hasMultipleCells ? styles.multiCell : ''}  ${isTable ? styles.tableCell : ''}`;
 
     const handleClickCellDragHandle = useCallback(() => {
         openMenu({
@@ -353,18 +357,111 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         handleDragStart(e, '', layoutId, cell.id);
     }, [layoutId, cell.id]);
 
+    const handleAddRow = useCallback(() => {
+        if (!isTable) return;
+
+        const presentation = usePresentationStore.getState().getPresentation(presentationId);
+        if (!presentation) return;
+
+        const slide = presentation.slides.find(s => s.id === slideId);
+        if (!slide) return;
+
+        const layout = slide.layouts.find(l => l.id === layoutId);
+        if (!layout || !layout.gridStructure) return;
+
+        const updatedLayout = { ...layout };
+        const updatedGridStructure = { ...layout.gridStructure };
+
+        const columns = updatedGridStructure.columns;
+        const newCells: GridCell[] = [];
+        const newElements: Element[] = [];
+
+        for (let i = 0; i < columns; i++) {
+            const newCellId = generateId(8);
+            const newCell: GridCell = {
+                id: newCellId,
+                column: i + 1,
+                row: updatedGridStructure.rows.length + 1,
+            };
+
+            const newEditor = getNewEditorElement(newCellId);
+
+            newCells.push(newCell);
+            newElements.push(newEditor);
+        }
+
+        const newRow = {
+            id: generateId(8),
+            cells: newCells
+        };
+
+        updatedGridStructure.rows.push(newRow);
+        updatedLayout.gridStructure = updatedGridStructure;
+        updatedLayout.elements = [...updatedLayout.elements, ...newElements];
+
+        usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
+    }, [isTable, slideId, layoutId, presentationId]);
+
+    const isLastRow = useCallback(() => {
+        const presentation = usePresentationStore.getState().getPresentation(presentationId);
+        if (!presentation) return false;
+
+        const slide = presentation.slides.find(s => s.id === slideId);
+        if (!slide) return false;
+
+        const layout = slide.layouts.find(l => l.id === layoutId);
+        if (!layout || !layout.gridStructure) return false;
+
+        const rowIndex = layout.gridStructure.rows.findIndex(row =>
+            row.cells.some(c => c.id === cell.id)
+        );
+
+        return rowIndex === layout.gridStructure.rows.length - 1;
+    }, [presentationId, slideId, layoutId, cell.id]);
+
+    const [lastRowCell, setLastRowCell] = useState(false);
+
+    useEffect(() => {
+        if (isTable) {
+            setLastRowCell(isLastRow());
+        }
+    }, [isTable, isLastRow]);
+
     return (
         <div
             className={`${className}`}
-            data-element-id={cell.id}
             data-cell-id={cell.id}
             data-cell="true"
             data-is-multi-cell={hasMultipleCells ? "true" : "false"}
-            onMouseEnter={() => setCellIsHovered(true)}
-            onMouseLeave={() => setCellIsHovered(false)}
+            data-is-table={isTable ? "true" : "false"}
+            onMouseEnter={(el) => {
+                console.log(el.target)
+                if (isTable && handleColumnHover) {
+                    handleColumnHover(cell.id)
+                }
+                setCellIsHovered(true)
+            }}
+            onMouseLeave={() => {
+                setCellIsHovered(false)}
+            }
             ref={editorRef}
         >
-            {(hasMultipleCells && (menuColumnId === cell.id || cellIsHovered)) && (
+            {isShowColumnDragHandle && (
+                <DragHandler
+                    slideId={slideId}
+                    isActive={menuColumnId === cell.id && !menuElementId}
+                    ariaLabel="Drag this column"
+                    className={styles.columnDragHandle}
+                    dataAttributes={{
+                        'data-column-drag-handle': cell.id,
+                    }}
+                    handleClick={handleClickCellDragHandle}
+                    handleKeyDown={handleKeyDownCellDragHandle}
+                    handleDragStart={handleDragStartCellDragHandle}
+                    horizontal={true}
+                />
+            )}
+            {!isTable && (hasMultipleCells && (menuColumnId === cell.id || cellIsHovered)) && (
                 <DragHandler
                     slideId={slideId}
                     isActive={menuColumnId === cell.id && !menuElementId}
@@ -404,6 +501,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                                 dragHandleRef={dragHandleRef}
                                 presentationId={presentationId}
                                 layoutId={layoutId}
+                                isInTable={isTable}
                             />
                         </div>
                     ))}
@@ -419,7 +517,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 </>
             )}
 
-            {hasMultipleCells && isLastCell && elementIsHovered && !slideIsSelected && (
+            {!isTable && hasMultipleCells && isLastCell && elementIsHovered && !slideIsSelected && (
                 <div
                     className={`${styles.addColumnIcon} themed-button`}
                     onClick={handleAddColumn}
@@ -427,6 +525,15 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     <PlusIcon />
                 </div>
             )}
+
+            {/* {isTable && lastRowCell && isLastCell && elementIsHovered && !slideIsSelected && (
+                <div
+                    className={`${styles.addRowIcon} themed-button`}
+                    onClick={handleAddRow}
+                >
+                    <PlusIcon />
+                </div>
+            )} */}
         </div>
     );
 };

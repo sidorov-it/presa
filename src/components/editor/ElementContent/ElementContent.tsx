@@ -7,7 +7,7 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { generateId } from '@/utils/id';
 import { useEditorStore } from '@/store/editorStore';
 import { useHistoryStore } from '@/store/historyStore';
-import { getElementConfig, getNewEditorElement, getNewElement } from '@/elements/registry';
+import { getElementConfig, getNewEditorElement, getNewElement, getNewTableLayout } from '@/elements/registry';
 import { getColumnWidths } from '../SlideEditor/SlideEditor';
 import { Image } from '@/elements/image';
 
@@ -25,6 +25,7 @@ export const ElementContent = ({
     dragHandleRef,
     presentationId,
     layoutId,
+    isInTable,
 }: {
     element: Element;
     setElementIsHovered: (isHovered: boolean) => void;
@@ -39,6 +40,7 @@ export const ElementContent = ({
     dragHandleRef: RefObject<HTMLDivElement>;
     presentationId: string;
     layoutId: string;
+    isInTable: boolean;
 }) => {
     const isCurrentEditorActive = useEditorStore(state => state.getActiveEditorId() === element.id);
 
@@ -68,13 +70,7 @@ export const ElementContent = ({
 
             const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures('single-column');
 
-            // const firstNewEditorId = generateId();
-
             const newElement = getNewEditorElement(defaultLayoutGridStructure.rows[0].cells[0].id, contentAfterCursor);
-
-            // const newElements: Element[] = defaultLayoutGridStructure.rows.map(row => {
-            //     return row.cells.map(cell => getNewEditorElement(cell.id))
-            // }).flat();
 
             const firstNewEditorId = newElement.id;
             const newLayout: Layout = {
@@ -326,21 +322,29 @@ export const ElementContent = ({
 
     // Handler for adding new elements via slash command
     const handleAddElement = useCallback((elementId: string) => (type: string) => {
-        const elementData = getNewElement(type);
-        if (elementData) {
-            const newElementWithCell = {
-                ...elementData,
-                cellId: element.cellId,
-                id: elementId
-            };
+        if (type.startsWith('table-')) {
+            const tableLayout = getNewTableLayout(type);
+            if (tableLayout) {
+                usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, tableLayout);
+            }
+        } else {
+            const elementData = getNewElement(type);
 
-            usePresentationStore.getState().updateElement(presentationId, slideId, layoutId, elementId, newElementWithCell as Partial<Element>);
+            if (elementData) {
+                const newElementWithCell = {
+                    ...elementData,
+                    cellId: element.cellId,
+                    id: elementId
+                };
 
-            if (elementConfig.hasTextEditor) {
-                tiptapRefs.current?.editors[elementId]?.editor.commands.setContent((elementData as EditorElement).content);
+                usePresentationStore.getState().updateElement(presentationId, slideId, layoutId, elementId, newElementWithCell as Partial<Element>);
+
+                if (elementConfig.hasTextEditor) {
+                    tiptapRefs.current?.editors[elementId]?.editor.commands.setContent((elementData as EditorElement).content);
+                }
             }
         }
-    }, [slideId, layoutId, presentationId]);
+    }, [presentationId, slideId, layoutId, element.cellId, elementConfig.hasTextEditor, tiptapRefs]);
 
 
     const getEditorContent = useCallback((element: Element): string => {
@@ -359,7 +363,7 @@ export const ElementContent = ({
                     elementConfig={elementConfig}
                     elementId={element.id}
                     tiptapRefs={tiptapRefs}
-                    id={element.cellId}
+                    id={element.id}
                     initialContent={getEditorContent(element)}
                     onEnterPressed={handleEnterPressed(element)}
                     onBackspacePressed={handleBackspacePressed(element)}
@@ -381,6 +385,16 @@ export const ElementContent = ({
                     layoutId={layoutId}
                 />
             );
+        // } else if (element.elementTypeId === 'table') {
+        //     // Render our custom table component for tables
+        //     return (
+        //         <TableElementWrapper
+        //             element={element}
+        //             presentationId={presentationId}
+        //             slideId={slideId}
+        //             layoutId={layoutId}
+        //         />
+        //     );
         }
 
         return (
@@ -392,6 +406,7 @@ export const ElementContent = ({
 
     return (
         <div
+            key={element.id}
             className={`${styles.elementContent} themed-text`}
             data-element-id={element.id}
             onMouseEnter={() => {
@@ -401,8 +416,8 @@ export const ElementContent = ({
                 setElementIsHovered(false)
             }}
         >
-            <div key={element.id} className={`${styles.elementWrapper}`}>
-                {(menuElementId === element.id || isCurrentEditorActive || elementIsHovered) && (
+            <div className={`${styles.elementWrapper}`}>
+                {!isInTable && (menuElementId === element.id || isCurrentEditorActive || elementIsHovered) && (
                     <DragHandler
                         className={styles.elementDragHandle}
                         slideId={slideId}

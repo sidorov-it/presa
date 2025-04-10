@@ -748,6 +748,9 @@ export const usePresentationStore = create<PresentationState>()(
 
                     const cellId = gridStructure.rows[0].cells[0].id;
 
+                    // Check if this element type should be treated as a table
+                    const isTable = element.defaultProps?.isTable || false;
+
                     const updatedState = {
                         presentations: state.presentations.map((presentation) => {
                             if (presentation.id === presentationId) {
@@ -767,6 +770,7 @@ export const usePresentationStore = create<PresentationState>()(
                                                     gridStructure,
                                                     type: 'single-column' as LayoutType,
                                                     style: {},
+                                                    isTable, // Add the isTable flag to the layout
                                                 }],
                                             };
                                         }

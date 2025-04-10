@@ -1,5 +1,5 @@
 import { generateId } from '@/utils/id'
-import { type BaseElement, type EditorElement, type ElementConfig, type Category, ImageElement } from '@/types'
+import { type BaseElement, type EditorElement, type ElementConfig, type Category, type ImageElement, type Layout, type GridCell, type Element, type GridRow } from '@/types'
 import { FaFont, FaTable, FaList, FaBox, FaImage, FaVideo, FaRegChartBar, FaLink, FaQuoteLeft, FaToggleOn } from 'react-icons/fa'
 import editorsDefaultContent from './textEditor/defaultContent';
 
@@ -14,18 +14,83 @@ import ButtonMenu from '@/components/editor/Menus/ButtonMenu';
 
 // Import our new Image components
 import { ImageSettings } from './image';
+import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 
 // Define component type enum to better categorize elements by their structure
 export enum ComponentStructureType {
-  // Pure text editor without wrapper
-  TEXT_EDITOR = 'text_editor',
-  // Text editor with wrapper (like box, summary, etc.)
-  WRAPPED_TEXT_EDITOR = 'wrapped_text_editor',
-  // Custom component without text editor
-  CUSTOM_COMPONENT = 'custom_component'
+    // Pure text editor without wrapper
+    TEXT_EDITOR = 'text_editor',
+    // Text editor with wrapper (like box, summary, etc.)
+    WRAPPED_TEXT_EDITOR = 'wrapped_text_editor',
+    // Custom component without text editor
+    CUSTOM_COMPONENT = 'custom_component'
 }
 
-export const getNewElement = (type: string): Omit<BaseElement, 'cellId'> | null => {
+export const getNewTableLayout = (type: string): Layout | null => {
+    if (!type.startsWith('table-')) {
+        return null;
+    }
+
+    const elementConfig = elementsRegistry
+        .flatMap(category =>
+            category.subCategories
+                ? category.subCategories.flatMap(sub => sub.elements)
+                : category.elements
+        )
+        .find(element => element?.elementTypeId === type);
+
+    if (!elementConfig) {
+        throw new Error(`Element with type ${type} not found in registry`);
+    }
+
+    const tableLayout: Layout = {
+        id: generateId(),
+        elements: [],
+        gridStructure: {
+            rows: elementConfig.defaultProps?.rows || 2,
+            columns: elementConfig.defaultProps?.columns || 2,
+            columnWidths: getColumnWidths(elementConfig.defaultProps?.columns || 2),
+        },
+        type: 'table',
+        style: {},
+        isTable: true
+    }
+
+    const rows: GridRow[] = [];
+    const elements: BaseElement[] = [];
+
+    for (let rowIndex = 0; rowIndex < elementConfig.defaultProps?.rows; rowIndex++) {
+        const cells: GridCell[] = [];
+
+        const row: GridRow = {
+            id: generateId(),
+            cells: [],
+        }
+
+        for (let columnIndex = 0; columnIndex < elementConfig.defaultProps?.columns; columnIndex++) {
+            const cellId = generateId();
+
+            const cell: GridCell = {
+                id: cellId,
+                row: rowIndex,
+                column: 0,
+            }
+            cells.push(cell);
+
+            const cellElement = getNewEditorElement(cellId);
+            elements.push(cellElement);
+        }
+
+        row.cells = cells;
+        rows.push(row);
+    }
+    tableLayout.gridStructure.rows = rows;
+    tableLayout.elements = elements as Element[];
+
+    return tableLayout;
+}
+
+export const getNewElement = (type: string): Omit<BaseElement, 'cellId'> | Layout | null => {
     // Find the element configuration in the registry
     const elementConfig = elementsRegistry
         .flatMap(category =>
@@ -163,11 +228,14 @@ export const elementsRegistry: Category[] = [
                         label: 'Таблица 2x2',
                         Icon: FaTable,
                         componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
-                        hasTextEditor: true,
+                        hasTextEditor: false,
                         MenuComponent: TableBubbleMenu,
                         defaultProps: {
                             textType: 'table',
                             content: editorsDefaultContent.table2x2,
+                            rows: 2,
+                            columns: 2,
+                            isTable: true  // Mark as a table for special handling
                         }
                     },
                     {
@@ -177,10 +245,13 @@ export const elementsRegistry: Category[] = [
                         Icon: FaTable,
                         componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
                         hasTextEditor: true,
-                        MenuComponent: TableBubbleMenu,
+                        MenuComponent: DefaultBubbleMenu,
                         defaultProps: {
                             textType: 'table',
                             content: editorsDefaultContent.table3x3,
+                            rows: 3,
+                            columns: 3,
+                            isTable: true  // Mark as a table for special handling
                         }
                     },
                     {
@@ -190,10 +261,13 @@ export const elementsRegistry: Category[] = [
                         Icon: FaTable,
                         componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
                         hasTextEditor: true,
-                        MenuComponent: TableBubbleMenu,
+                        MenuComponent: DefaultBubbleMenu,
                         defaultProps: {
                             textType: 'table',
-                            content: editorsDefaultContent.table4x4
+                            content: editorsDefaultContent.table4x4,
+                            rows: 4,
+                            columns: 4,
+                            isTable: true  // Mark as a table for special handling
                         }
                     }
                 ]

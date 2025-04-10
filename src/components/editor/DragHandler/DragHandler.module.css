@@ -15,7 +15,7 @@
     border-image: initial;
     border-color: var(--control-stroke, rgba(0, 0, 0, 0.08));
     color: var(--control-icon, #806cff);
-    background-color: var(--control-background, transparent);
+    background-color: var(--drag-handle-background, #fff);
     border-radius: 0.125rem;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     font-size: 16px;

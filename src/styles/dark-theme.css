@@ -16,6 +16,7 @@
   --secondary-text: #cccccc;
   --tertiary-text: #999999;
   
+  --drag-handle-background: #2a2a2a;
   /* Control elements - removed as they're now set dynamically in ThemeProvider.tsx */
   
   /* Buttons and interactive elements */

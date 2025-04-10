@@ -11,6 +11,7 @@ export default function DragHandler({
     handleDragStart,
     horizontal = false,
     dataAttributes,
+    style = {},
 }: {
     slideId: string,
     isActive: boolean,
@@ -23,6 +24,7 @@ export default function DragHandler({
     dataAttributes?: {
         [key: string]: string,
     },
+    style?: React.CSSProperties,
 }) {
     const [isVisible, setIsVisible] = useState(false);
     const { isDarkMode } = useTheme();
@@ -39,7 +41,7 @@ export default function DragHandler({
 
     return (
         <div
-            className={`${styles.dragHandle} ${isActive ? styles.active : ''} ${className} ${horizontal ? styles.horizontal : ''} ${isVisible ? styles.visible : ''}`}
+            className={`${styles.dragHandle} ${isActive ? styles.active : ''} ${horizontal ? styles.horizontal : ''} ${isVisible ? styles.visible : ''} ${className}`}
             aria-label={ariaLabel}
             draggable="true"
             onClick={handleClick}
@@ -56,7 +58,8 @@ export default function DragHandler({
                     backgroundColor: 'rgba(0, 0, 0, 0.7)',
                     color: 'white',
                     borderColor: 'white'
-                })
+                }),
+                ...style
             }}
             {...dataAttributes}
         >

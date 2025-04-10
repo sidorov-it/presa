@@ -69,6 +69,7 @@ export type LayoutType =
     | 'cards'
     | 'icons-with-text'
     | 'blank'
+    | 'table'
     | 'custom'; // User-defined grid layouts
 
 // Интерфейс для ячейки сетки
@@ -252,6 +253,17 @@ export interface Position {
     y: number;
 }
 
+// Table related types
+export interface TableCellData {
+    id: string;
+    elements: BaseElement[];
+}
+
+export interface TableData {
+    headers: TableCellData[];
+    rows: TableCellData[][];
+}
+
 export interface Size {
     width: number;
     height: number;
@@ -353,10 +365,11 @@ export type Element =
 // Интерфейс макета с поддержкой объединения ячеек
 export interface Layout {
     id: string;
-    type: LayoutType;
-    elements: BaseElement[];
-    style: Style;
     gridStructure: GridStructure;
+    type: LayoutType;
+    style: Record<string, unknown>;
+    elements: Element[];
+    isTable?: boolean; // Flag to identify when layout should be treated as a table
     parentId?: string;  // Reference to parent layout if nested
 }
 
@@ -577,3 +590,5 @@ export type ElementMenuProps = {
     columnId: string;
     elementId: string;
 }
+
+export { ComponentStructureType };
