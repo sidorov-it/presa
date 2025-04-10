@@ -14,6 +14,7 @@ import DragHandler from '../DragHandler';
 import { PlusIcon } from '@/components/icons';
 import { ElementContent } from '../ElementContent/ElementContent';
 import { ComponentStructureType, getNewEditorElement } from '@/elements/registry';
+import { useSelectStore } from '@/store/selectStore';
 
 const adjustColumnWidths = (
     columnWidths: string[],
@@ -104,10 +105,12 @@ interface GridCellElementProps {
     isLastCell: boolean;
     slideIsSelected: boolean;
     tiptapRefs: RefObject<TipTapRefs>;
-    onDelete: (element: Element) => void;
+    // onDelete: (element: Element) => void;
     isTable?: boolean;
-    handleColumnHover?: () => void;
-    isShowColumnDragHandle?: boolean;
+    rowIndex: number;
+    columnIndex: number;
+    // handleColumnHover?: () => void;
+    // isShowColumnDragHandle?: boolean;
 }
 
 const GridCellElement: React.FC<GridCellElementProps> = ({
@@ -120,10 +123,14 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     tiptapRefs,
     isLastCell,
     slideIsSelected,
-    handleColumnHover,
+    // handleColumnHover,
     isTable = false,
-    isShowColumnDragHandle = false
+    rowIndex,
+    columnIndex
+    // isShowColumnDragHandle = false
 }) => {
+    const isHoveredRow = useSelectStore(state => columnIndex === 0 && state.hoveredRowIndex === rowIndex);
+    const isHoveredColumn = useSelectStore(state => rowIndex === 0 && state.hoveredColumnIndex === columnIndex);
 
     const { openMenu, state: { elementId: menuElementId, columnId: menuColumnId, componentStructure: menuComponentStructure } } = useSlideMenu();
 
@@ -131,7 +138,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     const [elementIsHovered, setElementIsHovered] = useState(false);
     const [cellIsHovered, setCellIsHovered] = useState(false);
-
 
     const [isResizing, setIsResizing] = useState(false);
 
@@ -435,18 +441,20 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             data-is-multi-cell={hasMultipleCells ? "true" : "false"}
             data-is-table={isTable ? "true" : "false"}
             onMouseEnter={(el) => {
-                console.log(el.target)
-                if (isTable && handleColumnHover) {
-                    handleColumnHover(cell.id)
+                // console.log(el.target)
+                if (isTable) {
+                    useSelectStore.getState().hoverColumnIndex(layoutId, columnIndex);
+                    useSelectStore.getState().hoverRowIndex(layoutId, rowIndex);
                 }
                 setCellIsHovered(true)
             }}
             onMouseLeave={() => {
-                setCellIsHovered(false)}
+                setCellIsHovered(false)
+            }
             }
             ref={editorRef}
         >
-            {isShowColumnDragHandle && (
+            {/* {isShowColumnDragHandle && (
                 <DragHandler
                     slideId={slideId}
                     isActive={menuColumnId === cell.id && !menuElementId}
@@ -460,7 +468,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     handleDragStart={handleDragStartCellDragHandle}
                     horizontal={true}
                 />
-            )}
+            )} */}
             {!isTable && (hasMultipleCells && (menuColumnId === cell.id || cellIsHovered)) && (
                 <DragHandler
                     slideId={slideId}
@@ -524,6 +532,32 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 >
                     <PlusIcon />
                 </div>
+            )}
+
+
+            {isTable && isHoveredRow && (
+                <DragHandler
+                    className={styles.tableRowDragHandle}
+                    slideId={slideId}
+                    isActive={false}
+                    ariaLabel="Drag this row"
+                    // dataAttributes={{ 'data-row-drag-handle': row.id }}
+                    handleClick={() => { }}
+                    handleKeyDown={() => { }}
+                    handleDragStart={() => { }}
+                />
+            )}
+            {isTable && isHoveredColumn && (
+                <DragHandler
+                    className={styles.columnDragHandle}
+                    slideId={slideId}
+                    isActive={false}
+                    ariaLabel="Drag this row"
+                    // dataAttributes={{ 'data-row-drag-handle': row.id }}
+                    handleClick={() => { }}
+                    handleKeyDown={() => { }}
+                    handleDragStart={() => { }}
+                />
             )}
 
             {/* {isTable && lastRowCell && isLastCell && elementIsHovered && !slideIsSelected && (

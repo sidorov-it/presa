@@ -183,3 +183,20 @@
     transform: translateX(-50%) scale(1.1);
 }
 
+
+.tableRowDragHandle {
+    background-color: #fff;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    z-index: 1;
+    transform: translate(-50%, -50%);
+}
+
+.columnDragHandle {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(90deg);
+    pointer-events: none;
+}

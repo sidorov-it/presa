@@ -5,7 +5,6 @@ import { generateGridTemplateAreas, generateGridTemplateColumns } from '@/types'
 import GridCellElement from '../GridCellElement';
 import styles from './LayoutContent.module.css';
 import { useSlideMenuActions, useSlideMenuSelectedLayout, useSlideMenuSelectedElement, useSlideMenuSelectedColumn } from '@/contexts/SlideMenuContext';
-import DragHandler from '../DragHandler';
 import { generateId } from '@/utils/id';
 import { getNewEditorElement } from '@/elements/registry';
 import { usePresentationStore } from '@/store/presentationStore';
@@ -32,16 +31,12 @@ function simpleHash(str: string) {
 
 const LayoutContent: React.FC<LayoutContentProps> = ({
     layout,
-    onDeleteElement,
+    // onDeleteElement,
     tiptapRefs,
     presentationId,
     slideId
 }) => {
     const { state, handleDragStart } = useDnd();
-
-    const [selectedRow, setSelectedRow] = useState<number | null>(null);
-    const [selectedColumn, setSelectedColumn] = useState<number | null>(null);
-    const [isLayoutHovered, setIsLayoutHovered] = useState(false);
 
     // Use optimized selector hooks instead of full context
     const { openMenu } = useSlideMenuActions();
@@ -199,44 +194,17 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
 
     const isSelected = menuLayoutId === layout.id && menuElementId === null && menuColumnId === null;
 
-    const handleMouseEnter = useCallback(() => setIsLayoutHovered(true), []);
-    const handleMouseLeave = useCallback(() => setIsLayoutHovered(false), []);
-
-    const handleDeleteElement = useCallback((element: Element) => onDeleteElement(layout.id, element.id), [onDeleteElement, layout.id]);
-    const handleColumnHover = useCallback((cellIndex: number) => setSelectedColumn(cellIndex), []);
-
-    const createColumnHoverHandler = useCallback((index: number) => {
-        return () => setSelectedColumn(index);
-    }, []);
-    
     return (
         <>
             <div
                 className={`${styles.layout}`}
                 data-layout-id={layout.id}
                 data-is-single-element-layout={isSingleElementSingleCellLayout ? "true" : "false"}
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
                 role="region"
                 aria-label={`Layout ${layout.id}`}
             >
                 {isSelected && <div className={styles.layoutSelected} />}
 
-                {/* Layout drag handle */}
-                {layout.elements.length > 1 && (isLayoutHovered || isSelected) && (
-                    <DragHandler
-                        className={styles.layoutDragHandle}
-                        slideId={slideId}
-                        isActive={isSelected}
-                        ariaLabel="Drag this layout"
-                        dataAttributes={{
-                            'data-layout-drag-handle': layout.id,
-                        }}
-                        handleClick={handleOpenMenu}
-                        handleKeyDown={handleKeyDown}
-                        handleDragStart={handleLayoutDragStart}
-                    />
-                )}
                 {layout.gridStructure.rows.map((row: GridRow, rowIndex: number) => {
                     const className = rowIndex % 2 === 0 ? styles.layoutContent : styles.layoutContentEven;
                     return (
@@ -244,30 +212,12 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                             key={row.id}
                             data-layout-id={layout.id}
                             data-row-id={row.id}
-                            onMouseEnter={() => setSelectedRow(rowIndex)}
-                            onMouseLeave={() => setSelectedRow(null)}
-
                             className={`${styles.layoutContent} ${layout.isTable ? styles.tableLayoutContent : ''} ${hasMultipleCellsInRow ? styles.multiCellLayout : ''} ${className}`}
                             style={{
                                 gridTemplateAreas,
                                 gridTemplateColumns,
                             }}
                         >
-                            {selectedRow === rowIndex && (
-                                <DragHandler
-                                    className={styles.tableRowDragHandle}
-                                    slideId={slideId}
-                                    isActive={isSelected}
-                                    ariaLabel="Drag this layout"
-                                    dataAttributes={{
-                                        'data-layout-drag-handle': layout.id,
-                                    }}
-                                    handleClick={handleOpenMenu}
-                                    handleKeyDown={handleKeyDown}
-                                    handleDragStart={handleLayoutDragStart}
-                                />
-                            )}
-
                             {row.cells.map((cell: GridCell, cellIndex: number) => {
                                 const cellId = cell.id;
                                 const elements = cellElements[cellId] || [];
@@ -276,11 +226,6 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                                 const elementsIds = elements.map(element => element.id);
                                 const key = `${cellId}-${simpleHash(JSON.stringify(elementsIds))}`;
 
-                                const handleColumnHover = useMemo(
-                                    () => createColumnHoverHandler(cellIndex),
-                                    [createColumnHoverHandler, cellIndex]
-                                );
-                            
                                 return (
                                     <GridCellElement
                                         key={key}
@@ -294,16 +239,16 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                                         layoutId={layout.id}
                                         index={cellIndex}
                                         hasMultipleCells={hasMultipleCellsInRow}
-                                        // isLayoutHovered={isLayoutHovered}
                                         isLayoutSelected={isSelected}
                                         isLastCell={isLastCell}
                                         slideIsSelected={false}
-                                        onDelete={handleDeleteElement}
+                                        // onDelete={onDeleteElement}
                                         isTable={layout.isTable}
-                                        isShowColumnDragHandle={selectedColumn === cellIndex && rowIndex === 0}
-                                        handleColumnHover={handleColumnHover}
+                                        rowIndex={rowIndex}
+                                        columnIndex={cellIndex}
+                                        // isShowColumnDragHandle={useSelectStore.getState().hoveredColumnIndex === cellIndex && useSelectStore.getState().hoveredRowIndex === rowIndex}
+                                        // handleColumnHover={useSelectStore.getState().hoveredColumnIndex === cellIndex && useSelectStore.getState().hoveredRowIndex === rowIndex ? () => {} : undefined}
                                     />
-
                                 );
                             })}
                         </div>
@@ -330,8 +275,8 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
             </div>
             <br />
             <br />
-            <div>selectedRow: {selectedRow}</div>
-            <div>selectedColumn: {selectedColumn}</div>
+            {/* <div>selectedRow: {useSelectStore.getState()}</div>
+            <div>selectedColumn: {useSelectStore.getState().hoveredColumnIndex}</div> */}
         </>
     );
 };
