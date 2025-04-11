@@ -139,7 +139,7 @@ export const ElementContent = ({
                 tiptapRefs.current?.editors[newElementId]?.focus();
             }, 10)
         }
-    }, [slideId, layoutId]);
+    }, [presentationId, slideId, layoutId, tiptapRefs]);
 
     const handleEditorContentChange = useCallback((elementId: string) => (content: string, isEnterPress?: boolean) => {
         if (isEnterPress) {
@@ -318,7 +318,7 @@ export const ElementContent = ({
                 }
             }
         }
-    }, [slideId, layoutId]);
+    }, [presentationId, slideId, layoutId, tiptapRefs]);
 
     // Handler for adding new elements via slash command
     const handleAddElement = useCallback((elementId: string) => (type: string) => {
@@ -353,6 +353,10 @@ export const ElementContent = ({
         }
 
         return `<p>Неподдерживаемый тип элемента: ${element.elementTypeId}</p>`;
+    }, [elementConfig.hasTextEditor]);
+
+    const handleBlur = useCallback(() => {
+        useEditorStore.getState().setActiveEditor(null);
     }, []);
 
     const renderElementContent = useCallback((element: Element) => {
@@ -368,6 +372,7 @@ export const ElementContent = ({
                     onEnterPressed={handleEnterPressed(element)}
                     onBackspacePressed={handleBackspacePressed(element)}
                     onContentChange={handleEditorContentChange(element.id)}
+                    onBlur={handleBlur}
                     customBubbleMenuTrigger={dragHandleRef}
                     onAddElement={handleAddElement(element.id)}
                     presentationId={presentationId}

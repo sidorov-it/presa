@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { RefObject, useCallback, useRef, useState, memo, useDeferredValue } from 'react';
-import { GridCell, Element, TipTapRefs, ElementConfig } from '@/types';
+import { GridCell, Element, TipTapRefs, ElementConfig, ElementType } from '@/types';
 import { useHandleDragStart } from '@/contexts/DragDropContext';
 import styles from './GridCellElement.module.css';
 import { usePresentationStore } from '@/store/presentationStore';
@@ -181,27 +181,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     const animationFrameIdRef = useRef<number | null>(null);
 
-    const handleResizeStart = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const leftBorder = editorRef.current?.parentElement?.getBoundingClientRect().left || 0;
-        const initialX = e.clientX - leftBorder;
-        startXRef.current = initialX;
-
-        const cellElement = editorRef.current;
-        if (cellElement) {
-            const width = cellElement.offsetWidth;
-            startWidthRef.current = width;
-            resizebleElementRef.current = cellElement.getAttribute('data-element-id');
-        }
-
-        document.addEventListener('mousemove', handleResizeMove);
-        document.addEventListener('mouseup', handleResizeEnd);
-
-        setIsResizing(true);
-    }, []);
-
     const handleResizeMove = useCallback((e: MouseEvent) => {
         if (animationFrameIdRef.current !== null) {
             cancelAnimationFrame(animationFrameIdRef.current);
@@ -267,6 +246,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         });
     }, [presentationId, isLastCell, slideId, layoutId]);
 
+
     const handleResizeEnd = useCallback(() => {
         if (animationFrameIdRef.current !== null) {
             cancelAnimationFrame(animationFrameIdRef.current);
@@ -281,6 +261,28 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
         setIsResizing(false);
     }, [handleResizeMove]);
+
+    const handleResizeStart = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const leftBorder = editorRef.current?.parentElement?.getBoundingClientRect().left || 0;
+        const initialX = e.clientX - leftBorder;
+        startXRef.current = initialX;
+
+        const cellElement = editorRef.current;
+        if (cellElement) {
+            const width = cellElement.offsetWidth;
+            startWidthRef.current = width;
+            resizebleElementRef.current = cellElement.getAttribute('data-element-id');
+        }
+
+        document.addEventListener('mousemove', handleResizeMove);
+        document.addEventListener('mouseup', handleResizeEnd);
+
+        setIsResizing(true);
+    }, [handleResizeEnd, handleResizeMove]);
+
 
     const handleAddColumn = useCallback(() => {
         const presentation = usePresentationStore.getState().getPresentation(presentationId);
@@ -340,7 +342,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 componentStructure: elementConfig.componentStructure
             });
         }
-    }, []);
+    }, [handleMenuClick]);
 
     const handleKeyDownElementDragHandle = useCallback((element: Element, elementConfig: ElementConfig) => (e: any) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -408,6 +410,47 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         });
     }, [slideId, layoutId, rowIndex]);
 
+    const handleClickElement = useCallback((element: Element) => () => {
+        if (tiptapRefs.current?.editors[element.id]?.editor) {
+            tiptapRefs.current?.editors[element.id]?.editor.chain().focus().run();
+        }
+    }, [tiptapRefs]);
+
+
+    const handleClickGridCell = useCallback((ev: React.MouseEvent<HTMLDivElement>) => {
+        ev.stopPropagation();
+
+        if (elements.length === 1) {
+            const editor = tiptapRefs.current?.editors[elements[0].id]?.editor;
+            if (editor) {
+                editor.chain().focus().run();
+            }
+        } else if (ev.target instanceof HTMLElement && ev.target.classList.contains(styles.gridCellElement)) {
+            const rect = ev.target?.getBoundingClientRect();
+
+            if (rect) {
+                const positionY = ev.clientY - (rect.top ?? 0);
+                const slideHeight = rect.height ?? 0;
+                const isClickBottom = slideHeight - positionY < 30;
+                const isClickTop = positionY < 30;
+
+                if (isClickBottom) {
+                    const lastElement = elements[elements.length - 1];
+                    const editor = tiptapRefs.current?.editors[lastElement.id]?.editor;
+                    if (editor) {
+                        editor.chain().focus().run();
+                    }
+                } else if (isClickTop) {
+                    const firstElement = elements[0];
+                    const editor = tiptapRefs.current?.editors[firstElement.id]?.editor;
+                    if (editor) {
+                        editor.chain().focus().run();
+                    }
+                }
+            }
+        }
+    }, []);
+
     const deferredIsHoveredRow = isHoveredRow;
     const deferredIsHoveredColumn = isHoveredColumn;
 
@@ -430,10 +473,8 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 }
                 setCellIsHovered(true)
             }}
-            onMouseLeave={() => {
-                setCellIsHovered(false)
-            }
-            }
+            onMouseLeave={() => setCellIsHovered(false)}
+            onClick={handleClickGridCell}
             ref={editorRef}
         >
             {!isTable && (hasMultipleCells && (isMenuCurrentColumn || cellIsHovered)) && (
@@ -459,6 +500,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 >
                     {elements.map((element, idx) => (
                         <div
+                            onClick={handleClickElement(element)}
                             key={element.id}
                             data-is-first-element={idx === 0 ? "true" : "false"}
                             data-is-last-element={idx === elements.length - 1 ? "true" : "false"}
@@ -546,4 +588,4 @@ const GridCellElementMemo = memo(GridCellElement, (prevProps, nextProps) => {
 
 GridCellElementMemo.displayName = 'GridCellElementMemo';
 
-export default GridCellElementMemo;
+export default GridCellElement;

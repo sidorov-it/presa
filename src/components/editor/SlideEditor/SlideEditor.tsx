@@ -11,6 +11,7 @@ import { DragDropTransactionHelper } from '@/contexts/DragDropTransactionHelper'
 import DragHandler from '../DragHandler';
 import { getNewEditorElement } from '@/elements/registry';
 import { useMenuStore } from '@/store/menuStore';
+import { useEditorStore } from '@/store/editorStore';
 interface SlideEditorProps {
     slide: Slide;
     presentationId: string;
@@ -38,6 +39,9 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 }) => {
     const editorRef = useRef<HTMLDivElement>(null);
     const [isHovered, setIsHovered] = useState(false);
+
+    const menuElementId = useMenuStore(state => state.elementId);
+    const { activeEditor } = useEditorStore();
 
     const openMenu = useMenuStore.getState().openMenu;
     const checkSlideMenuIsOpen = useMenuStore.getState().checkSlideMenuIsOpen;
@@ -103,20 +107,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         };
     }, [slide.id, handleSelectSlide]);
 
-    const handleSlideClick = useCallback((e: React.MouseEvent) => {
-        const rect = editorRef.current?.getBoundingClientRect();
-        if (rect) {
-            const positionY = e.clientY - (rect.top ?? 0);
-            const slideHeight = rect.height ?? 0;
-            const isClickBottom = slideHeight - positionY < 30;
-
-            if (isClickBottom) {
-                createDefaultLayout();
-            }
-        }
-    }, []);
-
-    // Create default layout with a single editor
     const createDefaultLayout = useCallback(() => {
         const gridStructure = getPredefinedGridStructures('single-column');
         const cellId = gridStructure.rows[0].cells[0].id;
@@ -139,7 +129,24 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 detail: { editorId: editorElement.id }
             }));
         }, 100);
-    }, [presentationId, slide.id]);
+    }, [presentationId, slide.id, slide.layouts.length]);
+
+    const handleSlideClick = useCallback((e: React.MouseEvent) => {
+        if (slide.layouts.length === 1 && !menuElementId && !activeEditor) {
+            tiptapRefs.current?.editors[slide.layouts[0].elements[0].id]?.editor.chain().focus().run();
+        } else {
+            const rect = editorRef.current?.getBoundingClientRect();
+            if (rect) {
+                const positionY = e.clientY - (rect.top ?? 0);
+                const slideHeight = rect.height ?? 0;
+                const isClickBottom = slideHeight - positionY < 30;
+
+                if (isClickBottom) {
+                    createDefaultLayout();
+                }
+            }
+        }
+    }, [createDefaultLayout, slide.layouts, tiptapRefs, menuElementId, activeEditor]);
 
     return (
         <div
@@ -221,11 +228,11 @@ export default memo(SlideEditor, (prevProps, nextProps) => {
     const nextLayouts = nextProps.slide.layouts;
 
     const layoutsEqual = prevLayouts.length === nextLayouts.length &&
-                         prevLayouts.every((layout, index) =>
-                             JSON.stringify(layout) === JSON.stringify(nextLayouts[index]));
+        prevLayouts.every((layout, index) =>
+            JSON.stringify(layout) === JSON.stringify(nextLayouts[index]));
 
     return layoutsEqual &&
-           prevProps.isSelected === nextProps.isSelected &&
-           prevProps.presentationId === nextProps.presentationId &&
-           prevProps.slide.id === nextProps.slide.id;
+        prevProps.isSelected === nextProps.isSelected &&
+        prevProps.presentationId === nextProps.presentationId &&
+        prevProps.slide.id === nextProps.slide.id;
 });

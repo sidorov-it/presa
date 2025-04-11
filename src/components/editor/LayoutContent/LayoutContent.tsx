@@ -165,7 +165,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                     />
                 )}
                 {layout.gridStructure.rows.map((row: GridRow, rowIndex: number) => {
-                    const className = rowIndex % 2 === 0 ? styles.layoutContent : styles.layoutContentEven;
+                    const className = rowIndex % 2 === 0 ? '' : styles.layoutContentEven;
                     return (
                         <div
                             key={row.id}
@@ -229,8 +229,6 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 )}
 
             </div>
-            <br />
-            <br />
         </>
     );
 };
