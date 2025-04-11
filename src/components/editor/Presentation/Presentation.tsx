@@ -1,6 +1,6 @@
 import { TipTapRefs, IPresentation, Slide } from "@/types";
 import SlideEditor from "../SlideEditor";
-import { useRef, memo } from "react";
+import { memo, MutableRefObject } from "react";
 import { PresentationState, usePresentationStore } from '@/store/presentationStore';
 import { useShallow } from 'zustand/react/shallow'
 
@@ -8,6 +8,7 @@ interface PresentationProps {
     presentationId: string;
     activeSlideId: string | null;
     onSlideSelect: (slideId: string) => void;
+    tiptapRefs: MutableRefObject<TipTapRefs>;
 }
 
 // Create a SlideEditorWrapper component to handle rendering individual slides
@@ -22,7 +23,7 @@ const SlideEditorWrapper = memo(({
     presentationId: string;
     isSelected: boolean;
     onSlideSelect: (slideId: string) => void;
-    tiptapRefs: React.RefObject<TipTapRefs>;
+    tiptapRefs: MutableRefObject<TipTapRefs>;
 }) => {
     const slide = usePresentationStore(useShallow((state: PresentationState) => {
         const presentation = state.presentations.find((p: IPresentation) => p.id === presentationId);
@@ -48,13 +49,10 @@ SlideEditorWrapper.displayName = 'SlideEditorWrapper';
 function Presentation({
     presentationId,
     activeSlideId,
-    onSlideSelect
+    onSlideSelect,
+    tiptapRefs
 }: PresentationProps) {
     // Store editor references to avoid recreation
-    const tiptapRefs = useRef<TipTapRefs>({
-        editors: {},
-        editorRefs: []
-    });
 
     // Get only the slide IDs instead of full slide data
     // Use a selector factory to avoid creating a new function on each render

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import {
     BiBold,
     BiItalic,
@@ -9,18 +9,20 @@ import {
     BiTrash
 } from 'react-icons/bi';
 import styles from '../SlideMenu.module.css';
-import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
 import HeadingSelector from '@/components/settings/HeadingSelector/HeadingSelector';
 import { usePresentationStore } from '@/store/presentationStore';
 import { useMenuStore } from '@/store/menuStore';
-
+import { TipTapRefs } from '@/types';
+import { MutableRefObject } from 'react';
+import { Level } from '@tiptap/extension-heading';
 interface ColumnTableMenuProps {
     slideId?: string;
     layoutId?: string;
     elementId?: string;
     presentationId?: string;
     tableColumnIndex?: number;
+    tiptapRefs: MutableRefObject<TipTapRefs>;
 }
 
 const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
@@ -28,11 +30,27 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
     layoutId,
     tableColumnIndex,
     presentationId,
-    editor
+    tiptapRefs
 }) => {
+    const [refresh, setRefresh] = useState(Date.now());
+
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
     const { closeMenu } = useMenuStore();
+
+    const tableColumnElements = useMenuStore.getState().getTableColumnElements();
+
+    const isBoldActive = useMemo(() => {
+        return !tableColumnElements.some(element => !tiptapRefs.current.editors[element.id].editor.isActive('bold'));
+    }, [tableColumnElements]);
+
+    const isItalicActive = useMemo(() => {
+        return !tableColumnElements.some(element => !tiptapRefs.current.editors[element.id].editor.isActive('italic'));
+    }, [tableColumnElements]);
+
+    const isUnderlineActive = useMemo(() => {
+        return !tableColumnElements.some(element => !tiptapRefs.current.editors[element.id].editor.isActive('underline'));
+    }, [tableColumnElements]);
 
     // Light theme styles
     const lightThemeStyle = {
@@ -58,44 +76,68 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
 
     // Get current heading level from editor
     const getCurrentHeadingLevel = useCallback(() => {
-        if (!editor) return 0;
-
-        for (let i = 1; i <= 5; i++) {
-            if (editor.isActive('heading', { level: i })) {
-                return i;
-            }
-        }
-        return 0; // Default to paragraph
-    }, [editor]);
+        return 0;
+    }, []);
 
     // Handle heading change
     const handleHeadingChange = useCallback((level: number) => {
-        if (!editor) return;
-
-        if (level === 0) {
-            editor.chain().focus().setParagraph().run();
-        } else {
-            editor.chain().focus().setHeading({ level }).run();
-        }
-        setIsHeadingMenuOpen(false);
-    }, [editor]);
+        tableColumnElements.forEach(element => {
+            tiptapRefs.current.editors[element.id]?.editor.chain().setHeading({ level: level as Level }).run();
+        });
+    }, [tableColumnElements, tiptapRefs]);
 
     // Handle text formatting
     const handleToggleBold = useCallback(() => {
-        editor?.chain().focus().toggleBold().run();
-    }, [editor]);
+        tableColumnElements.forEach(element => {
+            const editor = tiptapRefs.current.editors[element.id]?.editor;
+            if (editor) {
+                const content = editor.getHTML();
+                if (isBoldActive) {
+                    // Remove bold from all content
+                    editor.commands.setContent(content.replace(/<strong>/g, '').replace(/<\/strong>/g, ''));
+                } else {
+                    // Add bold to all content
+                    editor.commands.setContent(content.replace(/(<p[^>]*>)(.*?)(<\/p>)/g, '$1<strong>$2</strong>$3'));
+                }
+            }
+        });
+    }, [tableColumnElements, isBoldActive, tiptapRefs]);
 
     const handleToggleItalic = useCallback(() => {
-        editor?.chain().focus().toggleItalic().run();
-    }, [editor]);
+        tableColumnElements.forEach(element => {
+            const editor = tiptapRefs.current.editors[element.id]?.editor;
+            if (editor) {
+                const content = editor.getHTML();
+                // Toggle italic for all content
+                if (content.includes('<em>')) {
+                    editor.commands.setContent(content.replace(/<em>/g, '').replace(/<\/em>/g, ''));
+                } else {
+                    editor.commands.setContent(content.replace(/(<p[^>]*>)(.*?)(<\/p>)/g, '$1<em>$2</em>$3'));
+                }
+            }
+        });
+    }, [tableColumnElements, tiptapRefs]);
 
     const handleToggleUnderline = useCallback(() => {
-        editor?.chain().focus().toggleUnderline().run();
-    }, [editor]);
+        tableColumnElements.forEach(element => {
+            const editor = tiptapRefs.current.editors[element.id]?.editor;
+            if (editor) {
+                const content = editor.getHTML();
+                // Toggle underline for all content
+                if (content.includes('<u>')) {
+                    editor.commands.setContent(content.replace(/<u>/g, '').replace(/<\/u>/g, ''));
+                } else {
+                    editor.commands.setContent(content.replace(/(<p[^>]*>)(.*?)(<\/p>)/g, '$1<u>$2</u>$3'));
+                }
+            }
+        });
+    }, [tableColumnElements, tiptapRefs]);
 
     const handleClearStyles = useCallback(() => {
-        editor?.chain().focus().clearNodes().unsetAllMarks().run();
-    }, [editor]);
+        tableColumnElements.forEach(element => {
+            tiptapRefs.current.editors[element.id]?.editor.chain().clearNodes().unsetAllMarks().run();
+        });
+    }, [tableColumnElements, tiptapRefs]);
 
     // Table column operations
     const handleAddColumnLeft = useCallback(() => {
@@ -130,14 +172,14 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
                 lightThemeStyle={lightThemeStyle}
             />
 
-            <ColorPicker
+            {/* <ColorPicker
                 editor={editor}
                 className={bubbleStyles.button}
-            />
+            /> */}
 
             <button
                 onClick={handleToggleBold}
-                className={`${styles.slideMenuButton}`}
+                className={`${styles.slideMenuButton} ${isBoldActive ? styles.active : ''}`}
                 aria-label="Жирный"
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && handleToggleBold()}
@@ -147,7 +189,7 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
 
             <button
                 onClick={handleToggleItalic}
-                className={`${styles.slideMenuButton}`}
+                className={`${styles.slideMenuButton} ${isItalicActive ? styles.active : ''}`}
                 aria-label="Курсив"
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && handleToggleItalic()}
@@ -157,7 +199,7 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
 
             <button
                 onClick={handleToggleUnderline}
-                className={`${styles.slideMenuButton}`}
+                className={`${styles.slideMenuButton} ${isUnderlineActive ? styles.active : ''}`}
                 aria-label="Подчеркнутый"
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && handleToggleUnderline()}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import SlidesList from '@/components/editor/SlidesList';
 import ElementsPanel from '@/components/editor/ElementsPanel/ElementsPanel';
@@ -7,6 +7,7 @@ import Presentation from '../Presentation';
 import DragDropIndicator from '@/components/DragDropIndicator';
 import SlideMenu from '../SlideMenu/SlideMenu';
 import { useMenuStore } from '@/store/menuStore';
+import { TipTapRefs } from '@/types';
 // import { useHistoryStore } from '@/store/historyStore';
 
 interface EditorProps {
@@ -23,6 +24,11 @@ const EditorContent: React.FC<{
     activeSlideId,
     onSlideSelect,
 }) => {
+    const tiptapRefs = useRef<TipTapRefs>({
+        editors: {},
+        editorRefs: []
+    });
+
     return (
         <div className="min-h-screen flex flex-col">
             <SlidesList
@@ -37,6 +43,7 @@ const EditorContent: React.FC<{
                     presentationId={presentationId}
                     activeSlideId={activeSlideId}
                     onSlideSelect={onSlideSelect}
+                    tiptapRefs={tiptapRefs}
                 />
 
                 {/* Tools panel */}
@@ -47,7 +54,7 @@ const EditorContent: React.FC<{
                     />
                 )}
             </div>
-            <SlideMenu />
+            <SlideMenu tiptapRefs={tiptapRefs} />
             {/* Global drag-drop indicator */}
             <DragDropIndicator />
         </div>

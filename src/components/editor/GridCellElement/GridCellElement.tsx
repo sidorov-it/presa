@@ -17,10 +17,12 @@ import { ComponentStructureType, getNewEditorElement } from '@/elements/registry
 import { useMenuStore } from '@/store/menuStore';
 
 export const useIsSelectedRow = (tableId: string, rowIndex: number) =>
-    useMenuStore(state => state.selectedRow === rowIndex && state.selectedTableId === tableId);
+    useMenuStore(state => state.tableRowIndex === rowIndex && state.tableId === tableId);
 
 export const useIsSelectedColumn = (tableId: string, columnIndex: number) =>
-    useMenuStore(state => state.selectedColumn === columnIndex && state.selectedTableId === tableId);
+    useMenuStore(state => {
+        return state.tableColumnIndex === columnIndex && state.tableId === tableId
+    });
 
 export const useIsHoveredRow = (tableId: string, rowIndex: number, columnIndex: number) =>
     useMenuStore(state => columnIndex === 0 && state.hoveredRowIndex === rowIndex && state.hoveredTableId === tableId);
@@ -114,12 +116,10 @@ interface GridCellElementProps {
     layoutId: string;
     index: number;
     hasMultipleCells: boolean;
-    // isLayoutHovered: boolean;
     isLayoutSelected: boolean;
     isLastCell: boolean;
     slideIsSelected: boolean;
     tiptapRefs: RefObject<TipTapRefs>;
-    // onDelete: (element: Element) => void;
     isTable?: boolean;
     rowIndex: number;
     columnIndex: number;
@@ -144,6 +144,10 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const isMenuCurrentColumn = useMenuStore(state => {
         return state.tableColumnIndex === columnIndex && state.selectedTableId === layoutId
     });
+
+    const hasSelectedColumn = useMenuStore(state => !!state.tableColumnIndex && state.selectedTableId === layoutId);
+    const hasSelectedRow = useMenuStore(state => !!state.tableRowIndex && state.selectedTableId === layoutId);
+
     const menuElementId = useMenuStore(state => state.elementId);
     const isHoveredRow = useIsHoveredRow(layoutId, rowIndex, columnIndex);
     const isSelectedRow = useIsSelectedRow(layoutId, rowIndex);
@@ -239,7 +243,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
             const currentColumnIndex = cell.column - 1;
 
-            const otherColumnsMinWidth = (columns - 1) * 15; // All other columns at minimum 15%
+            const otherColumnsMinWidth = (columns - 1) * 15;
             const maxAllowedWidth = 100 - otherColumnsMinWidth;
 
             const newWidthPart = Math.min(maxAllowedWidth, Math.max(15, newWidthPercentage)) / 100;
@@ -340,7 +344,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     const handleKeyDownElementDragHandle = useCallback((element: Element, elementConfig: ElementConfig) => (e: any) => {
         if (e.key === 'Enter' || e.key === ' ') {
-            handleClickElementDragHandle(element, elementConfig)(e);
+            handleClickElementDragHandle(element, elementConfig)();
         }
     }, [handleClickElementDragHandle]);
 
@@ -351,7 +355,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     const alignmentClassName = cell.alignment === 'top' ? styles.top : cell.alignment === 'center' ? styles.center : cell.alignment === 'bottom' ? styles.bottom : '';
 
-    // const className = `${styles.gridCellElement} ${hasMultipleCells ? styles.multiCell : ''} ${hasMultipleCells && !isLayoutHovered ? styles.multiCellNoHover : ''} ${isTable ? styles.tableCell : ''}`;
     const className = `${styles.gridCellElement} ${hasMultipleCells ? styles.multiCell : ''}  ${isTable ? styles.tableCell : ''}`;
 
     const handleClickCellDragHandle = useCallback(() => {
@@ -378,77 +381,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const handleDragStartCellDragHandle = useCallback((e: any) => {
         e.stopPropagation();
         handleDragStart(e, '', layoutId, cell.id);
-    }, [layoutId, cell.id]);
-
-    const handleAddRow = useCallback(() => {
-        if (!isTable) return;
-
-        const presentation = usePresentationStore.getState().getPresentation(presentationId);
-        if (!presentation) return;
-
-        const slide = presentation.slides.find(s => s.id === slideId);
-        if (!slide) return;
-
-        const layout = slide.layouts.find(l => l.id === layoutId);
-        if (!layout || !layout.gridStructure) return;
-
-        const updatedLayout = { ...layout };
-        const updatedGridStructure = { ...layout.gridStructure };
-
-        const columns = updatedGridStructure.columns;
-        const newCells: GridCell[] = [];
-        const newElements: Element[] = [];
-
-        for (let i = 0; i < columns; i++) {
-            const newCellId = generateId(8);
-            const newCell: GridCell = {
-                id: newCellId,
-                column: i + 1,
-                row: updatedGridStructure.rows.length + 1,
-            };
-
-            const newEditor = getNewEditorElement(newCellId);
-
-            newCells.push(newCell);
-            newElements.push(newEditor);
-        }
-
-        const newRow = {
-            id: generateId(8),
-            cells: newCells
-        };
-
-        updatedGridStructure.rows.push(newRow);
-        updatedLayout.gridStructure = updatedGridStructure;
-        updatedLayout.elements = [...updatedLayout.elements, ...newElements];
-
-        usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
-    }, [isTable, slideId, layoutId, presentationId]);
-
-    // const isLastRow = useCallback(() => {
-    //     const presentation = usePresentationStore.getState().getPresentation(presentationId);
-    //     if (!presentation) return false;
-
-    //     const slide = presentation.slides.find(s => s.id === slideId);
-    //     if (!slide) return false;
-
-    //     const layout = slide.layouts.find(l => l.id === layoutId);
-    //     if (!layout || !layout.gridStructure) return false;
-
-    //     const rowIndex = layout.gridStructure.rows.findIndex(row =>
-    //         row.cells.some(c => c.id === cell.id)
-    //     );
-
-    //     return rowIndex === layout.gridStructure.rows.length - 1;
-    // }, [presentationId, slideId, layoutId, cell.id]);
-
-    // const [lastRowCell, setLastRowCell] = useState(false);
-
-    // useEffect(() => {
-    //     if (isTable) {
-    //         setLastRowCell(isLastRow());
-    //     }
-    // }, [isTable, isLastRow]);
+    }, [handleDragStart, layoutId, cell.id]);
 
     const handleOpenColumnMenu = useCallback(() => {
         useMenuStore.getState().openMenu({
@@ -456,13 +389,12 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             elementId: null,
             layoutId,
             elementType: 'column',
-            cellId: cell.id,
-            tableRowIndex: rowIndex,
+            cellId: null,
+            tableRowIndex: null,
             tableColumnIndex: columnIndex,
             tableId: layoutId
         });
-        // useMenuStore.getState().setSelectedColumnIndex(layoutId, columnIndex);
-    }, [slideId, layoutId, cell.id, rowIndex, columnIndex]);
+    }, [slideId, layoutId, columnIndex]);
 
     const handleOpenRowMenu = useCallback(() => {
         useMenuStore.getState().openMenu({
@@ -471,23 +403,28 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             layoutId,
             elementType: 'row',
             tableRowIndex: rowIndex,
-            tableColumnIndex: columnIndex,
+            tableColumnIndex: null,
             tableId: layoutId
         });
-        // useMenuStore.getState().setSelectedRow(layoutId, rowIndex);
-    }, [slideId, layoutId, rowIndex, columnIndex]);
+    }, [slideId, layoutId, rowIndex]);
 
-    const deferredIsHoveredRow = useDeferredValue(isHoveredRow);
-    const deferredIsHoveredColumn = useDeferredValue(isHoveredColumn);
+    const deferredIsHoveredRow = isHoveredRow;
+    const deferredIsHoveredColumn = isHoveredColumn;
+
+    const isShowRowDragHandler = isTable && ((deferredIsHoveredRow && !isSelectedRow && !hasSelectedRow) || (isSelectedRow && columnIndex === 0));
+
+    const isShowColumnDragHandler = isTable &&
+        ((deferredIsHoveredColumn && !isSelectedColumn && !hasSelectedColumn) ||
+        (isSelectedColumn && rowIndex === 0));
 
     return (
         <div
-            className={`${className}`}
+            className={`${className} ${isSelectedRow || isSelectedColumn ? styles.selectedCell : ''}`}
             data-cell-id={cell.id}
             data-cell="true"
             data-is-multi-cell={hasMultipleCells ? "true" : "false"}
             data-is-table={isTable ? "true" : "false"}
-            onMouseEnter={(el) => {
+            onMouseEnter={() => {
                 if (isTable) {
                     useMenuStore.getState().hoverTableCell(layoutId, rowIndex, columnIndex);
                 }
@@ -564,7 +501,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 </div>
             )}
 
-            {isTable && deferredIsHoveredRow && (
+            {isShowRowDragHandler && (
                 <DragHandler
                     className={styles.tableRowDragHandle}
                     slideId={slideId}
@@ -576,7 +513,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     handleDragStart={() => { }}
                 />
             )}
-            {isTable && deferredIsHoveredColumn && (
+            {isShowColumnDragHandler && (
                 <DragHandler
                     className={styles.columnDragHandle}
                     slideId={slideId}
@@ -588,15 +525,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     handleDragStart={() => { }}
                 />
             )}
-
-            {/* {isTable && lastRowCell && isLastCell && elementIsHovered && !slideIsSelected && (
-                <div
-                    className={`${styles.addRowIcon} themed-button`}
-                    onClick={handleAddRow}
-                >
-                    <PlusIcon />
-                </div>
-            )} */}
         </div>
     );
 };
@@ -604,7 +532,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 GridCellElement.displayName = 'GridCellElement';
 
 const GridCellElementMemo = memo(GridCellElement, (prevProps, nextProps) => {
-    // Return true if nothing important changed (to prevent re-render)
     return (
         prevProps.cell.alignment === nextProps.cell.alignment &&
         prevProps.cell.id === nextProps.cell.id &&

@@ -80,7 +80,7 @@ export interface MenuState {
     alignColumnCenter: (slideId: string, layoutId: string, columnId: string) => void;
     alignColumnBottom: (slideId: string, layoutId: string, columnId: string) => void;
     deleteColumn: (slideId: string, layoutId: string, columnId: string) => void;
-
+    toggleBoldOnColumn: () => void;
     // Getter methods
     getElement: (slideId: string | null, layoutId: string | null, elementId: string | null) => BaseElement | null | undefined;
     getCell: (slideId: string | null, layoutId: string | null, columnId: string | null) => GridCell | null | undefined;
@@ -90,6 +90,8 @@ export interface MenuState {
 
     // Add a combined action to batch updates
     hoverTableCell: (tableId: string, rowIndex: number | null, columnIndex: number | null) => void;
+
+    getTableColumnElements: () => BaseElement[];
 }
 
 export const useMenuStore = create<MenuState>()(
@@ -139,34 +141,53 @@ export const useMenuStore = create<MenuState>()(
             },
 
             // Menu control actions
-            openMenu: (menuData) => set({
-                isOpen: true,
-                slideId: menuData.slideId ?? null,
-                elementId: menuData.elementId ?? null,
-                elementType: menuData.elementType ?? null,
-                layoutId: menuData.layoutId ?? null,
-                columnId: menuData.columnId ?? null,
-                cellId: menuData.cellId ?? null,
-                isTextEditor: menuData.isTextEditor ?? false,
-                componentStructure: menuData.componentStructure ?? null,
-                tableRowIndex: menuData.tableRowIndex ?? null,
-                tableColumnIndex: menuData.tableColumnIndex ?? null,
-                tableId: menuData.tableId ?? null,
-            }),
+            openMenu: (menuData) => {
+                console.log('openMenu', {
+                    isOpen: true,
+                    slideId: menuData.slideId ?? null,
+                    elementId: menuData.elementId ?? null,
+                    elementType: menuData.elementType ?? null,
+                    layoutId: menuData.layoutId ?? null,
+                    columnId: menuData.columnId ?? null,
+                    cellId: menuData.cellId ?? null,
+                    isTextEditor: menuData.isTextEditor ?? false,
+                    componentStructure: menuData.componentStructure ?? null,
+                    tableRowIndex: menuData.tableRowIndex ?? null,
+                    tableColumnIndex: menuData.tableColumnIndex ?? null,
+                    tableId: menuData.tableId ?? null,
+                });
+                set({
+                    isOpen: true,
+                    slideId: menuData.slideId ?? null,
+                    elementId: menuData.elementId ?? null,
+                    elementType: menuData.elementType ?? null,
+                    layoutId: menuData.layoutId ?? null,
+                    columnId: menuData.columnId ?? null,
+                    cellId: menuData.cellId ?? null,
+                    isTextEditor: menuData.isTextEditor ?? false,
+                    componentStructure: menuData.componentStructure ?? null,
+                    tableRowIndex: menuData.tableRowIndex ?? null,
+                    tableColumnIndex: menuData.tableColumnIndex ?? null,
+                    tableId: menuData.tableId ?? null,
+                })
+            },
 
-            closeMenu: () => set({
-                isOpen: false,
-                slideId: null,
-                elementId: null,
-                elementType: null,
-                layoutId: null,
-                columnId: null,
-                isTextEditor: false,
-                componentStructure: null,
-                tableRowIndex: null,
-                tableColumnIndex: null,
-                tableId: null,
-            }),
+            closeMenu: () => {
+                console.log('closeMenu');
+                set({
+                    isOpen: false,
+                    slideId: null,
+                    elementId: null,
+                    elementType: null,
+                    layoutId: null,
+                    columnId: null,
+                    isTextEditor: false,
+                    componentStructure: null,
+                    tableRowIndex: null,
+                    tableColumnIndex: null,
+                    tableId: null,
+                })
+            },
 
             checkSlideMenuIsOpen: (slideId) => {
                 const state = get();
@@ -317,6 +338,13 @@ export const useMenuStore = create<MenuState>()(
                 }
             },
 
+            toggleBoldOnColumn: () => {
+                const { presentationId, slideId, layoutId, tableColumnIndex } = get();
+                if (presentationId && slideId && layoutId) {
+                    const { toggleBoldOnColumn: toggleBoldOnColumnInStore } = usePresentationStore.getState();
+                    toggleBoldOnColumnInStore(presentationId, slideId, layoutId, tableColumnIndex!);
+                }
+            },
             // Getter methods
             getElement: (slideId, layoutId, elementId) => {
                 const { presentationId } = get();
@@ -365,6 +393,13 @@ export const useMenuStore = create<MenuState>()(
                         hoveredTableId: tableId
                     };
                 }),
+
+            getTableColumnElements: () => {
+                const { presentationId, slideId, layoutId, tableColumnIndex } = get();
+                if (!presentationId || !slideId || !layoutId || !tableColumnIndex) return [];
+                const { getTableColumnElements } = usePresentationStore.getState();
+                return getTableColumnElements(presentationId, slideId, layoutId, tableColumnIndex);
+            }
         }),
         {
             name: 'menu-store',

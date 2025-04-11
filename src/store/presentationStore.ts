@@ -100,6 +100,14 @@ export interface PresentationState {
 
     addLayoutWithElement: (presentationId: string, slideId: string, element: BaseElement) => void;
 
+    getTableColumnElements: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => BaseElement[];
+
+
+    toggleBoldOnColumn: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => void;
+    toggleItalicOnColumn: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => void;
+    toggleUnderlineOnColumn: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => void;
+    clearStylesOnColumn: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => void;
+
     // Undo/Redo operations
     undo: (presentationId: string) => void;
     redo: (presentationId: string) => void;
@@ -795,6 +803,81 @@ export const usePresentationStore = create<PresentationState>()(
                         description: 'Add layout with element',
                         presentationId,
                         slideId,
+                        before: { presentations: beforeState.presentations },
+                        after: updatedState
+                    });
+
+                    return updatedState;
+                });
+
+                get().saveChanges(presentationId);
+            },
+
+            getTableColumnElements: (presentationId, slideId, layoutId, tableColumnIndex) => {
+                const layout = get().getLayout(presentationId, slideId, layoutId);
+                if (!layout) return [];
+                const columnCellsIds = layout.gridStructure.rows.map(row => row.cells[tableColumnIndex].id)
+                return layout.elements.filter(element => columnCellsIds.includes(element.cellId));
+            },
+
+
+            toggleBoldOnColumn: (presentationId, slideId, layoutId, tableColumnIndex) => {
+                const beforeState = { ...get() };
+
+                const layout = get().getLayout(presentationId, slideId, layoutId);
+                if (!layout) return;
+
+                const columnCellsIds = layout.gridStructure.rows.map(row => row.cells[tableColumnIndex].id);
+
+                set((state) => {
+                    const updatedState = {
+                        presentations: state.presentations.map((presentation) => {
+                            if (presentation.id === presentationId) {
+                                return {
+                                    ...presentation,
+                                    slides: presentation.slides.map((slide) => {
+                                        if (slide.id === slideId) {
+                                            return {
+                                                ...slide,
+                                                layouts: slide.layouts.map((layout) => {
+                                                    if (layout.id === layoutId) {
+                                                        return {
+                                                            ...layout,
+                                                            gridStructure: {
+                                                                ...layout.gridStructure,
+                                                                rows: layout.gridStructure.rows.map((row) => {
+                                                                    return {
+                                                                        ...row,
+                                                                        cells: row.cells.map((cell) => {
+                                                                            if (columnCellsIds.includes(cell.id)) {
+                                                                                return { ...cell, bold: !cell.bold };
+                                                                            }
+                                                                            return cell;
+                                                                        }),
+                                                                    };
+                                                                }),
+                                                            }
+                                                        }
+                                                    }
+                                                    return layout;
+                                                }),
+                                            };
+                                        }
+                                        return slide;
+                                    }),
+                                    updatedAt: Date.now(),
+                                };
+                            }
+                            return presentation;
+                        }),
+                    };
+
+                    get().recordAction({
+                        type: 'layout',
+                        description: 'Toggle bold on column',
+                        presentationId,
+                        slideId,
+                        layoutId,
                         before: { presentations: beforeState.presentations },
                         after: updatedState
                     });

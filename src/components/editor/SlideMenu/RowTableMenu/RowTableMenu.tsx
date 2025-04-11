@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, MutableRefObject } from 'react';
 import { Editor } from '@tiptap/react';
 import {
     BiBold,
@@ -15,6 +15,7 @@ import { ColorPicker } from '@/components/tiptap/ColorPicker';
 import HeadingSelector from '@/components/settings/HeadingSelector/HeadingSelector';
 import { usePresentationStore } from '@/store/presentationStore';
 import { useMenuStore } from '@/store/menuStore';
+import { TipTapRefs } from '@/types';
 interface RowTableMenuProps {
     slideId?: string;
     layoutId?: string;
@@ -22,6 +23,7 @@ interface RowTableMenuProps {
     tableRowIndex?: number;
     presentationId?: string;
     editor?: Editor;
+    tiptapRefs: MutableRefObject<TipTapRefs>;
 }
 
 const RowTableMenu: React.FC<RowTableMenuProps> = ({
@@ -119,14 +121,14 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
                 lightThemeStyle={lightThemeStyle}
             />
 
-            <ColorPicker
+            {/* <ColorPicker
                 editor={editor}
                 className={bubbleStyles.button}
-            />
+            /> */}
 
             <button
                 onClick={handleToggleBold}
-                className={`${styles.slideMenuButton}`}
+                className={`${styles.slideMenuButton} ${editor?.isActive('bold') ? styles.active : ''}`}
                 aria-label="Жирный"
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && handleToggleBold()}

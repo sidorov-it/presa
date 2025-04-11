@@ -193,3 +193,7 @@
     z-index: 1;
     transform: translate(-50%, -50%);
 }
+
+.selectedCell {
+    background-color: #efebff;
+}

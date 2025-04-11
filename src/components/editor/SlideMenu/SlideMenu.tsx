@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, CSSProperties, useMemo, useCallback } from 'react';
+import React, { useRef, useEffect, useState, CSSProperties, useMemo, useCallback, MutableRefObject } from 'react';
 import styles from './SlideMenu.module.css';
 import { useEditorStore } from '@/store/editorStore';
 import { getElementMenuComponent } from '@/elements/registry';
@@ -18,6 +18,7 @@ import RowTableMenu from './RowTableMenu/RowTableMenu';
 import ColumnTableMenu from './ColumnTableMenu/ColumnTableMenu';
 import { useMenuIsOpen, useMenuStore, useMenuSelectedColumn, useMenuSelectedElement, useMenuSelectedLayout, useMenuSelectedSlide, useMenuSelectedCell } from '@/store/menuStore';
 import { usePresentationStore } from '@/store/presentationStore';
+import { TipTapRefs } from '@/types';
 // Define menu item types
 interface MenuItemProps {
     icon: React.ReactNode;
@@ -44,7 +45,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, label, onClick, className, ac
     </li>
 );
 
-const SlideMenu: React.FC = () => {
+const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tiptapRefs }) => {
     const {
         duplicateSlide,
         deleteSlide,
@@ -63,7 +64,6 @@ const SlideMenu: React.FC = () => {
         getSlide,
         mergeSlideWithPrevious,
     } = useMenuStore();
-
 
     const { activeEditor } = useEditorStore();
 
@@ -108,7 +108,6 @@ const SlideMenu: React.FC = () => {
 
     const menuRef = useRef<HTMLDivElement>(null);
     const [position, setPosition] = useState<{ x: number; y: number; rect: DOMRect } | null>(null);
-    // const activeEditor = useEditorStore((state) => state.activeEditor);
 
     // Custom light theme styles
     const lightThemeStyle = {
@@ -375,6 +374,7 @@ const SlideMenu: React.FC = () => {
                             presentationId={presentation!.id}
                             editor={activeEditor ?? undefined}
                             tableRowIndex={tableRowIndex ?? undefined}
+                            tiptapRefs={tiptapRefs}
                         />
                     </>
                 );
@@ -386,7 +386,7 @@ const SlideMenu: React.FC = () => {
                         elementId={elementId ?? undefined}
                         presentationId={presentation!.id}
                         tableColumnIndex={tableColumnIndex ?? undefined}
-                        editor={activeEditor ?? undefined}
+                        tiptapRefs={tiptapRefs}
                     />
                 );
             default:

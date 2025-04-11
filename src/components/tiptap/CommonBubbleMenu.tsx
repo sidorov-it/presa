@@ -186,7 +186,9 @@ export default function CommonBubbleMenu({
                 />
 
                 <button
-                    onClick={() => editor.chain().focus().toggleBold().run()}
+                    onClick={() => {
+                        editor.chain().focus().toggleBold().run()
+                    }}
                     className={`${styles.button} ${editor.isActive('bold') ? styles.active : ''}`}
                     aria-label="Жирный"
                 >
