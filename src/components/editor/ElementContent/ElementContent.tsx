@@ -1,7 +1,7 @@
 import Tiptap from '@/components/tiptap/Tiptap';
 import styles from './ElementContent.module.css';
 import DragHandler from '../DragHandler';
-import { RefObject, useCallback, useMemo } from 'react';
+import { RefObject, use, useCallback, useEffect, useMemo } from 'react';
 import { Element, GridStructure, getPredefinedGridStructures, Layout, TipTapRefs, EditorElement, ElementConfig, ImageElement } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import { generateId } from '@/utils/id';
@@ -12,7 +12,7 @@ import { getColumnWidths } from '../SlideEditor/SlideEditor';
 import { Image } from '@/elements/image';
 
 export const ElementContent = ({
-    element,
+    elementId,
     setElementIsHovered,
     menuElementId,
     // activeEditorId,
@@ -27,7 +27,7 @@ export const ElementContent = ({
     layoutId,
     isInTable,
 }: {
-    element: Element;
+    elementId: string;
     setElementIsHovered: (isHovered: boolean) => void;
     menuElementId: string | null;
     // activeEditorId?: string | null;
@@ -42,9 +42,23 @@ export const ElementContent = ({
     layoutId: string;
     isInTable: boolean;
 }) => {
-    const isCurrentEditorActive = useEditorStore(state => state.getActiveEditorId() === element.id);
+    const element = usePresentationStore(state => state.getElement(presentationId, slideId, layoutId, elementId));
 
-    const elementConfig = useMemo(() => getElementConfig(element.elementTypeId), [element.elementTypeId]);
+    const isCurrentEditorActive = useEditorStore(state => state.getActiveEditorId() === elementId);
+
+    const elementConfig = useMemo(() => getElementConfig(element!.elementTypeId), [element]);
+
+    const elementToFocus = useEditorStore(state => state.elementToFocus);
+    // const clearElementToFocus = useEditorStore.getState().clearElementToFocus;
+
+    const isElementToFocus = useMemo(() => elementToFocus?.elementId === elementId, [elementToFocus, elementId]);
+
+    useEffect(() => {
+        if (isElementToFocus) {
+            useEditorStore.getState().clearElementToFocus();
+        }
+    }, [isElementToFocus]);
+
 
     const handleEnterPressed = useCallback((element: Element) => (contentBeforeCursor?: string, contentAfterCursor?: string) => {
         // Start transaction at the beginning of the operation
@@ -118,7 +132,6 @@ export const ElementContent = ({
 
         } else {
             // в строке больше 1 элемента. просто добавляем новый элемент
-            const newElementId = generateId();
             const cell = row?.cells.find(c => c.id === element.cellId);
             if (!cell) return;
 
@@ -133,10 +146,16 @@ export const ElementContent = ({
 
             usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, layout);
 
+            useEditorStore.getState().setElementToFocus(
+                newElement.id,
+                layoutId,
+                cell.id
+            );
+
             useHistoryStore.getState().commitTransaction(presentationId);
 
             setTimeout(() => {
-                tiptapRefs.current?.editors[newElementId]?.focus();
+                tiptapRefs.current?.editors[newElement.id]?.editor.commands.focus('start');
             }, 10)
         }
     }, [presentationId, slideId, layoutId, tiptapRefs]);
@@ -344,7 +363,7 @@ export const ElementContent = ({
                 }
             }
         }
-    }, [presentationId, slideId, layoutId, element.cellId, elementConfig.hasTextEditor, tiptapRefs]);
+    }, [presentationId, slideId, layoutId, element!.cellId, elementConfig.hasTextEditor, tiptapRefs]);
 
 
     const getEditorContent = useCallback((element: Element): string => {
@@ -368,6 +387,7 @@ export const ElementContent = ({
                     elementId={element.id}
                     tiptapRefs={tiptapRefs}
                     id={element.id}
+                    autoFocus={isElementToFocus}
                     initialContent={getEditorContent(element)}
                     onEnterPressed={handleEnterPressed(element)}
                     onBackspacePressed={handleBackspacePressed(element)}

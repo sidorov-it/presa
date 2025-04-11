@@ -94,6 +94,8 @@ export interface PresentationState {
     alignColumn: (presentationId: string, slideId: string, layoutId: string, columnId: string, alignment: 'top' | 'center' | 'bottom') => void;
     deleteColumn: (presentationId: string, slideId: string, layoutId: string, columnId: string) => void;
 
+    getCellElementIds: (presentationId: string, slideId: string, layoutId: string, cellId: string) => string[];
+
     changeTemplate: (presentationId: string, slideId: string, layoutId: string, template: LayoutType) => void;
 
     mergeSlideWithPrevious: (presentationId: string, slideId: string) => void;
@@ -1495,6 +1497,12 @@ export const usePresentationStore = create<PresentationState>()(
                 return undefined;
             },
 
+            getCellElementIds: (presentationId, slideId, layoutId, cellId) => {
+                const layout = get().getLayout(presentationId, slideId, layoutId);
+                if (!layout) return [];
+                return layout.elements.filter(element => element.cellId === cellId).map(el => el.id);
+            },
+
             getElement: (presentationId, slideId, layoutId, elementId) => {
                 const layout = get().getLayout(presentationId, slideId, layoutId);
                 if (!layout) return null;
@@ -2422,3 +2430,6 @@ export const usePresentationStore = create<PresentationState>()(
         }
     )
 );
+
+export const selectCellElementIds = (presentationId: string, slideId: string, layoutId: string, cellId: string) => 
+    (state: PresentationState) => state.getCellElementIds(presentationId, slideId, layoutId, cellId);

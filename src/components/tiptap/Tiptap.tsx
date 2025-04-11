@@ -273,6 +273,7 @@ const Tiptap = ({
     onContentChange = () => { },
     onBlur = () => { },
     id = '',
+    autoFocus = false,
     customBubbleMenuTrigger,
     onAddElement,
     presentationId,
@@ -283,6 +284,7 @@ const Tiptap = ({
     elementConfig,
 }: TiptapProps) => {
     const editor = useEditor({
+        // autoFocus: !!autoFocus,
         extensions: getExtensions(
             onEnterPressed,
             onBackspacePressed,
@@ -368,12 +370,12 @@ const Tiptap = ({
     }
 
     // Устанавливаем фокус при монтировании, если autoFocus = true
-    // useEffect(() => {
-    //     if (autoFocus && editor) {
-    //         // Focus immediately
-    //         focus();
-    //     }
-    // }, [autoFocus, editor, focus])
+    useEffect(() => {
+        if (autoFocus && editor) {
+            // Focus immediately
+            focus();
+        }
+    }, [autoFocus, editor, focus])
 
     // Add event listener for custom trigger
     useEffect(() => {
@@ -441,6 +443,7 @@ const Tiptap = ({
                 {editor && (
                     <EditorContent
                         editor={editor}
+                        autoFocus={autoFocus}
                         className="cursor-text w-full focus:outline-none themed-text"
                     />
                 )}

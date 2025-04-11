@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { RefObject, useCallback, useRef, useState, memo, useDeferredValue } from 'react';
-import { GridCell, Element, TipTapRefs, ElementConfig, ElementType } from '@/types';
+import React, { RefObject, useCallback, useRef, useState, memo } from 'react';
+import { GridCell, Element, TipTapRefs, ElementConfig } from '@/types';
 import { useHandleDragStart } from '@/contexts/DragDropContext';
 import styles from './GridCellElement.module.css';
 import { usePresentationStore } from '@/store/presentationStore';
@@ -15,6 +15,7 @@ import { PlusIcon } from '@/components/icons';
 import { ElementContent } from '../ElementContent/ElementContent';
 import { ComponentStructureType, getNewEditorElement } from '@/elements/registry';
 import { useMenuStore } from '@/store/menuStore';
+import { useShallow } from 'zustand/react/shallow';
 
 export const useIsSelectedRow = (tableId: string, rowIndex: number) =>
     useMenuStore(state => state.tableRowIndex === rowIndex && state.tableId === tableId);
@@ -31,6 +32,7 @@ export const useIsHoveredColumn = (tableId: string, rowIndex: number, columnInde
     useMenuStore(state => rowIndex === 0 && state.hoveredColumnIndex === columnIndex && state.hoveredTableId === tableId);
 
 export const useMenuElementId = () => useMenuStore(state => state.elementId);
+
 
 const adjustColumnWidths = (
     columnWidths: string[],
@@ -108,16 +110,14 @@ const adjustColumnWidths = (
 
 interface GridCellElementProps {
     cell: GridCell;
-    elements: Element[];
-    dragOverElement: string | null;
-    dragOverPosition: 'top' | 'bottom' | 'left' | 'right' | null;
+    // elements: Element[];
     presentationId: string;
     slideId: string;
     layoutId: string;
     index: number;
     hasMultipleCells: boolean;
     isLayoutSelected: boolean;
-    isLastCell: boolean;
+    // isLastCell: boolean;
     slideIsSelected: boolean;
     tiptapRefs: RefObject<TipTapRefs>;
     isTable?: boolean;
@@ -127,13 +127,13 @@ interface GridCellElementProps {
 
 const GridCellElement: React.FC<GridCellElementProps> = ({
     cell,
-    elements,
+    // elements,
     presentationId,
     slideId,
     layoutId,
     hasMultipleCells,
     tiptapRefs,
-    isLastCell,
+    // isLastCell,
     slideIsSelected,
     isTable = false,
     rowIndex,
@@ -147,6 +147,17 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     const hasSelectedColumn = useMenuStore(state => !!state.tableColumnIndex && state.selectedTableId === layoutId);
     const hasSelectedRow = useMenuStore(state => !!state.tableRowIndex && state.selectedTableId === layoutId);
+
+    const elementsIds = usePresentationStore(
+        useShallow(state => state.presentations
+            .find(p => p.id === presentationId)
+            ?.slides.find(s => s.id === slideId)
+            ?.layouts.find(l => l.id === layoutId)
+            ?.elements.filter(e => e.cellId === cell.id)
+            .map(e => e.id) ?? []
+    ));        // const elements = usePresentationStore(state => state.getElements(presentationId, slideId, layoutId, elementsIds));
+    // const elements = usePresentationStore.getState().getCellElements(presentationId, slideId, layoutId, cell.id);
+    const isLastCell = elementsIds[elementsIds.length - 1] === cell.id;
 
     const menuElementId = useMenuStore(state => state.elementId);
     const isHoveredRow = useIsHoveredRow(layoutId, rowIndex, columnIndex);
@@ -410,9 +421,9 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         });
     }, [slideId, layoutId, rowIndex]);
 
-    const handleClickElement = useCallback((element: Element) => () => {
-        if (tiptapRefs.current?.editors[element.id]?.editor) {
-            tiptapRefs.current?.editors[element.id]?.editor.chain().focus().run();
+    const handleClickElement = useCallback((elementId: string) => () => {
+        if (tiptapRefs.current?.editors[elementId]?.editor) {
+            tiptapRefs.current?.editors[elementId]?.editor.chain().focus().run();
         }
     }, [tiptapRefs]);
 
@@ -420,8 +431,8 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const handleClickGridCell = useCallback((ev: React.MouseEvent<HTMLDivElement>) => {
         ev.stopPropagation();
 
-        if (elements.length === 1) {
-            const editor = tiptapRefs.current?.editors[elements[0].id]?.editor;
+        if (elementsIds.length === 1) {
+            const editor = tiptapRefs.current?.editors[elementsIds[0]]?.editor;
             if (editor) {
                 editor.chain().focus().run();
             }
@@ -435,14 +446,14 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 const isClickTop = positionY < 30;
 
                 if (isClickBottom) {
-                    const lastElement = elements[elements.length - 1];
-                    const editor = tiptapRefs.current?.editors[lastElement.id]?.editor;
+                    const lastElementId = elementsIds[elementsIds.length - 1];
+                    const editor = tiptapRefs.current?.editors[lastElementId]?.editor;
                     if (editor) {
                         editor.chain().focus().run();
                     }
                 } else if (isClickTop) {
-                    const firstElement = elements[0];
-                    const editor = tiptapRefs.current?.editors[firstElement.id]?.editor;
+                    const firstElementId = elementsIds[0];
+                    const editor = tiptapRefs.current?.editors[firstElementId]?.editor;
                     if (editor) {
                         editor.chain().focus().run();
                     }
@@ -498,15 +509,15 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     className={`${styles.elementsContainer} themed-text`}
                     data-is-multi-cell={hasMultipleCells ? "true" : "false"}
                 >
-                    {elements.map((element, idx) => (
+                    {elementsIds.map((elementId, idx) => (
                         <div
-                            onClick={handleClickElement(element)}
-                            key={element.id}
+                            onClick={handleClickElement(elementId)}
+                            key={elementId}
                             data-is-first-element={idx === 0 ? "true" : "false"}
-                            data-is-last-element={idx === elements.length - 1 ? "true" : "false"}
+                            data-is-last-element={idx === elementsIds.length - 1 ? "true" : "false"}
                         >
                             <ElementContent
-                                element={element}
+                                elementId={elementId}
                                 setElementIsHovered={setElementIsHovered}
                                 menuElementId={menuElementId}
                                 elementIsHovered={elementIsHovered}
@@ -579,7 +590,7 @@ const GridCellElementMemo = memo(GridCellElement, (prevProps, nextProps) => {
         prevProps.cell.id === nextProps.cell.id &&
         prevProps.slideId === nextProps.slideId &&
         prevProps.layoutId === nextProps.layoutId &&
-        prevProps.isLastCell === nextProps.isLastCell &&
+        // prevProps.isLastCell === nextProps.isLastCell &&
         prevProps.slideIsSelected === nextProps.slideIsSelected &&
         prevProps.rowIndex === nextProps.rowIndex &&
         prevProps.columnIndex === nextProps.columnIndex

@@ -180,7 +180,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                             {row.cells.map((cell: GridCell, cellIndex: number) => {
                                 const cellId = cell.id;
                                 const elements = cellElements[cellId] || [];
-                                const isLastCell = cellIndex === row.cells.length - 1;
+                                // const isLastCell = cellIndex === row.cells.length - 1;
 
                                 const elementsIds = elements.map(element => element.id);
                                 const key = `${cellId}-${simpleHash(JSON.stringify(elementsIds))}`;
@@ -190,16 +190,14 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                                         key={key}
                                         tiptapRefs={tiptapRefs}
                                         cell={cell}
-                                        elements={elements}
-                                        dragOverElement={state.indicators.elementIndicator}
-                                        dragOverPosition={state.indicators.elementPosition}
+                                        // elements={elements}
                                         presentationId={presentationId}
                                         slideId={slideId}
                                         layoutId={layout.id}
                                         index={cellIndex}
                                         hasMultipleCells={hasMultipleCellsInRow}
                                         isLayoutSelected={isSelected}
-                                        isLastCell={isLastCell}
+                                        // isLastCell={isLastCell}
                                         slideIsSelected={false}
                                         isTable={layout.isTable}
                                         rowIndex={rowIndex}
