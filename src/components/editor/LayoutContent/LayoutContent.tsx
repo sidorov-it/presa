@@ -1,16 +1,12 @@
 import React, { RefObject, useState, useCallback, useMemo, memo } from 'react';
-import { Layout, GridRow, GridCell, Element, TipTapRefs, GridStructure } from '@/types';
+import { Layout, GridRow, GridCell, Element, TipTapRefs } from '@/types';
 import { useDnd } from '@/contexts/DragDropContext';
 import { generateGridTemplateAreas, generateGridTemplateColumns } from '@/types';
 import GridCellElement from '../GridCellElement';
 import styles from './LayoutContent.module.css';
-import { useSlideMenuActions, useSlideMenuSelectedLayout, useSlideMenuSelectedElement, useSlideMenuSelectedColumn } from '@/contexts/SlideMenuContext';
-import { generateId } from '@/utils/id';
-import { getNewEditorElement } from '@/elements/registry';
 import { usePresentationStore } from '@/store/presentationStore';
-import { getColumnWidths } from '../SlideEditor/SlideEditor';
 import DragHandler from '../DragHandler';
-
+import { useMenuSelectedColumn, useMenuSelectedElement, useMenuSelectedLayout, useMenuStore } from '@/store/menuStore';
 interface LayoutContentProps {
     layout: Layout;
     onDeleteElement: (layoutId: string, elementId: string) => void;
@@ -37,16 +33,17 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     presentationId,
     slideId
 }) => {
-    const { state, handleDragStart } = useDnd();
+    const { state } = useDnd();
+    const { handleDragStart } = useDnd();
     const [isLayoutHovered, setIsLayoutHovered] = useState(false);
 
     // Use optimized selector hooks instead of full context
-    const { openMenu } = useSlideMenuActions();
+    const openMenu = useMenuStore.getState().openMenu;
 
     // Get only the needed state from SlideMenu
-    const menuLayoutId = useSlideMenuSelectedLayout();
-    const menuElementId = useSlideMenuSelectedElement();
-    const menuColumnId = useSlideMenuSelectedColumn();
+    const menuLayoutId = useMenuSelectedLayout();
+    const menuElementId = useMenuSelectedElement();
+    const menuColumnId = useMenuSelectedColumn();
 
     const handleMouseEnter = useCallback(() => {
         if (!isLayoutHovered) {

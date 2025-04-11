@@ -7,11 +7,10 @@ import { getPredefinedGridStructures, Layout, Slide, TipTapRefs } from '@/types'
 import { PresentationState, usePresentationStore } from '@/store/presentationStore';
 import styles from './SlideEditor.module.css';
 import LayoutContent from '../LayoutContent/LayoutContent';
-import { useSlideMenu } from '@/contexts/SlideMenuContext';
 import { DragDropTransactionHelper } from '@/contexts/DragDropTransactionHelper';
 import DragHandler from '../DragHandler';
 import { getNewEditorElement } from '@/elements/registry';
-
+import { useMenuStore } from '@/store/menuStore';
 interface SlideEditorProps {
     slide: Slide;
     presentationId: string;
@@ -40,11 +39,13 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const editorRef = useRef<HTMLDivElement>(null);
     const [isHovered, setIsHovered] = useState(false);
 
+    const openMenu = useMenuStore.getState().openMenu;
+    const checkSlideMenuIsOpen = useMenuStore.getState().checkSlideMenuIsOpen;
+
     // Use selector that only gets the specific needed function using a factory
     const addSlideSelector = useCallback((state: PresentationState) => state.addSlide, []);
     const addSlide = usePresentationStore(addSlideSelector);
 
-    const { openMenu, checkSlideMenuIsOpen } = useSlideMenu();
 
     const handleDeleteElement = useCallback((layoutId: string, elementId: string) => {
         // Use getState to access the store without subscribing to it

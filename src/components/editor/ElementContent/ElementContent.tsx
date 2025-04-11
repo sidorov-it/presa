@@ -410,10 +410,14 @@ export const ElementContent = ({
             className={`${styles.elementContent} themed-text`}
             data-element-id={element.id}
             onMouseEnter={() => {
-                setElementIsHovered(true)
+                if (!elementIsHovered) {
+                    setElementIsHovered(true)
+                }
             }}
             onMouseLeave={() => {
-                setElementIsHovered(false)
+                if (elementIsHovered) {
+                    setElementIsHovered(false)
+                }
             }}
         >
             <div className={`${styles.elementWrapper}`}>

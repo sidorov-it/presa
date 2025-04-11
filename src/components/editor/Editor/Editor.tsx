@@ -3,10 +3,10 @@ import { usePresentationStore } from '@/store/presentationStore';
 import SlidesList from '@/components/editor/SlidesList';
 import ElementsPanel from '@/components/editor/ElementsPanel/ElementsPanel';
 import { DndProvider } from '@/contexts/DragDropContext';
-import { SlideMenuProvider } from '@/contexts/SlideMenuContext';
 import Presentation from '../Presentation';
 import DragDropIndicator from '@/components/DragDropIndicator';
 import SlideMenu from '../SlideMenu/SlideMenu';
+import { useMenuStore } from '@/store/menuStore';
 // import { useHistoryStore } from '@/store/historyStore';
 
 interface EditorProps {
@@ -62,6 +62,11 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
     const slideIds = useMemo(() => usePresentationStore.getState().getSlideIds(presentationId), []);
     const presentationExists = useMemo(() => usePresentationStore.getState().checkPresentationExists(presentationId), []);
 
+    useEffect(() => {
+        const { setPresentationId } = useMenuStore.getState();
+        setPresentationId(presentationId);
+    }, [presentationId]);
+
     // Memoize not found UI
     const notFoundUI = useMemo(() => (
         <div className="min-h-screen flex items-center justify-center">
@@ -94,7 +99,7 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
 
     return (
         <DndProvider presentationId={presentationId}>
-            <SlideMenuProvider presentationId={presentationId}>
+            {/* <SlideMenuProvider presentationId={presentationId}> */}
                 {/* <button
                     onClick={() => {
                         console.log(useHistoryStore.getState().getHistoryDiff(presentationId))
@@ -110,7 +115,7 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
                     activeSlideId={activeSlideId}
                     onSlideSelect={handleSlideSelect}
                 />
-            </SlideMenuProvider>
+            {/* </SlideMenuProvider> */}
         </DndProvider>
     );
 };

@@ -1,6 +1,6 @@
 import { AlignCenterIcon, AlignTopIcon, AlignBottomIcon, DeleteIcon } from '@/components/icons';
 import styles from './LayoutMenu.module.css';
-import { useSlideMenu } from '@/contexts/SlideMenuContext';
+
 import { useEffect, useState } from 'react';
 import MenuButton from '../MenuButton';
 import { LayoutType } from '@/types';
@@ -12,6 +12,7 @@ import {
     ThreeColumnsIcon,
     FourColumnsIcon
 } from '@/components/icons';
+import { useMenuSelectedSlide, useMenuSelectedLayout, useMenuStore } from '@/store/menuStore';
 
 export default function LayoutMenu({
     position,
@@ -19,12 +20,16 @@ export default function LayoutMenu({
     position: { x: number, y: number }
     layoutId: string
 }) {
-    const { state, updateAlignLayout, deleteLayout, closeMenu, getLayout, changeTemplate } = useSlideMenu();
+    const { updateAlignLayout, deleteLayout, closeMenu, getLayout, changeTemplate } = useMenuStore();
+
+    const slideId = useMenuSelectedSlide();
+    const layoutId = useMenuSelectedLayout();
+
     const [isTemplateDropdownOpen, setIsTemplateDropdownOpen] = useState(false);
 
     // Get current layout type
-    const layout = state.slideId && state.layoutId ?
-        getLayout(state.slideId, state.layoutId) : null;
+    const layout = slideId && layoutId ?
+        getLayout(slideId, layoutId) : null;
 
     const currentLayoutType = layout?.type || 'custom';
 
@@ -56,32 +61,32 @@ export default function LayoutMenu({
     }, [closeMenu]);
 
     const handleAlignTop = () => {
-        if (state.slideId && state.layoutId) {
-            updateAlignLayout(state.layoutId, 'top');
+        if (slideId && layoutId) {
+            updateAlignLayout(slideId, layoutId, 'top');
         }
     }
 
     const handleAlignCenter = () => {
-        if (state.slideId && state.layoutId) {
-            updateAlignLayout(state.layoutId, 'center');
+        if (slideId && layoutId) {
+            updateAlignLayout(slideId, layoutId, 'center');
         }
     }
 
     const handleAlignBottom = () => {
-        if (state.slideId && state.layoutId) {
-            updateAlignLayout(state.layoutId, 'bottom');
+        if (slideId && layoutId) {
+            updateAlignLayout(slideId, layoutId, 'bottom');
         }
     }
 
     const handleDeleteLayout = () => {
-        if (state.slideId && state.layoutId) {
-            deleteLayout();
+        if (slideId && layoutId) {
+            deleteLayout(slideId, layoutId);
         }
     }
 
     const handleChangeTemplate = (templateType: LayoutType) => {
-        if (state.slideId && state.layoutId) {
-            changeTemplate(templateType);
+        if (slideId && layoutId) {
+            changeTemplate(slideId, layoutId, templateType);
         }
 
         setIsTemplateDropdownOpen(false);

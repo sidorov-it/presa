@@ -7,10 +7,14 @@ interface UndoRedoControlsProps {
 }
 
 const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, className = '' }) => {
-    const { undo, redo, canUndo, canRedo } = usePresentationStore();
+    const { undo, redo } = usePresentationStore();
 
-    const canUndoOperation = canUndo(presentationId);
-    const canRedoOperation = canRedo(presentationId);
+    // const canUndoOperation = canUndo(presentationId);
+    // const canRedoOperation = canRedo(presentationId);
+
+
+    const canUndoOperation = false;
+    const canRedoOperation = false;
 
     const handleUndo = () => {
         console.log('UndoRedoControls: handleUndo');

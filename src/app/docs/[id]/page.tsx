@@ -26,7 +26,7 @@ export default function PresentationEditorPage() {
     // Access store values individually to prevent unnecessary re-renders
     const loadPresentation = usePresentationStore(state => state.loadPresentation);
     const setTheme = usePresentationStore(state => state.setTheme);
-    const savingStatus = usePresentationStore(state => state.savingStatus);
+    // const savingStatus = usePresentationStore(state => state.savingStatus);
 
     const themes = useThemeStore(state => state.themes);
     const loadThemes = useThemeStore(state => state.loadThemes);
@@ -105,7 +105,7 @@ export default function PresentationEditorPage() {
         if (presentation) {
             window.open(`/view/${presentation.id}`, '_blank');
         }
-    }, [presentation]);
+    }, [presentation?.id]);
 
     // Memoize the loading and not found UI to prevent re-renders
     const loadingUI = useMemo(() => (
@@ -143,7 +143,7 @@ export default function PresentationEditorPage() {
                     <div className="container mx-auto flex justify-between items-center">
                         <div className="flex items-center gap-4">
                             <Link href="/dashboard" className="text-2xl font-bold text-blue-600">Presa</Link>
-                            <SaveStatus status={savingStatus} />
+                            {/* <SaveStatus status={savingStatus} /> */}
                         </div>
 
                         <div className="flex items-center space-x-4">

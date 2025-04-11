@@ -211,7 +211,7 @@ export const elementsRegistry: Category[] = [
                         // type: ContainerType.EDITOR,
                         label: 'Цитата',
                         Icon: FaQuoteLeft,
-                        componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
+                        componentStructure: ComponentStructureType.TEXT_EDITOR,
                         hasTextEditor: true,
                         MenuComponent: QuoteBubbleMenu,
                         defaultProps: { textType: 'quote', content: editorsDefaultContent.quote }

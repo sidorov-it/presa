@@ -592,3 +592,5 @@ export type ElementMenuProps = {
 }
 
 export { ComponentStructureType };
+
+export type MenuElementType = 'element' | 'cell' | 'layout' | 'slide' | 'editor' | 'row' | 'table' | 'column';

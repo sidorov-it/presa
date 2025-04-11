@@ -37,7 +37,7 @@ export interface PresentationState {
     loadPresentationsList: () => Promise<void>;
     updatePresentation: (id: string, data: Partial<IPresentation>) => void;
     deletePresentation: (id: string) => void;
-    getPresentation: (id: string) => IPresentation | undefined;
+    getPresentation: (id?: string) => IPresentation | undefined;
     setFullState: (state: { presentations: IPresentation[] }) => void;
     saveChanges: (id: string) => Promise<void>;
 

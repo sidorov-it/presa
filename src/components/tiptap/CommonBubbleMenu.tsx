@@ -20,10 +20,10 @@ import {
 } from "react-icons/bi";
 import { Level } from "@tiptap/extension-heading";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { useSlideMenu } from "@/contexts/SlideMenuContext";
 import { EditorView } from "@tiptap/pm/view";
 import { EditorState } from "@tiptap/pm/state";
 import HeadingSelector from "../settings/HeadingSelector/HeadingSelector";
+import { useMenuStore, useMenuIsOpen } from "@/store/menuStore";
 
 export default function CommonBubbleMenu({
     editor,
@@ -32,7 +32,8 @@ export default function CommonBubbleMenu({
 }) {
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
-    const { closeMenu, state: { isOpen } } = useSlideMenu();
+
+    // const isOpen = useMenuIsOpen();
 
     const headingLevels = [
         { label: "Текст", level: 0 },
@@ -106,12 +107,12 @@ export default function CommonBubbleMenu({
             return true;
         }
 
-        if (isOpen) {
-            closeMenu();
-        }
+        // if (isOpen) {
+        //     useMenuStore.getState().closeMenu();
+        // }
 
         return false;
-    }, [isOpen, closeMenu]);
+    }, []);
 
     return (
         <BubbleMenu

@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useState, CSSProperties, useMemo, useCallback } from 'react';
-import { useSlideMenu } from '@/contexts/SlideMenuContext';
 import styles from './SlideMenu.module.css';
 import { useEditorStore } from '@/store/editorStore';
 import { getElementMenuComponent } from '@/elements/registry';
@@ -17,7 +16,8 @@ import {
 } from '@/components/icons';
 import RowTableMenu from './RowTableMenu/RowTableMenu';
 import ColumnTableMenu from './ColumnTableMenu/ColumnTableMenu';
-
+import { useMenuIsOpen, useMenuStore, useMenuSelectedColumn, useMenuSelectedElement, useMenuSelectedLayout, useMenuSelectedSlide } from '@/store/menuStore';
+import { usePresentationStore } from '@/store/presentationStore';
 // Define menu item types
 interface MenuItemProps {
     icon: React.ReactNode;
@@ -46,7 +46,6 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, label, onClick, className, ac
 
 const SlideMenu: React.FC = () => {
     const {
-        state,
         closeMenu,
         duplicateSlide,
         deleteSlide,
@@ -65,19 +64,31 @@ const SlideMenu: React.FC = () => {
         getSlide,
         getPresentation,
         mergeSlideWithPrevious,
-    } = useSlideMenu();
+    } = useMenuStore();
 
     
     const { activeEditor } = useEditorStore();
 
-    const presentation = getPresentation()
-    const cell = getCell(state.slideId, state.layoutId, state.columnId);
+    const slideId = useMenuSelectedSlide();
+    const layoutId = useMenuSelectedLayout();
+    const columnId = useMenuSelectedColumn();
+    const elementId = useMenuSelectedElement();
+    const presentationId = useMenuStore(state => state.presentationId);
+    const presentation = usePresentationStore(state => state.getPresentation(presentationId ?? ''));
+    const elementType = useMenuStore(state => state.elementType);
+    const isOpen = useMenuIsOpen();
 
-    const element = getElement(state.slideId, state.layoutId, state.elementId);
+    const isTextEditor = useMenuStore(state => state.isTextEditor);
+    const tableRowIndex = useMenuStore(state => state.tableRowIndex);
+    const tableColumnIndex = useMenuStore(state => state.tableColumnIndex);
+
+    const cell = getCell(slideId, layoutId, columnId);
+
+    const element = getElement(slideId, layoutId, elementId);
 
     let slideIndex = 0;
-    if (state.elementType === 'slide') {
-        const slide = getSlide(state.slideId);
+    if (elementType === 'slide') {
+        const slide = getSlide(slideId);
         if (slide) {
             slideIndex = presentation?.slides.findIndex((s) => s.id === slide.id) ?? 0;
         }
@@ -118,40 +129,40 @@ const SlideMenu: React.FC = () => {
             }
         };
 
-        if (state.isOpen) {
+        if (isOpen) {
             document.addEventListener('mousedown', handleClickOutside);
         }
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [state.isOpen, closeMenu]);
+    }, [isOpen, closeMenu]);
 
     useEffect(() => {
-        if (state.slideId && state.isOpen) {
-            const slide = document.querySelector(`[data-slide-id="${state.slideId}"]`);
+        if (slideId && isOpen) {
+            const slide = document.querySelector(`[data-slide-id="${slideId}"]`);
 
             if (!slide) return;
 
             let dragElement = null;
 
             // Find the appropriate drag handle based on element type
-            if (state.elementType === 'row') {
-                dragElement = slide.querySelector(`[data-row-drag-handle="${state.layoutId}-${state.tableRowIndex}"]`);
-            } else if (state.elementType === 'column') {
-                dragElement = slide.querySelector(`[data-column-drag-handle="${state.layoutId}-${state.tableColumnIndex}"]`);
-            } else if (state.elementType === 'element' && state.elementId) {
-                dragElement = slide.querySelector(`[data-element-drag-handle="${state.elementId}"]`);
-            } else if (state.elementType === 'cell' && state.columnId) {
-                dragElement = slide.querySelector(`[data-column-drag-handle="${state.columnId}"]`);
-            } else if (state.elementType === 'layout' && state.layoutId) {
-                dragElement = slide.querySelector(`[data-layout-drag-handle="${state.layoutId}"]`);
-            } else if (state.elementType === 'slide') {
-                dragElement = document.querySelector(`[data-slide-drag-handle="${state.slideId}"]`);
+            if (elementType === 'row') {
+                dragElement = slide.querySelector(`[data-row-drag-handle="${layoutId}-${tableRowIndex}"]`);
+            } else if (elementType === 'column') {
+                dragElement = slide.querySelector(`[data-column-drag-handle="${layoutId}-${tableColumnIndex}"]`);
+            } else if (elementType === 'element' && elementId) {
+                dragElement = slide.querySelector(`[data-element-drag-handle="${elementId}"]`);
+            } else if (elementType === 'cell' && columnId) {
+                dragElement = slide.querySelector(`[data-column-drag-handle="${columnId}"]`);
+            } else if (elementType === 'layout' && layoutId) {
+                dragElement = slide.querySelector(`[data-layout-drag-handle="${layoutId}"]`);
+            } else if (elementType === 'slide') {
+                dragElement = document.querySelector(`[data-slide-drag-handle="${slideId}"]`);
             }
 
             if (!dragElement) {
-                dragElement = document.querySelector(`[data-slide-drag-handle="${state.slideId}"]`);
+                dragElement = document.querySelector(`[data-slide-drag-handle="${slideId}"]`);
             }
 
             if (dragElement) {
@@ -163,56 +174,56 @@ const SlideMenu: React.FC = () => {
         return () => {
             setPosition(null);
         };
-    }, [state.isOpen, state.slideId, state.elementId, state.elementType, state.layoutId, state.columnId]);
+    }, [isOpen, slideId, elementId, elementType, layoutId, columnId]);
 
     const handleAddColumnLeft = () => {
-        if (state.slideId && state.layoutId && state.columnId) {
-            addColumnLeft(state.slideId, state.layoutId, state.columnId);
+        if (slideId && layoutId && columnId) {
+            addColumnLeft(slideId, layoutId, columnId);
             closeMenu()
         }
     }
 
     const handleAddColumnRight = () => {
-        if (state.slideId && state.layoutId && state.columnId) {
-            addColumnRight(state.slideId, state.layoutId, state.columnId);
+        if (slideId && layoutId && columnId) {
+            addColumnRight(slideId, layoutId, columnId);
             closeMenu()
         }
     }
 
     const handleDuplicateColumn = () => {
-        if (state.slideId && state.layoutId && state.columnId) {
-            duplicateColumn(state.slideId, state.layoutId, state.columnId);
+        if (slideId && layoutId && columnId) {
+            duplicateColumn(slideId, layoutId, columnId);
             closeMenu()
         }
     }
 
     const handleAlignColumnTop = () => {
-        if (state.slideId && state.layoutId && state.columnId) {
-            alignColumnTop(state.slideId, state.layoutId, state.columnId);
+        if (slideId && layoutId && columnId) {
+            alignColumnTop(slideId, layoutId, columnId);
         }
     }
 
     const handleAlignColumnCenter = () => {
-        if (state.slideId && state.layoutId && state.columnId) {
-            alignColumnCenter(state.slideId, state.layoutId, state.columnId);
+        if (slideId && layoutId && columnId) {
+            alignColumnCenter(slideId, layoutId, columnId);
         }
     }
 
     const handleAlignColumnBottom = () => {
-        if (state.slideId && state.layoutId && state.columnId) {
-            alignColumnBottom(state.slideId, state.layoutId, state.columnId);
+        if (slideId && layoutId && columnId) {
+            alignColumnBottom(slideId, layoutId, columnId);
         }
     }
 
     const handleDeleteColumn = () => {
-        if (state.slideId && state.layoutId && state.columnId) {
-            deleteColumn(state.slideId, state.layoutId, state.columnId);
+        if (slideId && layoutId && columnId) {
+            deleteColumn(slideId, layoutId, columnId);
             closeMenu()
         }
     }
 
     const handleMergeSlide = () => {
-        if (state.slideId) {
+        if (slideId) {
             mergeSlideWithPrevious();
             closeMenu();
         }
@@ -235,13 +246,13 @@ const SlideMenu: React.FC = () => {
         return { left, top };
     }, [position]);
 
-    if (!state.isOpen || !position) {
+    if (!isOpen || !position) {
         return null;
     }
 
     // Render different menu items based on element type
     const renderMenuItems = () => {
-        switch (state.elementType) {
+        switch (elementType) {
             case 'element':
                 return (
                     <>
@@ -358,25 +369,25 @@ const SlideMenu: React.FC = () => {
                 return (
                     <>
                         <RowTableMenu
-                            slideId={state.slideId ?? undefined}
-                            layoutId={state.layoutId ?? undefined}
-                            columnId={state.columnId ?? undefined}
-                            elementId={state.elementId ?? undefined}
+                            slideId={slideId ?? undefined}
+                            layoutId={layoutId ?? undefined}
+                            columnId={columnId ?? undefined}
+                            elementId={elementId ?? undefined}
                             presentationId={presentation!.id}
                             editor={activeEditor ?? undefined}
-                            tableRowIndex={state.tableRowIndex ?? undefined}
+                            tableRowIndex={tableRowIndex ?? undefined}
                         />
                     </>
                 );
             case 'column':
                 return (
                     <ColumnTableMenu
-                        slideId={state.slideId ?? undefined}
-                        layoutId={state.layoutId ?? undefined}
-                        columnId={state.columnId ?? undefined}
-                        elementId={state.elementId ?? undefined}
+                        slideId={slideId ?? undefined}
+                        layoutId={layoutId ?? undefined}
+                        columnId={columnId ?? undefined}
+                        elementId={elementId ?? undefined}
                         presentationId={presentation!.id}
-                        tableColumnIndex={state.tableColumnIndex ?? undefined}
+                        tableColumnIndex={tableColumnIndex ?? undefined}
                         editor={activeEditor ?? undefined}
                     />
                 );
@@ -397,13 +408,14 @@ const SlideMenu: React.FC = () => {
         zIndex: 1000,
     };
 
-    if (state.isTextEditor) {
+    if (isTextEditor) {
         return null;
     }
 
-    if (state.elementType === 'layout' && state.layoutId) {
-        return <LayoutMenu position={position} layoutId={state.layoutId} />
+    if (elementType === 'layout' && layoutId) {
+        return <LayoutMenu position={position} layoutId={layoutId} />
     }
+
     return (
         <div
             ref={menuRef}
@@ -413,10 +425,10 @@ const SlideMenu: React.FC = () => {
             <ul className="flex items-center space-x-1">
                 {MenuComponent ? (
                     <MenuComponent
-                        slideId={state.slideId}
-                        layoutId={state.layoutId}
-                        columnId={state.columnId}
-                        elementId={state.elementId}
+                        slideId={slideId}
+                        layoutId={layoutId}
+                        columnId={columnId}
+                        elementId={elementId}
                         presentationId={presentation!.id}
                         editor={activeEditor}
                     />

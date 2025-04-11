@@ -13,10 +13,9 @@ import {
 import styles from '../SlideMenu.module.css';
 import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
-import { useSlideMenu } from '@/contexts/SlideMenuContext';
 import HeadingSelector from '@/components/settings/HeadingSelector/HeadingSelector';
 import { usePresentationStore } from '@/store/presentationStore';
-
+import { useMenuStore } from '@/store/menuStore';
 interface RowTableMenuProps {
     slideId?: string;
     layoutId?: string;
@@ -38,7 +37,7 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
 }) => {
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
-    const { closeMenu } = useSlideMenu();
+    const { closeMenu } = useMenuStore();
 
     // Light theme styles
     const lightThemeStyle = {
