@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
 import {
     BiBold,
     BiItalic,
@@ -191,10 +192,10 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
                 lightThemeStyle={lightThemeStyle}
             />
 
-            {/* <ColorPicker
-                editor={editor}
+            <ColorPicker
+                editors={tableColumnElements.map(element => tiptapRefs.current.editors[element.id]?.editor)}
                 className={bubbleStyles.button}
-            /> */}
+            />
 
             <button
                 onClick={handleToggleBold}

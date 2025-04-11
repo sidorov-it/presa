@@ -177,10 +177,10 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
                 lightThemeStyle={lightThemeStyle}
             />
 
-            {/* <ColorPicker
-                editor={editor}
+            <ColorPicker
+                editors={tableRowElements.map(element => tiptapRefs.current.editors[element.id]?.editor)}
                 className={bubbleStyles.button}
-            /> */}
+            />
 
             <button
                 onClick={handleToggleBold}

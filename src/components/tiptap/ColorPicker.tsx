@@ -28,7 +28,7 @@ const COLOR_PRESETS = [
     "#FFFFFF", // Белый
 ];
 
-export const ColorPicker = ({ editor, className }: { editor: Editor; className?: string }) => {
+export const ColorPicker = ({ editor, editors, className }: { editor?: Editor; editors?: Editor[]; className?: string }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [currentColor, setCurrentColor] = useState("#000000");
     const [customColor, setCustomColor] = useState("#000000");
@@ -51,7 +51,13 @@ export const ColorPicker = ({ editor, className }: { editor: Editor; className?:
     // Обработка выбора цвета из пресетов
     const handleColorSelect = (color: string) => {
         setCurrentColor(color);
-        editor.chain().focus().setColor(color).run();
+        if (editor) {
+            editor.chain().focus(null, { scrollIntoView: false }).selectAll().setColor(color).blur().run();
+        } else if (editors) {
+            editors.forEach(editor => {
+                editor.chain().focus(null, { scrollIntoView: false }).selectAll().setColor(color).blur().run();
+            });
+        }
         setIsOpen(false);
     };
 
@@ -62,7 +68,13 @@ export const ColorPicker = ({ editor, className }: { editor: Editor; className?:
 
     const handleCustomColorSelect = () => {
         setCurrentColor(customColor);
-        editor.chain().focus().setColor(customColor).run();
+        if (editor) {
+            editor.chain().focus().setColor(customColor).run();
+        } else if (editors) {
+            editors.forEach(editor => {
+                editor.chain().focus().setColor(customColor).run();
+            });
+        }
         setIsOpen(false);
     };
 
