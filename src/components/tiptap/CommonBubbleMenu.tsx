@@ -16,14 +16,12 @@ import {
     BiAlignRight,
     BiAlignJustify,
     BiX,
-    BiChevronDown,
 } from "react-icons/bi";
 import { Level } from "@tiptap/extension-heading";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { EditorView } from "@tiptap/pm/view";
 import { EditorState } from "@tiptap/pm/state";
 import HeadingSelector from "../settings/HeadingSelector/HeadingSelector";
-import { useMenuStore, useMenuIsOpen } from "@/store/menuStore";
 
 export default function CommonBubbleMenu({
     editor,

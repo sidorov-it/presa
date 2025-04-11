@@ -13,7 +13,7 @@ export const isColorDark = (color: string): boolean => {
         const brightness = (r * 299 + g * 587 + b * 114) / 1000;
         return brightness < 128;
     }
-    
+
     // Handle rgb/rgba colors
     if (color.startsWith('rgb')) {
         const rgbValues = color.match(/\d+/g);
@@ -25,7 +25,7 @@ export const isColorDark = (color: string): boolean => {
             return brightness < 128;
         }
     }
-    
+
     // Default to false for other color formats
     return false;
 };
@@ -80,4 +80,4 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, initialT
     );
 };
 
-export default ThemeContext; 
+export default ThemeContext;

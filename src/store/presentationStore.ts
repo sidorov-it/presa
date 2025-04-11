@@ -12,7 +12,6 @@ import {
     GridCell,
     getPredefinedGridStructures,
     EditorElement,
-    GridRow,
 } from '@/types';
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 import { getNewEditorElement } from '@/elements/registry';
@@ -86,8 +85,8 @@ export interface PresentationState {
     deleteElement: (presentationId: string, slideId: string, layoutId: string, elementId: string) => void;
     duplicateElement: (presentationId: string, slideId: string, elementId: string) => void;
     addColumn: (presentationId: string, slideId: string, layoutId: string, columnIndex: number) => void;
-    addColumnLeft: (presentationId: string, slideId: string, layoutId: string, columnId: string) => void;
-    addColumnRight: (presentationId: string, slideId: string, layoutId: string, columnId: string) => void;
+    addColumnLeft: (presentationId: string, slideId: string, layoutId: string, columnIndex: number) => void;
+    addColumnRight: (presentationId: string, slideId: string, layoutId: string, columnIndex: number) => void;
     duplicateColumn: (presentationId: string, slideId: string, layoutId: string, columnId: string) => void;
     alignColumnTop: (presentationId: string, slideId: string, layoutId: string, columnId: string) => void;
     alignColumnCenter: (presentationId: string, slideId: string, layoutId: string, columnId: string) => void;
@@ -1114,7 +1113,7 @@ export const usePresentationStore = create<PresentationState>()(
                 };
 
                 // Create new elements for the column
-                let updatedElements = currentLayout.elements.filter(element => !removedColumnsIds.includes(element.cellId));
+                const updatedElements = currentLayout.elements.filter(element => !removedColumnsIds.includes(element.cellId));
 
 
                 const updatedSlide = {
@@ -1152,7 +1151,7 @@ export const usePresentationStore = create<PresentationState>()(
                     presentationId,
                     slideId,
                     layoutId,
-                    columnId: removedColumnsIds[0],
+                    cellId: removedColumnsIds[0],
                     before: { presentations: beforeState.presentations },
                     after: updatedState
                 });
@@ -1305,6 +1304,8 @@ export const usePresentationStore = create<PresentationState>()(
 
                     return updatedState;
                 });
+
+                get().saveChanges(presentationId);
             },
             updateAndPotentiallyDeleteLayout: (
                 presentationId,
@@ -1763,10 +1764,14 @@ export const usePresentationStore = create<PresentationState>()(
                     ...currentLayout.gridStructure,
                     columns: currentLayout.gridStructure.columns + 1,
                     columnWidths: getColumnWidths(currentLayout.gridStructure.columns + 1),
-                    rows: currentLayout.gridStructure.rows.map((row: { id: string; cells: GridCell[] }) => ({
-                        ...row,
-                        cells: [...row.cells, newColumn],
-                    })),
+                    rows: currentLayout.gridStructure.rows.map((row: { id: string; cells: GridCell[] }) => {
+                        const updatedCells = [...row.cells];
+                        updatedCells.splice(columnIndex, 0, newColumn);
+                        return {
+                            ...row,
+                            cells: updatedCells,
+                        }
+                    }),
                 };
 
                 // Create new elements for the column
@@ -1822,14 +1827,14 @@ export const usePresentationStore = create<PresentationState>()(
                     presentationId,
                     slideId,
                     layoutId,
-                    columnId: newColumnId,
+                    cellId: newColumnId,
                     position: 'right',
                     before: { presentations: beforeState.presentations },
                     after: updatedState
                 });
             },
 
-            addColumnLeft: (presentationId: string, slideId: string, layoutId: string, columnId: string) => {
+            addColumnLeft: (presentationId: string, slideId: string, layoutId: string, columnIndex: number) => {
                 const currentPresentation = get().getPresentation(presentationId);
                 if (!currentPresentation) return;
 
@@ -1838,14 +1843,11 @@ export const usePresentationStore = create<PresentationState>()(
 
                 const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
                 if (!currentLayout) return;
-
-                const columnIndex = currentLayout.gridStructure.rows[0].cells.findIndex(cell => cell.id === columnId);
-                if (columnIndex === -1) return;
 
                 get().addColumn(presentationId, slideId, layoutId, columnIndex);
             },
 
-            addColumnRight: (presentationId: string, slideId: string, layoutId: string, columnId: string) => {
+            addColumnRight: (presentationId: string, slideId: string, layoutId: string, columnIndex: number) => {
                 const currentPresentation = get().getPresentation(presentationId);
                 if (!currentPresentation) return;
 
@@ -1855,13 +1857,10 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
                 if (!currentLayout) return;
 
-                const columnIndex = currentLayout.gridStructure.rows[0].cells.findIndex(cell => cell.id === columnId);
-                if (columnIndex === -1) return;
-
                 get().addColumn(presentationId, slideId, layoutId, columnIndex + 1);
             },
 
-            duplicateColumn: (presentationId: string, slideId: string, layoutId: string, columnId: string) => {
+            duplicateColumn: (presentationId: string, slideId: string, layoutId: string, cellId: string) => {
                 const currentPresentation = get().getPresentation(presentationId);
                 if (!currentPresentation) return;
 
@@ -1871,16 +1870,16 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
                 if (!currentLayout) return;
 
-                const currentColumn = currentLayout.gridStructure.rows[0].cells.find(cell => cell.id === columnId);
-                if (!currentColumn) return;
+                const currentCell = currentLayout.gridStructure.rows[0].cells.find(cell => cell.id === cellId);
+                if (!currentCell) return;
 
-                const columnIndex = currentLayout.gridStructure.rows[0].cells.findIndex(cell => cell.id === columnId);
-                if (columnIndex === -1) return;
+                const cellIndex = currentLayout.gridStructure.rows[0].cells.findIndex(cell => cell.id === cellId);
+                if (cellIndex === -1) return;
 
-                get().addColumn(presentationId, slideId, layoutId, columnIndex + 1);
+                get().addColumn(presentationId, slideId, layoutId, cellIndex + 1);
             },
 
-            alignColumn: (presentationId, slideId, layoutId, columnId, alignment) => {
+            alignColumn: (presentationId, slideId, layoutId, cellId, alignment) => {
                 const beforeState = { ...get() };
 
                 const currentPresentation = get().getPresentation(presentationId);
@@ -1892,11 +1891,11 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
                 if (!currentLayout) return;
 
-                const currentColumn = currentLayout.gridStructure.rows[0].cells.find(cell => cell.id === columnId);
-                if (!currentColumn) return;
+                const currentCell = currentLayout.gridStructure.rows[0].cells.find(cell => cell.id === cellId);
+                if (!currentCell) return;
 
                 const updatedGridStructure = JSON.parse(JSON.stringify(currentLayout.gridStructure));
-                updatedGridStructure.rows[0].cells.find((cell: GridCell) => cell.id === columnId).alignment = alignment;
+                updatedGridStructure.rows[0].cells.find((cell: GridCell) => cell.id === cellId).alignment = alignment;
 
                 set((state) => {
                     const updatedState = {
@@ -1933,28 +1932,30 @@ export const usePresentationStore = create<PresentationState>()(
                         presentationId,
                         slideId,
                         layoutId,
-                        columnId,
+                        cellId,
                         alignment,
                         before: { presentations: beforeState.presentations },
                         after: updatedState
                     });
                     return updatedState;
                 });
+
+                get().saveChanges(presentationId);
             },
 
-            alignColumnTop: (presentationId, slideId, layoutId, columnId) => {
-                get().alignColumn(presentationId, slideId, layoutId, columnId, 'top');
+            alignColumnTop: (presentationId, slideId, layoutId, cellId) => {
+                get().alignColumn(presentationId, slideId, layoutId, cellId, 'top');
             },
 
-            alignColumnCenter: (presentationId, slideId, layoutId, columnId) => {
-                get().alignColumn(presentationId, slideId, layoutId, columnId, 'center');
+            alignColumnCenter: (presentationId, slideId, layoutId, cellId) => {
+                get().alignColumn(presentationId, slideId, layoutId, cellId, 'center');
             },
 
-            alignColumnBottom: (presentationId, slideId, layoutId, columnId) => {
-                get().alignColumn(presentationId, slideId, layoutId, columnId, 'bottom');
+            alignColumnBottom: (presentationId, slideId, layoutId, cellId) => {
+                get().alignColumn(presentationId, slideId, layoutId, cellId, 'bottom');
             },
 
-            deleteColumn: (presentationId: string, slideId: string, layoutId: string, columnId: string) => {
+            deleteColumn: (presentationId: string, slideId: string, layoutId: string, cellId: string) => {
                 const beforeState = { ...get() };
                 const presentation = get().getPresentation(presentationId);
                 if (!presentation) return;
@@ -1972,7 +1973,7 @@ export const usePresentationStore = create<PresentationState>()(
                 // Find the row and column index
                 layout.gridStructure.rows.forEach((row, rIndex) => {
                     row.cells.forEach((cell, cIndex) => {
-                        if (cell.id === columnId) {
+                        if (cell.id === cellId) {
                             rowIndex = rIndex;
                             columnIndex = cIndex;
                         }
@@ -1991,7 +1992,7 @@ export const usePresentationStore = create<PresentationState>()(
                 row.cells.splice(columnIndex, 1);
 
                 // Remove all elements in the cell
-                const newElements = layout.elements.filter(element => element.cellId !== columnId);
+                const newElements = layout.elements.filter(element => element.cellId !== cellId);
 
                 // Update layout
                 const updatedLayouts = slide.layouts.map(l => {

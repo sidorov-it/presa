@@ -587,7 +587,7 @@ export type ElementMenuProps = {
     presentationId: string;
     slideId: string;
     layoutId: string;
-    columnId: string;
+    cellId: string;
     elementId: string;
 }
 

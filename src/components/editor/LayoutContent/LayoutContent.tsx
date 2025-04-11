@@ -6,7 +6,7 @@ import GridCellElement from '../GridCellElement';
 import styles from './LayoutContent.module.css';
 import { usePresentationStore } from '@/store/presentationStore';
 import DragHandler from '../DragHandler';
-import { useMenuSelectedColumn, useMenuSelectedElement, useMenuSelectedLayout, useMenuStore } from '@/store/menuStore';
+import { useMenuSelectedCell, useMenuSelectedElement, useMenuSelectedLayout, useMenuStore } from '@/store/menuStore';
 interface LayoutContentProps {
     layout: Layout;
     onDeleteElement: (layoutId: string, elementId: string) => void;
@@ -43,7 +43,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     // Get only the needed state from SlideMenu
     const menuLayoutId = useMenuSelectedLayout();
     const menuElementId = useMenuSelectedElement();
-    const menuColumnId = useMenuSelectedColumn();
+    const menuCellId = useMenuSelectedCell();
 
     const handleMouseEnter = useCallback(() => {
         if (!isLayoutHovered) {
@@ -60,18 +60,18 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     // Memoize grid properties to prevent recalculations
     const gridTemplateAreas = useMemo(() =>
         generateGridTemplateAreas(layout.gridStructure),
-        [layout.gridStructure]
+    [layout.gridStructure]
     );
 
     const gridTemplateColumns = useMemo(() =>
         generateGridTemplateColumns(layout.gridStructure),
-        [layout.gridStructure]
+    [layout.gridStructure]
     );
 
     // Memoize layout properties
     const hasMultipleCellsInRow = useMemo(() =>
         layout.gridStructure.rows.some(row => row.cells.length > 1),
-        [layout.gridStructure.rows]
+    [layout.gridStructure.rows]
     );
 
     // Memoize cell elements grouping
@@ -86,18 +86,12 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
         return elements;
     }, [layout.elements]);
 
-    // const handleLocalDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    //     e.preventDefault();
-    //     e.stopPropagation(); // Prevent propagation to avoid double triggering with global handler
-    //     handleDrop(e);
-    // }, [handleDrop]);
-
     // Detect if this is a layout with a single element in a single cell
     const isSingleElementSingleCellLayout = useMemo(() =>
         layout.elements.length === 1 &&
         layout.gridStructure.rows.length === 1 &&
         layout.gridStructure.rows[0].cells.length === 1,
-        [layout.elements.length, layout.gridStructure.rows]
+    [layout.elements.length, layout.gridStructure.rows]
     );
 
     // console.log('columnDragPosition', columnDragPosition)
@@ -119,7 +113,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
             elementType: 'layout',
             layoutId: layout.id
         }),
-        [openMenu, slideId, layout.id]
+    [openMenu, slideId, layout.id]
     );
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -141,7 +135,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
         usePresentationStore.getState().addRowToTable(presentationId, slideId, layout.id, layout.gridStructure.rows.length);
     }, [layout, presentationId, slideId]);
 
-    const isSelected = menuLayoutId === layout.id && menuElementId === null && menuColumnId === null;
+    const isSelected = menuLayoutId === layout.id && menuElementId === null && menuCellId === null;
 
     return (
         <>

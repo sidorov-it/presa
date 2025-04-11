@@ -323,7 +323,6 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({
                         layoutId={node.attrs.layoutId}
                         elementId={elementId}
                         presentationId={node.attrs.presentationId}
-                        columnId="" // Use an empty string as fallback for columnId
                         onUpdate={handleUpdateAttribute}
                         onDelete={deleteNode}
                         nodeAttributes={node.attrs}

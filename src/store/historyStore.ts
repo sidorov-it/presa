@@ -5,15 +5,16 @@ import deepDiff from '@/utils/deepDiff';
 
 // Define history action types
 export type HistoryAction = {
-    type: 'layout' | 'element' | 'presentation' | 'slide' | 'column' | 'row'; // type of entity modified
+    type: 'layout' | 'element' | 'presentation' | 'slide' | 'column' | 'row' | 'cell'; // type of entity modified
     description: string; // descriptive info about the action
     presentationId: string; // which presentation was modified
     slideId?: string; // which slide was modified (if applicable)
     layoutId?: string; // which layout was modified (if applicable)
     elementId?: string; // which element was modified (if applicable)
-    columnId?: string; // which column was modified (if applicable)
     alignment?: 'top' | 'center' | 'bottom'; // which alignment was modified (if applicable)
     position?: 'left' | 'right'; // which position was modified (if applicable)
+    cellId?: string; // which cell was modified (if applicable)
+    columnId?: string; // which cell was modified (if applicable)
     before: any; // state before the change
     after: any; // state after the change
     timestamp: number; // when the action happened

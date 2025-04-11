@@ -4,7 +4,6 @@ import {
     BiBold,
     BiItalic,
     BiUnderline,
-    BiChevronDown,
     BiX,
     BiArrowToTop,
     BiArrowToBottom,
@@ -19,7 +18,6 @@ import { useMenuStore } from '@/store/menuStore';
 interface RowTableMenuProps {
     slideId?: string;
     layoutId?: string;
-    columnId?: string;
     elementId?: string;
     tableRowIndex?: number;
     presentationId?: string;
@@ -29,8 +27,6 @@ interface RowTableMenuProps {
 const RowTableMenu: React.FC<RowTableMenuProps> = ({
     slideId,
     layoutId,
-    columnId,
-    elementId,
     presentationId,
     editor,
     tableRowIndex
@@ -70,7 +66,7 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
     // Handle heading change
     const handleHeadingChange = useCallback((level: number) => {
         if (!editor) return;
-        
+
         if (level === 0) {
             editor.chain().focus().setParagraph().run();
         } else {

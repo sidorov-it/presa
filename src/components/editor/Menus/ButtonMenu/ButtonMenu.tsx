@@ -6,8 +6,7 @@ import { usePresentationStore } from '@/store/presentationStore'
 import { ElementMenuProps } from '@/types'
 import { RefObject } from 'react'
 
-interface ButtonMenuProps extends Omit<ElementMenuProps, 'columnId'> {
-    columnId?: string;
+interface ButtonMenuProps extends ElementMenuProps {
     onUpdate: (key: string, value: any) => void;
     onDelete: () => void;
     nodeAttributes: Record<string, any>;
@@ -19,9 +18,6 @@ export default function ButtonMenu({
     layoutId,
     elementId,
     presentationId,
-    // columnId не используется, но необходим для типизации
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    columnId,
     onUpdate,
     onDelete,
     nodeAttributes,

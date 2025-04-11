@@ -100,7 +100,7 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
     return (
         <DndProvider presentationId={presentationId}>
             {/* <SlideMenuProvider presentationId={presentationId}> */}
-                {/* <button
+            {/* <button
                     onClick={() => {
                         console.log(useHistoryStore.getState().getHistoryDiff(presentationId))
                     }}
@@ -110,11 +110,11 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
                         console.log(useHistoryStore.getState().getHistoryDiff(presentationId, true))
                     }}
                 >show diff history future</button> */}
-                <EditorContent
-                    presentationId={presentationId}
-                    activeSlideId={activeSlideId}
-                    onSlideSelect={handleSlideSelect}
-                />
+            <EditorContent
+                presentationId={presentationId}
+                activeSlideId={activeSlideId}
+                onSlideSelect={handleSlideSelect}
+            />
             {/* </SlideMenuProvider> */}
         </DndProvider>
     );

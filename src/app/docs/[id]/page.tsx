@@ -8,7 +8,6 @@ import { useSession } from 'next-auth/react';
 import Editor from '@/components/editor/Editor/Editor';
 import { IPresentation } from '@/types';
 import UndoRedoControls from '@/components/UndoRedoControls';
-import SaveStatus from '@/components/ui/SaveStatus';
 import { ThemeIcon } from '@/components/icons';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
 import { useThemeStore } from '@/store/themeStore';

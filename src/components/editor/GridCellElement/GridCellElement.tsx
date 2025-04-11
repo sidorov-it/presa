@@ -16,20 +16,19 @@ import { ElementContent } from '../ElementContent/ElementContent';
 import { ComponentStructureType, getNewEditorElement } from '@/elements/registry';
 import { useMenuStore } from '@/store/menuStore';
 
-export const useIsSelectedRow = (tableId: string, rowIndex: number) => 
+export const useIsSelectedRow = (tableId: string, rowIndex: number) =>
     useMenuStore(state => state.selectedRow === rowIndex && state.selectedTableId === tableId);
 
-export const useIsSelectedColumn = (tableId: string, columnIndex: number) => 
+export const useIsSelectedColumn = (tableId: string, columnIndex: number) =>
     useMenuStore(state => state.selectedColumn === columnIndex && state.selectedTableId === tableId);
 
-export const useIsHoveredRow = (tableId: string, rowIndex: number, columnIndex: number) => 
+export const useIsHoveredRow = (tableId: string, rowIndex: number, columnIndex: number) =>
     useMenuStore(state => columnIndex === 0 && state.hoveredRowIndex === rowIndex && state.hoveredTableId === tableId);
 
-export const useIsHoveredColumn = (tableId: string, rowIndex: number, columnIndex: number) => 
+export const useIsHoveredColumn = (tableId: string, rowIndex: number, columnIndex: number) =>
     useMenuStore(state => rowIndex === 0 && state.hoveredColumnIndex === columnIndex && state.hoveredTableId === tableId);
 
 export const useMenuElementId = () => useMenuStore(state => state.elementId);
-// export const useMenuColumnId = () => useMenuStore(state => state.columnId === cell.id);
 
 const adjustColumnWidths = (
     columnWidths: string[],
@@ -143,7 +142,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const isSelectedColumn = useIsSelectedColumn(layoutId, columnIndex);
     const isHoveredColumn = useIsHoveredColumn(layoutId, rowIndex, columnIndex);
     const isMenuCurrentColumn = useMenuStore(state => {
-        return state.columnId === cell.id
+        return state.tableColumnIndex === columnIndex && state.selectedTableId === layoutId
     });
     const menuElementId = useMenuStore(state => state.elementId);
     const isHoveredRow = useIsHoveredRow(layoutId, rowIndex, columnIndex);
@@ -361,9 +360,12 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             elementId: null,
             elementType: 'cell',
             layoutId,
-            columnId: cell.id
+            cellId: cell.id,
+            tableColumnIndex: columnIndex,
+            tableRowIndex: rowIndex,
+            tableId: layoutId
         });
-    }, [slideId, layoutId, cell.id]);
+    }, [slideId, layoutId, cell.id, columnIndex, rowIndex]);
 
 
     const handleKeyDownCellDragHandle = useCallback((e: any) => {
@@ -454,12 +456,12 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             elementId: null,
             layoutId,
             elementType: 'column',
-            columnId: cell.id,
+            cellId: cell.id,
             tableRowIndex: rowIndex,
             tableColumnIndex: columnIndex,
             tableId: layoutId
         });
-        useMenuStore.getState().setSelectedColumn(layoutId, columnIndex);
+        // useMenuStore.getState().setSelectedColumnIndex(layoutId, columnIndex);
     }, [slideId, layoutId, cell.id, rowIndex, columnIndex]);
 
     const handleOpenRowMenu = useCallback(() => {
@@ -472,7 +474,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             tableColumnIndex: columnIndex,
             tableId: layoutId
         });
-        useMenuStore.getState().setSelectedRow(layoutId, rowIndex);
+        // useMenuStore.getState().setSelectedRow(layoutId, rowIndex);
     }, [slideId, layoutId, rowIndex, columnIndex]);
 
     const deferredIsHoveredRow = useDeferredValue(isHoveredRow);
@@ -504,7 +506,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     ariaLabel="Drag this cell"
                     className={styles.cellDragHandle}
                     dataAttributes={{
-                        'data-column-drag-handle': cell.id,
+                        'data-cell-drag-handle': cell.id,
                     }}
                     handleClick={handleClickCellDragHandle}
                     handleKeyDown={handleKeyDownCellDragHandle}
@@ -604,6 +606,7 @@ GridCellElement.displayName = 'GridCellElement';
 const GridCellElementMemo = memo(GridCellElement, (prevProps, nextProps) => {
     // Return true if nothing important changed (to prevent re-render)
     return (
+        prevProps.cell.alignment === nextProps.cell.alignment &&
         prevProps.cell.id === nextProps.cell.id &&
         prevProps.slideId === nextProps.slideId &&
         prevProps.layoutId === nextProps.layoutId &&

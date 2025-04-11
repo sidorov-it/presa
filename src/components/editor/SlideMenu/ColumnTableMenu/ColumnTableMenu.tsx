@@ -1,10 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Editor } from '@tiptap/react';
 import {
     BiBold,
     BiItalic,
     BiUnderline,
-    BiChevronDown,
     BiX,
     BiArrowToLeft,
     BiArrowToRight,
@@ -20,7 +18,6 @@ import { useMenuStore } from '@/store/menuStore';
 interface ColumnTableMenuProps {
     slideId?: string;
     layoutId?: string;
-    columnId?: string;
     elementId?: string;
     presentationId?: string;
     tableColumnIndex?: number;
@@ -29,8 +26,6 @@ interface ColumnTableMenuProps {
 const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
     slideId,
     layoutId,
-    columnId,
-    elementId,
     tableColumnIndex,
     presentationId,
     editor
@@ -64,7 +59,7 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
     // Get current heading level from editor
     const getCurrentHeadingLevel = useCallback(() => {
         if (!editor) return 0;
-        
+
         for (let i = 1; i <= 5; i++) {
             if (editor.isActive('heading', { level: i })) {
                 return i;
@@ -76,7 +71,7 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
     // Handle heading change
     const handleHeadingChange = useCallback((level: number) => {
         if (!editor) return;
-        
+
         if (level === 0) {
             editor.chain().focus().setParagraph().run();
         } else {
@@ -104,25 +99,25 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
 
     // Table column operations
     const handleAddColumnLeft = useCallback(() => {
-        if (presentationId && slideId && layoutId) {
+        if (presentationId && slideId && layoutId && (tableColumnIndex || tableColumnIndex === 0)) {
             usePresentationStore.getState().addColumnToTable(presentationId, slideId, layoutId, tableColumnIndex);
         }
         closeMenu();
-    }, [editor, closeMenu]);
+    }, [presentationId, slideId, layoutId, tableColumnIndex, closeMenu]);
 
     const handleAddColumnRight = useCallback(() => {
-        if (presentationId && slideId && layoutId) {
+        if (presentationId && slideId && layoutId && (tableColumnIndex || tableColumnIndex === 0)) {
             usePresentationStore.getState().addColumnToTable(presentationId, slideId, layoutId, tableColumnIndex + 1);
         }
         closeMenu();
-    }, [editor, closeMenu]);
+    }, [presentationId, slideId, layoutId, tableColumnIndex, closeMenu]);
 
     const handleDeleteColumn = useCallback(() => {
-        if (presentationId && slideId && layoutId) {
+        if (presentationId && slideId && layoutId && (tableColumnIndex || tableColumnIndex === 0)) {
             usePresentationStore.getState().deleteColumnFromTable(presentationId, slideId, layoutId, tableColumnIndex);
         }
         closeMenu();
-    }, [editor, closeMenu]);
+    }, [presentationId, slideId, layoutId, tableColumnIndex, closeMenu]);
 
     return (
         <>
