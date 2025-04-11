@@ -101,7 +101,7 @@ export interface PresentationState {
     addLayoutWithElement: (presentationId: string, slideId: string, element: BaseElement) => void;
 
     getTableColumnElements: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => BaseElement[];
-
+    getTableRowElements: (presentationId: string, slideId: string, layoutId: string, tableRowIndex: number) => BaseElement[];
 
     toggleBoldOnColumn: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => void;
     toggleItalicOnColumn: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => void;
@@ -820,6 +820,12 @@ export const usePresentationStore = create<PresentationState>()(
                 return layout.elements.filter(element => columnCellsIds.includes(element.cellId));
             },
 
+            getTableRowElements: (presentationId, slideId, layoutId, tableRowIndex) => {
+                const layout = get().getLayout(presentationId, slideId, layoutId);
+                if (!layout) return [];
+                const rowCellsIds = layout.gridStructure.rows[tableRowIndex].cells.map(cell => cell.id)
+                return layout.elements.filter(element => rowCellsIds.includes(element.cellId));
+            },
 
             toggleBoldOnColumn: (presentationId, slideId, layoutId, tableColumnIndex) => {
                 const beforeState = { ...get() };

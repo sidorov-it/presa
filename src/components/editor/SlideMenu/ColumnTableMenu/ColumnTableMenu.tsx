@@ -32,24 +32,51 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
     presentationId,
     tiptapRefs
 }) => {
-    const [refresh, setRefresh] = useState(Date.now());
-
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
     const { closeMenu } = useMenuStore();
 
     const tableColumnElements = useMenuStore.getState().getTableColumnElements();
 
+    const [headingLevelLocal, setHeadingLevelLocal] = useState<number>(tiptapRefs.current.editors[tableColumnElements[0].id]?.editor.getAttributes('heading').level || 0);
+
+    useEffect(() => {
+        const editor = tiptapRefs.current.editors[tableColumnElements[0].id]?.editor;
+        if (editor && !editor.isEmpty) {
+            setHeadingLevelLocal(editor.getAttributes('heading').level);
+        } else {
+            setHeadingLevelLocal(0);
+        }
+    }, [tableColumnElements, tiptapRefs]);
+
     const isBoldActive = useMemo(() => {
-        return !tableColumnElements.some(element => !tiptapRefs.current.editors[element.id].editor.isActive('bold'));
+        return !tableColumnElements.some(element => {
+            const editor = tiptapRefs.current.editors[element.id]?.editor;
+            if (editor) {
+                return !editor.isActive('bold') && !editor.isEmpty;
+            }
+            return false;
+        });
     }, [tableColumnElements]);
 
     const isItalicActive = useMemo(() => {
-        return !tableColumnElements.some(element => !tiptapRefs.current.editors[element.id].editor.isActive('italic'));
+        return !tableColumnElements.some(element => {
+            const editor = tiptapRefs.current.editors[element.id]?.editor;
+            if (editor) {
+                return !editor.isActive('italic') && !editor.isEmpty;
+            }
+            return true;
+        });
     }, [tableColumnElements]);
 
     const isUnderlineActive = useMemo(() => {
-        return !tableColumnElements.some(element => !tiptapRefs.current.editors[element.id].editor.isActive('underline'));
+        return !tableColumnElements.some(element => {
+            const editor = tiptapRefs.current.editors[element.id]?.editor;
+            if (editor) {
+                return !editor.isActive('underline') && !editor.isEmpty;
+            }
+            return true;
+        });
     }, [tableColumnElements]);
 
     // Light theme styles
@@ -74,30 +101,26 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
         };
     }, []);
 
-    // Get current heading level from editor
     const getCurrentHeadingLevel = useCallback(() => {
-        return 0;
-    }, []);
+        return headingLevelLocal;
+    }, [headingLevelLocal]);
 
-    // Handle heading change
     const handleHeadingChange = useCallback((level: number) => {
         tableColumnElements.forEach(element => {
             tiptapRefs.current.editors[element.id]?.editor.chain().setHeading({ level: level as Level }).run();
         });
+
+        setHeadingLevelLocal(level);
     }, [tableColumnElements, tiptapRefs]);
 
-    // Handle text formatting
     const handleToggleBold = useCallback(() => {
         tableColumnElements.forEach(element => {
             const editor = tiptapRefs.current.editors[element.id]?.editor;
             if (editor) {
-                const content = editor.getHTML();
                 if (isBoldActive) {
-                    // Remove bold from all content
-                    editor.commands.setContent(content.replace(/<strong>/g, '').replace(/<\/strong>/g, ''));
+                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().unsetBold().blur().run();
                 } else {
-                    // Add bold to all content
-                    editor.commands.setContent(content.replace(/(<p[^>]*>)(.*?)(<\/p>)/g, '$1<strong>$2</strong>$3'));
+                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().setBold().blur().run();
                 }
             }
         });
@@ -107,31 +130,27 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
         tableColumnElements.forEach(element => {
             const editor = tiptapRefs.current.editors[element.id]?.editor;
             if (editor) {
-                const content = editor.getHTML();
-                // Toggle italic for all content
-                if (content.includes('<em>')) {
-                    editor.commands.setContent(content.replace(/<em>/g, '').replace(/<\/em>/g, ''));
+                if (isItalicActive) {
+                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().unsetItalic().blur().run();
                 } else {
-                    editor.commands.setContent(content.replace(/(<p[^>]*>)(.*?)(<\/p>)/g, '$1<em>$2</em>$3'));
+                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().setItalic().blur().run();
                 }
             }
         });
-    }, [tableColumnElements, tiptapRefs]);
+    }, [tableColumnElements, isItalicActive, tiptapRefs]);
 
     const handleToggleUnderline = useCallback(() => {
         tableColumnElements.forEach(element => {
             const editor = tiptapRefs.current.editors[element.id]?.editor;
             if (editor) {
-                const content = editor.getHTML();
-                // Toggle underline for all content
-                if (content.includes('<u>')) {
-                    editor.commands.setContent(content.replace(/<u>/g, '').replace(/<\/u>/g, ''));
+                if (isUnderlineActive) {
+                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().unsetUnderline().blur().run();
                 } else {
-                    editor.commands.setContent(content.replace(/(<p[^>]*>)(.*?)(<\/p>)/g, '$1<u>$2</u>$3'));
+                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().setUnderline().blur().run();
                 }
             }
         });
-    }, [tableColumnElements, tiptapRefs]);
+    }, [tableColumnElements, isUnderlineActive, tiptapRefs]);
 
     const handleClearStyles = useCallback(() => {
         tableColumnElements.forEach(element => {

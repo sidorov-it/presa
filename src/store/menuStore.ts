@@ -92,6 +92,7 @@ export interface MenuState {
     hoverTableCell: (tableId: string, rowIndex: number | null, columnIndex: number | null) => void;
 
     getTableColumnElements: () => BaseElement[];
+    getTableRowElements: () => BaseElement[];
 }
 
 export const useMenuStore = create<MenuState>()(
@@ -399,6 +400,13 @@ export const useMenuStore = create<MenuState>()(
                 if (!presentationId || !slideId || !layoutId || !tableColumnIndex) return [];
                 const { getTableColumnElements } = usePresentationStore.getState();
                 return getTableColumnElements(presentationId, slideId, layoutId, tableColumnIndex);
+            },
+
+            getTableRowElements: () => {
+                const { presentationId, slideId, layoutId, tableRowIndex } = get();
+                if (!presentationId || !slideId || !layoutId) return [];
+                const { getTableRowElements } = usePresentationStore.getState();
+                return getTableRowElements(presentationId, slideId, layoutId, tableRowIndex!);
             }
         }),
         {
