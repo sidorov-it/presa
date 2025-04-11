@@ -15,6 +15,7 @@ import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
 import { useSlideMenu } from '@/contexts/SlideMenuContext';
 import HeadingSelector from '@/components/settings/HeadingSelector/HeadingSelector';
+import { usePresentationStore } from '@/store/presentationStore';
 
 interface ColumnTableMenuProps {
     slideId?: string;
@@ -22,7 +23,6 @@ interface ColumnTableMenuProps {
     columnId?: string;
     elementId?: string;
     presentationId?: string;
-    editor?: Editor;
 }
 
 const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
@@ -30,6 +30,7 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
     layoutId,
     columnId,
     elementId,
+    tableColumnIndex,
     presentationId,
     editor
 }) => {
@@ -102,23 +103,25 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
 
     // Table column operations
     const handleAddColumnLeft = useCallback(() => {
-        editor?.chain().focus().addColumnBefore().run();
+        if (presentationId && slideId && layoutId) {
+            usePresentationStore.getState().addColumnToTable(presentationId, slideId, layoutId, tableColumnIndex);
+        }
         closeMenu();
     }, [editor, closeMenu]);
 
     const handleAddColumnRight = useCallback(() => {
-        editor?.chain().focus().addColumnAfter().run();
+        if (presentationId && slideId && layoutId) {
+            usePresentationStore.getState().addColumnToTable(presentationId, slideId, layoutId, tableColumnIndex + 1);
+        }
         closeMenu();
     }, [editor, closeMenu]);
 
     const handleDeleteColumn = useCallback(() => {
-        editor?.chain().focus().deleteColumn().run();
+        if (presentationId && slideId && layoutId) {
+            usePresentationStore.getState().deleteColumnFromTable(presentationId, slideId, layoutId, tableColumnIndex);
+        }
         closeMenu();
     }, [editor, closeMenu]);
-
-    if (!editor) {
-        return null;
-    }
 
     return (
         <>
@@ -138,7 +141,7 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
 
             <button
                 onClick={handleToggleBold}
-                className={`${styles.slideMenuButton} ${editor.isActive('bold') ? styles.active : ''}`}
+                className={`${styles.slideMenuButton}`}
                 aria-label="Жирный"
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && handleToggleBold()}
@@ -148,7 +151,7 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
 
             <button
                 onClick={handleToggleItalic}
-                className={`${styles.slideMenuButton} ${editor.isActive('italic') ? styles.active : ''}`}
+                className={`${styles.slideMenuButton}`}
                 aria-label="Курсив"
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && handleToggleItalic()}
@@ -158,7 +161,7 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
 
             <button
                 onClick={handleToggleUnderline}
-                className={`${styles.slideMenuButton} ${editor.isActive('underline') ? styles.active : ''}`}
+                className={`${styles.slideMenuButton}`}
                 aria-label="Подчеркнутый"
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && handleToggleUnderline()}

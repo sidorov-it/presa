@@ -5,7 +5,7 @@ import deepDiff from '@/utils/deepDiff';
 
 // Define history action types
 export type HistoryAction = {
-    type: 'layout' | 'element' | 'presentation' | 'slide' | 'column'; // type of entity modified
+    type: 'layout' | 'element' | 'presentation' | 'slide' | 'column' | 'row'; // type of entity modified
     description: string; // descriptive info about the action
     presentationId: string; // which presentation was modified
     slideId?: string; // which slide was modified (if applicable)

@@ -924,83 +924,246 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
                 if (!currentLayout) return;
 
-                // Создаем обновленный gridStructure
-                const updatedGridStructure: GridStructure = {
+                const newColumnId = generateId();
+
+                const newColumn: GridCell = {
+                    id: newColumnId,
+                    row: 0,
+                    column: columnIndex + 1,
+                };
+
+                // Update grid structure
+                const updatedGridStructure = {
                     ...currentLayout.gridStructure,
                     columns: currentLayout.gridStructure.columns + 1,
-                    columnWidths: getColumnWidths(currentLayout.gridStructure.columns + 1)
+                    columnWidths: getColumnWidths(currentLayout.gridStructure.columns + 1),
+                    rows: currentLayout.gridStructure.rows.map((row: { id: string; cells: GridCell[] }) => {
+                        const cells = [...row.cells]
+                        cells.splice(columnIndex, 0, newColumn);
+                        return {
+                            ...row,
+                            cells,
+                        }
+                    }),
                 };
-        
-                const newElements: Element[] = [];
-        
-                // Создаем копию массива rows с новыми ячейками
-                updatedGridStructure.rows = updatedGridStructure.rows.map((row, index) => {
-                    const cellId = generateId(8);
-                    const newEditor = getNewEditorElement(cellId);
-                    newElements.push({
-                        ...newEditor,
-                        cellId: cellId,
-                    } as Element);
-                    
-                    return {
-                        ...row,
-                        cells: [
-                            ...row.cells,
-                            {
-                                id: cellId,
-                                column: row.cells.length + 1,
-                                row: index
+
+                // Create new elements for the column
+                let updatedElements = currentLayout.elements;
+                if (currentLayout.type === 'custom') {
+                    const firstRow = currentLayout.gridStructure.rows[0];
+                    if (!firstRow) return;
+                    const elements = currentLayout.elements.filter(element => element.cellId === firstRow.cells[0].id);
+                    const updatedNewElements = elements.map(element => ({
+                        ...element,
+                        id: generateId(),
+                        cellId: newColumnId,
+                    } as BaseElement));
+                    updatedElements = [...currentLayout.elements, ...updatedNewElements];
+                } else {
+                    const newElement = getNewEditorElement(newColumnId);
+                    updatedElements = [...currentLayout.elements, newElement];
+                }
+
+
+                const updatedSlide = {
+                    ...currentSlide,
+                    layouts: currentSlide.layouts.map(layout =>
+                        layout.id === layoutId
+                            ? {
+                                ...layout,
+                                gridStructure: updatedGridStructure,
+                                elements: updatedElements,
                             }
-                        ]
-                    };
-                });
-
-                // Создаем обновленный layout
-                const updatedLayout = {
-                    ...currentLayout,
-                    gridStructure: updatedGridStructure,
-                    elements: [...currentLayout.elements, ...newElements]
+                            : layout
+                    ),
                 };
 
-                // Обновляем состояние с соблюдением иммутабельности на всех уровнях
-                set((state) => {
-                    return {
-                        ...state,
-                        presentations: state.presentations.map(presentation => {
-                            if (presentation.id !== presentationId) return presentation;
-                            
-                            return {
-                                ...presentation,
-                                updatedAt: Date.now(),
-                                slides: presentation.slides.map(slide => {
-                                    if (slide.id !== slideId) return slide;
-                                    
-                                    return {
-                                        ...slide,
-                                        layouts: slide.layouts.map(layout => 
-                                            layout.id === layoutId ? updatedLayout : layout
-                                        )
-                                    };
-                                })
-                            };
-                        })
-                    };
+                const updatedPresentation = {
+                    ...currentPresentation,
+                    slides: currentPresentation.slides.map(slide =>
+                        slide.id === slideId ? updatedSlide : slide
+                    ),
+                };
+
+                const updatedState = {
+                    ...get(),
+                    presentations: get().presentations.map(presentation =>
+                        presentation.id === presentationId ? updatedPresentation : presentation
+                    ),
+                };
+
+                set(updatedState);
+
+                useHistoryStore.getState().recordAction({
+                    type: 'column',
+                    description: 'Add column',
+                    presentationId,
+                    slideId,
+                    layoutId,
+                    columnId: newColumnId,
+                    position: 'right',
+                    before: { presentations: beforeState.presentations },
+                    after: updatedState
+                });
+            },
+
+
+            deleteRowFromTable: (presentationId, slideId, layoutId, rowIndex) => {
+                const beforeState = { ...get() };
+
+                const currentPresentation = get().getPresentation(presentationId);
+                if (!currentPresentation) return;
+
+                const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
+                if (!currentSlide) return;
+
+                const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
+                if (!currentLayout) return;
+
+                const removedColumnsIds: string[] = [];
+
+                currentLayout.gridStructure.rows[rowIndex].cells.forEach(cell => {
+                    removedColumnsIds.push(cell.id);
                 });
 
-                // Запись действия для истории
-                get().recordAction({
-                    type: 'layout',
-                    description: 'Add column to table',
+                const filteredElements = currentLayout.elements.filter(element => !removedColumnsIds.includes(element.cellId));
+
+                const updatedRows = currentLayout.gridStructure.rows.filter(row => row.id !== currentLayout.gridStructure.rows[rowIndex].id);
+
+                // Update grid structure
+                const updatedGridStructure: GridStructure = {
+                    ...currentLayout.gridStructure,
+                    rows: updatedRows,
+                };
+
+
+                const updatedSlide = {
+                    ...currentSlide,
+                    layouts: currentSlide.layouts.map(layout =>
+                        layout.id === layoutId
+                            ? {
+                                ...layout,
+                                gridStructure: updatedGridStructure,
+                                elements: filteredElements,
+                            }
+                            : layout
+                    ),
+                };
+
+                const updatedPresentation = {
+                    ...currentPresentation,
+                    slides: currentPresentation.slides.map(slide =>
+                        slide.id === slideId ? updatedSlide : slide
+                    ),
+                };
+
+                const updatedState = {
+                    ...get(),
+                    presentations: get().presentations.map(presentation =>
+                        presentation.id === presentationId ? updatedPresentation : presentation
+                    ),
+                };
+
+                set(updatedState);
+
+                useHistoryStore.getState().recordAction({
+                    type: 'row',
+                    description: 'Remove row',
                     presentationId,
                     slideId,
                     layoutId,
                     before: { presentations: beforeState.presentations },
-                    after: { presentations: get().presentations }
+                    after: updatedState
                 });
-                
-                // Автосохранение
+
+                get().saveChanges(presentationId);
+
+
+            },
+
+
+            deleteColumnFromTable: (presentationId, slideId, layoutId, columnIndex) => {
+                const beforeState = { ...get() };
+
+                const currentPresentation = get().getPresentation(presentationId);
+                if (!currentPresentation) return;
+
+                const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
+                if (!currentSlide) return;
+
+                const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
+                if (!currentLayout) return;
+
+                const removedColumnsIds: string[] = [];
+
+                // Update grid structure
+                const updatedGridStructure = {
+                    ...currentLayout.gridStructure,
+                    columns: currentLayout.gridStructure.columns - 1,
+                    columnWidths: getColumnWidths(currentLayout.gridStructure.columns - 1),
+                    rows: currentLayout.gridStructure.rows.map((row: { id: string; cells: GridCell[] }) => {
+                        removedColumnsIds.push(row.cells[columnIndex].id);
+
+                        const cells = [...row.cells]
+                        cells.splice(columnIndex, 1);
+                        return {
+                            ...row,
+                            cells,
+                        }
+                    }),
+                };
+
+                // Create new elements for the column
+                let updatedElements = currentLayout.elements.filter(element => !removedColumnsIds.includes(element.cellId));
+
+
+                const updatedSlide = {
+                    ...currentSlide,
+                    layouts: currentSlide.layouts.map(layout =>
+                        layout.id === layoutId
+                            ? {
+                                ...layout,
+                                gridStructure: updatedGridStructure,
+                                elements: updatedElements,
+                            }
+                            : layout
+                    ),
+                };
+
+                const updatedPresentation = {
+                    ...currentPresentation,
+                    slides: currentPresentation.slides.map(slide =>
+                        slide.id === slideId ? updatedSlide : slide
+                    ),
+                };
+
+                const updatedState = {
+                    ...get(),
+                    presentations: get().presentations.map(presentation =>
+                        presentation.id === presentationId ? updatedPresentation : presentation
+                    ),
+                };
+
+                set(updatedState);
+
+                useHistoryStore.getState().recordAction({
+                    type: 'column',
+                    description: 'Remove column',
+                    presentationId,
+                    slideId,
+                    layoutId,
+                    columnId: removedColumnsIds[0],
+                    before: { presentations: beforeState.presentations },
+                    after: updatedState
+                });
+
                 get().saveChanges(presentationId);
             },
+
+
+
+
+
 
             addRowToTable: (presentationId, slideId, layoutId, rowIndex) => {
                 const beforeState = { ...get() };
@@ -1017,14 +1180,14 @@ export const usePresentationStore = create<PresentationState>()(
                 // Получаем необходимые данные
                 const cellsCount = currentLayout.gridStructure.columns;
                 const rowsCount = currentLayout.gridStructure.rows.length;
-        
+
                 // Создаем новые ячейки для новой строки
                 const newCells = Array.from({ length: cellsCount }, (_, i) => ({
                     id: generateId(8),
                     column: i + 1,
                     row: rowsCount + 1
                 }));
-        
+
                 // Создаем новые элементы для каждой ячейки
                 const newElements: Element[] = newCells.map(cell => {
                     const newEditor = getNewEditorElement(cell.id);
@@ -1033,42 +1196,42 @@ export const usePresentationStore = create<PresentationState>()(
                         cellId: cell.id,
                     } as Element;
                 });
-                
+
+                const updatedRows = [...currentLayout.gridStructure.rows];
+                updatedRows.splice(rowIndex, 0, {
+                    id: generateId(8),
+                    cells: newCells
+                });
+
                 // Создаем обновленную структуру сетки с новой строкой
                 const updatedGridStructure = {
                     ...currentLayout.gridStructure,
-                    rows: [
-                        ...currentLayout.gridStructure.rows,
-                        {
-                            id: generateId(8),
-                            cells: newCells
-                        }
-                    ]
+                    rows: updatedRows
                 };
-                
+
                 // Создаем обновленный layout
                 const updatedLayout = {
                     ...currentLayout,
                     gridStructure: updatedGridStructure,
                     elements: [...currentLayout.elements, ...newElements]
                 };
-        
+
                 // Обновляем состояние, соблюдая иммутабельность на всех уровнях
                 set((state) => {
                     return {
                         ...state,
                         presentations: state.presentations.map(presentation => {
                             if (presentation.id !== presentationId) return presentation;
-                            
+
                             return {
                                 ...presentation,
                                 updatedAt: Date.now(),
                                 slides: presentation.slides.map(slide => {
                                     if (slide.id !== slideId) return slide;
-                                    
+
                                     return {
                                         ...slide,
-                                        layouts: slide.layouts.map(layout => 
+                                        layouts: slide.layouts.map(layout =>
                                             layout.id === layoutId ? updatedLayout : layout
                                         )
                                     };
@@ -1077,7 +1240,7 @@ export const usePresentationStore = create<PresentationState>()(
                         })
                     };
                 });
-                
+
                 // Запись действия для истории
                 get().recordAction({
                     type: 'layout',
@@ -1088,7 +1251,7 @@ export const usePresentationStore = create<PresentationState>()(
                     before: { presentations: beforeState.presentations },
                     after: { presentations: get().presentations }
                 });
-                
+
                 // Автосохранение
                 get().saveChanges(presentationId);
             },
@@ -1452,31 +1615,31 @@ export const usePresentationStore = create<PresentationState>()(
                 const presentations = get().presentations;
                 const presentationIndex = presentations.findIndex(p => p.id === presentationId);
                 if (presentationIndex === -1) return;
-                
+
                 const slides = presentations[presentationIndex].slides;
                 const slideIndex = slides.findIndex(s => s.id === slideId);
                 if (slideIndex === -1) return;
-                
+
                 const layouts = slides[slideIndex].layouts;
                 const layoutIndex = layouts.findIndex(l => l.id === layoutId);
                 if (layoutIndex === -1) return;
-                
+
                 const elements = layouts[layoutIndex].elements;
                 const elementIndex = elements.findIndex(e => e.id === elementId);
                 if (elementIndex === -1) return;
 
                 // Create a copy of the current state for history
                 const newState = { ...get() };
-                
+
                 // Directly update the element while keeping reference identity of other objects
                 newState.presentations[presentationIndex].slides[slideIndex].layouts[layoutIndex].elements[elementIndex] = {
                     ...elements[elementIndex],
                     ...data
                 };
-                
+
                 // Update the timestamp to trigger auto-save
                 newState.presentations[presentationIndex].updatedAt = Date.now();
-                
+
                 // Set the new state
                 set(newState);
 

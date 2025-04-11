@@ -48,8 +48,16 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     const menuElementId = useSlideMenuSelectedElement();
     const menuColumnId = useSlideMenuSelectedColumn();
 
-    const handleMouseEnter = useCallback(() => setIsLayoutHovered(true), []);
-    const handleMouseLeave = useCallback(() => setIsLayoutHovered(false), []);
+    const handleMouseEnter = useCallback(() => {
+        if (!isLayoutHovered) {
+            setIsLayoutHovered(true);
+        }
+    }, [isLayoutHovered]);
+    const handleMouseLeave = useCallback(() => {
+        if (isLayoutHovered) {
+            setIsLayoutHovered(false);
+        }
+    }, [isLayoutHovered]);
 
 
     // Memoize grid properties to prevent recalculations
@@ -232,8 +240,6 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
             </div>
             <br />
             <br />
-            {/* <div>selectedRow: {useSelectStore.getState()}</div>
-            <div>selectedColumn: {useSelectStore.getState().hoveredColumnIndex}</div> */}
         </>
     );
 };

@@ -14,7 +14,7 @@ import DragHandler from '../DragHandler';
 import { PlusIcon } from '@/components/icons';
 import { ElementContent } from '../ElementContent/ElementContent';
 import { ComponentStructureType, getNewEditorElement } from '@/elements/registry';
-import { useSelectStore } from '@/store/selectStore';
+import { useMenuStore } from '@/store/menuStore';
 
 const adjustColumnWidths = (
     columnWidths: string[],
@@ -125,8 +125,8 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     rowIndex,
     columnIndex
 }) => {
-    const isHoveredRow = useSelectStore(state => columnIndex === 0 && state.hoveredRowIndex === rowIndex);
-    const isHoveredColumn = useSelectStore(state => rowIndex === 0 && state.hoveredColumnIndex === columnIndex);
+    const isHoveredRow = useMenuStore(state => columnIndex === 0 && state.hoveredRowIndex === rowIndex);
+    const isHoveredColumn = useMenuStore(state => rowIndex === 0 && state.hoveredColumnIndex === columnIndex);
 
     const { openMenu, state: { elementId: menuElementId, columnId: menuColumnId, componentStructure: menuComponentStructure } } = useSlideMenu();
 
@@ -136,6 +136,8 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const [cellIsHovered, setCellIsHovered] = useState(false);
 
     const [isResizing, setIsResizing] = useState(false);
+
+    const { selectedRow, selectedColumn, selectedTableId } = useMenuStore();
 
     const dragHandleRef = useRef<HTMLDivElement>(null);
     const resizeBorderRef = useRef<HTMLDivElement>(null);
@@ -440,6 +442,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             tableColumnIndex: columnIndex,
             tableId: layoutId
         });
+        useMenuStore.getState().setSelectedColumn(layoutId, columnIndex);
     }, [slideId, layoutId, cell.id, rowIndex, columnIndex]);
 
     const handleOpenRowMenu = useCallback(() => {
@@ -452,6 +455,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             tableColumnIndex: columnIndex,
             tableId: layoutId
         });
+        useMenuStore.getState().setSelectedRow(layoutId, rowIndex);
     }, [slideId, layoutId, cell.id, rowIndex, columnIndex]);
 
     return (
@@ -464,8 +468,8 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             onMouseEnter={(el) => {
                 // console.log(el.target)
                 if (isTable) {
-                    useSelectStore.getState().hoverColumnIndex(layoutId, columnIndex);
-                    useSelectStore.getState().hoverRowIndex(layoutId, rowIndex);
+                    useMenuStore.getState().hoverColumnIndex(layoutId, columnIndex);
+                    useMenuStore.getState().hoverRowIndex(layoutId, rowIndex);
                 }
                 setCellIsHovered(true)
             }}
@@ -540,12 +544,11 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 </div>
             )}
 
-
             {isTable && isHoveredRow && (
                 <DragHandler
                     className={styles.tableRowDragHandle}
                     slideId={slideId}
-                    isActive={false}
+                    isActive={selectedRow === rowIndex && selectedTableId === layoutId}
                     ariaLabel="Drag this row"
                     dataAttributes={{ 'data-row-drag-handle': `${layoutId}-${rowIndex}` }}
                     handleClick={handleOpenRowMenu}
@@ -557,8 +560,8 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 <DragHandler
                     className={styles.columnDragHandle}
                     slideId={slideId}
-                    isActive={false}
-                    ariaLabel="Drag this row"
+                    isActive={selectedColumn === columnIndex && selectedTableId === layoutId}
+                    ariaLabel="Drag this column"
                     dataAttributes={{ 'data-column-drag-handle': `${layoutId}-${columnIndex}` }}
                     handleClick={handleOpenColumnMenu}
                     handleKeyDown={() => { }}

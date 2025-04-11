@@ -15,12 +15,14 @@ import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
 import { useSlideMenu } from '@/contexts/SlideMenuContext';
 import HeadingSelector from '@/components/settings/HeadingSelector/HeadingSelector';
+import { usePresentationStore } from '@/store/presentationStore';
 
 interface RowTableMenuProps {
     slideId?: string;
     layoutId?: string;
     columnId?: string;
     elementId?: string;
+    tableRowIndex?: number;
     presentationId?: string;
     editor?: Editor;
 }
@@ -31,7 +33,8 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
     columnId,
     elementId,
     presentationId,
-    editor
+    editor,
+    tableRowIndex
 }) => {
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
@@ -61,13 +64,7 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
 
     // Get current heading level from editor
     const getCurrentHeadingLevel = useCallback(() => {
-        if (!editor) return 0;
-        
-        for (let i = 1; i <= 5; i++) {
-            if (editor.isActive('heading', { level: i })) {
-                return i;
-            }
-        }
+
         return 0; // Default to paragraph
     }, [editor]);
 
@@ -102,23 +99,19 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
 
     // Table row operations
     const handleAddRowAbove = useCallback(() => {
-        editor?.chain().focus().addRowBefore().run();
+        usePresentationStore.getState().addRowToTable(presentationId!, slideId!, layoutId!, tableRowIndex!);
         closeMenu();
     }, [editor, closeMenu]);
 
     const handleAddRowBelow = useCallback(() => {
-        editor?.chain().focus().addRowAfter().run();
+        usePresentationStore.getState().addRowToTable(presentationId!, slideId!, layoutId!, tableRowIndex! + 1);
         closeMenu();
     }, [editor, closeMenu]);
 
     const handleDeleteRow = useCallback(() => {
-        editor?.chain().focus().deleteRow().run();
+        usePresentationStore.getState().deleteRowFromTable(presentationId!, slideId!, layoutId!, tableRowIndex!);
         closeMenu();
     }, [editor, closeMenu]);
-
-    if (!editor) {
-        return null;
-    }
 
     return (
         <>
@@ -138,7 +131,7 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
 
             <button
                 onClick={handleToggleBold}
-                className={`${styles.slideMenuButton} ${editor.isActive('bold') ? styles.active : ''}`}
+                className={`${styles.slideMenuButton}`}
                 aria-label="Жирный"
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && handleToggleBold()}
@@ -148,7 +141,7 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
 
             <button
                 onClick={handleToggleItalic}
-                className={`${styles.slideMenuButton} ${editor.isActive('italic') ? styles.active : ''}`}
+                className={`${styles.slideMenuButton}`}
                 aria-label="Курсив"
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && handleToggleItalic()}
@@ -158,7 +151,7 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
 
             <button
                 onClick={handleToggleUnderline}
-                className={`${styles.slideMenuButton} ${editor.isActive('underline') ? styles.active : ''}`}
+                className={`${styles.slideMenuButton}`}
                 aria-label="Подчеркнутый"
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && handleToggleUnderline()}

@@ -15,7 +15,6 @@ import {
     AlignBottomIcon,
     MergeIcon
 } from '@/components/icons';
-import HeadingSelector from '@/components/settings/HeadingSelector/HeadingSelector';
 import RowTableMenu from './RowTableMenu/RowTableMenu';
 import ColumnTableMenu from './ColumnTableMenu/ColumnTableMenu';
 
@@ -68,6 +67,7 @@ const SlideMenu: React.FC = () => {
         mergeSlideWithPrevious,
     } = useSlideMenu();
 
+    
     const { activeEditor } = useEditorStore();
 
     const presentation = getPresentation()
@@ -364,6 +364,7 @@ const SlideMenu: React.FC = () => {
                             elementId={state.elementId ?? undefined}
                             presentationId={presentation!.id}
                             editor={activeEditor ?? undefined}
+                            tableRowIndex={state.tableRowIndex ?? undefined}
                         />
                     </>
                 );
@@ -375,6 +376,7 @@ const SlideMenu: React.FC = () => {
                         columnId={state.columnId ?? undefined}
                         elementId={state.elementId ?? undefined}
                         presentationId={presentation!.id}
+                        tableColumnIndex={state.tableColumnIndex ?? undefined}
                         editor={activeEditor ?? undefined}
                     />
                 );
