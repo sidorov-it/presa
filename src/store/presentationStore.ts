@@ -1014,13 +1014,7 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
                 if (!currentLayout) return;
 
-                const newColumnId = generateId();
-
-                const newColumn: GridCell = {
-                    id: newColumnId,
-                    row: 0,
-                    column: columnIndex + 1,
-                };
+                let updatedElements = currentLayout.elements;
 
                 // Update grid structure
                 const updatedGridStructure = {
@@ -1029,6 +1023,18 @@ export const usePresentationStore = create<PresentationState>()(
                     columnWidths: getColumnWidths(currentLayout.gridStructure.columns + 1),
                     rows: currentLayout.gridStructure.rows.map((row: { id: string; cells: GridCell[] }) => {
                         const cells = [...row.cells]
+
+                        const newColumnId = generateId();
+
+                        const newElement = getNewEditorElement(newColumnId);
+                        updatedElements = [...updatedElements, newElement];
+
+                        const newColumn: GridCell = {
+                            id: newColumnId,
+                            row: 0,
+                            column: columnIndex + 1,
+                        };
+
                         cells.splice(columnIndex, 0, newColumn);
                         return {
                             ...row,
@@ -1038,21 +1044,22 @@ export const usePresentationStore = create<PresentationState>()(
                 };
 
                 // Create new elements for the column
-                let updatedElements = currentLayout.elements;
-                if (currentLayout.type === 'custom') {
-                    const firstRow = currentLayout.gridStructure.rows[0];
-                    if (!firstRow) return;
-                    const elements = currentLayout.elements.filter(element => element.cellId === firstRow.cells[0].id);
-                    const updatedNewElements = elements.map(element => ({
-                        ...element,
-                        id: generateId(),
-                        cellId: newColumnId,
-                    } as BaseElement));
-                    updatedElements = [...currentLayout.elements, ...updatedNewElements];
-                } else {
-                    const newElement = getNewEditorElement(newColumnId);
-                    updatedElements = [...currentLayout.elements, newElement];
-                }
+                // let updatedElements = currentLayout.elements;
+                // if (currentLayout.type === 'custom') {
+                //     const firstRow = currentLayout.gridStructure.rows[0];
+                //     if (!firstRow) return;
+                //     const elements = currentLayout.elements.filter(element => element.cellId === firstRow.cells[0].id);
+                //     const updatedNewElements = elements.map(element => ({
+                //         ...element,
+                //         id: generateId(),
+                //         cellId: newColumnId,
+                //     } as BaseElement));
+
+                //     updatedElements = [...currentLayout.elements, ...updatedNewElements];
+                // } else {
+                    // const newElement = getNewEditorElement(newColumnId);
+                    // updatedElements = [...currentLayout.elements, newElement];
+                // }
 
 
                 const updatedSlide = {
@@ -1090,11 +1097,13 @@ export const usePresentationStore = create<PresentationState>()(
                     presentationId,
                     slideId,
                     layoutId,
-                    columnId: newColumnId,
+                    // columnId: newColumnId,
                     position: 'right',
                     before: { presentations: beforeState.presentations },
                     after: updatedState
                 });
+
+                get().saveChanges(presentationId);
             },
 
 
@@ -1167,8 +1176,6 @@ export const usePresentationStore = create<PresentationState>()(
                 });
 
                 get().saveChanges(presentationId);
-
-
             },
 
 
