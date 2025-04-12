@@ -30,15 +30,15 @@ const adjustWidths = (
 
     newColumnWidths[currentColumnIndex] = `${newWidthPercentage.toFixed(2)}%`;
 
-    let neighborIndex: number;
+    let neighborIndex = currentColumnIndex + 1;
 
-    if (!isLast && currentColumnIndex < totalColumns - 1) {
-        neighborIndex = currentColumnIndex + 1;
-    } else if (currentColumnIndex > 0) {
-        neighborIndex = currentColumnIndex - 1;
-    } else {
-        return newColumnWidths;
-    }
+    // if (!isLast && currentColumnIndex < totalColumns - 1) {
+    //     neighborIndex = currentColumnIndex + 1;
+    // } else if (currentColumnIndex > 0) {
+    //     neighborIndex = currentColumnIndex - 1;
+    // } else {
+    //     return newColumnWidths;
+    // }
 
     let neighborNewWidth = percentValues[neighborIndex] + difference;
 

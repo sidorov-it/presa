@@ -236,7 +236,6 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
         const layout = slide.layouts.find(l => l.id === layoutId);
         if (!layout || !layout.gridStructure) return;
 
-        // Calculate the current width of the column being resized
         const columnWidths = layout.gridStructure.columnWidths || 
             Array(layout.gridStructure.columns).fill(`${(100 / layout.gridStructure.columns).toFixed(2)}%`);
         
