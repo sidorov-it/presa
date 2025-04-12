@@ -285,7 +285,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         if (cellElement) {
             const width = cellElement.offsetWidth;
             startWidthRef.current = width;
-            resizebleElementRef.current = cellElement.getAttribute('data-element-id');
+            resizebleElementRef.current = cellElement.getAttribute('data-cell-id');
         }
 
         document.addEventListener('mousemove', handleResizeMove);
@@ -421,7 +421,8 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         });
     }, [slideId, layoutId, rowIndex]);
 
-    const handleClickElement = useCallback((elementId: string) => () => {
+    const handleClickElement = useCallback((elementId: string) => (ev: React.MouseEvent<HTMLDivElement>) => {
+        ev.stopPropagation();
         if (tiptapRefs.current?.editors[elementId]?.editor) {
             tiptapRefs.current?.editors[elementId]?.editor.chain().focus().run();
         }
@@ -535,24 +536,13 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     ))}
                 </div>
             </div>
-            {hasMultipleCells && !isLastCell && (
-                <>
-                    <div
-                        ref={resizeBorderRef}
-                        className={`${styles.resizableBorder} ${isResizing ? styles.resizableBorderDragged : ''}`}
-                        onMouseDown={handleResizeStart}
-                    />
-                </>
-            )}
-
-            {/* {!isTable && hasMultipleCells && isLastCell && elementIsHovered && !slideIsSelected && (
+            {hasMultipleCells && !isTable &&!isLastCell && (
                 <div
-                    className={`${styles.addColumnIcon} themed-button`}
-                    onClick={handleAddColumn}
-                >
-                    <PlusIcon />
-                </div>
-            )} */}
+                    ref={resizeBorderRef}
+                    className={`${styles.resizableBorder} ${isResizing ? styles.resizableBorderDragged : ''}`}
+                    onMouseDown={handleResizeStart}
+                />
+            )}
 
             {isShowRowDragHandler && (
                 <DragHandler
