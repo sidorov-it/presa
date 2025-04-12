@@ -470,17 +470,6 @@ export const ElementContent = ({
 
 
 const ElementContentMemo = memo(ElementContent, (prevProps, nextProps) => {
-    console.log('rerender ElementContentMemo', prevProps.elementId, (
-        prevProps.elementId === nextProps.elementId &&
-        prevProps.slideId === nextProps.slideId &&
-        prevProps.layoutId === nextProps.layoutId &&
-        // prevProps.isLastCell === nextProps.isLastCell &&
-        prevProps.elementId === nextProps.elementId &&
-        prevProps.slideId === nextProps.slideId &&
-        prevProps.presentationId === nextProps.presentationId &&
-        prevProps.layoutId === nextProps.layoutId &&
-        prevProps.isInTable === nextProps.isInTable
-    ))
     return (
         prevProps.elementId === nextProps.elementId &&
         prevProps.slideId === nextProps.slideId &&

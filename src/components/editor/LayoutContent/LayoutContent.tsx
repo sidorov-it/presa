@@ -1,4 +1,4 @@
-import React, { RefObject, useState, useCallback, useMemo, memo } from 'react';
+import React, { RefObject, useState, useCallback, useMemo, memo, useRef } from 'react';
 import { Layout, GridRow, GridCell, Element, TipTapRefs } from '@/types';
 import { useDnd } from '@/contexts/DragDropContext';
 import { generateGridTemplateAreas, generateGridTemplateColumns } from '@/types';
@@ -8,6 +8,8 @@ import { usePresentationStore } from '@/store/presentationStore';
 import DragHandler from '../DragHandler';
 import { useMenuSelectedCell, useMenuSelectedElement, useMenuSelectedLayout, useMenuStore } from '@/store/menuStore';
 import { useShallow } from 'zustand/react/shallow';
+import adjustWidths from '@/utils/adjustWidths';
+
 interface LayoutContentProps {
     layoutId: string;
     onDeleteElement: (layoutId: string, elementId: string) => void;
@@ -25,8 +27,19 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
 }) => {
     const { handleDragStart } = useDnd();
     const [isLayoutHovered, setIsLayoutHovered] = useState(false);
+    const [isResizingColumn, setIsResizingColumn] = useState(false);
+    
+    const layoutRef = useRef<HTMLDivElement>(null);
+    const animationFrameIdRef = useRef<number | null>(null);
+    const startXRef = useRef<number>(0);
+    const resizeColumnIndexRef = useRef<number | null>(null);
+    const startWidthRef = useRef<number | null>(null);
 
-    const layout = usePresentationStore(useShallow(state => state.getLayout(presentationId, slideId, layoutId)));
+    const layout = usePresentationStore(useShallow(state => state.getLayout(presentationId, slideId, layoutId)))!;
+
+    if (!layout || !layout.gridStructure) {
+        return null;
+    }
 
     // Use optimized selector hooks instead of full context
     const openMenu = useMenuStore.getState().openMenu;
@@ -51,18 +64,18 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     // Memoize grid properties to prevent recalculations
     const gridTemplateAreas = useMemo(() =>
         generateGridTemplateAreas(layout.gridStructure),
-    [layout.gridStructure]
+        [layout.gridStructure]
     );
 
     const gridTemplateColumns = useMemo(() =>
         generateGridTemplateColumns(layout.gridStructure),
-    [layout.gridStructure]
+        [layout.gridStructure]
     );
 
     // Memoize layout properties
     const hasMultipleCellsInRow = useMemo(() =>
         layout.gridStructure.rows.some(row => row.cells.length > 1),
-    [layout.gridStructure.rows]
+        [layout.gridStructure.rows]
     );
 
     // Memoize cell elements grouping
@@ -82,7 +95,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
         layout.elements.length === 1 &&
         layout.gridStructure.rows.length === 1 &&
         layout.gridStructure.rows[0].cells.length === 1,
-    [layout.elements.length, layout.gridStructure.rows]
+        [layout.elements.length, layout.gridStructure.rows]
     );
 
     // console.log('columnDragPosition', columnDragPosition)
@@ -104,7 +117,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
             elementType: 'layout',
             layoutId: layout.id
         }),
-    [openMenu, slideId, layout.id]
+        [openMenu, slideId, layout.id]
     );
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -126,11 +139,127 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
         usePresentationStore.getState().addRowToTable(presentationId, slideId, layout.id, layout.gridStructure.rows.length);
     }, [layout, presentationId, slideId]);
 
+
+    const handleResizeMoveTableColumn = useCallback((e: MouseEvent) => {
+        if (animationFrameIdRef.current !== null) {
+            cancelAnimationFrame(animationFrameIdRef.current);
+        }
+
+        animationFrameIdRef.current = requestAnimationFrame(() => {
+            if (!startWidthRef.current || resizeColumnIndexRef.current === null) return;
+            const presentation = usePresentationStore.getState().getPresentation(presentationId);
+            if (!presentation) return;
+
+            const slide = presentation.slides.find(s => s.id === slideId);
+            if (!slide) return;
+
+            const layout = slide.layouts.find(l => l.id === layoutId);
+            if (!layout || !layout.gridStructure) return;
+
+            if (!layoutRef.current) {
+                return;
+            }
+
+            const layoutRect = layoutRef.current.getBoundingClientRect();
+            if (!layoutRect) return;
+
+            const padding = 16; // Same padding as in GridCellElement
+            const totalWidth = layoutRef.current.offsetWidth - padding * 2;
+
+            const currentX = e.clientX - layoutRect.left;
+            const deltaX = currentX - startXRef.current;
+            const newWidth = Math.max(0, startWidthRef.current + deltaX);
+
+            const newWidthPercentage = (newWidth / totalWidth) * 100;
+
+            const columns = layout.gridStructure.columns;
+            const columnWidths = layout.gridStructure.columnWidths || Array(columns).fill(`${(100 / columns).toFixed(2)}%`);
+
+            const currentColumnIndex = resizeColumnIndexRef.current;
+            const isLastColumn = currentColumnIndex === columns - 2; // -2 because we're resizing between columns
+
+            const otherColumnsMinWidth = (columns - 1) * 15;
+            const maxAllowedWidth = 100 - otherColumnsMinWidth;
+
+            const newWidthPart = Math.min(maxAllowedWidth, Math.max(15, newWidthPercentage)) / 100;
+
+            const newColumnWidths = adjustWidths(
+                columnWidths,
+                currentColumnIndex,
+                newWidthPart,
+                isLastColumn,
+                columns
+            );
+
+            const updatedGridStructure = {
+                ...layout.gridStructure,
+                columnWidths: newColumnWidths
+            };
+
+            usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, {
+                gridStructure: updatedGridStructure
+            });
+        });
+    }, [presentationId, slideId, layoutId]);
+
+
+    const handleResizeEndTableColumn = useCallback(() => {
+        if (animationFrameIdRef.current !== null) {
+            cancelAnimationFrame(animationFrameIdRef.current);
+            animationFrameIdRef.current = null;
+        }
+
+        startWidthRef.current = null;
+        resizeColumnIndexRef.current = null;
+
+        document.removeEventListener('mousemove', handleResizeMoveTableColumn);
+        document.removeEventListener('mouseup', handleResizeEndTableColumn);
+
+        setIsResizingColumn(false);
+    }, [handleResizeMoveTableColumn]);
+
+    const handleResizeStartTableColumn = useCallback((e: React.MouseEvent<HTMLDivElement>, columnIndex: number) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const leftBorder = layoutRef.current?.getBoundingClientRect().left || 0;
+        const initialX = e.clientX - leftBorder;
+        startXRef.current = initialX;
+
+        // Get the current column width
+        const presentation = usePresentationStore.getState().getPresentation(presentationId);
+        if (!presentation) return;
+
+        const slide = presentation.slides.find(s => s.id === slideId);
+        if (!slide) return;
+
+        const layout = slide.layouts.find(l => l.id === layoutId);
+        if (!layout || !layout.gridStructure) return;
+
+        // Calculate the current width of the column being resized
+        const columnWidths = layout.gridStructure.columnWidths || 
+            Array(layout.gridStructure.columns).fill(`${(100 / layout.gridStructure.columns).toFixed(2)}%`);
+        
+        const currentColumnWidth = parseFloat(columnWidths[columnIndex].match(/^([\d.]+)%$/)?.[1] || '0');
+        const totalWidth = layoutRef.current?.offsetWidth || 0;
+        const padding = 16;
+        const columnWidthPx = (totalWidth - padding * 2) * (currentColumnWidth / 100);
+        
+        startWidthRef.current = columnWidthPx;
+        resizeColumnIndexRef.current = columnIndex;
+
+        document.addEventListener('mousemove', handleResizeMoveTableColumn);
+        document.addEventListener('mouseup', handleResizeEndTableColumn);
+
+        setIsResizingColumn(true);
+    }, [handleResizeEndTableColumn, handleResizeMoveTableColumn, presentationId, slideId, layoutId]);
+
     const isSelected = menuLayoutId === layout.id && menuElementId === null && menuCellId === null;
 
     return (
         <>
             <div
+                ref={layoutRef}
                 className={`${styles.layout}`}
                 data-layout-id={layout.id}
                 data-is-single-element-layout={isSingleElementSingleCellLayout ? "true" : "false"}
@@ -214,6 +343,33 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                         >
                             +
                         </button>
+                    </>
+                )}
+
+                {layout.isTable && (
+                    <>
+                        {Array.from({ length: layout.gridStructure.columns }).map((_, index) => {
+                            if (index === layout.gridStructure.columns - 1) {
+                                return null;
+                            }
+                            const left = layout.gridStructure.columnWidths.reduce((acc, width, i) => {
+                                if (i <= index) {
+                                    return acc + parseFloat(width);
+                                }
+                                return acc;
+                            }, 0);
+
+                            return (
+                                <div
+                                    key={index}
+                                    className={`${styles.tableColumnResizeBorder} ${isResizingColumn && resizeColumnIndexRef.current === index ? styles.tableColumnResizeBorderActive : ''}`}
+                                    onMouseDown={(e) => handleResizeStartTableColumn(e, index)}
+                                    style={{
+                                        left: `calc((100% - var(--grid-padding)) / 100 * ${left})`
+                                    }}
+                                />
+                            )
+                        })}
                     </>
                 )}
 
