@@ -1,4 +1,4 @@
-import { TipTapRefs, IPresentation, Slide } from "@/types";
+import { TipTapRefs, IPresentation, Slide, Layout } from "@/types";
 import SlideEditor from "../SlideEditor";
 import { memo, MutableRefObject } from "react";
 import { PresentationState, usePresentationStore } from '@/store/presentationStore';
@@ -25,19 +25,20 @@ const SlideEditorWrapper = memo(({
     onSlideSelect: (slideId: string) => void;
     tiptapRefs: MutableRefObject<TipTapRefs>;
 }) => {
-    const slide = usePresentationStore(useShallow((state: PresentationState) => {
+    const slideLayoutIds = usePresentationStore(useShallow((state: PresentationState) => {
         const presentation = state.presentations.find((p: IPresentation) => p.id === presentationId);
         if (!presentation) return null;
-        return presentation.slides.find((s: Slide) => s.id === slideId) || null;
+        return presentation.slides.find((s: Slide) => s.id === slideId)?.layouts.map((l: Layout) => l.id) || null;
     }));
 
-    if (!slide) return null;
+    if (!slideLayoutIds) return null;
 
     return (
         <SlideEditor
             tiptapRefs={tiptapRefs}
-            slide={slide}
+            slideLayoutIds={slideLayoutIds}
             presentationId={presentationId}
+            slideId={slideId}
             handleSelectSlide={onSlideSelect}
             isSelected={isSelected}
         />

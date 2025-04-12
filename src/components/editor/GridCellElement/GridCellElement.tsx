@@ -12,7 +12,7 @@ import { Editor } from '@tiptap/react';
 import { getColumnWidths } from '../SlideEditor/SlideEditor';
 import DragHandler from '../DragHandler';
 import { PlusIcon } from '@/components/icons';
-import { ElementContent } from '../ElementContent/ElementContent';
+import ElementContent from '../ElementContent/ElementContent';
 import { ComponentStructureType, getNewEditorElement } from '@/elements/registry';
 import { useMenuStore } from '@/store/menuStore';
 import { useShallow } from 'zustand/react/shallow';
@@ -155,8 +155,8 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             ?.layouts.find(l => l.id === layoutId)
             ?.elements.filter(e => e.cellId === cell.id)
             .map(e => e.id) ?? []
-    ));        // const elements = usePresentationStore(state => state.getElements(presentationId, slideId, layoutId, elementsIds));
-    // const elements = usePresentationStore.getState().getCellElements(presentationId, slideId, layoutId, cell.id);
+        ));
+
     const isLastCell = elementsIds[elementsIds.length - 1] === cell.id;
 
     const menuElementId = useMenuStore(state => state.elementId);
@@ -169,7 +169,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     const handleDragStart = useHandleDragStart();
 
-    const [elementIsHovered, setElementIsHovered] = useState(false);
+    // const [elementIsHovered, setElementIsHovered] = useState(false);
     const [cellIsHovered, setCellIsHovered] = useState(false);
 
     const startXRef = useRef(0);
@@ -518,9 +518,9 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                         >
                             <ElementContent
                                 elementId={elementId}
-                                setElementIsHovered={setElementIsHovered}
-                                menuElementId={menuElementId}
-                                elementIsHovered={elementIsHovered}
+                                // setElementIsHovered={setElementIsHovered}
+                                // elementIsHovered={elementIsHovered}
+                                // menuElementId={menuElementId}
                                 handleClickElementDragHandle={handleClickElementDragHandle}
                                 handleKeyDownElementDragHandle={handleKeyDownElementDragHandle}
                                 handleDragStartElementDragHandle={handleDragStartElementDragHandle}
@@ -545,14 +545,14 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 </>
             )}
 
-            {!isTable && hasMultipleCells && isLastCell && elementIsHovered && !slideIsSelected && (
+            {/* {!isTable && hasMultipleCells && isLastCell && elementIsHovered && !slideIsSelected && (
                 <div
                     className={`${styles.addColumnIcon} themed-button`}
                     onClick={handleAddColumn}
                 >
                     <PlusIcon />
                 </div>
-            )}
+            )} */}
 
             {isShowRowDragHandler && (
                 <DragHandler

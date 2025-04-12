@@ -1,7 +1,7 @@
 import Tiptap from '@/components/tiptap/Tiptap';
 import styles from './ElementContent.module.css';
 import DragHandler from '../DragHandler';
-import { RefObject, use, useCallback, useEffect, useMemo } from 'react';
+import { memo, RefObject, useCallback, useMemo, useState } from 'react';
 import { Element, GridStructure, getPredefinedGridStructures, Layout, TipTapRefs, EditorElement, ElementConfig, ImageElement } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import { generateId } from '@/utils/id';
@@ -10,13 +10,13 @@ import { useHistoryStore } from '@/store/historyStore';
 import { getElementConfig, getNewEditorElement, getNewElement, getNewTableLayout } from '@/elements/registry';
 import { getColumnWidths } from '../SlideEditor/SlideEditor';
 import { Image } from '@/elements/image';
+import { useMenuStore } from '@/store/menuStore';
+import { useShallow } from 'zustand/react/shallow';
 
 export const ElementContent = ({
     elementId,
-    setElementIsHovered,
-    menuElementId,
-    // activeEditorId,
-    elementIsHovered,
+    // elementIsHovered,
+    // setElementIsHovered,
     handleClickElementDragHandle,
     handleKeyDownElementDragHandle,
     handleDragStartElementDragHandle,
@@ -28,10 +28,9 @@ export const ElementContent = ({
     isInTable,
 }: {
     elementId: string;
-    setElementIsHovered: (isHovered: boolean) => void;
-    menuElementId: string | null;
+    // setElementIsHovered: (isHovered: boolean) => void;
     // activeEditorId?: string | null;
-    elementIsHovered: boolean;
+    // elementIsHovered: boolean;
     handleClickElementDragHandle: (element: Element, elementConfig: ElementConfig) => (e: any) => void;
     handleKeyDownElementDragHandle: (element: Element, elementConfig: ElementConfig) => (e: any) => void;
     handleDragStartElementDragHandle: (element: Element) => (e: any) => void;
@@ -42,22 +41,25 @@ export const ElementContent = ({
     layoutId: string;
     isInTable: boolean;
 }) => {
-    const element = usePresentationStore(state => state.getElement(presentationId, slideId, layoutId, elementId));
+    const element = usePresentationStore(state => state.getElement(presentationId, slideId, layoutId, elementId)!);
 
     const isCurrentEditorActive = useEditorStore(state => state.getActiveEditorId() === elementId);
-
     const elementConfig = useMemo(() => getElementConfig(element!.elementTypeId), [element]);
 
-    const elementToFocus = useEditorStore(state => state.elementToFocus);
+    const isMenuOpenOnCurrentElement = useMenuStore(useShallow(state => state.elementId === elementId));
+
+    const [elementIsHovered, setElementIsHovered] = useState(false);
+
+    // const elementToFocus = useEditorStore(state => state.elementToFocus);
     // const clearElementToFocus = useEditorStore.getState().clearElementToFocus;
 
-    const isElementToFocus = useMemo(() => elementToFocus?.elementId === elementId, [elementToFocus, elementId]);
+    // const isElementToFocus = useMemo(() => elementToFocus?.elementId === elementId, [elementToFocus, elementId]);
 
-    useEffect(() => {
-        if (isElementToFocus) {
-            useEditorStore.getState().clearElementToFocus();
-        }
-    }, [isElementToFocus]);
+    // useEffect(() => {
+    //     if (isElementToFocus) {
+    //         useEditorStore.getState().clearElementToFocus();
+    //     }
+    // }, [isElementToFocus]);
 
 
     const handleEnterPressed = useCallback((element: Element) => (contentBeforeCursor?: string, contentAfterCursor?: string) => {
@@ -117,16 +119,15 @@ export const ElementContent = ({
                 layouts: updatedLayouts
             }, true);
 
-            useEditorStore.getState().setElementToFocus(
-                firstNewEditorId,
-                newLayoutId,
-                newLayout.gridStructure.rows[0].cells[0].id
-            );
+            // useEditorStore.getState().setElementToFocus(
+            //     firstNewEditorId,
+            //     newLayoutId,
+            //     newLayout.gridStructure.rows[0].cells[0].id
+            // );
 
             useHistoryStore.getState().commitTransaction(presentationId);
 
             setTimeout(() => {
-                console.log('focusing', tiptapRefs.current?.editors[firstNewEditorId]?.editor);
                 tiptapRefs.current?.editors[firstNewEditorId]?.editor.commands.focus('start');
             }, 10);
 
@@ -146,11 +147,11 @@ export const ElementContent = ({
 
             usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, layout);
 
-            useEditorStore.getState().setElementToFocus(
-                newElement.id,
-                layoutId,
-                cell.id
-            );
+            // useEditorStore.getState().setElementToFocus(
+            //     newElement.id,
+            //     layoutId,
+            //     cell.id
+            // );
 
             useHistoryStore.getState().commitTransaction(presentationId);
 
@@ -387,7 +388,7 @@ export const ElementContent = ({
                     elementId={element.id}
                     tiptapRefs={tiptapRefs}
                     id={element.id}
-                    autoFocus={isElementToFocus}
+                    // autoFocus={isElementToFocus}
                     initialContent={getEditorContent(element)}
                     onEnterPressed={handleEnterPressed(element)}
                     onBackspacePressed={handleBackspacePressed(element)}
@@ -427,7 +428,7 @@ export const ElementContent = ({
                 Unsupported element type: {element.elementTypeId}
             </div>
         );
-    }, [elementConfig, tiptapRefs, getEditorContent, handleEnterPressed, handleBackspacePressed, handleEditorContentChange, dragHandleRef, handleAddElement, presentationId, slideId, layoutId]);
+    }, [elementConfig, tiptapRefs, getEditorContent, handleEnterPressed, handleBackspacePressed, handleEditorContentChange, handleBlur, dragHandleRef, handleAddElement, presentationId, slideId, layoutId]);
 
     return (
         <div
@@ -446,18 +447,18 @@ export const ElementContent = ({
             }}
         >
             <div className={`${styles.elementWrapper}`}>
-                {!isInTable && (menuElementId === element.id || isCurrentEditorActive || elementIsHovered) && (
+                {!isInTable && (isMenuOpenOnCurrentElement || isCurrentEditorActive || elementIsHovered) && (
                     <DragHandler
                         className={styles.elementDragHandle}
                         slideId={slideId}
-                        isActive={menuElementId === element.id}
+                        isActive={isMenuOpenOnCurrentElement}
                         dataAttributes={{
                             'data-element-drag-handle': element.id,
                         }}
                         ariaLabel="Drag this element"
-                        handleClick={handleClickElementDragHandle(element, elementConfig)}
-                        handleKeyDown={handleKeyDownElementDragHandle(element, elementConfig)}
-                        handleDragStart={handleDragStartElementDragHandle(element)}
+                        handleClick={handleClickElementDragHandle(element as Element, elementConfig)}
+                        handleKeyDown={handleKeyDownElementDragHandle(element as Element, elementConfig)}
+                        handleDragStart={handleDragStartElementDragHandle(element as Element)}
                     />
                 )}
 
@@ -466,3 +467,33 @@ export const ElementContent = ({
         </div>
     )
 }
+
+
+const ElementContentMemo = memo(ElementContent, (prevProps, nextProps) => {
+    console.log('rerender ElementContentMemo', prevProps.elementId, (
+        prevProps.elementId === nextProps.elementId &&
+        prevProps.slideId === nextProps.slideId &&
+        prevProps.layoutId === nextProps.layoutId &&
+        // prevProps.isLastCell === nextProps.isLastCell &&
+        prevProps.elementId === nextProps.elementId &&
+        prevProps.slideId === nextProps.slideId &&
+        prevProps.presentationId === nextProps.presentationId &&
+        prevProps.layoutId === nextProps.layoutId &&
+        prevProps.isInTable === nextProps.isInTable
+    ))
+    return (
+        prevProps.elementId === nextProps.elementId &&
+        prevProps.slideId === nextProps.slideId &&
+        prevProps.layoutId === nextProps.layoutId &&
+        // prevProps.isLastCell === nextProps.isLastCell &&
+        prevProps.elementId === nextProps.elementId &&
+        prevProps.slideId === nextProps.slideId &&
+        prevProps.presentationId === nextProps.presentationId &&
+        prevProps.layoutId === nextProps.layoutId &&
+        prevProps.isInTable === nextProps.isInTable
+    );
+});
+
+ElementContentMemo.displayName = 'ElementContentMemo';
+
+export default ElementContentMemo;

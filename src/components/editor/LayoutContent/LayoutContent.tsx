@@ -7,35 +7,26 @@ import styles from './LayoutContent.module.css';
 import { usePresentationStore } from '@/store/presentationStore';
 import DragHandler from '../DragHandler';
 import { useMenuSelectedCell, useMenuSelectedElement, useMenuSelectedLayout, useMenuStore } from '@/store/menuStore';
+import { useShallow } from 'zustand/react/shallow';
 interface LayoutContentProps {
-    layout: Layout;
+    layoutId: string;
     onDeleteElement: (layoutId: string, elementId: string) => void;
     tiptapRefs: RefObject<TipTapRefs>;
     presentationId: string;
     slideId: string;
 }
 
-// Pure function outside component to avoid recreation
-function simpleHash(str: string) {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash; // Convert to 32bit integer
-    }
-    return hash.toString(36);
-}
-
 const LayoutContent: React.FC<LayoutContentProps> = ({
-    layout,
+    layoutId,
     // onDeleteElement,
     tiptapRefs,
     presentationId,
     slideId
 }) => {
-    const { state } = useDnd();
     const { handleDragStart } = useDnd();
     const [isLayoutHovered, setIsLayoutHovered] = useState(false);
+
+    const layout = usePresentationStore(useShallow(state => state.getLayout(presentationId, slideId, layoutId)));
 
     // Use optimized selector hooks instead of full context
     const openMenu = useMenuStore.getState().openMenu;
@@ -178,16 +169,16 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                             }}
                         >
                             {row.cells.map((cell: GridCell, cellIndex: number) => {
-                                const cellId = cell.id;
-                                const elements = cellElements[cellId] || [];
+                                // const cellId = cell.id;
+                                // const elements = cellElements[cellId] || [];
                                 // const isLastCell = cellIndex === row.cells.length - 1;
 
-                                const elementsIds = elements.map(element => element.id);
-                                const key = `${cellId}-${simpleHash(JSON.stringify(elementsIds))}`;
+                                // const elementsIds = elements.map(element => element.id);
+                                // const key = `${cellId}-${simpleHash(JSON.stringify(elementsIds))}`;
 
                                 return (
                                     <GridCellElement
-                                        key={key}
+                                        key={cell.id}
                                         tiptapRefs={tiptapRefs}
                                         cell={cell}
                                         // elements={elements}
@@ -234,7 +225,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
 // Force the component to update when the store changes
 export default memo(LayoutContent, (prevProps, nextProps) => {
     // Only re-render if layout changes
-    return prevProps.layout === nextProps.layout &&
+    return prevProps.layoutId === nextProps.layoutId &&
         prevProps.slideId === nextProps.slideId &&
         prevProps.presentationId === nextProps.presentationId;
 });

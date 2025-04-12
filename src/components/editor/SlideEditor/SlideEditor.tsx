@@ -3,7 +3,7 @@
 'use client'
 
 import React, { useState, useRef, RefObject, useCallback, memo } from 'react';
-import { getPredefinedGridStructures, Layout, Slide, TipTapRefs } from '@/types';
+import { getPredefinedGridStructures, Layout, TipTapRefs } from '@/types';
 import { PresentationState, usePresentationStore } from '@/store/presentationStore';
 import styles from './SlideEditor.module.css';
 import LayoutContent from '../LayoutContent/LayoutContent';
@@ -12,12 +12,15 @@ import DragHandler from '../DragHandler';
 import { getNewEditorElement } from '@/elements/registry';
 import { useMenuStore } from '@/store/menuStore';
 import { useEditorStore } from '@/store/editorStore';
+import deepEqual from 'deep-equal';
+
 interface SlideEditorProps {
-    slide: Slide;
+    slideLayoutIds: string[];
     presentationId: string;
     handleSelectSlide: (slideId: string) => void;
     isSelected: boolean;
     tiptapRefs: RefObject<TipTapRefs>;
+    slideId: string;
 }
 
 export const getColumnWidths = (columnsCount: number): string[] => {
@@ -31,7 +34,8 @@ export const getColumnWidths = (columnsCount: number): string[] => {
 }
 
 const SlideEditor: React.FC<SlideEditorProps> = ({
-    slide,
+    slideLayoutIds,
+    slideId,
     tiptapRefs,
     presentationId,
     handleSelectSlide,
@@ -53,31 +57,31 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     const handleDeleteElement = useCallback((layoutId: string, elementId: string) => {
         // Use getState to access the store without subscribing to it
-        usePresentationStore.getState().deleteElement(presentationId, slide.id, layoutId, elementId);
-    }, [presentationId, slide.id]);
+        usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, elementId);
+    }, [presentationId, slideId]);
 
     const handleAddSlideAfter = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
 
         // Create a selector to get just the slide index
         const getSlideIndex = usePresentationStore.getState().getSlideIndex;
-        const slideIndex = getSlideIndex(presentationId, slide.id);
+        const slideIndex = getSlideIndex(presentationId, slideId);
 
         if (slideIndex !== -1) {
             const newSlideIndex = slideIndex + 1;
             addSlide(presentationId, newSlideIndex);
         }
-    }, [presentationId, slide.id, addSlide]);
+    }, [presentationId, slideId, addSlide]);
 
     const handleOpenSlideMenu = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
         openMenu({
-            slideId: slide.id,
+            slideId: slideId,
             elementId: null,
             elementType: 'slide'
         });
-        handleSelectSlide(slide.id);
-    }, [slide.id, openMenu, handleSelectSlide]);
+        handleSelectSlide(slideId);
+    }, [slideId, openMenu, handleSelectSlide]);
 
     const getSlideClassName = useCallback(() => {
         let className = styles.slideWrapper;
@@ -87,16 +91,16 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         return className;
     }, [isSelected]);
 
-    const slideMenuOpen = checkSlideMenuIsOpen(slide.id);
+    const slideMenuOpen = checkSlideMenuIsOpen(slideId);
 
     const handleSlideWrapperClick = useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
-        handleSelectSlide(slide.id);
+        handleSelectSlide(slideId);
 
         const handleDocumentClick = (event: MouseEvent) => {
             if (event.target instanceof HTMLElement &&
                 !event.target.closest('[data-slide-id]') &&
-                event.target.getAttribute('data-slide-drag-handle') !== slide.id) {
+                event.target.getAttribute('data-slide-drag-handle') !== slideId) {
                 document.removeEventListener('click', handleDocumentClick);
             }
         };
@@ -105,7 +109,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         return () => {
             document.removeEventListener('click', handleDocumentClick);
         };
-    }, [slide.id, handleSelectSlide]);
+    }, [slideId, handleSelectSlide]);
 
     const createDefaultLayout = useCallback(() => {
         const gridStructure = getPredefinedGridStructures('single-column');
@@ -120,7 +124,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             gridStructure
         };
 
-        DragDropTransactionHelper.addLayout(presentationId, slide.id, newLayout, slide.layouts.length);
+        DragDropTransactionHelper.addLayout(presentationId, slideId, newLayout, slideLayoutIds.length);
 
         setTimeout(() => {
             document.dispatchEvent(new CustomEvent('focus_editor', {
@@ -129,11 +133,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 detail: { editorId: editorElement.id }
             }));
         }, 100);
-    }, [presentationId, slide.id, slide.layouts.length]);
+    }, [presentationId, slideId, slideLayoutIds]);
 
     const handleSlideClick = useCallback((e: React.MouseEvent) => {
-        if (slide.layouts.length === 1 && !menuElementId && !activeEditor) {
-            tiptapRefs.current?.editors[slide.layouts[0].elements[0].id]?.editor.chain().focus().run();
+        if (slideLayoutIds.length === 1 && !menuElementId && !activeEditor) {
+            tiptapRefs.current?.editors[slideLayoutIds[0]]?.editor.chain().focus().run();
         } else {
             const rect = editorRef.current?.getBoundingClientRect();
             if (rect) {
@@ -146,7 +150,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 }
             }
         }
-    }, [createDefaultLayout, slide.layouts, tiptapRefs, menuElementId, activeEditor]);
+    }, [slideLayoutIds, menuElementId, activeEditor, tiptapRefs, createDefaultLayout]);
 
     return (
         <div
@@ -156,7 +160,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             onMouseLeave={() => setIsHovered(false)}
             role="button"
             tabIndex={0}
-            aria-label={`Slide ${slide.id}`}
+            aria-label={`Slide ${slideId}`}
             onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     handleSlideWrapperClick(e as unknown as React.MouseEvent);
@@ -173,11 +177,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     {(isSelected || slideMenuOpen || isHovered) && (
                         <DragHandler
                             className={styles.slideDragHandle}
-                            slideId={slide.id}
+                            slideId={slideId}
                             isActive={slideMenuOpen}
                             ariaLabel="Открыть меню слайда"
                             dataAttributes={{
-                                'data-slide-drag-handle': slide.id,
+                                'data-slide-drag-handle': slideId,
                             }}
                             handleClick={handleOpenSlideMenu}
                             handleKeyDown={(e) => {
@@ -191,15 +195,15 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                         />
                     )}
 
-                    <div className={`${styles.slideContainer} themed-card`} data-slide-id={slide.id} onClick={handleSlideClick}>
-                        {slide.layouts.map((layout: Layout) => (
+                    <div className={`${styles.slideContainer} themed-card`} data-slide-id={slideId} onClick={handleSlideClick}>
+                        {slideLayoutIds.map((layoutId: string) => (
                             <LayoutContent
-                                key={layout.id}
-                                layout={layout}
+                                key={layoutId}
+                                layoutId={layoutId}
                                 onDeleteElement={handleDeleteElement}
                                 tiptapRefs={tiptapRefs}
                                 presentationId={presentationId}
-                                slideId={slide.id}
+                                slideId={slideId}
                             />
                         ))}
                     </div>
@@ -224,15 +228,15 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 // Enhanced memo comparison to perform deep comparison of relevant slide properties
 export default memo(SlideEditor, (prevProps, nextProps) => {
     // Deep compare the slide layouts to ensure we only re-render when layouts change
-    const prevLayouts = prevProps.slide.layouts;
-    const nextLayouts = nextProps.slide.layouts;
+    // const prevLayouts = prevProps.slideLayoutsLength;
+    // const nextLayouts = nextProps.slideLayoutsLength;
 
-    const layoutsEqual = prevLayouts.length === nextLayouts.length &&
-        prevLayouts.every((layout, index) =>
-            JSON.stringify(layout) === JSON.stringify(nextLayouts[index]));
+    // const layoutsEqual = prevLayouts.length === nextLayouts.length &&
+    //     prevLayouts.every((layout, index) =>
+    //         JSON.stringify(layout) === JSON.stringify(nextLayouts[index]));
 
-    return layoutsEqual &&
+    return deepEqual(prevProps.slideLayoutIds, nextProps.slideLayoutIds) &&
         prevProps.isSelected === nextProps.isSelected &&
         prevProps.presentationId === nextProps.presentationId &&
-        prevProps.slide.id === nextProps.slide.id;
+        prevProps.slideId === nextProps.slideId;
 });
