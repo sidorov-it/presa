@@ -136,18 +136,24 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     }, [presentationId, slideId, slideLayoutIds]);
 
     const handleSlideClick = useCallback((e: React.MouseEvent) => {
-        if (slideLayoutIds.length === 1 && !menuElementId && !activeEditor) {
-            tiptapRefs.current?.editors[slideLayoutIds[0]]?.editor.chain().focus().run();
-        } else {
-            const rect = editorRef.current?.getBoundingClientRect();
-            if (rect) {
-                const positionY = e.clientY - (rect.top ?? 0);
-                const slideHeight = rect.height ?? 0;
-                const isClickBottom = slideHeight - positionY < 30;
 
-                if (isClickBottom) {
-                    createDefaultLayout();
-                }
+        if (slideLayoutIds.length === 1 && !menuElementId && !activeEditor) {
+            const layoutId = slideLayoutIds[0];
+            const layout = usePresentationStore.getState().getLayout(presentationId, slideId, layoutId);
+            if (layout?.elements.length === 1) {
+                tiptapRefs.current?.editors[layout.elements[0].id]?.editor.chain().focus().run();
+                return;
+            }
+        }
+
+        const rect = editorRef.current?.getBoundingClientRect();
+        if (rect) {
+            const positionY = e.clientY - (rect.top ?? 0);
+            const slideHeight = rect.height ?? 0;
+            const isClickBottom = slideHeight - positionY < 30;
+
+            if (isClickBottom) {
+                createDefaultLayout();
             }
         }
     }, [slideLayoutIds, menuElementId, activeEditor, tiptapRefs, createDefaultLayout]);
