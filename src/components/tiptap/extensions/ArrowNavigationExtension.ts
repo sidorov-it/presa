@@ -223,7 +223,7 @@ export const ArrowNavigationExtension = (
                                         console.log(`Focusing editor: ${targetElementId}`);
                                         // Try to maintain the same horizontal position when moving down
                                         // For simplicity, we'll focus at the start
-                                        targetEditor.editor.commands.focus('start');
+                                        targetEditor.editor.commands.focus();
                                         // targetEditor.focus();
                                     } else {
                                         console.warn(`Editor not found in refs: ${targetElementId}`);
@@ -285,7 +285,7 @@ export const ArrowNavigationExtension = (
                     const text = editor.getText();
                     const firstLineEnd = text.indexOf('\n') !== -1 ? text.indexOf('\n') : text.length;
 
-                    if (position <= firstLineEnd) {
+                    // if (position <= firstLineEnd) {
                         // Find the editor element above this one
                         const targetInfo = findNextEditor(
                             presentationId,
@@ -358,7 +358,7 @@ export const ArrowNavigationExtension = (
 
                             return true;
                         }
-                    }
+                    // }
 
                     return false;
                 },
@@ -402,7 +402,7 @@ function findNextEditor(
     const getElementType = (element: any): 'editor' | 'video' | 'other' => {
         if (!element) return 'other';
 
-        switch (element.type) {
+        switch (element.elementTypeId) {
             case 'editor':
             case 'text':
             case 'heading':
