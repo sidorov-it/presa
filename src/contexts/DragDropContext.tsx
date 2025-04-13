@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, ReactNode, useEffect, useMemo, useCallback } from 'react';
 import deepEqual from 'deep-equal';
-import { BaseElement, GridCell, GridStructure, Layout, Slide } from '@/types';
+import { BaseElement, GridCell, GridRow, GridStructure, Layout, Slide } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import { generateId } from '@/utils/id';
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
@@ -13,7 +13,10 @@ const initialState: DndState = {
     source: {
         elementId: null,
         layoutId: null,
-        cellId: null
+        cellId: null,
+        tableId: null,
+        rowIndex: null,
+        columnIndex: null
     },
     target: {
         elementId: null,
@@ -28,7 +31,9 @@ const initialState: DndState = {
         layoutPosition: null,
         slideIndicator: null,
         cellIndicator: null,
-        cellPosition: null
+        cellPosition: null,
+        columnIndicator: null,
+        columnPosition: null
     },
     newElement: {
         id: null,
@@ -51,7 +56,10 @@ function dndReducer(state: DndState, action: DndAction): DndState {
                 source: {
                     elementId: action.payload.elementId,
                     layoutId: action.payload.layoutId,
-                    cellId: action.payload.cellId
+                    cellId: action.payload.cellId,
+                    tableId: action.payload.tableId,
+                    rowIndex: action.payload.rowIndex,
+                    columnIndex: action.payload.columnIndex
                 },
                 // Clear any previous indicators and targets
                 target: { ...initialState.target },
@@ -115,6 +123,45 @@ function dndReducer(state: DndState, action: DndAction): DndState {
                 }
             };
             break;
+        case 'SET_TABLE_COLUMN_INDICATOR':
+            updatedState = {
+                ...state,
+                indicators: {
+                    ...state.indicators,
+                    cellId: action.payload.cellId,
+                    tableColumnIndicator: action.payload.columnIndex,
+                    tableColumnPosition: action.payload.position,
+                    tableId: action.payload.tableId,
+                    tableRowIndicator: null,
+                    tableRowPosition: null
+                }
+            };
+            break;
+        case 'SET_TABLE_ROW_INDICATOR':
+            updatedState = {
+                ...state,
+                indicators: {
+                    ...state.indicators,
+                    cellId: action.payload.cellId,
+                    tableRowIndicator: action.payload.rowIndex,
+                    tableRowPosition: action.payload.position,
+                    tableId: action.payload.tableId,
+                    tableColumnIndicator: null,
+                    tableColumnPosition: null
+                }
+            };
+            break;
+
+        case 'SET_COLUMN_INDICATOR':
+            updatedState = {
+                ...state,
+                indicators: {
+                    ...state.indicators,
+                    columnIndicator: action.payload.columnId,
+                    columnPosition: action.payload.position
+                }
+            };
+            break;
         case 'COMPLETE_DROP':
             updatedState = {
                 ...initialState,
@@ -123,7 +170,6 @@ function dndReducer(state: DndState, action: DndAction): DndState {
             break;
         case 'CANCEL_DRAG':
             return initialState;
-            break;
         case 'SET_READY_TO_DROP':
             updatedState = {
                 ...state,
@@ -169,9 +215,24 @@ type DndContextType = {
     setCellIndicator: (cellId: string | null, position: Position | null) => void;
     setLayoutIndicator: (layoutId: string | null, position: Position | null) => void;
     setSlideIndicator: (slideId: string | null) => void;
+    setColumnIndicator: (columnId: string | null, position: Position | null) => void;
     completeDrop: () => void;
     cancelDrag: () => void;
-    handleDragStart: (e: React.DragEvent<HTMLDivElement>, elementId: string, layoutId: string, cellId?: string) => void;
+    handleDragStart: (e: React.DragEvent<HTMLDivElement>, {
+        elementId,
+        layoutId,
+        cellId,
+        tableId,
+        rowIndex,
+        columnIndex
+    }: {
+        elementId: string | null,
+        layoutId?: string,
+        cellId?: string,
+        tableId?: string,
+        rowIndex?: number,
+        columnIndex?: number
+    }) => void;
     handleNewElementDragStart: (e: React.DragEvent<HTMLDivElement>, elementId: string, defaultProps: any) => void;
     isDragging: () => boolean;
     getElement: (elementId: string, layoutId: string) => BaseElement | undefined;
@@ -223,8 +284,8 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
     }, [getLayout]);
 
     // Basic handler functions with useCallback to prevent recreating on each render
-    const startDrag = useCallback((elementId: string | null, layoutId: string, cellId?: string) => {
-        dispatch({ type: 'START_DRAG', payload: { elementId, layoutId, cellId } });
+    const startDrag = useCallback((elementId: string | null, layoutId: string, cellId?: string, tableId?: string, rowIndex?: number, columnIndex?: number) => {
+        dispatch({ type: 'START_DRAG', payload: { elementId, layoutId, cellId, tableId, rowIndex, columnIndex } });
     }, []);
 
     const setDropTarget = useCallback((target: DropTarget) => {
@@ -239,6 +300,14 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         dispatch({ type: 'SET_CELL_INDICATOR', payload: { cellId, position } });
     }, []);
 
+    const setTableColumnIndicator = useCallback((cellId: string | null, columnIndex: number | null, position: Position | null, tableId: string | null) => {
+        dispatch({ type: 'SET_TABLE_COLUMN_INDICATOR', payload: { cellId, columnIndex, position, tableId } });
+    }, []);
+
+    const setTableRowIndicator = useCallback((cellId: string | null, rowIndex: number | null, position: Position | null, tableId: string | null) => {
+        dispatch({ type: 'SET_TABLE_ROW_INDICATOR', payload: { cellId, rowIndex, position, tableId } });
+    }, []);
+
     const setLayoutIndicator = useCallback((layoutId: string | null, position: Position | null) => {
         dispatch({ type: 'SET_LAYOUT_INDICATOR', payload: { layoutId, position } });
     }, []);
@@ -247,8 +316,8 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         dispatch({ type: 'SET_SLIDE_INDICATOR', payload: slideId });
     }, []);
 
-    const completeDrop = useCallback(() => {
-        dispatch({ type: 'COMPLETE_DROP' });
+    const setColumnIndicator = useCallback((columnId: string | null, position: Position | null) => {
+        dispatch({ type: 'SET_COLUMN_INDICATOR', payload: { columnId, position } });
     }, []);
 
     const cancelDrag = useCallback(() => {
@@ -262,15 +331,41 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
     }, []);
 
     // Event handlers with useCallback
-    const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, elementId: string | null, layoutId: string, cellId?: string) => {
+    const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, {
+        elementId,
+        layoutId,
+        cellId,
+        tableId,
+        rowIndex,
+        columnIndex
+    }: {
+        elementId: string | null,
+        layoutId: string,
+        cellId?: string,
+        tableId?: string,
+        rowIndex?: number,
+        columnIndex?: number
+    }) => {
         e.stopPropagation();
-        startDrag(elementId, layoutId, cellId);
+        startDrag(elementId, layoutId, cellId, tableId, rowIndex, columnIndex);
+
+        prevStateRef.current.source = {
+            elementId,
+            layoutId,
+            cellId,
+            tableId,
+            rowIndex,
+            columnIndex
+        }
 
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('application/json', JSON.stringify({
             elementId,
             layoutId,
-            cellId
+            cellId,
+            tableId,
+            rowIndex,
+            columnIndex
         }));
     }, [startDrag]);
 
@@ -975,6 +1070,186 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         }
     }, [getCell, getElement, getLayout, getLayoutSlide, processAddElementToCell, processMoveCellToCellInCurrentLayoutVertical, processMoveCellToCellInOtherLayoutVertical, processMoveCellToElementVertical, processMoveElementToElementHorizontal]);
 
+    const processTableColumnDrop = useCallback(() => {
+        if (!prevStateRef.current.source.tableId || !prevStateRef.current.target.tableId) {
+            return;
+        }
+
+        const sourceLayout = getLayout(prevStateRef.current.source.tableId);
+        const targetLayout = getLayout(prevStateRef.current.target.tableId);
+
+        if (!sourceLayout || !targetLayout) {
+            return;
+        }
+
+        const tableColumnPosition = prevStateRef.current.indicators.tableColumnPosition;
+        // const targetIndex = tableColumnPosition === 'left' ? prevStateRef.current.target.columnIndex : prevStateRef.current.target.columnIndex! + 1;
+
+        if (sourceLayout.id === targetLayout.id) {
+            const updatedGridStructure = sourceLayout.gridStructure;
+
+            const updatedRows = updatedGridStructure.rows.map((row) => {
+                const targetCellId = row.cells[prevStateRef.current.target.columnIndex!].id;
+
+                const updatedCells = [...row.cells];
+
+                const movedCell = updatedCells.splice(prevStateRef.current.source.columnIndex!, 1)[0];
+
+                const targetCellIndex = updatedCells.findIndex(cell => cell.id === targetCellId);
+
+                const targetIndex = tableColumnPosition === 'left' ? targetCellIndex : targetCellIndex + 1;
+
+                updatedCells.splice(targetIndex!, 0, movedCell);
+
+                updatedCells.forEach((cell, index) => {
+                    cell.column = index;
+                })
+
+                return {
+                    ...row,
+                    cells: updatedCells,
+                }
+            })
+
+            updatedGridStructure.rows = updatedRows;
+            const sourceSlide = getLayoutSlide(prevStateRef.current.source.tableId);
+
+            DragDropTransactionHelper.updateLayout(presentationId, sourceSlide!.id, sourceLayout.id, {
+                gridStructure: updatedGridStructure
+            })
+        } else {
+            const updatedSourceGridStructure = { ...sourceLayout.gridStructure };
+
+            const movedCells: GridCell[] = [];
+
+            const movedElementsInfo: {
+                cellId: string;
+                elements: BaseElement[];
+                rowIndex: number;
+            }[] = [];
+
+            const updatedSourceRows = updatedSourceGridStructure.rows.map((row, index) => {
+                const updatedCells = [...row.cells];
+
+                const movedCell = updatedCells.splice(prevStateRef.current.source.columnIndex!, 1)[0];
+                movedCells.push(movedCell);
+
+                const movedElements = sourceLayout.elements.filter((element) => element.cellId === movedCell.id);
+
+                if (movedElements.length > 0) {
+                    movedElementsInfo.push({
+                        cellId: movedCell.id,
+                        elements: movedElements,
+                        rowIndex: index,
+                    })
+                }
+
+                updatedCells.forEach((cell, index) => {
+                    cell.column = index;
+                })
+
+                return {
+                    ...row,
+                    cells: updatedCells,
+                }
+            })
+
+            updatedSourceGridStructure.rows = updatedSourceRows;
+            // TODO: нужен кейс, когда остается 1 столбец
+            updatedSourceGridStructure.columns = updatedSourceGridStructure.columns - 1;
+            updatedSourceGridStructure.columnWidths = getColumnWidths(updatedSourceGridStructure.columns);
+
+            const sourceSlide = getLayoutSlide(prevStateRef.current.source.tableId);
+
+            DragDropTransactionHelper.updateLayout(presentationId, sourceSlide!.id, sourceLayout.id, {
+                gridStructure: updatedSourceGridStructure,
+                elements: sourceLayout.elements.filter((element) => !movedCells.find((cell) => cell.id === element.cellId))
+            })
+
+            // проверяем кол-во строк. если в movedElementsInfo больше строк, чем в targetLayout, то добавляем новые строки
+            // проходим по каждой строке. добавляем новую ячейку по индексу target.columnIndex
+            // добавляем в эту ячейку элементы из movedElementsInfo по индексу rowIndex
+            // обновляем elements в target layout
+            // обновляем gridStructure в target layout
+            // пересчитываем columnWidths в target layout
+
+            const updatedTargetGridStructure = { ...targetLayout.gridStructure };
+            const countRows = updatedTargetGridStructure.rows.length;
+
+            const newEditors: BaseElement[] = [];
+
+            if (movedElementsInfo.length > countRows) {
+                for (let i = countRows; i < movedElementsInfo.length; i++) {
+                    // добавляем новые строки
+                    const newRow = {
+                        id: generateId(),
+                        cells: Array.from({ length: updatedTargetGridStructure.columns }, (_, index) => ({
+                            id: generateId(),
+                            row: index,
+                            column: index,
+                        })),
+                    }
+
+                    updatedTargetGridStructure.rows.push(newRow)
+
+                    newRow.cells.forEach((cell, index) => {
+                        // if (prevStateRef.current.target.columnIndex !== index) {
+                            newEditors.push(getNewEditorElement(cell.id));
+                        // }
+                    })
+                }
+            }
+
+            const updatedTargetElements = [...targetLayout.elements, ...newEditors] as BaseElement[];
+
+            const targetSlide = getLayoutSlide(prevStateRef.current.target.tableId);
+
+            if (!targetSlide) return;
+
+            const updatedTargetRows = updatedTargetGridStructure.rows.map((row, index) => {
+                const targetCellId = row.cells[prevStateRef.current.target.columnIndex!].id;
+
+                const updatedCells = [...row.cells];
+
+                const targetCellIndex = updatedCells.findIndex(cell => cell.id === targetCellId);
+
+                const targetIndex = tableColumnPosition === 'left' ? targetCellIndex : targetCellIndex + 1;
+
+                const newCellId = generateId();
+
+                movedElementsInfo[index].elements.map((element) => {
+                    updatedTargetElements.push({
+                        ...element,
+                        cellId: newCellId,
+                    })
+                })
+
+                updatedCells.splice(targetIndex!, 0, {
+                    id: newCellId,
+                    row: index,
+                    column: targetIndex,
+                })
+
+                updatedCells.forEach((cell, index) => {
+                    cell.column = index;
+                })
+
+                return {
+                    ...row,
+                    cells: updatedCells,
+                }
+            })
+
+            updatedTargetGridStructure.rows = updatedTargetRows;
+            updatedTargetGridStructure.columns = updatedTargetGridStructure.columns + 1;
+            updatedTargetGridStructure.columnWidths = getColumnWidths(updatedTargetGridStructure.columns);
+
+            DragDropTransactionHelper.updateLayout(presentationId, targetSlide!.id, targetLayout.id, {
+                gridStructure: updatedTargetGridStructure,
+                elements: updatedTargetElements,
+            })
+        }
+    }, [getLayout, getLayoutSlide, presentationId]);
 
     const processAddElementToLayout = useCallback(({
         targetLayout,
@@ -1192,10 +1467,10 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                             // переносим только элемент. на его месте создаем пустой редактор
                             // из elements в source layout удаляем элемент
                             // в source layout добавляем пустой редактор
-                            // обновляем elements в source layout
+                            // обновляем elements in source layout
                             // в target layout фильтруем элементы от элементов целевой ячейки
                             // вставляем между целевыми элементами элементы из source layout
-                            // обновляем elements в target layout
+                            // обновляем elements in target layout
                             const updatedSourceElements = sourceLayout.elements.filter(e => e.id !== draggedElement.id);
 
                             const editor = getNewEditorElement(draggedElement.cellId);
@@ -1409,8 +1684,126 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 }
             }
         }
-    }, [getLayout, getLayoutSlide, processAddElementToSiblingCell, processMoveCellToCellInCurrentLayout, processMoveCellToCellInOtherLayout, processMoveElementToCellInCurrentLayout, processMoveElementToCellToOtherLayout]);
+    }, [getLayout, getLayoutSlide, processAddElementToSiblingCell, processMoveCellToCellInCurrentLayout, processMoveCellToCellInOtherLayout]);
 
+    // Implementation of processColumnDrop
+    const processColumnDrop = useCallback(() => {
+        if (!prevStateRef.current.source.cellId || !prevStateRef.current.source.layoutId) {
+            return;
+        }
+
+        // Check if it's a column by checking if cellId starts with "column-"
+        if (!prevStateRef.current.source.cellId.startsWith('column-')) {
+            return;
+        }
+
+        // Extract column info from the cellId
+        const sourceColumnInfo = prevStateRef.current.source.cellId.split('-');
+        if (sourceColumnInfo.length !== 3) {
+            return;
+        }
+
+        const sourceLayoutId = sourceColumnInfo[1];
+        const sourceColumnIndex = parseInt(sourceColumnInfo[2], 10);
+
+        // Get target info
+        const targetLayoutId = prevStateRef.current.target.layoutId;
+        let targetColumnIndex = -1;
+
+        if (prevStateRef.current.target.cellId?.startsWith('column-')) {
+            const targetColumnInfo = prevStateRef.current.target.cellId.split('-');
+            if (targetColumnInfo.length === 3) {
+                targetColumnIndex = parseInt(targetColumnInfo[2], 10);
+            }
+        }
+
+        if (targetColumnIndex === -1 || !targetLayoutId) {
+            return;
+        }
+
+        // Restrict movement to only within the same table
+        if (sourceLayoutId !== targetLayoutId) {
+            console.warn('Column movement between different tables is not allowed');
+            return;
+        }
+
+        // Check if we're trying to move a column to itself
+        if (sourceColumnIndex === targetColumnIndex) {
+            return;
+        }
+
+        const sourceLayout = getLayout(sourceLayoutId);
+        const targetSlide = getLayoutSlide(sourceLayoutId);
+
+        if (!sourceLayout || !targetSlide) {
+            return;
+        }
+
+        // Begin transaction
+        DragDropTransactionHelper.beginDragOperation(presentationId, 'Move column');
+
+        // Clone the grid structures to avoid mutating the original
+        const sourceGridStructure = JSON.parse(JSON.stringify(sourceLayout.gridStructure));
+
+        // Moving a column within the same table
+        // Create a new copy of the elements for the update
+        const updatedRows = sourceGridStructure.rows.map((row: GridRow) => {
+            // Remove the source column cell
+            const updatedCells = [...row.cells];
+            const sourceCell = updatedCells.splice(sourceColumnIndex, 1)[0];
+
+            // Insert it at the target position
+            const insertIndex = sourceColumnIndex < targetColumnIndex
+                ? targetColumnIndex - 1  // Adjust for removal
+                : targetColumnIndex;
+            updatedCells.splice(insertIndex, 0, sourceCell);
+
+            // Update cell column positions
+            updatedCells.forEach((cell, colIndex) => {
+                cell.column = colIndex;
+            });
+
+            return {
+                ...row,
+                cells: updatedCells
+            };
+        });
+
+        // Update the layout
+        DragDropTransactionHelper.updateLayout(presentationId, targetSlide.id, sourceLayoutId, {
+            gridStructure: {
+                ...sourceGridStructure,
+                rows: updatedRows
+            }
+        });
+
+        // Clear column indicator
+        setColumnIndicator(null, null);
+
+        // Commit the transaction
+        DragDropTransactionHelper.commitDragOperation(presentationId);
+    }, [getLayout, getLayoutSlide, presentationId, setColumnIndicator]);
+
+    const completeDrop = useCallback(() => {
+        if (prevStateRef.current.dragState !== 'dragging') {
+            return;
+        }
+
+        // Check if source cellId is a column
+        if (prevStateRef.current.source.cellId?.startsWith('column-')) {
+            processColumnDrop();
+        } else if (prevStateRef.current.indicators.elementIndicator) {
+            processElementDrop();
+        } else if (prevStateRef.current.indicators.cellIndicator) {
+            processCellDrop();
+        } else if (prevStateRef.current.indicators.layoutIndicator) {
+            processLayoutDrop();
+        } else if (prevStateRef.current.indicators.slideIndicator) {
+            processSlideDrop();
+        }
+
+        dispatch({ type: 'COMPLETE_DROP' });
+    }, [processCellDrop, processElementDrop, processLayoutDrop, processSlideDrop, processColumnDrop]);
 
     useEffect(() => {
         let lastProcessedTime = 0;
@@ -1437,15 +1830,18 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             const rowNode = elemBelow.closest('[data-row-id]');
             const layoutNode = elemBelow.closest('[data-layout-id]');
             const slideNode = elemBelow.closest('[data-slide-id]');
+            const columnNode = elemBelow.closest('[data-column-drag-handle]');
 
             // Get all necessary IDs'
             const elementId = elementNode?.getAttribute('data-element-id');
-            const cellId = cellNode?.getAttribute('data-cell-id');
             const layoutId = elementNode?.getAttribute('data-layout-id') ||
                 cellNode?.getAttribute('data-layout-id') ||
                 rowNode?.getAttribute('data-layout-id') ||
                 layoutNode?.getAttribute('data-layout-id');
+
+            const cellId = cellNode?.getAttribute('data-cell-id');
             const slideId = slideNode?.getAttribute('data-slide-id');
+            const columnDragId = columnNode?.getAttribute('data-column-drag-handle');
 
             // If we're over the same element we're dragging or no valid target, clear indicators
             if (!layoutId ||
@@ -1456,6 +1852,8 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 setCellIndicator(null, null);
                 setLayoutIndicator(null, null);
                 setSlideIndicator(null);
+                setTableColumnIndicator(null, null, null, null);
+                setTableRowIndicator(null, null, null, null);
                 setDropTarget({
                     elementId: null,
                     layoutId: null,
@@ -1473,7 +1871,11 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                         cellPosition: null,
                         layoutIndicator: null,
                         layoutPosition: null,
-                        slideIndicator: null
+                        slideIndicator: null,
+                        tableColumnIndicator: null,
+                        tableColumnPosition: null,
+                        tableRowIndicator: null,
+                        tableRowPosition: null
                     }
                 };
 
@@ -1506,11 +1908,16 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             // Check if we're dealing with a layout that has multiple cells in a row
             const isMultiCellRow = targetLayout.gridStructure.rows[0].cells.length > 1;
 
+            const isTable = !!prevStateRef.current.source.tableId;
+
             // Prioritize targets based on the context
 
             // Case 1: If we're over a single cell with a single element, we can drop on any side
             if (isSingleCellSingleElement && elementId && elementId !== state.source.elementId) {
                 processLayoutTarget(e, layoutId, layoutNode as HTMLElement, isMultiCellRow);
+            }
+            else if (isTable) {
+                processTableTarget(e, layoutId, cellNode as HTMLElement);
             }
             // Case 2: If we're over a cell in a multi-cell row, we can drop on left/right of cell
             else if (isMultiCellRow && cellId && cellId !== state.source.cellId) {
@@ -1554,6 +1961,44 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     position: null
                 });
             }
+
+            // Check if we're dragging a column and hovering over another column
+            // if (prevStateRef.current.source.cellId?.startsWith('column-') && columnDragId) {
+            //     // Extract column info from the columnDragId
+            //     const targetColumnInfo = columnDragId.split('-');
+            //     if (targetColumnInfo.length === 3) {
+            //         const targetColumnLayoutId = targetColumnInfo[1];
+            //         const targetColumnIndex = parseInt(targetColumnInfo[2], 10);
+
+            //         // Extract source column info
+            //         const sourceColumnInfo = prevStateRef.current.source.cellId.split('-');
+            //         const sourceLayoutId = sourceColumnInfo[1];
+            //         const sourceColumnIndex = parseInt(sourceColumnInfo[2], 10);
+
+            //         // Only allow targeting columns in the same table
+            //         if (sourceLayoutId === targetColumnLayoutId) {
+            //             // Determine position (left or right)
+            //             const position: Position = sourceColumnIndex < targetColumnIndex ? 'right' : 'left';
+
+            //             // Set column indicator
+            //             setColumnIndicator(`column-${targetColumnLayoutId}-${targetColumnIndex}`, position);
+
+            //             // Set the target for the column
+            //             setDropTarget({
+            //                 elementId: null,
+            //                 layoutId: targetColumnLayoutId,
+            //                 cellId: `column-${targetColumnLayoutId}-${targetColumnIndex}`,
+            //                 position: null
+            //             });
+
+            //             // Clear other indicators
+            //             setElementIndicator(null, null);
+            //             setCellIndicator(null, null);
+            //             setLayoutIndicator(null, null);
+            //             setSlideIndicator(null);
+            //         }
+            //     }
+            // }
         };
 
         const processElementTarget = (e: DragEvent, elementId: string, layoutId: string, elementNode: HTMLElement) => {
@@ -1649,6 +2094,90 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 }
             };
         };
+
+        const processTableTarget = (e: DragEvent, tableId: string, cellNode: HTMLElement) => {
+            // здесь рассчитываем dragIndicator и targetElement
+            // проверяем, чтобы targetElement в таблице
+            // считаем его столбец и строку
+            // если столбец и строка не совпадают с source.columnIndex и source.rowIndex, то в targetIndicator пишем инфу
+
+            const layout = getLayout(tableId);
+            const targetLayout = getLayout(prevStateRef.current.target.tableId);
+
+            if (!layout || !layout.isTable || !cellNode) {
+                return;
+            }
+
+            const cellId = cellNode.getAttribute('data-cell-id');
+
+            const targetColumnIndex: number = layout.gridStructure.rows.flatMap(row => row.cells).find(cell => cell.id === cellId)?.column || 0;
+
+            const firstCellInColumn = layout.gridStructure.rows[0].cells[targetColumnIndex];
+
+            if (!firstCellInColumn) {
+                return;
+            }
+
+            const firstNodeInColumn = document.querySelector(`[data-cell-id="${firstCellInColumn.id}"]`);
+            if (!firstNodeInColumn) {
+                return;
+            }
+
+            const rectCell = firstNodeInColumn.getBoundingClientRect();
+            const distanceFromCellLeft = e.clientX - rectCell.left;
+            const distanceFromCellRight = rectCell.right - e.clientX;
+
+            const minDistance = Math.min(distanceFromCellLeft, distanceFromCellRight);
+
+            let position: Position | null = null;
+            if (minDistance === distanceFromCellLeft) {
+                position = 'left';
+            } else if (minDistance === distanceFromCellRight) {
+                position = 'right';
+            }
+
+            setElementIndicator(null, null);
+            setCellIndicator(null, null);
+            setLayoutIndicator(null, null);
+            setSlideIndicator(null);
+
+            setTableColumnIndicator(firstCellInColumn.id, firstCellInColumn.column, position, tableId);
+
+            // Update target state
+            setDropTarget({
+                elementId: null,
+                tableId,
+                columnIndex: targetColumnIndex,
+                position
+            });
+
+            // Update previous state reference
+            prevStateRef.current = {
+                ...state,
+                target: {
+                    elementId: null,
+                    tableId,
+                    columnIndex: targetColumnIndex,
+                    position
+                },
+                indicators: {
+                    ...state.indicators,
+                    elementIndicator: null,
+                    elementPosition: null,
+                    cellIndicator: cellId,
+                    cellPosition: position,
+                    layoutIndicator: null,
+                    layoutPosition: null,
+                    slideIndicator: null,
+                    tableColumnIndicator: targetColumnIndex,
+                    tableColumnPosition: position,
+                    tableRowIndicator: null,
+                    tableRowPosition: null
+                }
+            };
+
+            // console.log('prevStateRef.current', prevStateRef.current.indicators)
+        }
 
         const processCellTarget = (e: DragEvent, cellId: string, layoutId: string, cellNode: HTMLElement, elementNode?: HTMLElement, elementId?: string | null) => {
             // Get cell dimensions
@@ -1897,7 +2426,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                         'Move content between layouts',
                         () => processLayoutDrop()
                     );
-                } else if (prevStateRef.current.indicators.cellIndicator && prevStateRef.current.indicators.cellPosition) {
+                } else if (prevStateRef.current.indicators.cellIndicator && prevStateRef.current.indicators.cellPosition && !prevStateRef.current.indicators.tableId) {
                     DragDropTransactionHelper.wrapInTransaction(
                         presentationId,
                         'Move content between cells',
@@ -1908,6 +2437,12 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                         presentationId,
                         'Reposition element',
                         () => processElementDrop()
+                    );
+                } else if (Number.isInteger(prevStateRef.current.indicators.tableColumnIndicator) && prevStateRef.current.indicators.tableColumnPosition) {
+                    DragDropTransactionHelper.wrapInTransaction(
+                        presentationId,
+                        'Reposition tables column',
+                        () => processTableColumnDrop()
                     );
                 }
 
@@ -1934,7 +2469,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             document.removeEventListener('drop', handleDocumentDrop);
             document.removeEventListener('keydown', handleKeyDown);
         };
-    }, [state.dragState, state.source, state.newElement, state, getLayout, getLayoutSlide, setElementIndicator, setCellIndicator, setLayoutIndicator, setSlideIndicator, setDropTarget, completeDrop, presentationId, processSlideDrop, processLayoutDrop, processCellDrop, processElementDrop, cancelDrag]);
+    }, [state.dragState, state.source, state.newElement, state, getLayout, getLayoutSlide, setElementIndicator, setCellIndicator, setLayoutIndicator, setSlideIndicator, setDropTarget, completeDrop, presentationId, processSlideDrop, processLayoutDrop, processCellDrop, processElementDrop, cancelDrag, setColumnIndicator, setTableColumnIndicator, setTableRowIndicator]);
 
     // Memoize the context value to prevent unnecessary re-renders
     const contextValue = useMemo(() => ({
@@ -1945,6 +2480,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         setCellIndicator,
         setLayoutIndicator,
         setSlideIndicator,
+        setColumnIndicator,
         completeDrop,
         cancelDrag,
         handleDragStart,
@@ -1964,6 +2500,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         setCellIndicator,
         setLayoutIndicator,
         setSlideIndicator,
+        setColumnIndicator,
         completeDrop,
         cancelDrag,
         handleDragStart,

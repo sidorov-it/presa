@@ -288,7 +288,11 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     const handleDragStartElementDragHandle = useCallback((element: Element) => (e: any) => {
         e.stopPropagation();
-        handleDragStart(e, element.id, layoutId, element.cellId);
+        handleDragStart(e, {
+            elementId: element.id,
+            layoutId,
+            cellId: element.cellId,
+        });
     }, [handleDragStart, layoutId]);
 
     const alignmentClassName = cell.alignment === 'top' ? styles.top : cell.alignment === 'center' ? styles.center : cell.alignment === 'bottom' ? styles.bottom : '';
@@ -318,7 +322,11 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     const handleDragStartCellDragHandle = useCallback((e: any) => {
         e.stopPropagation();
-        handleDragStart(e, '', layoutId, cell.id);
+        handleDragStart(e, {
+            elementId: '',
+            layoutId,
+            cellId: cell.id,
+        });
     }, [handleDragStart, layoutId, cell.id]);
 
     const handleOpenColumnMenu = useCallback(() => {
@@ -490,7 +498,13 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     dataAttributes={{ 'data-column-drag-handle': `${layoutId}-${columnIndex}` }}
                     handleClick={handleOpenColumnMenu}
                     handleKeyDown={() => { }}
-                    handleDragStart={() => { }}
+                    handleDragStart={(e) => handleDragStart(e, {
+                        elementId: '',
+                        columnIndex: columnIndex,
+                        tableId: layoutId
+                    })}
+                    style={{ cursor: 'grab' }}
+                    title="Drag to reorder column (columns can only be moved within the same table)"
                 />
             )}
         </div>

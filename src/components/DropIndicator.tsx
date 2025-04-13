@@ -1,8 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDnd } from '@/contexts/DragDropContext';
 import { usePresentationStore } from '@/store/presentationStore';
 
-type IndicatorType = 'element' | 'layout' | 'slide' | 'cell';
+
+type IndicatorInfo = {
+    targetRect: {
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+        right: number;
+        bottom: number;
+    };
+    position: 'top' | 'bottom' | 'left' | 'right' | null;
+    type: IndicatorType;
+    sourceType: 'element' | 'layout' | 'slide' | 'cell' | 'column' | 'row';
+}
+
+type IndicatorType = 'element' | 'layout' | 'slide' | 'cell' | 'column';
 
 const DropIndicator = () => {
     const { state } = useDnd();
@@ -15,7 +30,14 @@ const DropIndicator = () => {
 
     // Add animation when indicator appears/disappears
     useEffect(() => {
-        if (dragState === 'dragging' && (indicators.elementIndicator || indicators.layoutIndicator || indicators.slideIndicator || indicators.cellIndicator)) {
+        if (dragState === 'dragging' && (
+            indicators.elementIndicator ||
+            indicators.layoutIndicator ||
+            indicators.slideIndicator ||
+            indicators.cellIndicator ||
+            (indicators.tableColumnIndicator || indicators.tableColumnIndicator === 0) ||
+            (indicators.tableRowIndicator || indicators.tableRowIndicator === 0)
+        )) {
             setVisible(true);
         } else {
             // Small delay to allow for animation
@@ -26,14 +48,15 @@ const DropIndicator = () => {
         }
     }, [dragState, indicators]);
 
-    if (!visible) {
-        return null;
-    }
 
     // Get indicator and position depending on what's being targeted
-    const getIndicatorInfo = () => {
+    const getIndicatorInfo = (): IndicatorInfo | null => {
         // Determine the dragging source type: element or cell or layout
         const sourceType: 'element' | 'cell' | 'layout' = 'element';
+
+        if (!indicators) {
+            return null;
+        }
 
         if (indicators.elementIndicator) {
             const element = document.querySelector(`[data-element-id="${indicators.elementIndicator}"]`);
@@ -153,16 +176,60 @@ const DropIndicator = () => {
             }
         }
 
+        // Add column indicator handling
+        if (indicators.tableColumnIndicator || indicators.tableColumnIndicator === 0) {
+            // Parse column information from the indicator
+            const layoutId = indicators.tableId;
+            if (!layoutId) return null;
+
+            // const columnIndex = indicators.tableColumnIndicator;
+
+            // Find the column node using data-column-drag-handle attribute
+            // const columnNode = document.querySelector(`[data-column-drag-handle="${layoutId}-${columnIndex}"]`);
+            // if (!columnNode) return null;
+
+            // Get the table cell node that contains this column
+            // const cellNode = columnNode.closest('[data-cell-id]');
+            const cellNode = document.querySelector(`[data-cell-id="${indicators.cellId}"]`);
+            if (!cellNode) return null;
+
+            const cellRect = cellNode.getBoundingClientRect();
+            const layoutRect = cellNode.closest('[data-layout-id]')?.getBoundingClientRect();
+
+            const position = indicators.tableColumnPosition;
+
+            // // Adjust rect based on position (left or right)
+            // const adjustedRect = {...rect};
+            // if (position === 'left') {
+            //     adjustedRect.width = 4; // Small width for the indicator
+            // } else if (position === 'right') {
+            //     adjustedRect.left = rect.right - 4;
+            //     adjustedRect.width = 4;
+            // }
+
+            return {
+                targetRect: {
+                    left: cellRect.left,
+                    top: cellRect.top,
+                    width: cellRect.width,
+                    height: layoutRect?.height || 0,
+                    right: cellRect.right,
+                    bottom: layoutRect?.bottom || 0,
+                },
+                position: position,
+                type: 'column' as IndicatorType,
+                sourceType: 'column'
+            };
+        }
+
         return null;
     };
 
     const indicatorInfo = getIndicatorInfo();
-    if (!indicatorInfo) return null;
-
-    const { targetRect, position, type } = indicatorInfo;
 
     // Generate styles based on position and context
-    const getIndicatorStyles = () => {
+    const getIndicatorStyles = useCallback(() => {
+        const { targetRect, position, type } = indicatorInfo;
         // Increase thickness for better visibility
         const thickness = type === 'element' ? 3 : type === 'cell' ? 4 : 4;
 
@@ -181,7 +248,8 @@ const DropIndicator = () => {
             element: '#3b82f6', // blue
             cell: '#3b82f6',    // red
             layout: '#3b82f6',  // green
-            slide: '#3b82f6'    // purple
+            slide: '#3b82f6',   // purple
+            column: '#4f46e5'   // indigo - different color for column indicator
         };
 
         const color = colors[type];
@@ -236,7 +304,9 @@ const DropIndicator = () => {
         }
 
         return styles;
-    };
+    }, [indicatorInfo]);
+
+    if (!visible || !indicatorInfo) return null;
 
     const styles = getIndicatorStyles();
 

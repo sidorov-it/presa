@@ -12,6 +12,7 @@ export default function DragHandler({
     horizontal = false,
     dataAttributes,
     style = {},
+    title,
 }: {
     slideId: string,
     isActive: boolean,
@@ -25,6 +26,7 @@ export default function DragHandler({
         [key: string]: string,
     },
     style?: React.CSSProperties,
+    title?: string,
 }) {
     const [isVisible, setIsVisible] = useState(false);
     const { isDarkMode } = useTheme();
@@ -47,6 +49,7 @@ export default function DragHandler({
             onClick={handleClick}
             onKeyDown={handleKeyDown}
             onDragStart={handleDragStart}
+            title={title}
             style={{
                 // Apply inline styles for dark mode
                 ...(isDarkMode && {

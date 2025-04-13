@@ -1,5 +1,5 @@
 import React, { RefObject, useState, useCallback, useMemo, memo, useRef } from 'react';
-import { Layout, GridRow, GridCell, Element, TipTapRefs } from '@/types';
+import { GridRow, GridCell, TipTapRefs } from '@/types';
 import { useDnd } from '@/contexts/DragDropContext';
 import { generateGridTemplateAreas, generateGridTemplateColumns } from '@/types';
 import GridCellElement from '../GridCellElement';
@@ -28,7 +28,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     const { handleDragStart } = useDnd();
     const [isLayoutHovered, setIsLayoutHovered] = useState(false);
     const [isResizingColumn, setIsResizingColumn] = useState(false);
-    
+
     const layoutRef = useRef<HTMLDivElement>(null);
     const animationFrameIdRef = useRef<number | null>(null);
     const startXRef = useRef<number>(0);
@@ -36,10 +36,6 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     const startWidthRef = useRef<number | null>(null);
 
     const layout = usePresentationStore(useShallow(state => state.getLayout(presentationId, slideId, layoutId)))!;
-
-    if (!layout || !layout.gridStructure) {
-        return null;
-    }
 
     // Use optimized selector hooks instead of full context
     const openMenu = useMenuStore.getState().openMenu;
@@ -64,44 +60,35 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     // Memoize grid properties to prevent recalculations
     const gridTemplateAreas = useMemo(() =>
         generateGridTemplateAreas(layout.gridStructure),
-        [layout.gridStructure]
+    [layout.gridStructure]
     );
 
     const gridTemplateColumns = useMemo(() =>
         generateGridTemplateColumns(layout.gridStructure),
-        [layout.gridStructure]
+    [layout.gridStructure]
     );
 
     // Memoize layout properties
     const hasMultipleCellsInRow = useMemo(() =>
         layout.gridStructure.rows.some(row => row.cells.length > 1),
-        [layout.gridStructure.rows]
+    [layout.gridStructure.rows]
     );
-
-    // Memoize cell elements grouping
-    const cellElements = useMemo(() => {
-        const elements: Record<string, Element[]> = {};
-        layout.elements.forEach(element => {
-            if (!elements[element.cellId]) {
-                elements[element.cellId] = [];
-            }
-            elements[element.cellId].push(element as Element);
-        });
-        return elements;
-    }, [layout.elements]);
 
     // Detect if this is a layout with a single element in a single cell
     const isSingleElementSingleCellLayout = useMemo(() =>
         layout.elements.length === 1 &&
         layout.gridStructure.rows.length === 1 &&
         layout.gridStructure.rows[0].cells.length === 1,
-        [layout.elements.length, layout.gridStructure.rows]
+    [layout.elements.length, layout.gridStructure.rows]
     );
 
     // console.log('columnDragPosition', columnDragPosition)
     const handleLayoutDragStart = useCallback((e: React.DragEvent<HTMLDivElement>) => {
         e.stopPropagation();
-        handleDragStart(e, "", layout.id);
+        handleDragStart(e, {
+            elementId: '',
+            layoutId: layout.id,
+        });
 
         e.dataTransfer.setData('application/json', JSON.stringify({
             type: 'layout',
@@ -117,7 +104,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
             elementType: 'layout',
             layoutId: layout.id
         }),
-        [openMenu, slideId, layout.id]
+    [openMenu, slideId, layout.id]
     );
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -236,14 +223,14 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
         const layout = slide.layouts.find(l => l.id === layoutId);
         if (!layout || !layout.gridStructure) return;
 
-        const columnWidths = layout.gridStructure.columnWidths || 
+        const columnWidths = layout.gridStructure.columnWidths ||
             Array(layout.gridStructure.columns).fill(`${(100 / layout.gridStructure.columns).toFixed(2)}%`);
-        
+
         const currentColumnWidth = parseFloat(columnWidths[columnIndex].match(/^([\d.]+)%$/)?.[1] || '0');
         const totalWidth = layoutRef.current?.offsetWidth || 0;
         const padding = 16;
         const columnWidthPx = (totalWidth - padding * 2) * (currentColumnWidth / 100);
-        
+
         startWidthRef.current = columnWidthPx;
         resizeColumnIndexRef.current = columnIndex;
 
@@ -288,7 +275,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                     return (
                         <div
                             key={row.id}
-                            data-layout-id={layout.id}
+                            // data-layout-id={layout.id}
                             data-row-id={row.id}
                             className={`${styles.layoutContent} ${layout.isTable ? styles.tableLayoutContent : ''} ${hasMultipleCellsInRow ? styles.multiCellLayout : ''} ${className}`}
                             style={{

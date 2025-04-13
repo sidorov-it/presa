@@ -73,7 +73,7 @@ export const getNewTableLayout = (type: string): Layout | null => {
             const cell: GridCell = {
                 id: cellId,
                 row: rowIndex,
-                column: 0,
+                column: columnIndex,
             }
             cells.push(cell);
 

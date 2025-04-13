@@ -1032,7 +1032,7 @@ export const usePresentationStore = create<PresentationState>()(
                         const newColumn: GridCell = {
                             id: newColumnId,
                             row: 0,
-                            column: columnIndex + 1,
+                            column: columnIndex,
                         };
 
                         cells.splice(columnIndex, 0, newColumn);
