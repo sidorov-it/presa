@@ -32,8 +32,11 @@ const initialState: DndState = {
         slideIndicator: null,
         cellIndicator: null,
         cellPosition: null,
-        columnIndicator: null,
-        columnPosition: null
+        tableColumnIndicator: null,
+        tableColumnPosition: null,
+        tableRowIndicator: null,
+        tableRowPosition: null,
+        tableId: null
     },
     newElement: {
         id: null,
@@ -157,8 +160,8 @@ function dndReducer(state: DndState, action: DndAction): DndState {
                 ...state,
                 indicators: {
                     ...state.indicators,
-                    columnIndicator: action.payload.columnId,
-                    columnPosition: action.payload.position
+                    tableColumnIndicator: action.payload.columnId,
+                    tableColumnPosition: action.payload.position
                 }
             };
             break;
@@ -525,7 +528,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             const elementsInSourceCell = sourceLayout.elements.filter(e => e.cellId === sourceCell.id && e.id !== draggedElement.id);
             const targetElementIndex = targetLayout.elements.findIndex(e => e.id === targetElement.id);
 
-            const updatedElement = {
+            const updatedElement: BaseElement = {
                 ...draggedElement,
                 cellId: targetElement.cellId
             }
@@ -643,8 +646,8 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         const updatedTargetElements = [...targetLayout.elements];
         updatedTargetElements.splice(newCellPosition, 0, {
             ...newElement,
-            cellId: newCellId
-        });
+            cellId: newCellId,
+        } as BaseElement);
 
         targetGridStructure.rows[0].cells.forEach((c: GridCell, index: number) => {
             c.column = index + 1;
@@ -1192,10 +1195,8 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
                     updatedTargetGridStructure.rows.push(newRow)
 
-                    newRow.cells.forEach((cell, index) => {
-                        // if (prevStateRef.current.target.columnIndex !== index) {
-                            newEditors.push(getNewEditorElement(cell.id));
-                        // }
+                    newRow.cells.forEach((cell) => {
+                        newEditors.push(getNewEditorElement(cell.id));
                     })
                 }
             }
@@ -1217,12 +1218,18 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
                 const newCellId = generateId();
 
-                movedElementsInfo[index].elements.map((element) => {
-                    updatedTargetElements.push({
-                        ...element,
-                        cellId: newCellId,
+                // в перетаскиваемом столбце меньше строк, чем в targetLayout
+                if (!movedElementsInfo[index]) {
+                    const newEditor = getNewEditorElement(newCellId);
+                    updatedTargetElements.push(newEditor);
+                } else {
+                    movedElementsInfo[index].elements.map((element) => {
+                        updatedTargetElements.push({
+                            ...element,
+                            cellId: newCellId,
+                        })
                     })
-                })
+                }
 
                 updatedCells.splice(targetIndex!, 0, {
                     id: newCellId,
@@ -1277,8 +1284,8 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         newLayout.gridStructure.rows[0].cells.push(newCell);
         newLayout.elements.push({
             ...newElement,
-            cellId: newCellId
-        });
+            cellId: newCellId,
+        } as BaseElement);
 
         const targetLayoutIndex = targetSlide.layouts.findIndex(l => l.id === targetLayout.id);
         if (targetLayoutIndex === -1) return;
@@ -1830,7 +1837,6 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             const rowNode = elemBelow.closest('[data-row-id]');
             const layoutNode = elemBelow.closest('[data-layout-id]');
             const slideNode = elemBelow.closest('[data-slide-id]');
-            const columnNode = elemBelow.closest('[data-column-drag-handle]');
 
             // Get all necessary IDs'
             const elementId = elementNode?.getAttribute('data-element-id');
@@ -1841,13 +1847,10 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
             const cellId = cellNode?.getAttribute('data-cell-id');
             const slideId = slideNode?.getAttribute('data-slide-id');
-            const columnDragId = columnNode?.getAttribute('data-column-drag-handle');
 
-            // If we're over the same element we're dragging or no valid target, clear indicators
             if (!layoutId ||
                 (elementId && elementId === state.source.elementId && layoutId === state.source.layoutId) ||
                 (cellId && cellId === state.source.cellId && layoutId === state.source.layoutId)) {
-                // Clear all indicators
                 setElementIndicator(null, null);
                 setCellIndicator(null, null);
                 setLayoutIndicator(null, null);
@@ -2102,7 +2105,6 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             // если столбец и строка не совпадают с source.columnIndex и source.rowIndex, то в targetIndicator пишем инфу
 
             const layout = getLayout(tableId);
-            const targetLayout = getLayout(prevStateRef.current.target.tableId);
 
             if (!layout || !layout.isTable || !cellNode) {
                 return;

@@ -368,7 +368,7 @@ export interface Layout {
     gridStructure: GridStructure;
     type: LayoutType;
     style: Record<string, unknown>;
-    elements: Element[];
+    elements: BaseElement[];
     isTable?: boolean; // Flag to identify when layout should be treated as a table
     parentId?: string;  // Reference to parent layout if nested
 }

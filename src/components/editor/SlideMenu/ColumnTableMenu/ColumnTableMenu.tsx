@@ -39,10 +39,10 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
 
     const tableColumnElements = useMenuStore.getState().getTableColumnElements();
 
-    const [headingLevelLocal, setHeadingLevelLocal] = useState<number>(tiptapRefs.current.editors[tableColumnElements[0].id]?.editor.getAttributes('heading').level || 0);
+    const [headingLevelLocal, setHeadingLevelLocal] = useState<number>(tiptapRefs.current.editors[tableColumnElements[0]?.id]?.editor.getAttributes('heading').level || 0);
 
     useEffect(() => {
-        const editor = tiptapRefs.current.editors[tableColumnElements[0].id]?.editor;
+        const editor = tiptapRefs.current.editors[tableColumnElements[0]?.id]?.editor;
         if (editor && !editor.isEmpty) {
             setHeadingLevelLocal(editor.getAttributes('heading').level);
         } else {

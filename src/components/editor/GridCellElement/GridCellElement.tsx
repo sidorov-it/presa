@@ -330,17 +330,34 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     }, [handleDragStart, layoutId, cell.id]);
 
     const handleOpenColumnMenu = useCallback(() => {
-        useMenuStore.getState().openMenu({
-            slideId,
-            elementId: null,
-            layoutId,
-            elementType: 'column',
-            cellId: null,
-            tableRowIndex: null,
-            tableColumnIndex: columnIndex,
-            tableId: layoutId
-        });
-    }, [slideId, layoutId, columnIndex]);
+        const layout = usePresentationStore.getState().getLayout(presentationId, slideId, layoutId);
+        if (!layout) return;
+
+        if (layout.gridStructure.columns === 1) {
+            useMenuStore.getState().openMenu({
+                slideId,
+                elementId: null,
+                layoutId,
+                elementType: 'layout',
+                cellId: null,
+                tableRowIndex: null,
+                tableColumnIndex: null,
+                tableId: null
+            });
+
+        } else {
+            useMenuStore.getState().openMenu({
+                slideId,
+                elementId: null,
+                layoutId,
+                elementType: 'column',
+                cellId: null,
+                tableRowIndex: null,
+                tableColumnIndex: columnIndex,
+                tableId: layoutId
+            });
+        }
+    }, [slideId, presentationId, layoutId, columnIndex]);
 
     const handleOpenRowMenu = useCallback(() => {
         useMenuStore.getState().openMenu({
