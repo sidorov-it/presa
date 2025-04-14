@@ -105,6 +105,8 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const resizebleElementRef = useRef<string | null>(null);
 
     const editorRef = useRef<HTMLDivElement>(null);
+    const animationFrameIdRef = useRef<number | null>(null);
+
     const handleMenuClick = useCallback(
         (menuData: {
             elementId: string;
@@ -124,8 +126,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         },
         [slideId, layoutId]
     );
-
-    const animationFrameIdRef = useRef<number | null>(null);
 
     const handleResizeMove = useCallback(
         (e: MouseEvent) => {
@@ -480,9 +480,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                         >
                             <ElementContent
                                 elementId={elementId}
-                                // setElementIsHovered={setElementIsHovered}
-                                // elementIsHovered={elementIsHovered}
-                                // menuElementId={menuElementId}
                                 handleClickElementDragHandle={handleClickElementDragHandle}
                                 handleKeyDownElementDragHandle={handleKeyDownElementDragHandle}
                                 handleDragStartElementDragHandle={handleDragStartElementDragHandle}
@@ -492,6 +489,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                                 presentationId={presentationId}
                                 layoutId={layoutId}
                                 isInTable={isTable}
+                                hasMultipleCells={hasMultipleCells}
                             />
                         </div>
                     ))}

@@ -50,6 +50,28 @@ export default function DragHandler({
         [handleClickProp]
     );
 
+    let dragHandlerStyle = {
+        ...style,
+    };
+
+    if (isDarkMode) {
+        if (isActive) {
+            dragHandlerStyle = {
+                ...dragHandlerStyle,
+                borderColor: 'white',
+                color: 'white',
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            };
+        } else {
+            dragHandlerStyle = {
+                ...dragHandlerStyle,
+                borderColor: 'white',
+                color: 'white',
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            };
+        }
+    }
+
     return (
         <div
             className={`${styles.dragHandle} ${isActive ? styles.active : ''} ${horizontal ? styles.horizontal : ''} ${isVisible ? styles.visible : ''} ${className}`}
@@ -59,21 +81,7 @@ export default function DragHandler({
             onKeyDown={handleKeyDown}
             onDragStart={handleDragStart}
             title={title}
-            style={{
-                // Apply inline styles for dark mode
-                ...(isDarkMode && {
-                    borderColor: 'white',
-                    color: 'white',
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                }),
-                ...(isDarkMode &&
-                    isActive && {
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                    color: 'white',
-                    borderColor: 'white',
-                }),
-                ...style,
-            }}
+            style={dragHandlerStyle}
             {...dataAttributes}
         >
             ⋮

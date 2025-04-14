@@ -113,7 +113,15 @@ export interface PresentationState {
     ) => void;
     deleteElement: (presentationId: string, slideId: string, layoutId: string, elementId: string) => void;
     duplicateElement: (presentationId: string, slideId: string, elementId: string) => void;
-    addColumn: (presentationId: string, slideId: string, layoutId: string, columnIndex: number) => void;
+    addColumn: (
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        columnIndex: number,
+        options?: {
+            width?: number;
+        }
+    ) => void;
     addColumnLeft: (presentationId: string, slideId: string, layoutId: string, columnIndex: number) => void;
     addColumnRight: (presentationId: string, slideId: string, layoutId: string, columnIndex: number) => void;
     duplicateColumn: (presentationId: string, slideId: string, layoutId: string, columnId: string) => void;
@@ -128,6 +136,16 @@ export interface PresentationState {
         alignment: 'top' | 'center' | 'bottom'
     ) => void;
     deleteColumn: (presentationId: string, slideId: string, layoutId: string, columnId: string) => void;
+
+    addColumnsAroundImage: (
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        options?: {
+            width?: number;
+            direction?: 'left' | 'right' | 'both';
+        }
+    ) => void;
 
     getCellElementIds: (presentationId: string, slideId: string, layoutId: string, cellId: string) => string[];
 
@@ -152,7 +170,6 @@ export interface PresentationState {
     ) => BaseElement[];
     getTableFirstElement: (presentationId: string, slideId: string, layoutId: string) => BaseElement | null;
 
-    toggleBoldOnColumn: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => void;
     toggleItalicOnColumn: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => void;
     toggleUnderlineOnColumn: (
         presentationId: string,
@@ -976,50 +993,6 @@ export const usePresentationStore = create<PresentationState>()(
                 // }
                 set(state => {
                     const updatedState = {
-                        presentations: state.presentations.map(presentation =>
-                            presentation.id === presentationId
-                                ? {
-                                    ...presentation,
-                                    slides: presentation.slides.map(slide =>
-                                        slide.id === slideId
-                                            ? {
-                                                ...slide,
-                                                layouts: slide.layouts.map(layout =>
-                                                    layout.id === layoutId
-                                                        ? {
-                                                            ...layout,
-                                                            gridStructure: {
-                                                                ...layout.gridStructure,
-                                                                columnWidths: getColumnWidths(
-                                                                    layout.gridStructure.columns
-                                                                ),
-                                                            },
-                                                        }
-                                                        : layout
-                                                ),
-                                            }
-                                            : slide
-                                    ),
-                                }
-                                : presentation
-                        ),
-                    };
-                    return updatedState;
-                });
-
-                get().saveChanges(presentationId);
-            },
-
-            toggleBoldOnColumn: (presentationId, slideId, layoutId, tableColumnIndex) => {
-                const beforeState = { ...get() };
-
-                const layout = get().getLayout(presentationId, slideId, layoutId);
-                if (!layout) return;
-
-                const columnCellsIds = layout.gridStructure.rows.map(row => row.cells[tableColumnIndex].id);
-
-                set(state => {
-                    const updatedState = {
                         presentations: state.presentations.map(presentation => {
                             if (presentation.id === presentationId) {
                                 return {
@@ -1034,17 +1007,9 @@ export const usePresentationStore = create<PresentationState>()(
                                                             ...layout,
                                                             gridStructure: {
                                                                 ...layout.gridStructure,
-                                                                rows: layout.gridStructure.rows.map(row => {
-                                                                    return {
-                                                                        ...row,
-                                                                        cells: row.cells.map(cell => {
-                                                                            if (columnCellsIds.includes(cell.id)) {
-                                                                                return { ...cell, bold: !cell.bold };
-                                                                            }
-                                                                            return cell;
-                                                                        }),
-                                                                    };
-                                                                }),
+                                                                columnWidths: getColumnWidths(
+                                                                    layout.gridStructure.columns
+                                                                ),
                                                             },
                                                         };
                                                     }
@@ -1054,23 +1019,11 @@ export const usePresentationStore = create<PresentationState>()(
                                         }
                                         return slide;
                                     }),
-                                    updatedAt: Date.now(),
                                 };
                             }
                             return presentation;
                         }),
                     };
-
-                    get().recordAction({
-                        type: 'layout',
-                        description: 'Toggle bold on column',
-                        presentationId,
-                        slideId,
-                        layoutId,
-                        before: { presentations: beforeState.presentations },
-                        after: updatedState,
-                    });
-
                     return updatedState;
                 });
 
@@ -1243,15 +1196,16 @@ export const usePresentationStore = create<PresentationState>()(
 
                 const updatedSlide = {
                     ...currentSlide,
-                    layouts: currentSlide.layouts.map(layout =>
-                        layout.id === layoutId
-                            ? {
+                    layouts: currentSlide.layouts.map(layout => {
+                        if (layout.id === layoutId) {
+                            return {
                                 ...layout,
                                 gridStructure: updatedGridStructure,
                                 elements: updatedElements,
-                            }
-                            : layout
-                    ),
+                            };
+                        }
+                        return layout;
+                    }),
                 };
 
                 const updatedPresentation = {
@@ -1317,15 +1271,16 @@ export const usePresentationStore = create<PresentationState>()(
 
                 const updatedSlide = {
                     ...currentSlide,
-                    layouts: currentSlide.layouts.map(layout =>
-                        layout.id === layoutId
-                            ? {
+                    layouts: currentSlide.layouts.map(layout => {
+                        if (layout.id === layoutId) {
+                            return {
                                 ...layout,
                                 gridStructure: updatedGridStructure,
                                 elements: filteredElements,
-                            }
-                            : layout
-                    ),
+                            };
+                        }
+                        return layout;
+                    }),
                 };
 
                 const updatedPresentation = {
@@ -1393,15 +1348,16 @@ export const usePresentationStore = create<PresentationState>()(
 
                 const updatedSlide = {
                     ...currentSlide,
-                    layouts: currentSlide.layouts.map(layout =>
-                        layout.id === layoutId
-                            ? {
+                    layouts: currentSlide.layouts.map(layout => {
+                        if (layout.id === layoutId) {
+                            return {
                                 ...layout,
                                 gridStructure: updatedGridStructure,
                                 elements: updatedElements,
-                            }
-                            : layout
-                    ),
+                            };
+                        }
+                        return layout;
+                    }),
                 };
 
                 const updatedPresentation = {
@@ -2027,7 +1983,205 @@ export const usePresentationStore = create<PresentationState>()(
                 get().saveChanges(presentationId);
             },
 
-            addColumn: (presentationId, slideId, layoutId, columnIndex) => {
+            addColumnsAroundImage: (presentationId, slideId, layoutId, options) => {
+                const beforeState = { ...get() };
+
+                const currentPresentation = get().getPresentation(presentationId);
+                if (!currentPresentation) return;
+
+                const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
+                if (!currentSlide) return;
+
+                const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
+                if (!currentLayout) return;
+
+                if (options?.direction === 'left' || options?.direction === 'right') {
+                    const newColumnId = generateId();
+
+                    const newColumnIndex = options?.direction === 'left' ? 0 : 1;
+                    const columnIndex = options?.direction === 'left' ? 1 : 0;
+
+                    const newColumn: GridCell = {
+                        id: newColumnId,
+                        row: 0,
+                        column: newColumnIndex,
+                    };
+
+                    let columnWidths;
+                    if (options?.width) {
+                        columnWidths = getColumnWidths(currentLayout.gridStructure.columns + 1, {
+                            columnIndex,
+                            width: options?.width,
+                        });
+                    } else {
+                        columnWidths = getColumnWidths(currentLayout.gridStructure.columns + 1);
+                    }
+                    // Update grid structure
+                    const updatedGridStructure = {
+                        ...currentLayout.gridStructure,
+                        columns: currentLayout.gridStructure.columns + 1,
+                        columnWidths,
+                        rows: currentLayout.gridStructure.rows.map((row: { id: string; cells: GridCell[] }) => {
+                            const updatedCells = [...row.cells];
+                            updatedCells.splice(newColumnIndex, 0, newColumn);
+                            return {
+                                ...row,
+                                cells: updatedCells,
+                            };
+                        }),
+                    };
+
+                    const newElement = getNewEditorElement(newColumnId);
+                    const updatedElements = [...currentLayout.elements, newElement];
+
+                    const updatedSlide = {
+                        ...currentSlide,
+                        layouts: currentSlide.layouts.map(layout =>
+                            layout.id === layoutId
+                                ? {
+                                    ...layout,
+                                    gridStructure: updatedGridStructure,
+                                    elements: updatedElements,
+                                }
+                                : layout
+                        ),
+                    };
+
+                    const updatedPresentation = {
+                        ...currentPresentation,
+                        slides: currentPresentation.slides.map(slide => (slide.id === slideId ? updatedSlide : slide)),
+                    };
+
+                    const updatedState = {
+                        ...get(),
+                        presentations: get().presentations.map(presentation =>
+                            presentation.id === presentationId ? updatedPresentation : presentation
+                        ),
+                    };
+
+                    set(state => {
+                        const updatedState = {
+                            ...state,
+                            presentations: state.presentations.map(presentation => {
+                                if (presentation.id === presentationId) {
+                                    return {
+                                        ...presentation,
+                                        slides: presentation.slides.map(slide => {
+                                            if (slide.id === slideId) {
+                                                return {
+                                                    ...slide,
+                                                    layouts: slide.layouts.map(layout => {
+                                                        if (layout.id === layoutId) {
+                                                            return {
+                                                                ...layout,
+                                                                gridStructure: updatedGridStructure,
+                                                                elements: updatedElements,
+                                                            };
+                                                        }
+                                                        return layout;
+                                                    }),
+                                                };
+                                            }
+                                            return slide;
+                                        }),
+                                    };
+                                }
+
+                                return presentation;
+                            }),
+                        };
+
+                        useHistoryStore.getState().recordAction({
+                            type: 'column',
+                            description: 'Add column',
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            cellId: newColumnId,
+                            position: 'right',
+                            before: { presentations: beforeState.presentations },
+                            after: updatedState,
+                        });
+
+                        return updatedState;
+                    });
+                } else {
+                    // создаем 2 новые ячейки
+                    const newLeftCellId = generateId();
+                    const newRightCellId = generateId();
+                    // создаем 2 новых редактора
+                    const newLeftCell: GridCell = {
+                        id: newLeftCellId,
+                        row: 0,
+                        column: 0,
+                    };
+                    const newRightCell: GridCell = {
+                        id: newRightCellId,
+                        row: 0,
+                        column: 2,
+                    };
+                    const newLeftElement = getNewEditorElement(newLeftCellId);
+                    const newRightElement = getNewEditorElement(newRightCellId);
+                    // обновляем gridStructure.
+                    const columnWidths = getColumnWidths(currentLayout.gridStructure.columns + 2, {
+                        columnIndex: 1,
+                        width: options!.width!,
+                    });
+
+                    const updatedGridStructure = {
+                        ...currentLayout.gridStructure,
+                        columns: currentLayout.gridStructure.columns + 2,
+                        columnWidths,
+                        rows: currentLayout.gridStructure.rows.map((row: { id: string; cells: GridCell[] }) => {
+                            const updatedCells = [...row.cells];
+                            updatedCells.splice(0, 0, newLeftCell);
+                            updatedCells.splice(2, 0, newRightCell);
+                            return {
+                                ...row,
+                                cells: updatedCells,
+                            };
+                        }),
+                    };
+
+                    const updatedElements = [newLeftElement, ...currentLayout.elements, newRightElement];
+
+                    set(state => {
+                        const updatedState = {
+                            ...state,
+                            presentations: state.presentations.map(presentation => {
+                                if (presentation.id === presentationId) {
+                                    return {
+                                        ...presentation,
+                                        slides: presentation.slides.map(slide => {
+                                            if (slide.id === slideId) {
+                                                return {
+                                                    ...slide,
+                                                    layouts: slide.layouts.map(layout => {
+                                                        if (layout.id === layoutId) {
+                                                            return {
+                                                                ...layout,
+                                                                gridStructure: updatedGridStructure,
+                                                                elements: updatedElements,
+                                                            };
+                                                        }
+                                                        return layout;
+                                                    }),
+                                                };
+                                            }
+                                            return slide;
+                                        }),
+                                    };
+                                }
+                                return presentation;
+                            }),
+                        };
+
+                        return updatedState;
+                    });
+                }
+            },
+
+            addColumn: (presentationId, slideId, layoutId, columnIndex, options) => {
                 const beforeState = { ...get() };
 
                 const currentPresentation = get().getPresentation(presentationId);
@@ -2047,11 +2201,20 @@ export const usePresentationStore = create<PresentationState>()(
                     column: columnIndex,
                 };
 
+                let columnWidths;
+                if (options?.width) {
+                    columnWidths = getColumnWidths(currentLayout.gridStructure.columns + 1, {
+                        columnIndex,
+                        width: options?.width,
+                    });
+                } else {
+                    columnWidths = getColumnWidths(currentLayout.gridStructure.columns + 1);
+                }
                 // Update grid structure
                 const updatedGridStructure = {
                     ...currentLayout.gridStructure,
                     columns: currentLayout.gridStructure.columns + 1,
-                    columnWidths: getColumnWidths(currentLayout.gridStructure.columns + 1),
+                    columnWidths,
                     rows: currentLayout.gridStructure.rows.map((row: { id: string; cells: GridCell[] }) => {
                         const updatedCells = [...row.cells];
                         updatedCells.splice(columnIndex, 0, newColumn);
@@ -2084,15 +2247,16 @@ export const usePresentationStore = create<PresentationState>()(
 
                 const updatedSlide = {
                     ...currentSlide,
-                    layouts: currentSlide.layouts.map(layout =>
-                        layout.id === layoutId
-                            ? {
+                    layouts: currentSlide.layouts.map(layout => {
+                        if (layout.id === layoutId) {
+                            return {
                                 ...layout,
                                 gridStructure: updatedGridStructure,
                                 elements: updatedElements,
-                            }
-                            : layout
-                    ),
+                            };
+                        }
+                        return layout;
+                    }),
                 };
 
                 const updatedPresentation = {

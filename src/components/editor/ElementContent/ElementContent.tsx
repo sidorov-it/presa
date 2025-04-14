@@ -35,6 +35,7 @@ export const ElementContent = ({
     presentationId,
     layoutId,
     isInTable,
+    hasMultipleCells,
 }: {
     elementId: string;
     // setElementIsHovered: (isHovered: boolean) => void;
@@ -49,6 +50,7 @@ export const ElementContent = ({
     presentationId: string;
     layoutId: string;
     isInTable: boolean;
+    hasMultipleCells: boolean;
 }) => {
     const element = usePresentationStore(state => state.getElement(presentationId, slideId, layoutId, elementId)!);
 
@@ -263,9 +265,7 @@ export const ElementContent = ({
                         layouts: updatedLayouts,
                     });
                 }
-            }
-            // backspace не в первой строке -> удаляем layout
-            else if (
+            } else if (
                 elementsInCell.length === 1 &&
                 !isMultiCellRow &&
                 layoutIndex !== 0 &&
@@ -273,9 +273,7 @@ export const ElementContent = ({
                 isEmpty
             ) {
                 usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
-            }
-            // backspace в единственном элементе в ячейке с несколькими ячейками -> удаляем всю ячейку
-            else if (isMultiCellRow && elementsInCell.length === 1) {
+            } else if (isMultiCellRow && elementsInCell.length === 1) {
                 const updatedLayout = { ...layout };
                 const updatedElements = updatedLayout.elements.filter(e => e.cellId !== element.cellId);
                 updatedLayout.elements = updatedElements;
@@ -473,6 +471,7 @@ export const ElementContent = ({
                         presentationId={presentationId}
                         slideId={slideId}
                         layoutId={layoutId}
+                        hasMultipleCells={hasMultipleCells}
                     />
                 );
                 // } else if (element.elementTypeId === 'table') {
@@ -557,7 +556,8 @@ const ElementContentMemo = memo(ElementContent, (prevProps, nextProps) => {
         prevProps.slideId === nextProps.slideId &&
         prevProps.presentationId === nextProps.presentationId &&
         prevProps.layoutId === nextProps.layoutId &&
-        prevProps.isInTable === nextProps.isInTable
+        prevProps.isInTable === nextProps.isInTable &&
+        prevProps.hasMultipleCells === nextProps.hasMultipleCells
     );
 });
 

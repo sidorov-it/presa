@@ -23,14 +23,34 @@ interface SlideEditorProps {
     slideId: string;
 }
 
-export const getColumnWidths = (columnsCount: number): string[] => {
+interface ColumnWidthOptions {
+    columnIndex: number;
+    width: number;
+}
+
+export const getColumnWidths = (columnsCount: number, options?: ColumnWidthOptions): string[] => {
     if (columnsCount === 0) {
         return [];
-    } else if (columnsCount === 3) {
-        return ['33%', '34%', '33%'];
-    } else {
-        return new Array(columnsCount).fill(`${100 / columnsCount}%`);
     }
+
+    if (options) {
+        const { columnIndex, width } = options;
+        if (columnIndex >= columnsCount) {
+            throw new Error('Column index is out of bounds');
+        }
+
+        const remainingColumns = columnsCount - 1;
+        const remainingWidth = 100 - width;
+        const equalWidth = `${remainingWidth / remainingColumns}%`;
+
+        return Array.from({ length: columnsCount }, (_, index) => (index === columnIndex ? `${width}%` : equalWidth));
+    }
+
+    if (columnsCount === 3) {
+        return ['33%', '34%', '33%'];
+    }
+
+    return new Array(columnsCount).fill(`${100 / columnsCount}%`);
 };
 
 const SlideEditor: React.FC<SlideEditorProps> = ({
@@ -155,7 +175,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             if (slideLayoutIds.length === 1 && !menuElementId && !activeEditor) {
                 const layoutId = slideLayoutIds[0];
                 const layout = usePresentationStore.getState().getLayout(presentationId, slideId, layoutId);
-                if (layout?.elements.length === 1) {
+                if (layout?.elements.length === 1 && tiptapRefs.current?.editors[layout.elements[0].id]) {
                     tiptapRefs.current?.editors[layout.elements[0].id]?.editor.chain().focus().run();
                     return;
                 }

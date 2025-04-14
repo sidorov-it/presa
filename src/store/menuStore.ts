@@ -82,7 +82,6 @@ export interface MenuState {
     alignColumnCenter: () => void;
     alignColumnBottom: () => void;
     deleteColumn: () => void;
-    toggleBoldOnColumn: () => void;
     // Getter methods
     getElement: (
         slideId: string | null,
@@ -362,13 +361,6 @@ export const useMenuStore = create<MenuState>()(
                 }
             },
 
-            toggleBoldOnColumn: () => {
-                const { presentationId, slideId, layoutId, tableColumnIndex } = get();
-                if (presentationId && slideId && layoutId) {
-                    const { toggleBoldOnColumn: toggleBoldOnColumnInStore } = usePresentationStore.getState();
-                    toggleBoldOnColumnInStore(presentationId, slideId, layoutId, tableColumnIndex!);
-                }
-            },
             // Getter methods
             getElement: (slideId, layoutId, elementId) => {
                 const { presentationId } = get();
