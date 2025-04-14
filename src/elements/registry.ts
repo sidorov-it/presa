@@ -35,6 +35,7 @@ import ButtonMenu from '@/components/editor/Menus/ButtonMenu';
 
 // Import our new Image components
 import { ImageSettings } from './image';
+import ChartSettings from './chart/ChartSettings';
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 
 // Define component type enum to better categorize elements by their structure
@@ -143,6 +144,30 @@ export const getNewElement = (type: string): Omit<BaseElement, 'cellId'> | Layou
             alignment: elementConfig?.defaultProps?.alignment || 'center',
             width: elementConfig?.defaultProps?.width || undefined,
         } as Omit<ImageElement, 'cellId'>;
+    }
+
+    // Special handling for chart elements
+    if (type.includes('chart')) {
+        // Determine chart type from element type ID
+        let chartType: 'bar' | 'line' | 'pie' | 'donut' = 'bar';
+
+        if (type === 'column-chart') chartType = 'bar';
+        else if (type === 'bar-chart') chartType = 'bar';
+        else if (type === 'line-chart') chartType = 'line';
+        else if (type === 'pie-chart') chartType = 'pie';
+        else if (type === 'donut-chart') chartType = 'donut';
+
+        return {
+            ...baseElement,
+            type: 'chart',
+            chartType,
+            data: [
+                { name: 'Q1', value: 220 },
+                { name: 'Q2', value: 458 },
+                { name: 'Q3', value: 359 },
+                { name: 'Q4', value: 500 },
+            ],
+        } as Omit<ChartElement, 'cellId'>;
     }
 
     // Return default text element for other types
@@ -538,8 +563,9 @@ export const elementsRegistry: Category[] = [
                 Icon: FaRegChartBar,
                 componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
                 hasTextEditor: false,
-                // MenuComponent: DefaultBubbleMenu,
+                MenuComponent: ChartSettings,
                 defaultProps: { content: '' },
+                customMenuType: 'chart',
             },
             // Bar chart
             {
@@ -549,8 +575,9 @@ export const elementsRegistry: Category[] = [
                 Icon: FaRegChartBar,
                 componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
                 hasTextEditor: false,
-                // MenuComponent: DefaultBubbleMenu,
+                MenuComponent: ChartSettings,
                 defaultProps: { content: '' },
+                customMenuType: 'chart',
             },
             // Line chart
             {
@@ -560,8 +587,9 @@ export const elementsRegistry: Category[] = [
                 Icon: FaRegChartBar,
                 componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
                 hasTextEditor: false,
-                // MenuComponent: DefaultBubbleMenu,
+                MenuComponent: ChartSettings,
                 defaultProps: { content: '' },
+                customMenuType: 'chart',
             },
             // Pie chart
             {
@@ -571,8 +599,9 @@ export const elementsRegistry: Category[] = [
                 Icon: FaRegChartBar,
                 componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
                 hasTextEditor: false,
-                // MenuComponent: DefaultBubbleMenu,
+                MenuComponent: ChartSettings,
                 defaultProps: { content: '' },
+                customMenuType: 'chart',
             },
             // Donut  chart
             {
@@ -582,8 +611,9 @@ export const elementsRegistry: Category[] = [
                 Icon: FaRegChartBar,
                 componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
                 hasTextEditor: false,
-                // MenuComponent: DefaultBubbleMenu,
+                MenuComponent: ChartSettings,
                 defaultProps: { content: '' },
+                customMenuType: 'chart',
             },
         ],
     },

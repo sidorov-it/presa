@@ -14,6 +14,7 @@ import { ComponentStructureType } from '@/elements/registry';
 import { useMenuStore } from '@/store/menuStore';
 import { useShallow } from 'zustand/react/shallow';
 import adjustWidths from '@/utils/adjustWidths';
+import { OpenCustomMenuEvent } from '@/customEvents/OpenCustomMenuEvent';
 
 export const useIsSelectedRow = (tableId: string, rowIndex: number) =>
     useMenuStore(state => state.tableRowIndex === rowIndex && state.tableId === tableId);
@@ -239,7 +240,14 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         (element: Element, elementConfig: ElementConfig) => () => {
             const editor = tiptapRefs.current?.editors[element.id]?.editor;
 
-            if (
+            if (elementConfig.customMenuType) {
+                document.dispatchEvent(
+                    new OpenCustomMenuEvent({
+                        elementId: element.id,
+                        elementType: elementConfig.customMenuType,
+                    })
+                );
+            } else if (
                 elementConfig.hasTextEditor &&
                 editor &&
                 elementConfig.componentStructure === ComponentStructureType.TEXT_EDITOR

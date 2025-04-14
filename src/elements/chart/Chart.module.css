@@ -1,0 +1,101 @@
+.chartContainer {
+  width: 100%;
+  margin: 0 auto;
+  padding: 4px;
+  position: relative;
+}
+
+.chartControls {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  gap: 4px;
+  z-index: 10;
+}
+
+.chartControlButton {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chartControlButton:hover {
+  background-color: rgba(255, 255, 255, 1);
+  border-color: #aaa;
+}
+
+.editButton {
+  background-color: #f0f9ff;
+  border-color: #93c5fd;
+  color: #2563eb;
+}
+
+/* Resize Dot Styles */
+.dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  border: 2px solid #3b82f6;
+  border-radius: 50%;
+  z-index: 20;
+}
+
+/* Top edge */
+.dotTopMiddle {
+  top: -4px;
+  left: calc(50% - 4px);
+}
+
+/* Right edge */
+.dotRightMiddle {
+  right: -4px;
+  top: calc(50% - 4px);
+}
+
+/* Bottom edge */
+.dotBottomMiddle {
+  bottom: -4px;
+  left: calc(50% - 4px);
+}
+
+/* Left edge */
+.dotLeftMiddle {
+  left: -4px;
+  top: calc(50% - 4px);
+}
+
+/* Corners */
+.dotTopLeft {
+  top: -4px;
+  left: -4px;
+}
+
+.dotTopRight {
+  top: -4px;
+  right: -4px;
+}
+
+.dotBottomLeft {
+  bottom: -4px;
+  left: -4px;
+}
+
+.dotBottomRight {
+  bottom: -4px;
+  right: -4px;
+} 
+
+.chartSettingsPopup {
+  position: fixed; 
+  z-index: 50; 
+  padding: 1rem; 
+  border-radius: 0.5rem; 
+  background-color: #ffffff; 
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+}

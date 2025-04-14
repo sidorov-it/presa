@@ -11,6 +11,7 @@ import {
     EditorElement,
     ElementConfig,
     ImageElement,
+    ChartElement,
 } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import { generateId } from '@/utils/id';
@@ -21,6 +22,7 @@ import { getColumnWidths } from '../SlideEditor/SlideEditor';
 import { Image } from '@/elements/image';
 import { useMenuStore } from '@/store/menuStore';
 import { useShallow } from 'zustand/react/shallow';
+import Chart from '@/elements/chart/Chart';
 
 export const ElementContent = ({
     elementId,
@@ -474,16 +476,16 @@ export const ElementContent = ({
                         hasMultipleCells={hasMultipleCells}
                     />
                 );
-                // } else if (element.elementTypeId === 'table') {
-                //     // Render our custom table component for tables
-                //     return (
-                //         <TableElementWrapper
-                //             element={element}
-                //             presentationId={presentationId}
-                //             slideId={slideId}
-                //             layoutId={layoutId}
-                //         />
-                //     );
+            } else if (element.elementTypeId.includes('chart')) {
+                return (
+                    <Chart
+                        element={element as ChartElement}
+                        presentationId={presentationId}
+                        slideId={slideId}
+                        layoutId={layoutId}
+                        hasMultipleCells={hasMultipleCells}
+                    />
+                );
             }
 
             return (

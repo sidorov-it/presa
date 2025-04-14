@@ -333,8 +333,10 @@ export interface VideoElement extends BaseElement {
 // Элемент диаграммы
 export interface ChartElement extends BaseElement {
     type: 'chart';
-    chartType: 'bar' | 'line' | 'pie' | 'donut';
+    chartType: 'bar' | 'line' | 'pie' | 'donut' | 'column';
     data: any; // Данные для диаграммы
+    alignment?: 'left' | 'center' | 'right';
+    width?: number;
 }
 
 // Элемент кнопки

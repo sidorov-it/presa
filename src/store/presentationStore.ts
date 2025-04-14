@@ -2036,15 +2036,16 @@ export const usePresentationStore = create<PresentationState>()(
 
                     const updatedSlide = {
                         ...currentSlide,
-                        layouts: currentSlide.layouts.map(layout =>
-                            layout.id === layoutId
-                                ? {
+                        layouts: currentSlide.layouts.map(layout => {
+                            if (layout.id === layoutId) {
+                                return {
                                     ...layout,
                                     gridStructure: updatedGridStructure,
                                     elements: updatedElements,
-                                }
-                                : layout
-                        ),
+                                };
+                            }
+                            return layout;
+                        }),
                     };
 
                     const updatedPresentation = {
@@ -2052,6 +2053,7 @@ export const usePresentationStore = create<PresentationState>()(
                         slides: currentPresentation.slides.map(slide => (slide.id === slideId ? updatedSlide : slide)),
                     };
 
+                     // ???
                     const updatedState = {
                         ...get(),
                         presentations: get().presentations.map(presentation =>
