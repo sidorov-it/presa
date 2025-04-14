@@ -8,21 +8,19 @@ import {
     BiArrowToBottom,
     BiTrash
 } from 'react-icons/bi';
-import styles from './TableMenu.module.css';
-import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
-import { ColorPicker } from '@/components/tiptap/ColorPicker';
-import HeadingSelector from '@/components/settings/HeadingSelector/HeadingSelector';
-import { usePresentationStore } from '@/store/presentationStore';
 import { useMenuStore } from '@/store/menuStore';
 import { TipTapRefs } from '@/types';
-import { Level } from '@tiptap/extension-heading';
+import { BaseMenu, MenuItem } from '../BaseMenu';
+import { ColorPicker } from '@/components/tiptap/ColorPicker';
+import HeadingSelector from '@/components/settings/HeadingSelector/HeadingSelector';
+
 interface TableMenuProps {
     slideId?: string;
     layoutId?: string;
     elementId?: string;
     presentationId?: string;
     tiptapRefs: MutableRefObject<TipTapRefs>;
-    position: { x: number, y: number };
+    position: { x: number, y: number; rect?: DOMRect };
 }
 
 const TableMenu: React.FC<TableMenuProps> = ({
@@ -36,7 +34,9 @@ const TableMenu: React.FC<TableMenuProps> = ({
     const headingMenuRef = useRef<HTMLDivElement>(null);
 
     const tableFirstElement = useMenuStore.getState().getTableFirstElement();
-    const [headingLevelLocal, setHeadingLevelLocal] = useState<number>(tableFirstElement?.id ? tiptapRefs.current.editors[tableFirstElement?.id]?.editor.getAttributes('heading').level : 0);
+    const [headingLevelLocal, setHeadingLevelLocal] = useState<number>(
+        tableFirstElement?.id ? tiptapRefs.current.editors[tableFirstElement?.id]?.editor.getAttributes('heading').level : 0
+    );
 
     useEffect(() => {
         const editor = tableFirstElement?.id ? tiptapRefs.current.editors[tableFirstElement?.id]?.editor : null;
@@ -59,13 +59,21 @@ const TableMenu: React.FC<TableMenuProps> = ({
         return tableFirstElement?.id ? tiptapRefs.current.editors[tableFirstElement?.id]?.editor.isActive('underline') : false;
     }, [tableFirstElement]);
 
-    // Light theme styles
-    const lightThemeStyle = {
-        backgroundColor: 'white',
-        color: '#333',
-        borderColor: '#e0e0e0',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-    };
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            // Don't hide if clicking on the editor or the bubble menu itself
+            const target = e.target as HTMLElement;
+            if (target.closest('.layout-menu')) {
+                return;
+            }
+            useMenuStore.getState().closeMenu();
+        };
+
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, []);
 
     // Close the heading dropdown menu when clicking outside
     useEffect(() => {
@@ -81,31 +89,14 @@ const TableMenu: React.FC<TableMenuProps> = ({
         };
     }, []);
 
-    // Get current heading level from editor
-    const getCurrentHeadingLevel = useCallback(() => {
-        return headingLevelLocal || 0;
-    }, [headingLevelLocal]);
-
-    const handleHeadingChange = useCallback((level: number) => {
-        if (tableFirstElement?.id) {
-            tiptapRefs.current.editors[tableFirstElement?.id]?.editor.chain().setHeading({ level: level as Level }).run();
-        }
-
-        setHeadingLevelLocal(level);
-    }, [tableFirstElement, tiptapRefs]);
-
     const handleToggleBold = useCallback(() => {
         if (tableFirstElement?.id) {
             const editor = tiptapRefs.current.editors[tableFirstElement?.id]?.editor;
             if (editor) {
-                if (isBoldActive) {
-                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().unsetBold().blur().run();
-                } else {
-                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().setBold().blur().run();
-                }
+                editor.chain().focus(null, { scrollIntoView: false }).selectAll().toggleBold().blur().run();
             }
         }
-    }, [tableFirstElement, isBoldActive, tiptapRefs]);
+    }, [tableFirstElement, tiptapRefs]);
 
     const handleToggleItalic = useCallback(() => {
         if (tableFirstElement?.id) {
@@ -131,111 +122,32 @@ const TableMenu: React.FC<TableMenuProps> = ({
         }
     }, [tableFirstElement, tiptapRefs]);
 
-
-    // Table row operations
-    const handleAddRowAbove = useCallback(() => {
-        // usePresentationStore.getState().addRowToTable(presentationId!, slideId!, layoutId!, tableRowIndex!);
-        useMenuStore.getState().closeMenu();
-    }, []);
-
-    const handleAddRowBelow = useCallback(() => {
-        // usePresentationStore.getState().addRowToTable(presentationId!, slideId!, layoutId!, tableRowIndex! + 1);
-        useMenuStore.getState().closeMenu();
-    }, []);
-
-    const handleDeleteRow = useCallback(() => {
-        // usePresentationStore.getState().deleteRowFromTable(presentationId!, slideId!, layoutId!, tableRowIndex!);
-        useMenuStore.getState().closeMenu();
-    }, []);
-
     return (
-        <div className={`${styles.layoutMenu} layout-menu`} style={{
-            top: position.y
-        }}>
-            <HeadingSelector
-                headingMenuRef={headingMenuRef}
-                isHeadingMenuOpen={isHeadingMenuOpen}
-                setIsHeadingMenuOpen={setIsHeadingMenuOpen}
-                getCurrentHeadingLevel={getCurrentHeadingLevel}
-                handleHeadingChange={handleHeadingChange}
-                lightThemeStyle={lightThemeStyle}
-            />
-
-            <ColorPicker
-                editor={tableFirstElement?.id ? tiptapRefs.current.editors[tableFirstElement?.id]?.editor : null}
-                className={bubbleStyles.button}
-            />
-
-            <button
+        <BaseMenu position={position}>
+            <MenuItem
+                icon={<BiBold />}
+                label="Bold"
                 onClick={handleToggleBold}
-                className={`${styles.slideMenuButton} ${isBoldActive ? styles.active : ''}`}
-                aria-label="Жирный"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleToggleBold()}
-            >
-                <BiBold size={16} />
-            </button>
-
-            <button
+                active={isBoldActive}
+            />
+            <MenuItem
+                icon={<BiItalic />}
+                label="Italic"
                 onClick={handleToggleItalic}
-                className={`${styles.slideMenuButton} ${isItalicActive ? styles.active : ''}`}
-                aria-label="Курсив"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleToggleItalic()}
-            >
-                <BiItalic size={16} />
-            </button>
-
-            <button
+                active={isItalicActive}
+            />
+            <MenuItem
+                icon={<BiUnderline />}
+                label="Underline"
                 onClick={handleToggleUnderline}
-                className={`${styles.slideMenuButton} ${isUnderlineActive ? styles.active : ''}`}
-                aria-label="Подчеркнутый"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleToggleUnderline()}
-            >
-                <BiUnderline size={16} />
-            </button>
-
-            <button
+                active={isUnderlineActive}
+            />
+            <MenuItem
+                icon={<BiX />}
+                label="Clear formatting"
                 onClick={handleClearStyles}
-                className={styles.slideMenuButton}
-                aria-label="Очистить форматирование"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleClearStyles()}
-            >
-                <BiX size={16} />
-            </button>
-
-            <button
-                onClick={handleAddRowAbove}
-                className={styles.slideMenuButton}
-                aria-label="Добавить строку сверху"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddRowAbove()}
-            >
-                <BiArrowToTop size={16} />
-            </button>
-
-            <button
-                onClick={handleAddRowBelow}
-                className={styles.slideMenuButton}
-                aria-label="Добавить строку снизу"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddRowBelow()}
-            >
-                <BiArrowToBottom size={16} />
-            </button>
-
-            <button
-                onClick={handleDeleteRow}
-                className={`${styles.slideMenuButton} ${styles.removeButton}`}
-                aria-label="Удалить строку"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleDeleteRow()}
-            >
-                <BiTrash size={16} />
-            </button>
-        </div>
+            />
+        </BaseMenu>
     );
 };
 

@@ -18,7 +18,6 @@ export default function HeadingSelector({
     setIsHeadingMenuOpen,
     getCurrentHeadingLevel = () => 0,
     handleHeadingChange = () => { },
-    lightThemeStyle,
     headingLevels = defaultHeadingLevels,
 }: {
     headingMenuRef?: React.RefObject<HTMLDivElement>;
@@ -26,9 +25,15 @@ export default function HeadingSelector({
     setIsHeadingMenuOpen: (isOpen: boolean) => void;
     getCurrentHeadingLevel: () => number;
     handleHeadingChange: (level: number) => void;
-    lightThemeStyle: React.CSSProperties;
     headingLevels?: { level: number; label: string }[];
-}) {
+    }) {
+        const lightThemeStyle = {
+            backgroundColor: 'white',
+            color: '#333',
+            borderColor: '#e0e0e0',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+        };
+    
     return (
         <div className={styles.headingSelector} ref={headingMenuRef}>
             <button

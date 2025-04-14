@@ -85,6 +85,8 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const isLastCell = elementsIds[elementsIds.length - 1] === cell.id;
 
     const menuElementId = useMenuStore(state => state.elementId);
+    const menuCellId = useMenuStore(state => state.cellId);
+
     const isHoveredRow = useIsHoveredRow(layoutId, rowIndex, columnIndex);
     const isSelectedRow = useIsSelectedRow(layoutId, rowIndex);
     const dragHandleRef = useRef<HTMLDivElement>(null);
@@ -306,11 +308,11 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             elementType: 'cell',
             layoutId,
             cellId: cell.id,
-            tableColumnIndex: columnIndex,
-            tableRowIndex: rowIndex,
-            tableId: layoutId
+            tableColumnIndex: null,
+            tableRowIndex: null,
+            tableId: null
         });
-    }, [slideId, layoutId, cell.id, columnIndex, rowIndex]);
+    }, [slideId, layoutId, cell.id]);
 
 
     const handleKeyDownCellDragHandle = useCallback((e: any) => {
@@ -439,10 +441,10 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             onClick={handleClickGridCell}
             ref={editorRef}
         >
-            {!isTable && (hasMultipleCells && (isMenuCurrentColumn || cellIsHovered)) && (
+            {!isTable && (hasMultipleCells && (isMenuCurrentColumn || cellIsHovered || menuCellId === cell.id)) && (
                 <DragHandler
                     slideId={slideId}
-                    isActive={isMenuCurrentColumn && !menuElementId}
+                    isActive={menuCellId === cell.id}
                     ariaLabel="Drag this cell"
                     className={styles.cellDragHandle}
                     dataAttributes={{
@@ -524,7 +526,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                         columnIndex: columnIndex,
                         tableId: layoutId
                     })}
-                    style={{ cursor: 'grab' }}
                     title="Drag to reorder column (columns can only be moved within the same table)"
                 />
             )}

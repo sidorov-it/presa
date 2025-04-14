@@ -1,5 +1,4 @@
-import React, { useRef, useEffect, useState, CSSProperties, useMemo, useCallback, MutableRefObject } from 'react';
-import styles from './SlideMenu.module.css';
+import React, { useEffect, useState, useMemo, useCallback, MutableRefObject } from 'react';
 import { useEditorStore } from '@/store/editorStore';
 import { getElementMenuComponent } from '@/elements/registry';
 import LayoutMenu from './LayoutMenu';
@@ -20,31 +19,7 @@ import { useMenuIsOpen, useMenuStore, useMenuSelectedColumn, useMenuSelectedElem
 import { usePresentationStore } from '@/store/presentationStore';
 import { TipTapRefs } from '@/types';
 import TableMenu from './TableMenu/TableMenu';
-// Define menu item types
-interface MenuItemProps {
-    icon: React.ReactNode;
-    label: string;
-    onClick: () => void;
-    className?: string;
-    active?: boolean;
-}
-
-const MenuItem: React.FC<MenuItemProps> = ({ icon, label, onClick, className, active }) => (
-    <li>
-        <button
-            className={`${styles.slideMenuButton} ${className || ''} ${active ? styles.active : ''}`}
-            onClick={onClick}
-            aria-label={label}
-            tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && onClick()}
-            title={label}
-        >
-            <div className="flex items-center justify-center">
-                {icon}
-            </div>
-        </button>
-    </li>
-);
+import { BaseMenu, MenuItem } from './BaseMenu';
 
 const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tiptapRefs }) => {
     const {
@@ -85,7 +60,6 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
     const tableColumnIndex = useMenuStore(state => state.tableColumnIndex);
 
     const cell = getCell(slideId, layoutId, cellId);
-
     const element = getElement(slideId, layoutId, elementId);
 
     useEffect(() => {
@@ -119,33 +93,7 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
         };
     }, [element?.elementTypeId]);
 
-    const menuRef = useRef<HTMLDivElement>(null);
     const [position, setPosition] = useState<{ x: number; y: number; rect: DOMRect } | null>(null);
-
-    // Custom light theme styles
-    const lightThemeStyle = {
-        backgroundColor: 'white',
-        color: '#333',
-        borderColor: '#e2e8f0',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
-    };
-
-    // Close the menu when clicking outside of it
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                useMenuStore.getState().closeMenu();
-            }
-        };
-
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [isOpen]);
 
     useEffect(() => {
         if (slideId && isOpen) {
@@ -186,53 +134,43 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
     }, [isOpen, slideId, elementId, elementType, layoutId, columnId, tableRowIndex, tableColumnIndex, cell]);
 
     const handleAddColumnLeft = useCallback(() => {
-        if (slideId && layoutId) {
-            addColumnLeft(slideId, layoutId, tableColumnIndex!);
+        if (Number.isInteger(tableColumnIndex)) {
+            addColumnLeft(tableColumnIndex!);
             useMenuStore.getState().closeMenu();
         }
-    }, [slideId, layoutId, tableColumnIndex, addColumnLeft]);
+    }, [tableColumnIndex, addColumnLeft]);
 
     const handleAddColumnRight = useCallback(() => {
-        if (slideId && layoutId) {
-            addColumnRight(slideId, layoutId, tableColumnIndex!);
+        if (Number.isInteger(tableColumnIndex)) {
+            addColumnRight(tableColumnIndex!);
             useMenuStore.getState().closeMenu();
         }
-    }, [slideId, layoutId, tableColumnIndex, addColumnRight]);
+    }, [tableColumnIndex, addColumnRight]);
 
     const handleDuplicateColumn = useCallback(() => {
-        if (slideId && layoutId && columnId) {
-            duplicateColumn(slideId, layoutId, columnId);
-            useMenuStore.getState().closeMenu();
-        }
-    }, [slideId, layoutId, columnId, duplicateColumn]);
+        duplicateColumn();
+        useMenuStore.getState().closeMenu();
+    }, [duplicateColumn]);
 
     const handleAlignColumnTop = useCallback(() => {
-        if (slideId && layoutId && cellId) {
-            alignColumnTop(slideId, layoutId, cellId);
-            useMenuStore.getState().closeMenu();
-        }
-    }, [slideId, layoutId, cellId, alignColumnTop]);
+        alignColumnTop();
+        useMenuStore.getState().closeMenu();
+    }, [alignColumnTop]);
 
     const handleAlignColumnCenter = useCallback(() => {
-        if (slideId && layoutId && cellId) {
-            alignColumnCenter(slideId, layoutId, cellId);
-            useMenuStore.getState().closeMenu();
-        }
-    }, [slideId, layoutId, cellId, alignColumnCenter]);
+        alignColumnCenter();
+        useMenuStore.getState().closeMenu();
+    }, [alignColumnCenter]);
 
     const handleAlignColumnBottom = useCallback(() => {
-        if (slideId && layoutId && cellId) {
-            alignColumnBottom(slideId, layoutId, cellId);
-            useMenuStore.getState().closeMenu();
-        }
-    }, [slideId, layoutId, cellId, alignColumnBottom]);
+        alignColumnBottom();
+        useMenuStore.getState().closeMenu();
+    }, [alignColumnBottom]);
 
     const handleDeleteColumn = useCallback(() => {
-        if (slideId && layoutId && cellId) {
-            deleteColumn(slideId, layoutId, cellId);
-            useMenuStore.getState().closeMenu();
-        }
-    }, [slideId, layoutId, cellId, deleteColumn]);
+        deleteColumn();
+        useMenuStore.getState().closeMenu();
+    }, [deleteColumn]);
 
     const handleMergeSlide = useCallback(() => {
         if (slideId) {
@@ -240,27 +178,6 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
             useMenuStore.getState().closeMenu();
         }
     }, [slideId, mergeSlideWithPrevious]);
-
-    const getMenuPosition = useCallback(() => {
-        if (!position) return { left: 0, top: 0 };
-
-        const menuWidth = 250; // Estimated menu width
-        const defaultMenuHeight = 46; // Estimated menu height
-
-        let left = position.x;
-        const top = position.y - defaultMenuHeight - 5;
-
-        // Check right edge
-        if (left + menuWidth > window.innerWidth) {
-            left = window.innerWidth - menuWidth - 10;
-        }
-
-        return { left, top };
-    }, [position]);
-
-    if (!isOpen || !position) {
-        return null;
-    }
 
     // Render different menu items based on element type
     const renderMenuItems = () => {
@@ -282,7 +199,7 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
                             icon={<DeleteIcon />}
                             label="Delete"
                             onClick={deleteElement}
-                            className={styles.removeButton}
+                            color="#f00"
                         />
                     </>
                 );
@@ -291,67 +208,43 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
                     <>
                         <MenuItem
                             icon={<AddColumnLeftIcon />}
-                            label="Добавить столбец слева"
+                            label="Add column left"
                             onClick={handleAddColumnLeft}
                         />
                         <MenuItem
                             icon={<AddColumnRightIcon />}
-                            label="Добавить столбец справа"
+                            label="Add column right"
                             onClick={handleAddColumnRight}
                         />
                         <MenuItem
                             icon={<DuplicateIcon />}
-                            label="Дублировать"
+                            label="Duplicate"
                             onClick={handleDuplicateColumn}
                         />
-
                         <MenuItem
                             icon={<AlignTopIcon />}
-                            label="Выровнять по верхнему краю"
-                            active={cell?.alignment === 'top'}
+                            label="Align top"
                             onClick={handleAlignColumnTop}
+                            active={cell?.alignment === 'top'}
                         />
                         <MenuItem
                             icon={<AlignCenterIcon />}
-                            label="Выровнять по центру"
-                            active={cell?.alignment === 'center'}
+                            label="Align center"
                             onClick={handleAlignColumnCenter}
+                            active={cell?.alignment === 'center'}
                         />
                         <MenuItem
                             icon={<AlignBottomIcon />}
-                            label="Выровнять по нижнему краю"
-                            active={cell?.alignment === 'bottom'}
+                            label="Align bottom"
                             onClick={handleAlignColumnBottom}
+                            active={cell?.alignment === 'bottom'}
                         />
-
                         <MenuItem
                             icon={<DeleteIcon />}
-                            label="Удалить столбец"
+                            label="Delete column"
                             onClick={handleDeleteColumn}
-                            className={styles.removeButton}
+                            color="#f00"
                         />
-                    </>
-                );
-            case 'layout':
-                return (
-                    <>
-                        {/* <MenuItem
-                            icon={<DuplicateIcon />}
-                            label="Duplicate"
-                            onClick={closeMenu}
-                        />
-                        <MenuItem
-                            icon={<MoveIcon />}
-                            label="Move"
-                            onClick={closeMenu}
-                        />
-                        <MenuItem
-                            icon={<DeleteIcon />}
-                            label="Delete"
-                            onClick={deleteLayout}
-                            className={styles.removeButton}
-                        /> */}
-                        {/* <LayoutMenu position={position} /> */}
                     </>
                 );
             case 'slide':
@@ -373,31 +266,22 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
                             icon={<DeleteIcon />}
                             label="Delete"
                             onClick={deleteSlide}
-                            className={styles.removeButton}
+                            color="#f00"
                         />
                     </>
                 );
             case 'row':
                 return (
-                    <>
-                        <RowTableMenu
-                            slideId={slideId ?? undefined}
-                            layoutId={layoutId ?? undefined}
-                            elementId={elementId ?? undefined}
-                            presentationId={presentation!.id}
-                            editor={activeEditor ?? undefined}
-                            tableRowIndex={tableRowIndex ?? undefined}
-                            tiptapRefs={tiptapRefs}
-                        />
-                    </>
+                    <RowTableMenu
+                        elementId={elementId ?? undefined}
+                        tableRowIndex={tableRowIndex ?? undefined}
+                        tiptapRefs={tiptapRefs}
+                    />
                 );
             case 'column':
                 return (
                     <ColumnTableMenu
-                        slideId={slideId ?? undefined}
-                        layoutId={layoutId ?? undefined}
                         elementId={elementId ?? undefined}
-                        presentationId={presentation!.id}
                         tableColumnIndex={tableColumnIndex ?? undefined}
                         tiptapRefs={tiptapRefs}
                     />
@@ -407,49 +291,43 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
         }
     };
 
-    // Calculate menu position so it doesn't go off-screen
-
-
-    const menuPosition = getMenuPosition();
-    const menuStyle = {
-        position: 'absolute' as CSSProperties['position'],
-        left: `${menuPosition.left}px`,
-        top: `${menuPosition.top}px`,
-        ...lightThemeStyle,  // Apply light theme styles inline
-        zIndex: 1000,
-    };
+    if (!isOpen || !position) {
+        return null;
+    }
 
     if (isTextEditor) {
         return null;
     }
 
     if (elementType === 'layout' && layoutId && !isTable) {
-        return <LayoutMenu position={position} layoutId={layoutId} />
-    } else if (isTable) {
-        return <TableMenu position={position} layoutId={layoutId} presentationId={presentation!.id} slideId={slideId} tiptapRefs={tiptapRefs} />
+        return <LayoutMenu position={position} layoutId={layoutId} />;
+    } else if (isTable && elementType === 'layout') {
+        return (
+            <TableMenu
+                position={position}
+                layoutId={layoutId ?? undefined}
+                presentationId={presentation!.id}
+                slideId={slideId ?? undefined}
+                tiptapRefs={tiptapRefs}
+            />
+        );
     }
 
     return (
-        <div
-            ref={menuRef}
-            className={`${styles.slideMenu} light-theme-only`}
-            style={menuStyle}
-        >
-            <ul className="flex items-center space-x-1">
-                {MenuComponent ? (
-                    <MenuComponent
-                        slideId={slideId}
-                        layoutId={layoutId}
-                        columnId={columnId}
-                        elementId={elementId}
-                        presentationId={presentation!.id}
-                        editor={activeEditor}
-                    />
-                ) : (
-                    renderMenuItems()
-                )}
-            </ul>
-        </div>
+        <BaseMenu position={position}>
+            {MenuComponent ? (
+                <MenuComponent
+                    slideId={slideId}
+                    layoutId={layoutId}
+                    columnId={columnId}
+                    elementId={elementId}
+                    presentationId={presentation!.id}
+                    editor={activeEditor}
+                />
+            ) : (
+                renderMenuItems()
+            )}
+        </BaseMenu>
     );
 };
 

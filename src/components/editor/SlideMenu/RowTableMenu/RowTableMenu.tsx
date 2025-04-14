@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useCallback, MutableRefObject, useMemo } from 'react';
-import { Editor } from '@tiptap/react';
 import {
     BiBold,
     BiItalic,
@@ -9,46 +8,51 @@ import {
     BiArrowToBottom,
     BiTrash
 } from 'react-icons/bi';
-import styles from '../SlideMenu.module.css';
 import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
 import HeadingSelector from '@/components/settings/HeadingSelector/HeadingSelector';
-import { usePresentationStore } from '@/store/presentationStore';
 import { useMenuStore } from '@/store/menuStore';
 import { TipTapRefs } from '@/types';
+import { MenuItem } from '../BaseMenu';
+import { useShallow } from 'zustand/react/shallow';
+import { Level } from '@tiptap/extension-heading';
 interface RowTableMenuProps {
-    slideId?: string;
-    layoutId?: string;
     elementId?: string;
     tableRowIndex?: number;
-    presentationId?: string;
     tiptapRefs: MutableRefObject<TipTapRefs>;
 }
 
 const RowTableMenu: React.FC<RowTableMenuProps> = ({
-    slideId,
-    layoutId,
-    presentationId,
     tableRowIndex,
     tiptapRefs
 }) => {
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
 
-    const tableRowElements = useMenuStore.getState().getTableRowElements();
-    const [headingLevelLocal, setHeadingLevelLocal] = useState<number>(tiptapRefs.current.editors[tableRowElements[0]?.id]?.editor.getAttributes('heading').level || 0);
+    const tableRowElements = useMenuStore(useShallow(state => state.getTableRowElements()));
+    const currentHeadingLevel = useMenuStore(state => state.getCommonRowHeadingLevel(tiptapRefs));
+
+    const [localHeadingLevel, setLocalHeadingLevel] = useState<number>(currentHeadingLevel || 0);
+
 
     useEffect(() => {
-        const editor = tiptapRefs.current.editors[tableRowElements[0]?.id]?.editor;
-        if (editor && !editor.isEmpty) {
-            setHeadingLevelLocal(editor.getAttributes('heading').level || 0);
-        } else {
-            setHeadingLevelLocal(0);
-        }
-    }, [tableRowElements, tiptapRefs]);
+        const handleClickOutside = (event: MouseEvent) => {
+            if (headingMenuRef.current && !headingMenuRef.current.contains(event.target as Node)) {
+                setIsHeadingMenuOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     const isBoldActive = useMemo(() => {
-        return !tableRowElements.some(element => {
+        const notEmptyEditors = tableRowElements.filter(element => tiptapRefs.current.editors[element.id] && !tiptapRefs.current.editors[element.id].editor.isEmpty);
+        if (!notEmptyEditors.length) return false;
+
+        return !notEmptyEditors.some(element => {
             const editor = tiptapRefs.current.editors[element.id]?.editor;
             if (editor) {
                 return !editor.isActive('bold') && !editor.isEmpty;
@@ -58,7 +62,10 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
     }, [tableRowElements]);
 
     const isItalicActive = useMemo(() => {
-        return !tableRowElements.some(element => {
+        const notEmptyEditors = tableRowElements.filter(element => tiptapRefs.current.editors[element.id] && !tiptapRefs.current.editors[element.id].editor.isEmpty);
+        if (!notEmptyEditors.length) return false;
+
+        return !notEmptyEditors.some(element => {
             const editor = tiptapRefs.current.editors[element.id]?.editor;
             if (editor) {
                 return !editor.isActive('italic') && !editor.isEmpty;
@@ -68,7 +75,10 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
     }, [tableRowElements]);
 
     const isUnderlineActive = useMemo(() => {
-        return !tableRowElements.some(element => {
+        const notEmptyEditors = tableRowElements.filter(element => tiptapRefs.current.editors[element.id] && !tiptapRefs.current.editors[element.id].editor.isEmpty);
+        if (!notEmptyEditors.length) return false;
+
+        return !notEmptyEditors.some(element => {
             const editor = tiptapRefs.current.editors[element.id]?.editor;
             if (editor) {
                 return !editor.isActive('underline') && !editor.isEmpty;
@@ -76,14 +86,6 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
             return true;
         });
     }, [tableRowElements]);
-
-    // Light theme styles
-    const lightThemeStyle = {
-        backgroundColor: 'white',
-        color: '#333',
-        borderColor: '#e0e0e0',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-    };
 
     // Close the heading dropdown menu when clicking outside
     useEffect(() => {
@@ -99,31 +101,21 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
         };
     }, []);
 
-    // Get current heading level from editor
-    const getCurrentHeadingLevel = useCallback(() => {
-        return headingLevelLocal;
-    }, [headingLevelLocal]);
-
     const handleHeadingChange = useCallback((level: number) => {
         tableRowElements.forEach(element => {
             tiptapRefs.current.editors[element.id]?.editor.chain().setHeading({ level: level as Level }).run();
         });
-
-        setHeadingLevelLocal(level);
+        setLocalHeadingLevel(level);
     }, [tableRowElements, tiptapRefs]);
 
     const handleToggleBold = useCallback(() => {
         tableRowElements.forEach(element => {
             const editor = tiptapRefs.current.editors[element.id]?.editor;
             if (editor) {
-                if (isBoldActive) {
-                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().unsetBold().blur().run();
-                } else {
-                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().setBold().blur().run();
-                }
+                editor.chain().focus(null, { scrollIntoView: false }).selectAll().toggleBold().blur().run();
             }
         });
-    }, [tableRowElements, isBoldActive, tiptapRefs]);
+    }, [tableRowElements, tiptapRefs]);
 
     const handleToggleItalic = useCallback(() => {
         tableRowElements.forEach(element => {
@@ -145,26 +137,34 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
 
     const handleClearStyles = useCallback(() => {
         tableRowElements.forEach(element => {
-            tiptapRefs.current.editors[element.id]?.editor.chain().clearNodes().unsetAllMarks().run();
+            const editor = tiptapRefs.current.editors[element.id]?.editor;
+            if (editor) {
+                editor.chain().clearNodes().unsetAllMarks().run();
+            }
         });
     }, [tableRowElements, tiptapRefs]);
 
-
     // Table row operations
     const handleAddRowAbove = useCallback(() => {
-        usePresentationStore.getState().addRowToTable(presentationId!, slideId!, layoutId!, tableRowIndex!);
-        useMenuStore.getState().closeMenu();
-    }, []);
+        if (Number.isInteger(tableRowIndex)) {
+            useMenuStore.getState().addRowToTable(tableRowIndex!);
+            useMenuStore.getState().closeMenu();
+        }
+    }, [tableRowIndex]);
 
     const handleAddRowBelow = useCallback(() => {
-        usePresentationStore.getState().addRowToTable(presentationId!, slideId!, layoutId!, tableRowIndex! + 1);
-        useMenuStore.getState().closeMenu();
-    }, []);
+        if (Number.isInteger(tableRowIndex)) {
+            useMenuStore.getState().addRowToTable(tableRowIndex! + 1);
+            useMenuStore.getState().closeMenu();
+        }
+    }, [tableRowIndex]);
 
     const handleDeleteRow = useCallback(() => {
-        usePresentationStore.getState().deleteRowFromTable(presentationId!, slideId!, layoutId!, tableRowIndex!);
-        useMenuStore.getState().closeMenu();
-    }, []);
+        if (Number.isInteger(tableRowIndex)) {
+            useMenuStore.getState().deleteRowFromTable(tableRowIndex!);
+            useMenuStore.getState().closeMenu();
+        }
+    }, [tableRowIndex]);
 
     return (
         <>
@@ -172,85 +172,54 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
                 headingMenuRef={headingMenuRef}
                 isHeadingMenuOpen={isHeadingMenuOpen}
                 setIsHeadingMenuOpen={setIsHeadingMenuOpen}
-                getCurrentHeadingLevel={getCurrentHeadingLevel}
+                getCurrentHeadingLevel={() => localHeadingLevel || 0}
                 handleHeadingChange={handleHeadingChange}
-                lightThemeStyle={lightThemeStyle}
+                // lightThemeStyle={lightThemeStyle}
             />
-
             <ColorPicker
                 editors={tableRowElements.map(element => tiptapRefs.current.editors[element.id]?.editor)}
                 className={bubbleStyles.button}
             />
 
-            <button
+            <MenuItem
+                icon={<BiBold />}
+                label="Bold"
                 onClick={handleToggleBold}
-                className={`${styles.slideMenuButton} ${isBoldActive ? styles.active : ''}`}
-                aria-label="Жирный"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleToggleBold()}
-            >
-                <BiBold size={16} />
-            </button>
-
-            <button
+                active={isBoldActive}
+            />
+            <MenuItem
+                icon={<BiItalic />}
+                label="Italic"
                 onClick={handleToggleItalic}
-                className={`${styles.slideMenuButton} ${isItalicActive ? styles.active : ''}`}
-                aria-label="Курсив"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleToggleItalic()}
-            >
-                <BiItalic size={16} />
-            </button>
-
-            <button
+                active={isItalicActive}
+            />
+            <MenuItem
+                icon={<BiUnderline />}
+                label="Underline"
                 onClick={handleToggleUnderline}
-                className={`${styles.slideMenuButton} ${isUnderlineActive ? styles.active : ''}`}
-                aria-label="Подчеркнутый"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleToggleUnderline()}
-            >
-                <BiUnderline size={16} />
-            </button>
-
-            <button
+                active={isUnderlineActive}
+            />
+            <MenuItem
+                icon={<BiX />}
+                label="Clear formatting"
                 onClick={handleClearStyles}
-                className={styles.slideMenuButton}
-                aria-label="Очистить форматирование"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleClearStyles()}
-            >
-                <BiX size={16} />
-            </button>
-
-            <button
+            />
+            <MenuItem
+                icon={<BiArrowToTop />}
+                label="Add row above"
                 onClick={handleAddRowAbove}
-                className={styles.slideMenuButton}
-                aria-label="Добавить строку сверху"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddRowAbove()}
-            >
-                <BiArrowToTop size={16} />
-            </button>
-
-            <button
+            />
+            <MenuItem
+                icon={<BiArrowToBottom />}
+                label="Add row below"
                 onClick={handleAddRowBelow}
-                className={styles.slideMenuButton}
-                aria-label="Добавить строку снизу"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddRowBelow()}
-            >
-                <BiArrowToBottom size={16} />
-            </button>
-
-            <button
+            />
+            <MenuItem
+                icon={<BiTrash />}
+                label="Delete row"
                 onClick={handleDeleteRow}
-                className={`${styles.slideMenuButton} ${styles.removeButton}`}
-                aria-label="Удалить строку"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleDeleteRow()}
-            >
-                <BiTrash size={16} />
-            </button>
+                color="#f00"
+            />
         </>
     );
 };

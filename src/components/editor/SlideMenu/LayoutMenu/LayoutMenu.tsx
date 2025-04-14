@@ -1,179 +1,93 @@
-import { AlignCenterIcon, AlignTopIcon, AlignBottomIcon, DeleteIcon } from '@/components/icons';
-import styles from './LayoutMenu.module.css';
-
-import { useEffect, useState } from 'react';
-import MenuButton from '../MenuButton';
-import { LayoutType } from '@/types';
-// Import column layout icons from the local icons folder
+import React, { useCallback } from 'react';
+import { useMenuStore } from '@/store/menuStore';
+import { BaseMenu, MenuItem } from '../BaseMenu';
 import {
-    TwoColumnsIcon,
-    TwoColumnsLeftIcon,
-    TwoColumnsRightIcon,
-    ThreeColumnsIcon,
-    FourColumnsIcon
+    AlignTopIcon,
+    AlignCenterIcon,
+    AlignBottomIcon,
+    DeleteIcon,
 } from '@/components/icons';
-import { useMenuSelectedSlide, useMenuSelectedLayout, useMenuStore } from '@/store/menuStore';
 
-export default function LayoutMenu({
-    position,
-}: {
-    position: { x: number, y: number }
-    layoutId: string
-}) {
+import { useMenuSelectedSlide } from '@/store/menuStore';
+import { LayoutType } from '@/types';
+import LayoutTemplateDropdown from '../LayoutTemplateDropdown/LayoutTemplateDropdown';
+
+interface LayoutMenuProps {
+    position: { x: number; y: number; rect?: DOMRect };
+    layoutId: string;
+}
+
+export default function LayoutMenu({ position, layoutId }: LayoutMenuProps) {
     const { updateAlignLayout, deleteLayout, closeMenu, getLayout, changeTemplate } = useMenuStore();
 
+    const commonAlignment = useMenuStore(state => state.getCommonAlignment());
+
     const slideId = useMenuSelectedSlide();
-    const layoutId = useMenuSelectedLayout();
-
-    const [isTemplateDropdownOpen, setIsTemplateDropdownOpen] = useState(false);
-
-    // Get current layout type
     const layout = slideId && layoutId ?
         getLayout(slideId, layoutId) : null;
 
     const currentLayoutType = layout?.type || 'custom';
 
-    // Function to get display name for layout type
-    const getLayoutTypeName = (): string => {
-        switch (layout?.gridStructure.columns) {
-            case 1: return '1 столбец';
-            case 2: return '2 столбца';
-            case 3: return '3 столбца';
-            case 4: return '4 столбца';
-            default: return 'custom';
-        }
-    };
+    const handleAlignTop = useCallback(() => {
+        updateAlignLayout('top');
+        closeMenu();
+    }, [updateAlignLayout, closeMenu]);
 
-    useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
-            // Don't hide if clicking on the editor or the bubble menu itself
-            const target = e.target as HTMLElement;
-            if (target.closest('.layout-menu')) {
-                return;
-            }
-            closeMenu();
-        };
+    const handleAlignCenter = useCallback(() => {
+        updateAlignLayout('center');
+        closeMenu();
+    }, [updateAlignLayout, closeMenu]);
 
-        document.addEventListener('click', handleClickOutside);
-        return () => {
-            document.removeEventListener('click', handleClickOutside);
-        };
-    }, [closeMenu]);
+    const handleAlignBottom = useCallback(() => {
+        updateAlignLayout('bottom');
+        closeMenu();
+    }, [updateAlignLayout, closeMenu]);
 
-    const handleAlignTop = () => {
-        if (slideId && layoutId) {
-            updateAlignLayout(slideId, layoutId, 'top');
-        }
-    }
+    const handleDeleteLayout = useCallback(() => {
+        deleteLayout(slideId, layoutId);
+        closeMenu();
+    }, [slideId, layoutId, deleteLayout, closeMenu]);
 
-    const handleAlignCenter = () => {
-        if (slideId && layoutId) {
-            updateAlignLayout(slideId, layoutId, 'center');
-        }
-    }
+    const handleChangeTemplate = useCallback((templateType: LayoutType) => {
+        changeTemplate(templateType);
+        closeMenu();
+    }, [changeTemplate, closeMenu]);
 
-    const handleAlignBottom = () => {
-        if (slideId && layoutId) {
-            updateAlignLayout(slideId, layoutId, 'bottom');
-        }
-    }
-
-    const handleDeleteLayout = () => {
-        if (slideId && layoutId) {
-            deleteLayout(slideId, layoutId);
-        }
-    }
-
-    const handleChangeTemplate = (templateType: LayoutType) => {
-        if (slideId && layoutId) {
-            changeTemplate(slideId, layoutId, templateType);
-        }
-
-        setIsTemplateDropdownOpen(false);
+    if (!layout) {
+        return null;
     }
 
     return (
-        <div className={`${styles.layoutMenu} layout-menu`} style={{
-            top: position.y
-        }}>
-            <div className={styles.layoutMenuButtons}>
-                <div className={styles.templateDropdown}>
-                    <button
-                        className={styles.templateDropdownButton}
-                        onClick={() => setIsTemplateDropdownOpen(!isTemplateDropdownOpen)}
-                    >
-                        {getLayoutTypeName()} {isTemplateDropdownOpen ? '▲' : '▼'}
-                    </button>
-
-                    {isTemplateDropdownOpen && (
-                        <div className={styles.templateDropdownMenu}>
-                            <button
-                                className={`${styles.templateOption} ${currentLayoutType === 'two-columns-equal' ? styles.active : ''}`}
-                                onClick={() => handleChangeTemplate('two-columns-equal')}
-                            >
-                                <div className={styles.templateIcon}>
-                                    <TwoColumnsIcon />
-                                </div>
-                                <span>2 столбца - равные</span>
-                            </button>
-                            <button
-                                className={`${styles.templateOption} ${currentLayoutType === 'two-columns-left' ? styles.active : ''}`}
-                                onClick={() => handleChangeTemplate('two-columns-left')}
-                            >
-                                <div className={styles.templateIcon}>
-                                    <TwoColumnsLeftIcon />
-                                </div>
-                                <span>2 столбца - слева</span>
-                            </button>
-                            <button
-                                className={`${styles.templateOption} ${currentLayoutType === 'two-columns-right' ? styles.active : ''}`}
-                                onClick={() => handleChangeTemplate('two-columns-right')}
-                            >
-                                <div className={styles.templateIcon}>
-                                    <TwoColumnsRightIcon />
-                                </div>
-                                <span>2 столбца - справа</span>
-                            </button>
-                            <button
-                                className={`${styles.templateOption} ${currentLayoutType === 'three-columns' ? styles.active : ''}`}
-                                onClick={() => handleChangeTemplate('three-columns')}
-                            >
-                                <div className={styles.templateIcon}>
-                                    <ThreeColumnsIcon />
-                                </div>
-                                <span>3 столбца</span>
-                            </button>
-                            <button
-                                className={`${styles.templateOption} ${currentLayoutType === 'four-columns' ? styles.active : ''}`}
-                                onClick={() => handleChangeTemplate('four-columns')}
-                            >
-                                <div className={styles.templateIcon}>
-                                    <FourColumnsIcon />
-                                </div>
-                                <span>4 столбца</span>
-                            </button>
-                        </div>
-                    )}
-                </div>
-                <MenuButton
-                    icon={<AlignTopIcon />}
-                    onClick={handleAlignTop}
-                />
-                <MenuButton
-                    icon={<AlignCenterIcon />}
-                    onClick={handleAlignCenter}
-                />
-                <MenuButton
-                    icon={<AlignBottomIcon />}
-                    onClick={handleAlignBottom}
-                />
-                <div className={styles.layoutMenuButtonSeparator} />
-                <MenuButton
-                    icon={<DeleteIcon />}
-                    onClick={handleDeleteLayout}
-                    color="#f00"
-                />
-            </div>
-        </div>
-    )
+        <BaseMenu position={position}>
+            <LayoutTemplateDropdown
+                currentLayoutType={currentLayoutType}
+                setCurrentLayoutType={handleChangeTemplate}
+                layout={layout}
+            />
+            <MenuItem
+                icon={<AlignTopIcon />}
+                label="Align top"
+                onClick={handleAlignTop}
+                active={commonAlignment === 'top'}
+            />
+            <MenuItem
+                icon={<AlignCenterIcon />}
+                label="Align center"
+                onClick={handleAlignCenter}
+                active={commonAlignment === 'center'}
+            />
+            <MenuItem
+                icon={<AlignBottomIcon />}
+                label="Align bottom"
+                onClick={handleAlignBottom}
+                active={commonAlignment === 'bottom'}
+            />
+            <MenuItem
+                icon={<DeleteIcon />}
+                label="Delete layout"
+                onClick={handleDeleteLayout}
+                color="#f00"
+            />
+        </BaseMenu>
+    );
 }

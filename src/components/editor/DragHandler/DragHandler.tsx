@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styles from './DragHandler.module.css';
 import { useTheme } from '@/components/providers/ThemeProvider';
 
@@ -6,7 +6,7 @@ export default function DragHandler({
     isActive,
     ariaLabel,
     className,
-    handleClick,
+    handleClick: handleClickProp,
     handleKeyDown,
     handleDragStart,
     horizontal = false,
@@ -40,6 +40,11 @@ export default function DragHandler({
 
         return () => clearTimeout(timer);
     }, []);
+
+    const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+        handleClickProp(e);
+    }, [handleClickProp]);
 
     return (
         <div

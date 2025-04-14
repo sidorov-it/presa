@@ -3,6 +3,8 @@ import { devtools } from 'zustand/middleware';
 import { usePresentationStore } from './presentationStore';
 import { BaseElement, GridCell, IPresentation, Layout, LayoutType, Slide } from '@/types';
 import { ComponentStructureType } from '@/elements/registry';
+import { MutableRefObject } from 'react';
+import { TipTapRefs } from '@/types';
 
 // Define menu element types
 export type MenuElementType = 'element' | 'cell' | 'layout' | 'slide' | 'editor' | 'row' | 'table' | 'column';
@@ -64,8 +66,8 @@ export interface MenuState {
 
     // Layout actions
     deleteLayout: (slideId: string, layoutId: string) => void;
-    updateAlignLayout: (slideId: string, layoutId: string, align: 'top' | 'center' | 'bottom') => void;
-    changeTemplate: (slideId: string, layoutId: string, template: LayoutType) => void;
+    updateAlignLayout: (align: 'top' | 'center' | 'bottom') => void;
+    changeTemplate: (template: LayoutType) => void;
 
     // Element actions
     duplicateElement: () => void;
@@ -73,13 +75,13 @@ export interface MenuState {
     editElement: () => void;
 
     // Column actions
-    addColumnLeft: (slideId: string, layoutId: string, columnIndex: number) => void;
-    addColumnRight: (slideId: string, layoutId: string, columnIndex: number) => void;
-    duplicateColumn: (slideId: string, layoutId: string, columnId: string) => void;
-    alignColumnTop: (slideId: string, layoutId: string, columnId: string) => void;
-    alignColumnCenter: (slideId: string, layoutId: string, columnId: string) => void;
-    alignColumnBottom: (slideId: string, layoutId: string, columnId: string) => void;
-    deleteColumn: (slideId: string, layoutId: string, columnId: string) => void;
+    addColumnLeft: (columnIndex: number) => void;
+    addColumnRight: (columnIndex: number) => void;
+    duplicateColumn: () => void;
+    alignColumnTop: () => void;
+    alignColumnCenter: () => void;
+    alignColumnBottom: () => void;
+    deleteColumn: () => void;
     toggleBoldOnColumn: () => void;
     // Getter methods
     getElement: (slideId: string | null, layoutId: string | null, elementId: string | null) => BaseElement | null | undefined;
@@ -94,6 +96,18 @@ export interface MenuState {
     getTableColumnElements: () => BaseElement[];
     getTableRowElements: () => BaseElement[];
     getTableFirstElement: () => BaseElement | null;
+
+    getCommonAlignment: () => string;
+    addRowToTable: (tableRowIndex: number) => void;
+    deleteRowFromTable: (tableRowIndex: number) => void;
+
+    addColumnToTable: (tableColumnIndex: number) => void;
+    deleteColumnFromTable: (tableColumnIndex: number) => void;
+
+    getCommonHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>) => number | null;
+    getCommonTableHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>) => number | null;
+    getCommonRowHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>) => number | null;
+    getCommonColumnHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>) => number | null;
 }
 
 export const useMenuStore = create<MenuState>()(
@@ -188,6 +202,7 @@ export const useMenuStore = create<MenuState>()(
                     tableRowIndex: null,
                     tableColumnIndex: null,
                     tableId: null,
+                    cellId: null
                 })
             },
 
@@ -234,16 +249,16 @@ export const useMenuStore = create<MenuState>()(
                 }
             },
 
-            updateAlignLayout: (slideId, layoutId, align) => {
+            updateAlignLayout: (align) => {
                 const { updateAlignLayout: updateAlignLayoutInStore } = usePresentationStore.getState();
-                const { presentationId } = get();
-                if (presentationId) {
-                    updateAlignLayoutInStore(presentationId, layoutId, align);
+                const { presentationId, slideId, layoutId } = get();
+                if (presentationId && slideId && layoutId) {
+                    updateAlignLayoutInStore(presentationId, slideId, layoutId, align);
                 }
             },
 
-            changeTemplate: (slideId, layoutId, template) => {
-                const { presentationId } = get();
+            changeTemplate: (template) => {
+                const { presentationId, slideId, layoutId } = get();
                 if (slideId && layoutId && presentationId) {
                     const { changeTemplate: changeTemplateInStore } = usePresentationStore.getState();
                     changeTemplateInStore(presentationId, slideId, layoutId, template);
@@ -277,63 +292,63 @@ export const useMenuStore = create<MenuState>()(
             },
 
             // Column actions
-            addColumnLeft: (slideId, layoutId) => {
-                const { presentationId, tableColumnIndex } = get();
-                if (presentationId) {
+            addColumnLeft: () => {
+                const { presentationId, slideId, layoutId, tableColumnIndex } = get();
+                if (presentationId && slideId && layoutId && Number.isInteger(tableColumnIndex)) {
                     const { addColumnLeft: addColumnLeftInStore } = usePresentationStore.getState();
                     addColumnLeftInStore(presentationId, slideId, layoutId, tableColumnIndex!);
                     get().closeMenu();
                 }
             },
 
-            addColumnRight: (slideId, layoutId) => {
-                const { presentationId, tableColumnIndex } = get();
-                if (presentationId) {
+            addColumnRight: () => {
+                const { presentationId, slideId, layoutId, tableColumnIndex } = get();
+                if (presentationId && slideId && layoutId && Number.isInteger(tableColumnIndex)) {
                     const { addColumnRight: addColumnRightInStore } = usePresentationStore.getState();
                     addColumnRightInStore(presentationId, slideId, layoutId, tableColumnIndex!);
                     get().closeMenu();
                 }
             },
 
-            duplicateColumn: (slideId, layoutId, columnId) => {
-                const { presentationId } = get();
-                if (presentationId) {
+            duplicateColumn: () => {
+                const { presentationId, slideId, layoutId, columnId } = get();
+                if (presentationId && slideId && layoutId && columnId) {
                     const { duplicateColumn: duplicateColumnInStore } = usePresentationStore.getState();
                     duplicateColumnInStore(presentationId, slideId, layoutId, columnId);
                     get().closeMenu();
                 }
             },
 
-            alignColumnTop: (slideId, layoutId, columnId) => {
-                const { presentationId } = get();
-                if (presentationId) {
+            alignColumnTop: () => {
+                const { presentationId, slideId, layoutId, columnId } = get();
+                if (presentationId && slideId && layoutId && columnId) {
                     const { alignColumnTop: alignColumnTopInStore } = usePresentationStore.getState();
                     alignColumnTopInStore(presentationId, slideId, layoutId, columnId);
                     get().closeMenu();
                 }
             },
 
-            alignColumnCenter: (slideId, layoutId, columnId) => {
-                const { presentationId } = get();
-                if (presentationId) {
+            alignColumnCenter: () => {
+                const { presentationId, slideId, layoutId, columnId } = get();
+                if (presentationId && slideId && layoutId && columnId) {
                     const { alignColumnCenter: alignColumnCenterInStore } = usePresentationStore.getState();
                     alignColumnCenterInStore(presentationId, slideId, layoutId, columnId);
                     get().closeMenu();
                 }
             },
 
-            alignColumnBottom: (slideId, layoutId, columnId) => {
-                const { presentationId } = get();
-                if (presentationId) {
+            alignColumnBottom: () => {
+                const { presentationId, slideId, layoutId, columnId } = get();
+                if (presentationId && slideId && layoutId && columnId) {
                     const { alignColumnBottom: alignColumnBottomInStore } = usePresentationStore.getState();
                     alignColumnBottomInStore(presentationId, slideId, layoutId, columnId);
                     get().closeMenu();
                 }
             },
 
-            deleteColumn: (slideId, layoutId, columnId) => {
-                const { presentationId } = get();
-                if (presentationId) {
+            deleteColumn: () => {
+                const { presentationId, slideId, layoutId, columnId } = get();
+                if (presentationId && slideId && layoutId && columnId) {
                     const { deleteColumn: deleteColumnInStore } = usePresentationStore.getState();
                     deleteColumnInStore(presentationId, slideId, layoutId, columnId);
                     get().closeMenu();
@@ -398,9 +413,9 @@ export const useMenuStore = create<MenuState>()(
 
             getTableColumnElements: () => {
                 const { presentationId, slideId, layoutId, tableColumnIndex } = get();
-                if (!presentationId || !slideId || !layoutId || !tableColumnIndex) return [];
+                if (!presentationId || !slideId || !layoutId || !Number.isInteger(tableColumnIndex)) return [];
                 const { getTableColumnElements } = usePresentationStore.getState();
-                return getTableColumnElements(presentationId, slideId, layoutId, tableColumnIndex);
+                return getTableColumnElements(presentationId, slideId, layoutId, tableColumnIndex!);
             },
 
             getTableRowElements: () => {
@@ -409,11 +424,71 @@ export const useMenuStore = create<MenuState>()(
                 const { getTableRowElements } = usePresentationStore.getState();
                 return getTableRowElements(presentationId, slideId, layoutId, tableRowIndex!);
             },
+
             getTableFirstElement: () => {
                 const { presentationId, slideId, layoutId } = get();
                 if (!presentationId || !slideId || !layoutId) return null;
                 const { getTableFirstElement } = usePresentationStore.getState();
                 return getTableFirstElement(presentationId, slideId, layoutId);
+            },
+
+            getCommonAlignment: () => {
+                const { presentationId, slideId, layoutId } = get();
+                if (!presentationId || !slideId || !layoutId) return [];
+                const { getCommonAlignment } = usePresentationStore.getState();
+                return getCommonAlignment(presentationId, slideId, layoutId);
+            },
+
+            getCommonTableHeadingLevel: (tiptapRefs) => {
+                const { presentationId, slideId, layoutId } = get();
+                if (!presentationId || !slideId || !layoutId) return [];
+                const { getCommonTableHeadingLevel } = usePresentationStore.getState();
+                return getCommonTableHeadingLevel(tiptapRefs, presentationId, slideId, layoutId);
+            },
+            getCommonRowHeadingLevel: (tiptapRefs) => {
+                const { presentationId, slideId, layoutId, tableRowIndex } = get();
+                if (!presentationId || !slideId || !layoutId || !Number.isInteger(tableRowIndex)) return [];
+                const { getCommonRowHeadingLevel } = usePresentationStore.getState();
+                return getCommonRowHeadingLevel(tiptapRefs, presentationId, slideId, layoutId, tableRowIndex!);
+            },
+            getCommonColumnHeadingLevel: (tiptapRefs) => {
+                const { presentationId, slideId, layoutId, tableColumnIndex } = get();
+                if (!presentationId || !slideId || !layoutId || !Number.isInteger(tableColumnIndex)) return [];
+                const { getCommonColumnHeadingLevel } = usePresentationStore.getState();
+                return getCommonColumnHeadingLevel(tiptapRefs, presentationId, slideId, layoutId, tableColumnIndex!);
+            },
+            addRowToTable: (tableRowIndex: number) => {
+                const { presentationId, slideId, layoutId } = get();
+                if (!presentationId || !slideId || !layoutId || !Number.isInteger(tableRowIndex)) return [];
+                const { addRowToTable } = usePresentationStore.getState();
+                addRowToTable(presentationId, slideId, layoutId, tableRowIndex!);
+            },
+            deleteRowFromTable: (tableRowIndex: number) => {
+                const { presentationId, slideId, layoutId } = get();
+                if (!presentationId || !slideId || !layoutId) return [];
+                const { deleteRowFromTable } = usePresentationStore.getState();
+                deleteRowFromTable(presentationId, slideId, layoutId, tableRowIndex);
+            },
+            addColumnToTable: (tableColumnIndex: number) => {
+                const { presentationId, slideId, layoutId } = get();
+                if (!presentationId || !slideId || !layoutId) return [];
+                const { addColumnToTable } = usePresentationStore.getState();
+                addColumnToTable(presentationId, slideId, layoutId, tableColumnIndex);
+            },
+            deleteColumnFromTable: (tableColumnIndex: number) => {
+                const { presentationId, slideId, layoutId } = get();
+                if (!presentationId || !slideId || !layoutId) return [];
+                const { deleteColumnFromTable } = usePresentationStore.getState();
+                deleteColumnFromTable(presentationId, slideId, layoutId, tableColumnIndex);
+            },
+            getCommonHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>) => {
+                const { presentationId, slideId, layoutId } = get();
+                if (!presentationId || !slideId || !layoutId) return null;
+                const { getCommonHeadingLevel, getLayout } = usePresentationStore.getState();
+                const layout = getLayout(presentationId, slideId, layoutId);
+                if (!layout) return null;
+                const elements = layout.elements;
+                return getCommonHeadingLevel(tiptapRefs, elements);
             }
         }),
         {
@@ -425,7 +500,7 @@ export const useMenuStore = create<MenuState>()(
 
 // Create selector hooks to prevent unnecessary re-renders
 export const useMenuIsOpen = () => useMenuStore(state => state.isOpen);
-export const useMenuSelectedSlide = () => useMenuStore(state => state.slideId);
+export const useMenuSelectedSlide = () => useMenuStore(state => state.slideId!);
 export const useMenuSelectedElement = () => useMenuStore(state => state.elementId);
 export const useMenuSelectedLayout = () => useMenuStore(state => state.layoutId);
 export const useMenuSelectedColumn = () => useMenuStore(state => state.columnId);

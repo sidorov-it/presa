@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
 import {
     BiBold,
     BiItalic,
@@ -9,17 +8,14 @@ import {
     BiArrowToRight,
     BiTrash
 } from 'react-icons/bi';
-import styles from '../SlideMenu.module.css';
-import { ColorPicker } from '@/components/tiptap/ColorPicker';
-import HeadingSelector from '@/components/settings/HeadingSelector/HeadingSelector';
-import { usePresentationStore } from '@/store/presentationStore';
 import { useMenuStore } from '@/store/menuStore';
 import { TipTapRefs } from '@/types';
 import { MutableRefObject } from 'react';
+import { MenuItem } from '../BaseMenu';
+import HeadingSelector from '@/components/settings/HeadingSelector/HeadingSelector';
 import { Level } from '@tiptap/extension-heading';
+import { useShallow } from 'zustand/react/shallow';
 interface ColumnTableMenuProps {
-    slideId?: string;
-    layoutId?: string;
     elementId?: string;
     presentationId?: string;
     tableColumnIndex?: number;
@@ -27,28 +23,29 @@ interface ColumnTableMenuProps {
 }
 
 const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
-    slideId,
-    layoutId,
     tableColumnIndex,
-    presentationId,
     tiptapRefs
 }) => {
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
-    const { closeMenu } = useMenuStore();
 
-    const tableColumnElements = useMenuStore.getState().getTableColumnElements();
+    const tableColumnElements = useMenuStore(useShallow(state => state.getTableColumnElements()));
+    const currentHeadingLevel = useMenuStore(state => state.getCommonColumnHeadingLevel(tiptapRefs));
 
-    const [headingLevelLocal, setHeadingLevelLocal] = useState<number>(tiptapRefs.current.editors[tableColumnElements[0]?.id]?.editor.getAttributes('heading').level || 0);
+    const [localHeadingLevel, setLocalHeadingLevel] = useState<number>(currentHeadingLevel || 0);
 
     useEffect(() => {
-        const editor = tiptapRefs.current.editors[tableColumnElements[0]?.id]?.editor;
-        if (editor && !editor.isEmpty) {
-            setHeadingLevelLocal(editor.getAttributes('heading').level || 0);
-        } else {
-            setHeadingLevelLocal(0);
-        }
-    }, [tableColumnElements, tiptapRefs]);
+        const handleClickOutside = (event: MouseEvent) => {
+            if (headingMenuRef.current && !headingMenuRef.current.contains(event.target as Node)) {
+                setIsHeadingMenuOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     const isBoldActive = useMemo(() => {
         return !tableColumnElements.some(element => {
@@ -80,40 +77,6 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
         });
     }, [tableColumnElements]);
 
-    // Light theme styles
-    const lightThemeStyle = {
-        backgroundColor: 'white',
-        color: '#333',
-        borderColor: '#e0e0e0',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-    };
-
-    // Close the heading dropdown menu when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (headingMenuRef.current && !headingMenuRef.current.contains(event.target as Node)) {
-                setIsHeadingMenuOpen(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
-
-    const getCurrentHeadingLevel = useCallback(() => {
-        return headingLevelLocal;
-    }, [headingLevelLocal]);
-
-    const handleHeadingChange = useCallback((level: number) => {
-        tableColumnElements.forEach(element => {
-            tiptapRefs.current.editors[element.id]?.editor.chain().setHeading({ level: level as Level }).run();
-        });
-
-        setHeadingLevelLocal(level);
-    }, [tableColumnElements, tiptapRefs]);
-
     const handleToggleBold = useCallback(() => {
         tableColumnElements.forEach(element => {
             const editor = tiptapRefs.current.editors[element.id]?.editor;
@@ -125,7 +88,7 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
                 }
             }
         });
-    }, [tableColumnElements, isBoldActive, tiptapRefs]);
+    }, [tableColumnElements, tiptapRefs, isBoldActive]);
 
     const handleToggleItalic = useCallback(() => {
         tableColumnElements.forEach(element => {
@@ -138,7 +101,7 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
                 }
             }
         });
-    }, [tableColumnElements, isItalicActive, tiptapRefs]);
+    }, [tableColumnElements, tiptapRefs, isItalicActive]);
 
     const handleToggleUnderline = useCallback(() => {
         tableColumnElements.forEach(element => {
@@ -151,35 +114,44 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
                 }
             }
         });
-    }, [tableColumnElements, isUnderlineActive, tiptapRefs]);
+    }, [tableColumnElements, tiptapRefs, isUnderlineActive]);
 
     const handleClearStyles = useCallback(() => {
         tableColumnElements.forEach(element => {
-            tiptapRefs.current.editors[element.id]?.editor.chain().clearNodes().unsetAllMarks().run();
+            const editor = tiptapRefs.current.editors[element.id]?.editor;
+            if (editor) {
+                editor.chain().clearNodes().unsetAllMarks().run();
+            }
         });
     }, [tableColumnElements, tiptapRefs]);
 
-    // Table column operations
     const handleAddColumnLeft = useCallback(() => {
-        if (presentationId && slideId && layoutId && (tableColumnIndex || tableColumnIndex === 0)) {
-            usePresentationStore.getState().addColumnToTable(presentationId, slideId, layoutId, tableColumnIndex);
+        if (Number.isInteger(tableColumnIndex)) {
+            useMenuStore.getState().addColumnToTable(tableColumnIndex!);
+            useMenuStore.getState().closeMenu();
         }
-        closeMenu();
-    }, [presentationId, slideId, layoutId, tableColumnIndex, closeMenu]);
+    }, [tableColumnIndex]);
 
     const handleAddColumnRight = useCallback(() => {
-        if (presentationId && slideId && layoutId && (tableColumnIndex || tableColumnIndex === 0)) {
-            usePresentationStore.getState().addColumnToTable(presentationId, slideId, layoutId, tableColumnIndex + 1);
+        if (Number.isInteger(tableColumnIndex)) {
+            useMenuStore.getState().addColumnToTable(tableColumnIndex! + 1);
+            useMenuStore.getState().closeMenu();
         }
-        closeMenu();
-    }, [presentationId, slideId, layoutId, tableColumnIndex, closeMenu]);
+    }, [tableColumnIndex]);
 
     const handleDeleteColumn = useCallback(() => {
-        if (presentationId && slideId && layoutId && (tableColumnIndex || tableColumnIndex === 0)) {
-            usePresentationStore.getState().deleteColumnFromTable(presentationId, slideId, layoutId, tableColumnIndex);
+        if (Number.isInteger(tableColumnIndex)) {
+            useMenuStore.getState().deleteColumnFromTable(tableColumnIndex!);
+            useMenuStore.getState().closeMenu();
         }
-        closeMenu();
-    }, [presentationId, slideId, layoutId, tableColumnIndex, closeMenu]);
+    }, [tableColumnIndex]);
+
+    const handleHeadingChange = useCallback((level: number) => {
+        tableColumnElements.forEach(element => {
+            tiptapRefs.current.editors[element.id]?.editor.chain().setHeading({ level: level as Level }).run();
+        });
+        setLocalHeadingLevel(level);
+    }, [tableColumnElements, tiptapRefs]);
 
     return (
         <>
@@ -187,85 +159,54 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
                 headingMenuRef={headingMenuRef}
                 isHeadingMenuOpen={isHeadingMenuOpen}
                 setIsHeadingMenuOpen={setIsHeadingMenuOpen}
-                getCurrentHeadingLevel={getCurrentHeadingLevel}
+                getCurrentHeadingLevel={() => localHeadingLevel || 0}
                 handleHeadingChange={handleHeadingChange}
-                lightThemeStyle={lightThemeStyle}
+                // lightThemeStyle={lightThemeStyle}
             />
 
-            <ColorPicker
+            {/* <ColorPicker
                 editors={tableColumnElements.map(element => tiptapRefs.current.editors[element.id]?.editor)}
                 className={bubbleStyles.button}
-            />
-
-            <button
+            /> */}
+            <MenuItem
+                icon={<BiBold />}
+                label="Bold"
                 onClick={handleToggleBold}
-                className={`${styles.slideMenuButton} ${isBoldActive ? styles.active : ''}`}
-                aria-label="Жирный"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleToggleBold()}
-            >
-                <BiBold size={16} />
-            </button>
-
-            <button
+                active={isBoldActive}
+            />
+            <MenuItem
+                icon={<BiItalic />}
+                label="Italic"
                 onClick={handleToggleItalic}
-                className={`${styles.slideMenuButton} ${isItalicActive ? styles.active : ''}`}
-                aria-label="Курсив"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleToggleItalic()}
-            >
-                <BiItalic size={16} />
-            </button>
-
-            <button
+                active={isItalicActive}
+            />
+            <MenuItem
+                icon={<BiUnderline />}
+                label="Underline"
                 onClick={handleToggleUnderline}
-                className={`${styles.slideMenuButton} ${isUnderlineActive ? styles.active : ''}`}
-                aria-label="Подчеркнутый"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleToggleUnderline()}
-            >
-                <BiUnderline size={16} />
-            </button>
-
-            <button
+                active={isUnderlineActive}
+            />
+            <MenuItem
+                icon={<BiX />}
+                label="Clear formatting"
                 onClick={handleClearStyles}
-                className={styles.slideMenuButton}
-                aria-label="Очистить форматирование"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleClearStyles()}
-            >
-                <BiX size={16} />
-            </button>
-
-            <button
+            />
+            <MenuItem
+                icon={<BiArrowToLeft />}
+                label="Add column left"
                 onClick={handleAddColumnLeft}
-                className={styles.slideMenuButton}
-                aria-label="Добавить колонку слева"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddColumnLeft()}
-            >
-                <BiArrowToLeft size={16} />
-            </button>
-
-            <button
+            />
+            <MenuItem
+                icon={<BiArrowToRight />}
+                label="Add column right"
                 onClick={handleAddColumnRight}
-                className={styles.slideMenuButton}
-                aria-label="Добавить колонку справа"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddColumnRight()}
-            >
-                <BiArrowToRight size={16} />
-            </button>
-
-            <button
+            />
+            <MenuItem
+                icon={<BiTrash />}
+                label="Delete column"
                 onClick={handleDeleteColumn}
-                className={`${styles.slideMenuButton} ${styles.removeButton}`}
-                aria-label="Удалить колонку"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleDeleteColumn()}
-            >
-                <BiTrash size={16} />
-            </button>
+                color="#f00"
+            />
         </>
     );
 };

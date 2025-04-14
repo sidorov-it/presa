@@ -12,13 +12,14 @@ import {
     GridCell,
     getPredefinedGridStructures,
     EditorElement,
+    TipTapRefs,
 } from '@/types';
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 import { getNewEditorElement } from '@/elements/registry';
 import debounce from 'lodash/debounce';
 import { generateId } from '@/utils/id';
 import deepDiff from '@/utils/deepDiff';
-
+import { MutableRefObject } from 'react';
 export interface PresentationState {
     presentations: IPresentation[];
     isLoading: boolean;
@@ -72,7 +73,7 @@ export interface PresentationState {
         data: Partial<Layout>,
         deleteIfEmpty?: boolean
     ) => void;
-    updateAlignLayout: (presentationId: string, layoutId: string, alignment: 'top' | 'center' | 'bottom') => void;
+    updateAlignLayout: (presentationId: string, slideId: string, layoutId: string, alignment: 'top' | 'center' | 'bottom') => void;
 
     findLayoutByElementId: (elementId: string) => Layout | undefined;
     getLayout: (presentationId: string, slideId: string, layoutId: string) => Layout | undefined;
@@ -110,6 +111,12 @@ export interface PresentationState {
     toggleItalicOnColumn: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => void;
     toggleUnderlineOnColumn: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => void;
     clearStylesOnColumn: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => void;
+
+    getCommonAlignment: (presentationId: string, slideId: string, layoutId: string) => string;
+    getCommonHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>, elements: BaseElement[]) => number | null;
+    getCommonTableHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>, presentationId: string, slideId: string, layoutId: string) => number | null;
+    getCommonRowHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>, presentationId: string, slideId: string, layoutId: string, tableRowIndex: number) => number | null;
+    getCommonColumnHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>, presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => number | null;
 
     // Undo/Redo operations
     undo: (presentationId: string) => void;
@@ -836,6 +843,43 @@ export const usePresentationStore = create<PresentationState>()(
                 return layout.elements[0];
             },
 
+            getCommonAlignment: (presentationId, slideId, layoutId) => {
+                const layout = get().getLayout(presentationId, slideId, layoutId);
+                if (!layout) return null;
+
+                const allAlignments = layout.gridStructure.rows.flatMap(row => row.cells.map(cell => cell.alignment));
+                const uniqueAlignments = new Set(allAlignments);
+
+                return uniqueAlignments.size === 1 ? uniqueAlignments.values().next().value : null;
+            },
+
+            getCommonHeadingLevel: (tiptapRefs, elements) => {
+                const notEmptyEditors = elements.filter(element => tiptapRefs.current.editors[element.id] && !tiptapRefs.current.editors[element.id].editor.isEmpty);
+                const allHeadingLevels = notEmptyEditors.map(element => tiptapRefs.current.editors[element.id]?.editor.getAttributes('heading').level);
+                const uniqueHeadingLevels = new Set(allHeadingLevels);
+                return uniqueHeadingLevels.size === 1 ? uniqueHeadingLevels.values().next().value : null;
+            },
+
+            getCommonTableHeadingLevel: (tiptapRefs, presentationId, slideId, layoutId) => {
+                const layout = get().getLayout(presentationId, slideId, layoutId);
+                if (!layout) return null;
+                return get().getCommonHeadingLevel(tiptapRefs, layout.elements)
+            },
+
+            getCommonRowHeadingLevel: (tiptapRefs, presentationId, slideId, layoutId, tableRowIndex) => {
+                const layout = get().getLayout(presentationId, slideId, layoutId);
+                if (!layout) return null;
+                const rowCellsIds = layout.gridStructure.rows[tableRowIndex].cells.map(cell => cell.id)
+                return get().getCommonHeadingLevel(tiptapRefs, layout.elements.filter(element => rowCellsIds.includes(element.cellId)))
+            },
+
+            getCommonColumnHeadingLevel: (tiptapRefs, presentationId, slideId, layoutId, tableColumnIndex) => {
+                const layout = get().getLayout(presentationId, slideId, layoutId);
+                if (!layout) return null;
+                const columnCellsIds = layout.gridStructure.rows.map(row => row.cells[tableColumnIndex].id)
+                return get().getCommonHeadingLevel(tiptapRefs, layout.elements.filter(element => columnCellsIds.includes(element.cellId)))
+            },
+
             toggleBoldOnColumn: (presentationId, slideId, layoutId, tableColumnIndex) => {
                 const beforeState = { ...get() };
 
@@ -1264,11 +1308,6 @@ export const usePresentationStore = create<PresentationState>()(
                 get().saveChanges(presentationId);
             },
 
-
-
-
-
-
             addRowToTable: (presentationId, slideId, layoutId, rowIndex) => {
                 const beforeState = { ...get() };
 
@@ -1360,7 +1399,7 @@ export const usePresentationStore = create<PresentationState>()(
                 get().saveChanges(presentationId);
             },
 
-            updateAlignLayout: (presentationId, layoutId, alignment) => {
+            updateAlignLayout: (presentationId, slideId, layoutId, alignment) => {
                 const beforeState = { ...get() };
 
                 const currentPresentation = get().getPresentation(presentationId);
@@ -1373,6 +1412,7 @@ export const usePresentationStore = create<PresentationState>()(
                                 return {
                                     ...presentation,
                                     slides: presentation.slides.map((slide) => {
+                                        if (slide.id !== slideId) return slide;
                                         return {
                                             ...slide,
                                             layouts: slide.layouts.map((layout) => {
