@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useCallback, MutableRefObject, useMemo } from 'react';
-import { Editor } from '@tiptap/react';
 import {
     BiBold,
     BiItalic,
@@ -9,73 +8,56 @@ import {
     BiArrowToBottom,
     BiTrash
 } from 'react-icons/bi';
-import styles from '../SlideMenu.module.css';
+import styles from './TableMenu.module.css';
 import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
 import HeadingSelector from '@/components/settings/HeadingSelector/HeadingSelector';
 import { usePresentationStore } from '@/store/presentationStore';
 import { useMenuStore } from '@/store/menuStore';
 import { TipTapRefs } from '@/types';
-interface RowTableMenuProps {
+import { Level } from '@tiptap/extension-heading';
+interface TableMenuProps {
     slideId?: string;
     layoutId?: string;
     elementId?: string;
-    tableRowIndex?: number;
     presentationId?: string;
     tiptapRefs: MutableRefObject<TipTapRefs>;
+    position: { x: number, y: number };
 }
 
-const RowTableMenu: React.FC<RowTableMenuProps> = ({
+const TableMenu: React.FC<TableMenuProps> = ({
     slideId,
     layoutId,
     presentationId,
-    tableRowIndex,
-    tiptapRefs
+    tiptapRefs,
+    position
 }) => {
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
 
-    const tableRowElements = useMenuStore.getState().getTableRowElements();
-    const [headingLevelLocal, setHeadingLevelLocal] = useState<number>(tiptapRefs.current.editors[tableRowElements[0]?.id]?.editor.getAttributes('heading').level || 0);
+    const tableFirstElement = useMenuStore.getState().getTableFirstElement();
+    const [headingLevelLocal, setHeadingLevelLocal] = useState<number>(tableFirstElement?.id ? tiptapRefs.current.editors[tableFirstElement?.id]?.editor.getAttributes('heading').level : 0);
 
     useEffect(() => {
-        const editor = tiptapRefs.current.editors[tableRowElements[0]?.id]?.editor;
+        const editor = tableFirstElement?.id ? tiptapRefs.current.editors[tableFirstElement?.id]?.editor : null;
         if (editor && !editor.isEmpty) {
             setHeadingLevelLocal(editor.getAttributes('heading').level || 0);
         } else {
             setHeadingLevelLocal(0);
         }
-    }, [tableRowElements, tiptapRefs]);
+    }, [tableFirstElement, tiptapRefs]);
 
     const isBoldActive = useMemo(() => {
-        return !tableRowElements.some(element => {
-            const editor = tiptapRefs.current.editors[element.id]?.editor;
-            if (editor) {
-                return !editor.isActive('bold') && !editor.isEmpty;
-            }
-            return false;
-        });
-    }, [tableRowElements]);
+        return tableFirstElement?.id ? tiptapRefs.current.editors[tableFirstElement?.id]?.editor.isActive('bold') : false;
+    }, [tableFirstElement]);
 
     const isItalicActive = useMemo(() => {
-        return !tableRowElements.some(element => {
-            const editor = tiptapRefs.current.editors[element.id]?.editor;
-            if (editor) {
-                return !editor.isActive('italic') && !editor.isEmpty;
-            }
-            return true;
-        });
-    }, [tableRowElements]);
+        return tableFirstElement?.id ? tiptapRefs.current.editors[tableFirstElement?.id]?.editor.isActive('italic') : false;
+    }, [tableFirstElement]);
 
     const isUnderlineActive = useMemo(() => {
-        return !tableRowElements.some(element => {
-            const editor = tiptapRefs.current.editors[element.id]?.editor;
-            if (editor) {
-                return !editor.isActive('underline') && !editor.isEmpty;
-            }
-            return true;
-        });
-    }, [tableRowElements]);
+        return tableFirstElement?.id ? tiptapRefs.current.editors[tableFirstElement?.id]?.editor.isActive('underline') : false;
+    }, [tableFirstElement]);
 
     // Light theme styles
     const lightThemeStyle = {
@@ -101,20 +83,20 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
 
     // Get current heading level from editor
     const getCurrentHeadingLevel = useCallback(() => {
-        return headingLevelLocal;
+        return headingLevelLocal || 0;
     }, [headingLevelLocal]);
 
     const handleHeadingChange = useCallback((level: number) => {
-        tableRowElements.forEach(element => {
-            tiptapRefs.current.editors[element.id]?.editor.chain().setHeading({ level: level as Level }).run();
-        });
+        if (tableFirstElement?.id) {
+            tiptapRefs.current.editors[tableFirstElement?.id]?.editor.chain().setHeading({ level: level as Level }).run();
+        }
 
         setHeadingLevelLocal(level);
-    }, [tableRowElements, tiptapRefs]);
+    }, [tableFirstElement, tiptapRefs]);
 
     const handleToggleBold = useCallback(() => {
-        tableRowElements.forEach(element => {
-            const editor = tiptapRefs.current.editors[element.id]?.editor;
+        if (tableFirstElement?.id) {
+            const editor = tiptapRefs.current.editors[tableFirstElement?.id]?.editor;
             if (editor) {
                 if (isBoldActive) {
                     editor.chain().focus(null, { scrollIntoView: false }).selectAll().unsetBold().blur().run();
@@ -122,52 +104,54 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
                     editor.chain().focus(null, { scrollIntoView: false }).selectAll().setBold().blur().run();
                 }
             }
-        });
-    }, [tableRowElements, isBoldActive, tiptapRefs]);
+        }
+    }, [tableFirstElement, isBoldActive, tiptapRefs]);
 
     const handleToggleItalic = useCallback(() => {
-        tableRowElements.forEach(element => {
-            const editor = tiptapRefs.current.editors[element.id]?.editor;
+        if (tableFirstElement?.id) {
+            const editor = tiptapRefs.current.editors[tableFirstElement?.id]?.editor;
             if (editor) {
                 editor.chain().focus(null, { scrollIntoView: false }).selectAll().toggleItalic().blur().run();
             }
-        });
-    }, [tableRowElements, tiptapRefs]);
+        }
+    }, [tableFirstElement, tiptapRefs]);
 
     const handleToggleUnderline = useCallback(() => {
-        tableRowElements.forEach(element => {
-            const editor = tiptapRefs.current.editors[element.id]?.editor;
+        if (tableFirstElement?.id) {
+            const editor = tiptapRefs.current.editors[tableFirstElement?.id]?.editor;
             if (editor) {
                 editor.chain().focus(null, { scrollIntoView: false }).selectAll().toggleUnderline().blur().run();
             }
-        });
-    }, [tableRowElements, tiptapRefs]);
+        }
+    }, [tableFirstElement, tiptapRefs]);
 
     const handleClearStyles = useCallback(() => {
-        tableRowElements.forEach(element => {
-            tiptapRefs.current.editors[element.id]?.editor.chain().clearNodes().unsetAllMarks().run();
-        });
-    }, [tableRowElements, tiptapRefs]);
+        if (tableFirstElement?.id) {
+            tiptapRefs.current.editors[tableFirstElement?.id]?.editor.chain().clearNodes().unsetAllMarks().run();
+        }
+    }, [tableFirstElement, tiptapRefs]);
 
 
     // Table row operations
     const handleAddRowAbove = useCallback(() => {
-        usePresentationStore.getState().addRowToTable(presentationId!, slideId!, layoutId!, tableRowIndex!);
+        // usePresentationStore.getState().addRowToTable(presentationId!, slideId!, layoutId!, tableRowIndex!);
         useMenuStore.getState().closeMenu();
     }, []);
 
     const handleAddRowBelow = useCallback(() => {
-        usePresentationStore.getState().addRowToTable(presentationId!, slideId!, layoutId!, tableRowIndex! + 1);
+        // usePresentationStore.getState().addRowToTable(presentationId!, slideId!, layoutId!, tableRowIndex! + 1);
         useMenuStore.getState().closeMenu();
     }, []);
 
     const handleDeleteRow = useCallback(() => {
-        usePresentationStore.getState().deleteRowFromTable(presentationId!, slideId!, layoutId!, tableRowIndex!);
+        // usePresentationStore.getState().deleteRowFromTable(presentationId!, slideId!, layoutId!, tableRowIndex!);
         useMenuStore.getState().closeMenu();
     }, []);
 
     return (
-        <>
+        <div className={`${styles.layoutMenu} layout-menu`} style={{
+            top: position.y
+        }}>
             <HeadingSelector
                 headingMenuRef={headingMenuRef}
                 isHeadingMenuOpen={isHeadingMenuOpen}
@@ -178,7 +162,7 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
             />
 
             <ColorPicker
-                editors={tableRowElements.map(element => tiptapRefs.current.editors[element.id]?.editor)}
+                editor={tableFirstElement?.id ? tiptapRefs.current.editors[tableFirstElement?.id]?.editor : null}
                 className={bubbleStyles.button}
             />
 
@@ -251,8 +235,8 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
             >
                 <BiTrash size={16} />
             </button>
-        </>
+        </div>
     );
 };
 
-export default RowTableMenu;
+export default TableMenu;

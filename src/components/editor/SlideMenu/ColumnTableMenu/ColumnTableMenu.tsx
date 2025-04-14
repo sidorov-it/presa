@@ -44,7 +44,7 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
     useEffect(() => {
         const editor = tiptapRefs.current.editors[tableColumnElements[0]?.id]?.editor;
         if (editor && !editor.isEmpty) {
-            setHeadingLevelLocal(editor.getAttributes('heading').level);
+            setHeadingLevelLocal(editor.getAttributes('heading').level || 0);
         } else {
             setHeadingLevelLocal(0);
         }

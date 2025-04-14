@@ -93,6 +93,7 @@ export interface MenuState {
 
     getTableColumnElements: () => BaseElement[];
     getTableRowElements: () => BaseElement[];
+    getTableFirstElement: () => BaseElement | null;
 }
 
 export const useMenuStore = create<MenuState>()(
@@ -407,6 +408,12 @@ export const useMenuStore = create<MenuState>()(
                 if (!presentationId || !slideId || !layoutId) return [];
                 const { getTableRowElements } = usePresentationStore.getState();
                 return getTableRowElements(presentationId, slideId, layoutId, tableRowIndex!);
+            },
+            getTableFirstElement: () => {
+                const { presentationId, slideId, layoutId } = get();
+                if (!presentationId || !slideId || !layoutId) return null;
+                const { getTableFirstElement } = usePresentationStore.getState();
+                return getTableFirstElement(presentationId, slideId, layoutId);
             }
         }),
         {

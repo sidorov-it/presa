@@ -19,6 +19,7 @@ import ColumnTableMenu from './ColumnTableMenu/ColumnTableMenu';
 import { useMenuIsOpen, useMenuStore, useMenuSelectedColumn, useMenuSelectedElement, useMenuSelectedLayout, useMenuSelectedSlide, useMenuSelectedCell } from '@/store/menuStore';
 import { usePresentationStore } from '@/store/presentationStore';
 import { TipTapRefs } from '@/types';
+import TableMenu from './TableMenu/TableMenu';
 // Define menu item types
 interface MenuItemProps {
     icon: React.ReactNode;
@@ -67,6 +68,8 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
 
     const { activeEditor } = useEditorStore();
 
+    const [isTable, setIsTable] = useState(false);
+
     const slideId = useMenuSelectedSlide();
     const layoutId = useMenuSelectedLayout();
     const columnId = useMenuSelectedColumn();
@@ -84,6 +87,16 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
     const cell = getCell(slideId, layoutId, cellId);
 
     const element = getElement(slideId, layoutId, elementId);
+
+    useEffect(() => {
+        if (!presentationId || !slideId || !layoutId) return;
+
+        const layout = usePresentationStore.getState().getLayout(presentationId, slideId, layoutId);
+
+        if (isTable !== layout?.isTable) {
+            setIsTable(layout?.isTable ?? false);
+        }
+    }, [layoutId, isTable]);
 
     let slideIndex = 0;
     if (elementType === 'slide') {
@@ -410,8 +423,10 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
         return null;
     }
 
-    if (elementType === 'layout' && layoutId) {
+    if (elementType === 'layout' && layoutId && !isTable) {
         return <LayoutMenu position={position} layoutId={layoutId} />
+    } else if (isTable) {
+        return <TableMenu position={position} layoutId={layoutId} presentationId={presentation!.id} slideId={slideId} tiptapRefs={tiptapRefs} />
     }
 
     return (
