@@ -16,6 +16,7 @@ import { TipTapRefs } from '@/types';
 import { MenuItem } from '../BaseMenu';
 import { useShallow } from 'zustand/react/shallow';
 import { Level } from '@tiptap/extension-heading';
+import isEditorPropertyConsistent from '@/utils/isEditorPropertyConsistent';
 interface RowTableMenuProps {
     elementId?: string;
     tableRowIndex?: number;
@@ -30,10 +31,9 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
     const headingMenuRef = useRef<HTMLDivElement>(null);
 
     const tableRowElements = useMenuStore(useShallow(state => state.getTableRowElements()));
-    const currentHeadingLevel = useMenuStore(state => state.getCommonRowHeadingLevel(tiptapRefs));
+    const currentHeadingLevel = useMenuStore(useShallow(state => state.getCommonRowHeadingLevel(tiptapRefs) || 0));
 
     const [localHeadingLevel, setLocalHeadingLevel] = useState<number>(currentHeadingLevel || 0);
-
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -48,44 +48,9 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
         };
     }, []);
 
-    const isBoldActive = useMemo(() => {
-        const notEmptyEditors = tableRowElements.filter(element => tiptapRefs.current.editors[element.id] && !tiptapRefs.current.editors[element.id].editor.isEmpty);
-        if (!notEmptyEditors.length) return false;
-
-        return !notEmptyEditors.some(element => {
-            const editor = tiptapRefs.current.editors[element.id]?.editor;
-            if (editor) {
-                return !editor.isActive('bold') && !editor.isEmpty;
-            }
-            return false;
-        });
-    }, [tableRowElements]);
-
-    const isItalicActive = useMemo(() => {
-        const notEmptyEditors = tableRowElements.filter(element => tiptapRefs.current.editors[element.id] && !tiptapRefs.current.editors[element.id].editor.isEmpty);
-        if (!notEmptyEditors.length) return false;
-
-        return !notEmptyEditors.some(element => {
-            const editor = tiptapRefs.current.editors[element.id]?.editor;
-            if (editor) {
-                return !editor.isActive('italic') && !editor.isEmpty;
-            }
-            return true;
-        });
-    }, [tableRowElements]);
-
-    const isUnderlineActive = useMemo(() => {
-        const notEmptyEditors = tableRowElements.filter(element => tiptapRefs.current.editors[element.id] && !tiptapRefs.current.editors[element.id].editor.isEmpty);
-        if (!notEmptyEditors.length) return false;
-
-        return !notEmptyEditors.some(element => {
-            const editor = tiptapRefs.current.editors[element.id]?.editor;
-            if (editor) {
-                return !editor.isActive('underline') && !editor.isEmpty;
-            }
-            return true;
-        });
-    }, [tableRowElements]);
+    const isBoldActive = useMemo(() => isEditorPropertyConsistent(tableRowElements, tiptapRefs, 'bold'), [tableRowElements, tiptapRefs]);
+    const isItalicActive = useMemo(() => isEditorPropertyConsistent(tableRowElements, tiptapRefs, 'italic'), [tableRowElements, tiptapRefs]);
+    const isUnderlineActive = useMemo(() => isEditorPropertyConsistent(tableRowElements, tiptapRefs, 'underline'), [tableRowElements, tiptapRefs]);
 
     // Close the heading dropdown menu when clicking outside
     useEffect(() => {
@@ -112,28 +77,40 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({
         tableRowElements.forEach(element => {
             const editor = tiptapRefs.current.editors[element.id]?.editor;
             if (editor) {
-                editor.chain().focus(null, { scrollIntoView: false }).selectAll().toggleBold().blur().run();
+                if (isBoldActive) {
+                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().unsetBold().blur().run();
+                } else {
+                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().setBold().blur().run();
+                }
             }
         });
-    }, [tableRowElements, tiptapRefs]);
+    }, [tableRowElements, tiptapRefs, isBoldActive]);
 
     const handleToggleItalic = useCallback(() => {
         tableRowElements.forEach(element => {
             const editor = tiptapRefs.current.editors[element.id]?.editor;
             if (editor) {
-                editor.chain().focus(null, { scrollIntoView: false }).selectAll().toggleItalic().blur().run();
+                if (isItalicActive) {
+                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().unsetItalic().blur().run();
+                } else {
+                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().setItalic().blur().run();
+                }
             }
         });
-    }, [tableRowElements, tiptapRefs]);
+    }, [tableRowElements, tiptapRefs, isItalicActive]);
 
     const handleToggleUnderline = useCallback(() => {
         tableRowElements.forEach(element => {
             const editor = tiptapRefs.current.editors[element.id]?.editor;
             if (editor) {
-                editor.chain().focus(null, { scrollIntoView: false }).selectAll().toggleUnderline().blur().run();
+                if (isUnderlineActive) {
+                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().unsetUnderline().blur().run();
+                } else {
+                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().setUnderline().blur().run();
+                }
             }
         });
-    }, [tableRowElements, tiptapRefs]);
+    }, [tableRowElements, tiptapRefs, isUnderlineActive]);
 
     const handleClearStyles = useCallback(() => {
         tableRowElements.forEach(element => {

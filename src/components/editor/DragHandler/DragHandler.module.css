@@ -29,9 +29,11 @@
 }
 
 .active {
-    background: var(--control-background, #eae7ff);
+    /* background: var(--control-background, #eae7ff); */
+    background: #eae7ff;
     backdrop-filter: blur(8px);
-    color: var(--control-icon, #806cff);
+    /* color: var(--control-icon, #806cff); */
+    color: #806cff;
     border-color: var(--control-stroke, rgba(0, 0, 0, 0.08));
 }
 

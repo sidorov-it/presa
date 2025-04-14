@@ -58,8 +58,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     layoutId,
     hasMultipleCells,
     tiptapRefs,
-    // isLastCell,
-    slideIsSelected,
     isTable = false,
     rowIndex,
     columnIndex
@@ -84,7 +82,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     const isLastCell = elementsIds[elementsIds.length - 1] === cell.id;
 
-    const menuElementId = useMenuStore(state => state.elementId);
     const menuCellId = useMenuStore(state => state.cellId);
 
     const isHoveredRow = useIsHoveredRow(layoutId, rowIndex, columnIndex);

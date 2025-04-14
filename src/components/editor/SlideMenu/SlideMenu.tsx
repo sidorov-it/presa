@@ -20,6 +20,7 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { TipTapRefs } from '@/types';
 import TableMenu from './TableMenu/TableMenu';
 import { BaseMenu, MenuItem } from './BaseMenu';
+import { BiTrash } from 'react-icons/bi';
 
 const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tiptapRefs }) => {
     const {
@@ -263,7 +264,7 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
                             />
                         )}
                         <MenuItem
-                            icon={<DeleteIcon />}
+                            icon={<BiTrash />}
                             label="Delete"
                             onClick={deleteSlide}
                             color="#f00"
@@ -305,9 +306,6 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
         return (
             <TableMenu
                 position={position}
-                layoutId={layoutId ?? undefined}
-                presentationId={presentation!.id}
-                slideId={slideId ?? undefined}
                 tiptapRefs={tiptapRefs}
             />
         );

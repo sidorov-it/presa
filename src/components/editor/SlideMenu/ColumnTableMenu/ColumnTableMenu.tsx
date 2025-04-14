@@ -15,6 +15,7 @@ import { MenuItem } from '../BaseMenu';
 import HeadingSelector from '@/components/settings/HeadingSelector/HeadingSelector';
 import { Level } from '@tiptap/extension-heading';
 import { useShallow } from 'zustand/react/shallow';
+import isEditorPropertyConsistent from '@/utils/isEditorPropertyConsistent';
 interface ColumnTableMenuProps {
     elementId?: string;
     presentationId?: string;
@@ -47,35 +48,9 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
         };
     }, []);
 
-    const isBoldActive = useMemo(() => {
-        return !tableColumnElements.some(element => {
-            const editor = tiptapRefs.current.editors[element.id]?.editor;
-            if (editor) {
-                return !editor.isActive('bold') && !editor.isEmpty;
-            }
-            return false;
-        });
-    }, [tableColumnElements]);
-
-    const isItalicActive = useMemo(() => {
-        return !tableColumnElements.some(element => {
-            const editor = tiptapRefs.current.editors[element.id]?.editor;
-            if (editor) {
-                return !editor.isActive('italic') && !editor.isEmpty;
-            }
-            return true;
-        });
-    }, [tableColumnElements]);
-
-    const isUnderlineActive = useMemo(() => {
-        return !tableColumnElements.some(element => {
-            const editor = tiptapRefs.current.editors[element.id]?.editor;
-            if (editor) {
-                return !editor.isActive('underline') && !editor.isEmpty;
-            }
-            return true;
-        });
-    }, [tableColumnElements]);
+    const isBoldActive = useMemo(() => isEditorPropertyConsistent(tableColumnElements, tiptapRefs, 'bold'), [tableColumnElements, tiptapRefs]);
+    const isItalicActive = useMemo(() => isEditorPropertyConsistent(tableColumnElements, tiptapRefs, 'italic'), [tableColumnElements, tiptapRefs]);
+    const isUnderlineActive = useMemo(() => isEditorPropertyConsistent(tableColumnElements, tiptapRefs, 'underline'), [tableColumnElements, tiptapRefs]);
 
     const handleToggleBold = useCallback(() => {
         tableColumnElements.forEach(element => {

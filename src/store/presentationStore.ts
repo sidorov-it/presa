@@ -103,6 +103,7 @@ export interface PresentationState {
 
     addLayoutWithElement: (presentationId: string, slideId: string, element: BaseElement) => void;
 
+    getTableElements: (presentationId: string, slideId: string, layoutId: string) => BaseElement[];
     getTableColumnElements: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => BaseElement[];
     getTableRowElements: (presentationId: string, slideId: string, layoutId: string, tableRowIndex: number) => BaseElement[];
     getTableFirstElement: (presentationId: string, slideId: string, layoutId: string) => BaseElement | null;
@@ -117,6 +118,8 @@ export interface PresentationState {
     getCommonTableHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>, presentationId: string, slideId: string, layoutId: string) => number | null;
     getCommonRowHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>, presentationId: string, slideId: string, layoutId: string, tableRowIndex: number) => number | null;
     getCommonColumnHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>, presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => number | null;
+
+    equalizeTable: (presentationId: string, slideId: string, layoutId: string) => void;
 
     // Undo/Redo operations
     undo: (presentationId: string) => void;
@@ -823,6 +826,12 @@ export const usePresentationStore = create<PresentationState>()(
                 get().saveChanges(presentationId);
             },
 
+            getTableElements: (presentationId, slideId, layoutId) => {
+                const layout = get().getLayout(presentationId, slideId, layoutId);
+                if (!layout) return [];
+                return layout.elements;
+            },
+
             getTableColumnElements: (presentationId, slideId, layoutId, tableColumnIndex) => {
                 const layout = get().getLayout(presentationId, slideId, layoutId);
                 if (!layout) return [];
@@ -878,6 +887,37 @@ export const usePresentationStore = create<PresentationState>()(
                 if (!layout) return null;
                 const columnCellsIds = layout.gridStructure.rows.map(row => row.cells[tableColumnIndex].id)
                 return get().getCommonHeadingLevel(tiptapRefs, layout.elements.filter(element => columnCellsIds.includes(element.cellId)))
+            },
+
+            equalizeTable: (presentationId, slideId, layoutId) => {
+                const layout = get().getLayout(presentationId, slideId, layoutId);
+                if (!layout) return;
+
+                // const updatedGridStructure = {
+                //     ...layout.gridStructure,
+                //     columnWidths: getColumnWidths(layout.gridStructure.columns)
+                // }
+                set((state) => {
+                    const updatedState = {
+                        presentations: state.presentations.map(
+                            presentation => presentation.id === presentationId
+                                ? {
+                                    ...presentation, slides: presentation.slides.map(slide => slide.id === slideId
+                                        ? {
+                                            ...slide, layouts: slide.layouts.map(layout => layout.id === layoutId
+                                                ? {
+                                                    ...layout, gridStructure: {
+                                                        ...layout.gridStructure,
+                                                        columnWidths: getColumnWidths(layout.gridStructure.columns)
+                                                    }
+                                                } : layout)
+                                        } : slide)
+                                } : presentation)
+                    }
+                    return updatedState;
+                })
+
+                get().saveChanges(presentationId);
             },
 
             toggleBoldOnColumn: (presentationId, slideId, layoutId, tableColumnIndex) => {

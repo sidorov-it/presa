@@ -65,7 +65,7 @@ export interface MenuState {
     mergeSlideWithPrevious: () => void;
 
     // Layout actions
-    deleteLayout: (slideId: string, layoutId: string) => void;
+    deleteLayout: () => void;
     updateAlignLayout: (align: 'top' | 'center' | 'bottom') => void;
     changeTemplate: (template: LayoutType) => void;
 
@@ -93,6 +93,7 @@ export interface MenuState {
     // Add a combined action to batch updates
     hoverTableCell: (tableId: string, rowIndex: number | null, columnIndex: number | null) => void;
 
+    getTableElements: () => BaseElement[];
     getTableColumnElements: () => BaseElement[];
     getTableRowElements: () => BaseElement[];
     getTableFirstElement: () => BaseElement | null;
@@ -108,6 +109,8 @@ export interface MenuState {
     getCommonTableHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>) => number | null;
     getCommonRowHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>) => number | null;
     getCommonColumnHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>) => number | null;
+
+    equalizeTable: () => void;
 }
 
 export const useMenuStore = create<MenuState>()(
@@ -240,8 +243,8 @@ export const useMenuStore = create<MenuState>()(
             },
 
             // Layout actions
-            deleteLayout: (slideId, layoutId) => {
-                const { presentationId } = get();
+            deleteLayout: () => {
+                const { presentationId, slideId, layoutId } = get();
                 if (slideId && layoutId && presentationId) {
                     const { deleteLayout } = usePresentationStore.getState();
                     deleteLayout(presentationId, slideId, layoutId);
@@ -411,6 +414,13 @@ export const useMenuStore = create<MenuState>()(
                     };
                 }),
 
+            getTableElements: () => {
+                const { presentationId, slideId, layoutId } = get();
+                if (!presentationId || !slideId || !layoutId) return [];
+                const { getTableElements } = usePresentationStore.getState();
+                return getTableElements(presentationId, slideId, layoutId);
+            },
+
             getTableColumnElements: () => {
                 const { presentationId, slideId, layoutId, tableColumnIndex } = get();
                 if (!presentationId || !slideId || !layoutId || !Number.isInteger(tableColumnIndex)) return [];
@@ -489,6 +499,13 @@ export const useMenuStore = create<MenuState>()(
                 if (!layout) return null;
                 const elements = layout.elements;
                 return getCommonHeadingLevel(tiptapRefs, elements);
+            },
+
+            equalizeTable: () => {
+                const { presentationId, slideId, layoutId } = get();
+                if (!presentationId || !slideId || !layoutId) return [];
+                const { equalizeTable } = usePresentationStore.getState();
+                equalizeTable(presentationId, slideId, layoutId);
             }
         }),
         {

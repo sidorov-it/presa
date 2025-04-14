@@ -45,6 +45,8 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     const menuElementId = useMenuSelectedElement();
     const menuCellId = useMenuSelectedCell();
 
+    const isTableContentSelected = useMenuStore(state => state.tableColumnIndex !== null || state.tableRowIndex !== null);
+
     const handleMouseEnter = useCallback(() => {
         if (!isLayoutHovered) {
             setIsLayoutHovered(true);
@@ -256,11 +258,11 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
             >
                 {isSelected && <div className={styles.layoutSelected} />}
 
-                {layout.elements.length > 1 && (isLayoutHovered || isSelected) && (
+                {layout.elements.length > 1 && (isLayoutHovered || isSelected) &&(
                     <DragHandler
                         className={styles.layoutDragHandle}
                         slideId={slideId}
-                        isActive={isSelected}
+                        isActive={isSelected && !isTableContentSelected}
                         ariaLabel="Drag this layout"
                         dataAttributes={{
                             'data-layout-drag-handle': layout.id,
