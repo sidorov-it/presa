@@ -1,11 +1,6 @@
-import React, { useState, useRef, useEffect, useCallback, MutableRefObject, useMemo } from 'react';
-import {
-    BiBold,
-    BiItalic,
-    BiUnderline,
-    BiX,
-} from 'react-icons/bi';
-import { PiEquals } from "react-icons/pi";
+import React, { useState, useRef, useEffect, useCallback, MutableRefObject } from 'react';
+import { BiBold, BiItalic, BiUnderline, BiX } from 'react-icons/bi';
+import { PiEquals } from 'react-icons/pi';
 
 import { useMenuStore } from '@/store/menuStore';
 import { TipTapRefs } from '@/types';
@@ -22,13 +17,10 @@ import { DeleteIcon } from 'lucide-react';
 interface TableMenuProps {
     presentationId?: string;
     tiptapRefs: MutableRefObject<TipTapRefs>;
-    position: { x: number, y: number; rect?: DOMRect };
+    position: { x: number; y: number; rect?: DOMRect };
 }
 
-const TableMenu: React.FC<TableMenuProps> = ({
-    tiptapRefs,
-    position
-}) => {
+const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, position }) => {
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
 
@@ -85,19 +77,37 @@ const TableMenu: React.FC<TableMenuProps> = ({
         };
     }, []);
 
-    const handleHeadingChange = useCallback((level: number) => {
-        tableElements.forEach(element => {
-            tiptapRefs.current.editors[element.id]?.editor.chain().setHeading({ level: level as Level }).run();
-        });
-        setLocalHeadingLevel(level);
-    }, [tableElements, tiptapRefs]);
+    const handleHeadingChange = useCallback(
+        (level: number) => {
+            tableElements.forEach(element => {
+                tiptapRefs.current.editors[element.id]?.editor
+                    .chain()
+                    .setHeading({ level: level as Level })
+                    .run();
+            });
+            setLocalHeadingLevel(level);
+        },
+        [tableElements, tiptapRefs]
+    );
 
     const handleToggleBold = useCallback(() => {
         tableElements.forEach(element => {
             if (isBoldActive) {
-                tiptapRefs.current.editors[element.id]?.editor.chain().focus(null, { scrollIntoView: false }).selectAll().unsetBold().blur().run();
+                tiptapRefs.current.editors[element.id]?.editor
+                    .chain()
+                    .focus(null, { scrollIntoView: false })
+                    .selectAll()
+                    .unsetBold()
+                    .blur()
+                    .run();
             } else {
-                tiptapRefs.current.editors[element.id]?.editor.chain().focus(null, { scrollIntoView: false }).selectAll().setBold().blur().run();
+                tiptapRefs.current.editors[element.id]?.editor
+                    .chain()
+                    .focus(null, { scrollIntoView: false })
+                    .selectAll()
+                    .setBold()
+                    .blur()
+                    .run();
             }
         });
     }, [tableElements, tiptapRefs, isBoldActive]);
@@ -105,9 +115,21 @@ const TableMenu: React.FC<TableMenuProps> = ({
     const handleToggleItalic = useCallback(() => {
         tableElements.forEach(element => {
             if (isItalicActive) {
-                tiptapRefs.current.editors[element.id]?.editor.chain().focus(null, { scrollIntoView: false }).selectAll().unsetItalic().blur().run();
+                tiptapRefs.current.editors[element.id]?.editor
+                    .chain()
+                    .focus(null, { scrollIntoView: false })
+                    .selectAll()
+                    .unsetItalic()
+                    .blur()
+                    .run();
             } else {
-                tiptapRefs.current.editors[element.id]?.editor.chain().focus(null, { scrollIntoView: false }).selectAll().setItalic().blur().run();
+                tiptapRefs.current.editors[element.id]?.editor
+                    .chain()
+                    .focus(null, { scrollIntoView: false })
+                    .selectAll()
+                    .setItalic()
+                    .blur()
+                    .run();
             }
         });
     }, [tableElements, tiptapRefs, isItalicActive]);
@@ -115,16 +137,33 @@ const TableMenu: React.FC<TableMenuProps> = ({
     const handleToggleUnderline = useCallback(() => {
         tableElements.forEach(element => {
             if (isUnderlineActive) {
-                tiptapRefs.current.editors[element.id]?.editor.chain().focus(null, { scrollIntoView: false }).selectAll().unsetUnderline().blur().run();
+                tiptapRefs.current.editors[element.id]?.editor
+                    .chain()
+                    .focus(null, { scrollIntoView: false })
+                    .selectAll()
+                    .unsetUnderline()
+                    .blur()
+                    .run();
             } else {
-                tiptapRefs.current.editors[element.id]?.editor.chain().focus(null, { scrollIntoView: false }).selectAll().setUnderline().blur().run();
+                tiptapRefs.current.editors[element.id]?.editor
+                    .chain()
+                    .focus(null, { scrollIntoView: false })
+                    .selectAll()
+                    .setUnderline()
+                    .blur()
+                    .run();
             }
         });
     }, [tableElements, tiptapRefs, isUnderlineActive]);
 
     const handleClearStyles = useCallback(() => {
         tableElements.forEach(element => {
-            tiptapRefs.current.editors[element.id]?.editor.chain().focus(null, { scrollIntoView: false }).selectAll().unsetAllMarks().run();
+            tiptapRefs.current.editors[element.id]?.editor
+                .chain()
+                .focus(null, { scrollIntoView: false })
+                .selectAll()
+                .unsetAllMarks()
+                .run();
         });
     }, [tableElements, tiptapRefs]);
 
@@ -144,50 +183,26 @@ const TableMenu: React.FC<TableMenuProps> = ({
                 setIsHeadingMenuOpen={setIsHeadingMenuOpen}
                 getCurrentHeadingLevel={() => localHeadingLevel || 0}
                 handleHeadingChange={handleHeadingChange}
-            // lightThemeStyle={lightThemeStyle}
+                // lightThemeStyle={lightThemeStyle}
             />
             <ColorPicker
                 editors={tableElements.map(element => tiptapRefs.current.editors[element.id]?.editor)}
                 className={bubbleStyles.button}
             />
 
-            <MenuItem
-                icon={<BiBold />}
-                label="Bold"
-                onClick={handleToggleBold}
-                active={isBoldActive}
-            />
-            <MenuItem
-                icon={<BiItalic />}
-                label="Italic"
-                onClick={handleToggleItalic}
-                active={isItalicActive}
-            />
+            <MenuItem icon={<BiBold />} label="Bold" onClick={handleToggleBold} active={isBoldActive} />
+            <MenuItem icon={<BiItalic />} label="Italic" onClick={handleToggleItalic} active={isItalicActive} />
             <MenuItem
                 icon={<BiUnderline />}
                 label="Underline"
                 onClick={handleToggleUnderline}
                 active={isUnderlineActive}
             />
-            <MenuItem
-                icon={<BiX />}
-                label="Clear formatting"
-                onClick={handleClearStyles}
-            />
+            <MenuItem icon={<BiX />} label="Clear formatting" onClick={handleClearStyles} />
 
-            <MenuItem
-                icon={<PiEquals />}
-                label="Equalize"
-                active={false}
-                onClick={handleEqualize}
-            />
+            <MenuItem icon={<PiEquals />} label="Equalize" active={false} onClick={handleEqualize} />
 
-            <MenuItem
-                icon={<DeleteIcon />}
-                label="Delete"
-                onClick={handleDelete}
-                color="#f00"
-            />
+            <MenuItem icon={<DeleteIcon />} label="Delete" onClick={handleDelete} color="#f00" />
         </BaseMenu>
     );
 };

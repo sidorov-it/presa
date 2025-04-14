@@ -11,10 +11,7 @@ export async function GET() {
         return NextResponse.json(themes);
     } catch (error) {
         console.error('Failed to fetch themes:', error);
-        return NextResponse.json(
-            { error: 'Failed to fetch themes' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Failed to fetch themes' }, { status: 500 });
     }
 }
 
@@ -42,9 +39,6 @@ export async function POST(request: Request) {
         return NextResponse.json(createdTheme, { status: 201 });
     } catch (error) {
         console.error('Failed to create theme:', error);
-        return NextResponse.json(
-            { error: 'Failed to create theme' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Failed to create theme' }, { status: 500 });
     }
 }

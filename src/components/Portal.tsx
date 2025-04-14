@@ -2,7 +2,7 @@ import { useEffect, useState, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
 interface PortalProps {
-  children: ReactNode;
+    children: ReactNode;
 }
 
 const Portal = ({ children }: PortalProps) => {
@@ -15,10 +15,7 @@ const Portal = ({ children }: PortalProps) => {
 
     if (!mounted) return null;
 
-    return createPortal(
-        children,
-        document.body
-    );
+    return createPortal(children, document.body);
 };
 
 export default Portal;

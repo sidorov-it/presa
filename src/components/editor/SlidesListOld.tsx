@@ -10,11 +10,7 @@ interface SlidesListProps {
     onSlideSelect: (slideId: string) => void;
 }
 
-const SlidesList: React.FC<SlidesListProps> = ({
-    slides,
-    activeSlideId,
-    onSlideSelect,
-}) => {
+const SlidesList: React.FC<SlidesListProps> = ({ slides, activeSlideId, onSlideSelect }) => {
     const { duplicateSlide, deleteSlide } = usePresentationStore();
 
     if (slides.length === 0) {
@@ -25,32 +21,24 @@ const SlidesList: React.FC<SlidesListProps> = ({
         );
     }
 
-    const handleDuplicate = (
-        e: React.MouseEvent<HTMLButtonElement>,
-        presentationId: string,
-        slideId: string
-    ) => {
+    const handleDuplicate = (e: React.MouseEvent<HTMLButtonElement>, presentationId: string, slideId: string) => {
         e.stopPropagation();
         const newSlideId = duplicateSlide(presentationId, slideId);
         onSlideSelect(newSlideId);
     };
 
-    const handleDelete = (
-        e: React.MouseEvent<HTMLButtonElement>,
-        presentationId: string,
-        slideId: string
-    ) => {
+    const handleDelete = (e: React.MouseEvent<HTMLButtonElement>, presentationId: string, slideId: string) => {
         e.stopPropagation();
         deleteSlide(presentationId, slideId);
 
         // Если удалили активный слайд, выбираем первый доступный
         if (activeSlideId === slideId && slides.length > 1) {
-            const nextSlideIndex = slides.findIndex((slide) => slide.id === slideId) - 1;
+            const nextSlideIndex = slides.findIndex(slide => slide.id === slideId) - 1;
             const nextSlide = slides[nextSlideIndex >= 0 ? nextSlideIndex : 0];
             if (nextSlide && nextSlide.id !== slideId) {
                 onSlideSelect(nextSlide.id);
             } else if (slides.length > 1) {
-                const alternativeSlide = slides.find((slide) => slide.id !== slideId);
+                const alternativeSlide = slides.find(slide => slide.id !== slideId);
                 if (alternativeSlide) {
                     onSlideSelect(alternativeSlide.id);
                 }
@@ -74,7 +62,7 @@ const SlidesList: React.FC<SlidesListProps> = ({
                         onClick={() => onSlideSelect(slide.id)}
                         tabIndex={0}
                         aria-label={`Слайд ${index + 1}: ${slide.title}`}
-                        onKeyDown={(e) => {
+                        onKeyDown={e => {
                             if (e.key === 'Enter' || e.key === ' ') {
                                 e.preventDefault();
                                 onSlideSelect(slide.id);
@@ -87,10 +75,10 @@ const SlidesList: React.FC<SlidesListProps> = ({
                             <div className="flex space-x-1">
                                 <button
                                     className="p-1 text-gray-500 hover:text-blue-600 rounded"
-                                    onClick={(e) => handleDuplicate(e, slide.id.split('-')[0], slide.id)}
+                                    onClick={e => handleDuplicate(e, slide.id.split('-')[0], slide.id)}
                                     aria-label="Дублировать слайд"
                                     tabIndex={0}
-                                    onKeyDown={(e) => {
+                                    onKeyDown={e => {
                                         if (e.key === 'Enter' || e.key === ' ') {
                                             e.preventDefault();
                                             handleDuplicate(
@@ -119,10 +107,10 @@ const SlidesList: React.FC<SlidesListProps> = ({
 
                                 <button
                                     className="p-1 text-gray-500 hover:text-red-600 rounded"
-                                    onClick={(e) => handleDelete(e, slide.id.split('-')[0], slide.id)}
+                                    onClick={e => handleDelete(e, slide.id.split('-')[0], slide.id)}
                                     aria-label="Удалить слайд"
                                     tabIndex={0}
-                                    onKeyDown={(e) => {
+                                    onKeyDown={e => {
                                         if (e.key === 'Enter' || e.key === ' ') {
                                             e.preventDefault();
                                             handleDelete(
@@ -152,15 +140,11 @@ const SlidesList: React.FC<SlidesListProps> = ({
                             </div>
                         </div>
 
-                        <div
-                            className="w-full aspect-[16/9] bg-white rounded border border-gray-200 flex items-center justify-center text-xs text-gray-400"
-                        >
+                        <div className="w-full aspect-[16/9] bg-white rounded border border-gray-200 flex items-center justify-center text-xs text-gray-400">
                             {slide.layouts.length > 0 ? (
                                 <div className="w-full h-full bg-white rounded overflow-hidden">
                                     {/* Здесь будет миниатюра слайда */}
-                                    <div className="w-full h-full flex items-center justify-center">
-                                        {slide.title}
-                                    </div>
+                                    <div className="w-full h-full flex items-center justify-center">{slide.title}</div>
                                 </div>
                             ) : (
                                 'Пустой слайд'

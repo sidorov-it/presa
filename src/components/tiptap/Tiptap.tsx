@@ -1,25 +1,31 @@
 /* eslint-disable react/no-unknown-property */
 'use client';
 
-import { EditorContent } from '@tiptap/react'
-import { useEditor } from '@tiptap/react'
-import { useCallback, useEffect, RefObject } from 'react'
-import StarterKit from '@tiptap/starter-kit'
-import Placeholder from '@tiptap/extension-placeholder'
-import TaskList from '@tiptap/extension-task-list'
-import TaskItem from '@tiptap/extension-task-item'
-import Table from '@tiptap/extension-table'
-import TableRow from '@tiptap/extension-table-row'
-import TableHeader from '@tiptap/extension-table-header'
-import TableCell from '@tiptap/extension-table-cell'
-import TextStyle from '@tiptap/extension-text-style'
-import { Color } from '@tiptap/extension-color'
-import Underline from '@tiptap/extension-underline'
-import TextAlign from '@tiptap/extension-text-align'
-import { Extension, generateHTML } from '@tiptap/core'
-import { useEditorStore } from '@/store/editorStore'
-import styles from './Tiptap.module.css'
-import { SlashCommandExtension, PreventDropExtension, EnterHandlerExtension, ArrowNavigationExtension, EditorWithMethods } from './extensions/index'
+import { EditorContent } from '@tiptap/react';
+import { useEditor } from '@tiptap/react';
+import { useCallback, useEffect, RefObject } from 'react';
+import StarterKit from '@tiptap/starter-kit';
+import Placeholder from '@tiptap/extension-placeholder';
+import TaskList from '@tiptap/extension-task-list';
+import TaskItem from '@tiptap/extension-task-item';
+import Table from '@tiptap/extension-table';
+import TableRow from '@tiptap/extension-table-row';
+import TableHeader from '@tiptap/extension-table-header';
+import TableCell from '@tiptap/extension-table-cell';
+import TextStyle from '@tiptap/extension-text-style';
+import { Color } from '@tiptap/extension-color';
+import Underline from '@tiptap/extension-underline';
+import TextAlign from '@tiptap/extension-text-align';
+import { Extension, generateHTML } from '@tiptap/core';
+import { useEditorStore } from '@/store/editorStore';
+import styles from './Tiptap.module.css';
+import {
+    SlashCommandExtension,
+    PreventDropExtension,
+    EnterHandlerExtension,
+    ArrowNavigationExtension,
+    EditorWithMethods,
+} from './extensions/index';
 import {
     ButtonNode,
     BoxNode,
@@ -28,14 +34,14 @@ import {
     WarningBoxNode,
     CautionBoxNode,
     SuccessBoxNode,
-    QuestionBoxNode
-} from './nodes'
+    QuestionBoxNode,
+} from './nodes';
 import { ElementConfig, TipTapRefs } from '@/types';
 import CommonBubbleMenu from './CommonBubbleMenu';
 import Link from '@tiptap/extension-link';
-import Details from '@tiptap-pro/extension-details'
-import DetailsContent from '@tiptap-pro/extension-details-content'
-import DetailsSummary from '@tiptap-pro/extension-details-summary'
+import Details from '@tiptap-pro/extension-details';
+import DetailsContent from '@tiptap-pro/extension-details-content';
+import DetailsSummary from '@tiptap-pro/extension-details-summary';
 
 // Определяем типы пропсов
 interface TiptapProps {
@@ -84,7 +90,7 @@ const getExtensions = (
         dropcursor: false,
         history: false,
         heading: {
-            levels: [1, 2, 3, 4, 5]
+            levels: [1, 2, 3, 4, 5],
         },
         bulletList: {
             keepMarks: true,
@@ -133,62 +139,60 @@ const getExtensions = (
         isAllowedUri: (url, ctx) => {
             try {
                 // construct URL
-                const parsedUrl = url.includes(':') ? new URL(url) : new URL(`${ctx.defaultProtocol}://${url}`)
+                const parsedUrl = url.includes(':') ? new URL(url) : new URL(`${ctx.defaultProtocol}://${url}`);
 
                 // use default validation
                 if (!ctx.defaultValidate(parsedUrl.href)) {
-                    return false
+                    return false;
                 }
 
                 // disallowed protocols
-                const disallowedProtocols = ['ftp', 'file', 'mailto']
-                const protocol = parsedUrl.protocol.replace(':', '')
+                const disallowedProtocols = ['ftp', 'file', 'mailto'];
+                const protocol = parsedUrl.protocol.replace(':', '');
 
                 if (disallowedProtocols.includes(protocol)) {
-                    return false
+                    return false;
                 }
 
                 // only allow protocols specified in ctx.protocols
-                const allowedProtocols = ctx.protocols.map(p => (typeof p === 'string' ? p : p.scheme))
+                const allowedProtocols = ctx.protocols.map(p => (typeof p === 'string' ? p : p.scheme));
 
                 if (!allowedProtocols.includes(protocol)) {
-                    return false
+                    return false;
                 }
 
                 // disallowed domains
-                const disallowedDomains = ['example-phishing.com', 'malicious-site.net']
-                const domain = parsedUrl.hostname
+                const disallowedDomains = ['example-phishing.com', 'malicious-site.net'];
+                const domain = parsedUrl.hostname;
 
                 if (disallowedDomains.includes(domain)) {
-                    return false
+                    return false;
                 }
 
                 // all checks have passed
-                return true
+                return true;
             } catch {
-                return false
+                return false;
             }
         },
         shouldAutoLink: url => {
             try {
                 // construct URL
-                const parsedUrl = url.includes(':') ? new URL(url) : new URL(`https://${url}`)
+                const parsedUrl = url.includes(':') ? new URL(url) : new URL(`https://${url}`);
 
                 // only auto-link if the domain is not in the disallowed list
-                const disallowedDomains = ['example-no-autolink.com', 'another-no-autolink.com']
-                const domain = parsedUrl.hostname
+                const disallowedDomains = ['example-no-autolink.com', 'another-no-autolink.com'];
+                const domain = parsedUrl.hostname;
 
-                return !disallowedDomains.includes(domain)
+                return !disallowedDomains.includes(domain);
             } catch {
-                return false
+                return false;
             }
         },
-
     }),
     // BubbleMenu.configure({
     //     element: document.querySelector('.menu'),
     //   }),
-
 
     // Интерактивные элементы
     Extension.create({
@@ -205,9 +209,8 @@ const getExtensions = (
                                 if (!attributes['data-type']) return {};
                                 return {
                                     'data-type': attributes['data-type'],
-                                    class: attributes['data-type'] === 'button'
-                                        ? 'interactive-button'
-                                        : 'toggle-wrapper'
+                                    class:
+                                        attributes['data-type'] === 'button' ? 'interactive-button' : 'toggle-wrapper',
                                 };
                             },
                         },
@@ -220,28 +223,31 @@ const getExtensions = (
     // Предотвращение дропа извне
     PreventDropExtension,
 
-    EnterHandlerExtension((contentBeforeCursor, contentAfterCursor) => {
-        if (!contentBeforeCursor && !contentAfterCursor) return;
-        const htmlBeforeCursor = generateHTML(contentBeforeCursor!, getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement))
-        const htmlAfterCursor = generateHTML(contentAfterCursor!, getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement))
-        onEnterPressed(htmlBeforeCursor, htmlAfterCursor)
-    }, (isEmpty, textContent) => {
-        onBackspacePressed(isEmpty, textContent)
-    }),
+    EnterHandlerExtension(
+        (contentBeforeCursor, contentAfterCursor) => {
+            if (!contentBeforeCursor && !contentAfterCursor) return;
+            const htmlBeforeCursor = generateHTML(
+                contentBeforeCursor!,
+                getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement)
+            );
+            const htmlAfterCursor = generateHTML(
+                contentAfterCursor!,
+                getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement)
+            );
+            onEnterPressed(htmlBeforeCursor, htmlAfterCursor);
+        },
+        (isEmpty, textContent) => {
+            onBackspacePressed(isEmpty, textContent);
+        }
+    ),
 
     // Arrow key navigation between editors
-    ...(presentationId && slideId && layoutId && elementId && tiptapRefs ? [
-        ArrowNavigationExtension(
-            presentationId,
-            slideId,
-            layoutId,
-            elementId,
-            tiptapRefs
-        )
-    ] : []),
+    ...(presentationId && slideId && layoutId && elementId && tiptapRefs
+        ? [ArrowNavigationExtension(presentationId, slideId, layoutId, elementId, tiptapRefs)]
+        : []),
     // Slash command
     SlashCommandExtension.configure({
-        onAddElement: onAddElement || (() => { }),
+        onAddElement: onAddElement || (() => {}),
     }),
     // Плейсхолдер
     Placeholder.configure({
@@ -264,14 +270,14 @@ const getExtensions = (
     CautionBoxNode,
     SuccessBoxNode,
     QuestionBoxNode,
-]
+];
 
 const Tiptap = ({
     initialContent = '',
-    onEnterPressed = () => { },
-    onBackspacePressed = () => { },
-    onContentChange = () => { },
-    onBlur = () => { },
+    onEnterPressed = () => {},
+    onBackspacePressed = () => {},
+    onContentChange = () => {},
+    onBlur = () => {},
     id = '',
     autoFocus = false,
     customBubbleMenuTrigger,
@@ -303,8 +309,8 @@ const Tiptap = ({
             },
         },
         immediatelyRender: true,
-        onContentError: (error) => {
-            console.log('contentError', error)
+        onContentError: error => {
+            console.log('contentError', error);
             return false;
         },
         onBlur: () => {
@@ -318,7 +324,7 @@ const Tiptap = ({
             const isEnterPress = transaction.getMeta('handleEnter');
             onContentChange(html, isEnterPress);
         },
-    })
+    });
 
     // Update editor content when initialContent changes (including undo/redo operations)
     useEffect(() => {
@@ -329,7 +335,7 @@ const Tiptap = ({
                 editor.commands.setContent(initialContent, false);
             }
         }
-    }, [editor, initialContent])
+    }, [editor, initialContent]);
 
     useEffect(() => {
         if (editor) {
@@ -347,15 +353,18 @@ const Tiptap = ({
                 document.removeEventListener('focus_editor', handleFocusEditor);
             };
         }
-    }, [editor, elementId])
+    }, [editor, elementId]);
 
     // Метод для программного фокуса на редакторе
-    const focus = useCallback((position: 'start' | 'end' = 'end') => {
-        if (editor) {
-            // Focus immediately without any delay
-            editor.commands.focus(position);
-        }
-    }, [editor])
+    const focus = useCallback(
+        (position: 'start' | 'end' = 'end') => {
+            if (editor) {
+                // Focus immediately without any delay
+                editor.commands.focus(position);
+            }
+        },
+        [editor]
+    );
 
     // Expose the focus method via ref
     // useImperativeHandle(ref, () => {
@@ -365,7 +374,7 @@ const Tiptap = ({
             editor,
             focus,
             getText: () => editor?.getText() ?? '',
-            isEmpty: editor?.isEmpty || false
+            isEmpty: editor?.isEmpty || false,
         };
     }
 
@@ -375,7 +384,7 @@ const Tiptap = ({
             // Focus immediately
             focus();
         }
-    }, [autoFocus, editor, focus])
+    }, [autoFocus, editor, focus]);
 
     // Add event listener for custom trigger
     useEffect(() => {
@@ -443,17 +452,16 @@ const Tiptap = ({
                 {editor && (
                     <EditorContent
                         editor={editor}
+                        // eslint-disable-next-line jsx-a11y/no-autofocus
                         autoFocus={autoFocus}
                         className="cursor-text w-full focus:outline-none themed-text"
                     />
                 )}
             </div>
-
-
         </div>
-    )
-}
+    );
+};
 
 Tiptap.displayName = 'Tiptap';
 
-export default Tiptap
+export default Tiptap;

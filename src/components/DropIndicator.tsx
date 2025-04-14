@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useDnd } from '@/contexts/DragDropContext';
 import { usePresentationStore } from '@/store/presentationStore';
 
-
 type IndicatorInfo = {
     targetRect: {
         left: number;
@@ -15,7 +14,7 @@ type IndicatorInfo = {
     position: 'top' | 'bottom' | 'left' | 'right' | null;
     type: IndicatorType;
     sourceType: 'element' | 'layout' | 'slide' | 'cell' | 'column' | 'row';
-}
+};
 
 type IndicatorType = 'element' | 'layout' | 'slide' | 'cell' | 'column' | 'row';
 
@@ -24,20 +23,21 @@ const DropIndicator = () => {
     const { indicators, dragState } = state;
     const [visible, setVisible] = useState(false);
 
-    const {
-        findLayoutByElementId
-    } = usePresentationStore();
+    const { findLayoutByElementId } = usePresentationStore();
 
     // Add animation when indicator appears/disappears
     useEffect(() => {
-        if (dragState === 'dragging' && (
-            indicators.elementIndicator ||
-            indicators.layoutIndicator ||
-            indicators.slideIndicator ||
-            indicators.cellIndicator ||
-            (indicators.tableColumnIndicator || indicators.tableColumnIndicator === 0) ||
-            (indicators.tableRowIndicator || indicators.tableRowIndicator === 0)
-        )) {
+        if (
+            dragState === 'dragging' &&
+            (indicators.elementIndicator ||
+                indicators.layoutIndicator ||
+                indicators.slideIndicator ||
+                indicators.cellIndicator ||
+                indicators.tableColumnIndicator ||
+                indicators.tableColumnIndicator === 0 ||
+                indicators.tableRowIndicator ||
+                indicators.tableRowIndicator === 0)
+        ) {
             setVisible(true);
         } else {
             // Small delay to allow for animation
@@ -47,7 +47,6 @@ const DropIndicator = () => {
             return () => clearTimeout(timeout);
         }
     }, [dragState, indicators]);
-
 
     // Get indicator and position depending on what's being targeted
     const getIndicatorInfo = (): IndicatorInfo | null => {
@@ -82,7 +81,7 @@ const DropIndicator = () => {
                     targetRect: rect,
                     position: position,
                     type: 'element' as IndicatorType,
-                    sourceType
+                    sourceType,
                 };
             }
 
@@ -95,7 +94,7 @@ const DropIndicator = () => {
                         targetRect: rect,
                         position: position,
                         type: 'element' as IndicatorType,
-                        sourceType
+                        sourceType,
                     };
                 }
 
@@ -105,7 +104,7 @@ const DropIndicator = () => {
                         targetRect: rect,
                         position: position,
                         type: 'element' as IndicatorType,
-                        sourceType
+                        sourceType,
                     };
                 }
 
@@ -115,7 +114,7 @@ const DropIndicator = () => {
                         targetRect: cellRect,
                         position: position,
                         type: 'cell' as IndicatorType,
-                        sourceType: 'cell'
+                        sourceType: 'cell',
                     };
                 }
 
@@ -125,7 +124,7 @@ const DropIndicator = () => {
                         targetRect: cellRect,
                         position: position,
                         type: 'layout' as IndicatorType,
-                        sourceType: 'layout'
+                        sourceType: 'layout',
                     };
                 }
             }
@@ -144,7 +143,7 @@ const DropIndicator = () => {
                     targetRect: rect,
                     position: position,
                     type: 'cell' as IndicatorType,
-                    sourceType: 'cell'
+                    sourceType: 'cell',
                 };
             }
 
@@ -154,7 +153,7 @@ const DropIndicator = () => {
                     targetRect: rect,
                     position: position,
                     type: 'layout' as IndicatorType,
-                    sourceType: 'layout'
+                    sourceType: 'layout',
                 };
             }
         }
@@ -171,7 +170,7 @@ const DropIndicator = () => {
                     targetRect: rect,
                     position: position,
                     type: 'cell' as IndicatorType,
-                    sourceType: 'cell'
+                    sourceType: 'cell',
                 };
             }
         }
@@ -218,7 +217,7 @@ const DropIndicator = () => {
                 },
                 position: position,
                 type: 'column' as IndicatorType,
-                sourceType: 'column'
+                sourceType: 'column',
             };
         }
 
@@ -248,7 +247,7 @@ const DropIndicator = () => {
                 },
                 position: position,
                 type: 'row' as IndicatorType,
-                sourceType: 'row'
+                sourceType: 'row',
             };
         }
 
@@ -262,7 +261,13 @@ const DropIndicator = () => {
         if (!indicatorInfo) return {};
         const { targetRect, position, type } = indicatorInfo;
         // Increase thickness for better visibility
-        const thickness = type === 'element' ? 3 : type === 'cell' ? 4 : 4;
+        let thickness;
+
+        if (type === 'element') {
+            thickness = 3;
+        } else {
+            thickness = 4;
+        }
 
         const offset = 0;
         let styles: React.CSSProperties = {
@@ -277,11 +282,11 @@ const DropIndicator = () => {
 
         const colors: Record<IndicatorType, string> = {
             element: '#3b82f6', // blue
-            cell: '#3b82f6',    // red
-            layout: '#3b82f6',  // green
-            slide: '#3b82f6',   // purple
-            column: '#4f46e5',  // indigo - different color for column indicator
-            row: '#4f46e5'      // indigo - same color as column for consistency
+            cell: '#3b82f6', // red
+            layout: '#3b82f6', // green
+            slide: '#3b82f6', // purple
+            column: '#4f46e5', // indigo - different color for column indicator
+            row: '#4f46e5', // indigo - same color as column for consistency
         };
 
         const color = colors[type];

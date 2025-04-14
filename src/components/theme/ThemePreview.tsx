@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 
 interface ThemePreviewProps {
-  theme: Theme;
+    theme: Theme;
 }
 
 export const ThemePreview = ({ theme }: ThemePreviewProps) => {
@@ -52,12 +52,15 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
     return (
         <div className="w-full max-w-4xl mx-auto p-6" style={previewStyle}>
             <ThemedCard className="mb-6">
-                <ThemedHeading as="h2" className="mb-3">Sample Heading</ThemedHeading>
+                <ThemedHeading as="h2" className="mb-3">
+                    Sample Heading
+                </ThemedHeading>
                 <ThemedText className="mb-4">
-                    This is a sample paragraph to demonstrate how the theme's typography and colors will look in your presentation.
+                    This is a sample paragraph to demonstrate how the theme's typography and colors will look in your
+                    presentation.
                 </ThemedText>
                 <div className="mt-4 space-y-4">
-                    <ThemedButton variant={theme.design.buttons.buttonShape as "rounded" | "pill" | "square"}>
+                    <ThemedButton variant={theme.design.buttons.buttonShape as 'rounded' | 'pill' | 'square'}>
                         Sample Button
                     </ThemedButton>
                     <div className="mt-2">
@@ -67,17 +70,19 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
             </ThemedCard>
 
             <ThemedBlock className="mb-6">
-                <ThemedHeading as="h3" className="mb-2">Content Block</ThemedHeading>
+                <ThemedHeading as="h3" className="mb-2">
+                    Content Block
+                </ThemedHeading>
                 <ThemedText>
                     This is a sample content block to demonstrate how blocks will look in your presentation.
                 </ThemedText>
             </ThemedBlock>
 
             <ThemedCard className="border">
-                <ThemedHeading as="h3" className="mb-2">Slide Preview</ThemedHeading>
-                <ThemedText>
-                    This is how a slide will look with your theme applied.
-                </ThemedText>
+                <ThemedHeading as="h3" className="mb-2">
+                    Slide Preview
+                </ThemedHeading>
+                <ThemedText>This is how a slide will look with your theme applied.</ThemedText>
             </ThemedCard>
         </div>
     );

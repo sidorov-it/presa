@@ -15,7 +15,7 @@ export enum ElementType {
     CHART = 'chart',
     BUTTON = 'button',
     EDITOR = 'editor',
-    SHAPE = 'shape'
+    SHAPE = 'shape',
 }
 
 /**
@@ -56,4 +56,4 @@ export type ViewerElement = {
     alt?: string;
     content?: string;
     shapeType?: string;
-}
+};

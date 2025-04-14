@@ -14,14 +14,10 @@ import {
     FaCreditCard,
     FaSignOutAlt,
     FaBars,
-    FaTimes
+    FaTimes,
 } from 'react-icons/fa';
 
-export default function DashboardLayout({
-    children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
     const pathname = usePathname();
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -31,9 +27,12 @@ export default function DashboardLayout({
     useEffect(() => {
         // If the previous path contained '/edit' or '/docs' and the current one doesn't
         // we're navigating away from an editor page
-        if (previousPath
-            && (previousPath.includes('/edit') || previousPath.includes('/docs'))
-            && !pathname.includes('/edit') && !pathname.includes('/docs')) {
+        if (
+            previousPath &&
+            (previousPath.includes('/edit') || previousPath.includes('/docs')) &&
+            !pathname.includes('/edit') &&
+            !pathname.includes('/docs')
+        ) {
             console.log('Navigating away from editor page, resetting theme styles');
             resetThemeStyles();
         }
@@ -46,32 +45,32 @@ export default function DashboardLayout({
         {
             label: 'Мои презентации',
             path: '/dashboard',
-            icon: <FaHome size={20} />
+            icon: <FaHome size={20} />,
         },
         {
             label: 'Шаблоны',
             path: '/templates',
-            icon: <FaChalkboard size={20} />
+            icon: <FaChalkboard size={20} />,
         },
         {
             label: 'Темы',
             path: '/themes',
-            icon: <FaPalette size={20} />
+            icon: <FaPalette size={20} />,
         },
         {
             label: 'Корзина',
             path: '/trash',
-            icon: <FaTrash size={20} />
+            icon: <FaTrash size={20} />,
         },
         {
             label: 'Настройки',
             path: '/settings',
-            icon: <FaCog size={20} />
+            icon: <FaCog size={20} />,
         },
         {
             label: 'Оплата',
             path: '/payment',
-            icon: <FaCreditCard size={20} />
+            icon: <FaCreditCard size={20} />,
         },
     ];
 
@@ -120,7 +119,7 @@ export default function DashboardLayout({
                         </div>
                     </div>
 
-                    {menuItems.map((item) => {
+                    {menuItems.map(item => {
                         const isActive = pathname === item.path;
                         return (
                             <Link
@@ -140,7 +139,9 @@ export default function DashboardLayout({
                         onClick={handleSignOut}
                         className="flex items-center px-6 py-3 mt-10 text-gray-100 hover:bg-gray-700 w-full"
                     >
-                        <span className="mr-3"><FaSignOutAlt size={20} /></span>
+                        <span className="mr-3">
+                            <FaSignOutAlt size={20} />
+                        </span>
                         <span>Выйти</span>
                     </button>
                 </nav>
@@ -148,9 +149,7 @@ export default function DashboardLayout({
 
             {/* Main content */}
             <div className="flex-1 flex flex-col overflow-hidden">
-                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
-                    {children}
-                </main>
+                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">{children}</main>
             </div>
         </div>
     );

@@ -6,7 +6,7 @@ const testUser = {
     email: 'test@example.com',
     name: 'Test User',
     password: 'hashedPassword123',
-    role: 'user'
+    role: 'user',
 };
 
 const testPresentation = {
@@ -24,8 +24,8 @@ const testPresentation = {
                             id: 'element-1',
                             type: 'text',
                             content: 'Hello world',
-                            cellId: 'cell-1'
-                        }
+                            cellId: 'cell-1',
+                        },
                     ],
                     gridStructure: {
                         rows: [
@@ -35,19 +35,19 @@ const testPresentation = {
                                     {
                                         id: 'cell-1',
                                         row: 0,
-                                        column: 0
-                                    }
-                                ]
-                            }
+                                        column: 0,
+                                    },
+                                ],
+                            },
                         ],
                         columns: 1,
-                        columnWidths: ['100%']
+                        columnWidths: ['100%'],
                     },
-                    style: {}
-                }
-            ]
-        }
-    ]
+                    style: {},
+                },
+            ],
+        },
+    ],
 };
 
 describe('Database Operations', () => {
@@ -59,19 +59,19 @@ describe('Database Operations', () => {
         // Clean up any existing test data
         await prisma.presentation.deleteMany({
             where: {
-                title: testPresentation.title
-            }
+                title: testPresentation.title,
+            },
         });
 
         await prisma.user.deleteMany({
             where: {
-                email: testUser.email
-            }
+                email: testUser.email,
+            },
         });
 
         // Create test user
         const user = await prisma.user.create({
-            data: testUser
+            data: testUser,
         });
 
         userId = user.id;
@@ -83,15 +83,15 @@ describe('Database Operations', () => {
         if (presentationId) {
             await prisma.presentation.delete({
                 where: {
-                    id: presentationId
-                }
+                    id: presentationId,
+                },
             });
         }
 
         await prisma.user.delete({
             where: {
-                id: userId
-            }
+                id: userId,
+            },
         });
 
         await prisma.$disconnect();
@@ -104,8 +104,8 @@ describe('Database Operations', () => {
                 title: testPresentation.title,
                 description: testPresentation.description,
                 userId,
-                slides: JSON.stringify(testPresentation.slides)
-            }
+                slides: JSON.stringify(testPresentation.slides),
+            },
         });
 
         presentationId = presentation.id;
@@ -128,8 +128,8 @@ describe('Database Operations', () => {
         // Retrieve the presentation
         const presentation = await prisma.presentation.findUnique({
             where: {
-                id: presentationId
-            }
+                id: presentationId,
+            },
         });
 
         expect(presentation).toBeDefined();
@@ -143,11 +143,11 @@ describe('Database Operations', () => {
         // Update presentation with modified slides
         const updatedPresentation = await prisma.presentation.update({
             where: {
-                id: presentationId
+                id: presentationId,
             },
             data: {
-                slides: JSON.stringify(slides)
-            }
+                slides: JSON.stringify(slides),
+            },
         });
 
         // Verify update

@@ -1,12 +1,7 @@
 import React, { useCallback } from 'react';
 import { useMenuStore } from '@/store/menuStore';
 import { BaseMenu, MenuItem } from '../BaseMenu';
-import {
-    AlignTopIcon,
-    AlignCenterIcon,
-    AlignBottomIcon,
-    DeleteIcon,
-} from '@/components/icons';
+import { AlignTopIcon, AlignCenterIcon, AlignBottomIcon, DeleteIcon } from '@/components/icons';
 
 import { useMenuSelectedSlide } from '@/store/menuStore';
 import { LayoutType } from '@/types';
@@ -23,8 +18,7 @@ export default function LayoutMenu({ position, layoutId }: LayoutMenuProps) {
     const commonAlignment = useMenuStore(state => state.getCommonAlignment());
 
     const slideId = useMenuSelectedSlide();
-    const layout = slideId && layoutId ?
-        getLayout(slideId, layoutId) : null;
+    const layout = slideId && layoutId ? getLayout(slideId, layoutId) : null;
 
     const currentLayoutType = layout?.type || 'custom';
 
@@ -48,10 +42,13 @@ export default function LayoutMenu({ position, layoutId }: LayoutMenuProps) {
         closeMenu();
     }, [slideId, layoutId, deleteLayout, closeMenu]);
 
-    const handleChangeTemplate = useCallback((templateType: LayoutType) => {
-        changeTemplate(templateType);
-        closeMenu();
-    }, [changeTemplate, closeMenu]);
+    const handleChangeTemplate = useCallback(
+        (templateType: LayoutType) => {
+            changeTemplate(templateType);
+            closeMenu();
+        },
+        [changeTemplate, closeMenu]
+    );
 
     if (!layout) {
         return null;
@@ -82,12 +79,7 @@ export default function LayoutMenu({ position, layoutId }: LayoutMenuProps) {
                 onClick={handleAlignBottom}
                 active={commonAlignment === 'bottom'}
             />
-            <MenuItem
-                icon={<DeleteIcon />}
-                label="Delete layout"
-                onClick={handleDeleteLayout}
-                color="#f00"
-            />
+            <MenuItem icon={<DeleteIcon />} label="Delete layout" onClick={handleDeleteLayout} color="#f00" />
         </BaseMenu>
     );
 }

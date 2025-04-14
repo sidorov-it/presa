@@ -12,18 +12,18 @@ export const generateMetadata = async (props: { params: Promise<{ id: string }> 
     try {
         const presentation = await prisma.presentation.findUnique({
             where: { id: params.id },
-            select: { title: true }
+            select: { title: true },
         });
 
         return {
             title: presentation?.title || 'Presentation Viewer',
-            description: 'View the presentation in read-only mode'
+            description: 'View the presentation in read-only mode',
         };
     } catch (error: any) {
         console.error('Failed to load presentation:', error);
         return {
             title: 'Presentation Viewer',
-            description: 'View presentation content'
+            description: 'View presentation content',
         };
     }
 };
@@ -48,17 +48,17 @@ export default async function PresentationView(props: { params: Promise<{ id: st
         // Parse the presentation data
         presentation = parsePresentation(presentationData);
 
-        console.log("Presentation themeId:", presentation.themeId);
+        console.log('Presentation themeId:', presentation.themeId);
 
         // Fetch theme if available
         if (presentation.themeId) {
             try {
                 // Directly fetch the theme using raw Prisma client to get full structure
                 const themeData = await prisma.theme.findUnique({
-                    where: { id: presentation.themeId }
+                    where: { id: presentation.themeId },
                 });
 
-                console.log("Theme data from DB:", JSON.stringify(themeData, null, 2));
+                console.log('Theme data from DB:', JSON.stringify(themeData, null, 2));
 
                 if (themeData) {
                     // Convert to proper Theme type with correct structure
@@ -72,38 +72,38 @@ export default async function PresentationView(props: { params: Promise<{ id: st
                             ...themeData.typography,
                             // Ensure numbers are parsed correctly
                             headingWeight: Number(themeData.typography.headingWeight),
-                            bodyWeight: Number(themeData.typography.bodyWeight)
+                            bodyWeight: Number(themeData.typography.bodyWeight),
                         },
                         design: {
                             slide: themeData.design.slide,
                             blocks: {
                                 ...themeData.design.blocks,
                                 // Ensure numbers are parsed correctly
-                                opacity: Number(themeData.design.blocks.opacity)
+                                opacity: Number(themeData.design.blocks.opacity),
                             },
-                            buttons: themeData.design.buttons
+                            buttons: themeData.design.buttons,
                         },
                         createdAt: themeData.createdAt,
-                        updatedAt: themeData.updatedAt
+                        updatedAt: themeData.updatedAt,
                     };
 
-                    console.log("Theme object created:", theme.name);
-                    console.log("Theme structure validation:", {
+                    console.log('Theme object created:', theme.name);
+                    console.log('Theme structure validation:', {
                         hasColors: !!theme.colors,
                         hasTypography: !!theme.typography,
                         hasDesign: !!theme.design,
                         hasSlide: theme.design && !!theme.design.slide,
                         hasBlocks: theme.design && !!theme.design.blocks,
-                        hasButtons: theme.design && !!theme.design.buttons
+                        hasButtons: theme.design && !!theme.design.buttons,
                     });
                 } else {
-                    console.log("Theme not found in database");
+                    console.log('Theme not found in database');
                 }
             } catch (themeError) {
-                console.error("Error fetching theme:", themeError);
+                console.error('Error fetching theme:', themeError);
             }
         } else {
-            console.log("No themeId in presentation");
+            console.log('No themeId in presentation');
         }
     } catch (error) {
         console.error('Failed to load presentation:', error);

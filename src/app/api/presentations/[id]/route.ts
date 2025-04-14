@@ -17,20 +17,14 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
         });
 
         if (!presentation) {
-            return NextResponse.json(
-                { error: 'Presentation not found' },
-                { status: 404 }
-            );
+            return NextResponse.json({ error: 'Presentation not found' }, { status: 404 });
         }
 
         // Use the utility function to parse the slides JSON
         return NextResponse.json(parsePresentation(presentation));
     } catch (error) {
         console.error('Error fetching presentation:', error);
-        return NextResponse.json(
-            { error: 'Error fetching presentation' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Error fetching presentation' }, { status: 500 });
     }
 }
 
@@ -42,7 +36,11 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ id: s
         const data = await request.json();
 
         // Try to update using the helper function that avoids transactions
-        const { id: _id, userId: _userId, ...updateData } = {
+        const {
+            id: _id,
+            userId: _userId,
+            ...updateData
+        } = {
             ...data,
             updatedAt: new Date(),
             slides: data.slides ? stringifyJsonField(data.slides) : undefined,
@@ -57,10 +55,7 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ id: s
         return NextResponse.json(parsePresentation(presentation));
     } catch (error) {
         console.error('Error updating presentation:', error);
-        return NextResponse.json(
-            { error: 'Error updating presentation' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Error updating presentation' }, { status: 500 });
     }
 }
 
@@ -71,10 +66,7 @@ export async function DELETE(req: NextRequest, props: { params: Promise<{ id: st
         const session = await getServerSession(authOptions);
 
         if (!session?.user) {
-            return NextResponse.json(
-                { message: 'Unauthorized' },
-                { status: 401 }
-            );
+            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
         }
 
         const userId = session.user.id;
@@ -85,15 +77,12 @@ export async function DELETE(req: NextRequest, props: { params: Promise<{ id: st
             where: {
                 id: presentationId,
                 userId: userId,
-                isDeleted: false
-            }
+                isDeleted: false,
+            },
         });
 
         if (!presentation) {
-            return NextResponse.json(
-                { message: 'Presentation not found' },
-                { status: 404 }
-            );
+            return NextResponse.json({ message: 'Presentation not found' }, { status: 404 });
         }
 
         // Soft delete the presentation
@@ -101,8 +90,8 @@ export async function DELETE(req: NextRequest, props: { params: Promise<{ id: st
             where: { id: presentationId },
             data: {
                 isDeleted: true,
-                deletedAt: new Date()
-            }
+                deletedAt: new Date(),
+            },
         });
 
         return NextResponse.json({
@@ -110,10 +99,7 @@ export async function DELETE(req: NextRequest, props: { params: Promise<{ id: st
         });
     } catch (error) {
         console.error('Delete presentation error:', error);
-        return NextResponse.json(
-            { message: 'Internal server error' },
-            { status: 500 }
-        );
+        return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }
 
@@ -122,10 +108,7 @@ export async function POST(req: NextRequest) {
         const session = await getServerSession(authOptions);
 
         if (!session?.user) {
-            return NextResponse.json(
-                { message: 'Unauthorized' },
-                { status: 401 }
-            );
+            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
         }
 
         const userId = session.user.id;
@@ -134,27 +117,35 @@ export async function POST(req: NextRequest) {
         // Create slide structure
         const slideData = {
             id: generateId(),
-            layouts: [{
-                id: generateId(),
-                type: 'single-column',
-                elements: [{
-                    ...getNewEditorElement(generateId()),
-                    cellId: generateId()
-                }],
-                gridStructure: {
-                    rows: [{
-                        id: generateId(),
-                        cells: [{
-                            id: generateId(),
-                            row: 0,
-                            column: 0,
-                        }]
-                    }],
-                    columns: 1,
-                    columnWidths: ['100%']
+            layouts: [
+                {
+                    id: generateId(),
+                    type: 'single-column',
+                    elements: [
+                        {
+                            ...getNewEditorElement(generateId()),
+                            cellId: generateId(),
+                        },
+                    ],
+                    gridStructure: {
+                        rows: [
+                            {
+                                id: generateId(),
+                                cells: [
+                                    {
+                                        id: generateId(),
+                                        row: 0,
+                                        column: 0,
+                                    },
+                                ],
+                            },
+                        ],
+                        columns: 1,
+                        columnWidths: ['100%'],
+                    },
+                    style: {},
                 },
-                style: {}
-            }]
+            ],
         };
 
         // Create presentation
@@ -166,21 +157,18 @@ export async function POST(req: NextRequest) {
                 userId,
                 createdAt: new Date(),
                 updatedAt: new Date(),
-            }
+            },
         });
 
         return NextResponse.json({
             message: 'Presentation created successfully',
             presentation: {
                 ...presentation,
-                slides: JSON.parse(presentation.slides as string)
+                slides: JSON.parse(presentation.slides as string),
             },
         });
     } catch (error) {
         console.error('Create presentation error:', error);
-        return NextResponse.json(
-            { message: 'Internal server error' },
-            { status: 500 }
-        );
+        return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }

@@ -11,10 +11,7 @@ export async function POST(request: NextRequest) {
         const session = await getServerSession(authOptions);
 
         if (!session?.user) {
-            return NextResponse.json(
-                { message: 'Unauthorized' },
-                { status: 401 }
-            );
+            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
         }
 
         const userId = session.user.id;
@@ -23,10 +20,7 @@ export async function POST(request: NextRequest) {
 
         // Validate inputs
         if (!prompt) {
-            return NextResponse.json(
-                { message: 'Prompt is required' },
-                { status: 400 }
-            );
+            return NextResponse.json({ message: 'Prompt is required' }, { status: 400 });
         }
 
         // Create example slides based on the prompt
@@ -40,9 +34,9 @@ export async function POST(request: NextRequest) {
                         type: 'text',
                         content: title || 'AI Generated Presentation',
                         position: { x: 100, y: 100 },
-                        size: { width: 600, height: 100 }
-                    }
-                ]
+                        size: { width: 600, height: 100 },
+                    },
+                ],
             },
             {
                 id: `slide-${generateId()}`,
@@ -53,10 +47,10 @@ export async function POST(request: NextRequest) {
                         type: 'text',
                         content: prompt,
                         position: { x: 100, y: 100 },
-                        size: { width: 600, height: 300 }
-                    }
-                ]
-            }
+                        size: { width: 600, height: 300 },
+                    },
+                ],
+            },
         ];
 
         // Try to create the presentation using the helper function that avoids transactions
@@ -65,14 +59,14 @@ export async function POST(request: NextRequest) {
                 title: title || 'AI Generated Presentation',
                 description: `Generated from prompt: ${prompt}`,
                 slides: slidesData,
-                userId
+                userId,
             });
 
             return NextResponse.json({
                 presentation: {
                     ...presentation,
-                    slides: slidesData
-                }
+                    slides: slidesData,
+                },
             });
         } catch (err) {
             console.error('Error with direct MongoDB method, falling back to Prisma:', err);
@@ -83,22 +77,19 @@ export async function POST(request: NextRequest) {
                     title: title || 'AI Generated Presentation',
                     description: `Generated from prompt: ${prompt}`,
                     userId: userId,
-                    slides: stringifyJsonField(slidesData)
+                    slides: stringifyJsonField(slidesData),
                 },
             });
 
             return NextResponse.json({
                 presentation: {
                     ...presentation,
-                    slides: slidesData
-                }
+                    slides: slidesData,
+                },
             });
         }
     } catch (error) {
         console.error('Error generating AI presentation:', error);
-        return NextResponse.json(
-            { error: 'Error generating AI presentation' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Error generating AI presentation' }, { status: 500 });
     }
 }

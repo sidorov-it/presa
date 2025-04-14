@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import React from 'react';
 import { Editor } from '@tiptap/react';
@@ -48,18 +48,10 @@ const TableBubbleMenu: React.FC<BubbleMenuProps> = ({ editor }) => {
             >
                 Добавить столбец после
             </button>
-            <button
-                onClick={handleAddRowBefore}
-                className="p-1 hover:bg-gray-100 rounded"
-                aria-label="Add row before"
-            >
+            <button onClick={handleAddRowBefore} className="p-1 hover:bg-gray-100 rounded" aria-label="Add row before">
                 Добавить строку до
             </button>
-            <button
-                onClick={handleAddRowAfter}
-                className="p-1 hover:bg-gray-100 rounded"
-                aria-label="Add row after"
-            >
+            <button onClick={handleAddRowAfter} className="p-1 hover:bg-gray-100 rounded" aria-label="Add row after">
                 Добавить строку после
             </button>
             <button

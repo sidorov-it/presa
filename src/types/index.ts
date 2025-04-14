@@ -1,7 +1,7 @@
-import { EditorWithMethods } from "@/components/tiptap/extensions/ArrowNavigationExtension";
-import { generateId } from "@/utils/id";
-import { IconType } from "react-icons/lib";
-import { ComponentStructureType } from "@/elements/registry";
+import { EditorWithMethods } from '@/components/tiptap/extensions/ArrowNavigationExtension';
+import { generateId } from '@/utils/id';
+import { IconType } from 'react-icons/lib';
+import { ComponentStructureType } from '@/elements/registry';
 
 // This enum represents the core element types in the system
 export enum ElementType {
@@ -28,7 +28,7 @@ export enum ElementType {
     // TABLE = 'table',
 
     // Special elements
-    EDITOR = 'editor'
+    EDITOR = 'editor',
 }
 
 // This defines the content container type (elements can be placed in editors, tables, layouts, etc.)
@@ -103,12 +103,10 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 rows: [
                     {
                         id: generateId(8),
-                        cells: [
-                            { id: generateId(8), row: 1, column: 1 }
-                        ]
-                    }
+                        cells: [{ id: generateId(8), row: 1, column: 1 }],
+                    },
                 ],
-                columnWidths: ['100%']
+                columnWidths: ['100%'],
             };
         case 'two-columns-equal':
             return {
@@ -118,11 +116,11 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                         id: generateId(8),
                         cells: [
                             { id: generateId(8), row: 1, column: 1 },
-                            { id: generateId(8), row: 1, column: 2 }
-                        ]
-                    }
+                            { id: generateId(8), row: 1, column: 2 },
+                        ],
+                    },
                 ],
-                columnWidths: ['50%', '50%']
+                columnWidths: ['50%', '50%'],
             };
         case 'three-columns':
             return {
@@ -133,11 +131,11 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                         cells: [
                             { id: generateId(8), row: 1, column: 1 },
                             { id: generateId(8), row: 1, column: 2 },
-                            { id: generateId(8), row: 1, column: 3 }
-                        ]
-                    }
+                            { id: generateId(8), row: 1, column: 3 },
+                        ],
+                    },
                 ],
-                columnWidths: ['33.33%', '33.34%', '33.33%']
+                columnWidths: ['33.33%', '33.34%', '33.33%'],
             };
         case 'four-columns':
             return {
@@ -149,11 +147,11 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                             { id: generateId(8), row: 1, column: 1 },
                             { id: generateId(8), row: 1, column: 2 },
                             { id: generateId(8), row: 1, column: 3 },
-                            { id: generateId(8), row: 1, column: 4 }
-                        ]
-                    }
+                            { id: generateId(8), row: 1, column: 4 },
+                        ],
+                    },
                 ],
-                columnWidths: ['25%', '25%', '25%', '25%']
+                columnWidths: ['25%', '25%', '25%', '25%'],
             };
         case 'image-text':
             return {
@@ -163,11 +161,11 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                         id: generateId(8),
                         cells: [
                             { id: generateId(8), row: 1, column: 1 },
-                            { id: generateId(8), row: 1, column: 2 }
-                        ]
-                    }
+                            { id: generateId(8), row: 1, column: 2 },
+                        ],
+                    },
                 ],
-                columnWidths: ['50%', '50%']
+                columnWidths: ['50%', '50%'],
             };
         case 'text-image':
             return {
@@ -177,11 +175,11 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                         id: generateId(8),
                         cells: [
                             { id: generateId(8), row: 1, column: 1 },
-                            { id: generateId(8), row: 1, column: 2 }
-                        ]
-                    }
+                            { id: generateId(8), row: 1, column: 2 },
+                        ],
+                    },
                 ],
-                columnWidths: ['50%', '50%']
+                columnWidths: ['50%', '50%'],
             };
         case 'cards':
             return {
@@ -191,18 +189,18 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                         id: generateId(8),
                         cells: [
                             { id: generateId(8), row: 1, column: 1 },
-                            { id: generateId(8), row: 1, column: 2 }
-                        ]
+                            { id: generateId(8), row: 1, column: 2 },
+                        ],
                     },
                     {
                         id: generateId(8),
                         cells: [
                             { id: generateId(8), row: 2, column: 1 },
-                            { id: generateId(8), row: 2, column: 2 }
-                        ]
-                    }
+                            { id: generateId(8), row: 2, column: 2 },
+                        ],
+                    },
                 ],
-                columnWidths: ['50%', '50%']
+                columnWidths: ['50%', '50%'],
             };
         case 'icons-with-text':
             return {
@@ -213,25 +211,25 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                         cells: [
                             { id: generateId(8), row: 1, column: 1 },
                             { id: generateId(8), row: 1, column: 2 },
-                            { id: generateId(8), row: 1, column: 3 }
-                        ]
+                            { id: generateId(8), row: 1, column: 3 },
+                        ],
                     },
                     {
                         id: generateId(8),
                         cells: [
                             { id: generateId(8), row: 2, column: 1 },
                             { id: generateId(8), row: 2, column: 2 },
-                            { id: generateId(8), row: 2, column: 3 }
-                        ]
-                    }
+                            { id: generateId(8), row: 2, column: 3 },
+                        ],
+                    },
                 ],
-                columnWidths: ['33.33%', '33.34%', '33.33%']
+                columnWidths: ['33.33%', '33.34%', '33.33%'],
             };
         case 'blank':
             return {
                 columns: 1,
                 rows: [],
-                columnWidths: ['100%']
+                columnWidths: ['100%'],
             };
         default:
             return {
@@ -239,15 +237,13 @@ export const getPredefinedGridStructures = (name: LayoutType): GridStructure => 
                 rows: [
                     {
                         id: generateId(8),
-                        cells: [
-                            { id: generateId(8), row: 1, column: 1 }
-                        ]
-                    }
+                        cells: [{ id: generateId(8), row: 1, column: 1 }],
+                    },
                 ],
-                columnWidths: ['100%']
+                columnWidths: ['100%'],
             };
     }
-}
+};
 export interface Position {
     x: number;
     y: number;
@@ -286,7 +282,7 @@ export interface Style {
 export interface BaseElement {
     id: string;
     // type: TextElementType;
-    cellId: string;   // Reference to the cell this element belongs to
+    cellId: string; // Reference to the cell this element belongs to
     // componentStructure: ComponentStructureType;
     // hasTextEditor: boolean;
     elementTypeId: string;
@@ -370,13 +366,13 @@ export interface Layout {
     style: Record<string, unknown>;
     elements: BaseElement[];
     isTable?: boolean; // Flag to identify when layout should be treated as a table
-    parentId?: string;  // Reference to parent layout if nested
+    parentId?: string; // Reference to parent layout if nested
 }
 
 // Функция для создания новой ячейки
 export const createGridCell = (
     row: number,
-    column: number,
+    column: number
     // rowSpan: number = 1,
     // colSpan: number = 1,
 ): GridCell => {
@@ -394,7 +390,7 @@ export const createGridCell = (
 export const createGridRow = (cells: GridCell[] = []): GridRow => {
     return {
         id: `row-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-        cells
+        cells,
     };
 };
 
@@ -406,7 +402,8 @@ export const generateGridTemplateAreas = (gridStructure: GridStructure): string 
     // if (maxRows === 0) return '""';
 
     // Инициализируем матрицу пустыми значениями
-    const grid: string[][] = Array(maxRows).fill(null)
+    const grid: string[][] = Array(maxRows)
+        .fill(null)
         .map(() => Array(gridStructure.columns).fill('.'));
 
     // Заполняем матрицу именами областей
@@ -444,13 +441,14 @@ export const generateGridTemplateColumns = (gridStructure: GridStructure): strin
         return convertedWidths.join(' ');
     }
     // Default to equal percentage columns
-    return Array(gridStructure.columns).fill(`${100 / gridStructure.columns}%`).join(' ');
+    return Array(gridStructure.columns)
+        .fill(`${100 / gridStructure.columns}%`)
+        .join(' ');
 };
 
 // Функция для генерации CSS Grid Template Rows из структуры сетки
 export const generateGridTemplateRows = (gridStructure: GridStructure): string => {
-    const maxRows = Math.max(...gridStructure.rows.map(row =>
-        Math.max(...row.cells.map(cell => cell.row - 1))), 0);
+    const maxRows = Math.max(...gridStructure.rows.map(row => Math.max(...row.cells.map(cell => cell.row - 1))), 0);
 
     return Array(maxRows).fill('auto').join(' ');
 };
@@ -469,7 +467,7 @@ export const createLayout = (type: LayoutType = 'blank'): Layout => {
         gridStructure = {
             columns: 1,
             rows: [],
-            columnWidths: []
+            columnWidths: [],
         };
     }
 
@@ -478,7 +476,7 @@ export const createLayout = (type: LayoutType = 'blank'): Layout => {
         type,
         elements: [],
         style: {},
-        gridStructure
+        gridStructure,
     };
 };
 
@@ -500,7 +498,7 @@ export const addElementToCell = (layout: Layout, element: Element, cellId: strin
 
         return {
             ...row,
-            cells: updatedCells
+            cells: updatedCells,
         };
     });
 
@@ -511,16 +509,16 @@ export const addElementToCell = (layout: Layout, element: Element, cellId: strin
     // Обновляем элемент, чтобы он ссылался на ячейку
     const updatedElement = {
         ...element,
-        cellId
+        cellId,
     };
 
     return {
         ...layout,
         gridStructure: {
             ...layout.gridStructure,
-            rows: updatedRows
+            rows: updatedRows,
         },
-        elements: [...layout.elements, updatedElement]
+        elements: [...layout.elements, updatedElement],
     };
 };
 
@@ -581,7 +579,7 @@ export interface Category {
 export type TipTapRefs = {
     editors: Record<string, EditorWithMethods>;
     editorRefs: React.RefObject<HTMLDivElement>[];
-}
+};
 
 export type ElementMenuProps = {
     presentationId: string;
@@ -589,7 +587,7 @@ export type ElementMenuProps = {
     layoutId: string;
     cellId: string;
     elementId: string;
-}
+};
 
 export { ComponentStructureType };
 

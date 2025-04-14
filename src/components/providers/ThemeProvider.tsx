@@ -8,9 +8,9 @@ import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
 import { resetThemeStyles } from '@/utils/themeUtils';
 
 interface ThemeContextType {
-  currentTheme: Theme | null;
-  setTheme: (theme: Theme) => void;
-  isDarkMode: boolean;
+    currentTheme: Theme | null;
+    setTheme: (theme: Theme) => void;
+    isDarkMode: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -24,8 +24,8 @@ export const useTheme = () => {
 };
 
 interface ThemeProviderProps {
-  children: ReactNode;
-  initialTheme?: Theme | null;
+    children: ReactNode;
+    initialTheme?: Theme | null;
 }
 
 export const ThemeProvider = ({ children, initialTheme }: ThemeProviderProps) => {
@@ -56,10 +56,16 @@ export const ThemeProvider = ({ children, initialTheme }: ThemeProviderProps) =>
         // Block design
         document.documentElement.style.setProperty('--block-background', theme.design.blocks.backgroundColor);
         document.documentElement.style.setProperty('--block-opacity', theme.design.blocks.opacity.toString());
-        document.documentElement.style.setProperty('--block-border-width',
-            theme.design.blocks.borderWidth === 'thin' ? '1px' :
-                theme.design.blocks.borderWidth === 'medium' ? '2px' :
-                    theme.design.blocks.borderWidth === 'thick' ? '4px' : '0');
+
+        let blockBorderWidth = '0';
+        if (theme.design.blocks.borderWidth === 'thin') {
+            blockBorderWidth = '1px';
+        } else if (theme.design.blocks.borderWidth === 'medium') {
+            blockBorderWidth = '2px';
+        } else if (theme.design.blocks.borderWidth === 'thick') {
+            blockBorderWidth = '4px';
+        }
+        document.documentElement.style.setProperty('--block-border-width', blockBorderWidth);
         document.documentElement.style.setProperty('--block-shadow', theme.design.blocks.shadow);
 
         // Button and link design
@@ -74,7 +80,10 @@ export const ThemeProvider = ({ children, initialTheme }: ThemeProviderProps) =>
         // Control variables - the single place these should be set dynamically
         document.documentElement.style.setProperty('--control-stroke', isDark ? 'white' : 'rgba(0, 0, 0, 0.2)');
         document.documentElement.style.setProperty('--control-icon', isDark ? 'white' : 'rgba(0, 0, 0, 0.6)');
-        document.documentElement.style.setProperty('--control-background', isDark ? 'rgba(0, 0, 0, 0.5)' : 'transparent');
+        document.documentElement.style.setProperty(
+            '--control-background',
+            isDark ? 'rgba(0, 0, 0, 0.5)' : 'transparent'
+        );
 
         // Toggle dark-theme class on body for additional theme-specific styles
         if (isDark) {
@@ -86,7 +95,7 @@ export const ThemeProvider = ({ children, initialTheme }: ThemeProviderProps) =>
 
     // Set theme function that updates both the state and the store
     const setTheme = (theme: Theme) => {
-        console.log("ThemeProvider: Setting theme", theme.name);
+        console.log('ThemeProvider: Setting theme', theme.name);
         setCurrentThemeState(theme);
         setCurrentTheme(theme); // Update zustand store
     };
@@ -94,13 +103,13 @@ export const ThemeProvider = ({ children, initialTheme }: ThemeProviderProps) =>
     // Handle initialTheme when it's provided
     useEffect(() => {
         if (initialTheme) {
-            console.log("ThemeProvider: Using initialTheme", initialTheme.name);
+            console.log('ThemeProvider: Using initialTheme', initialTheme.name);
             setCurrentThemeState(initialTheme);
         }
 
         // Return cleanup function to reset everything when component unmounts
         return () => {
-            console.log("ThemeProvider: Cleaning up on unmount");
+            console.log('ThemeProvider: Cleaning up on unmount');
 
             // Use utility function to reset theme styles
             resetThemeStyles();
@@ -109,7 +118,7 @@ export const ThemeProvider = ({ children, initialTheme }: ThemeProviderProps) =>
             // const defaultTheme = getDefaultTheme();
             // setCurrentThemeState(defaultTheme);
             // setCurrentTheme(defaultTheme);
-        }
+        };
     }, [initialTheme]);
 
     // Load themes when the provider is initialized
@@ -138,7 +147,7 @@ export const ThemeProvider = ({ children, initialTheme }: ThemeProviderProps) =>
     const value = {
         currentTheme,
         setTheme,
-        isDarkMode
+        isDarkMode,
     };
 
     return (

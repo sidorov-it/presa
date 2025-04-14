@@ -8,7 +8,7 @@
  * @returns The parsed object or the original data
  */
 export function parseJsonField<T>(data: unknown): T {
-    return typeof data === 'string' ? JSON.parse(data) : data as T;
+    return typeof data === 'string' ? JSON.parse(data) : (data as T);
 }
 
 /**
@@ -30,7 +30,7 @@ export function parsePresentation<T extends { slides: unknown }>(presentation: T
 
     return {
         ...presentation,
-        slides: parseJsonField(presentation.slides)
+        slides: parseJsonField(presentation.slides),
     };
 }
 

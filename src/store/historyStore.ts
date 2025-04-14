@@ -27,7 +27,7 @@ interface HistoryState {
         [presentationId: string]: {
             past: HistoryAction[];
             future: HistoryAction[];
-        }
+        };
     };
 
     // Track active transactions
@@ -36,7 +36,7 @@ interface HistoryState {
             transactionId: string;
             actions: Omit<HistoryAction, 'timestamp'>[];
             description: string;
-        } | null
+        } | null;
     };
 
     // Initialize history for a presentation
@@ -95,7 +95,7 @@ export const useHistoryStore = create<HistoryState>()(
             activeTransactions: {},
 
             initHistory: (presentationId: string) => {
-                set((state) => {
+                set(state => {
                     if (state.history[presentationId]) {
                         return state; // Already initialized
                     }
@@ -105,13 +105,13 @@ export const useHistoryStore = create<HistoryState>()(
                             ...state.history,
                             [presentationId]: {
                                 past: [],
-                                future: []
-                            }
+                                future: [],
+                            },
                         },
                         activeTransactions: {
                             ...state.activeTransactions,
-                            [presentationId]: null
-                        }
+                            [presentationId]: null,
+                        },
                     };
                 });
             },
@@ -124,22 +124,22 @@ export const useHistoryStore = create<HistoryState>()(
 
                 const transactionId = generateTransactionId();
 
-                console.debug('begin transaction', description)
-                set((state) => ({
+                console.debug('begin transaction', description);
+                set(state => ({
                     activeTransactions: {
                         ...state.activeTransactions,
                         [presentationId]: {
                             transactionId,
                             actions: [],
-                            description
-                        }
-                    }
+                            description,
+                        },
+                    },
                 }));
 
                 return transactionId;
             },
 
-            recordTransactionAction: (action) => {
+            recordTransactionAction: action => {
                 console.debug('recordTransactionAction', action);
                 const presentationId = action.presentationId;
                 const activeTransaction = get().activeTransactions[presentationId];
@@ -150,14 +150,14 @@ export const useHistoryStore = create<HistoryState>()(
                     return;
                 }
 
-                set((state) => ({
+                set(state => ({
                     activeTransactions: {
                         ...state.activeTransactions,
                         [presentationId]: {
                             ...activeTransaction,
-                            actions: [...activeTransaction.actions, action]
-                        }
-                    }
+                            actions: [...activeTransaction.actions, action],
+                        },
+                    },
                 }));
             },
 
@@ -166,13 +166,13 @@ export const useHistoryStore = create<HistoryState>()(
 
                 if (!activeTransaction || activeTransaction.actions.length === 0) {
                     // No transaction or empty transaction - nothing to commit
-                    set((state) => {
+                    set(state => {
                         const updatedState = {
                             activeTransactions: {
                                 ...state.activeTransactions,
-                                [presentationId]: null
-                            }
-                        }
+                                [presentationId]: null,
+                            },
+                        };
 
                         // const diff1 = deepDiff(state.get, updatedState);
                         // console.log('diff1', diff1);
@@ -197,11 +197,11 @@ export const useHistoryStore = create<HistoryState>()(
                     before: firstAction.before,
                     after: lastAction.after,
                     timestamp: Date.now(),
-                    transactionId: activeTransaction.transactionId
+                    transactionId: activeTransaction.transactionId,
                 };
 
                 // Record the combined action
-                set((state) => {
+                set(state => {
                     const presentationHistory = state.history[presentationId] || { past: [], future: [] };
                     const newPast = [...presentationHistory.past, combinedAction];
 
@@ -215,13 +215,13 @@ export const useHistoryStore = create<HistoryState>()(
                             ...state.history,
                             [presentationId]: {
                                 past: newPast,
-                                future: [] // Clear future when new action is recorded
-                            }
+                                future: [], // Clear future when new action is recorded
+                            },
                         },
                         activeTransactions: {
                             ...state.activeTransactions,
-                            [presentationId]: null // Clear the active transaction
-                        }
+                            [presentationId]: null, // Clear the active transaction
+                        },
                     };
                     console.debug('commit transaction', state, updatedState);
                     return updatedState;
@@ -229,15 +229,15 @@ export const useHistoryStore = create<HistoryState>()(
             },
 
             cancelTransaction: (presentationId: string) => {
-                set((state) => ({
+                set(state => ({
                     activeTransactions: {
                         ...state.activeTransactions,
-                        [presentationId]: null
-                    }
+                        [presentationId]: null,
+                    },
                 }));
             },
 
-            recordAction: (action) => {
+            recordAction: action => {
                 console.log('Recording Action:', {
                     type: action.type,
                     description: action.description,
@@ -245,7 +245,7 @@ export const useHistoryStore = create<HistoryState>()(
                     slideId: action.slideId,
                     elementId: action.elementId,
                     before: JSON.stringify(action.before),
-                    after: JSON.stringify(action.after)
+                    after: JSON.stringify(action.after),
                 });
 
                 const presentationId = action.presentationId;
@@ -262,11 +262,11 @@ export const useHistoryStore = create<HistoryState>()(
                     get().initHistory(presentationId);
                 }
 
-                set((state) => {
+                set(state => {
                     // When a new action is recorded, future is cleared
                     const historyEntry = {
                         ...action,
-                        timestamp: Date.now()
+                        timestamp: Date.now(),
                     };
 
                     const presentationHistory = state.history[presentationId];
@@ -282,9 +282,9 @@ export const useHistoryStore = create<HistoryState>()(
                             ...state.history,
                             [presentationId]: {
                                 past: newPast,
-                                future: [] // Clear future when new action is recorded
-                            }
-                        }
+                                future: [], // Clear future when new action is recorded
+                            },
+                        },
                     };
                 });
             },
@@ -298,7 +298,7 @@ export const useHistoryStore = create<HistoryState>()(
 
                 const presentationStore = usePresentationStore.getState();
 
-                set((state) => {
+                set(state => {
                     const presentationHistory = state.history[presentationId];
 
                     if (!presentationHistory || presentationHistory.past.length === 0) {
@@ -315,7 +315,7 @@ export const useHistoryStore = create<HistoryState>()(
                         slideId: lastAction.slideId,
                         elementId: lastAction.elementId,
                         before: JSON.stringify(lastAction.before),
-                        after: JSON.stringify(lastAction.after)
+                        after: JSON.stringify(lastAction.after),
                     });
 
                     const newPast = presentationHistory.past.slice(0, -1);
@@ -333,9 +333,9 @@ export const useHistoryStore = create<HistoryState>()(
                             ...state.history,
                             [presentationId]: {
                                 past: newPast,
-                                future: newFuture
-                            }
-                        }
+                                future: newFuture,
+                            },
+                        },
                     };
                 });
             },
@@ -348,7 +348,7 @@ export const useHistoryStore = create<HistoryState>()(
 
                 const presentationStore = usePresentationStore.getState();
 
-                set((state) => {
+                set(state => {
                     const presentationHistory = state.history[presentationId];
 
                     if (!presentationHistory || presentationHistory.future.length === 0) {
@@ -371,9 +371,9 @@ export const useHistoryStore = create<HistoryState>()(
                             ...state.history,
                             [presentationId]: {
                                 past: newPast,
-                                future: newFuture
-                            }
-                        }
+                                future: newFuture,
+                            },
+                        },
                     };
                 });
             },
@@ -389,18 +389,18 @@ export const useHistoryStore = create<HistoryState>()(
             },
 
             clearHistory: (presentationId: string) => {
-                set((state) => ({
+                set(state => ({
                     history: {
                         ...state.history,
                         [presentationId]: {
                             past: [],
-                            future: []
-                        }
+                            future: [],
+                        },
                     },
                     activeTransactions: {
                         ...state.activeTransactions,
-                        [presentationId]: null
-                    }
+                        [presentationId]: null,
+                    },
                 }));
             },
 
@@ -417,17 +417,17 @@ export const useHistoryStore = create<HistoryState>()(
 
                 const key = future ? 'future' : 'past';
                 presentationHistory[key].forEach(pastState => {
-                    console.log(deepDiff(pastState.before, pastState.after))
-                })
+                    console.log(deepDiff(pastState.before, pastState.after));
+                });
             },
 
             hasActiveTransaction: (presentationId: string) => {
                 return !!get().activeTransactions[presentationId];
-            }
+            },
         }),
         {
             name: 'history-store',
-            enabled: true
+            enabled: true,
         }
     )
 );

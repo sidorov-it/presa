@@ -39,7 +39,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType>({
     isDarkMode: false,
     setTheme: () => {},
-    currentTheme: null
+    currentTheme: null,
 });
 
 export const useTheme = () => useContext(ThemeContext);
@@ -73,11 +73,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, initialT
         }
     }, [initialTheme]);
 
-    return (
-        <ThemeContext.Provider value={{ isDarkMode, setTheme, currentTheme }}>
-            {children}
-        </ThemeContext.Provider>
-    );
+    return <ThemeContext.Provider value={{ isDarkMode, setTheme, currentTheme }}>{children}</ThemeContext.Provider>;
 };
 
 export default ThemeContext;

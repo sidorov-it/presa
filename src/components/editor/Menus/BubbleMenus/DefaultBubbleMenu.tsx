@@ -1,10 +1,10 @@
-"use client"
+'use client';
 
 import React from 'react';
 import { Editor } from '@tiptap/react';
 
 interface BubbleMenuProps {
-  editor: Editor;
+    editor: Editor;
 }
 
 const DefaultBubbleMenu: React.FC<BubbleMenuProps> = ({ editor }) => {
@@ -23,14 +23,14 @@ const DefaultBubbleMenu: React.FC<BubbleMenuProps> = ({ editor }) => {
                 className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('bold') ? 'bg-gray-200' : ''}`}
                 aria-label="Bold"
             >
-        Жирный
+                Жирный
             </button>
             <button
                 onClick={handleItalic}
                 className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('italic') ? 'bg-gray-200' : ''}`}
                 aria-label="Italic"
             >
-        Курсив
+                Курсив
             </button>
         </div>
     );

@@ -11,11 +11,19 @@ import {
     AlignTopIcon,
     AlignCenterIcon,
     AlignBottomIcon,
-    MergeIcon
+    MergeIcon,
 } from '@/components/icons';
 import RowTableMenu from './RowTableMenu/RowTableMenu';
 import ColumnTableMenu from './ColumnTableMenu/ColumnTableMenu';
-import { useMenuIsOpen, useMenuStore, useMenuSelectedColumn, useMenuSelectedElement, useMenuSelectedLayout, useMenuSelectedSlide, useMenuSelectedCell } from '@/store/menuStore';
+import {
+    useMenuIsOpen,
+    useMenuStore,
+    useMenuSelectedColumn,
+    useMenuSelectedElement,
+    useMenuSelectedLayout,
+    useMenuSelectedSlide,
+    useMenuSelectedCell,
+} from '@/store/menuStore';
 import { usePresentationStore } from '@/store/presentationStore';
 import { TipTapRefs } from '@/types';
 import TableMenu from './TableMenu/TableMenu';
@@ -71,26 +79,24 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
         if (isTable !== layout?.isTable) {
             setIsTable(layout?.isTable ?? false);
         }
-    }, [layoutId, isTable]);
+    }, [layoutId, isTable, presentationId, slideId]);
 
     let slideIndex = 0;
     if (elementType === 'slide') {
         const slide = getSlide(slideId);
         if (slide) {
-            slideIndex = presentation?.slides.findIndex((s) => s.id === slide.id) ?? 0;
+            slideIndex = presentation?.slides.findIndex(s => s.id === slide.id) ?? 0;
         }
     }
 
-    const {
-        MenuComponent,
-    } = useMemo(() => {
+    const { MenuComponent } = useMemo(() => {
         if (element?.elementTypeId) {
-            return getElementMenuComponent(element.elementTypeId)
+            return getElementMenuComponent(element.elementTypeId);
         }
         return {
             MenuComponent: null,
             menuDirection: 'bottom',
-            menuHeight: undefined
+            menuHeight: undefined,
         };
     }, [element?.elementTypeId]);
 
@@ -186,42 +192,21 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
             case 'element':
                 return (
                     <>
-                        <MenuItem
-                            icon={<EditIcon />}
-                            label="Edit"
-                            onClick={editElement}
-                        />
-                        <MenuItem
-                            icon={<DuplicateIcon />}
-                            label="Duplicate"
-                            onClick={duplicateElement}
-                        />
-                        <MenuItem
-                            icon={<DeleteIcon />}
-                            label="Delete"
-                            onClick={deleteElement}
-                            color="#f00"
-                        />
+                        <MenuItem icon={<EditIcon />} label="Edit" onClick={editElement} />
+                        <MenuItem icon={<DuplicateIcon />} label="Duplicate" onClick={duplicateElement} />
+                        <MenuItem icon={<DeleteIcon />} label="Delete" onClick={deleteElement} color="#f00" />
                     </>
                 );
             case 'cell':
                 return (
                     <>
-                        <MenuItem
-                            icon={<AddColumnLeftIcon />}
-                            label="Add column left"
-                            onClick={handleAddColumnLeft}
-                        />
+                        <MenuItem icon={<AddColumnLeftIcon />} label="Add column left" onClick={handleAddColumnLeft} />
                         <MenuItem
                             icon={<AddColumnRightIcon />}
                             label="Add column right"
                             onClick={handleAddColumnRight}
                         />
-                        <MenuItem
-                            icon={<DuplicateIcon />}
-                            label="Duplicate"
-                            onClick={handleDuplicateColumn}
-                        />
+                        <MenuItem icon={<DuplicateIcon />} label="Duplicate" onClick={handleDuplicateColumn} />
                         <MenuItem
                             icon={<AlignTopIcon />}
                             label="Align top"
@@ -251,24 +236,9 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
             case 'slide':
                 return (
                     <>
-                        <MenuItem
-                            icon={<DuplicateIcon />}
-                            label="Duplicate"
-                            onClick={duplicateSlide}
-                        />
-                        {slideIndex > 0 && (
-                            <MenuItem
-                                icon={<MergeIcon />}
-                                label="Merge"
-                                onClick={handleMergeSlide}
-                            />
-                        )}
-                        <MenuItem
-                            icon={<BiTrash />}
-                            label="Delete"
-                            onClick={deleteSlide}
-                            color="#f00"
-                        />
+                        <MenuItem icon={<DuplicateIcon />} label="Duplicate" onClick={duplicateSlide} />
+                        {slideIndex > 0 && <MenuItem icon={<MergeIcon />} label="Merge" onClick={handleMergeSlide} />}
+                        <MenuItem icon={<BiTrash />} label="Delete" onClick={deleteSlide} color="#f00" />
                     </>
                 );
             case 'row':
@@ -303,12 +273,7 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
     if (elementType === 'layout' && layoutId && !isTable) {
         return <LayoutMenu position={position} layoutId={layoutId} />;
     } else if (isTable && elementType === 'layout') {
-        return (
-            <TableMenu
-                position={position}
-                tiptapRefs={tiptapRefs}
-            />
-        );
+        return <TableMenu position={position} tiptapRefs={tiptapRefs} />;
     }
 
     return (

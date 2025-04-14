@@ -1,11 +1,11 @@
-import { Editor } from "@tiptap/react";
-import { useState, useRef, useEffect } from "react";
-import { BiLink, BiUnlink } from "react-icons/bi";
-import styles from "./LinkEditor.module.css";
+import { Editor } from '@tiptap/react';
+import { useState, useRef, useEffect } from 'react';
+import { BiLink, BiUnlink } from 'react-icons/bi';
+import styles from './LinkEditor.module.css';
 
 export const LinkEditor = ({ editor, className }: { editor: Editor; className?: string }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [url, setUrl] = useState("");
+    const [url, setUrl] = useState('');
     const linkEditorRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -33,9 +33,9 @@ export const LinkEditor = ({ editor, className }: { editor: Editor; className?: 
             }
         };
 
-        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener('mousedown', handleClickOutside);
         return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
 
@@ -82,7 +82,7 @@ export const LinkEditor = ({ editor, className }: { editor: Editor; className?: 
         <div className={`${styles.linkEditorContainer} light-theme-only`} ref={linkEditorRef}>
             <button
                 onClick={toggleLinkEditor}
-                className={`${className || ""} ${editor.isActive('link') ? styles.active : ""}`}
+                className={`${className || ''} ${editor.isActive('link') ? styles.active : ''}`}
                 aria-label="Вставить ссылку"
                 aria-expanded={isOpen}
             >
@@ -96,18 +96,14 @@ export const LinkEditor = ({ editor, className }: { editor: Editor; className?: 
                             ref={inputRef}
                             type="text"
                             value={url}
-                            onChange={(e) => setUrl(e.target.value)}
+                            onChange={e => setUrl(e.target.value)}
                             onKeyDown={handleKeyDown}
                             placeholder="Введите URL..."
                             className={styles.linkInput}
                             aria-label="URL ссылки"
                         />
                         <div className={styles.linkActions}>
-                            <button
-                                onClick={applyLink}
-                                className={styles.applyButton}
-                                disabled={!url.trim()}
-                            >
+                            <button onClick={applyLink} className={styles.applyButton} disabled={!url.trim()}>
                                 Применить
                             </button>
                             {editor.isActive('link') && (

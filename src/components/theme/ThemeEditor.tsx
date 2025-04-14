@@ -7,8 +7,8 @@ import { Theme, ThemeColors, ThemeTypography, ThemeDesign } from '@/types/theme'
 import { ColorPicker } from '@/components/ui/ColorPicker/ColorPicker';
 
 interface ThemeEditorProps {
-  theme: Theme;
-  onThemeChange: (theme: Theme) => void;
+    theme: Theme;
+    onThemeChange: (theme: Theme) => void;
 }
 
 export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
@@ -48,7 +48,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                             <Label>Основной акцент</Label>
                             <ColorPicker
                                 value={theme.colors.primaryAccent}
-                                onChange={(value) => handleColorsChange({ primaryAccent: value })}
+                                onChange={value => handleColorsChange({ primaryAccent: value })}
                             />
                         </div>
 
@@ -56,7 +56,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                             <Label>Цвет заголовков</Label>
                             <ColorPicker
                                 value={theme.colors.headingColor}
-                                onChange={(value) => handleColorsChange({ headingColor: value })}
+                                onChange={value => handleColorsChange({ headingColor: value })}
                             />
                         </div>
 
@@ -64,7 +64,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                             <Label>Цвет текста</Label>
                             <ColorPicker
                                 value={theme.colors.textColor}
-                                onChange={(value) => handleColorsChange({ textColor: value })}
+                                onChange={value => handleColorsChange({ textColor: value })}
                             />
                         </div>
 
@@ -72,7 +72,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                             <Label>Фон слайда</Label>
                             <ColorPicker
                                 value={theme.colors.slideBackground}
-                                onChange={(value) => handleColorsChange({ slideBackground: value })}
+                                onChange={value => handleColorsChange({ slideBackground: value })}
                             />
                         </div>
 
@@ -80,7 +80,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                             <Label>Фон страницы</Label>
                             <ColorPicker
                                 value={theme.colors.pageBackground}
-                                onChange={(value) => handleColorsChange({ pageBackground: value })}
+                                onChange={value => handleColorsChange({ pageBackground: value })}
                             />
                         </div>
                     </div>
@@ -92,7 +92,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                             <Label>Шрифт заголовков</Label>
                             <Select
                                 value={theme.typography.headingFont}
-                                onValueChange={(value) => handleTypographyChange({ headingFont: value })}
+                                onValueChange={value => handleTypographyChange({ headingFont: value })}
                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select font" />
@@ -122,7 +122,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                             <Label>Шрифт текста</Label>
                             <Select
                                 value={theme.typography.bodyFont}
-                                onValueChange={(value) => handleTypographyChange({ bodyFont: value })}
+                                onValueChange={value => handleTypographyChange({ bodyFont: value })}
                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select font" />
@@ -157,9 +157,11 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                             <Input
                                 type="text"
                                 value={theme.design.slide.borderRadius}
-                                onChange={(e) => handleDesignChange({
-                                    slide: { ...theme.design.slide, borderRadius: e.target.value }
-                                })}
+                                onChange={e =>
+                                    handleDesignChange({
+                                        slide: { ...theme.design.slide, borderRadius: e.target.value },
+                                    })
+                                }
                                 placeholder="e.g., 8px"
                             />
                         </div>
@@ -168,9 +170,11 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                             <Label>Прозрачность блоков: {Math.round(theme.design.blocks.opacity * 100)}%</Label>
                             <Slider
                                 value={[theme.design.blocks.opacity * 100]}
-                                onValueChange={([value]) => handleDesignChange({
-                                    blocks: { ...theme.design.blocks, opacity: value / 100 }
-                                })}
+                                onValueChange={([value]) =>
+                                    handleDesignChange({
+                                        blocks: { ...theme.design.blocks, opacity: value / 100 },
+                                    })
+                                }
                                 min={0}
                                 max={100}
                                 step={1}
@@ -182,9 +186,14 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                             <Label>Ширина границы</Label>
                             <Select
                                 value={theme.design.blocks.borderWidth}
-                                onValueChange={(value) => handleDesignChange({
-                                    blocks: { ...theme.design.blocks, borderWidth: value as ThemeDesign['blocks']['borderWidth'] }
-                                })}
+                                onValueChange={value =>
+                                    handleDesignChange({
+                                        blocks: {
+                                            ...theme.design.blocks,
+                                            borderWidth: value as ThemeDesign['blocks']['borderWidth'],
+                                        },
+                                    })
+                                }
                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select border width" />
@@ -202,9 +211,14 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                             <Label>Форма кнопки</Label>
                             <Select
                                 value={theme.design.buttons.buttonShape}
-                                onValueChange={(value) => handleDesignChange({
-                                    buttons: { ...theme.design.buttons, buttonShape: value as ThemeDesign['buttons']['buttonShape'] }
-                                })}
+                                onValueChange={value =>
+                                    handleDesignChange({
+                                        buttons: {
+                                            ...theme.design.buttons,
+                                            buttonShape: value as ThemeDesign['buttons']['buttonShape'],
+                                        },
+                                    })
+                                }
                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select button shape" />

@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { Heading } from "@/components/ui/heading"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Button } from "@/components/ui/Button"
-import { Check } from "lucide-react"
+import { Heading } from '@/components/ui/heading';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/Button';
+import { Check } from 'lucide-react';
 
 // Sample plan data
 const PLANS = [
@@ -14,17 +14,8 @@ const PLANS = [
         name: 'Бесплатный',
         price: 0,
         billing: 'навсегда',
-        features: [
-            'До 3 презентаций',
-            'Базовые шаблоны',
-            'Экспорт в PDF',
-            'Поддержка сообщества',
-        ],
-        limitations: [
-            'Без генерации ИИ',
-            'Ограничение до 20 слайдов на презентацию',
-            'Только стандартные темы',
-        ],
+        features: ['До 3 презентаций', 'Базовые шаблоны', 'Экспорт в PDF', 'Поддержка сообщества'],
+        limitations: ['Без генерации ИИ', 'Ограничение до 20 слайдов на презентацию', 'Только стандартные темы'],
     },
     {
         id: 'pro',
@@ -90,10 +81,7 @@ const PaymentPage = () => {
     return (
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
             <div className="flex items-center justify-between">
-                <Heading
-                    title="Тарифные планы"
-                    description="Выберите идеальный план для ваших нужд"
-                />
+                <Heading title="Тарифные планы" description="Выберите идеальный план для ваших нужд" />
             </div>
 
             <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
@@ -124,11 +112,7 @@ const PaymentPage = () => {
                         </ul>
                     </CardContent>
                     <CardFooter>
-                        <Button
-                            variant="outline"
-                            className="w-full"
-                            onClick={() => handleSubscribe("free")}
-                        >
+                        <Button variant="outline" className="w-full" onClick={() => handleSubscribe('free')}>
                             Начать
                         </Button>
                     </CardFooter>
@@ -165,10 +149,7 @@ const PaymentPage = () => {
                         </ul>
                     </CardContent>
                     <CardFooter>
-                        <Button
-                            className="w-full"
-                            onClick={() => handleSubscribe("pro")}
-                        >
+                        <Button className="w-full" onClick={() => handleSubscribe('pro')}>
                             Подписаться
                         </Button>
                     </CardFooter>
@@ -204,18 +185,14 @@ const PaymentPage = () => {
                         </ul>
                     </CardContent>
                     <CardFooter>
-                        <Button
-                            variant="outline"
-                            className="w-full"
-                            onClick={() => handleSubscribe("enterprise")}
-                        >
+                        <Button variant="outline" className="w-full" onClick={() => handleSubscribe('enterprise')}>
                             Связаться с отделом продаж
                         </Button>
                     </CardFooter>
                 </Card>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default PaymentPage
+export default PaymentPage;

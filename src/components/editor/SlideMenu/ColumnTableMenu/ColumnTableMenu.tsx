@@ -1,13 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import {
-    BiBold,
-    BiItalic,
-    BiUnderline,
-    BiX,
-    BiArrowToLeft,
-    BiArrowToRight,
-    BiTrash
-} from 'react-icons/bi';
+import { BiBold, BiItalic, BiUnderline, BiX, BiArrowToLeft, BiArrowToRight, BiTrash } from 'react-icons/bi';
 import { useMenuStore } from '@/store/menuStore';
 import { TipTapRefs } from '@/types';
 import { MutableRefObject } from 'react';
@@ -23,10 +15,7 @@ interface ColumnTableMenuProps {
     tiptapRefs: MutableRefObject<TipTapRefs>;
 }
 
-const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
-    tableColumnIndex,
-    tiptapRefs
-}) => {
+const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({ tableColumnIndex, tiptapRefs }) => {
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
 
@@ -48,9 +37,18 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
         };
     }, []);
 
-    const isBoldActive = useMemo(() => isEditorPropertyConsistent(tableColumnElements, tiptapRefs, 'bold'), [tableColumnElements, tiptapRefs]);
-    const isItalicActive = useMemo(() => isEditorPropertyConsistent(tableColumnElements, tiptapRefs, 'italic'), [tableColumnElements, tiptapRefs]);
-    const isUnderlineActive = useMemo(() => isEditorPropertyConsistent(tableColumnElements, tiptapRefs, 'underline'), [tableColumnElements, tiptapRefs]);
+    const isBoldActive = useMemo(
+        () => isEditorPropertyConsistent(tableColumnElements, tiptapRefs, 'bold'),
+        [tableColumnElements, tiptapRefs]
+    );
+    const isItalicActive = useMemo(
+        () => isEditorPropertyConsistent(tableColumnElements, tiptapRefs, 'italic'),
+        [tableColumnElements, tiptapRefs]
+    );
+    const isUnderlineActive = useMemo(
+        () => isEditorPropertyConsistent(tableColumnElements, tiptapRefs, 'underline'),
+        [tableColumnElements, tiptapRefs]
+    );
 
     const handleToggleBold = useCallback(() => {
         tableColumnElements.forEach(element => {
@@ -121,12 +119,18 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
         }
     }, [tableColumnIndex]);
 
-    const handleHeadingChange = useCallback((level: number) => {
-        tableColumnElements.forEach(element => {
-            tiptapRefs.current.editors[element.id]?.editor.chain().setHeading({ level: level as Level }).run();
-        });
-        setLocalHeadingLevel(level);
-    }, [tableColumnElements, tiptapRefs]);
+    const handleHeadingChange = useCallback(
+        (level: number) => {
+            tableColumnElements.forEach(element => {
+                tiptapRefs.current.editors[element.id]?.editor
+                    .chain()
+                    .setHeading({ level: level as Level })
+                    .run();
+            });
+            setLocalHeadingLevel(level);
+        },
+        [tableColumnElements, tiptapRefs]
+    );
 
     return (
         <>
@@ -143,45 +147,18 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({
                 editors={tableColumnElements.map(element => tiptapRefs.current.editors[element.id]?.editor)}
                 className={bubbleStyles.button}
             /> */}
-            <MenuItem
-                icon={<BiBold />}
-                label="Bold"
-                onClick={handleToggleBold}
-                active={isBoldActive}
-            />
-            <MenuItem
-                icon={<BiItalic />}
-                label="Italic"
-                onClick={handleToggleItalic}
-                active={isItalicActive}
-            />
+            <MenuItem icon={<BiBold />} label="Bold" onClick={handleToggleBold} active={isBoldActive} />
+            <MenuItem icon={<BiItalic />} label="Italic" onClick={handleToggleItalic} active={isItalicActive} />
             <MenuItem
                 icon={<BiUnderline />}
                 label="Underline"
                 onClick={handleToggleUnderline}
                 active={isUnderlineActive}
             />
-            <MenuItem
-                icon={<BiX />}
-                label="Clear formatting"
-                onClick={handleClearStyles}
-            />
-            <MenuItem
-                icon={<BiArrowToLeft />}
-                label="Add column left"
-                onClick={handleAddColumnLeft}
-            />
-            <MenuItem
-                icon={<BiArrowToRight />}
-                label="Add column right"
-                onClick={handleAddColumnRight}
-            />
-            <MenuItem
-                icon={<BiTrash />}
-                label="Delete column"
-                onClick={handleDeleteColumn}
-                color="#f00"
-            />
+            <MenuItem icon={<BiX />} label="Clear formatting" onClick={handleClearStyles} />
+            <MenuItem icon={<BiArrowToLeft />} label="Add column left" onClick={handleAddColumnLeft} />
+            <MenuItem icon={<BiArrowToRight />} label="Add column right" onClick={handleAddColumnRight} />
+            <MenuItem icon={<BiTrash />} label="Delete column" onClick={handleDeleteColumn} color="#f00" />
         </>
     );
 };

@@ -14,22 +14,23 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 // Create Prisma client instance
-export const prisma = globalForPrisma.prisma ??
-  new PrismaClient(prismaClientOptions).$extends({
-      result: {
-          presentation: {
-              slides: {
-                  needs: { slides: true },
-                  compute(presentation) {
-                      if (typeof presentation.slides === 'string') {
-                          return JSON.parse(presentation.slides);
-                      }
-                      return presentation.slides;
-                  },
-              },
-          },
-      },
-  });
+export const prisma =
+    globalForPrisma.prisma ??
+    new PrismaClient(prismaClientOptions).$extends({
+        result: {
+            presentation: {
+                slides: {
+                    needs: { slides: true },
+                    compute(presentation) {
+                        if (typeof presentation.slides === 'string') {
+                            return JSON.parse(presentation.slides);
+                        }
+                        return presentation.slides;
+                    },
+                },
+            },
+        },
+    });
 
 if (process.env.NODE_ENV !== 'production') {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment

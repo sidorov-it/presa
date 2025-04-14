@@ -1,4 +1,3 @@
-
 const adjustWidths = (
     columnWidths: string[],
     currentColumnIndex: number,
@@ -30,7 +29,7 @@ const adjustWidths = (
 
     newColumnWidths[currentColumnIndex] = `${newWidthPercentage.toFixed(2)}%`;
 
-    let neighborIndex = currentColumnIndex + 1;
+    const neighborIndex = currentColumnIndex + 1;
 
     // if (!isLast && currentColumnIndex < totalColumns - 1) {
     //     neighborIndex = currentColumnIndex + 1;

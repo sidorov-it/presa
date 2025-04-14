@@ -6,9 +6,7 @@ interface PresentationViewerProps {
     presentation: IPresentation;
 }
 
-const PresentationViewer: React.FC<PresentationViewerProps> = ({
-    presentation
-}) => {
+const PresentationViewer: React.FC<PresentationViewerProps> = ({ presentation }) => {
     return (
         <div className="min-h-screen w-full overflow-y-auto py-10 px-4">
             <div className="max-w-6xl mx-auto space-y-20">

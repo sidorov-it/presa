@@ -19,23 +19,15 @@ const EditorContent: React.FC<{
     presentationId: string;
     activeSlideId: string | null;
     onSlideSelect: (slideId: string, scroll?: boolean) => void;
-}> = React.memo(({
-    presentationId,
-    activeSlideId,
-    onSlideSelect,
-}) => {
+}> = React.memo(({ presentationId, activeSlideId, onSlideSelect }) => {
     const tiptapRefs = useRef<TipTapRefs>({
         editors: {},
-        editorRefs: []
+        editorRefs: [],
     });
 
     return (
         <div className="min-h-screen flex flex-col">
-            <SlidesList
-                presentationId={presentationId}
-                activeSlideId={activeSlideId}
-                onSlideSelect={onSlideSelect}
-            />
+            <SlidesList presentationId={presentationId} activeSlideId={activeSlideId} onSlideSelect={onSlideSelect} />
 
             <div>
                 {/* Main editing area */}
@@ -47,12 +39,7 @@ const EditorContent: React.FC<{
                 />
 
                 {/* Tools panel */}
-                {activeSlideId && (
-                    <ElementsPanel
-                        presentationId={presentationId}
-                        slideId={activeSlideId}
-                    />
-                )}
+                {activeSlideId && <ElementsPanel presentationId={presentationId} slideId={activeSlideId} />}
             </div>
             <SlideMenu tiptapRefs={tiptapRefs} />
             {/* Global drag-drop indicator */}
@@ -66,8 +53,11 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
 
     // const { getSlideIds, checkPresentationExists } = usePresentationStore();
     // Use specific selectors to only subscribe to needed state
-    const slideIds = useMemo(() => usePresentationStore.getState().getSlideIds(presentationId), []);
-    const presentationExists = useMemo(() => usePresentationStore.getState().checkPresentationExists(presentationId), []);
+    const slideIds = useMemo(() => usePresentationStore.getState().getSlideIds(presentationId), [presentationId]);
+    const presentationExists = useMemo(
+        () => usePresentationStore.getState().checkPresentationExists(presentationId),
+        [presentationId]
+    );
 
     useEffect(() => {
         const { setPresentationId } = useMenuStore.getState();
@@ -75,11 +65,14 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
     }, [presentationId]);
 
     // Memoize not found UI
-    const notFoundUI = useMemo(() => (
-        <div className="min-h-screen flex items-center justify-center">
-            <p className="text-lg text-gray-500">Презентация не найдена</p>
-        </div>
-    ), []);
+    const notFoundUI = useMemo(
+        () => (
+            <div className="min-h-screen flex items-center justify-center">
+                <p className="text-lg text-gray-500">Презентация не найдена</p>
+            </div>
+        ),
+        []
+    );
 
     // Handle slide selection with useCallback
     const handleSlideSelect = useCallback((slideId: string, scroll: boolean = false) => {
@@ -88,7 +81,7 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
         if (scroll) {
             document.querySelector(`[data-slide-id="${slideId}"]`)?.scrollIntoView({
                 behavior: 'smooth',
-                block: 'center'
+                block: 'center',
             });
         }
     }, []);

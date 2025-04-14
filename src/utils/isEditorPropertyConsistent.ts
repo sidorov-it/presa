@@ -1,9 +1,15 @@
-import { MutableRefObject } from "react";
+import { MutableRefObject } from 'react';
 
-import { TipTapRefs, BaseElement } from "@/types";
+import { TipTapRefs, BaseElement } from '@/types';
 
-const isEditorPropertyConsistent = (elements: BaseElement[], tiptapRefs: MutableRefObject<TipTapRefs>, propertyName: string) => {
-    const notEmptyEditors = elements.filter(element => tiptapRefs.current.editors[element.id] && !tiptapRefs.current.editors[element.id].editor.isEmpty);
+const isEditorPropertyConsistent = (
+    elements: BaseElement[],
+    tiptapRefs: MutableRefObject<TipTapRefs>,
+    propertyName: string
+) => {
+    const notEmptyEditors = elements.filter(
+        element => tiptapRefs.current.editors[element.id] && !tiptapRefs.current.editors[element.id].editor.isEmpty
+    );
     if (!notEmptyEditors.length) return false;
 
     return notEmptyEditors.every(element => {
@@ -16,6 +22,6 @@ const isEditorPropertyConsistent = (elements: BaseElement[], tiptapRefs: Mutable
         }
         return false;
     });
-}
+};
 
 export default isEditorPropertyConsistent;

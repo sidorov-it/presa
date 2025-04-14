@@ -1,6 +1,5 @@
-import { Extension } from "@tiptap/react";
-import { PluginKey, Plugin } from '@tiptap/pm/state'
-
+import { Extension } from '@tiptap/react';
+import { PluginKey, Plugin } from '@tiptap/pm/state';
 
 export const pluginKey = new PluginKey('prevent-drop-from-outside');
 

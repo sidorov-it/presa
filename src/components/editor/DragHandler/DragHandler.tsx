@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useCallback, useEffect, useState } from 'react';
 import styles from './DragHandler.module.css';
 import { useTheme } from '@/components/providers/ThemeProvider';
@@ -14,19 +15,19 @@ export default function DragHandler({
     style = {},
     title,
 }: {
-    slideId: string,
-    isActive: boolean,
-    ariaLabel: string,
-    className: string,
-    handleClick: (e: React.MouseEvent<HTMLDivElement>) => void,
-    handleKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => void,
-    handleDragStart: (e: React.DragEvent<HTMLDivElement>) => void,
-    horizontal?: boolean,
+    slideId: string;
+    isActive: boolean;
+    ariaLabel: string;
+    className: string;
+    handleClick: (e: React.MouseEvent<HTMLDivElement>) => void;
+    handleKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => void;
+    handleDragStart: (e: React.DragEvent<HTMLDivElement>) => void;
+    horizontal?: boolean;
     dataAttributes?: {
-        [key: string]: string,
-    },
-    style?: React.CSSProperties,
-    title?: string,
+        [key: string]: string;
+    };
+    style?: React.CSSProperties;
+    title?: string;
 }) {
     const [isVisible, setIsVisible] = useState(false);
     const { isDarkMode } = useTheme();
@@ -41,10 +42,13 @@ export default function DragHandler({
         return () => clearTimeout(timer);
     }, []);
 
-    const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-        e.stopPropagation();
-        handleClickProp(e);
-    }, [handleClickProp]);
+    const handleClick = useCallback(
+        (e: React.MouseEvent<HTMLDivElement>) => {
+            e.stopPropagation();
+            handleClickProp(e);
+        },
+        [handleClickProp]
+    );
 
     return (
         <div
@@ -60,14 +64,15 @@ export default function DragHandler({
                 ...(isDarkMode && {
                     borderColor: 'white',
                     color: 'white',
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
                 }),
-                ...(isDarkMode && isActive && {
+                ...(isDarkMode &&
+                    isActive && {
                     backgroundColor: 'rgba(0, 0, 0, 0.7)',
                     color: 'white',
-                    borderColor: 'white'
+                    borderColor: 'white',
                 }),
-                ...style
+                ...style,
             }}
             {...dataAttributes}
         >

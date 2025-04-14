@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
-import { Heading } from "@/components/ui/heading"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/Button"
-import { Plus } from "lucide-react"
+import { Heading } from '@/components/ui/heading';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/Button';
+import { Plus } from 'lucide-react';
 
 // Sample template data
 const TEMPLATES = [
@@ -80,15 +80,12 @@ const TemplatesPage = () => {
 
     const handleCreateTemplate = () => {
         // TODO: Implement template creation
-    }
+    };
 
     return (
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
             <div className="flex items-center justify-between">
-                <Heading
-                    title="Templates"
-                    description="Manage your presentation templates"
-                />
+                <Heading title="Templates" description="Manage your presentation templates" />
                 <Button onClick={handleCreateTemplate}>
                     <Plus className="mr-2 h-4 w-4" />
                     New Template
@@ -101,7 +98,7 @@ const TemplatesPage = () => {
                 </div>
             ) : (
                 <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                    {TEMPLATES.map((template) => (
+                    {TEMPLATES.map(template => (
                         <Card
                             key={template.id}
                             className="hover:shadow-lg transition-shadow cursor-pointer"
@@ -120,6 +117,6 @@ const TemplatesPage = () => {
             )}
         </div>
     );
-}
+};
 
-export default TemplatesPage
+export default TemplatesPage;

@@ -84,7 +84,11 @@ export interface MenuState {
     deleteColumn: () => void;
     toggleBoldOnColumn: () => void;
     // Getter methods
-    getElement: (slideId: string | null, layoutId: string | null, elementId: string | null) => BaseElement | null | undefined;
+    getElement: (
+        slideId: string | null,
+        layoutId: string | null,
+        elementId: string | null
+    ) => BaseElement | null | undefined;
     getCell: (slideId: string | null, layoutId: string | null, columnId: string | null) => GridCell | null | undefined;
     getLayout: (slideId: string | null, layoutId: string | null) => Layout | null | undefined;
     getSlide: (slideId: string | null) => Slide | null | undefined;
@@ -145,22 +149,22 @@ export const useMenuStore = create<MenuState>()(
             setSelectedRowIndex: (tableId: string, rowIndex: number | null) => {
                 const { selectedTableId } = get();
                 if (selectedTableId !== tableId) {
-                    set({ selectedRowIndex: rowIndex, selectedTableId: tableId })
+                    set({ selectedRowIndex: rowIndex, selectedTableId: tableId });
                 } else {
-                    set({ selectedRowIndex: rowIndex })
+                    set({ selectedRowIndex: rowIndex });
                 }
             },
             setSelectedColumnIndex: (tableId: string, columnIndex: number | null) => {
                 const { selectedTableId } = get();
                 if (selectedTableId !== tableId) {
-                    set({ selectedColumnIndex: columnIndex, selectedTableId: tableId })
+                    set({ selectedColumnIndex: columnIndex, selectedTableId: tableId });
                 } else {
-                    set({ selectedColumnIndex: columnIndex })
+                    set({ selectedColumnIndex: columnIndex });
                 }
             },
 
             // Menu control actions
-            openMenu: (menuData) => {
+            openMenu: menuData => {
                 console.log('openMenu', {
                     isOpen: true,
                     slideId: menuData.slideId ?? null,
@@ -188,7 +192,7 @@ export const useMenuStore = create<MenuState>()(
                     tableRowIndex: menuData.tableRowIndex ?? null,
                     tableColumnIndex: menuData.tableColumnIndex ?? null,
                     tableId: menuData.tableId ?? null,
-                })
+                });
             },
 
             closeMenu: () => {
@@ -205,11 +209,11 @@ export const useMenuStore = create<MenuState>()(
                     tableRowIndex: null,
                     tableColumnIndex: null,
                     tableId: null,
-                    cellId: null
-                })
+                    cellId: null,
+                });
             },
 
-            checkSlideMenuIsOpen: (slideId) => {
+            checkSlideMenuIsOpen: slideId => {
                 const state = get();
                 return state.slideId === slideId && state.elementId === null && state.layoutId === null;
             },
@@ -252,7 +256,7 @@ export const useMenuStore = create<MenuState>()(
                 }
             },
 
-            updateAlignLayout: (align) => {
+            updateAlignLayout: align => {
                 const { updateAlignLayout: updateAlignLayoutInStore } = usePresentationStore.getState();
                 const { presentationId, slideId, layoutId } = get();
                 if (presentationId && slideId && layoutId) {
@@ -260,7 +264,7 @@ export const useMenuStore = create<MenuState>()(
                 }
             },
 
-            changeTemplate: (template) => {
+            changeTemplate: template => {
                 const { presentationId, slideId, layoutId } = get();
                 if (slideId && layoutId && presentationId) {
                     const { changeTemplate: changeTemplateInStore } = usePresentationStore.getState();
@@ -387,30 +391,32 @@ export const useMenuStore = create<MenuState>()(
                 return getLayout(presentationId, slideId, layoutId);
             },
 
-            getSlide: (slideId) => {
+            getSlide: slideId => {
                 const { presentationId } = get();
                 if (!slideId || !presentationId) return null;
                 const { getSlide } = usePresentationStore.getState();
                 return getSlide(presentationId, slideId);
             },
 
-            getPresentation: (presentationId) => {
+            getPresentation: presentationId => {
                 const { getPresentation } = usePresentationStore.getState();
                 return getPresentation(presentationId);
             },
 
             // Add a combined action to batch updates
             hoverTableCell: (tableId: string, rowIndex: number | null, columnIndex: number | null) =>
-                set((state) => {
-                    if (state.hoveredRowIndex === rowIndex &&
-                    state.hoveredColumnIndex === columnIndex &&
-                    state.hoveredTableId === tableId) {
+                set(state => {
+                    if (
+                        state.hoveredRowIndex === rowIndex &&
+                        state.hoveredColumnIndex === columnIndex &&
+                        state.hoveredTableId === tableId
+                    ) {
                         return state; // No change needed
                     }
                     return {
                         hoveredRowIndex: rowIndex,
                         hoveredColumnIndex: columnIndex,
-                        hoveredTableId: tableId
+                        hoveredTableId: tableId,
                     };
                 }),
 
@@ -449,19 +455,19 @@ export const useMenuStore = create<MenuState>()(
                 return getCommonAlignment(presentationId, slideId, layoutId);
             },
 
-            getCommonTableHeadingLevel: (tiptapRefs) => {
+            getCommonTableHeadingLevel: tiptapRefs => {
                 const { presentationId, slideId, layoutId } = get();
                 if (!presentationId || !slideId || !layoutId) return [];
                 const { getCommonTableHeadingLevel } = usePresentationStore.getState();
                 return getCommonTableHeadingLevel(tiptapRefs, presentationId, slideId, layoutId);
             },
-            getCommonRowHeadingLevel: (tiptapRefs) => {
+            getCommonRowHeadingLevel: tiptapRefs => {
                 const { presentationId, slideId, layoutId, tableRowIndex } = get();
                 if (!presentationId || !slideId || !layoutId || !Number.isInteger(tableRowIndex)) return [];
                 const { getCommonRowHeadingLevel } = usePresentationStore.getState();
                 return getCommonRowHeadingLevel(tiptapRefs, presentationId, slideId, layoutId, tableRowIndex!);
             },
-            getCommonColumnHeadingLevel: (tiptapRefs) => {
+            getCommonColumnHeadingLevel: tiptapRefs => {
                 const { presentationId, slideId, layoutId, tableColumnIndex } = get();
                 if (!presentationId || !slideId || !layoutId || !Number.isInteger(tableColumnIndex)) return [];
                 const { getCommonColumnHeadingLevel } = usePresentationStore.getState();
@@ -506,7 +512,7 @@ export const useMenuStore = create<MenuState>()(
                 if (!presentationId || !slideId || !layoutId) return [];
                 const { equalizeTable } = usePresentationStore.getState();
                 equalizeTable(presentationId, slideId, layoutId);
-            }
+            },
         }),
         {
             name: 'menu-store',

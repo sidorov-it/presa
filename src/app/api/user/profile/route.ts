@@ -9,10 +9,7 @@ export async function GET() {
         const session = await getServerSession(authOptions);
 
         if (!session?.user) {
-            return NextResponse.json(
-                { message: 'Unauthorized' },
-                { status: 401 }
-            );
+            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
         }
 
         const userId = session.user.id;
@@ -25,15 +22,12 @@ export async function GET() {
                 name: true,
                 email: true,
                 image: true,
-                role: true
-            }
+                role: true,
+            },
         });
 
         if (!user) {
-            return NextResponse.json(
-                { message: 'User not found' },
-                { status: 404 }
-            );
+            return NextResponse.json({ message: 'User not found' }, { status: 404 });
         }
 
         return NextResponse.json({
@@ -42,15 +36,12 @@ export async function GET() {
                 name: user.name,
                 email: user.email,
                 image: user.image,
-                role: user.role
-            }
+                role: user.role,
+            },
         });
     } catch (error) {
         console.error('Get profile error:', error);
-        return NextResponse.json(
-            { message: 'Internal server error' },
-            { status: 500 }
-        );
+        return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }
 
@@ -61,10 +52,7 @@ export async function PUT(req: NextRequest) {
         console.log('PUT /api/user/profile - Session:', session?.user ? 'Authenticated' : 'Not authenticated');
 
         if (!session?.user) {
-            return NextResponse.json(
-                { message: 'Unauthorized' },
-                { status: 401 }
-            );
+            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
         }
 
         const userId = session.user.id;
@@ -72,10 +60,7 @@ export async function PUT(req: NextRequest) {
         console.log('PUT /api/user/profile - UserId:', userId, 'New name:', name);
 
         if (!name || typeof name !== 'string') {
-            return NextResponse.json(
-                { message: 'Name is required' },
-                { status: 400 }
-            );
+            return NextResponse.json({ message: 'Name is required' }, { status: 400 });
         }
 
         // Find user and update
@@ -87,8 +72,8 @@ export async function PUT(req: NextRequest) {
                 name: true,
                 email: true,
                 image: true,
-                role: true
-            }
+                role: true,
+            },
         });
         console.log('PUT /api/user/profile - User found by ID:', !!user);
 
@@ -102,31 +87,28 @@ export async function PUT(req: NextRequest) {
                     name: true,
                     email: true,
                     image: true,
-                    role: true
-                }
+                    role: true,
+                },
             });
             console.log('PUT /api/user/profile - User found by email:', !!userByEmail);
 
             if (!userByEmail) {
-                return NextResponse.json(
-                    { message: 'User not found' },
-                    { status: 404 }
-                );
+                return NextResponse.json({ message: 'User not found' }, { status: 404 });
             }
 
             // Update user's name
             const updatedUser = await prisma.user.update({
                 where: { id: userByEmail.id },
                 data: {
-                    name: name
+                    name: name,
                 },
                 select: {
                     id: true,
                     name: true,
                     email: true,
                     image: true,
-                    role: true
-                }
+                    role: true,
+                },
             });
             console.log('PUT /api/user/profile - User updated by email lookup');
 
@@ -137,8 +119,8 @@ export async function PUT(req: NextRequest) {
                     name: updatedUser.name,
                     email: updatedUser.email,
                     image: updatedUser.image,
-                    role: updatedUser.role
-                }
+                    role: updatedUser.role,
+                },
             });
         }
 
@@ -146,15 +128,15 @@ export async function PUT(req: NextRequest) {
         const updatedUser = await prisma.user.update({
             where: { id: user.id },
             data: {
-                name: name
+                name: name,
             },
             select: {
                 id: true,
                 name: true,
                 email: true,
                 image: true,
-                role: true
-            }
+                role: true,
+            },
         });
         console.log('PUT /api/user/profile - User updated successfully');
 
@@ -165,14 +147,11 @@ export async function PUT(req: NextRequest) {
                 name: updatedUser.name,
                 email: updatedUser.email,
                 image: updatedUser.image,
-                role: updatedUser.role
-            }
+                role: updatedUser.role,
+            },
         });
     } catch (error) {
         console.error('Update profile error:', error);
-        return NextResponse.json(
-            { message: 'Internal server error' },
-            { status: 500 }
-        );
+        return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }

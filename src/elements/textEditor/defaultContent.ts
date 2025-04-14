@@ -95,7 +95,7 @@ const editorsDefaultContent = {
         <summary>This is a summary</summary>
         <p>Surprise!</p>
       </details>
-`
-}
+`,
+};
 
 export default editorsDefaultContent;

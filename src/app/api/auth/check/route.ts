@@ -9,7 +9,7 @@ export async function GET() {
         if (!session?.user) {
             return NextResponse.json({
                 authenticated: false,
-                message: 'Not authenticated'
+                message: 'Not authenticated',
             });
         }
 
@@ -19,8 +19,8 @@ export async function GET() {
                 id: session.user.id,
                 name: session.user.name,
                 email: session.user.email,
-                role: session.user.role
-            }
+                role: session.user.role,
+            },
         });
     } catch (error) {
         console.error('Authentication check error:', error);
@@ -28,7 +28,7 @@ export async function GET() {
             {
                 authenticated: false,
                 message: 'Error checking authentication',
-                error: error instanceof Error ? error.message : 'Unknown error'
+                error: error instanceof Error ? error.message : 'Unknown error',
             },
             { status: 500 }
         );

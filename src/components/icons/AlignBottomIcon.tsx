@@ -1,7 +1,15 @@
 import React from 'react';
 
 const AlignBottomIcon: React.FC = () => (
-    <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+    <svg
+        stroke="currentColor"
+        fill="currentColor"
+        strokeWidth="0"
+        viewBox="0 0 24 24"
+        height="1em"
+        width="1em"
+        xmlns="http://www.w3.org/2000/svg"
+    >
         <path fill="none" d="M0 0h24v24H0V0z"></path>
         <path d="M16 13h-3V3h-2v10H8l4 4 4-4zM4 19v2h16v-2H4z"></path>
     </svg>

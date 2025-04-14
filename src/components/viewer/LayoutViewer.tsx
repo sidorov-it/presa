@@ -21,10 +21,7 @@ const LayoutViewer = ({ layout, slideId }: LayoutViewerProps) => {
         return `repeat(${columns}, 1fr)`;
     };
 
-    const gridTemplateAreas = useMemo(() =>
-        generateGridTemplateAreas(layout.gridStructure),
-    [layout.gridStructure]
-    );
+    const gridTemplateAreas = useMemo(() => generateGridTemplateAreas(layout.gridStructure), [layout.gridStructure]);
 
     return (
         <div
@@ -40,18 +37,13 @@ const LayoutViewer = ({ layout, slideId }: LayoutViewerProps) => {
                     gridTemplateAreas: gridTemplateAreas,
                 }}
             >
-                {layout.gridStructure.rows.map(row => (
+                {layout.gridStructure.rows.map(row =>
                     row.cells.map(cell => {
                         // Find elements for this cell
-                        const cellElements = layout.elements.filter(
-                            element => element.cellId === cell.id
-                        );
+                        const cellElements = layout.elements.filter(element => element.cellId === cell.id);
 
                         return (
-                            <div
-                                key={cell.id}
-                                className="relative"
-                            >
+                            <div key={cell.id} className="relative">
                                 {cellElements.map(element => (
                                     <ElementViewer
                                         key={element.id}
@@ -63,7 +55,7 @@ const LayoutViewer = ({ layout, slideId }: LayoutViewerProps) => {
                             </div>
                         );
                     })
-                ))}
+                )}
             </div>
         </div>
     );

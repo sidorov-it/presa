@@ -45,16 +45,42 @@ export type DndState = {
     newElement: {
         id: string | null;
         defaultProps: any;
-    }
+    };
 };
 
 export type DndAction =
-    | { type: 'START_DRAG'; payload: { elementId: string | null; layoutId?: string; cellId?: string; tableId?: string; rowIndex?: number; columnIndex?: number } }
+    | {
+          type: 'START_DRAG';
+          payload: {
+              elementId: string | null;
+              layoutId?: string;
+              cellId?: string;
+              tableId?: string;
+              rowIndex?: number;
+              columnIndex?: number;
+          };
+      }
     | { type: 'SET_DROP_TARGET'; payload: DropTarget }
     | { type: 'SET_ELEMENT_INDICATOR'; payload: { elementId: string | null; position: Position | null } }
     | { type: 'SET_CELL_INDICATOR'; payload: { cellId: string | null; position: Position | null } }
-    | { type: 'SET_TABLE_COLUMN_INDICATOR'; payload: { cellId: string | null; columnIndex: number | null; position: Position | null, tableId: string | null } }
-    | { type: 'SET_TABLE_ROW_INDICATOR'; payload: { cellId: string | null; rowIndex: number | null; position: Position | null, tableId: string | null } }
+    | {
+          type: 'SET_TABLE_COLUMN_INDICATOR';
+          payload: {
+              cellId: string | null;
+              columnIndex: number | null;
+              position: Position | null;
+              tableId: string | null;
+          };
+      }
+    | {
+          type: 'SET_TABLE_ROW_INDICATOR';
+          payload: {
+              cellId: string | null;
+              rowIndex: number | null;
+              position: Position | null;
+              tableId: string | null;
+          };
+      }
     | { type: 'SET_LAYOUT_INDICATOR'; payload: { layoutId: string | null; position: Position | null } }
     | { type: 'SET_SLIDE_INDICATOR'; payload: string | null }
     | { type: 'COMPLETE_DROP' }

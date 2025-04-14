@@ -19,10 +19,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
             case 'editor':
                 // For text elements, render HTML content from 'content' property
                 return (
-                    <div
-                        className="w-full h-full tiptap"
-                        dangerouslySetInnerHTML={{ __html: element.content || '' }}
-                    />
+                    <div className="w-full h-full tiptap" dangerouslySetInnerHTML={{ __html: element.content || '' }} />
                 );
 
             case 'image':

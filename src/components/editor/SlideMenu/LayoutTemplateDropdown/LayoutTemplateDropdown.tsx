@@ -1,22 +1,33 @@
-import { TwoColumnsIcon, TwoColumnsLeftIcon, TwoColumnsRightIcon, ThreeColumnsIcon, FourColumnsIcon } from "@/components/icons";
+import {
+    TwoColumnsIcon,
+    TwoColumnsLeftIcon,
+    TwoColumnsRightIcon,
+    ThreeColumnsIcon,
+    FourColumnsIcon,
+} from '@/components/icons';
 import styles from './LayoutTemplateDropdown.module.css';
-import { LayoutType, Layout } from "@/types";
-import { useState } from "react";
+import { LayoutType, Layout } from '@/types';
+import { useState } from 'react';
 
 const getLayoutTypeName = (columns: number): string => {
     switch (columns) {
-        case 1: return '1 столбец';
-        case 2: return '2 столбца';
-        case 3: return '3 столбца';
-        case 4: return '4 столбца';
-        default: return 'custom';
+        case 1:
+            return '1 столбец';
+        case 2:
+            return '2 столбца';
+        case 3:
+            return '3 столбца';
+        case 4:
+            return '4 столбца';
+        default:
+            return 'custom';
     }
 };
 
 export default function LayoutTemplateDropdown({
     currentLayoutType,
     setCurrentLayoutType,
-    layout
+    layout,
 }: {
     currentLayoutType: LayoutType;
     setCurrentLayoutType: (layoutType: LayoutType) => void;

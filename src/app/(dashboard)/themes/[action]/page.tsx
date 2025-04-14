@@ -88,9 +88,7 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
     return (
         <div className="min-h-screen bg-background p-6 flex-1 space-y-4 p-4 md:p-8 pt-6">
             <div className="mb-6 flex justify-between items-center">
-                <h1 className="text-3xl font-bold">
-                    {params.action === 'new' ? 'Новая тема' : 'Редактировать тему'}
-                </h1>
+                <h1 className="text-3xl font-bold">{params.action === 'new' ? 'Новая тема' : 'Редактировать тему'}</h1>
                 <div className="flex gap-2">
                     <Button onClick={handleSave}>Сохранить</Button>
                     <Button onClick={() => router.push('/themes')}>Отменить</Button>
@@ -101,11 +99,13 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
                 <div className="space-y-6">
                     <div className="p-6 bg-card rounded-lg shadow-sm">
                         <div className="mb-4">
-                            <Label htmlFor="theme-name" className="mb-2 block">Название темы</Label>
+                            <Label htmlFor="theme-name" className="mb-2 block">
+                                Название темы
+                            </Label>
                             <Input
                                 id="theme-name"
                                 value={theme.name}
-                                onChange={(e) => setTheme({...theme, name: e.target.value})}
+                                onChange={e => setTheme({ ...theme, name: e.target.value })}
                                 placeholder="Введите название темы"
                                 className="w-full"
                             />

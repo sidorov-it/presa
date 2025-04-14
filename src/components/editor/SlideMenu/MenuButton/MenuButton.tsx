@@ -15,7 +15,7 @@ export default function MenuButton({
         <button
             className={`${styles.menuButton} ${isActive ? styles.active : ''}`}
             onClick={onClick}
-            onKeyDown={(e) => {
+            onKeyDown={e => {
                 if (e.key === 'Enter') {
                     onClick();
                 }
@@ -24,5 +24,5 @@ export default function MenuButton({
         >
             {icon}
         </button>
-    )
+    );
 }

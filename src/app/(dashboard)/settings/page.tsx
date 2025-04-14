@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { Heading } from "@/components/ui/heading"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/Button"
-import { toast } from "sonner"
+import { Heading } from '@/components/ui/heading';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/Button';
+import { toast } from 'sonner';
 
 // export const metadata = {
 //     title: "Settings",
@@ -133,14 +133,14 @@ const SettingsPage = () => {
             // Update the session to reflect the name change
             console.log('Updating session with new name');
             await update({
-                user: { name }
+                user: { name },
             });
             console.log('Session updated successfully');
 
-            toast.success("Profile updated successfully");
+            toast.success('Profile updated successfully');
         } catch (error) {
             console.error('Profile update error complete details:', error);
-            toast.error(error instanceof Error ? error.message : "Failed to update profile");
+            toast.error(error instanceof Error ? error.message : 'Failed to update profile');
         } finally {
             setIsSaving(false);
         }
@@ -155,7 +155,7 @@ const SettingsPage = () => {
         }
 
         if (newPassword.length < 8) {
-            toast.error("Password must be at least 8 characters");
+            toast.error('Password must be at least 8 characters');
             return;
         }
 
@@ -176,7 +176,7 @@ const SettingsPage = () => {
                 },
                 body: JSON.stringify({
                     currentPassword,
-                    newPassword
+                    newPassword,
                 }),
             });
 
@@ -186,14 +186,14 @@ const SettingsPage = () => {
                 throw new Error(data.message || 'Failed to change password');
             }
 
-            toast.success("Password changed successfully");
+            toast.success('Password changed successfully');
 
             // Reset password fields
             setCurrentPassword('');
             setNewPassword('');
             setConfirmPassword('');
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : "Failed to change password");
+            toast.error(error instanceof Error ? error.message : 'Failed to change password');
             console.error(error);
         } finally {
             setIsSaving(false);
@@ -220,7 +220,7 @@ const SettingsPage = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    emailUpdates
+                    emailUpdates,
                 }),
             });
 
@@ -231,9 +231,9 @@ const SettingsPage = () => {
                 throw new Error(data.message || 'Failed to update preferences');
             }
 
-            toast.success("Email preferences updated");
+            toast.success('Email preferences updated');
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : "Failed to update preferences");
+            toast.error(error instanceof Error ? error.message : 'Failed to update preferences');
             console.error('Email preferences error:', error);
         } finally {
             setIsSaving(false);
@@ -251,10 +251,7 @@ const SettingsPage = () => {
     return (
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
             <div className="flex items-center justify-between">
-                <Heading
-                    title="Настройки"
-                    description="Управление настройками учетной записи и предпочтениями"
-                />
+                <Heading title="Настройки" description="Управление настройками учетной записи и предпочтениями" />
             </div>
 
             <div className="grid gap-4 grid-cols-1">
@@ -273,7 +270,7 @@ const SettingsPage = () => {
                                     type="text"
                                     id="name"
                                     value={name}
-                                    onChange={(e) => setName(e.target.value)}
+                                    onChange={e => setName(e.target.value)}
                                     className="w-full px-3 py-2 border rounded-md"
                                     placeholder="John Doe"
                                 />
@@ -315,7 +312,7 @@ const SettingsPage = () => {
                                     type="password"
                                     id="currentPassword"
                                     value={currentPassword}
-                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                    onChange={e => setCurrentPassword(e.target.value)}
                                     className="w-full px-3 py-2 border rounded-md"
                                     required
                                 />
@@ -328,7 +325,7 @@ const SettingsPage = () => {
                                     type="password"
                                     id="newPassword"
                                     value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    onChange={e => setNewPassword(e.target.value)}
                                     className="w-full px-3 py-2 border rounded-md"
                                     required
                                     minLength={8}
@@ -342,7 +339,7 @@ const SettingsPage = () => {
                                     type="password"
                                     id="confirmPassword"
                                     value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    onChange={e => setConfirmPassword(e.target.value)}
                                     className="w-full px-3 py-2 border rounded-md"
                                     required
                                 />
@@ -363,7 +360,9 @@ const SettingsPage = () => {
                         <form onSubmit={handleEmailPreferences} className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="space-y-0.5">
-                                    <label htmlFor="emailUpdates" className="text-sm font-medium">Обновления и уведомления</label>
+                                    <label htmlFor="emailUpdates" className="text-sm font-medium">
+                                        Обновления и уведомления
+                                    </label>
                                     <p className="text-sm text-muted-foreground">
                                         Получать электронные письма о продуктовых обновлениях и уведомлениях
                                     </p>
@@ -373,7 +372,7 @@ const SettingsPage = () => {
                                         type="checkbox"
                                         id="emailUpdates"
                                         checked={emailUpdates}
-                                        onChange={(e) => {
+                                        onChange={e => {
                                             const newValue = e.target.checked;
                                             console.log('Checkbox toggled to:', newValue);
                                             setEmailUpdates(newValue);
@@ -390,7 +389,7 @@ const SettingsPage = () => {
                 </Card>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default SettingsPage
+export default SettingsPage;

@@ -40,7 +40,9 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
         const handleButtonClick = (category: string) => {
             console.log(category);
             const newElement = getNewElement(category);
-            usePresentationStore.getState().addLayoutWithElement(presentationId, slideId, newElement as unknown as BaseElement);
+            usePresentationStore
+                .getState()
+                .addLayoutWithElement(presentationId, slideId, newElement as unknown as BaseElement);
         };
 
         return (
@@ -59,7 +61,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
                                             key={element.elementTypeId}
                                             className={`${styles.elementItem}`}
                                             draggable
-                                            onDragStart={(e) => handleDragStart(e, element)}
+                                            onDragStart={e => handleDragStart(e, element)}
                                             aria-label={`${subCategory.label}: ${element.label}`}
                                             onClick={() => handleButtonClick(element.elementTypeId)}
                                         >
@@ -79,7 +81,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
                                 key={element.elementTypeId}
                                 className={`${styles.elementItem}`}
                                 draggable
-                                onDragStart={(e) => handleDragStart(e, element)}
+                                onDragStart={e => handleDragStart(e, element)}
                                 aria-label={element.label}
                             >
                                 <div className="text-xs text-center text-gray-800">{element.label}</div>
@@ -105,7 +107,17 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
                         className="text-gray-400 hover:text-gray-500 focus:outline-none"
                         aria-label="Закрыть"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
                             <line x1="18" y1="6" x2="6" y2="18" />
                             <line x1="6" y1="6" x2="18" y2="18" />
                         </svg>
@@ -136,7 +148,7 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ presentationId, slideId }
         <div className={styles.elementsPanel}>
             <div className={styles.elementsPanelContent}>
                 <div className="space-y-3">
-                    {elementsRegistry.map((category) => (
+                    {elementsRegistry.map(category => (
                         <div key={category.id} className="relative group">
                             <button
                                 // className={`p-2 rounded-md flex items-center justify-center hover:bg-gray-100 transition-colors duration-200 ${activeCategory === category.id ? 'bg-blue-100 text-blue-600' : 'text-gray-600'}`}

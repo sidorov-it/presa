@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+// import { useSession } from 'next-auth/react';
 import { FaTrashRestore, FaTrashAlt, FaRegClock } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { pluralize } from '@/utils/helpers';
@@ -14,7 +14,7 @@ interface DeletedPresentation {
 }
 
 export default function TrashPage() {
-    const { data: session } = useSession();
+    // const { data: session } = useSession();
     const [deletedPresentations, setDeletedPresentations] = useState<DeletedPresentation[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -86,7 +86,13 @@ export default function TrashPage() {
         const date = new Date(dateString);
         const now = new Date();
         const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-        return diffDays === 0 ? 'Сегодня' : diffDays === 1 ? 'Вчера' : `${diffDays} дней назад`;
+        if (diffDays === 0) {
+            return 'Сегодня';
+        } else if (diffDays === 1) {
+            return 'Вчера';
+        } else {
+            return `${diffDays} дней назад`;
+        }
     };
 
     return (
@@ -98,19 +104,18 @@ export default function TrashPage() {
                 </p>
             </div>
 
-            {isLoading ? (
+            {isLoading && (
                 <div className="flex justify-center items-center h-64">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                 </div>
-            ) : deletedPresentations.length === 0 ? (
+            )}
+            {!isLoading && deletedPresentations.length === 0 ? (
                 <div className="bg-white rounded-lg shadow-md p-8 text-center">
                     <div className="mb-4 flex justify-center">
                         <FaTrashAlt className="text-gray-400 text-4xl" />
                     </div>
                     <h2 className="text-xl font-semibold text-gray-700 mb-2">Ваша корзина пуста</h2>
-                    <p className="text-gray-500">
-                        Здесь будут отображаться удаленные презентации
-                    </p>
+                    <p className="text-gray-500">Здесь будут отображаться удаленные презентации</p>
                 </div>
             ) : (
                 <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -132,7 +137,7 @@ export default function TrashPage() {
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {deletedPresentations.map((presentation) => (
+                            {deletedPresentations.map(presentation => (
                                 <tr key={presentation.id}>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="text-sm font-medium text-gray-900">{presentation.title}</div>

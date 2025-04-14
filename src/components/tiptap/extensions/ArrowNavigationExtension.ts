@@ -23,69 +23,75 @@ export const ArrowNavigationExtension = (
 
         addKeyboardShortcuts() {
             return {
-                'ArrowRight': ({ editor }) => {
+                ArrowRight: ({ editor }) => {
                     const { selection } = editor.state;
                     const docLength = editor.state.doc.content.size;
 
                     // Check if cursor is at the end of the document
                     if (selection.$anchor.pos >= docLength - 1) {
                         // Find the next editor element in the same layout or in the next layout
-                        const targetInfo = findNextEditor(
-                            presentationId,
-                            slideId,
-                            layoutId,
-                            elementId,
-                            'right'
-                        );
+                        const targetInfo = findNextEditor(presentationId, slideId, layoutId, elementId, 'right');
 
                         if (targetInfo) {
                             const { targetElementId, targetType, targetSlideId } = targetInfo;
-                            console.log(`Navigating right to: ${targetElementId} (${targetType}) in slide ${targetSlideId}`);
+                            console.log(
+                                `Navigating right to: ${targetElementId} (${targetType}) in slide ${targetSlideId}`
+                            );
 
                             // Check if we're moving to a different slide
                             const isCrossingSlides = targetSlideId !== slideId;
 
                             if (targetType === 'editor') {
                                 // Focus the target editor
-                                setTimeout(() => {
-                                    const targetEditor = tiptapRefs.current?.editors[targetElementId];
-                                    if (targetEditor) {
-                                        console.log(`Focusing editor: ${targetElementId}`);
-                                        // Focus at the beginning of the content (position 1)
-                                        targetEditor.editor.commands.focus('start');
-                                        // targetEditor.focus();
-                                    } else {
-                                        console.warn(`Editor not found in refs: ${targetElementId}`);
-                                        // If the editor ref isn't available yet (due to slide change),
-                                        // we can try to find it in the DOM and focus it
-                                        const editorElement = document.querySelector(`[data-element-id="${targetElementId}"]`);
-                                        if (editorElement) {
-                                            console.log(`Found editor in DOM: ${targetElementId}`);
-                                            (editorElement as HTMLElement).click();
+                                setTimeout(
+                                    () => {
+                                        const targetEditor = tiptapRefs.current?.editors[targetElementId];
+                                        if (targetEditor) {
+                                            console.log(`Focusing editor: ${targetElementId}`);
+                                            // Focus at the beginning of the content (position 1)
+                                            targetEditor.editor.commands.focus('start');
+                                            // targetEditor.focus();
+                                        } else {
+                                            console.warn(`Editor not found in refs: ${targetElementId}`);
+                                            // If the editor ref isn't available yet (due to slide change),
+                                            // we can try to find it in the DOM and focus it
+                                            const editorElement = document.querySelector(
+                                                `[data-element-id="${targetElementId}"]`
+                                            );
+                                            if (editorElement) {
+                                                console.log(`Found editor in DOM: ${targetElementId}`);
+                                                (editorElement as HTMLElement).click();
+                                            }
                                         }
-                                    }
-                                }, isCrossingSlides ? 100 : 10); // Wait longer for slide changes
+                                    },
+                                    isCrossingSlides ? 100 : 10
+                                ); // Wait longer for slide changes
                             } else {
                                 // Wait a bit longer for slide changes before focusing non-editor elements
-                                setTimeout(() => {
-                                    // Find and focus the element by its ID
-                                    const element = document.querySelector(`[data-element-id="${targetElementId}"]`);
-                                    if (element) {
-                                        console.log(`Focusing non-editor element: ${targetElementId}`);
-                                        // Add a focus visual indicator class
-                                        element.classList.add('element-focus');
-                                        // Set focus on the element for keyboard navigation
-                                        (element as HTMLElement).tabIndex = 0;
-                                        (element as HTMLElement).focus();
+                                setTimeout(
+                                    () => {
+                                        // Find and focus the element by its ID
+                                        const element = document.querySelector(
+                                            `[data-element-id="${targetElementId}"]`
+                                        );
+                                        if (element) {
+                                            console.log(`Focusing non-editor element: ${targetElementId}`);
+                                            // Add a focus visual indicator class
+                                            element.classList.add('element-focus');
+                                            // Set focus on the element for keyboard navigation
+                                            (element as HTMLElement).tabIndex = 0;
+                                            (element as HTMLElement).focus();
 
-                                        // Remove the focus class after animation completes
-                                        setTimeout(() => {
-                                            element.classList.remove('element-focus');
-                                        }, 1000);
-                                    } else {
-                                        console.warn(`Element not found in DOM: ${targetElementId}`);
-                                    }
-                                }, isCrossingSlides ? 100 : 10); // Wait longer for slide changes
+                                            // Remove the focus class after animation completes
+                                            setTimeout(() => {
+                                                element.classList.remove('element-focus');
+                                            }, 1000);
+                                        } else {
+                                            console.warn(`Element not found in DOM: ${targetElementId}`);
+                                        }
+                                    },
+                                    isCrossingSlides ? 100 : 10
+                                ); // Wait longer for slide changes
                             }
 
                             if (isCrossingSlides) {
@@ -106,68 +112,74 @@ export const ArrowNavigationExtension = (
                     return false;
                 },
 
-                'ArrowLeft': ({ editor }) => {
+                ArrowLeft: ({ editor }) => {
                     const { selection } = editor.state;
 
                     // Check if cursor is at the beginning of the document
                     if (selection.$anchor.pos === 1) {
                         // Find the previous editor element
-                        const targetInfo = findNextEditor(
-                            presentationId,
-                            slideId,
-                            layoutId,
-                            elementId,
-                            'left'
-                        );
+                        const targetInfo = findNextEditor(presentationId, slideId, layoutId, elementId, 'left');
 
                         if (targetInfo) {
                             const { targetElementId, targetType, targetSlideId } = targetInfo;
-                            console.log(`Navigating left to: ${targetElementId} (${targetType}) in slide ${targetSlideId}`);
+                            console.log(
+                                `Navigating left to: ${targetElementId} (${targetType}) in slide ${targetSlideId}`
+                            );
 
                             // Check if we're moving to a different slide
                             const isCrossingSlides = targetSlideId !== slideId;
 
                             if (targetType === 'editor') {
                                 // Focus the target editor
-                                setTimeout(() => {
-                                    const targetEditor = tiptapRefs.current?.editors[targetElementId];
-                                    if (targetEditor) {
-                                        console.log(`Focusing editor: ${targetElementId}`);
-                                        // Focus at the end of the content
-                                        targetEditor.editor.commands.focus('end');
-                                        // targetEditor.focus();
-                                    } else {
-                                        console.warn(`Editor not found in refs: ${targetElementId}`);
-                                        // If the editor ref isn't available yet (due to slide change),
-                                        // we can try to find it in the DOM and focus it
-                                        const editorElement = document.querySelector(`[data-element-id="${targetElementId}"]`);
-                                        if (editorElement) {
-                                            console.log(`Found editor in DOM: ${targetElementId}`);
-                                            (editorElement as HTMLElement).click();
+                                setTimeout(
+                                    () => {
+                                        const targetEditor = tiptapRefs.current?.editors[targetElementId];
+                                        if (targetEditor) {
+                                            console.log(`Focusing editor: ${targetElementId}`);
+                                            // Focus at the end of the content
+                                            targetEditor.editor.commands.focus('end');
+                                            // targetEditor.focus();
+                                        } else {
+                                            console.warn(`Editor not found in refs: ${targetElementId}`);
+                                            // If the editor ref isn't available yet (due to slide change),
+                                            // we can try to find it in the DOM and focus it
+                                            const editorElement = document.querySelector(
+                                                `[data-element-id="${targetElementId}"]`
+                                            );
+                                            if (editorElement) {
+                                                console.log(`Found editor in DOM: ${targetElementId}`);
+                                                (editorElement as HTMLElement).click();
+                                            }
                                         }
-                                    }
-                                }, isCrossingSlides ? 100 : 10); // Wait longer for slide changes
+                                    },
+                                    isCrossingSlides ? 100 : 10
+                                ); // Wait longer for slide changes
                             } else {
                                 // Wait a bit longer for slide changes before focusing non-editor elements
-                                setTimeout(() => {
-                                    // Find and focus the element by its ID
-                                    const element = document.querySelector(`[data-element-id="${targetElementId}"]`);
-                                    if (element) {
-                                        console.log(`Focusing non-editor element: ${targetElementId}`);
-                                        // Add a focus visual indicator class
-                                        element.classList.add('element-focus');
-                                        // Set focus on the element for keyboard navigation
-                                        (element as HTMLElement).tabIndex = 0;
-                                        (element as HTMLElement).focus();
+                                setTimeout(
+                                    () => {
+                                        // Find and focus the element by its ID
+                                        const element = document.querySelector(
+                                            `[data-element-id="${targetElementId}"]`
+                                        );
+                                        if (element) {
+                                            console.log(`Focusing non-editor element: ${targetElementId}`);
+                                            // Add a focus visual indicator class
+                                            element.classList.add('element-focus');
+                                            // Set focus on the element for keyboard navigation
+                                            (element as HTMLElement).tabIndex = 0;
+                                            (element as HTMLElement).focus();
 
-                                        // Remove the focus class after animation completes
-                                        setTimeout(() => {
-                                            element.classList.remove('element-focus');
-                                        }, 1000);
-                                    } else {
-                                        console.warn(`Element not found in DOM: ${targetElementId}`);
-                                    }
-                                }, isCrossingSlides ? 100 : 10); // Wait longer for slide changes
+                                            // Remove the focus class after animation completes
+                                            setTimeout(() => {
+                                                element.classList.remove('element-focus');
+                                            }, 1000);
+                                        } else {
+                                            console.warn(`Element not found in DOM: ${targetElementId}`);
+                                        }
+                                    },
+                                    isCrossingSlides ? 100 : 10
+                                ); // Wait longer for slide changes
                             }
 
                             if (isCrossingSlides) {
@@ -188,7 +200,7 @@ export const ArrowNavigationExtension = (
                     return false;
                 },
 
-                'ArrowDown': ({ editor }) => {
+                ArrowDown: ({ editor }) => {
                     const { selection } = editor.state;
                     const position = selection.$anchor.pos;
                     const docLength = editor.state.doc.content.size;
@@ -200,63 +212,69 @@ export const ArrowNavigationExtension = (
 
                     if (position >= lastLineStart || position >= docLength - 1) {
                         // Find the editor element below this one
-                        const targetInfo = findNextEditor(
-                            presentationId,
-                            slideId,
-                            layoutId,
-                            elementId,
-                            'down'
-                        );
+                        const targetInfo = findNextEditor(presentationId, slideId, layoutId, elementId, 'down');
 
                         if (targetInfo) {
                             const { targetElementId, targetType, targetSlideId } = targetInfo;
-                            console.log(`Navigating down to: ${targetElementId} (${targetType}) in slide ${targetSlideId}`);
+                            console.log(
+                                `Navigating down to: ${targetElementId} (${targetType}) in slide ${targetSlideId}`
+                            );
 
                             // Check if we're moving to a different slide
                             const isCrossingSlides = targetSlideId !== slideId;
 
                             if (targetType === 'editor') {
                                 // Focus the target editor
-                                setTimeout(() => {
-                                    const targetEditor = tiptapRefs.current?.editors[targetElementId];
-                                    if (targetEditor) {
-                                        console.log(`Focusing editor: ${targetElementId}`);
-                                        // Try to maintain the same horizontal position when moving down
-                                        // For simplicity, we'll focus at the start
-                                        targetEditor.editor.commands.focus();
-                                        // targetEditor.focus();
-                                    } else {
-                                        console.warn(`Editor not found in refs: ${targetElementId}`);
-                                        // If the editor ref isn't available yet (due to slide change),
-                                        // we can try to find it in the DOM and focus it
-                                        const editorElement = document.querySelector(`[data-element-id="${targetElementId}"]`);
-                                        if (editorElement) {
-                                            console.log(`Found editor in DOM: ${targetElementId}`);
-                                            (editorElement as HTMLElement).click();
+                                setTimeout(
+                                    () => {
+                                        const targetEditor = tiptapRefs.current?.editors[targetElementId];
+                                        if (targetEditor) {
+                                            console.log(`Focusing editor: ${targetElementId}`);
+                                            // Try to maintain the same horizontal position when moving down
+                                            // For simplicity, we'll focus at the start
+                                            targetEditor.editor.commands.focus();
+                                            // targetEditor.focus();
+                                        } else {
+                                            console.warn(`Editor not found in refs: ${targetElementId}`);
+                                            // If the editor ref isn't available yet (due to slide change),
+                                            // we can try to find it in the DOM and focus it
+                                            const editorElement = document.querySelector(
+                                                `[data-element-id="${targetElementId}"]`
+                                            );
+                                            if (editorElement) {
+                                                console.log(`Found editor in DOM: ${targetElementId}`);
+                                                (editorElement as HTMLElement).click();
+                                            }
                                         }
-                                    }
-                                }, isCrossingSlides ? 100 : 10); // Wait longer for slide changes
+                                    },
+                                    isCrossingSlides ? 100 : 10
+                                ); // Wait longer for slide changes
                             } else {
                                 // Wait a bit longer for slide changes before focusing non-editor elements
-                                setTimeout(() => {
-                                    // Find and focus the element by its ID
-                                    const element = document.querySelector(`[data-element-id="${targetElementId}"]`);
-                                    if (element) {
-                                        console.log(`Focusing non-editor element: ${targetElementId}`);
-                                        // Add a focus visual indicator class
-                                        element.classList.add('element-focus');
-                                        // Set focus on the element for keyboard navigation
-                                        (element as HTMLElement).tabIndex = 0;
-                                        (element as HTMLElement).focus();
+                                setTimeout(
+                                    () => {
+                                        // Find and focus the element by its ID
+                                        const element = document.querySelector(
+                                            `[data-element-id="${targetElementId}"]`
+                                        );
+                                        if (element) {
+                                            console.log(`Focusing non-editor element: ${targetElementId}`);
+                                            // Add a focus visual indicator class
+                                            element.classList.add('element-focus');
+                                            // Set focus on the element for keyboard navigation
+                                            (element as HTMLElement).tabIndex = 0;
+                                            (element as HTMLElement).focus();
 
-                                        // Remove the focus class after animation completes
-                                        setTimeout(() => {
-                                            element.classList.remove('element-focus');
-                                        }, 1000);
-                                    } else {
-                                        console.warn(`Element not found in DOM: ${targetElementId}`);
-                                    }
-                                }, isCrossingSlides ? 100 : 10); // Wait longer for slide changes
+                                            // Remove the focus class after animation completes
+                                            setTimeout(() => {
+                                                element.classList.remove('element-focus');
+                                            }, 1000);
+                                        } else {
+                                            console.warn(`Element not found in DOM: ${targetElementId}`);
+                                        }
+                                    },
+                                    isCrossingSlides ? 100 : 10
+                                ); // Wait longer for slide changes
                             }
 
                             if (isCrossingSlides) {
@@ -277,23 +295,9 @@ export const ArrowNavigationExtension = (
                     return false;
                 },
 
-                'ArrowUp': ({ editor }) => {
-                    const { selection } = editor.state;
-                    const position = selection.$anchor.pos;
-
-                    // Check if cursor is on the first line (approximation)
-                    const text = editor.getText();
-                    const firstLineEnd = text.indexOf('\n') !== -1 ? text.indexOf('\n') : text.length;
-
-                    // if (position <= firstLineEnd) {
+                ArrowUp: () => {
                     // Find the editor element above this one
-                    const targetInfo = findNextEditor(
-                        presentationId,
-                        slideId,
-                        layoutId,
-                        elementId,
-                        'up'
-                    );
+                    const targetInfo = findNextEditor(presentationId, slideId, layoutId, elementId, 'up');
 
                     if (targetInfo) {
                         const { targetElementId, targetType, targetSlideId } = targetInfo;
@@ -304,45 +308,53 @@ export const ArrowNavigationExtension = (
 
                         if (targetType === 'editor') {
                             // Focus the target editor
-                            setTimeout(() => {
-                                const targetEditor = tiptapRefs.current?.editors[targetElementId];
-                                if (targetEditor) {
-                                    console.log(`Focusing editor: ${targetElementId}`);
-                                    // When navigating up, move cursor to the end of the previous editor's content
-                                    targetEditor.editor.commands.focus('end');
-                                    // targetEditor.focus();
-                                } else {
-                                    console.warn(`Editor not found in refs: ${targetElementId}`);
-                                    // If the editor ref isn't available yet (due to slide change),
-                                    // we can try to find it in the DOM and focus it
-                                    const editorElement = document.querySelector(`[data-element-id="${targetElementId}"]`);
-                                    if (editorElement) {
-                                        console.log(`Found editor in DOM: ${targetElementId}`);
-                                        (editorElement as HTMLElement).click();
+                            setTimeout(
+                                () => {
+                                    const targetEditor = tiptapRefs.current?.editors[targetElementId];
+                                    if (targetEditor) {
+                                        console.log(`Focusing editor: ${targetElementId}`);
+                                        // When navigating up, move cursor to the end of the previous editor's content
+                                        targetEditor.editor.commands.focus('end');
+                                        // targetEditor.focus();
+                                    } else {
+                                        console.warn(`Editor not found in refs: ${targetElementId}`);
+                                        // If the editor ref isn't available yet (due to slide change),
+                                        // we can try to find it in the DOM and focus it
+                                        const editorElement = document.querySelector(
+                                            `[data-element-id="${targetElementId}"]`
+                                        );
+                                        if (editorElement) {
+                                            console.log(`Found editor in DOM: ${targetElementId}`);
+                                            (editorElement as HTMLElement).click();
+                                        }
                                     }
-                                }
-                            }, isCrossingSlides ? 100 : 10); // Wait longer for slide changes
+                                },
+                                isCrossingSlides ? 100 : 10
+                            ); // Wait longer for slide changes
                         } else {
                             // Wait a bit longer for slide changes before focusing non-editor elements
-                            setTimeout(() => {
-                                // Find and focus the element by its ID
-                                const element = document.querySelector(`[data-element-id="${targetElementId}"]`);
-                                if (element) {
-                                    console.log(`Focusing non-editor element: ${targetElementId}`);
-                                    // Add a focus visual indicator class
-                                    element.classList.add('element-focus');
-                                    // Set focus on the element for keyboard navigation
-                                    (element as HTMLElement).tabIndex = 0;
-                                    (element as HTMLElement).focus();
+                            setTimeout(
+                                () => {
+                                    // Find and focus the element by its ID
+                                    const element = document.querySelector(`[data-element-id="${targetElementId}"]`);
+                                    if (element) {
+                                        console.log(`Focusing non-editor element: ${targetElementId}`);
+                                        // Add a focus visual indicator class
+                                        element.classList.add('element-focus');
+                                        // Set focus on the element for keyboard navigation
+                                        (element as HTMLElement).tabIndex = 0;
+                                        (element as HTMLElement).focus();
 
-                                    // Remove the focus class after animation completes
-                                    setTimeout(() => {
-                                        element.classList.remove('element-focus');
-                                    }, 1000);
-                                } else {
-                                    console.warn(`Element not found in DOM: ${targetElementId}`);
-                                }
-                            }, isCrossingSlides ? 100 : 10); // Wait longer for slide changes
+                                        // Remove the focus class after animation completes
+                                        setTimeout(() => {
+                                            element.classList.remove('element-focus');
+                                        }, 1000);
+                                    } else {
+                                        console.warn(`Element not found in DOM: ${targetElementId}`);
+                                    }
+                                },
+                                isCrossingSlides ? 100 : 10
+                            ); // Wait longer for slide changes
                         }
 
                         if (isCrossingSlides) {
@@ -374,7 +386,13 @@ function findNextEditor(
     layoutId: string,
     elementId: string,
     direction: 'left' | 'right' | 'up' | 'down'
-): { targetElementId: string; targetLayoutId: string; targetCellId: string; targetSlideId: string; targetType: 'editor' | 'video' | 'other' } | null {
+): {
+    targetElementId: string;
+    targetLayoutId: string;
+    targetCellId: string;
+    targetSlideId: string;
+    targetType: 'editor' | 'video' | 'other';
+} | null {
     const store = usePresentationStore.getState();
     const presentation = store.getPresentation(presentationId);
 
@@ -393,9 +411,7 @@ function findNextEditor(
     if (!currentElement) return null;
 
     // Find current cell
-    const currentCell = currentLayout.gridStructure.rows[0].cells.find(cell =>
-        cell.id === currentElement.cellId
-    );
+    const currentCell = currentLayout.gridStructure.rows[0].cells.find(cell => cell.id === currentElement.cellId);
     if (!currentCell) return null;
 
     // Helper function to determine element type
@@ -429,14 +445,14 @@ function findNextEditor(
                 targetLayoutId: layoutId,
                 targetCellId: currentElement.cellId,
                 targetSlideId: slideId,
-                targetType: getElementType(nextElement)
+                targetType: getElementType(nextElement),
             };
         }
 
         // Check if there's a cell to the right
         if (currentLayout.gridStructure.rows[0].cells.length > 1) {
-            const currentCellIndex = currentLayout.gridStructure.rows[0].cells.findIndex(cell =>
-                cell.id === currentElement.cellId
+            const currentCellIndex = currentLayout.gridStructure.rows[0].cells.findIndex(
+                cell => cell.id === currentElement.cellId
             );
 
             if (currentCellIndex < currentLayout.gridStructure.rows[0].cells.length - 1) {
@@ -451,7 +467,7 @@ function findNextEditor(
                         targetLayoutId: layoutId,
                         targetCellId: nextCell.id,
                         targetSlideId: slideId,
-                        targetType: getElementType(firstElementInNextCell)
+                        targetType: getElementType(firstElementInNextCell),
                     };
                 }
             }
@@ -473,7 +489,7 @@ function findNextEditor(
                     targetLayoutId: nextLayout.id,
                     targetCellId: firstCell.id,
                     targetSlideId: slideId,
-                    targetType: getElementType(firstElement)
+                    targetType: getElementType(firstElement),
                 };
             }
         }
@@ -497,7 +513,7 @@ function findNextEditor(
                         targetLayoutId: firstLayout.id,
                         targetCellId: firstCell.id,
                         targetSlideId: nextSlide.id,
-                        targetType: getElementType(firstElement)
+                        targetType: getElementType(firstElement),
                     };
                 }
             }
@@ -515,14 +531,14 @@ function findNextEditor(
                 targetLayoutId: layoutId,
                 targetCellId: currentElement.cellId,
                 targetSlideId: slideId,
-                targetType: getElementType(prevElement)
+                targetType: getElementType(prevElement),
             };
         }
 
         // Check if there's a cell to the left
         if (currentLayout.gridStructure.rows[0].cells.length > 1) {
-            const currentCellIndex = currentLayout.gridStructure.rows[0].cells.findIndex(cell =>
-                cell.id === currentElement.cellId
+            const currentCellIndex = currentLayout.gridStructure.rows[0].cells.findIndex(
+                cell => cell.id === currentElement.cellId
             );
 
             if (currentCellIndex > 0) {
@@ -538,7 +554,7 @@ function findNextEditor(
                         targetLayoutId: layoutId,
                         targetCellId: previousCell.id,
                         targetSlideId: slideId,
-                        targetType: getElementType(lastElement)
+                        targetType: getElementType(lastElement),
                     };
                 }
             }
@@ -562,7 +578,7 @@ function findNextEditor(
                     targetLayoutId: previousLayout.id,
                     targetCellId: lastCell.id,
                     targetSlideId: slideId,
-                    targetType: getElementType(lastElement)
+                    targetType: getElementType(lastElement),
                 };
             }
         }
@@ -588,7 +604,7 @@ function findNextEditor(
                         targetLayoutId: lastLayout.id,
                         targetCellId: lastCell.id,
                         targetSlideId: previousSlide.id,
-                        targetType: getElementType(lastElement)
+                        targetType: getElementType(lastElement),
                     };
                 }
             }
@@ -606,7 +622,7 @@ function findNextEditor(
                 targetLayoutId: layoutId,
                 targetCellId: currentElement.cellId,
                 targetSlideId: slideId,
-                targetType: getElementType(nextElement)
+                targetType: getElementType(nextElement),
             };
         }
 
@@ -626,7 +642,7 @@ function findNextEditor(
                     targetLayoutId: nextLayout.id,
                     targetCellId: firstCell.id,
                     targetSlideId: slideId,
-                    targetType: getElementType(firstElement)
+                    targetType: getElementType(firstElement),
                 };
             }
         }
@@ -650,7 +666,7 @@ function findNextEditor(
                         targetLayoutId: firstLayout.id,
                         targetCellId: firstCell.id,
                         targetSlideId: nextSlide.id,
-                        targetType: getElementType(firstElement)
+                        targetType: getElementType(firstElement),
                     };
                 }
             }
@@ -668,7 +684,7 @@ function findNextEditor(
                 targetLayoutId: layoutId,
                 targetCellId: currentElement.cellId,
                 targetSlideId: slideId,
-                targetType: getElementType(prevElement)
+                targetType: getElementType(prevElement),
             };
         }
 
@@ -690,7 +706,7 @@ function findNextEditor(
                     targetLayoutId: previousLayout.id,
                     targetCellId: lastCell.id,
                     targetSlideId: slideId,
-                    targetType: getElementType(lastElement)
+                    targetType: getElementType(lastElement),
                 };
             }
         }
@@ -716,7 +732,7 @@ function findNextEditor(
                         targetLayoutId: lastLayout.id,
                         targetCellId: lastCell.id,
                         targetSlideId: previousSlide.id,
-                        targetType: getElementType(lastElement)
+                        targetType: getElementType(lastElement),
                     };
                 }
             }

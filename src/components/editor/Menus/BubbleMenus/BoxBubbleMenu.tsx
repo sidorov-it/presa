@@ -1,9 +1,17 @@
-"use client"
+'use client';
 
 import React from 'react';
 import { Editor } from '@tiptap/react';
 import { BiAlignLeft, BiAlignMiddle, BiAlignRight, BiAlignJustify, BiX } from 'react-icons/bi';
-import { FaInfoCircle, FaExclamationTriangle, FaExclamationCircle, FaCheck, FaQuestion, FaBook, FaBox } from 'react-icons/fa';
+import {
+    FaInfoCircle,
+    FaExclamationTriangle,
+    FaExclamationCircle,
+    FaCheck,
+    FaQuestion,
+    FaBook,
+    FaBox,
+} from 'react-icons/fa';
 
 interface BubbleMenuProps {
     editor: Editor;

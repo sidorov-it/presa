@@ -12,10 +12,7 @@ export async function GET() {
         const session = await getServerSession(authOptions);
 
         if (!session?.user) {
-            return NextResponse.json(
-                { message: 'Unauthorized' },
-                { status: 401 }
-            );
+            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
         }
 
         const userId = session.user.id;
@@ -24,7 +21,7 @@ export async function GET() {
         const presentations = await prisma.presentation.findMany({
             where: {
                 userId: userId,
-                isDeleted: false
+                isDeleted: false,
             },
             select: {
                 id: true,
@@ -32,21 +29,18 @@ export async function GET() {
                 description: true,
                 createdAt: true,
                 updatedAt: true,
-                slides: true
+                slides: true,
             },
             orderBy: {
-                updatedAt: 'desc'
-            }
+                updatedAt: 'desc',
+            },
         });
 
         // Use the utility function to parse the slides JSON in all presentations
         return NextResponse.json(parsePresentations(presentations));
     } catch (error) {
         console.error('Error fetching presentations:', error);
-        return NextResponse.json(
-            { error: 'Error fetching presentations' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Error fetching presentations' }, { status: 500 });
     }
 }
 
@@ -56,10 +50,7 @@ export async function POST(request: NextRequest) {
         const session = await getServerSession(authOptions);
 
         if (!session?.user) {
-            return NextResponse.json(
-                { message: 'Unauthorized' },
-                { status: 401 }
-            );
+            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
         }
 
         const userId = session.user.id;
@@ -75,27 +66,35 @@ export async function POST(request: NextRequest) {
         // Create slide structure
         const slideData = {
             id: slideId,
-            layouts: [{
-                id: layoutId,
-                type: 'single-column',
-                elements: [{
-                    ...newElement,
-                    cellId
-                }],
-                gridStructure: {
-                    rows: [{
-                        id: rowId,
-                        cells: [{
-                            id: cellId,
-                            row: 0,
-                            column: 0,
-                        }]
-                    }],
-                    columns: 1,
-                    columnWidths: ['100%']
+            layouts: [
+                {
+                    id: layoutId,
+                    type: 'single-column',
+                    elements: [
+                        {
+                            ...newElement,
+                            cellId,
+                        },
+                    ],
+                    gridStructure: {
+                        rows: [
+                            {
+                                id: rowId,
+                                cells: [
+                                    {
+                                        id: cellId,
+                                        row: 0,
+                                        column: 0,
+                                    },
+                                ],
+                            },
+                        ],
+                        columns: 1,
+                        columnWidths: ['100%'],
+                    },
+                    style: {},
                 },
-                style: {}
-            }]
+            ],
         };
 
         // Try to create the presentation using the helper function that avoids transactions
@@ -105,20 +104,17 @@ export async function POST(request: NextRequest) {
                 description: '',
                 slides: stringifyJsonField([slideData]),
                 userId,
-            }
+            },
         });
 
         return NextResponse.json({
             presentation: {
                 ...presentation,
-                slides: [slideData]
-            }
+                slides: [slideData],
+            },
         });
     } catch (error) {
         console.error('Error creating presentation:', error);
-        return NextResponse.json(
-            { error: 'Error creating presentation' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Error creating presentation' }, { status: 500 });
     }
 }

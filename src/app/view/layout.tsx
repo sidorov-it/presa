@@ -1,24 +1,22 @@
-import { Inter } from 'next/font/google'
-import '@/styles/globals.css'
-import type { Metadata } from 'next'
+import { Inter } from 'next/font/google';
+import '@/styles/globals.css';
+import type { Metadata } from 'next';
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
     title: 'Presentation Viewer',
     description: 'View presentations created with Presa',
-}
+};
 
 export default function ViewerLayout({
     children,
 }: Readonly<{
-  children: React.ReactNode
+    children: React.ReactNode;
 }>) {
     return (
         <html lang="en">
-            <body className={inter.className}>
-                {children}
-            </body>
+            <body className={inter.className}>{children}</body>
         </html>
-    )
+    );
 }

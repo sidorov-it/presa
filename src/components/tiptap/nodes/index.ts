@@ -1,4 +1,4 @@
-import { ButtonNode } from './ButtonNode'
+import { ButtonNode } from './ButtonNode';
 import {
     BoxNode,
     NoteBoxNode,
@@ -6,8 +6,8 @@ import {
     WarningBoxNode,
     CautionBoxNode,
     SuccessBoxNode,
-    QuestionBoxNode
-} from './BoxNodes'
+    QuestionBoxNode,
+} from './BoxNodes';
 
 export {
     ButtonNode,
@@ -17,5 +17,5 @@ export {
     WarningBoxNode,
     CautionBoxNode,
     SuccessBoxNode,
-    QuestionBoxNode
-}
+    QuestionBoxNode,
+};

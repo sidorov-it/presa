@@ -50,27 +50,41 @@ export default function ForgotPasswordPage() {
             <div className="max-w-md w-full space-y-8">
                 <div>
                     <h1 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Восстановить пароль</h1>
-                    <p className="mt-2 text-center text-sm text-gray-600">
-            Мы отправим вам ссылку для сброса пароля
-                    </p>
+                    <p className="mt-2 text-center text-sm text-gray-600">Мы отправим вам ссылку для сброса пароля</p>
                 </div>
 
                 {isSubmitted ? (
                     <div className="bg-green-50 p-4 rounded-md">
                         <div className="flex">
                             <div className="flex-shrink-0">
-                                <svg className="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                <svg
+                                    className="h-5 w-5 text-green-400"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                        clipRule="evenodd"
+                                    />
                                 </svg>
                             </div>
                             <div className="ml-3">
                                 <h3 className="text-sm font-medium text-green-800">Ссылка для сброса отправлена</h3>
                                 <div className="mt-2 text-sm text-green-700">
-                                    <p>Мы отправили ссылку для сброса пароля на {email}. Пожалуйста, проверьте ваш почтовый ящик.</p>
+                                    <p>
+                                        Мы отправили ссылку для сброса пароля на {email}. Пожалуйста, проверьте ваш
+                                        почтовый ящик.
+                                    </p>
                                 </div>
                                 <div className="mt-4">
-                                    <Link href="/login" className="text-sm font-medium text-blue-600 hover:text-blue-500">
-                    Вернуться на страницу входа
+                                    <Link
+                                        href="/login"
+                                        className="text-sm font-medium text-blue-600 hover:text-blue-500"
+                                    >
+                                        Вернуться на страницу входа
                                     </Link>
                                 </div>
                             </div>
@@ -79,7 +93,9 @@ export default function ForgotPasswordPage() {
                 ) : (
                     <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                         <div>
-                            <label htmlFor="email-address" className="sr-only">Email</label>
+                            <label htmlFor="email-address" className="sr-only">
+                                Email
+                            </label>
                             <input
                                 id="email-address"
                                 name="email"
@@ -87,20 +103,18 @@ export default function ForgotPasswordPage() {
                                 autoComplete="email"
                                 required
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={e => setEmail(e.target.value)}
                                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                                 placeholder="Email address"
                             />
                         </div>
 
-                        {error && (
-                            <div className="text-red-500 text-sm text-center">{error}</div>
-                        )}
+                        {error && <div className="text-red-500 text-sm text-center">{error}</div>}
 
                         <div className="flex items-center justify-between">
                             <div className="text-sm">
                                 <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
-                  Вернуться на страницу входа
+                                    Вернуться на страницу входа
                                 </Link>
                             </div>
                         </div>

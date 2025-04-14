@@ -3,7 +3,7 @@ import { FiCheck, FiAlertCircle } from 'react-icons/fi';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 interface SaveStatusProps {
-  status: 'idle' | 'saving' | 'saved' | 'error';
+    status: 'idle' | 'saving' | 'saved' | 'error';
 }
 
 const SaveStatus: React.FC<SaveStatusProps> = ({ status }) => {

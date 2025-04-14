@@ -4,15 +4,12 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(req: NextRequest) {
     try {
-    // Parse the request body
+        // Parse the request body
         const { email } = await req.json();
 
         // Validate the input
         if (!email) {
-            return NextResponse.json(
-                { message: 'Email is required' },
-                { status: 400 }
-            );
+            return NextResponse.json({ message: 'Email is required' }, { status: 400 });
         }
 
         // Find the user
@@ -34,7 +31,10 @@ export async function POST(req: NextRequest) {
         // Save token to user document
         user.resetPasswordToken = resetToken;
         user.resetPasswordExpires = new Date(resetTokenExpiry);
-        await prisma.user.update({ where: { id: user.id }, data: { resetPasswordToken: resetToken, resetPasswordExpires: new Date(resetTokenExpiry) } });
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { resetPasswordToken: resetToken, resetPasswordExpires: new Date(resetTokenExpiry) },
+        });
 
         // In a real application, you would send an email with a link to reset the password
         // For this example, we'll just return the token in the response
@@ -46,16 +46,13 @@ export async function POST(req: NextRequest) {
                 // Include token in development only
                 ...(process.env.NODE_ENV === 'development' && {
                     token: resetToken,
-                    resetUrl: `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`
-                })
+                    resetUrl: `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`,
+                }),
             },
             { status: 200 }
         );
     } catch (error) {
         console.error('Forgot password error:', error);
-        return NextResponse.json(
-            { message: 'Internal server error' },
-            { status: 500 }
-        );
+        return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }

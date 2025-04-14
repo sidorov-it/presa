@@ -18,7 +18,7 @@ export const MenuItem: React.FC<MenuItemProps> = ({
     className,
     active,
     color,
-    disabled = false
+    disabled = false,
 }) => {
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' || e.key === 'Space') {
@@ -31,11 +31,11 @@ export const MenuItem: React.FC<MenuItemProps> = ({
         <li>
             <button
                 className={cn(
-                    "w-9 h-9 rounded flex items-center justify-center transition-colors",
-                    "hover:bg-[#f3f4f6] focus:bg-[#f3f4f6] focus:outline-none",
-                    active && "bg-[#e5e7eb]",
-                    color === "#f00" && " hover:bg-[#fee2e2] hover:text-[#ef4444]",
-                    disabled && "opacity-50 cursor-not-allowed",
+                    'w-9 h-9 rounded flex items-center justify-center transition-colors',
+                    'hover:bg-[#f3f4f6] focus:bg-[#f3f4f6] focus:outline-none',
+                    active && 'bg-[#e5e7eb]',
+                    color === '#f00' && ' hover:bg-[#fee2e2] hover:text-[#ef4444]',
+                    disabled && 'opacity-50 cursor-not-allowed',
                     className
                 )}
                 onClick={disabled ? undefined : onClick}
@@ -46,10 +46,8 @@ export const MenuItem: React.FC<MenuItemProps> = ({
                 disabled={disabled}
                 style={color ? { color } : undefined}
             >
-                <div className="flex items-center justify-center ">
-                    {icon}
-                </div>
+                <div className="flex items-center justify-center ">{icon}</div>
             </button>
         </li>
     );
-}; 
+};

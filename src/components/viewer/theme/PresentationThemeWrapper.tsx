@@ -5,8 +5,8 @@ import { Theme } from '@/types/theme';
 import ThemeStylesApplier from './ThemeStylesApplier';
 
 interface PresentationThemeWrapperProps {
-  theme: Theme | null;
-  children: React.ReactNode;
+    theme: Theme | null;
+    children: React.ReactNode;
 }
 
 const PresentationThemeWrapper: React.FC<PresentationThemeWrapperProps> = ({ theme, children }) => {
@@ -17,9 +17,7 @@ const PresentationThemeWrapper: React.FC<PresentationThemeWrapperProps> = ({ the
 
             {/* Render the server components inside */}
             <div className="min-h-screen w-full py-10 px-4 themed-page">
-                <div className="max-w-6xl mx-auto space-y-20">
-                    {children}
-                </div>
+                <div className="max-w-6xl mx-auto space-y-20">{children}</div>
             </div>
         </>
     );

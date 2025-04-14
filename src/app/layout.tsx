@@ -13,17 +13,11 @@ export const metadata: Metadata = {
     description: 'Create beautiful presentations with artificial intelligence',
 };
 
-export default function RootLayout({
-    children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en">
             <body className={`${inter.className} bg-gray-50 text-gray-900 min-h-screen`}>
-                <NextAuthProvider>
-                    {children}
-                </NextAuthProvider>
+                <NextAuthProvider>{children}</NextAuthProvider>
                 <Toaster />
             </body>
         </html>

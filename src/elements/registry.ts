@@ -1,6 +1,27 @@
-import { generateId } from '@/utils/id'
-import { type BaseElement, type EditorElement, type ElementConfig, type Category, type ImageElement, type Layout, type GridCell, type Element, type GridRow } from '@/types'
-import { FaFont, FaTable, FaList, FaBox, FaImage, FaVideo, FaRegChartBar, FaLink, FaQuoteLeft, FaToggleOn } from 'react-icons/fa'
+import { generateId } from '@/utils/id';
+import {
+    type BaseElement,
+    type EditorElement,
+    type ElementConfig,
+    type Category,
+    type ImageElement,
+    type Layout,
+    type GridCell,
+    type Element,
+    type GridRow,
+} from '@/types';
+import {
+    FaFont,
+    FaTable,
+    FaList,
+    FaBox,
+    FaImage,
+    FaVideo,
+    FaRegChartBar,
+    FaLink,
+    FaQuoteLeft,
+    FaToggleOn,
+} from 'react-icons/fa';
 import editorsDefaultContent from './textEditor/defaultContent';
 
 // Define components for the BubbleMenu
@@ -23,7 +44,7 @@ export enum ComponentStructureType {
     // Text editor with wrapper (like box, summary, etc.)
     WRAPPED_TEXT_EDITOR = 'wrapped_text_editor',
     // Custom component without text editor
-    CUSTOM_COMPONENT = 'custom_component'
+    CUSTOM_COMPONENT = 'custom_component',
 }
 
 export const getNewTableLayout = (type: string): Layout | null => {
@@ -33,9 +54,7 @@ export const getNewTableLayout = (type: string): Layout | null => {
 
     const elementConfig = elementsRegistry
         .flatMap(category =>
-            category.subCategories
-                ? category.subCategories.flatMap(sub => sub.elements)
-                : category.elements
+            category.subCategories ? category.subCategories.flatMap(sub => sub.elements) : category.elements
         )
         .find(element => element?.elementTypeId === type);
 
@@ -53,8 +72,8 @@ export const getNewTableLayout = (type: string): Layout | null => {
         },
         type: 'table',
         style: {},
-        isTable: true
-    }
+        isTable: true,
+    };
 
     const rows: GridRow[] = [];
     const elements: BaseElement[] = [];
@@ -65,7 +84,7 @@ export const getNewTableLayout = (type: string): Layout | null => {
         const row: GridRow = {
             id: generateId(),
             cells: [],
-        }
+        };
 
         for (let columnIndex = 0; columnIndex < elementConfig.defaultProps?.columns; columnIndex++) {
             const cellId = generateId();
@@ -74,7 +93,7 @@ export const getNewTableLayout = (type: string): Layout | null => {
                 id: cellId,
                 row: rowIndex,
                 column: columnIndex,
-            }
+            };
             cells.push(cell);
 
             const cellElement = getNewEditorElement(cellId);
@@ -88,15 +107,13 @@ export const getNewTableLayout = (type: string): Layout | null => {
     tableLayout.elements = elements as Element[];
 
     return tableLayout;
-}
+};
 
 export const getNewElement = (type: string): Omit<BaseElement, 'cellId'> | Layout | null => {
     // Find the element configuration in the registry
     const elementConfig = elementsRegistry
         .flatMap(category =>
-            category.subCategories
-                ? category.subCategories.flatMap(sub => sub.elements)
-                : category.elements
+            category.subCategories ? category.subCategories.flatMap(sub => sub.elements) : category.elements
         )
         .find(element => element?.elementTypeId === type);
 
@@ -130,7 +147,7 @@ export const getNewElement = (type: string): Omit<BaseElement, 'cellId'> | Layou
 
     // Return default text element for other types
     return baseElement as Omit<BaseElement, 'cellId'>;
-}
+};
 
 export const elementsRegistry: Category[] = [
     {
@@ -152,7 +169,7 @@ export const elementsRegistry: Category[] = [
                         componentStructure: ComponentStructureType.TEXT_EDITOR,
                         hasTextEditor: true,
                         MenuComponent: HeadingBubbleMenu,
-                        defaultProps: { textType: 'text', content: '' }
+                        defaultProps: { textType: 'text', content: '' },
                     },
 
                     {
@@ -164,7 +181,7 @@ export const elementsRegistry: Category[] = [
                         componentStructure: ComponentStructureType.TEXT_EDITOR,
                         hasTextEditor: true,
                         MenuComponent: HeadingBubbleMenu,
-                        defaultProps: { textType: 'heading', level: 1, content: editorsDefaultContent.title }
+                        defaultProps: { textType: 'heading', level: 1, content: editorsDefaultContent.title },
                     },
                     {
                         elementTypeId: 'heading-1',
@@ -174,7 +191,7 @@ export const elementsRegistry: Category[] = [
                         componentStructure: ComponentStructureType.TEXT_EDITOR,
                         hasTextEditor: true,
                         MenuComponent: HeadingBubbleMenu,
-                        defaultProps: { textType: 'heading', level: 2, content: editorsDefaultContent.heading1 }
+                        defaultProps: { textType: 'heading', level: 2, content: editorsDefaultContent.heading1 },
                     },
                     {
                         elementTypeId: 'heading-2',
@@ -184,7 +201,7 @@ export const elementsRegistry: Category[] = [
                         componentStructure: ComponentStructureType.TEXT_EDITOR,
                         hasTextEditor: true,
                         MenuComponent: HeadingBubbleMenu,
-                        defaultProps: { textType: 'heading', level: 3, content: editorsDefaultContent.heading2 }
+                        defaultProps: { textType: 'heading', level: 3, content: editorsDefaultContent.heading2 },
                     },
                     {
                         elementTypeId: 'heading-3',
@@ -194,7 +211,7 @@ export const elementsRegistry: Category[] = [
                         componentStructure: ComponentStructureType.TEXT_EDITOR,
                         hasTextEditor: true,
                         MenuComponent: HeadingBubbleMenu,
-                        defaultProps: { textType: 'heading', level: 4, content: editorsDefaultContent.heading3 }
+                        defaultProps: { textType: 'heading', level: 4, content: editorsDefaultContent.heading3 },
                     },
                     {
                         elementTypeId: 'heading-4',
@@ -204,7 +221,7 @@ export const elementsRegistry: Category[] = [
                         componentStructure: ComponentStructureType.TEXT_EDITOR,
                         hasTextEditor: true,
                         MenuComponent: HeadingBubbleMenu,
-                        defaultProps: { textType: 'heading', level: 5, content: editorsDefaultContent.heading4 }
+                        defaultProps: { textType: 'heading', level: 5, content: editorsDefaultContent.heading4 },
                     },
                     {
                         elementTypeId: 'quote',
@@ -214,9 +231,9 @@ export const elementsRegistry: Category[] = [
                         componentStructure: ComponentStructureType.TEXT_EDITOR,
                         hasTextEditor: true,
                         MenuComponent: QuoteBubbleMenu,
-                        defaultProps: { textType: 'quote', content: editorsDefaultContent.quote }
+                        defaultProps: { textType: 'quote', content: editorsDefaultContent.quote },
                     },
-                ]
+                ],
             },
             {
                 id: 'tables',
@@ -235,8 +252,8 @@ export const elementsRegistry: Category[] = [
                             content: editorsDefaultContent.table2x2,
                             rows: 2,
                             columns: 2,
-                            isTable: true  // Mark as a table for special handling
-                        }
+                            isTable: true, // Mark as a table for special handling
+                        },
                     },
                     {
                         elementTypeId: 'table-3x3',
@@ -251,8 +268,8 @@ export const elementsRegistry: Category[] = [
                             content: editorsDefaultContent.table3x3,
                             rows: 3,
                             columns: 3,
-                            isTable: true  // Mark as a table for special handling
-                        }
+                            isTable: true, // Mark as a table for special handling
+                        },
                     },
                     {
                         elementTypeId: 'table-4x4',
@@ -267,10 +284,10 @@ export const elementsRegistry: Category[] = [
                             content: editorsDefaultContent.table4x4,
                             rows: 4,
                             columns: 4,
-                            isTable: true  // Mark as a table for special handling
-                        }
-                    }
-                ]
+                            isTable: true, // Mark as a table for special handling
+                        },
+                    },
+                ],
             },
             {
                 id: 'lists',
@@ -286,8 +303,8 @@ export const elementsRegistry: Category[] = [
                         hasTextEditor: true,
                         MenuComponent: ListBubbleMenu,
                         defaultProps: {
-                            content: editorsDefaultContent.lists
-                        }
+                            content: editorsDefaultContent.lists,
+                        },
                     },
                     {
                         elementTypeId: 'numered-list',
@@ -298,8 +315,8 @@ export const elementsRegistry: Category[] = [
                         hasTextEditor: true,
                         MenuComponent: ListBubbleMenu,
                         defaultProps: {
-                            content: editorsDefaultContent.numeredList
-                        }
+                            content: editorsDefaultContent.numeredList,
+                        },
                     },
                     {
                         elementTypeId: 'todo-list',
@@ -310,10 +327,10 @@ export const elementsRegistry: Category[] = [
                         hasTextEditor: true,
                         MenuComponent: ListBubbleMenu,
                         defaultProps: {
-                            content: editorsDefaultContent.todoList
-                        }
+                            content: editorsDefaultContent.todoList,
+                        },
                     },
-                ]
+                ],
             },
             {
                 id: 'boxes',
@@ -329,8 +346,8 @@ export const elementsRegistry: Category[] = [
                         MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'box',
-                            content: editorsDefaultContent.box
-                        }
+                            content: editorsDefaultContent.box,
+                        },
                     },
                     {
                         elementTypeId: 'note-box',
@@ -342,8 +359,8 @@ export const elementsRegistry: Category[] = [
                         MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'note-box',
-                            content: editorsDefaultContent.noteBox
-                        }
+                            content: editorsDefaultContent.noteBox,
+                        },
                     },
                     {
                         elementTypeId: 'info-box',
@@ -355,8 +372,8 @@ export const elementsRegistry: Category[] = [
                         MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'info-box',
-                            content: editorsDefaultContent.infoBox
-                        }
+                            content: editorsDefaultContent.infoBox,
+                        },
                     },
                     {
                         elementTypeId: 'warning-box',
@@ -368,8 +385,8 @@ export const elementsRegistry: Category[] = [
                         MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'warning-box',
-                            content: editorsDefaultContent.warningBox
-                        }
+                            content: editorsDefaultContent.warningBox,
+                        },
                     },
                     {
                         elementTypeId: 'caution-box',
@@ -381,8 +398,8 @@ export const elementsRegistry: Category[] = [
                         MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'caution-box',
-                            content: editorsDefaultContent.cautionBox
-                        }
+                            content: editorsDefaultContent.cautionBox,
+                        },
                     },
                     {
                         elementTypeId: 'success-box',
@@ -394,8 +411,8 @@ export const elementsRegistry: Category[] = [
                         MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'success-box',
-                            content: editorsDefaultContent.successBox
-                        }
+                            content: editorsDefaultContent.successBox,
+                        },
                     },
                     {
                         elementTypeId: 'question-box',
@@ -407,10 +424,10 @@ export const elementsRegistry: Category[] = [
                         MenuComponent: BoxBubbleMenu,
                         defaultProps: {
                             textType: 'question-box',
-                            content: editorsDefaultContent.questionBox
-                        }
-                    }
-                ]
+                            content: editorsDefaultContent.questionBox,
+                        },
+                    },
+                ],
             },
             {
                 id: 'interactive',
@@ -430,8 +447,8 @@ export const elementsRegistry: Category[] = [
                         hasLimitedTextFormatting: true,
                         defaultProps: {
                             textType: 'button',
-                            content: editorsDefaultContent.button
-                        }
+                            content: editorsDefaultContent.button,
+                        },
                     },
                     {
                         elementTypeId: 'toggle',
@@ -443,13 +460,13 @@ export const elementsRegistry: Category[] = [
                         // MenuComponent: DefaultBubbleMenu,
                         defaultProps: {
                             textType: 'details',
-                            content: editorsDefaultContent.toggle
-                        }
-                    }
-                ]
+                            content: editorsDefaultContent.toggle,
+                        },
+                    },
+                ],
             },
             // ... остальные подкатегории
-        ]
+        ],
     },
     {
         id: 'image',
@@ -476,7 +493,7 @@ export const elementsRegistry: Category[] = [
                 componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
                 hasTextEditor: false,
                 // MenuComponent: DefaultBubbleMenu,
-                defaultProps: { content: '' }
+                defaultProps: { content: '' },
             },
             // QR
             // {
@@ -489,7 +506,7 @@ export const elementsRegistry: Category[] = [
             //     // MenuComponent: DefaultBubbleMenu,
             //     defaultProps: { content: '' }
             // },
-        ]
+        ],
     },
     {
         id: 'video',
@@ -504,9 +521,9 @@ export const elementsRegistry: Category[] = [
                 componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
                 hasTextEditor: false,
                 // MenuComponent: DefaultBubbleMenu,
-                defaultProps: { content: '' }
-            }
-        ]
+                defaultProps: { content: '' },
+            },
+        ],
     },
     {
         id: 'charts',
@@ -522,7 +539,7 @@ export const elementsRegistry: Category[] = [
                 componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
                 hasTextEditor: false,
                 // MenuComponent: DefaultBubbleMenu,
-                defaultProps: { content: '' }
+                defaultProps: { content: '' },
             },
             // Bar chart
             {
@@ -533,7 +550,7 @@ export const elementsRegistry: Category[] = [
                 componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
                 hasTextEditor: false,
                 // MenuComponent: DefaultBubbleMenu,
-                defaultProps: { content: '' }
+                defaultProps: { content: '' },
             },
             // Line chart
             {
@@ -544,7 +561,7 @@ export const elementsRegistry: Category[] = [
                 componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
                 hasTextEditor: false,
                 // MenuComponent: DefaultBubbleMenu,
-                defaultProps: { content: '' }
+                defaultProps: { content: '' },
             },
             // Pie chart
             {
@@ -555,7 +572,7 @@ export const elementsRegistry: Category[] = [
                 componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
                 hasTextEditor: false,
                 // MenuComponent: DefaultBubbleMenu,
-                defaultProps: { content: '' }
+                defaultProps: { content: '' },
             },
             // Donut  chart
             {
@@ -566,9 +583,9 @@ export const elementsRegistry: Category[] = [
                 componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
                 hasTextEditor: false,
                 // MenuComponent: DefaultBubbleMenu,
-                defaultProps: { content: '' }
+                defaultProps: { content: '' },
             },
-        ]
+        ],
     },
     {
         id: 'media',
@@ -586,21 +603,21 @@ export const elementsRegistry: Category[] = [
                     src: '',
                     alt: 'Image',
                     alignment: 'center',
-                    width: undefined
-                }
+                    width: undefined,
+                },
             },
             // ... other media elements ...
-        ]
-    }
-]
+        ],
+    },
+];
 
 // Helper to get appropriate menu based on element and context
-export const getElementMenuComponent = (elementId: string): { MenuComponent: React.ComponentType<any>, menuDirection: 'bottom' | 'top', menuHeight: number | undefined } => {
+export const getElementMenuComponent = (
+    elementId: string
+): { MenuComponent: React.ComponentType<any>; menuDirection: 'bottom' | 'top'; menuHeight: number | undefined } => {
     const elementConfig = elementsRegistry
         .flatMap(category =>
-            category.subCategories
-                ? category.subCategories.flatMap(sub => sub.elements)
-                : category.elements
+            category.subCategories ? category.subCategories.flatMap(sub => sub.elements) : category.elements
         )
         .find(element => element?.elementTypeId === elementId);
 
@@ -608,22 +625,22 @@ export const getElementMenuComponent = (elementId: string): { MenuComponent: Rea
         return {
             MenuComponent: elementConfig.MenuComponent,
             menuDirection: elementConfig.menuDirection || 'bottom',
-            menuHeight: elementConfig.menuHeight || 0
+            menuHeight: elementConfig.menuHeight || 0,
         };
     }
 
     return {
         MenuComponent: DefaultBubbleMenu,
         menuDirection: 'bottom',
-        menuHeight: undefined
+        menuHeight: undefined,
     };
-}
+};
 
-const emptyTextElement = elementsRegistry.flatMap(category =>
-    category.subCategories
-        ? category.subCategories.flatMap(sub => sub.elements)
-        : category.elements
-).find(element => element?.elementTypeId === 'text');
+const emptyTextElement = elementsRegistry
+    .flatMap(category =>
+        category.subCategories ? category.subCategories.flatMap(sub => sub.elements) : category.elements
+    )
+    .find(element => element?.elementTypeId === 'text');
 
 export const getNewEditorElement = (cellId: string, content?: string): EditorElement => {
     const newEditor: EditorElement = {
@@ -635,56 +652,48 @@ export const getNewEditorElement = (cellId: string, content?: string): EditorEle
         // type: emptyTextElement!.type as any,
         // componentStructure: emptyTextElement!.componentStructure,
         // hasTextEditor: true,
-    }
+    };
 
     return newEditor;
-}
+};
 
 // Check if an element has text editing capabilities
 export const hasTextEditor = (elementId: string): boolean => {
     const elementConfig = elementsRegistry
         .flatMap(category =>
-            category.subCategories
-                ? category.subCategories.flatMap(sub => sub.elements)
-                : category.elements
+            category.subCategories ? category.subCategories.flatMap(sub => sub.elements) : category.elements
         )
         .find(element => element?.elementTypeId === elementId);
 
     return elementConfig?.hasTextEditor ?? false;
-}
+};
 
 // Check if element uses limited text formatting (like button)
 export const hasLimitedTextFormatting = (elementId: string): boolean => {
     const elementConfig = elementsRegistry
         .flatMap(category =>
-            category.subCategories
-                ? category.subCategories.flatMap(sub => sub.elements)
-                : category.elements
+            category.subCategories ? category.subCategories.flatMap(sub => sub.elements) : category.elements
         )
         .find(element => element?.elementTypeId === elementId);
 
     return elementConfig?.hasLimitedTextFormatting ?? false;
-}
+};
 
 // Get component structure type
 export const getComponentStructureType = (elementId: string): ComponentStructureType | undefined => {
     const elementConfig = elementsRegistry
         .flatMap(category =>
-            category.subCategories
-                ? category.subCategories.flatMap(sub => sub.elements)
-                : category.elements
+            category.subCategories ? category.subCategories.flatMap(sub => sub.elements) : category.elements
         )
         .find(element => element?.elementTypeId === elementId);
 
     return elementConfig?.componentStructure;
-}
+};
 
 export const getElementConfig = (elementId: string): ElementConfig => {
     const elementConfig = elementsRegistry
         .flatMap(category =>
-            category.subCategories
-                ? category.subCategories.flatMap(sub => sub.elements)
-                : category.elements
+            category.subCategories ? category.subCategories.flatMap(sub => sub.elements) : category.elements
         )
         .find(element => element?.elementTypeId === elementId);
 
@@ -693,4 +702,4 @@ export const getElementConfig = (elementId: string): ElementConfig => {
     }
 
     return elementConfig;
-}
+};

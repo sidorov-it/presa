@@ -13,6 +13,7 @@ import {
     getPredefinedGridStructures,
     EditorElement,
     TipTapRefs,
+    ElementConfig,
 } from '@/types';
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 import { getNewEditorElement } from '@/elements/registry';
@@ -46,7 +47,12 @@ export interface PresentationState {
 
     // Работа со слайдами
     addSlide: (presentationId: string, index?: number) => string;
-    updateSlide: (presentationId: string, slideId: string, data: Partial<Slide>, forceRecordTransactionAction?: boolean) => void;
+    updateSlide: (
+        presentationId: string,
+        slideId: string,
+        data: Partial<Slide>,
+        forceRecordTransactionAction?: boolean
+    ) => void;
     deleteSlide: (presentationId: string, slideId: string) => void;
     duplicateSlide: (presentationId: string, slideId: string) => string;
     reorderSlides: (presentationId: string, startIndex: number, endIndex: number) => void;
@@ -57,7 +63,12 @@ export interface PresentationState {
     checkPresentationExists: (presentationId: string) => boolean;
 
     // Работа с макетами
-    addLayout: (presentationId: string, slideId: string, layout: Omit<Layout, 'id'> | LayoutType, index?: number) => string;
+    addLayout: (
+        presentationId: string,
+        slideId: string,
+        layout: Omit<Layout, 'id'> | LayoutType,
+        index?: number
+    ) => string;
     updateLayout: (presentationId: string, slideId: string, layoutId: string, data: Partial<Layout>) => void;
 
     addColumnToTable: (presentationId: string, slideId: string, layoutId: string, columnIndex: number) => void;
@@ -73,16 +84,33 @@ export interface PresentationState {
         data: Partial<Layout>,
         deleteIfEmpty?: boolean
     ) => void;
-    updateAlignLayout: (presentationId: string, slideId: string, layoutId: string, alignment: 'top' | 'center' | 'bottom') => void;
+    updateAlignLayout: (
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        alignment: 'top' | 'center' | 'bottom'
+    ) => void;
 
     findLayoutByElementId: (elementId: string) => Layout | undefined;
     getLayout: (presentationId: string, slideId: string, layoutId: string) => Layout | undefined;
     getCell: (presentationId: string, slideId: string, layoutId: string, cellId: string) => GridCell | undefined;
 
     // Работа с элементами
-    getElement: (presentationId: string, slideId: string, layoutId: string, elementId: string) => BaseElement | undefined;
+    getElement: (
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        elementId: string
+    ) => BaseElement | undefined;
     addElement: (presentationId: string, slideId: string, layoutId: string, element: Omit<BaseElement, 'id'>) => string;
-    updateElement: (presentationId: string, slideId: string, layoutId: string, elementId: string, data: Partial<Element>, createHistoryEntry?: boolean) => void;
+    updateElement: (
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        elementId: string,
+        data: Partial<Element>,
+        createHistoryEntry?: boolean
+    ) => void;
     deleteElement: (presentationId: string, slideId: string, layoutId: string, elementId: string) => void;
     duplicateElement: (presentationId: string, slideId: string, elementId: string) => void;
     addColumn: (presentationId: string, slideId: string, layoutId: string, columnIndex: number) => void;
@@ -92,7 +120,13 @@ export interface PresentationState {
     alignColumnTop: (presentationId: string, slideId: string, layoutId: string, columnId: string) => void;
     alignColumnCenter: (presentationId: string, slideId: string, layoutId: string, columnId: string) => void;
     alignColumnBottom: (presentationId: string, slideId: string, layoutId: string, columnId: string) => void;
-    alignColumn: (presentationId: string, slideId: string, layoutId: string, columnId: string, alignment: 'top' | 'center' | 'bottom') => void;
+    alignColumn: (
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        columnId: string,
+        alignment: 'top' | 'center' | 'bottom'
+    ) => void;
     deleteColumn: (presentationId: string, slideId: string, layoutId: string, columnId: string) => void;
 
     getCellElementIds: (presentationId: string, slideId: string, layoutId: string, cellId: string) => string[];
@@ -101,23 +135,55 @@ export interface PresentationState {
 
     mergeSlideWithPrevious: (presentationId: string, slideId: string) => void;
 
-    addLayoutWithElement: (presentationId: string, slideId: string, element: BaseElement) => void;
+    addLayoutWithElement: (presentationId: string, slideId: string, element: ElementConfig) => void;
 
     getTableElements: (presentationId: string, slideId: string, layoutId: string) => BaseElement[];
-    getTableColumnElements: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => BaseElement[];
-    getTableRowElements: (presentationId: string, slideId: string, layoutId: string, tableRowIndex: number) => BaseElement[];
+    getTableColumnElements: (
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        tableColumnIndex: number
+    ) => BaseElement[];
+    getTableRowElements: (
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        tableRowIndex: number
+    ) => BaseElement[];
     getTableFirstElement: (presentationId: string, slideId: string, layoutId: string) => BaseElement | null;
 
     toggleBoldOnColumn: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => void;
     toggleItalicOnColumn: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => void;
-    toggleUnderlineOnColumn: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => void;
+    toggleUnderlineOnColumn: (
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        tableColumnIndex: number
+    ) => void;
     clearStylesOnColumn: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => void;
 
     getCommonAlignment: (presentationId: string, slideId: string, layoutId: string) => string;
     getCommonHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>, elements: BaseElement[]) => number | null;
-    getCommonTableHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>, presentationId: string, slideId: string, layoutId: string) => number | null;
-    getCommonRowHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>, presentationId: string, slideId: string, layoutId: string, tableRowIndex: number) => number | null;
-    getCommonColumnHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>, presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => number | null;
+    getCommonTableHeadingLevel: (
+        tiptapRefs: MutableRefObject<TipTapRefs>,
+        presentationId: string,
+        slideId: string,
+        layoutId: string
+    ) => number | null;
+    getCommonRowHeadingLevel: (
+        tiptapRefs: MutableRefObject<TipTapRefs>,
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        tableRowIndex: number
+    ) => number | null;
+    getCommonColumnHeadingLevel: (
+        tiptapRefs: MutableRefObject<TipTapRefs>,
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        tableColumnIndex: number
+    ) => number | null;
 
     equalizeTable: (presentationId: string, slideId: string, layoutId: string) => void;
 
@@ -202,7 +268,7 @@ export const usePresentationStore = create<PresentationState>()(
 
                     const { presentation } = await response.json();
 
-                    set((state) => ({
+                    set(state => ({
                         presentations: [...state.presentations, presentation],
                     }));
 
@@ -232,13 +298,13 @@ export const usePresentationStore = create<PresentationState>()(
 
                     set({
                         presentations,
-                        isLoading: false
+                        isLoading: false,
                     });
                 } catch (error) {
                     console.error('Error loading presentations:', error);
                     set({
                         error: 'Failed to load presentations',
-                        isLoading: false
+                        isLoading: false,
                     });
                 }
             },
@@ -254,11 +320,8 @@ export const usePresentationStore = create<PresentationState>()(
 
                     const presentation = await response.json();
 
-                    set((state) => ({
-                        presentations: [
-                            ...state.presentations.filter(p => p.id !== id),
-                            presentation
-                        ],
+                    set(state => ({
+                        presentations: [...state.presentations.filter(p => p.id !== id), presentation],
                     }));
 
                     // Инициализируем историю для загруженной презентации
@@ -281,20 +344,18 @@ export const usePresentationStore = create<PresentationState>()(
                 // Capture the state before the operation
                 const beforeState = { ...get() };
 
-                set((state) => {
+                set(state => {
                     const updatedState = {
-                        presentations: state.presentations.map((presentation) =>
-                            presentation.id === id
-                                ? { ...presentation, ...data, updatedAt: Date.now() }
-                                : presentation
+                        presentations: state.presentations.map(presentation =>
+                            presentation.id === id ? { ...presentation, ...data, updatedAt: Date.now() } : presentation
                         ),
-                    }
+                    };
                     get().recordAction({
                         type: 'presentation',
                         description: 'Update presentation details',
                         presentationId: id,
                         before: { presentations: beforeState.presentations },
-                        after: updatedState
+                        after: updatedState,
                     });
 
                     return updatedState;
@@ -304,20 +365,20 @@ export const usePresentationStore = create<PresentationState>()(
                 get().saveChanges(id);
             },
 
-            deletePresentation: (id) => {
+            deletePresentation: id => {
                 const presentation = get().getPresentation(id);
                 if (!presentation) return;
 
                 // Clear history for the presentation being deleted
                 useHistoryStore.getState().clearHistory(id);
 
-                set((state) => ({
-                    presentations: state.presentations.filter((presentation) => presentation.id !== id),
+                set(state => ({
+                    presentations: state.presentations.filter(presentation => presentation.id !== id),
                 }));
             },
 
-            getPresentation: (id) => {
-                return get().presentations.find((presentation) => presentation.id === id);
+            getPresentation: id => {
+                return get().presentations.find(presentation => presentation.id === id);
             },
 
             addSlide: (presentationId, index = 0) => {
@@ -329,9 +390,11 @@ export const usePresentationStore = create<PresentationState>()(
                 const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures(defaultGridType);
 
                 // Create editor elements for each cell
-                const elements: EditorElement[] = defaultLayoutGridStructure.rows.map(row => {
-                    return row.cells.map(cell => getNewEditorElement(cell.id))
-                }).flat();
+                const elements: EditorElement[] = defaultLayoutGridStructure.rows
+                    .map(row => {
+                        return row.cells.map(cell => getNewEditorElement(cell.id));
+                    })
+                    .flat();
 
                 const layout: Layout = {
                     id: generateId(),
@@ -339,7 +402,7 @@ export const usePresentationStore = create<PresentationState>()(
                     type: defaultGridType,
                     style: {},
                     elements,
-                }
+                };
 
                 const newSlide: Slide = {
                     id: slideId,
@@ -352,9 +415,9 @@ export const usePresentationStore = create<PresentationState>()(
                     style: {},
                 };
 
-                set((state) => {
+                set(state => {
                     const updatedState = {
-                        presentations: state.presentations.map((presentation) => {
+                        presentations: state.presentations.map(presentation => {
                             if (presentation.id === presentationId) {
                                 const newSlides = [...presentation.slides];
 
@@ -376,7 +439,7 @@ export const usePresentationStore = create<PresentationState>()(
                         presentationId,
                         slideId,
                         before: { presentations: beforeState.presentations },
-                        after: updatedState
+                        after: updatedState,
                     });
 
                     return updatedState;
@@ -397,13 +460,13 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
                 if (!currentSlide) return;
 
-                set((state) => {
+                set(state => {
                     const updatedState = {
-                        presentations: state.presentations.map((presentation) => {
+                        presentations: state.presentations.map(presentation => {
                             if (presentation.id === presentationId) {
                                 return {
                                     ...presentation,
-                                    slides: presentation.slides.map((slide) =>
+                                    slides: presentation.slides.map(slide =>
                                         slide.id === slideId ? { ...slide, ...data } : slide
                                     ),
                                     updatedAt: Date.now(),
@@ -411,7 +474,7 @@ export const usePresentationStore = create<PresentationState>()(
                             }
                             return presentation;
                         }),
-                    }
+                    };
 
                     if (forceRecordTransactionAction) {
                         useHistoryStore.getState().recordTransactionAction({
@@ -420,9 +483,8 @@ export const usePresentationStore = create<PresentationState>()(
                             presentationId,
                             slideId,
                             before: { presentations: beforeState.presentations },
-                            after: updatedState
+                            after: updatedState,
                         });
-
                     } else {
                         get().recordAction({
                             type: 'slide',
@@ -430,7 +492,7 @@ export const usePresentationStore = create<PresentationState>()(
                             presentationId,
                             slideId,
                             before: { presentations: beforeState.presentations },
-                            after: updatedState
+                            after: updatedState,
                         });
                     }
 
@@ -450,19 +512,19 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
                 if (!currentSlide) return;
 
-                set((state) => {
+                set(state => {
                     const updatedState = {
-                        presentations: state.presentations.map((presentation) => {
+                        presentations: state.presentations.map(presentation => {
                             if (presentation.id === presentationId) {
                                 return {
                                     ...presentation,
-                                    slides: presentation.slides.filter((slide) => slide.id !== slideId),
+                                    slides: presentation.slides.filter(slide => slide.id !== slideId),
                                     updatedAt: Date.now(),
                                 };
                             }
                             return presentation;
                         }),
-                    }
+                    };
 
                     get().recordAction({
                         type: 'slide',
@@ -470,7 +532,7 @@ export const usePresentationStore = create<PresentationState>()(
                         presentationId,
                         slideId,
                         before: { presentations: beforeState.presentations },
-                        after: updatedState
+                        after: updatedState,
                     });
 
                     return updatedState;
@@ -484,11 +546,11 @@ export const usePresentationStore = create<PresentationState>()(
                 const beforeState = { ...get() };
 
                 const { presentations } = get();
-                const presentation = presentations.find((p) => p.id === presentationId);
+                const presentation = presentations.find(p => p.id === presentationId);
 
                 if (!presentation) return '';
 
-                const slideToClone = presentation.slides.find((s) => s.id === slideId);
+                const slideToClone = presentation.slides.find(s => s.id === slideId);
 
                 if (!slideToClone) return '';
 
@@ -499,20 +561,19 @@ export const usePresentationStore = create<PresentationState>()(
                     ...JSON.parse(JSON.stringify(slideToClone)),
                     id: newSlideId,
                     title: `${slideToClone.title} (копия)`,
-                    layouts: slideToClone.layouts.map((layout) => ({
+                    layouts: slideToClone.layouts.map(layout => ({
                         ...layout,
                         id: generateId(),
-                        elements: layout.elements.map((element) => ({
+                        elements: layout.elements.map(element => ({
                             ...element,
                             id: generateId(),
                         })),
                     })),
                 };
 
-
-                set((state) => {
+                set(state => {
                     const updatedState = {
-                        presentations: state.presentations.map((p) => {
+                        presentations: state.presentations.map(p => {
                             if (p.id === presentationId) {
                                 const updatedSlides = [...p.slides];
 
@@ -529,14 +590,14 @@ export const usePresentationStore = create<PresentationState>()(
                             }
                             return p;
                         }),
-                    }
+                    };
                     get().recordAction({
                         type: 'slide',
                         description: 'Duplicate slide',
                         presentationId,
                         slideId: newSlideId,
                         before: { presentations: beforeState.presentations },
-                        after: updatedState
+                        after: updatedState,
                     });
                     return updatedState;
                 });
@@ -562,7 +623,7 @@ export const usePresentationStore = create<PresentationState>()(
                 const previousSlide = currentPresentation.slides[currentSlideIndex - 1];
                 if (!previousSlide) return;
 
-                set((state) => {
+                set(state => {
                     // удаляем текущий слайд
                     // обновляем layouts в предыдущем слайде
                     let updatedSlides = [...currentPresentation.slides];
@@ -570,7 +631,7 @@ export const usePresentationStore = create<PresentationState>()(
 
                     const updatedLayoutsInPreviousSlide = [...previousSlide.layouts, ...currentSlide.layouts];
 
-                    updatedSlides = updatedSlides.map((slide) => {
+                    updatedSlides = updatedSlides.map(slide => {
                         if (slide.id === previousSlide.id) {
                             return {
                                 ...slide,
@@ -578,10 +639,10 @@ export const usePresentationStore = create<PresentationState>()(
                             };
                         }
                         return slide;
-                    })
+                    });
 
                     const updatedState = {
-                        presentations: state.presentations.map((presentation) => {
+                        presentations: state.presentations.map(presentation => {
                             if (presentation.id === presentationId) {
                                 return {
                                     ...presentation,
@@ -598,7 +659,7 @@ export const usePresentationStore = create<PresentationState>()(
                         description: 'Merge slide with previous',
                         presentationId,
                         before: { presentations: beforeState.presentations },
-                        after: updatedState
+                        after: updatedState,
                     });
 
                     return updatedState;
@@ -615,8 +676,8 @@ export const usePresentationStore = create<PresentationState>()(
                 const [removed] = newSlides.splice(startIndex, 1);
                 newSlides.splice(endIndex, 0, removed);
 
-                set((state) => {
-                    const presentation = state.presentations.find((p) => p.id === presentationId);
+                set(state => {
+                    const presentation = state.presentations.find(p => p.id === presentationId);
 
                     if (!presentation) return state;
 
@@ -625,10 +686,8 @@ export const usePresentationStore = create<PresentationState>()(
                     newSlides.splice(endIndex, 0, removed);
 
                     const updatedState = {
-                        presentations: state.presentations.map((p) =>
-                            p.id === presentationId
-                                ? { ...p, slides: newSlides, updatedAt: Date.now() }
-                                : p
+                        presentations: state.presentations.map(p =>
+                            p.id === presentationId ? { ...p, slides: newSlides, updatedAt: Date.now() } : p
                         ),
                     };
                     get().recordAction({
@@ -636,7 +695,7 @@ export const usePresentationStore = create<PresentationState>()(
                         description: 'Reorder slides',
                         presentationId,
                         before: { presentations: beforeState.presentations },
-                        after: updatedState
+                        after: updatedState,
                     });
 
                     return updatedState;
@@ -689,9 +748,9 @@ export const usePresentationStore = create<PresentationState>()(
                     const gridStructure = getPredefinedGridStructures(layout as LayoutType);
 
                     // Создаем элементы для каждой ячейки сетки
-                    const elements: EditorElement[] = gridStructure.rows.map(row =>
-                        row.cells.map(cell => getNewEditorElement(cell.id))
-                    ).flat();
+                    const elements: EditorElement[] = gridStructure.rows
+                        .map(row => row.cells.map(cell => getNewEditorElement(cell.id)))
+                        .flat();
 
                     newLayout = {
                         id: layoutId,
@@ -703,13 +762,15 @@ export const usePresentationStore = create<PresentationState>()(
                 } else {
                     // Это объект макета, добавляем только ID
                     newLayout = {
-                        ...layout as Layout,
+                        ...(layout as Layout),
                         id: layoutId,
                     };
                 }
 
-                set((state) => {
-                    const targetSlide = state.presentations.find((p) => p.id === presentationId)?.slides.find((s) => s.id === slideId);
+                set(state => {
+                    const targetSlide = state.presentations
+                        .find(p => p.id === presentationId)
+                        ?.slides.find(s => s.id === slideId);
 
                     let layouts: Layout[];
                     if (typeof index === 'number' && targetSlide && index <= targetSlide.layouts.length) {
@@ -722,11 +783,11 @@ export const usePresentationStore = create<PresentationState>()(
                     }
 
                     const updatedState = {
-                        presentations: state.presentations.map((presentation) => {
+                        presentations: state.presentations.map(presentation => {
                             if (presentation.id === presentationId) {
                                 return {
                                     ...presentation,
-                                    slides: presentation.slides.map((slide) => {
+                                    slides: presentation.slides.map(slide => {
                                         if (slide.id === slideId) {
                                             return {
                                                 ...slide,
@@ -749,7 +810,7 @@ export const usePresentationStore = create<PresentationState>()(
                         slideId,
                         layoutId,
                         before: { presentations: beforeState.presentations },
-                        after: updatedState
+                        after: updatedState,
                     });
 
                     return updatedState;
@@ -770,7 +831,7 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
                 if (!currentSlide) return;
 
-                set((state) => {
+                set(state => {
                     const gridStructure = getPredefinedGridStructures('single-column');
 
                     const cellId = gridStructure.rows[0].cells[0].id;
@@ -779,26 +840,31 @@ export const usePresentationStore = create<PresentationState>()(
                     const isTable = element.defaultProps?.isTable || false;
 
                     const updatedState = {
-                        presentations: state.presentations.map((presentation) => {
+                        presentations: state.presentations.map(presentation => {
                             if (presentation.id === presentationId) {
                                 return {
                                     ...presentation,
-                                    slides: presentation.slides.map((slide) => {
+                                    slides: presentation.slides.map(slide => {
                                         if (slide.id === slideId) {
                                             return {
                                                 ...slide,
-                                                layouts: [...slide.layouts, {
-                                                    id: generateId(),
-                                                    elements: [{
-                                                        ...element,
+                                                layouts: [
+                                                    ...slide.layouts,
+                                                    {
                                                         id: generateId(),
-                                                        cellId,
-                                                    }],
-                                                    gridStructure,
-                                                    type: 'single-column' as LayoutType,
-                                                    style: {},
-                                                    isTable, // Add the isTable flag to the layout
-                                                }],
+                                                        elements: [
+                                                            {
+                                                                ...element,
+                                                                id: generateId(),
+                                                                cellId,
+                                                            },
+                                                        ],
+                                                        gridStructure,
+                                                        type: 'single-column' as LayoutType,
+                                                        style: {},
+                                                        isTable, // Add the isTable flag to the layout
+                                                    },
+                                                ],
                                             };
                                         }
                                         return slide;
@@ -817,7 +883,7 @@ export const usePresentationStore = create<PresentationState>()(
                         presentationId,
                         slideId,
                         before: { presentations: beforeState.presentations },
-                        after: updatedState
+                        after: updatedState,
                     });
 
                     return updatedState;
@@ -835,14 +901,14 @@ export const usePresentationStore = create<PresentationState>()(
             getTableColumnElements: (presentationId, slideId, layoutId, tableColumnIndex) => {
                 const layout = get().getLayout(presentationId, slideId, layoutId);
                 if (!layout) return [];
-                const columnCellsIds = layout.gridStructure.rows.map(row => row.cells[tableColumnIndex].id)
+                const columnCellsIds = layout.gridStructure.rows.map(row => row.cells[tableColumnIndex].id);
                 return layout.elements.filter(element => columnCellsIds.includes(element.cellId));
             },
 
             getTableRowElements: (presentationId, slideId, layoutId, tableRowIndex) => {
                 const layout = get().getLayout(presentationId, slideId, layoutId);
                 if (!layout) return [];
-                const rowCellsIds = layout.gridStructure.rows[tableRowIndex].cells.map(cell => cell.id)
+                const rowCellsIds = layout.gridStructure.rows[tableRowIndex].cells.map(cell => cell.id);
                 return layout.elements.filter(element => rowCellsIds.includes(element.cellId));
             },
 
@@ -863,8 +929,13 @@ export const usePresentationStore = create<PresentationState>()(
             },
 
             getCommonHeadingLevel: (tiptapRefs, elements) => {
-                const notEmptyEditors = elements.filter(element => tiptapRefs.current.editors[element.id] && !tiptapRefs.current.editors[element.id].editor.isEmpty);
-                const allHeadingLevels = notEmptyEditors.map(element => tiptapRefs.current.editors[element.id]?.editor.getAttributes('heading').level);
+                const notEmptyEditors = elements.filter(
+                    element =>
+                        tiptapRefs.current.editors[element.id] && !tiptapRefs.current.editors[element.id].editor.isEmpty
+                );
+                const allHeadingLevels = notEmptyEditors.map(
+                    element => tiptapRefs.current.editors[element.id]?.editor.getAttributes('heading').level
+                );
                 const uniqueHeadingLevels = new Set(allHeadingLevels);
                 return uniqueHeadingLevels.size === 1 ? uniqueHeadingLevels.values().next().value : null;
             },
@@ -872,21 +943,27 @@ export const usePresentationStore = create<PresentationState>()(
             getCommonTableHeadingLevel: (tiptapRefs, presentationId, slideId, layoutId) => {
                 const layout = get().getLayout(presentationId, slideId, layoutId);
                 if (!layout) return null;
-                return get().getCommonHeadingLevel(tiptapRefs, layout.elements)
+                return get().getCommonHeadingLevel(tiptapRefs, layout.elements);
             },
 
             getCommonRowHeadingLevel: (tiptapRefs, presentationId, slideId, layoutId, tableRowIndex) => {
                 const layout = get().getLayout(presentationId, slideId, layoutId);
                 if (!layout) return null;
-                const rowCellsIds = layout.gridStructure.rows[tableRowIndex].cells.map(cell => cell.id)
-                return get().getCommonHeadingLevel(tiptapRefs, layout.elements.filter(element => rowCellsIds.includes(element.cellId)))
+                const rowCellsIds = layout.gridStructure.rows[tableRowIndex].cells.map(cell => cell.id);
+                return get().getCommonHeadingLevel(
+                    tiptapRefs,
+                    layout.elements.filter(element => rowCellsIds.includes(element.cellId))
+                );
             },
 
             getCommonColumnHeadingLevel: (tiptapRefs, presentationId, slideId, layoutId, tableColumnIndex) => {
                 const layout = get().getLayout(presentationId, slideId, layoutId);
                 if (!layout) return null;
-                const columnCellsIds = layout.gridStructure.rows.map(row => row.cells[tableColumnIndex].id)
-                return get().getCommonHeadingLevel(tiptapRefs, layout.elements.filter(element => columnCellsIds.includes(element.cellId)))
+                const columnCellsIds = layout.gridStructure.rows.map(row => row.cells[tableColumnIndex].id);
+                return get().getCommonHeadingLevel(
+                    tiptapRefs,
+                    layout.elements.filter(element => columnCellsIds.includes(element.cellId))
+                );
             },
 
             equalizeTable: (presentationId, slideId, layoutId) => {
@@ -897,25 +974,38 @@ export const usePresentationStore = create<PresentationState>()(
                 //     ...layout.gridStructure,
                 //     columnWidths: getColumnWidths(layout.gridStructure.columns)
                 // }
-                set((state) => {
+                set(state => {
                     const updatedState = {
-                        presentations: state.presentations.map(
-                            presentation => presentation.id === presentationId
+                        presentations: state.presentations.map(presentation =>
+                            presentation.id === presentationId
                                 ? {
-                                    ...presentation, slides: presentation.slides.map(slide => slide.id === slideId
-                                        ? {
-                                            ...slide, layouts: slide.layouts.map(layout => layout.id === layoutId
-                                                ? {
-                                                    ...layout, gridStructure: {
-                                                        ...layout.gridStructure,
-                                                        columnWidths: getColumnWidths(layout.gridStructure.columns)
-                                                    }
-                                                } : layout)
-                                        } : slide)
-                                } : presentation)
-                    }
+                                    ...presentation,
+                                    slides: presentation.slides.map(slide =>
+                                        slide.id === slideId
+                                            ? {
+                                                ...slide,
+                                                layouts: slide.layouts.map(layout =>
+                                                    layout.id === layoutId
+                                                        ? {
+                                                            ...layout,
+                                                            gridStructure: {
+                                                                ...layout.gridStructure,
+                                                                columnWidths: getColumnWidths(
+                                                                    layout.gridStructure.columns
+                                                                ),
+                                                            },
+                                                        }
+                                                        : layout
+                                                ),
+                                            }
+                                            : slide
+                                    ),
+                                }
+                                : presentation
+                        ),
+                    };
                     return updatedState;
-                })
+                });
 
                 get().saveChanges(presentationId);
             },
@@ -928,26 +1018,26 @@ export const usePresentationStore = create<PresentationState>()(
 
                 const columnCellsIds = layout.gridStructure.rows.map(row => row.cells[tableColumnIndex].id);
 
-                set((state) => {
+                set(state => {
                     const updatedState = {
-                        presentations: state.presentations.map((presentation) => {
+                        presentations: state.presentations.map(presentation => {
                             if (presentation.id === presentationId) {
                                 return {
                                     ...presentation,
-                                    slides: presentation.slides.map((slide) => {
+                                    slides: presentation.slides.map(slide => {
                                         if (slide.id === slideId) {
                                             return {
                                                 ...slide,
-                                                layouts: slide.layouts.map((layout) => {
+                                                layouts: slide.layouts.map(layout => {
                                                     if (layout.id === layoutId) {
                                                         return {
                                                             ...layout,
                                                             gridStructure: {
                                                                 ...layout.gridStructure,
-                                                                rows: layout.gridStructure.rows.map((row) => {
+                                                                rows: layout.gridStructure.rows.map(row => {
                                                                     return {
                                                                         ...row,
-                                                                        cells: row.cells.map((cell) => {
+                                                                        cells: row.cells.map(cell => {
                                                                             if (columnCellsIds.includes(cell.id)) {
                                                                                 return { ...cell, bold: !cell.bold };
                                                                             }
@@ -955,8 +1045,8 @@ export const usePresentationStore = create<PresentationState>()(
                                                                         }),
                                                                     };
                                                                 }),
-                                                            }
-                                                        }
+                                                            },
+                                                        };
                                                     }
                                                     return layout;
                                                 }),
@@ -978,7 +1068,7 @@ export const usePresentationStore = create<PresentationState>()(
                         slideId,
                         layoutId,
                         before: { presentations: beforeState.presentations },
-                        after: updatedState
+                        after: updatedState,
                     });
 
                     return updatedState;
@@ -999,18 +1089,17 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
                 if (!currentLayout) return;
 
-
-                set((state) => {
+                set(state => {
                     const updatedState = {
-                        presentations: state.presentations.map((presentation) => {
+                        presentations: state.presentations.map(presentation => {
                             if (presentation.id === presentationId) {
                                 return {
                                     ...presentation,
-                                    slides: presentation.slides.map((slide) => {
+                                    slides: presentation.slides.map(slide => {
                                         if (slide.id === slideId) {
                                             return {
                                                 ...slide,
-                                                layouts: slide.layouts.map((layout) =>
+                                                layouts: slide.layouts.map(layout =>
                                                     layout.id === layoutId ? { ...layout, ...data } : layout
                                                 ),
                                             };
@@ -1032,7 +1121,7 @@ export const usePresentationStore = create<PresentationState>()(
                         slideId,
                         layoutId,
                         before: { presentations: beforeState.presentations },
-                        after: updatedState
+                        after: updatedState,
                     });
 
                     return updatedState;
@@ -1054,17 +1143,17 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
                 if (!currentLayout) return;
 
-                set((state) => {
+                set(state => {
                     const updatedState = {
-                        presentations: state.presentations.map((presentation) => {
+                        presentations: state.presentations.map(presentation => {
                             if (presentation.id === presentationId) {
                                 return {
                                     ...presentation,
-                                    slides: presentation.slides.map((slide) => {
+                                    slides: presentation.slides.map(slide => {
                                         if (slide.id === slideId) {
                                             return {
                                                 ...slide,
-                                                layouts: slide.layouts.filter((layout) => layout.id !== layoutId),
+                                                layouts: slide.layouts.filter(layout => layout.id !== layoutId),
                                             };
                                         }
                                         return slide;
@@ -1074,7 +1163,7 @@ export const usePresentationStore = create<PresentationState>()(
                             }
                             return presentation;
                         }),
-                    }
+                    };
 
                     get().recordAction({
                         type: 'layout',
@@ -1083,7 +1172,7 @@ export const usePresentationStore = create<PresentationState>()(
                         slideId,
                         layoutId,
                         before: { presentations: beforeState.presentations },
-                        after: updatedState
+                        after: updatedState,
                     });
 
                     return updatedState;
@@ -1113,7 +1202,7 @@ export const usePresentationStore = create<PresentationState>()(
                     columns: currentLayout.gridStructure.columns + 1,
                     columnWidths: getColumnWidths(currentLayout.gridStructure.columns + 1),
                     rows: currentLayout.gridStructure.rows.map((row: { id: string; cells: GridCell[] }) => {
-                        const cells = [...row.cells]
+                        const cells = [...row.cells];
 
                         const newColumnId = generateId();
 
@@ -1130,7 +1219,7 @@ export const usePresentationStore = create<PresentationState>()(
                         return {
                             ...row,
                             cells,
-                        }
+                        };
                     }),
                 };
 
@@ -1148,10 +1237,9 @@ export const usePresentationStore = create<PresentationState>()(
 
                 //     updatedElements = [...currentLayout.elements, ...updatedNewElements];
                 // } else {
-                    // const newElement = getNewEditorElement(newColumnId);
-                    // updatedElements = [...currentLayout.elements, newElement];
+                // const newElement = getNewEditorElement(newColumnId);
+                // updatedElements = [...currentLayout.elements, newElement];
                 // }
-
 
                 const updatedSlide = {
                     ...currentSlide,
@@ -1168,9 +1256,7 @@ export const usePresentationStore = create<PresentationState>()(
 
                 const updatedPresentation = {
                     ...currentPresentation,
-                    slides: currentPresentation.slides.map(slide =>
-                        slide.id === slideId ? updatedSlide : slide
-                    ),
+                    slides: currentPresentation.slides.map(slide => (slide.id === slideId ? updatedSlide : slide)),
                 };
 
                 const updatedState = {
@@ -1191,12 +1277,11 @@ export const usePresentationStore = create<PresentationState>()(
                     // columnId: newColumnId,
                     position: 'right',
                     before: { presentations: beforeState.presentations },
-                    after: updatedState
+                    after: updatedState,
                 });
 
                 get().saveChanges(presentationId);
             },
-
 
             deleteRowFromTable: (presentationId, slideId, layoutId, rowIndex) => {
                 const beforeState = { ...get() };
@@ -1216,16 +1301,19 @@ export const usePresentationStore = create<PresentationState>()(
                     removedColumnsIds.push(cell.id);
                 });
 
-                const filteredElements = currentLayout.elements.filter(element => !removedColumnsIds.includes(element.cellId));
+                const filteredElements = currentLayout.elements.filter(
+                    element => !removedColumnsIds.includes(element.cellId)
+                );
 
-                const updatedRows = currentLayout.gridStructure.rows.filter(row => row.id !== currentLayout.gridStructure.rows[rowIndex].id);
+                const updatedRows = currentLayout.gridStructure.rows.filter(
+                    row => row.id !== currentLayout.gridStructure.rows[rowIndex].id
+                );
 
                 // Update grid structure
                 const updatedGridStructure: GridStructure = {
                     ...currentLayout.gridStructure,
                     rows: updatedRows,
                 };
-
 
                 const updatedSlide = {
                     ...currentSlide,
@@ -1242,9 +1330,7 @@ export const usePresentationStore = create<PresentationState>()(
 
                 const updatedPresentation = {
                     ...currentPresentation,
-                    slides: currentPresentation.slides.map(slide =>
-                        slide.id === slideId ? updatedSlide : slide
-                    ),
+                    slides: currentPresentation.slides.map(slide => (slide.id === slideId ? updatedSlide : slide)),
                 };
 
                 const updatedState = {
@@ -1263,12 +1349,11 @@ export const usePresentationStore = create<PresentationState>()(
                     slideId,
                     layoutId,
                     before: { presentations: beforeState.presentations },
-                    after: updatedState
+                    after: updatedState,
                 });
 
                 get().saveChanges(presentationId);
             },
-
 
             deleteColumnFromTable: (presentationId, slideId, layoutId, columnIndex) => {
                 const beforeState = { ...get() };
@@ -1292,18 +1377,19 @@ export const usePresentationStore = create<PresentationState>()(
                     rows: currentLayout.gridStructure.rows.map((row: { id: string; cells: GridCell[] }) => {
                         removedColumnsIds.push(row.cells[columnIndex].id);
 
-                        const cells = [...row.cells]
+                        const cells = [...row.cells];
                         cells.splice(columnIndex, 1);
                         return {
                             ...row,
                             cells,
-                        }
+                        };
                     }),
                 };
 
                 // Create new elements for the column
-                const updatedElements = currentLayout.elements.filter(element => !removedColumnsIds.includes(element.cellId));
-
+                const updatedElements = currentLayout.elements.filter(
+                    element => !removedColumnsIds.includes(element.cellId)
+                );
 
                 const updatedSlide = {
                     ...currentSlide,
@@ -1320,9 +1406,7 @@ export const usePresentationStore = create<PresentationState>()(
 
                 const updatedPresentation = {
                     ...currentPresentation,
-                    slides: currentPresentation.slides.map(slide =>
-                        slide.id === slideId ? updatedSlide : slide
-                    ),
+                    slides: currentPresentation.slides.map(slide => (slide.id === slideId ? updatedSlide : slide)),
                 };
 
                 const updatedState = {
@@ -1342,7 +1426,7 @@ export const usePresentationStore = create<PresentationState>()(
                     layoutId,
                     cellId: removedColumnsIds[0],
                     before: { presentations: beforeState.presentations },
-                    after: updatedState
+                    after: updatedState,
                 });
 
                 get().saveChanges(presentationId);
@@ -1368,7 +1452,7 @@ export const usePresentationStore = create<PresentationState>()(
                 const newCells = Array.from({ length: cellsCount }, (_, i) => ({
                     id: generateId(8),
                     column: i,
-                    row: rowsCount
+                    row: rowsCount,
                 }));
 
                 // Создаем новые элементы для каждой ячейки
@@ -1383,24 +1467,24 @@ export const usePresentationStore = create<PresentationState>()(
                 const updatedRows = [...currentLayout.gridStructure.rows];
                 updatedRows.splice(rowIndex, 0, {
                     id: generateId(8),
-                    cells: newCells
+                    cells: newCells,
                 });
 
                 // Создаем обновленную структуру сетки с новой строкой
                 const updatedGridStructure = {
                     ...currentLayout.gridStructure,
-                    rows: updatedRows
+                    rows: updatedRows,
                 };
 
                 // Создаем обновленный layout
                 const updatedLayout = {
                     ...currentLayout,
                     gridStructure: updatedGridStructure,
-                    elements: [...currentLayout.elements, ...newElements]
+                    elements: [...currentLayout.elements, ...newElements],
                 };
 
                 // Обновляем состояние, соблюдая иммутабельность на всех уровнях
-                set((state) => {
+                set(state => {
                     return {
                         ...state,
                         presentations: state.presentations.map(presentation => {
@@ -1416,11 +1500,11 @@ export const usePresentationStore = create<PresentationState>()(
                                         ...slide,
                                         layouts: slide.layouts.map(layout =>
                                             layout.id === layoutId ? updatedLayout : layout
-                                        )
+                                        ),
                                     };
-                                })
+                                }),
                             };
-                        })
+                        }),
                     };
                 });
 
@@ -1432,7 +1516,7 @@ export const usePresentationStore = create<PresentationState>()(
                     slideId,
                     layoutId,
                     before: { presentations: beforeState.presentations },
-                    after: { presentations: get().presentations }
+                    after: { presentations: get().presentations },
                 });
 
                 // Автосохранение
@@ -1445,26 +1529,32 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentPresentation = get().getPresentation(presentationId);
                 if (!currentPresentation) return;
 
-                set((state) => {
+                set(state => {
                     const updatedState = {
-                        presentations: state.presentations.map((presentation) => {
+                        presentations: state.presentations.map(presentation => {
                             if (presentation.id === presentationId) {
                                 return {
                                     ...presentation,
-                                    slides: presentation.slides.map((slide) => {
+                                    slides: presentation.slides.map(slide => {
                                         if (slide.id !== slideId) return slide;
                                         return {
                                             ...slide,
-                                            layouts: slide.layouts.map((layout) => {
+                                            layouts: slide.layouts.map(layout => {
                                                 if (layout.id === layoutId) {
                                                     return {
                                                         ...layout,
                                                         gridStructure: {
                                                             ...layout.gridStructure,
-                                                            rows: layout.gridStructure.rows.map((row) => {
-                                                                return { ...row, cells: row.cells.map((cell) => ({ ...cell, alignment })) };
-                                                            })
-                                                        }
+                                                            rows: layout.gridStructure.rows.map(row => {
+                                                                return {
+                                                                    ...row,
+                                                                    cells: row.cells.map(cell => ({
+                                                                        ...cell,
+                                                                        alignment,
+                                                                    })),
+                                                                };
+                                                            }),
+                                                        },
                                                     };
                                                 }
                                                 return layout;
@@ -1484,7 +1574,7 @@ export const usePresentationStore = create<PresentationState>()(
                         presentationId,
                         layoutId,
                         before: { presentations: beforeState.presentations },
-                        after: updatedState
+                        after: updatedState,
                     });
 
                     return updatedState;
@@ -1492,13 +1582,7 @@ export const usePresentationStore = create<PresentationState>()(
 
                 get().saveChanges(presentationId);
             },
-            updateAndPotentiallyDeleteLayout: (
-                presentationId,
-                slideId,
-                layoutId,
-                data,
-                deleteIfEmpty = false
-            ) => {
+            updateAndPotentiallyDeleteLayout: (presentationId, slideId, layoutId, data, deleteIfEmpty = false) => {
                 const beforeState = { ...get() };
 
                 const currentPresentation = get().getPresentation(presentationId);
@@ -1516,49 +1600,49 @@ export const usePresentationStore = create<PresentationState>()(
                     shouldDelete = updatedElements.length === 0;
                 }
 
-                set((state) => {
-                    const presentation = state.presentations.find((p) => p.id === presentationId);
+                set(state => {
+                    const presentation = state.presentations.find(p => p.id === presentationId);
                     if (!presentation) return state;
 
                     // First, update the layout with the new data
-                    const updatedSlides = presentation.slides.map((slide) => {
+                    const updatedSlides = presentation.slides.map(slide => {
                         if (slide.id !== slideId) return slide;
 
                         // Get the updated layout
-                        const updatedLayouts = slide.layouts.map((layout) =>
+                        const updatedLayouts = slide.layouts.map(layout =>
                             layout.id === layoutId ? { ...layout, ...data } : layout
                         );
 
                         // Check if we need to delete the layout
-                        const updatedLayout = updatedLayouts.find((layout) => layout.id === layoutId);
+                        const updatedLayout = updatedLayouts.find(layout => layout.id === layoutId);
 
                         if (deleteIfEmpty && updatedLayout && updatedLayout.elements.length === 0) {
                             // If the layout is now empty and deleteIfEmpty is true, remove it
                             return {
                                 ...slide,
-                                layouts: updatedLayouts.filter((layout) => layout.id !== layoutId)
+                                layouts: updatedLayouts.filter(layout => layout.id !== layoutId),
                             };
                         }
 
                         // Otherwise just return the slide with updated layouts
                         return {
                             ...slide,
-                            layouts: updatedLayouts
+                            layouts: updatedLayouts,
                         };
                     });
 
                     // Update the presentation with new slides
                     const updatedState = {
-                        presentations: state.presentations.map((p) => {
+                        presentations: state.presentations.map(p => {
                             if (p.id === presentationId) {
                                 return {
                                     ...p,
                                     slides: updatedSlides,
-                                    updatedAt: Date.now()
+                                    updatedAt: Date.now(),
                                 };
                             }
                             return p;
-                        })
+                        }),
                     };
 
                     get().recordAction({
@@ -1568,7 +1652,7 @@ export const usePresentationStore = create<PresentationState>()(
                         slideId,
                         layoutId,
                         before: { presentations: beforeState.presentations },
-                        after: updatedState
+                        after: updatedState,
                     });
 
                     return updatedState;
@@ -1578,7 +1662,7 @@ export const usePresentationStore = create<PresentationState>()(
                 get().saveChanges(presentationId);
             },
 
-            findLayoutByElementId: (elementId) => {
+            findLayoutByElementId: elementId => {
                 for (const presentation of get().presentations) {
                     for (const slide of presentation.slides) {
                         for (const layout of slide.layouts) {
@@ -1608,7 +1692,7 @@ export const usePresentationStore = create<PresentationState>()(
                 const elementId = generateId();
 
                 const newElement: BaseElement = {
-                    ...elementData as BaseElement,
+                    ...(elementData as BaseElement),
                     id: elementId,
                     // type: 'text' as TextElementType,
                     // componentStructure: elementData.componentStructure || ComponentStructureType.TEXT_EDITOR,
@@ -1626,17 +1710,17 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
                 if (!currentLayout) return elementId;
 
-                set((state) => {
+                set(state => {
                     const updatedState = {
-                        presentations: state.presentations.map((presentation) => {
+                        presentations: state.presentations.map(presentation => {
                             if (presentation.id === presentationId) {
                                 return {
                                     ...presentation,
-                                    slides: presentation.slides.map((slide) => {
+                                    slides: presentation.slides.map(slide => {
                                         if (slide.id === slideId) {
                                             return {
                                                 ...slide,
-                                                layouts: slide.layouts.map((layout) => {
+                                                layouts: slide.layouts.map(layout => {
                                                     if (layout.id === layoutId) {
                                                         return {
                                                             ...layout,
@@ -1664,7 +1748,7 @@ export const usePresentationStore = create<PresentationState>()(
                         layoutId,
                         elementId,
                         before: { presentations: beforeState.presentations },
-                        after: updatedState
+                        after: updatedState,
                     });
 
                     return updatedState;
@@ -1685,7 +1769,9 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
                 if (!currentSlide) return;
 
-                const currentLayout = currentSlide.layouts.find(layout => layout.elements.some(element => element.id === elementId));
+                const currentLayout = currentSlide.layouts.find(layout =>
+                    layout.elements.some(element => element.id === elementId)
+                );
                 if (!currentLayout) return;
 
                 const currentElement = currentLayout.elements.find(element => element.id === elementId);
@@ -1693,22 +1779,24 @@ export const usePresentationStore = create<PresentationState>()(
 
                 const newElement = getNewEditorElement(currentElement.cellId);
 
-                set((state) => {
+                set(state => {
                     let updatedState;
                     if (currentLayout.gridStructure.columns > 1) {
                         updatedState = {
-                            presentations: state.presentations.map((presentation) => {
+                            presentations: state.presentations.map(presentation => {
                                 if (presentation.id === presentationId) {
                                     return {
                                         ...presentation,
-                                        slides: presentation.slides.map((slide) => {
+                                        slides: presentation.slides.map(slide => {
                                             if (slide.id === slideId) {
                                                 return {
                                                     ...slide,
-                                                    layouts: slide.layouts.map((layout) => {
+                                                    layouts: slide.layouts.map(layout => {
                                                         if (layout.id === currentLayout.id) {
                                                             const updatedElements = [...layout.elements];
-                                                            const targetIndex = updatedElements.findIndex(element => element.id === elementId);
+                                                            const targetIndex = updatedElements.findIndex(
+                                                                element => element.id === elementId
+                                                            );
                                                             updatedElements.splice(targetIndex + 1, 0, newElement);
                                                             return { ...layout, elements: updatedElements };
                                                         }
@@ -1733,7 +1821,7 @@ export const usePresentationStore = create<PresentationState>()(
                             layoutId: currentLayout.id,
                             elementId,
                             before: { presentations: beforeState.presentations },
-                            after: updatedState
+                            after: updatedState,
                         });
                     } else {
                         const cellId = generateId();
@@ -1742,33 +1830,41 @@ export const usePresentationStore = create<PresentationState>()(
                             gridStructure: {
                                 columns: 1,
                                 columnWidths: getColumnWidths(1),
-                                rows: [{
-                                    id: generateId(),
-                                    cells: [{
-                                        id: cellId,
-                                        row: 0,
-                                        column: 1,
-                                    }]
-                                }]
+                                rows: [
+                                    {
+                                        id: generateId(),
+                                        cells: [
+                                            {
+                                                id: cellId,
+                                                row: 0,
+                                                column: 1,
+                                            },
+                                        ],
+                                    },
+                                ],
                             },
                             type: currentLayout.type,
-                            elements: [{
-                                ...newElement,
-                                cellId,
-                            }],
+                            elements: [
+                                {
+                                    ...newElement,
+                                    cellId,
+                                },
+                            ],
                             style: currentLayout.style,
                         };
-                        const currentLayoutIndex = currentSlide.layouts.findIndex(layout => layout.id === currentLayout.id);
+                        const currentLayoutIndex = currentSlide.layouts.findIndex(
+                            layout => layout.id === currentLayout.id
+                        );
                         const updatedLayouts = JSON.parse(JSON.stringify(currentSlide.layouts));
 
                         updatedLayouts.splice(currentLayoutIndex + 1, 0, newLayout);
 
                         updatedState = {
-                            presentations: state.presentations.map((presentation) => {
+                            presentations: state.presentations.map(presentation => {
                                 if (presentation.id === presentationId) {
                                     return {
                                         ...presentation,
-                                        slides: presentation.slides.map((slide) => {
+                                        slides: presentation.slides.map(slide => {
                                             if (slide.id === slideId) {
                                                 return {
                                                     ...slide,
@@ -1785,7 +1881,7 @@ export const usePresentationStore = create<PresentationState>()(
                         };
                     }
                     return updatedState;
-                })
+                });
             },
             updateElement: (presentationId, slideId, layoutId, elementId, data, createHistoryEntry = true) => {
                 const beforeState = { ...get() };
@@ -1824,9 +1920,11 @@ export const usePresentationStore = create<PresentationState>()(
                 const newState = { ...get() };
 
                 // Directly update the element while keeping reference identity of other objects
-                newState.presentations[presentationIndex].slides[slideIndex].layouts[layoutIndex].elements[elementIndex] = {
+                newState.presentations[presentationIndex].slides[slideIndex].layouts[layoutIndex].elements[
+                    elementIndex
+                ] = {
                     ...elements[elementIndex],
-                    ...data
+                    ...data,
                 };
 
                 // Update the timestamp to trigger auto-save
@@ -1845,7 +1943,7 @@ export const usePresentationStore = create<PresentationState>()(
                         layoutId,
                         elementId,
                         before: { presentations: beforeState.presentations },
-                        after: { presentations: get().presentations }
+                        after: { presentations: get().presentations },
                     });
                 } else {
                     get().recordAction({
@@ -1856,7 +1954,7 @@ export const usePresentationStore = create<PresentationState>()(
                         layoutId,
                         elementId,
                         before: { presentations: beforeState.presentations },
-                        after: { presentations: newState.presentations }
+                        after: { presentations: newState.presentations },
                     });
                 }
 
@@ -1879,22 +1977,22 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentElement = currentLayout.elements.find(element => element.id === elementId);
                 if (!currentElement) return;
 
-                set((state) => {
+                set(state => {
                     const updatedState = {
-                        presentations: state.presentations.map((presentation) => {
+                        presentations: state.presentations.map(presentation => {
                             if (presentation.id === presentationId) {
                                 return {
                                     ...presentation,
-                                    slides: presentation.slides.map((slide) => {
+                                    slides: presentation.slides.map(slide => {
                                         if (slide.id === slideId) {
                                             return {
                                                 ...slide,
-                                                layouts: slide.layouts.map((layout) => {
+                                                layouts: slide.layouts.map(layout => {
                                                     if (layout.id === layoutId) {
                                                         return {
                                                             ...layout,
                                                             elements: layout.elements.filter(
-                                                                (element) => element.id !== elementId
+                                                                element => element.id !== elementId
                                                             ),
                                                         };
                                                     }
@@ -1920,7 +2018,7 @@ export const usePresentationStore = create<PresentationState>()(
                         layoutId,
                         elementId,
                         before: { presentations: beforeState.presentations },
-                        after: updatedState
+                        after: updatedState,
                     });
                     return updatedState;
                 });
@@ -1928,7 +2026,6 @@ export const usePresentationStore = create<PresentationState>()(
                 // Add auto-save after deleting element
                 get().saveChanges(presentationId);
             },
-
 
             addColumn: (presentationId, slideId, layoutId, columnIndex) => {
                 const beforeState = { ...get() };
@@ -1961,7 +2058,7 @@ export const usePresentationStore = create<PresentationState>()(
                         return {
                             ...row,
                             cells: updatedCells,
-                        }
+                        };
                     }),
                 };
 
@@ -1971,17 +2068,19 @@ export const usePresentationStore = create<PresentationState>()(
                     const firstRow = currentLayout.gridStructure.rows[0];
                     if (!firstRow) return;
                     const elements = currentLayout.elements.filter(element => element.cellId === firstRow.cells[0].id);
-                    const updatedNewElements = elements.map(element => ({
-                        ...element,
-                        id: generateId(),
-                        cellId: newColumnId,
-                    } as BaseElement));
+                    const updatedNewElements = elements.map(
+                        element =>
+                            ({
+                                ...element,
+                                id: generateId(),
+                                cellId: newColumnId,
+                            }) as BaseElement
+                    );
                     updatedElements = [...currentLayout.elements, ...updatedNewElements];
                 } else {
                     const newElement = getNewEditorElement(newColumnId);
                     updatedElements = [...currentLayout.elements, newElement];
                 }
-
 
                 const updatedSlide = {
                     ...currentSlide,
@@ -1998,9 +2097,7 @@ export const usePresentationStore = create<PresentationState>()(
 
                 const updatedPresentation = {
                     ...currentPresentation,
-                    slides: currentPresentation.slides.map(slide =>
-                        slide.id === slideId ? updatedSlide : slide
-                    ),
+                    slides: currentPresentation.slides.map(slide => (slide.id === slideId ? updatedSlide : slide)),
                 };
 
                 const updatedState = {
@@ -2021,7 +2118,7 @@ export const usePresentationStore = create<PresentationState>()(
                     cellId: newColumnId,
                     position: 'right',
                     before: { presentations: beforeState.presentations },
-                    after: updatedState
+                    after: updatedState,
                 });
             },
 
@@ -2088,17 +2185,17 @@ export const usePresentationStore = create<PresentationState>()(
                 const updatedGridStructure = JSON.parse(JSON.stringify(currentLayout.gridStructure));
                 updatedGridStructure.rows[0].cells.find((cell: GridCell) => cell.id === cellId).alignment = alignment;
 
-                set((state) => {
+                set(state => {
                     const updatedState = {
-                        presentations: state.presentations.map((presentation) => {
+                        presentations: state.presentations.map(presentation => {
                             if (presentation.id === presentationId) {
                                 return {
                                     ...presentation,
-                                    slides: presentation.slides.map((slide) => {
+                                    slides: presentation.slides.map(slide => {
                                         if (slide.id === slideId) {
                                             return {
                                                 ...slide,
-                                                layouts: slide.layouts.map((layout) => {
+                                                layouts: slide.layouts.map(layout => {
                                                     if (layout.id === layoutId) {
                                                         return {
                                                             ...layout,
@@ -2126,7 +2223,7 @@ export const usePresentationStore = create<PresentationState>()(
                         cellId,
                         alignment,
                         before: { presentations: beforeState.presentations },
-                        after: updatedState
+                        after: updatedState,
                     });
                     return updatedState;
                 });
@@ -2191,7 +2288,7 @@ export const usePresentationStore = create<PresentationState>()(
                         return {
                             ...l,
                             gridStructure: newGridStructure,
-                            elements: newElements
+                            elements: newElements,
                         };
                     }
                     return l;
@@ -2202,7 +2299,7 @@ export const usePresentationStore = create<PresentationState>()(
                     if (s.id === slideId) {
                         return {
                             ...s,
-                            layouts: updatedLayouts
+                            layouts: updatedLayouts,
                         };
                     }
                     return s;
@@ -2215,11 +2312,11 @@ export const usePresentationStore = create<PresentationState>()(
                             return {
                                 ...p,
                                 slides: updatedSlides,
-                                updatedAt: Date.now()
+                                updatedAt: Date.now(),
                             };
                         }
                         return p;
-                    })
+                    }),
                 });
 
                 // Save changes
@@ -2231,13 +2328,12 @@ export const usePresentationStore = create<PresentationState>()(
                     description: 'Delete column',
                     presentationId,
                     before: { presentations: beforeState.presentations },
-                    after: { presentations: get().presentations }
+                    after: { presentations: get().presentations },
                 });
 
                 // Increment version to ensure UI updates
                 get().incrementVersion();
             },
-
 
             changeTemplate: (presentationId: string, slideId: string, layoutId: string, template: LayoutType) => {
                 const beforeState = { ...get() };
@@ -2280,15 +2376,18 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentColumnsCount = updatedGridStructure.columns;
 
                 if (currentColumnsCount > newColumnsCount) {
-                    const strippedColumns = updatedGridStructure.rows[0].cells.slice(newColumnsCount, updatedGridStructure.rows[0].cells.length);
+                    const strippedColumns = updatedGridStructure.rows[0].cells.slice(
+                        newColumnsCount,
+                        updatedGridStructure.rows[0].cells.length
+                    );
                     const updatedColumns = updatedGridStructure.rows[0].cells.slice(0, newColumnsCount);
 
                     const lastColumn = updatedColumns[updatedColumns.length - 1];
 
                     updatedGridStructure.columns = newColumnsCount;
 
-                    const updatedElements = layout.elements.map((element) => {
-                        if (strippedColumns.some((column) => column.id === element.cellId)) {
+                    const updatedElements = layout.elements.map(element => {
+                        if (strippedColumns.some(column => column.id === element.cellId)) {
                             return {
                                 ...element,
                                 cellId: lastColumn.id,
@@ -2299,17 +2398,17 @@ export const usePresentationStore = create<PresentationState>()(
 
                     updatedGridStructure.rows[0].cells = updatedColumns;
 
-                    set((state) => {
+                    set(state => {
                         const updatedState = {
-                            presentations: state.presentations.map((presentation) => {
+                            presentations: state.presentations.map(presentation => {
                                 if (presentation.id === presentationId) {
                                     return {
                                         ...presentation,
-                                        slides: presentation.slides.map((slide) => {
+                                        slides: presentation.slides.map(slide => {
                                             if (slide.id === slideId) {
                                                 return {
                                                     ...slide,
-                                                    layouts: slide.layouts.map((layout) => {
+                                                    layouts: slide.layouts.map(layout => {
                                                         if (layout.id === layoutId) {
                                                             return {
                                                                 ...layout,
@@ -2336,45 +2435,46 @@ export const usePresentationStore = create<PresentationState>()(
                             slideId,
                             layoutId,
                             before: { presentations: beforeState.presentations },
-                            after: updatedState
+                            after: updatedState,
                         });
 
                         return updatedState;
                     });
-
                 } else if (currentColumnsCount < newColumnsCount) {
                     updatedGridStructure.columns = newColumnsCount;
 
                     const newElements: BaseElement[] = [];
 
-                    const newCells: GridCell[] = new Array(newColumnsCount - currentColumnsCount).fill(null).map((_, index) => {
-                        const cellId = generateId();
+                    const newCells: GridCell[] = new Array(newColumnsCount - currentColumnsCount)
+                        .fill(null)
+                        .map((_, index) => {
+                            const cellId = generateId();
 
-                        const newEditor = getNewEditorElement(cellId);
-                        newElements.push(newEditor as BaseElement);
+                            const newEditor = getNewEditorElement(cellId);
+                            newElements.push(newEditor as BaseElement);
 
-                        return {
-                            id: cellId,
-                            row: 0,
-                            column: currentColumnsCount + index,
-                            elements: [],
-                        };
-                    });
+                            return {
+                                id: cellId,
+                                row: 0,
+                                column: currentColumnsCount + index,
+                                elements: [],
+                            };
+                        });
 
                     updatedGridStructure.rows[0].cells = updatedGridStructure.rows[0].cells.concat(newCells);
                     const updatedElements = layout.elements.concat(newElements);
 
-                    set((state) => {
+                    set(state => {
                         const updatedState = {
-                            presentations: state.presentations.map((presentation) => {
+                            presentations: state.presentations.map(presentation => {
                                 if (presentation.id === presentationId) {
                                     return {
                                         ...presentation,
-                                        slides: presentation.slides.map((slide) => {
+                                        slides: presentation.slides.map(slide => {
                                             if (slide.id === slideId) {
                                                 return {
                                                     ...slide,
-                                                    layouts: slide.layouts.map((layout) => {
+                                                    layouts: slide.layouts.map(layout => {
                                                         if (layout.id === layoutId) {
                                                             return {
                                                                 ...layout,
@@ -2401,23 +2501,23 @@ export const usePresentationStore = create<PresentationState>()(
                             slideId,
                             layoutId,
                             before: { presentations: beforeState.presentations },
-                            after: updatedState
+                            after: updatedState,
                         });
 
                         return updatedState;
                     });
                 } else {
-                    set((state) => {
+                    set(state => {
                         const updatedState = {
-                            presentations: state.presentations.map((presentation) => {
+                            presentations: state.presentations.map(presentation => {
                                 if (presentation.id === presentationId) {
                                     return {
                                         ...presentation,
-                                        slides: presentation.slides.map((slide) => {
+                                        slides: presentation.slides.map(slide => {
                                             if (slide.id === slideId) {
                                                 return {
                                                     ...slide,
-                                                    layouts: slide.layouts.map((layout) => {
+                                                    layouts: slide.layouts.map(layout => {
                                                         if (layout.id === layoutId) {
                                                             return {
                                                                 ...layout,
@@ -2443,7 +2543,7 @@ export const usePresentationStore = create<PresentationState>()(
                             slideId,
                             layoutId,
                             before: { presentations: beforeState.presentations },
-                            after: updatedState
+                            after: updatedState,
                         });
 
                         return updatedState;
@@ -2488,9 +2588,9 @@ export const usePresentationStore = create<PresentationState>()(
             setTheme: (presentationId, themeId) => {
                 const beforeState = { ...get() };
 
-                set((state) => {
+                set(state => {
                     const updatedState = {
-                        presentations: state.presentations.map((presentation) =>
+                        presentations: state.presentations.map(presentation =>
                             presentation.id === presentationId
                                 ? { ...presentation, themeId, updatedAt: Date.now() }
                                 : presentation
@@ -2502,7 +2602,7 @@ export const usePresentationStore = create<PresentationState>()(
                         description: 'Update presentation theme',
                         presentationId,
                         before: { presentations: beforeState.presentations },
-                        after: updatedState
+                        after: updatedState,
                     });
 
                     return updatedState;
@@ -2525,5 +2625,6 @@ export const usePresentationStore = create<PresentationState>()(
     )
 );
 
-export const selectCellElementIds = (presentationId: string, slideId: string, layoutId: string, cellId: string) => 
-    (state: PresentationState) => state.getCellElementIds(presentationId, slideId, layoutId, cellId);
+export const selectCellElementIds =
+    (presentationId: string, slideId: string, layoutId: string, cellId: string) => (state: PresentationState) =>
+        state.getCellElementIds(presentationId, slideId, layoutId, cellId);

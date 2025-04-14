@@ -7,7 +7,7 @@ import { DEFAULT_THEME } from '@/constants/defaultTheme';
  * to prevent theme styles from affecting admin UI components.
  */
 export const resetThemeStyles = (): void => {
-    console.log("ThemeUtils: Resetting theme styles to defaults");
+    console.log('ThemeUtils: Resetting theme styles to defaults');
 
     // Base colors
     document.documentElement.style.setProperty('--primary-accent', DEFAULT_THEME.colors.primaryAccent);
@@ -17,7 +17,10 @@ export const resetThemeStyles = (): void => {
     document.documentElement.style.setProperty('--page-background', DEFAULT_THEME.colors.pageBackground);
 
     // Typography
-    document.documentElement.style.setProperty('--heading-font', `'${DEFAULT_THEME.typography.headingFont}', sans-serif`);
+    document.documentElement.style.setProperty(
+        '--heading-font',
+        `'${DEFAULT_THEME.typography.headingFont}', sans-serif`
+    );
     document.documentElement.style.setProperty('--heading-weight', DEFAULT_THEME.typography.headingWeight.toString());
     document.documentElement.style.setProperty('--body-font', `'${DEFAULT_THEME.typography.bodyFont}', sans-serif`);
     document.documentElement.style.setProperty('--body-weight', DEFAULT_THEME.typography.bodyWeight.toString());
@@ -33,11 +36,16 @@ export const resetThemeStyles = (): void => {
     document.documentElement.style.setProperty('--block-opacity', DEFAULT_THEME.design.blocks.opacity.toString());
 
     // Handle block border width with proper indentation
-    const blockBorderWidth = DEFAULT_THEME.design.blocks.borderWidth === 'thin' ? '1px' :
-        DEFAULT_THEME.design.blocks.borderWidth === 'medium' ? '2px' :
-            DEFAULT_THEME.design.blocks.borderWidth === 'thick' ? '4px' : '0';
-
+    let blockBorderWidth = '0';
+    if (DEFAULT_THEME.design.blocks.borderWidth === 'thin') {
+        blockBorderWidth = '1px';
+    } else if (DEFAULT_THEME.design.blocks.borderWidth === 'medium') {
+        blockBorderWidth = '2px';
+    } else if (DEFAULT_THEME.design.blocks.borderWidth === 'thick') {
+        blockBorderWidth = '4px';
+    }
     document.documentElement.style.setProperty('--block-border-width', blockBorderWidth);
+
     document.documentElement.style.setProperty('--block-shadow', DEFAULT_THEME.design.blocks.shadow);
 
     // Button and link design

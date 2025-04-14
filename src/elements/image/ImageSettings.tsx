@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React from 'react';
 import { ImageElement } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
@@ -12,12 +12,12 @@ interface ImageSettingsProps {
 }
 
 const ImageSettings: React.FC<ImageSettingsProps> = ({ elementId, presentationId, slideId, layoutId }) => {
-    const element = usePresentationStore((state) =>
-        state.getElement(presentationId, slideId, layoutId, elementId) as ImageElement
+    const element = usePresentationStore(
+        state => state.getElement(presentationId, slideId, layoutId, elementId) as ImageElement
     );
 
-    const updateElement = usePresentationStore((state) => state.updateElement);
-    const deleteElement = usePresentationStore((state) => state.deleteElement);
+    const updateElement = usePresentationStore(state => state.updateElement);
+    const deleteElement = usePresentationStore(state => state.deleteElement);
     const handleSrcChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         updateElement(presentationId, slideId, layoutId, elementId, { src: e.target.value });
     };
@@ -29,7 +29,6 @@ const ImageSettings: React.FC<ImageSettingsProps> = ({ elementId, presentationId
     const handleAlignmentChange = (alignment: 'left' | 'center' | 'right') => {
         updateElement(presentationId, slideId, layoutId, elementId, { alignment });
     };
-
 
     const handleDeleteElement = () => {
         // todo: нужно обработать все кейсы
@@ -82,7 +81,7 @@ const ImageSettings: React.FC<ImageSettingsProps> = ({ elementId, presentationId
                         onClick={() => handleAlignmentChange('left')}
                         aria-label="Align left"
                         tabIndex={0}
-                        onKeyDown={(e) => e.key === 'Enter' && handleAlignmentChange('left')}
+                        onKeyDown={e => e.key === 'Enter' && handleAlignmentChange('left')}
                     >
                         Слева
                     </button>
@@ -92,7 +91,7 @@ const ImageSettings: React.FC<ImageSettingsProps> = ({ elementId, presentationId
                         onClick={() => handleAlignmentChange('center')}
                         aria-label="Align center"
                         tabIndex={0}
-                        onKeyDown={(e) => e.key === 'Enter' && handleAlignmentChange('center')}
+                        onKeyDown={e => e.key === 'Enter' && handleAlignmentChange('center')}
                     >
                         По центру
                     </button>
@@ -102,7 +101,7 @@ const ImageSettings: React.FC<ImageSettingsProps> = ({ elementId, presentationId
                         onClick={() => handleAlignmentChange('right')}
                         aria-label="Align right"
                         tabIndex={0}
-                        onKeyDown={(e) => e.key === 'Enter' && handleAlignmentChange('right')}
+                        onKeyDown={e => e.key === 'Enter' && handleAlignmentChange('right')}
                     >
                         Справа
                     </button>
@@ -116,7 +115,7 @@ const ImageSettings: React.FC<ImageSettingsProps> = ({ elementId, presentationId
                     onClick={() => handleDeleteElement()}
                     aria-label="Удалить изображение"
                     tabIndex={0}
-                    onKeyDown={(e) => e.key === 'Enter' && handleDeleteElement()}
+                    onKeyDown={e => e.key === 'Enter' && handleDeleteElement()}
                 >
                     Удалить
                 </button>

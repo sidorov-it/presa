@@ -1,7 +1,6 @@
 import React, { CSSProperties, useRef, useEffect } from 'react';
 import { useMenuStore } from '@/store/menuStore';
 import { cn } from '@/lib/utils';
-import styles from './BaseMenu.module.css';
 
 export interface BaseMenuProps {
     children: React.ReactNode;
@@ -11,14 +10,7 @@ export interface BaseMenuProps {
     onClose?: () => void;
 }
 
-export const BaseMenu: React.FC<BaseMenuProps> = ({
-    children,
-    position,
-    className,
-    style,
-    center,
-    onClose
-}) => {
+export const BaseMenu: React.FC<BaseMenuProps> = ({ children, position, className, style, onClose }) => {
     const menuRef = useRef<HTMLDivElement>(null);
     const isOpen = useMenuStore(state => state.isOpen);
 
@@ -27,7 +19,7 @@ export const BaseMenu: React.FC<BaseMenuProps> = ({
         backgroundColor: 'white',
         color: '#333',
         borderColor: '#e2e8f0',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
     };
 
     // Calculate menu position
@@ -82,15 +74,13 @@ export const BaseMenu: React.FC<BaseMenuProps> = ({
         <div
             ref={menuRef}
             className={cn(
-                "min-w-auto border border-[#e2e8f0] flex p-1 rounded-md bg-white shadow-lg",
-                "light-theme-only",
-                className,
+                'min-w-auto border border-[#e2e8f0] flex p-1 rounded-md bg-white shadow-lg',
+                'light-theme-only',
+                className
             )}
             style={menuStyle}
         >
-            <ul className="flex items-center space-x-1">
-                {children}
-            </ul>
+            <ul className="flex items-center space-x-1">{children}</ul>
         </div>
     );
-}; 
+};

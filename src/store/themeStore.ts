@@ -3,21 +3,21 @@ import { Theme } from '@/types/theme';
 import { createNewTheme } from '@/constants/defaultTheme';
 
 interface ThemeState {
-  themes: Theme[];
-  currentTheme: Theme | null;
-  setCurrentTheme: (theme: Theme | null) => void;
-  addTheme: (theme: Omit<Theme, 'id'>) => Promise<void>;
-  updateTheme: (theme: Theme) => Promise<void>;
-  deleteTheme: (themeId: string) => Promise<void>;
-  loadThemes: () => Promise<void>;
-  getDefaultTheme: () => Theme;
+    themes: Theme[];
+    currentTheme: Theme | null;
+    setCurrentTheme: (theme: Theme | null) => void;
+    addTheme: (theme: Omit<Theme, 'id'>) => Promise<void>;
+    updateTheme: (theme: Theme) => Promise<void>;
+    deleteTheme: (themeId: string) => Promise<void>;
+    loadThemes: () => Promise<void>;
+    getDefaultTheme: () => Theme;
 }
 
 export const useThemeStore = create<ThemeState>((set, get) => ({
     themes: [],
     currentTheme: null,
 
-    setCurrentTheme: (theme) => {
+    setCurrentTheme: theme => {
         set({ currentTheme: theme });
     },
 
@@ -25,7 +25,7 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
         return createNewTheme();
     },
 
-    addTheme: async (theme) => {
+    addTheme: async theme => {
         try {
             const response = await fetch('/api/themes', {
                 method: 'POST',
@@ -49,7 +49,7 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
         }
     },
 
-    updateTheme: async (theme) => {
+    updateTheme: async theme => {
         try {
             const response = await fetch(`/api/themes/${theme.id}`, {
                 method: 'PUT',
@@ -64,7 +64,7 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
             }
 
             const updatedTheme = await response.json();
-            const themes = get().themes.map((t) => (t.id === theme.id ? updatedTheme : t));
+            const themes = get().themes.map(t => (t.id === theme.id ? updatedTheme : t));
             set({ themes });
             if (get().currentTheme?.id === theme.id) {
                 set({ currentTheme: updatedTheme });
@@ -76,7 +76,7 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
         }
     },
 
-    deleteTheme: async (themeId) => {
+    deleteTheme: async themeId => {
         try {
             const response = await fetch(`/api/themes/${themeId}`, {
                 method: 'DELETE',
@@ -87,7 +87,7 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
             }
 
             // Update local state after successful deletion
-            const filteredThemes = get().themes.filter((t) => t.id !== themeId);
+            const filteredThemes = get().themes.filter(t => t.id !== themeId);
             set({ themes: filteredThemes });
 
             if (get().currentTheme?.id === themeId) {

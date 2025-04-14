@@ -9,10 +9,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
         const session = await getServerSession(authOptions);
 
         if (!session?.user) {
-            return NextResponse.json(
-                { message: 'Unauthorized' },
-                { status: 401 }
-            );
+            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
         }
 
         const userId = session.user.id;
@@ -23,15 +20,12 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
             where: {
                 id: presentationId,
                 userId,
-                isDeleted: false
-            }
+                isDeleted: false,
+            },
         });
 
         if (!originalPresentation) {
-            return NextResponse.json(
-                { message: 'Presentation not found' },
-                { status: 404 }
-            );
+            return NextResponse.json({ message: 'Presentation not found' }, { status: 404 });
         }
 
         // Create a deep copy of the slides data
@@ -65,7 +59,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
                 slides: newSlides,
                 userId: userId,
                 isDeleted: false,
-            }
+            },
         });
 
         return NextResponse.json({
@@ -74,9 +68,6 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
         });
     } catch (error) {
         console.error('Duplicate presentation error:', error);
-        return NextResponse.json(
-            { message: 'Internal server error' },
-            { status: 500 }
-        );
+        return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }

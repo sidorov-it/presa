@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 interface Params {
-  id: string;
+    id: string;
 }
 
 export async function GET(request: Request, props: { params: Promise<Params> }) {
@@ -15,19 +15,13 @@ export async function GET(request: Request, props: { params: Promise<Params> }) 
         });
 
         if (!theme) {
-            return NextResponse.json(
-                { error: 'Theme not found' },
-                { status: 404 }
-            );
+            return NextResponse.json({ error: 'Theme not found' }, { status: 404 });
         }
 
         return NextResponse.json(theme);
     } catch (error) {
         console.error('Failed to fetch theme:', error);
-        return NextResponse.json(
-            { error: 'Failed to fetch theme' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Failed to fetch theme' }, { status: 500 });
     }
 }
 
@@ -41,10 +35,7 @@ export async function DELETE(request: Request, props: { params: Promise<Params> 
         });
 
         if (!theme) {
-            return NextResponse.json(
-                { error: 'Theme not found' },
-                { status: 404 }
-            );
+            return NextResponse.json({ error: 'Theme not found' }, { status: 404 });
         }
 
         await prisma.theme.delete({
@@ -54,10 +45,7 @@ export async function DELETE(request: Request, props: { params: Promise<Params> 
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('Failed to delete theme:', error);
-        return NextResponse.json(
-            { error: 'Failed to delete theme' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Failed to delete theme' }, { status: 500 });
     }
 }
 
@@ -73,10 +61,7 @@ export async function PUT(request: Request, props: { params: Promise<Params> }) 
         });
 
         if (!existingTheme) {
-            return NextResponse.json(
-                { error: 'Theme not found' },
-                { status: 404 }
-            );
+            return NextResponse.json({ error: 'Theme not found' }, { status: 404 });
         }
 
         // Update the theme
@@ -100,9 +85,6 @@ export async function PUT(request: Request, props: { params: Promise<Params> }) 
         return NextResponse.json(updatedTheme);
     } catch (error) {
         console.error('Failed to update theme:', error);
-        return NextResponse.json(
-            { error: 'Failed to update theme' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Failed to update theme' }, { status: 500 });
     }
 }

@@ -16,10 +16,7 @@ export async function GET() {
         return NextResponse.json(parsePresentations(presentations));
     } catch (error) {
         console.error('Error fetching deleted presentations:', error);
-        return NextResponse.json(
-            { error: 'Error fetching deleted presentations' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Error fetching deleted presentations' }, { status: 500 });
     }
 }
 
@@ -30,25 +27,19 @@ export async function PUT(request: NextRequest) {
 
         const presentation = await prisma.presentation.update({
             where: { id },
-            data: { isDeleted: false }
+            data: { isDeleted: false },
         });
 
         if (!presentation) {
-            return NextResponse.json(
-                { error: 'Presentation not found' },
-                { status: 404 }
-            );
+            return NextResponse.json({ error: 'Presentation not found' }, { status: 404 });
         }
 
         return NextResponse.json({
-            message: 'Presentation restored successfully'
+            message: 'Presentation restored successfully',
         });
     } catch (error) {
         console.error('Error restoring presentation:', error);
-        return NextResponse.json(
-            { error: 'Error restoring presentation' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Error restoring presentation' }, { status: 500 });
     }
 }
 
@@ -58,20 +49,14 @@ export async function DELETE(req: NextRequest) {
         const session = await getServerSession(authOptions);
 
         if (!session?.user) {
-            return NextResponse.json(
-                { message: 'Unauthorized' },
-                { status: 401 }
-            );
+            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
         }
 
         const { searchParams } = new URL(req.url);
         const id = searchParams.get('id');
 
         if (!id) {
-            return NextResponse.json(
-                { message: 'Invalid presentation ID' },
-                { status: 400 }
-            );
+            return NextResponse.json({ message: 'Invalid presentation ID' }, { status: 400 });
         }
 
         const userId = session.user.id;
@@ -81,25 +66,19 @@ export async function DELETE(req: NextRequest) {
             where: {
                 id: id,
                 userId: userId,
-                isDeleted: true
-            }
+                isDeleted: true,
+            },
         });
 
         if (!result) {
-            return NextResponse.json(
-                { message: 'Presentation not found' },
-                { status: 404 }
-            );
+            return NextResponse.json({ message: 'Presentation not found' }, { status: 404 });
         }
 
         return NextResponse.json({
-            message: 'Presentation permanently deleted'
+            message: 'Presentation permanently deleted',
         });
     } catch (error) {
         console.error('Permanent delete presentation error:', error);
-        return NextResponse.json(
-            { message: 'Internal server error' },
-            { status: 500 }
-        );
+        return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }

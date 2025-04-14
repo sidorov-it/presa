@@ -1,10 +1,10 @@
-'use client'
-import { useState, useEffect } from 'react'
-import FillIcon from './FillIcon'
-import BorderedIcon from './BorderedIcon'
-import { usePresentationStore } from '@/store/presentationStore'
-import { ElementMenuProps } from '@/types'
-import { RefObject } from 'react'
+'use client';
+import { useState, useEffect } from 'react';
+import FillIcon from './FillIcon';
+import BorderedIcon from './BorderedIcon';
+import { usePresentationStore } from '@/store/presentationStore';
+import { ElementMenuProps } from '@/types';
+import { RefObject } from 'react';
 
 interface ButtonMenuProps extends ElementMenuProps {
     onUpdate: (key: string, value: any) => void;
@@ -21,10 +21,10 @@ export default function ButtonMenu({
     onUpdate,
     onDelete,
     nodeAttributes,
-    ref
+    ref,
 }: ButtonMenuProps) {
-    const [color, setColor] = useState(nodeAttributes.color || '#3C3939')
-    const { updateElement } = usePresentationStore()
+    const [color, setColor] = useState(nodeAttributes.color || '#3C3939');
+    const { updateElement } = usePresentationStore();
 
     // Log important information on mount
     useEffect(() => {
@@ -33,7 +33,7 @@ export default function ButtonMenu({
             nodeElementId: nodeAttributes.elementId,
             slideId,
             layoutId,
-            presentationId
+            presentationId,
         });
     }, [elementId, nodeAttributes.elementId, slideId, layoutId, presentationId]);
 
@@ -56,20 +56,23 @@ export default function ButtonMenu({
 
         // Обновляем состояние в store
         updateElement(presentationId, slideId, layoutId, targetElementId, { [key]: value });
-    }
+    };
 
     const handleDelete = () => {
         onDelete();
-    }
+    };
 
     return (
-        <div className="flex flex-col gap-4 p-3 w-[300px] bg-white rounded-md shadow-md border border-gray-200" ref={ref}>
+        <div
+            className="flex flex-col gap-4 p-3 w-[300px] bg-white rounded-md shadow-md border border-gray-200"
+            ref={ref}
+        >
             {/* Link Input */}
             <div className="w-full">
                 <input
                     type="text"
                     value={nodeAttributes.link || ''}
-                    onChange={(e) => handleChange('link', e.target.value)}
+                    onChange={e => handleChange('link', e.target.value)}
                     placeholder="Paste a link or search for a page"
                     className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm"
                 />
@@ -81,18 +84,14 @@ export default function ButtonMenu({
                 <div className="flex bg-gray-100 rounded-md p-1 gap-1">
                     <button
                         onClick={() => handleChange('buttonStyle', 'filled')}
-                        className={`px-3 py-1 rounded ${
-                            nodeAttributes.buttonStyle === 'filled' ? 'bg-purple-100' : ''
-                        }`}
+                        className={`px-3 py-1 rounded ${nodeAttributes.buttonStyle === 'filled' ? 'bg-purple-100' : ''}`}
                         aria-label="Стиль кнопки"
                     >
                         <FillIcon />
                     </button>
                     <button
                         onClick={() => handleChange('buttonStyle', 'outlined')}
-                        className={`px-3 py-1 rounded ${
-                            nodeAttributes.buttonStyle === 'outlined' ? 'bg-purple-100' : ''
-                        }`}
+                        className={`px-3 py-1 rounded ${nodeAttributes.buttonStyle === 'outlined' ? 'bg-purple-100' : ''}`}
                         aria-label="Стиль кнопки"
                     >
                         <BorderedIcon />
@@ -106,9 +105,7 @@ export default function ButtonMenu({
                 <div className="flex bg-gray-100 rounded-md p-1 gap-1">
                     <button
                         onClick={() => handleChange('alignment', 'left')}
-                        className={`px-3 py-1 rounded ${
-                            nodeAttributes.alignment === 'left' ? 'bg-purple-100' : ''
-                        }`}
+                        className={`px-3 py-1 rounded ${nodeAttributes.alignment === 'left' ? 'bg-purple-100' : ''}`}
                         aria-label="Выравнивание"
                     >
                         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -117,9 +114,7 @@ export default function ButtonMenu({
                     </button>
                     <button
                         onClick={() => handleChange('alignment', 'center')}
-                        className={`px-3 py-1 rounded ${
-                            nodeAttributes.alignment === 'center' ? 'bg-purple-100' : ''
-                        }`}
+                        className={`px-3 py-1 rounded ${nodeAttributes.alignment === 'center' ? 'bg-purple-100' : ''}`}
                         aria-label="Выравнивание"
                     >
                         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -128,9 +123,7 @@ export default function ButtonMenu({
                     </button>
                     <button
                         onClick={() => handleChange('alignment', 'right')}
-                        className={`px-3 py-1 rounded ${
-                            nodeAttributes.alignment === 'right' ? 'bg-purple-100' : ''
-                        }`}
+                        className={`px-3 py-1 rounded ${nodeAttributes.alignment === 'right' ? 'bg-purple-100' : ''}`}
                         aria-label="Выравнивание"
                     >
                         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -144,14 +137,11 @@ export default function ButtonMenu({
             <div className="flex items-center justify-between gap-2">
                 <span className="text-sm text-gray-700">Цвет</span>
                 <div className="flex items-center bg-gray-100 rounded-md px-2 py-1">
-                    <div
-                        className="w-5 h-5 rounded mr-2"
-                        style={{ backgroundColor: color }}
-                    />
+                    <div className="w-5 h-5 rounded mr-2" style={{ backgroundColor: color }} />
                     <input
                         type="text"
                         value={color}
-                        onChange={(e) => handleChange('color', e.target.value)}
+                        onChange={e => handleChange('color', e.target.value)}
                         className="bg-transparent border-none text-sm w-20"
                         aria-label="Цвет"
                     />
@@ -170,5 +160,5 @@ export default function ButtonMenu({
                 Удалить
             </button>
         </div>
-    )
+    );
 }

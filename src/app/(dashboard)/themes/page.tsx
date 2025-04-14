@@ -12,7 +12,7 @@ export default function ThemesPage() {
     const { themes, loadThemes, deleteTheme } = useThemeStore();
 
     useEffect(() => {
-        loadThemes().catch((error) => {
+        loadThemes().catch(error => {
             console.error('Failed to load themes:', error);
             toast.error('Failed to load themes');
         });
@@ -43,24 +43,18 @@ export default function ThemesPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {themes.map((theme) => (
+                {themes.map(theme => (
                     <Card key={theme.id}>
                         <CardHeader>
                             <CardTitle>{theme.name}</CardTitle>
-                            {theme.description && (
-                                <CardDescription>{theme.description}</CardDescription>
-                            )}
+                            {theme.description && <CardDescription>{theme.description}</CardDescription>}
                         </CardHeader>
                         <CardContent>
                             <div className="flex justify-end gap-2">
                                 <Link href={`/themes/${theme.id}`}>
                                     <Button variant="outline">Редактировать</Button>
                                 </Link>
-                                <Button
-                                    variant="destructive"
-                                    size="icon"
-                                    onClick={() => handleDelete(theme.id)}
-                                >
+                                <Button variant="destructive" size="icon" onClick={() => handleDelete(theme.id)}>
                                     <Trash2 className="w-4 h-4" />
                                 </Button>
                             </div>

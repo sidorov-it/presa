@@ -6,9 +6,9 @@ import { cn } from '@/lib/utils';
 import styles from './ColorPicker.module.css';
 
 interface ColorPickerProps {
-  value: string;
-  onChange: (value: string) => void;
-  className?: string;
+    value: string;
+    onChange: (value: string) => void;
+    className?: string;
 }
 
 export const ColorPicker = ({ value, onChange, className }: ColorPickerProps) => {
@@ -36,14 +36,14 @@ export const ColorPicker = ({ value, onChange, className }: ColorPickerProps) =>
     };
 
     const handleInputBlur = () => {
-    // Revert to the valid value if the input is invalid
+        // Revert to the valid value if the input is invalid
         if (!/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(inputValue)) {
             setInputValue(value);
         }
     };
 
     return (
-        <div className={cn("flex items-center gap-2", className)}>
+        <div className={cn('flex items-center gap-2', className)}>
             <Popover open={isOpen} onOpenChange={setIsOpen}>
                 <PopoverTrigger asChild>
                     <button
@@ -65,10 +65,7 @@ export const ColorPicker = ({ value, onChange, className }: ColorPickerProps) =>
 
                         <div className="flex items-center gap-2">
                             <div className="flex items-center gap-1">
-                                <div
-                                    className="w-6 h-6 rounded"
-                                    style={{ backgroundColor: value }}
-                                />
+                                <div className="w-6 h-6 rounded" style={{ backgroundColor: value }} />
                             </div>
                             <Input
                                 type="text"

@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Heading } from "@/components/ui/heading"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/Button"
-import { Plus } from "lucide-react"
+import { Heading } from '@/components/ui/heading';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/Button';
+import { Plus } from 'lucide-react';
 
 // Sample theme data
 const THEMES = [
@@ -62,20 +62,17 @@ const ThemesPage = () => {
 
     const handleThemeSelect = (themeId: string) => {
         setActiveTheme(themeId);
-    // In a real app, you would save the selected theme to the user's preferences
+        // In a real app, you would save the selected theme to the user's preferences
     };
 
     const handleCreateTheme = () => {
         // TODO: Implement theme creation
-    }
+    };
 
     return (
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
             <div className="flex items-center justify-between">
-                <Heading
-                    title="Темы"
-                    description="Настройте темы ваших презентаций"
-                />
+                <Heading title="Темы" description="Настройте темы ваших презентаций" />
                 <Button onClick={handleCreateTheme}>
                     <Plus className="mr-2 h-4 w-4" />
                     Новая тема
@@ -83,7 +80,7 @@ const ThemesPage = () => {
             </div>
 
             <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                {THEMES.map((theme) => (
+                {THEMES.map(theme => (
                     <Card
                         key={theme.id}
                         className={`hover:shadow-lg transition-shadow cursor-pointer ${
@@ -108,7 +105,7 @@ const ThemesPage = () => {
                 ))}
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default ThemesPage
+export default ThemesPage;

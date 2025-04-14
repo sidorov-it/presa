@@ -57,7 +57,7 @@ export const DragDropTransactionHelper = {
                 description,
                 presentationId,
                 before: beforeState,
-                after: afterState
+                after: afterState,
             });
 
             historyStore.commitTransaction(presentationId);
@@ -70,12 +70,7 @@ export const DragDropTransactionHelper = {
     /**
      * Updates a layout with transaction tracking
      */
-    updateLayout: (
-        presentationId: string,
-        slideId: string,
-        layoutId: string,
-        data: any
-    ) => {
+    updateLayout: (presentationId: string, slideId: string, layoutId: string, data: any) => {
         const presentationStore = usePresentationStore.getState();
         const historyStore = useHistoryStore.getState();
 
@@ -96,18 +91,14 @@ export const DragDropTransactionHelper = {
             slideId,
             layoutId,
             before: beforeState,
-            after: afterState
+            after: afterState,
         });
     },
 
     /**
      * Deletes a layout with transaction tracking
      */
-    deleteLayout: (
-        presentationId: string,
-        slideId: string,
-        layoutId: string
-    ) => {
+    deleteLayout: (presentationId: string, slideId: string, layoutId: string) => {
         const presentationStore = usePresentationStore.getState();
         const historyStore = useHistoryStore.getState();
 
@@ -128,7 +119,7 @@ export const DragDropTransactionHelper = {
             slideId,
             layoutId,
             before: beforeState,
-            after: afterState
+            after: afterState,
         });
     },
 
@@ -155,19 +146,14 @@ export const DragDropTransactionHelper = {
             presentationId,
             slideId,
             before: beforeState,
-            after: afterState
+            after: afterState,
         });
     },
 
     /**
      * Adds a layout with transaction tracking
      */
-    addLayout: (
-        presentationId: string,
-        slideId: string,
-        layout: any,
-        index?: number
-    ) => {
+    addLayout: (presentationId: string, slideId: string, layout: any, index?: number) => {
         const presentationStore = usePresentationStore.getState();
         const historyStore = useHistoryStore.getState();
 
@@ -188,7 +174,7 @@ export const DragDropTransactionHelper = {
             slideId,
             layoutId: newLayoutId,
             before: beforeState,
-            after: afterState
+            after: afterState,
         });
 
         return newLayoutId;
@@ -197,11 +183,7 @@ export const DragDropTransactionHelper = {
     /**
      * Updates a slide with transaction tracking
      */
-    updateSlide: (
-        presentationId: string,
-        slideId: string,
-        data: any
-    ) => {
+    updateSlide: (presentationId: string, slideId: string, data: any) => {
         const presentationStore = usePresentationStore.getState();
         const historyStore = useHistoryStore.getState();
 
@@ -221,7 +203,7 @@ export const DragDropTransactionHelper = {
             presentationId,
             slideId,
             before: beforeState,
-            after: afterState
+            after: afterState,
         });
-    }
+    },
 };

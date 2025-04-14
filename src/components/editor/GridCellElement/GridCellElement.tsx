@@ -5,14 +5,12 @@ import { GridCell, Element, TipTapRefs, ElementConfig } from '@/types';
 import { useHandleDragStart } from '@/contexts/DragDropContext';
 import styles from './GridCellElement.module.css';
 import { usePresentationStore } from '@/store/presentationStore';
-import { generateId } from '@/utils/id';
 import { useEditorStore } from '@/store/editorStore';
 import { MenuElementType } from '@/types';
 import { Editor } from '@tiptap/react';
-import { getColumnWidths } from '../SlideEditor/SlideEditor';
 import DragHandler from '../DragHandler';
 import ElementContent from '../ElementContent/ElementContent';
-import { ComponentStructureType, getNewEditorElement } from '@/elements/registry';
+import { ComponentStructureType } from '@/elements/registry';
 import { useMenuStore } from '@/store/menuStore';
 import { useShallow } from 'zustand/react/shallow';
 import adjustWidths from '@/utils/adjustWidths';
@@ -22,14 +20,16 @@ export const useIsSelectedRow = (tableId: string, rowIndex: number) =>
 
 export const useIsSelectedColumn = (tableId: string, columnIndex: number) =>
     useMenuStore(state => {
-        return state.tableColumnIndex === columnIndex && state.tableId === tableId
+        return state.tableColumnIndex === columnIndex && state.tableId === tableId;
     });
 
 export const useIsHoveredRow = (tableId: string, rowIndex: number, columnIndex: number) =>
     useMenuStore(state => columnIndex === 0 && state.hoveredRowIndex === rowIndex && state.hoveredTableId === tableId);
 
 export const useIsHoveredColumn = (tableId: string, rowIndex: number, columnIndex: number) =>
-    useMenuStore(state => rowIndex === 0 && state.hoveredColumnIndex === columnIndex && state.hoveredTableId === tableId);
+    useMenuStore(
+        state => rowIndex === 0 && state.hoveredColumnIndex === columnIndex && state.hoveredTableId === tableId
+    );
 
 export const useMenuElementId = () => useMenuStore(state => state.elementId);
 
@@ -60,25 +60,28 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     tiptapRefs,
     isTable = false,
     rowIndex,
-    columnIndex
+    columnIndex,
 }) => {
     const isSelectedColumn = useIsSelectedColumn(layoutId, columnIndex);
     const isHoveredColumn = useIsHoveredColumn(layoutId, rowIndex, columnIndex);
     const isMenuCurrentColumn = useMenuStore(state => {
-        return state.tableColumnIndex === columnIndex && state.selectedTableId === layoutId
+        return state.tableColumnIndex === columnIndex && state.selectedTableId === layoutId;
     });
 
     const hasSelectedColumn = useMenuStore(state => !!state.tableColumnIndex && state.selectedTableId === layoutId);
     const hasSelectedRow = useMenuStore(state => !!state.tableRowIndex && state.selectedTableId === layoutId);
 
     const elementsIds = usePresentationStore(
-        useShallow(state => state.presentations
-            .find(p => p.id === presentationId)
-            ?.slides.find(s => s.id === slideId)
-            ?.layouts.find(l => l.id === layoutId)
-            ?.elements.filter(e => e.cellId === cell.id)
-            .map(e => e.id) ?? []
-        ));
+        useShallow(
+            state =>
+                state.presentations
+                    .find(p => p.id === presentationId)
+                    ?.slides.find(s => s.id === slideId)
+                    ?.layouts.find(l => l.id === layoutId)
+                    ?.elements.filter(e => e.cellId === cell.id)
+                    .map(e => e.id) ?? []
+        )
+    );
 
     const isLastCell = elementsIds[elementsIds.length - 1] === cell.id;
 
@@ -101,86 +104,97 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     const resizebleElementRef = useRef<string | null>(null);
 
-    const editorRef = useRef<HTMLDivElement>(null)
-    const handleMenuClick = useCallback((menuData: { elementId: string, elementType: MenuElementType, componentStructure?: ComponentStructureType, activeEditor?: Editor }) => {
-        useEditorStore.getState().setActiveEditor(menuData.activeEditor ?? null)
-        useMenuStore.getState().openMenu({
-            slideId,
-            elementId: menuData.elementId,
-            elementType: menuData.elementType,
-            layoutId,
-            isTextEditor: !!menuData.activeEditor,
-            componentStructure: menuData.componentStructure
-        });
-    }, [slideId, layoutId]);
+    const editorRef = useRef<HTMLDivElement>(null);
+    const handleMenuClick = useCallback(
+        (menuData: {
+            elementId: string;
+            elementType: MenuElementType;
+            componentStructure?: ComponentStructureType;
+            activeEditor?: Editor;
+        }) => {
+            useEditorStore.getState().setActiveEditor(menuData.activeEditor ?? null);
+            useMenuStore.getState().openMenu({
+                slideId,
+                elementId: menuData.elementId,
+                elementType: menuData.elementType,
+                layoutId,
+                isTextEditor: !!menuData.activeEditor,
+                componentStructure: menuData.componentStructure,
+            });
+        },
+        [slideId, layoutId]
+    );
 
     const animationFrameIdRef = useRef<number | null>(null);
 
-    const handleResizeMove = useCallback((e: MouseEvent) => {
-        if (animationFrameIdRef.current !== null) {
-            cancelAnimationFrame(animationFrameIdRef.current);
-        }
-
-        animationFrameIdRef.current = requestAnimationFrame(() => {
-            if (!startWidthRef.current) return;
-            const presentation = usePresentationStore.getState().getPresentation(presentationId);
-            if (!presentation) return;
-
-            const slide = presentation.slides.find(s => s.id === slideId);
-            if (!slide) return;
-
-            const layout = slide.layouts.find(l => l.id === layoutId);
-            if (!layout || !layout.gridStructure) return;
-
-            const cell = layout.gridStructure.rows[0].cells.find(c => c.id === resizebleElementRef.current);
-            if (!cell) return;
-
-            if (!editorRef.current?.parentElement) {
-                return;
+    const handleResizeMove = useCallback(
+        (e: MouseEvent) => {
+            if (animationFrameIdRef.current !== null) {
+                cancelAnimationFrame(animationFrameIdRef.current);
             }
 
-            const slideEditorRect = editorRef.current.parentElement.getBoundingClientRect();
-            if (!slideEditorRect) return;
+            animationFrameIdRef.current = requestAnimationFrame(() => {
+                if (!startWidthRef.current) return;
+                const presentation = usePresentationStore.getState().getPresentation(presentationId);
+                if (!presentation) return;
 
-            const padding = 16;
-            const totalWidth = editorRef.current.parentElement.offsetWidth - padding * 2;
+                const slide = presentation.slides.find(s => s.id === slideId);
+                if (!slide) return;
 
-            const currentX = e.clientX - slideEditorRect.left;
-            const deltaX = currentX - startXRef.current;
-            const newWidth = Math.max(0, startWidthRef.current + deltaX);
+                const layout = slide.layouts.find(l => l.id === layoutId);
+                if (!layout || !layout.gridStructure) return;
 
-            const newWidthPercentage = (newWidth / totalWidth) * 100;
+                const cell = layout.gridStructure.rows[0].cells.find(c => c.id === resizebleElementRef.current);
+                if (!cell) return;
 
-            const columns = layout.gridStructure.columns;
+                if (!editorRef.current?.parentElement) {
+                    return;
+                }
 
-            const columnWidths = layout.gridStructure.columnWidths || Array(columns).fill(`${(100 / columns).toFixed(2)}%`);
+                const slideEditorRect = editorRef.current.parentElement.getBoundingClientRect();
+                if (!slideEditorRect) return;
 
-            const currentColumnIndex = cell.column - 1;
+                const padding = 16;
+                const totalWidth = editorRef.current.parentElement.offsetWidth - padding * 2;
 
-            const otherColumnsMinWidth = (columns - 1) * 15;
-            const maxAllowedWidth = 100 - otherColumnsMinWidth;
+                const currentX = e.clientX - slideEditorRect.left;
+                const deltaX = currentX - startXRef.current;
+                const newWidth = Math.max(0, startWidthRef.current + deltaX);
 
-            const newWidthPart = Math.min(maxAllowedWidth, Math.max(15, newWidthPercentage)) / 100;
+                const newWidthPercentage = (newWidth / totalWidth) * 100;
 
-            const newColumnWidths = adjustWidths(
-                columnWidths,
-                currentColumnIndex,
-                newWidthPart,
-                isLastCell,
-                columns
-            );
+                const columns = layout.gridStructure.columns;
 
-            const updatedGridStructure = {
-                ...layout.gridStructure,
-                columnWidths: newColumnWidths
-            };
+                const columnWidths =
+                    layout.gridStructure.columnWidths || Array(columns).fill(`${(100 / columns).toFixed(2)}%`);
 
-            usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, {
-                gridStructure: updatedGridStructure
+                const currentColumnIndex = cell.column - 1;
+
+                const otherColumnsMinWidth = (columns - 1) * 15;
+                const maxAllowedWidth = 100 - otherColumnsMinWidth;
+
+                const newWidthPart = Math.min(maxAllowedWidth, Math.max(15, newWidthPercentage)) / 100;
+
+                const newColumnWidths = adjustWidths(
+                    columnWidths,
+                    currentColumnIndex,
+                    newWidthPart,
+                    isLastCell,
+                    columns
+                );
+
+                const updatedGridStructure = {
+                    ...layout.gridStructure,
+                    columnWidths: newColumnWidths,
+                };
+
+                usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, {
+                    gridStructure: updatedGridStructure,
+                });
             });
-        });
-    }, [presentationId, isLastCell, slideId, layoutId]);
-
+        },
+        [presentationId, isLastCell, slideId, layoutId]
+    );
 
     const handleResizeEnd = useCallback(() => {
         if (animationFrameIdRef.current !== null) {
@@ -197,104 +211,92 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         setIsResizing(false);
     }, [handleResizeMove]);
 
-    const handleResizeStart = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
+    const handleResizeStart = useCallback(
+        (e: React.MouseEvent<HTMLDivElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
 
-        const leftBorder = editorRef.current?.parentElement?.getBoundingClientRect().left || 0;
-        const initialX = e.clientX - leftBorder;
-        startXRef.current = initialX;
+            const leftBorder = editorRef.current?.parentElement?.getBoundingClientRect().left || 0;
+            const initialX = e.clientX - leftBorder;
+            startXRef.current = initialX;
 
-        const cellElement = editorRef.current;
-        if (cellElement) {
-            const width = cellElement.offsetWidth;
-            startWidthRef.current = width;
-            resizebleElementRef.current = cellElement.getAttribute('data-cell-id');
-        }
+            const cellElement = editorRef.current;
+            if (cellElement) {
+                const width = cellElement.offsetWidth;
+                startWidthRef.current = width;
+                resizebleElementRef.current = cellElement.getAttribute('data-cell-id');
+            }
 
-        document.addEventListener('mousemove', handleResizeMove);
-        document.addEventListener('mouseup', handleResizeEnd);
+            document.addEventListener('mousemove', handleResizeMove);
+            document.addEventListener('mouseup', handleResizeEnd);
 
-        setIsResizing(true);
-    }, [handleResizeEnd, handleResizeMove]);
+            setIsResizing(true);
+        },
+        [handleResizeEnd, handleResizeMove]
+    );
 
+    const handleClickElementDragHandle = useCallback(
+        (element: Element, elementConfig: ElementConfig) => () => {
+            const editor = tiptapRefs.current?.editors[element.id]?.editor;
 
-    const handleAddColumn = useCallback(() => {
-        const presentation = usePresentationStore.getState().getPresentation(presentationId);
-        if (!presentation) return;
-
-        const slide = presentation.slides.find(s => s.id === slideId);
-        if (!slide) return;
-
-        const layout = slide.layouts.find(l => l.id === layoutId);
-        if (!layout) return;
-
-        const updatedLayout = { ...layout };
-        const updatedGridStructure = { ...layout.gridStructure };
-
-        const updatedColumnWidths = getColumnWidths(updatedGridStructure.columns);
-        updatedGridStructure.columns = updatedGridStructure.columns + 1;
-        updatedGridStructure.columnWidths = updatedColumnWidths;
-
-        const newCellId = generateId();
-
-        const newCell: GridCell = {
-            id: newCellId,
-            column: updatedGridStructure.columns,
-            row: 0,
-        }
-
-        const newEditor = getNewEditorElement(newCellId);
-
-        updatedGridStructure.rows[0].cells.push(newCell);
-        updatedGridStructure.columnWidths = getColumnWidths(updatedGridStructure.columns);
-        updatedLayout.elements.push(newEditor);
-        updatedLayout.gridStructure = updatedGridStructure;
-        usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
-    }, [slideId, layoutId, presentationId]);
-
-    const handleClickElementDragHandle = useCallback((element: Element, elementConfig: ElementConfig) => () => {
-        const editor = tiptapRefs.current?.editors[element.id]?.editor;
-
-        if (elementConfig.hasTextEditor && editor && elementConfig.componentStructure === ComponentStructureType.TEXT_EDITOR) {
-            if (elementConfig.customMenu) {
-                editor.chain().focus().run();
-            } else if (editor.getText().length > 0) {
-                useEditorStore.getState().setActiveEditor(editor);
-                editor.chain().focus().selectAll().run();
+            if (
+                elementConfig.hasTextEditor &&
+                editor &&
+                elementConfig.componentStructure === ComponentStructureType.TEXT_EDITOR
+            ) {
+                if (elementConfig.customMenu) {
+                    editor.chain().focus().run();
+                } else if (editor.getText().length > 0) {
+                    useEditorStore.getState().setActiveEditor(editor);
+                    editor.chain().focus().selectAll().run();
+                    handleMenuClick({
+                        elementId: element.id,
+                        elementType: 'editor',
+                        activeEditor: editor,
+                    });
+                } else {
+                    return;
+                }
+            } else {
                 handleMenuClick({
                     elementId: element.id,
-                    elementType: 'editor',
-                    activeEditor: editor
+                    elementType: 'element',
+                    componentStructure: elementConfig.componentStructure,
                 });
-            } else {
-                return;
             }
-        } else {
-            handleMenuClick({
+        },
+        [handleMenuClick, tiptapRefs]
+    );
+
+    const handleKeyDownElementDragHandle = useCallback(
+        (element: Element, elementConfig: ElementConfig) => (e: any) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                handleClickElementDragHandle(element, elementConfig)();
+            }
+        },
+        [handleClickElementDragHandle]
+    );
+
+    const handleDragStartElementDragHandle = useCallback(
+        (element: Element) => (e: any) => {
+            e.stopPropagation();
+            handleDragStart(e, {
                 elementId: element.id,
-                elementType: 'element',
-                componentStructure: elementConfig.componentStructure
+                layoutId,
+                cellId: element.cellId,
             });
-        }
-    }, [handleMenuClick]);
+        },
+        [handleDragStart, layoutId]
+    );
 
-    const handleKeyDownElementDragHandle = useCallback((element: Element, elementConfig: ElementConfig) => (e: any) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            handleClickElementDragHandle(element, elementConfig)();
-        }
-    }, [handleClickElementDragHandle]);
-
-    const handleDragStartElementDragHandle = useCallback((element: Element) => (e: any) => {
-        e.stopPropagation();
-        handleDragStart(e, {
-            elementId: element.id,
-            layoutId,
-            cellId: element.cellId,
-        });
-    }, [handleDragStart, layoutId]);
-
-    const alignmentClassName = cell.alignment === 'top' ? styles.top : cell.alignment === 'center' ? styles.center : cell.alignment === 'bottom' ? styles.bottom : '';
+    let alignmentClassName = '';
+    if (cell.alignment === 'top') {
+        alignmentClassName = styles.top;
+    } else if (cell.alignment === 'center') {
+        alignmentClassName = styles.center;
+    } else if (cell.alignment === 'bottom') {
+        alignmentClassName = styles.bottom;
+    }
 
     const className = `${styles.gridCellElement} ${hasMultipleCells ? styles.multiCell : ''}  ${isTable ? styles.tableCell : ''}`;
 
@@ -307,26 +309,30 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             cellId: cell.id,
             tableColumnIndex: null,
             tableRowIndex: null,
-            tableId: null
+            tableId: null,
         });
     }, [slideId, layoutId, cell.id]);
 
+    const handleKeyDownCellDragHandle = useCallback(
+        (e: any) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                handleClickCellDragHandle();
+            }
+        },
+        [handleClickCellDragHandle]
+    );
 
-    const handleKeyDownCellDragHandle = useCallback((e: any) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            handleClickCellDragHandle();
-        }
-    }, [handleClickCellDragHandle]);
-
-
-    const handleDragStartCellDragHandle = useCallback((e: any) => {
-        e.stopPropagation();
-        handleDragStart(e, {
-            elementId: '',
-            layoutId,
-            cellId: cell.id,
-        });
-    }, [handleDragStart, layoutId, cell.id]);
+    const handleDragStartCellDragHandle = useCallback(
+        (e: any) => {
+            e.stopPropagation();
+            handleDragStart(e, {
+                elementId: '',
+                layoutId,
+                cellId: cell.id,
+            });
+        },
+        [handleDragStart, layoutId, cell.id]
+    );
 
     const handleOpenColumnMenu = useCallback(() => {
         const layout = usePresentationStore.getState().getLayout(presentationId, slideId, layoutId);
@@ -341,9 +347,8 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 cellId: null,
                 tableRowIndex: null,
                 tableColumnIndex: null,
-                tableId: null
+                tableId: null,
             });
-
         } else {
             useMenuStore.getState().openMenu({
                 slideId,
@@ -353,7 +358,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 cellId: null,
                 tableRowIndex: null,
                 tableColumnIndex: columnIndex,
-                tableId: layoutId
+                tableId: layoutId,
             });
         }
     }, [slideId, presentationId, layoutId, columnIndex]);
@@ -366,79 +371,86 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             elementType: 'row',
             tableRowIndex: rowIndex,
             tableColumnIndex: null,
-            tableId: layoutId
+            tableId: layoutId,
         });
     }, [slideId, layoutId, rowIndex]);
 
-    const handleClickElement = useCallback((elementId: string) => (ev: React.MouseEvent<HTMLDivElement>) => {
-        ev.stopPropagation();
-        if (tiptapRefs.current?.editors[elementId]?.editor) {
-            tiptapRefs.current?.editors[elementId]?.editor.chain().focus().run();
-        }
-    }, [tiptapRefs]);
-
-
-    const handleClickGridCell = useCallback((ev: React.MouseEvent<HTMLDivElement>) => {
-        ev.stopPropagation();
-
-        if (elementsIds.length === 1) {
-            const editor = tiptapRefs.current?.editors[elementsIds[0]]?.editor;
-            if (editor) {
-                editor.chain().focus().run();
+    const handleClickElement = useCallback(
+        (elementId: string) => (ev: React.MouseEvent<HTMLDivElement>) => {
+            ev.stopPropagation();
+            if (tiptapRefs.current?.editors[elementId]?.editor) {
+                tiptapRefs.current?.editors[elementId]?.editor.chain().focus().run();
             }
-        } else if (ev.target instanceof HTMLElement && ev.target.classList.contains(styles.gridCellElement)) {
-            const rect = ev.target?.getBoundingClientRect();
+        },
+        [tiptapRefs]
+    );
 
-            if (rect) {
-                const positionY = ev.clientY - (rect.top ?? 0);
-                const slideHeight = rect.height ?? 0;
-                const isClickBottom = slideHeight - positionY < 30;
-                const isClickTop = positionY < 30;
+    const handleClickGridCell = useCallback(
+        (ev: React.MouseEvent<HTMLDivElement>) => {
+            ev.stopPropagation();
 
-                if (isClickBottom) {
-                    const lastElementId = elementsIds[elementsIds.length - 1];
-                    const editor = tiptapRefs.current?.editors[lastElementId]?.editor;
-                    if (editor) {
-                        editor.chain().focus().run();
-                    }
-                } else if (isClickTop) {
-                    const firstElementId = elementsIds[0];
-                    const editor = tiptapRefs.current?.editors[firstElementId]?.editor;
-                    if (editor) {
-                        editor.chain().focus().run();
+            if (elementsIds.length === 1) {
+                const editor = tiptapRefs.current?.editors[elementsIds[0]]?.editor;
+                if (editor) {
+                    editor.chain().focus().run();
+                }
+            } else if (ev.target instanceof HTMLElement && ev.target.classList.contains(styles.gridCellElement)) {
+                const rect = ev.target?.getBoundingClientRect();
+
+                if (rect) {
+                    const positionY = ev.clientY - (rect.top ?? 0);
+                    const slideHeight = rect.height ?? 0;
+                    const isClickBottom = slideHeight - positionY < 30;
+                    const isClickTop = positionY < 30;
+
+                    if (isClickBottom) {
+                        const lastElementId = elementsIds[elementsIds.length - 1];
+                        const editor = tiptapRefs.current?.editors[lastElementId]?.editor;
+                        if (editor) {
+                            editor.chain().focus().run();
+                        }
+                    } else if (isClickTop) {
+                        const firstElementId = elementsIds[0];
+                        const editor = tiptapRefs.current?.editors[firstElementId]?.editor;
+                        if (editor) {
+                            editor.chain().focus().run();
+                        }
                     }
                 }
             }
-        }
-    }, []);
+        },
+        [elementsIds, tiptapRefs]
+    );
 
     const deferredIsHoveredRow = isHoveredRow;
     const deferredIsHoveredColumn = isHoveredColumn;
 
-    const isShowRowDragHandler = isTable && ((deferredIsHoveredRow && !isSelectedRow && !hasSelectedRow) || (isSelectedRow && columnIndex === 0));
+    const isShowRowDragHandler =
+        isTable &&
+        ((deferredIsHoveredRow && !isSelectedRow && !hasSelectedRow) || (isSelectedRow && columnIndex === 0));
 
-    const isShowColumnDragHandler = isTable &&
-        ((deferredIsHoveredColumn && !isSelectedColumn && !hasSelectedColumn) ||
-        (isSelectedColumn && rowIndex === 0));
+    const isShowColumnDragHandler =
+        isTable &&
+        ((deferredIsHoveredColumn && !isSelectedColumn && !hasSelectedColumn) || (isSelectedColumn && rowIndex === 0));
 
     return (
         <div
             className={`${className} ${isSelectedRow || isSelectedColumn ? styles.selectedCell : ''}`}
             data-cell-id={cell.id}
             data-cell="true"
-            data-is-multi-cell={hasMultipleCells ? "true" : "false"}
-            data-is-table={isTable ? "true" : "false"}
+            data-is-multi-cell={hasMultipleCells ? 'true' : 'false'}
+            data-is-table={isTable ? 'true' : 'false'}
             onMouseEnter={() => {
                 if (isTable) {
                     useMenuStore.getState().hoverTableCell(layoutId, rowIndex, columnIndex);
                 }
-                setCellIsHovered(true)
+                setCellIsHovered(true);
             }}
             onMouseLeave={() => setCellIsHovered(false)}
             onClick={handleClickGridCell}
             ref={editorRef}
         >
-            {!isTable && (hasMultipleCells && (isMenuCurrentColumn || cellIsHovered || menuCellId === cell.id)) && (
+            {!isTable && hasMultipleCells && (isMenuCurrentColumn || cellIsHovered || menuCellId === cell.id) && (
                 <DragHandler
                     slideId={slideId}
                     isActive={menuCellId === cell.id}
@@ -457,14 +469,14 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             <div className={`${styles.gridCell} ${alignmentClassName}`}>
                 <div
                     className={`${styles.elementsContainer} themed-text`}
-                    data-is-multi-cell={hasMultipleCells ? "true" : "false"}
+                    data-is-multi-cell={hasMultipleCells ? 'true' : 'false'}
                 >
                     {elementsIds.map((elementId, idx) => (
                         <div
                             onClick={handleClickElement(elementId)}
                             key={elementId}
-                            data-is-first-element={idx === 0 ? "true" : "false"}
-                            data-is-last-element={idx === elementsIds.length - 1 ? "true" : "false"}
+                            data-is-first-element={idx === 0 ? 'true' : 'false'}
+                            data-is-last-element={idx === elementsIds.length - 1 ? 'true' : 'false'}
                         >
                             <ElementContent
                                 elementId={elementId}
@@ -485,7 +497,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     ))}
                 </div>
             </div>
-            {hasMultipleCells && !isTable &&!isLastCell && (
+            {hasMultipleCells && !isTable && !isLastCell && (
                 <div
                     ref={resizeBorderRef}
                     className={`${styles.resizableBorder} ${isResizing ? styles.resizableBorderDragged : ''}`}
@@ -501,12 +513,14 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     ariaLabel="Drag this row"
                     dataAttributes={{ 'data-row-drag-handle': `${layoutId}-${rowIndex}` }}
                     handleClick={handleOpenRowMenu}
-                    handleKeyDown={() => { }}
-                    handleDragStart={(e) => handleDragStart(e, {
-                        elementId: '',
-                        rowIndex: rowIndex,
-                        tableId: layoutId,
-                    })}
+                    handleKeyDown={() => {}}
+                    handleDragStart={e =>
+                        handleDragStart(e, {
+                            elementId: '',
+                            rowIndex: rowIndex,
+                            tableId: layoutId,
+                        })
+                    }
                 />
             )}
             {isShowColumnDragHandler && (
@@ -517,12 +531,14 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     ariaLabel="Drag this column"
                     dataAttributes={{ 'data-column-drag-handle': `${layoutId}-${columnIndex}` }}
                     handleClick={handleOpenColumnMenu}
-                    handleKeyDown={() => { }}
-                    handleDragStart={(e) => handleDragStart(e, {
-                        elementId: '',
-                        columnIndex: columnIndex,
-                        tableId: layoutId
-                    })}
+                    handleKeyDown={() => {}}
+                    handleDragStart={e =>
+                        handleDragStart(e, {
+                            elementId: '',
+                            columnIndex: columnIndex,
+                            tableId: layoutId,
+                        })
+                    }
                     title="Drag to reorder column (columns can only be moved within the same table)"
                 />
             )}

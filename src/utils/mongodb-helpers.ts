@@ -12,10 +12,10 @@ import { stringifyJsonField, parseJsonField } from '@/utils/json';
  */
 export async function createPresentationWithoutTransaction(data: any) {
     try {
-    // Ensure slides is properly stringified
+        // Ensure slides is properly stringified
         const presentationData = {
             ...data,
-            slides: data.slides ? stringifyJsonField(data.slides) : '[]'
+            slides: data.slides ? stringifyJsonField(data.slides) : '[]',
         };
 
         // Use direct MongoDB driver to create the document
@@ -27,19 +27,19 @@ export async function createPresentationWithoutTransaction(data: any) {
             // @ts-expect-error
             _id: presentationData.id || new Prisma.ObjectId().toString(),
             createdAt: new Date(),
-            updatedAt: new Date()
+            updatedAt: new Date(),
         });
 
         // Read the document back to return it
         const presentation = await db.collection('Presentation').findOne({
-            _id: result.insertedId
+            _id: result.insertedId,
         });
 
         // Format for return (parse slides JSON)
         return {
             ...presentation,
             id: presentation._id,
-            slides: parseJsonField(presentation.slides)
+            slides: parseJsonField(presentation.slides),
         };
     } catch (error) {
         console.error('Error creating presentation without transaction:', error);
@@ -52,19 +52,16 @@ export async function createPresentationWithoutTransaction(data: any) {
  */
 export async function updatePresentationWithoutTransaction(id: string, data: any) {
     try {
-    // Ensure slides is properly stringified
+        // Ensure slides is properly stringified
         const updateData = {
             ...data,
             slides: data.slides ? stringifyJsonField(data.slides) : undefined,
-            updatedAt: new Date()
+            updatedAt: new Date(),
         };
 
         // Use direct MongoDB driver to update the document
         const db = (prisma as any)._engine.client.db();
-        await db.collection('Presentation').updateOne(
-            { _id: id },
-            { $set: updateData }
-        );
+        await db.collection('Presentation').updateOne({ _id: id }, { $set: updateData });
 
         // Read the document back to return it
         const presentation = await db.collection('Presentation').findOne({ _id: id });
@@ -73,7 +70,7 @@ export async function updatePresentationWithoutTransaction(id: string, data: any
         return {
             ...presentation,
             id: presentation._id,
-            slides: parseJsonField(presentation.slides)
+            slides: parseJsonField(presentation.slides),
         };
     } catch (error) {
         console.error('Error updating presentation without transaction:', error);

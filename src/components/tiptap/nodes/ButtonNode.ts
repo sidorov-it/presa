@@ -1,6 +1,6 @@
-import { Node, mergeAttributes } from '@tiptap/core'
-import { ReactNodeViewRenderer } from '@tiptap/react'
-import ButtonNodeView from './ButtonNodeView'
+import { Node, mergeAttributes } from '@tiptap/core';
+import { ReactNodeViewRenderer } from '@tiptap/react';
+import ButtonNodeView from './ButtonNodeView';
 
 // Расширение для кнопки
 export const ButtonNode = Node.create({
@@ -11,52 +11,52 @@ export const ButtonNode = Node.create({
     addAttributes() {
         return {
             class: {
-                default: 'interactive-button'
+                default: 'interactive-button',
             },
             presentationId: {
-                default: null
+                default: null,
             },
             slideId: {
-                default: null
+                default: null,
             },
             layoutId: {
-                default: null
+                default: null,
             },
             elementId: {
-                default: null
+                default: null,
             },
             buttonStyle: {
-                default: 'filled'
+                default: 'filled',
             },
             alignment: {
-                default: 'left'
+                default: 'left',
             },
             color: {
-                default: '#3C3939'
+                default: '#3C3939',
             },
             link: {
-                default: ''
-            }
-        }
+                default: '',
+            },
+        };
     },
 
     parseHTML() {
         return [
             {
-                tag: 'button[data-type="button"]'
-            }
-        ]
+                tag: 'button[data-type="button"]',
+            },
+        ];
     },
 
     renderHTML({ HTMLAttributes }) {
-        return ['button', mergeAttributes(HTMLAttributes, { 'data-type': 'button' }), 0]
+        return ['button', mergeAttributes(HTMLAttributes, { 'data-type': 'button' }), 0];
     },
 
     addNodeView() {
         return ReactNodeViewRenderer(ButtonNodeView, {
             // Важные параметры для корректной работы ReactNodeViewRenderer
             as: 'div', // Использовать div как контейнер
-            className: 'button-node-view-wrapper' // Класс для контейнера
-        })
-    }
-})
+            className: 'button-node-view-wrapper', // Класс для контейнера
+        });
+    },
+});

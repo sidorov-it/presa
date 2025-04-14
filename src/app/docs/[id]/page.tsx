@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/interactive-supports-focus */
 'use client';
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
@@ -73,20 +74,23 @@ export default function PresentationEditorPage() {
 
     // Load themes separately
     useEffect(() => {
-        loadThemes().catch((error) => {
+        loadThemes().catch(error => {
             console.error('Failed to load themes:', error);
         });
     }, [loadThemes]);
 
-    const handleThemeChange = useCallback((theme: Theme) => {
-        setCurrentTheme(theme);
+    const handleThemeChange = useCallback(
+        (theme: Theme) => {
+            setCurrentTheme(theme);
 
-        if (presentation) {
-            setTheme(presentation.id, theme.id);
-        }
+            if (presentation) {
+                setTheme(presentation.id, theme.id);
+            }
 
-        setIsThemePopoverOpen(false);
-    }, [presentation, setCurrentTheme, setTheme]);
+            setIsThemePopoverOpen(false);
+        },
+        [presentation, setCurrentTheme, setTheme]
+    );
 
     const handleSetDefaultTheme = useCallback(() => {
         const defaultTheme = getDefaultTheme();
@@ -107,18 +111,26 @@ export default function PresentationEditorPage() {
     }, [presentation?.id]);
 
     // Memoize the loading and not found UI to prevent re-renders
-    const loadingUI = useMemo(() => (
-        <div className="min-h-screen flex justify-center items-center bg-gray-50">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-        </div>
-    ), []);
+    const loadingUI = useMemo(
+        () => (
+            <div className="min-h-screen flex justify-center items-center bg-gray-50">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+        ),
+        []
+    );
 
-    const notFoundUI = useMemo(() => (
-        <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50">
-            <h1 className="text-2xl font-bold text-gray-800 mb-4">Presentation Not Found</h1>
-            <p className="text-gray-600">The presentation you're looking for doesn't exist or you don't have access to it.</p>
-        </div>
-    ), []);
+    const notFoundUI = useMemo(
+        () => (
+            <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50">
+                <h1 className="text-2xl font-bold text-gray-800 mb-4">Presentation Not Found</h1>
+                <p className="text-gray-600">
+                    The presentation you're looking for doesn't exist or you don't have access to it.
+                </p>
+            </div>
+        ),
+        []
+    );
 
     if (isLoading) return loadingUI;
     if (notFound || !presentation) return notFoundUI;
@@ -137,18 +149,25 @@ export default function PresentationEditorPage() {
                 </div>
             </header> */}
 
-
                 <header className="bg-white border-b border-gray-200 p-4">
                     <div className="container mx-auto flex justify-between items-center">
                         <div className="flex items-center gap-4">
-                            <Link href="/dashboard" className="text-2xl font-bold text-blue-600">Presa</Link>
+                            <Link href="/dashboard" className="text-2xl font-bold text-blue-600">
+                                Presa
+                            </Link>
                             {/* <SaveStatus status={savingStatus} /> */}
                         </div>
 
                         <div className="flex items-center space-x-4">
                             <Popover open={isThemePopoverOpen} onOpenChange={setIsThemePopoverOpen}>
                                 <PopoverTrigger asChild>
-                                    <div className="flex items-center gap-2 cursor-pointer" role="button" aria-label="Open theme selector" onClick={() => setIsThemePopoverOpen(!isThemePopoverOpen)} onKeyDown={(e) => e.key === 'Enter' && setIsThemePopoverOpen(!isThemePopoverOpen)}>
+                                    <div
+                                        className="flex items-center gap-2 cursor-pointer"
+                                        role="button"
+                                        aria-label="Open theme selector"
+                                        onClick={() => setIsThemePopoverOpen(!isThemePopoverOpen)}
+                                        onKeyDown={e => e.key === 'Enter' && setIsThemePopoverOpen(!isThemePopoverOpen)}
+                                    >
                                         <ThemeIcon />
                                         <span>Тема</span>
                                     </div>
@@ -160,13 +179,14 @@ export default function PresentationEditorPage() {
                                             {/* Default Theme Option */}
                                             <div
                                                 className={cn(
-                                                    "flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-100 border-b pb-3",
-                                                    (!currentTheme || currentTheme.name === 'Default Theme') && "bg-blue-50 ring-1 ring-blue-200"
+                                                    'flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-100 border-b pb-3',
+                                                    (!currentTheme || currentTheme.name === 'Default Theme') &&
+                                                        'bg-blue-50 ring-1 ring-blue-200'
                                                 )}
                                                 onClick={handleSetDefaultTheme}
                                                 role="button"
                                                 aria-label="Set default theme"
-                                                onKeyDown={(e) => e.key === 'Enter' && handleSetDefaultTheme()}
+                                                onKeyDown={e => e.key === 'Enter' && handleSetDefaultTheme()}
                                             >
                                                 <div
                                                     className="w-5 h-5 rounded-full mr-2"
@@ -178,17 +198,18 @@ export default function PresentationEditorPage() {
 
                                             {/* Custom Themes */}
                                             {themes.length > 0 ? (
-                                                themes.map((theme) => (
+                                                themes.map(theme => (
                                                     <div
                                                         key={theme.id}
                                                         className={cn(
-                                                            "flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-100",
-                                                            currentTheme?.id === theme.id && "bg-blue-50 ring-1 ring-blue-200"
+                                                            'flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-100',
+                                                            currentTheme?.id === theme.id &&
+                                                                'bg-blue-50 ring-1 ring-blue-200'
                                                         )}
                                                         onClick={() => handleThemeChange(theme)}
                                                         role="button"
                                                         aria-label={`Select theme ${theme.name}`}
-                                                        onKeyDown={(e) => e.key === 'Enter' && handleThemeChange(theme)}
+                                                        onKeyDown={e => e.key === 'Enter' && handleThemeChange(theme)}
                                                     >
                                                         <div
                                                             className="w-5 h-5 rounded-full mr-2"

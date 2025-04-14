@@ -1,7 +1,7 @@
-import { BubbleMenu, Editor } from "@tiptap/react";
-import { ColorPicker } from "./ColorPicker";
-import { LinkEditor } from "./LinkEditor";
-import styles from "./BubbleMenu.module.css";
+import { BubbleMenu, Editor } from '@tiptap/react';
+import { ColorPicker } from './ColorPicker';
+import { LinkEditor } from './LinkEditor';
+import styles from './BubbleMenu.module.css';
 import {
     BiBold,
     BiItalic,
@@ -16,32 +16,28 @@ import {
     BiAlignRight,
     BiAlignJustify,
     BiX,
-} from "react-icons/bi";
-import { Level } from "@tiptap/extension-heading";
-import { useState, useRef, useEffect, useCallback } from "react";
-import { EditorView } from "@tiptap/pm/view";
-import { EditorState } from "@tiptap/pm/state";
-import HeadingSelector from "../settings/HeadingSelector/HeadingSelector";
+} from 'react-icons/bi';
+import { Level } from '@tiptap/extension-heading';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { EditorView } from '@tiptap/pm/view';
+import { EditorState } from '@tiptap/pm/state';
+import HeadingSelector from '../settings/HeadingSelector/HeadingSelector';
 
-export default function CommonBubbleMenu({
-    editor,
-}: {
-    editor: Editor;
-}) {
+export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
 
     // const isOpen = useMenuIsOpen();
 
     const headingLevels = [
-        { label: "Текст", level: 0 },
-        { label: "Заголовок 1", level: 1 },
-        { label: "Заголовок 2", level: 2 },
-        { label: "Заголовок 3", level: 3 },
-        { label: "Заголовок 4", level: 4 },
-        { label: "Заголовок 5", level: 5 },
-        { label: "Дисплей", level: 6 },
-        { label: "Монстр", level: 7 },
+        { label: 'Текст', level: 0 },
+        { label: 'Заголовок 1', level: 1 },
+        { label: 'Заголовок 2', level: 2 },
+        { label: 'Заголовок 3', level: 3 },
+        { label: 'Заголовок 4', level: 4 },
+        { label: 'Заголовок 5', level: 5 },
+        { label: 'Дисплей', level: 6 },
+        { label: 'Монстр', level: 7 },
     ];
 
     // Определение текущего уровня заголовка
@@ -68,22 +64,32 @@ export default function CommonBubbleMenu({
         };
     }, []);
 
-    const handleHeadingChange = useCallback((level: number) => {
-        if (level === 0) {
-            editor.chain().focus().setParagraph().run();
-            // } else if (level === 6) {
-            //   editor.chain().focus().setDisplay().run();
-            // } else if (level === 7) {
-            //   editor.chain().focus().setMonster().run();
-        } else {
-            editor.chain().focus().setHeading({ level: level as Level }).run();
-        }
-        setIsHeadingMenuOpen(false);
-    }, [editor]);
+    const handleHeadingChange = useCallback(
+        (level: number) => {
+            if (level === 0) {
+                editor.chain().focus().setParagraph().run();
+                // } else if (level === 6) {
+                //   editor.chain().focus().setDisplay().run();
+                // } else if (level === 7) {
+                //   editor.chain().focus().setMonster().run();
+            } else {
+                editor
+                    .chain()
+                    .focus()
+                    .setHeading({ level: level as Level })
+                    .run();
+            }
+            setIsHeadingMenuOpen(false);
+        },
+        [editor]
+    );
 
-    const handleAlignment = useCallback((align: 'left' | 'center' | 'right' | 'justify') => {
-        editor.chain().focus().setTextAlign(align).run();
-    }, [editor]);
+    const handleAlignment = useCallback(
+        (align: 'left' | 'center' | 'right' | 'justify') => {
+            editor.chain().focus().setTextAlign(align).run();
+        },
+        [editor]
+    );
 
     const handleClearStyles = useCallback(() => {
         editor.chain().focus().clearNodes().unsetAllMarks().run();
@@ -94,23 +100,39 @@ export default function CommonBubbleMenu({
         backgroundColor: 'white',
         color: '#333',
         borderColor: '#e0e0e0',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
     };
 
+    const shouldShow = useCallback(
+        ({
+            editor: _editor,
+            view,
+            state: _state,
+            oldState: _oldState,
+            from,
+            to,
+        }: {
+            editor: Editor;
+            view: EditorView;
+            state: EditorState;
+            oldState?: EditorState | null;
+            from: number;
+            to: number;
+        }) => {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            if (from !== to && view.focused) {
+                return true;
+            }
 
-    const shouldShow = useCallback(({ editor: _editor, view, state: _state, oldState: _oldState, from, to }: { editor: Editor; view: EditorView; state: EditorState; oldState?: EditorState | null; from: number; to: number }) => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        if (from !== to && view.focused) {
-            return true;
-        }
+            // if (isOpen) {
+            //     useMenuStore.getState().closeMenu();
+            // }
 
-        // if (isOpen) {
-        //     useMenuStore.getState().closeMenu();
-        // }
-
-        return false;
-    }, []);
+            return false;
+        },
+        []
+    );
 
     return (
         <BubbleMenu
@@ -180,14 +202,11 @@ export default function CommonBubbleMenu({
                     )}
                 </div> */}
 
-                <ColorPicker
-                    editor={editor}
-                    className={styles.button}
-                />
+                <ColorPicker editor={editor} className={styles.button} />
 
                 <button
                     onClick={() => {
-                        editor.chain().focus().toggleBold().run()
+                        editor.chain().focus().toggleBold().run();
                     }}
                     className={`${styles.button} ${editor.isActive('bold') ? styles.active : ''}`}
                     aria-label="Жирный"
@@ -227,10 +246,7 @@ export default function CommonBubbleMenu({
                     <BiCode size={16} />
                 </button>
 
-                <LinkEditor
-                    editor={editor}
-                    className={styles.button}
-                />
+                <LinkEditor editor={editor} className={styles.button} />
 
                 <button
                     onClick={() => editor.chain().focus().toggleOrderedList().run()}
@@ -287,11 +303,7 @@ export default function CommonBubbleMenu({
                     </button>
                 </div>
 
-                <button
-                    onClick={handleClearStyles}
-                    className={styles.button}
-                    aria-label="Очистить форматирование"
-                >
+                <button onClick={handleClearStyles} className={styles.button} aria-label="Очистить форматирование">
                     <BiX size={16} />
                 </button>
             </div>

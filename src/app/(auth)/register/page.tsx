@@ -64,9 +64,9 @@ export default function RegisterPage() {
                 <div>
                     <h1 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Создать аккаунт</h1>
                     <p className="mt-2 text-center text-sm text-gray-600">
-            или{' '}
+                        или{' '}
                         <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
-              войти в ваш существующий аккаунт
+                            войти в ваш существующий аккаунт
                         </Link>
                     </p>
                 </div>
@@ -74,7 +74,9 @@ export default function RegisterPage() {
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     <div className="rounded-md shadow-sm -space-y-px">
                         <div>
-                            <label htmlFor="name" className="sr-only">Имя</label>
+                            <label htmlFor="name" className="sr-only">
+                                Имя
+                            </label>
                             <input
                                 id="name"
                                 name="name"
@@ -82,13 +84,15 @@ export default function RegisterPage() {
                                 autoComplete="name"
                                 required
                                 value={name}
-                                onChange={(e) => setName(e.target.value)}
+                                onChange={e => setName(e.target.value)}
                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                                 placeholder="Имя"
                             />
                         </div>
                         <div>
-                            <label htmlFor="email-address" className="sr-only">Email</label>
+                            <label htmlFor="email-address" className="sr-only">
+                                Email
+                            </label>
                             <input
                                 id="email-address"
                                 name="email"
@@ -96,13 +100,15 @@ export default function RegisterPage() {
                                 autoComplete="email"
                                 required
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={e => setEmail(e.target.value)}
                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                                 placeholder="Email"
                             />
                         </div>
                         <div>
-                            <label htmlFor="password" className="sr-only">Пароль</label>
+                            <label htmlFor="password" className="sr-only">
+                                Пароль
+                            </label>
                             <input
                                 id="password"
                                 name="password"
@@ -110,13 +116,15 @@ export default function RegisterPage() {
                                 autoComplete="new-password"
                                 required
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                onChange={e => setPassword(e.target.value)}
                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                                 placeholder="Пароль"
                             />
                         </div>
                         <div>
-                            <label htmlFor="confirm-password" className="sr-only">Подтвердить пароль</label>
+                            <label htmlFor="confirm-password" className="sr-only">
+                                Подтвердить пароль
+                            </label>
                             <input
                                 id="confirm-password"
                                 name="confirm-password"
@@ -124,16 +132,14 @@ export default function RegisterPage() {
                                 autoComplete="new-password"
                                 required
                                 value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                onChange={e => setConfirmPassword(e.target.value)}
                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                                 placeholder="Подтвердить пароль"
                             />
                         </div>
                     </div>
 
-                    {error && (
-                        <div className="text-red-500 text-sm text-center">{error}</div>
-                    )}
+                    {error && <div className="text-red-500 text-sm text-center">{error}</div>}
 
                     <div>
                         <button
