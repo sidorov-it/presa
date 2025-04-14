@@ -17,7 +17,7 @@ type IndicatorInfo = {
     sourceType: 'element' | 'layout' | 'slide' | 'cell' | 'column' | 'row';
 }
 
-type IndicatorType = 'element' | 'layout' | 'slide' | 'cell' | 'column';
+type IndicatorType = 'element' | 'layout' | 'slide' | 'cell' | 'column' | 'row';
 
 const DropIndicator = () => {
     const { state } = useDnd();
@@ -222,6 +222,36 @@ const DropIndicator = () => {
             };
         }
 
+        // Add row indicator handling
+        if (indicators.tableRowIndicator || indicators.tableRowIndicator === 0) {
+            const layoutId = indicators.tableId;
+            if (!layoutId) return null;
+
+            const cellNode = document.querySelector(`[data-cell-id="${indicators.cellId}"]`);
+            if (!cellNode) return null;
+
+            const rowRect = cellNode.closest('[data-row-id]')?.getBoundingClientRect();
+            const layoutRect = cellNode.closest('[data-layout-id]')?.getBoundingClientRect();
+
+            if (!rowRect || !layoutRect) return null;
+
+            const position = indicators.tableRowPosition;
+
+            return {
+                targetRect: {
+                    left: layoutRect.left,
+                    top: rowRect.top,
+                    width: layoutRect.width,
+                    height: rowRect.height,
+                    right: layoutRect.right,
+                    bottom: rowRect.bottom,
+                },
+                position: position,
+                type: 'row' as IndicatorType,
+                sourceType: 'row'
+            };
+        }
+
         return null;
     };
 
@@ -229,6 +259,7 @@ const DropIndicator = () => {
 
     // Generate styles based on position and context
     const getIndicatorStyles = useCallback(() => {
+        if (!indicatorInfo) return {};
         const { targetRect, position, type } = indicatorInfo;
         // Increase thickness for better visibility
         const thickness = type === 'element' ? 3 : type === 'cell' ? 4 : 4;
@@ -249,7 +280,8 @@ const DropIndicator = () => {
             cell: '#3b82f6',    // red
             layout: '#3b82f6',  // green
             slide: '#3b82f6',   // purple
-            column: '#4f46e5'   // indigo - different color for column indicator
+            column: '#4f46e5',  // indigo - different color for column indicator
+            row: '#4f46e5'      // indigo - same color as column for consistency
         };
 
         const color = colors[type];

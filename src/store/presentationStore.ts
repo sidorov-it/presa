@@ -1281,8 +1281,8 @@ export const usePresentationStore = create<PresentationState>()(
                 // Создаем новые ячейки для новой строки
                 const newCells = Array.from({ length: cellsCount }, (_, i) => ({
                     id: generateId(8),
-                    column: i + 1,
-                    row: rowsCount + 1
+                    column: i,
+                    row: rowsCount
                 }));
 
                 // Создаем новые элементы для каждой ячейки
@@ -1860,7 +1860,7 @@ export const usePresentationStore = create<PresentationState>()(
                 const newColumn: GridCell = {
                     id: newColumnId,
                     row: 0,
-                    column: columnIndex + 1,
+                    column: columnIndex,
                 };
 
                 // Update grid structure

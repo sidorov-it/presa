@@ -503,7 +503,11 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     dataAttributes={{ 'data-row-drag-handle': `${layoutId}-${rowIndex}` }}
                     handleClick={handleOpenRowMenu}
                     handleKeyDown={() => { }}
-                    handleDragStart={() => { }}
+                    handleDragStart={(e) => handleDragStart(e, {
+                        elementId: '',
+                        rowIndex: rowIndex,
+                        tableId: layoutId,
+                    })}
                 />
             )}
             {isShowColumnDragHandler && (

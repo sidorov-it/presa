@@ -1791,6 +1791,161 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         DragDropTransactionHelper.commitDragOperation(presentationId);
     }, [getLayout, getLayoutSlide, presentationId, setColumnIndicator]);
 
+    const processTableRowDrop = useCallback(() => {
+        if (!prevStateRef.current.source.tableId || !prevStateRef.current.target.tableId) {
+            return;
+        }
+
+        const sourceLayout = getLayout(prevStateRef.current.source.tableId);
+        const targetLayout = getLayout(prevStateRef.current.target.tableId);
+
+        if (!sourceLayout || !targetLayout) {
+            return;
+        }
+
+        const tableRowPosition = prevStateRef.current.indicators.tableRowPosition;
+
+        if (sourceLayout.id === targetLayout.id) {
+            // Moving rows within the same table
+            const updatedGridStructure = { ...sourceLayout.gridStructure };
+            const sourceRowIndex = prevStateRef.current.source.rowIndex!;
+            const targetRowIndex = prevStateRef.current.target.rowIndex!;
+
+            // Don't do anything if source and target are the same
+            if (sourceRowIndex === targetRowIndex) {
+                return;
+            }
+
+            // Move the row
+            const [movedRow] = updatedGridStructure.rows.splice(sourceRowIndex, 1);
+            const insertIndex = tableRowPosition === 'top' ? targetRowIndex - 1 : targetRowIndex;
+            updatedGridStructure.rows.splice(insertIndex, 0, movedRow);
+
+            // Update row indices
+            updatedGridStructure.rows.forEach((row, index) => {
+                row.cells.forEach(cell => {
+                    cell.row = index;
+                });
+            });
+
+            const sourceSlide = getLayoutSlide(prevStateRef.current.source.tableId);
+
+            DragDropTransactionHelper.updateLayout(presentationId, sourceSlide!.id, sourceLayout.id, {
+                gridStructure: updatedGridStructure
+            });
+        } else {
+            // Moving rows between different tables
+            const updatedSourceGridStructure = { ...sourceLayout.gridStructure };
+            const updatedTargetGridStructure = { ...targetLayout.gridStructure };
+
+            const sourceRowIndex = prevStateRef.current.source.rowIndex!;
+            const targetRowIndex = prevStateRef.current.target.rowIndex!;
+
+            // Get the row being moved
+            const [movedRow] = updatedSourceGridStructure.rows.splice(sourceRowIndex, 1);
+
+            // Get elements in the moved row
+            const movedElements = sourceLayout.elements.filter(element =>
+                movedRow.cells.some(cell => cell.id === element.cellId)
+            );
+
+            // если размер перемещаемой строки больше, чем размер целевой строки, то добавляем новые колонки во все ячейки
+            if (movedRow.cells.length > targetLayout.gridStructure.columns) {
+                updatedTargetGridStructure.columns = movedRow.cells.length;
+
+                updatedTargetGridStructure.rows.forEach((row, index) => {
+                    const newCells = Array.from({ length: movedRow.cells.length - row.cells.length }, (_, index) => ({
+                        id: generateId(),
+                        row: index,
+                        column: row.cells.length + index,
+                    }))
+
+                    const newEditors = newCells.map((cell) => getNewEditorElement(cell.id));
+
+                    row.cells = [...row.cells, ...newCells];
+                    targetLayout.elements = [...targetLayout.elements, ...newEditors];
+                });
+
+                updatedTargetGridStructure.columns = movedRow.cells.length;
+                updatedTargetGridStructure.columnWidths = getColumnWidths(updatedTargetGridStructure.columns);
+            } else if (movedRow.cells.length < updatedTargetGridStructure.columns) {
+                // добавляем в строку новые ячейки и создаем новые элементы в них
+                const newCells = movedRow.cells.concat(Array.from({ length: updatedTargetGridStructure.columns - movedRow.cells.length }, (_, index) => ({
+                    id: generateId(),
+                    row: index,
+                    // TODO: нужно проверить. скорее всего непраивльный column
+                    column: index,
+                })));
+
+                movedRow.cells = newCells;
+
+                const newEditors = newCells.map((cell) => getNewEditorElement(cell.id));
+
+                targetLayout.elements = [...targetLayout.elements, ...newEditors];
+            }
+
+            // если размер перемещаемой строки меньше, чем размер целевой строки, то добавляем в строку новые ячейки и создаем новые элементы в них
+
+            
+            // Create new cells for the target table with new IDs
+            const newRow = {
+                ...movedRow,
+                cells: movedRow.cells.map((cell, index) => ({
+                    ...cell,
+                    id: generateId(),
+                    column: index
+                }))
+            };
+
+            // Insert the row in the target table
+            const insertIndex = tableRowPosition === 'top' ? targetRowIndex : targetRowIndex + 1;
+            updatedTargetGridStructure.rows.splice(insertIndex, 0, newRow);
+
+            // Update row indices in both tables
+            updatedSourceGridStructure.rows.forEach((row, index) => {
+                row.cells.forEach(cell => {
+                    cell.row = index;
+                });
+            });
+
+            updatedTargetGridStructure.rows.forEach((row, index) => {
+                row.cells.forEach(cell => {
+                    cell.row = index;
+                });
+            });
+
+            // Update elements with new cell IDs
+            const updatedTargetElements = [...targetLayout.elements];
+            movedElements.forEach(element => {
+                const oldCell = movedRow.cells.find(cell => cell.id === element.cellId);
+                if (oldCell) {
+                    const newCell = newRow.cells[oldCell.column];
+                    updatedTargetElements.push({
+                        ...element,
+                        cellId: newCell.id
+                    });
+                }
+            });
+
+            const sourceSlide = getLayoutSlide(prevStateRef.current.source.tableId);
+            const targetSlide = getLayoutSlide(prevStateRef.current.target.tableId);
+
+            // Update source table
+            DragDropTransactionHelper.updateLayout(presentationId, sourceSlide!.id, sourceLayout.id, {
+                gridStructure: updatedSourceGridStructure,
+                elements: sourceLayout.elements.filter(element => 
+                    !movedElements.some(movedElement => movedElement.id === element.id)
+                )
+            });
+
+            // Update target table
+            DragDropTransactionHelper.updateLayout(presentationId, targetSlide!.id, targetLayout.id, {
+                gridStructure: updatedTargetGridStructure,
+                elements: updatedTargetElements
+            });
+        }
+    }, [getLayout, getLayoutSlide, presentationId]);
+
     const completeDrop = useCallback(() => {
         if (prevStateRef.current.dragState !== 'dragging') {
             return;
@@ -1799,6 +1954,8 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         // Check if source cellId is a column
         if (prevStateRef.current.source.cellId?.startsWith('column-')) {
             processColumnDrop();
+        } else if (Number.isInteger(prevStateRef.current.source.rowIndex)) {
+            processTableRowDrop();
         } else if (prevStateRef.current.indicators.elementIndicator) {
             processElementDrop();
         } else if (prevStateRef.current.indicators.cellIndicator) {
@@ -1810,7 +1967,8 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         }
 
         dispatch({ type: 'COMPLETE_DROP' });
-    }, [processCellDrop, processElementDrop, processLayoutDrop, processSlideDrop, processColumnDrop]);
+    }, [processCellDrop, processElementDrop, processLayoutDrop, processSlideDrop, processColumnDrop, processTableRowDrop]);
+    // ... existing code ...
 
     useEffect(() => {
         let lastProcessedTime = 0;
@@ -2099,11 +2257,6 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         };
 
         const processTableTarget = (e: DragEvent, tableId: string, cellNode: HTMLElement) => {
-            // здесь рассчитываем dragIndicator и targetElement
-            // проверяем, чтобы targetElement в таблице
-            // считаем его столбец и строку
-            // если столбец и строка не совпадают с source.columnIndex и source.rowIndex, то в targetIndicator пишем инфу
-
             const layout = getLayout(tableId);
 
             if (!layout || !layout.isTable || !cellNode) {
@@ -2111,7 +2264,75 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             }
 
             const cellId = cellNode.getAttribute('data-cell-id');
+            
+            // Handle row drag
+            if (prevStateRef.current.source.rowIndex !== undefined) {
+                const targetRowIndex = layout.gridStructure.rows.findIndex(row => 
+                    row.cells.some(cell => cell.id === cellId)
+                );
 
+                const firstCellInRow = layout.gridStructure.rows[targetRowIndex]?.cells[0];
+                if (!firstCellInRow) return;
+
+                const firstNodeInRow = document.querySelector(`[data-cell-id="${firstCellInRow.id}"]`);
+                if (!firstNodeInRow) return;
+
+                const rectCell = firstNodeInRow.getBoundingClientRect();
+                const distanceFromCellTop = e.clientY - rectCell.top;
+                const distanceFromCellBottom = rectCell.bottom - e.clientY;
+
+                const minDistance = Math.min(distanceFromCellTop, distanceFromCellBottom);
+
+                let position: Position | null = null;
+                if (minDistance === distanceFromCellTop) {
+                    position = 'top';
+                } else if (minDistance === distanceFromCellBottom) {
+                    position = 'bottom';
+                }
+
+                setElementIndicator(null, null);
+                setCellIndicator(null, null);
+                setLayoutIndicator(null, null);
+                setSlideIndicator(null);
+                setTableColumnIndicator(null, null, null, null);
+
+                setTableRowIndicator(firstCellInRow.id, targetRowIndex, position, tableId);
+
+                setDropTarget({
+                    elementId: null,
+                    tableId,
+                    rowIndex: targetRowIndex,
+                    position
+                });
+
+                prevStateRef.current = {
+                    ...state,
+                    target: {
+                        elementId: null,
+                        tableId,
+                        rowIndex: targetRowIndex,
+                        position
+                    },
+                    indicators: {
+                        ...state.indicators,
+                        elementIndicator: null,
+                        elementPosition: null,
+                        cellIndicator: cellId,
+                        cellPosition: position,
+                        layoutIndicator: null,
+                        layoutPosition: null,
+                        slideIndicator: null,
+                        tableColumnIndicator: null,
+                        tableColumnPosition: null,
+                        tableRowIndicator: targetRowIndex,
+                        tableRowPosition: position,
+                        tableId
+                    }
+                };
+                return;
+            }
+
+            // Handle column drag (existing code)
             const targetColumnIndex: number = layout.gridStructure.rows.flatMap(row => row.cells).find(cell => cell.id === cellId)?.column || 0;
 
             const firstCellInColumn = layout.gridStructure.rows[0].cells[targetColumnIndex];
@@ -2142,10 +2363,10 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             setCellIndicator(null, null);
             setLayoutIndicator(null, null);
             setSlideIndicator(null);
+            setTableRowIndicator(null, null, null, null);
 
             setTableColumnIndicator(firstCellInColumn.id, firstCellInColumn.column, position, tableId);
 
-            // Update target state
             setDropTarget({
                 elementId: null,
                 tableId,
@@ -2153,7 +2374,6 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 position
             });
 
-            // Update previous state reference
             prevStateRef.current = {
                 ...state,
                 target: {
@@ -2174,12 +2394,11 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     tableColumnIndicator: targetColumnIndex,
                     tableColumnPosition: position,
                     tableRowIndicator: null,
-                    tableRowPosition: null
+                    tableRowPosition: null,
+                    tableId
                 }
             };
-
-            // console.log('prevStateRef.current', prevStateRef.current.indicators)
-        }
+        };
 
         const processCellTarget = (e: DragEvent, cellId: string, layoutId: string, cellNode: HTMLElement, elementNode?: HTMLElement, elementId?: string | null) => {
             // Get cell dimensions

@@ -39,6 +39,7 @@ export type DndState = {
         tableRowIndicator: number | null;
         tableRowPosition: Position | null;
         tableId: string | null;
+        cellId: string | null;
     };
     isReadyToDrop: boolean;
     newElement: {
