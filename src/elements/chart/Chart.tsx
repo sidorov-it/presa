@@ -379,9 +379,9 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
                                 <Bar 
                                     key={serie.key}
                                     dataKey={serie.key}
-                                    name={serie.label}
+                                    name={serie.label?.trim() || ' '}
                                     fill={serie.color || COLORS[index % COLORS.length]}
-                                    label={serie.label}
+                                    label={getLabelProps()}
                                 />
                             ))}
                         </BarChart>
@@ -405,7 +405,7 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
                                 <Bar 
                                     key={serie.key}
                                     dataKey={serie.key}
-                                    name={serie.label}
+                                    name={serie.label?.trim() || ' '}
                                     fill={serie.color || COLORS[index % COLORS.length]}
                                     label={{ 
                                         position: 'right',
@@ -437,9 +437,9 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
                                     key={serie.key}
                                     type="monotone" 
                                     dataKey={serie.key}
-                                    name={serie.label}
+                                    name={serie.label?.trim() || ' '}
                                     stroke={serie.color || COLORS[index % COLORS.length]}
-                                    label={serie.label}
+                                    label={getLabelProps()}
                                 />
                             ))}
                         </LineChart>

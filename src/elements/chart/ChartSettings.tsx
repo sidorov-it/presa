@@ -262,16 +262,15 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                 <div className="overflow-x-auto border border-gray-200 rounded-md">
                     <table className="min-w-full divide-y divide-gray-200 table-fixed">
                         <colgroup>
-                            <col className="w-[200px]" /> {/* Fixed width for name column */}
-                            {series.map(() => (
-                                <col className="w-[200px]" /> // Fixed width for data columns
+                            <col className="w-[200px]" />
+                            {series.map((s) => (
+                                <col key={s.key} className="w-[200px]" />
                             ))}
-                            <col className="w-[100px]" /> {/* Fixed width for actions column */}
+                            <col className="w-[100px]" />
                         </colgroup>
                         <thead className="bg-gray-50">
                             <tr>
                                 <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 bg-gray-50">
-                                    Название
                                 </th>
                                 {series.map((s) => (
                                     <th key={s.key} className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
