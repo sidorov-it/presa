@@ -271,28 +271,37 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                         <thead className="bg-gray-50">
                             <tr>
                                 <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 bg-gray-50">
+                                    Название
                                 </th>
-                                {series.map((s) => (
-                                    <th key={s.key} className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        <div className="flex items-center space-x-2">
-                                            <input
-                                                type="text"
-                                                className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                                value={s.label}
-                                                onChange={(e) => handleColumnLabelChange(s.key, e.target.value)}
-                                            />
-                                            {series.length > 1 && (
-                                                <button
-                                                    type="button"
-                                                    className="text-red-600 hover:text-red-900 flex-shrink-0"
-                                                    onClick={() => handleDeleteColumn(s.key)}
-                                                >
-                                                    ✕
-                                                </button>
-                                            )}
-                                        </div>
-                                    </th>
-                                ))}
+                                {series.map((s, colIndex) => {
+                                    const isPieOrDonut = element?.chartType === 'pie' || element?.chartType === 'donut';
+                                    const isUnusedColumn = isPieOrDonut && colIndex > 0;
+                                    
+                                    return (
+                                        <th key={s.key} className={`px-3 py-3 text-left text-xs font-medium tracking-wider ${isUnusedColumn ? 'text-gray-400' : 'text-gray-500'}`}>
+                                            <div className="flex items-center space-x-2">
+                                                <div className="flex-1">
+                                                    <input
+                                                        type="text"
+                                                        className={`block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${isUnusedColumn ? 'opacity-40' : ''}`}
+                                                        value={s.label}
+                                                        onChange={(e) => handleColumnLabelChange(s.key, e.target.value)}
+                                                        disabled={isUnusedColumn}
+                                                    />
+                                                </div>
+                                                {series.length > 1 && (
+                                                    <button
+                                                        type="button"
+                                                        className="text-red-600 hover:text-red-900 flex-shrink-0"
+                                                        onClick={() => handleDeleteColumn(s.key)}
+                                                    >
+                                                        ✕
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </th>
+                                    );
+                                })}
                                 <th className="relative w-[100px] px-3 py-3">
                                     <span className="sr-only">Actions</span>
                                 </th>
@@ -309,16 +318,22 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                                             onChange={e => handleValueChange(rowIndex, 'name', e.target.value)}
                                         />
                                     </td>
-                                    {series.map(s => (
-                                        <td key={s.key} className="px-3 py-4 whitespace-nowrap">
-                                            <input
-                                                type="number"
-                                                className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                                value={row[s.key]}
-                                                onChange={e => handleValueChange(rowIndex, s.key, e.target.value)}
-                                            />
-                                        </td>
-                                    ))}
+                                    {series.map((s, colIndex) => {
+                                        const isPieOrDonut = element?.chartType === 'pie' || element?.chartType === 'donut';
+                                        const isUnusedColumn = isPieOrDonut && colIndex > 0;
+                                        
+                                        return (
+                                            <td key={s.key} className="px-3 py-4 whitespace-nowrap">
+                                                <input
+                                                    type="number"
+                                                    className={`block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${isUnusedColumn ? 'opacity-40' : ''}`}
+                                                    value={row[s.key]}
+                                                    onChange={e => handleValueChange(rowIndex, s.key, e.target.value)}
+                                                    disabled={isUnusedColumn}
+                                                />
+                                            </td>
+                                        );
+                                    })}
                                     <td className="px-3 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <button
                                             type="button"
