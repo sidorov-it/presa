@@ -140,9 +140,26 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
     // Toggle settings
     const handleToggleSettings = (setting: string, value: boolean | string) => {
         // Just for the demo, in a real implementation we would save these to the element
-        if (setting === 'showLabels') setShowLabels(value as boolean);
-        if (setting === 'showValues') setShowValues(value as boolean);
-        if (setting === 'legendPosition') setLegendPosition(value as 'left' | 'right' | 'top' | 'bottom');
+        if (setting === 'showLabels') {
+            setShowLabels(value as boolean);
+            if (presentationId && slideId && layoutId) {
+                updateElement(presentationId, slideId, layoutId, element.id, { showLabels: value as boolean });
+            }
+        }
+        if (setting === 'showValues') {
+            setShowValues(value as boolean);
+            if (presentationId && slideId && layoutId) {
+                updateElement(presentationId, slideId, layoutId, element.id, { showValues: value as boolean });
+            }
+        }
+        if (setting === 'legendPosition') {
+            setLegendPosition(value as 'left' | 'right' | 'top' | 'bottom');
+            if (presentationId && slideId && layoutId) {
+                updateElement(presentationId, slideId, layoutId, element.id, {
+                    legendPosition: value as 'left' | 'right' | 'top' | 'bottom',
+                });
+            }
+        }
         // if (setting === 'colorScheme') setColorScheme(value as string);
         if (setting === 'horizontalAlignment') {
             setHorizontalAlignment(value as 'left' | 'center' | 'right');
@@ -346,14 +363,14 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
                     <ResponsiveContainer width="100%" height={300}>
                         <BarChart data={data}>
                             <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
+                            {showLabels && <XAxis dataKey="name" />}
+                            {showLabels && <YAxis />}
                             {showValues && <Tooltip />}
-                            <Legend
+                            {/* <Legend
                                 layout={legendProps.layout}
                                 align={legendProps.align}
                                 verticalAlign={legendProps.verticalAlign}
-                            />
+                            /> */}
                             <Bar dataKey="value" fill="#8884d8" label={getLabelProps()} />
                         </BarChart>
                     </ResponsiveContainer>
@@ -362,10 +379,10 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
             case 'line':
                 return (
                     <ResponsiveContainer width="100%" height={300}>
-                        <LineChart data={data}>
+                        <LineChart data={[{ name: '' }, ...data, { name: '' }]}>
                             <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
+                            {showLabels && <XAxis dataKey="name" />}
+                            {showLabels && <YAxis />}
                             {showValues && <Tooltip />}
                             <Legend
                                 layout={legendProps.layout}
