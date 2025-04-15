@@ -3,6 +3,15 @@ import { generateId } from '@/utils/id';
 import { IconType } from 'react-icons/lib';
 import { ComponentStructureType } from '@/elements/registry';
 
+export const SLIDE_TEMPLATES = [
+    { value: 'standard', label: 'Standard (No Image)' },
+    { value: 'imageTop', label: 'Image Top' },
+    { value: 'imageBottom', label: 'Image Bottom' },
+    { value: 'imageLeft', label: 'Image Left' },
+    { value: 'imageRight', label: 'Image Right' },
+    { value: 'imageBackground', label: 'Image Background' },
+];
+
 // This enum represents the core element types in the system
 export enum ElementType {
     // Basic elements
@@ -542,6 +551,12 @@ export interface Slide {
         value: string;
     };
     style: Style;
+    templateType?: (typeof SLIDE_TEMPLATES)[number]['value'];
+    imageUrl?: string;
+    imageSize?: {
+        width?: string;
+        height?: string;
+    };
 }
 
 // Интерфейс презентации

@@ -152,6 +152,13 @@
     left: 0.5rem;
 }
 
+.templateButton {
+    top: 0.75rem;
+    left: 2.5rem;
+    cursor: pointer;
+}
+
+
 .slideContainer {
     position: relative; 
     width: 100%; 

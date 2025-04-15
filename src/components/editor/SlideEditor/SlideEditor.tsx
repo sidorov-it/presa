@@ -2,13 +2,15 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 'use client';
 
-import React, { useState, useRef, RefObject, useCallback, memo } from 'react';
+import React, { useState, useRef, RefObject, useCallback, memo, useMemo } from 'react';
 import { getPredefinedGridStructures, Layout, TipTapRefs } from '@/types';
 import { PresentationState, usePresentationStore } from '@/store/presentationStore';
 import styles from './SlideEditor.module.css';
 import LayoutContent from '../LayoutContent/LayoutContent';
 import { DragDropTransactionHelper } from '@/contexts/DragDropTransactionHelper';
 import DragHandler from '../DragHandler';
+import TemplateButton from '../TemplateButton';
+import ResizableTemplateImage from '../ResizableTemplateImage';
 import { getNewEditorElement } from '@/elements/registry';
 import { useMenuStore } from '@/store/menuStore';
 import { useEditorStore } from '@/store/editorStore';
@@ -70,6 +72,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const openMenu = useMenuStore.getState().openMenu;
     const checkSlideMenuIsOpen = useMenuStore.getState().checkSlideMenuIsOpen;
 
+    // Get slide data to access template properties
+    const slide = usePresentationStore(
+        useCallback(state => state.getSlide(presentationId, slideId), [presentationId, slideId])
+    );
+
     // Use selector that only gets the specific needed function using a factory
     const addSlideSelector = useCallback((state: PresentationState) => state.addSlide, []);
     const addSlide = usePresentationStore(addSlideSelector);
@@ -110,6 +117,15 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         },
         [slideId, openMenu, handleSelectSlide]
     );
+
+    const getSlideStyle = useCallback(() => {
+        if (slide?.templateType === 'imageBackground') {
+            return {
+                ...(slide?.imageUrl ? { backgroundImage: `url(${slide.imageUrl})` } : {}),
+            };
+        }
+        return {};
+    }, [slide?.imageUrl, slide?.templateType]);
 
     const getSlideClassName = useCallback(() => {
         let className = styles.slideWrapper;
@@ -195,6 +211,117 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         [slideLayoutIds, menuElementId, activeEditor, tiptapRefs, createDefaultLayout, presentationId, slideId]
     );
 
+    // Image rendering based on template type
+    const imageStyle = useMemo(() => {
+        if (!slide?.templateType || !slide?.imageUrl) return null;
+
+        const baseStyle: React.CSSProperties = {
+            backgroundImage: `url(${slide.imageUrl})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+        };
+
+        switch (slide.templateType) {
+            case 'imageTop':
+                return {
+                    ...baseStyle,
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '33%',
+                    zIndex: 1,
+                };
+            case 'imageBottom':
+                return {
+                    ...baseStyle,
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: '33%',
+                    zIndex: 1,
+                };
+            case 'imageLeft':
+                return {
+                    ...baseStyle,
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    width: '33%',
+                    zIndex: 1,
+                };
+            case 'imageRight':
+                return {
+                    ...baseStyle,
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    width: '33%',
+                    zIndex: 1,
+                };
+            case 'imageBackground':
+                // This is handled by slide background
+                return null;
+            default:
+                return null;
+        }
+    }, [slide?.templateType, slide?.imageUrl]);
+
+    // Calculate content style for layouts based on template
+    const contentStyle = useMemo(() => {
+        if (!slide?.templateType || !slide?.imageUrl) return {};
+
+        // Get stored image size or use default values
+        const imageWidth = slide.imageSize?.width || '33%';
+        const imageHeight = slide.imageSize?.height || '33%';
+        const remainingWidth = `${100 - parseFloat(imageWidth)}%`;
+        const remainingHeight = `${100 - parseFloat(imageHeight)}%`;
+
+        switch (slide.templateType) {
+            case 'imageTop':
+                return {
+                    position: 'relative',
+                    zIndex: 2,
+                    paddingTop: imageHeight,
+                    height: remainingHeight,
+                };
+            case 'imageBottom':
+                return {
+                    position: 'relative',
+                    zIndex: 2,
+                    height: remainingHeight,
+                };
+            case 'imageLeft':
+                return {
+                    position: 'relative',
+                    zIndex: 2,
+                    marginLeft: imageWidth,
+                    width: remainingWidth,
+                };
+            case 'imageRight':
+                return {
+                    position: 'relative',
+                    zIndex: 2,
+                    width: remainingWidth,
+                };
+            // case 'imageBackground':
+            //     return {
+            //         position: 'relative',
+            //         zIndex: 2,
+            //         backgroundSize: 'cover',
+            //         backgroundPosition: 'center',
+            //         backgroundRepeat: 'no-repeat',
+            //         backgroundImage: `url(${slide.imageUrl})`,
+            //     };
+            default:
+                return {};
+        }
+    }, [slide?.templateType, slide?.imageUrl, slide?.imageSize]);
+
     return (
         <div
             className={`${styles.slide}`}
@@ -210,27 +337,54 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 }
             }}
         >
-            <div className={`${getSlideClassName()} themed-slide`}>
+            <div
+                className={`${getSlideClassName()} themed-slide`}
+                style={getSlideStyle()}
+            >
                 <div className={`${styles.slideBorder} ${isSelected || isHovered ? styles.slideBorderMenuOpen : ''}`} />
                 <div ref={editorRef} className={`${styles.slideContent} themed-card`} style={{}}>
                     {(isSelected || slideMenuOpen || isHovered) && (
-                        <DragHandler
-                            className={styles.slideDragHandle}
+                        <>
+                            <DragHandler
+                                className={styles.slideDragHandle}
+                                slideId={slideId}
+                                isActive={slideMenuOpen}
+                                ariaLabel="Открыть меню слайда"
+                                dataAttributes={{
+                                    'data-slide-drag-handle': slideId,
+                                }}
+                                handleClick={handleOpenSlideMenu}
+                                handleKeyDown={e => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        handleOpenSlideMenu(e as unknown as React.MouseEvent<HTMLDivElement>);
+                                    }
+                                }}
+                                handleDragStart={e => {
+                                    e.preventDefault();
+                                }}
+                            />
+                            <TemplateButton
+                                presentationId={presentationId}
+                                slideId={slideId}
+                                isHovered={isHovered}
+                                isSelected={isSelected}
+                            />
+                        </>
+                    )}
+
+                    {/* Template image if needed */}
+                    {imageStyle && slide?.templateType && slide?.imageUrl && (
+                        <ResizableTemplateImage
+                            presentationId={presentationId}
                             slideId={slideId}
-                            isActive={slideMenuOpen}
-                            ariaLabel="Открыть меню слайда"
-                            dataAttributes={{
-                                'data-slide-drag-handle': slideId,
-                            }}
-                            handleClick={handleOpenSlideMenu}
-                            handleKeyDown={e => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                    handleOpenSlideMenu(e as unknown as React.MouseEvent<HTMLDivElement>);
-                                }
-                            }}
-                            handleDragStart={e => {
-                                e.preventDefault();
-                            }}
+                            templateType={slide.templateType}
+                            imageUrl={slide.imageUrl}
+                            // defaultSize={
+                            //     slide.templateType === 'imageTop' || slide.templateType === 'imageBottom'
+                            //         ? { height: '33%' }
+                            //         : { width: '33%' }
+                            // }
+                            initialImageStyle={imageStyle}
                         />
                     )}
 
@@ -238,6 +392,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                         className={`${styles.slideContainer} themed-card`}
                         data-slide-id={slideId}
                         onClick={handleSlideClick}
+                        style={contentStyle}
                     >
                         {slideLayoutIds.map((layoutId: string) => (
                             <LayoutContent

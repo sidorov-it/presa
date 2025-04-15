@@ -430,6 +430,7 @@ export const usePresentationStore = create<PresentationState>()(
                         value: '#ffffff',
                     },
                     style: {},
+                    templateType: 'standard', // Default template type
                 };
 
                 set(state => {
@@ -483,9 +484,12 @@ export const usePresentationStore = create<PresentationState>()(
                             if (presentation.id === presentationId) {
                                 return {
                                     ...presentation,
-                                    slides: presentation.slides.map(slide =>
-                                        slide.id === slideId ? { ...slide, ...data } : slide
-                                    ),
+                                    slides: presentation.slides.map(slide => {
+                                        if (slide.id === slideId) {
+                                            return { ...slide, ...data };
+                                        }
+                                        return slide;
+                                    }),
                                     updatedAt: Date.now(),
                                 };
                             }
