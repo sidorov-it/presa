@@ -38,6 +38,7 @@ interface ChartProps {
     slideId?: string;
     layoutId?: string;
     hasMultipleCells?: boolean;
+    inSettings?: boolean;
 }
 
 // Default sample data if no data is provided
@@ -54,7 +55,7 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 // Types for resize direction
 type ResizeDirection = 'top' | 'right' | 'bottom' | 'left' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
-const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, slideId, layoutId }) => {
+const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, slideId, layoutId, inSettings = false }) => {
     const [isSelected, setIsSelected] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -278,7 +279,10 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
 
     // Get alignment style
     const getAlignmentClass = () => {
-        // If the element has an alignment property, use it, otherwise use the state
+        if (inSettings) {
+            return 'mx-auto';
+        }
+
         const align = element.alignment || horizontalAlignment;
         switch (align) {
             case 'left':
@@ -366,12 +370,20 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
                             {showLabels && <XAxis dataKey="name" />}
                             {showLabels && <YAxis />}
                             {showValues && <Tooltip />}
-                            {/* <Legend
+                            <Legend
                                 layout={legendProps.layout}
                                 align={legendProps.align}
                                 verticalAlign={legendProps.verticalAlign}
-                            /> */}
-                            <Bar dataKey="value" fill="#8884d8" label={getLabelProps()} />
+                            />
+                            {element.series?.map((serie, index) => (
+                                <Bar 
+                                    key={serie.key}
+                                    dataKey={serie.key}
+                                    name={serie.label}
+                                    fill={serie.color || COLORS[index % COLORS.length]}
+                                    label={serie.label}
+                                />
+                            ))}
                         </BarChart>
                     </ResponsiveContainer>
                 );
@@ -389,16 +401,20 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
                                 align={legendProps.align}
                                 verticalAlign={legendProps.verticalAlign}
                             />
-                            <Bar 
-                                dataKey="value" 
-                                fill="#8884d8" 
-                                label={{ 
-                                    position: 'right',
-                                    formatter: (value) => showValues ? `${value}` : '',
-                                    fill: '#666',
-                                    fontSize: 12
-                                }}
-                            />
+                            {element.series?.map((serie, index) => (
+                                <Bar 
+                                    key={serie.key}
+                                    dataKey={serie.key}
+                                    name={serie.label}
+                                    fill={serie.color || COLORS[index % COLORS.length]}
+                                    label={{ 
+                                        position: 'right',
+                                        formatter: (value) => showValues ? `${value}` : '',
+                                        fill: '#666',
+                                        fontSize: 12
+                                    }}
+                                />
+                            ))}
                         </BarChart>
                     </ResponsiveContainer>
                 );
@@ -416,17 +432,33 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
                                 align={legendProps.align}
                                 verticalAlign={legendProps.verticalAlign}
                             />
-                            <Line type="monotone" dataKey="value" stroke="#8884d8" label={getLabelProps()} />
+                            {element.series?.map((serie, index) => (
+                                <Line 
+                                    key={serie.key}
+                                    type="monotone" 
+                                    dataKey={serie.key}
+                                    name={serie.label}
+                                    stroke={serie.color || COLORS[index % COLORS.length]}
+                                    label={serie.label}
+                                />
+                            ))}
                         </LineChart>
                     </ResponsiveContainer>
                 );
 
             case 'pie':
+                // Transform data for pie chart - use first series only
+                const pieData = element.series && element.series.length > 0
+                    ? data.map(item => ({
+                        name: item.name,
+                        value: Number(item[element.series[0].key])
+                    }))
+                    : data;
                 return (
                     <ResponsiveContainer width="100%" height={300}>
                         <PieChart>
                             <Pie
-                                data={data}
+                                data={pieData}
                                 cx="50%"
                                 cy="50%"
                                 labelLine={showLabels || showValues}
@@ -435,7 +467,7 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
                                 fill="#8884d8"
                                 dataKey="value"
                             >
-                                {data.map((entry: { name: string; value: number }, index: number) => (
+                                {pieData.map((entry, index) => (
                                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                 ))}
                             </Pie>
@@ -450,11 +482,18 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
                 );
 
             case 'donut':
+                // Transform data for donut chart - use first series only
+                const donutData = element.series && element.series.length > 0
+                    ? data.map(item => ({
+                        name: item.name,
+                        value: Number(item[element.series[0].key])
+                    }))
+                    : data;
                 return (
                     <ResponsiveContainer width="100%" height={300}>
                         <PieChart>
                             <Pie
-                                data={data}
+                                data={donutData}
                                 cx="50%"
                                 cy="50%"
                                 labelLine={showLabels || showValues}
@@ -464,7 +503,7 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
                                 fill="#8884d8"
                                 dataKey="value"
                             >
-                                {data.map((entry: { name: string; value: number }, index: number) => (
+                                {donutData.map((entry, index) => (
                                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                 ))}
                             </Pie>

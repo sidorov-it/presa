@@ -24,23 +24,40 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
 
     const updateElement = usePresentationStore(state => state.updateElement);
 
-    const [chartType, setChartType] = useState<'bar' | 'line' | 'pie' | 'donut'>(element?.chartType || 'bar');
+    const [chartType, setChartType] = useState<'bar' | 'line' | 'pie' | 'donut' | 'column'>(element?.chartType || 'bar');
 
-    // Initial state for table data with default rows
-    const [tableData, setTableData] = useState<Array<{ name: string; value: number }>>([
-        { name: 'Q1', value: 220 },
-        { name: 'Q2', value: 458 },
-        { name: 'Q3', value: 359 },
-        { name: 'Q4', value: 500 },
+    // Initial state for table data with default rows and series
+    const [tableData, setTableData] = useState<Array<{ [key: string]: string | number }>>([
+        { name: 'Q1', 'Sales (Millions)': 220, Clients: 133 },
+        { name: 'Q2', 'Sales (Millions)': 458, Clients: 123 },
+        { name: 'Q3', 'Sales (Millions)': 359, Clients: 222 },
+        { name: 'Q4', 'Sales (Millions)': 500, Clients: 135 },
+    ]);
+
+    const [series, setSeries] = useState<Array<{ key: string; label: string }>>([
+        { key: 'Sales (Millions)', label: 'Sales (Millions)' },
+        { key: 'Clients', label: 'Clients' }
     ]);
 
     useEffect(() => {
         if (element?.data) {
             setTableData(element.data);
+            if (element.series) {
+                setSeries(element.series);
+            } else {
+                // Extract series from data if not explicitly defined
+                const firstRow = element.data[0];
+                if (firstRow) {
+                    const newSeries = Object.keys(firstRow)
+                        .filter(key => key !== 'name')
+                        .map(key => ({ key, label: key }));
+                    setSeries(newSeries);
+                }
+            }
         }
     }, [element]);
 
-    const handleChangeChartType = (chartType: 'bar' | 'line' | 'pie' | 'donut') => {
+    const handleChangeChartType = (chartType: 'bar' | 'line' | 'pie' | 'donut' | 'column') => {
         setChartType(chartType);
 
         if (presentationId && slideId && layoutId && elementId) {
@@ -60,34 +77,67 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
         }
     };
 
-    const handleValueChange = (index: number, field: 'name' | 'value', value: string) => {
+    const handleValueChange = (index: number, key: string, value: string) => {
         setTableData(prev => {
             const newData = [...prev];
-            if (field === 'name') {
+            if (key === 'name') {
                 newData[index] = { ...newData[index], name: value };
             } else {
-                newData[index] = { ...newData[index], value: Number(value) || 0 };
+                newData[index] = { ...newData[index], [key]: Number(value) || 0 };
             }
             return newData;
         });
     };
 
     const handleAddRow = () => {
-        setTableData(prev => [...prev, { name: `Item ${prev.length + 1}`, value: 0 }]);
+        setTableData(prev => {
+            const newRow: { [key: string]: string | number } = { name: `Item ${prev.length + 1}` };
+            series.forEach(s => {
+                newRow[s.key] = 0;
+            });
+            return [...prev, newRow];
+        });
+    };
+
+    const handleAddColumn = () => {
+        const timestamp = Date.now();
+        const newKey = `series_${timestamp}`;
+        const newLabel = `Серия ${series.length + 1}`;
+        setSeries(prev => [...prev, { key: newKey, label: newLabel }]);
+        setTableData(prev => 
+            prev.map(row => ({
+                ...row,
+                [newKey]: 0
+            }))
+        );
     };
 
     const handleDeleteRow = (index: number) => {
         setTableData(prev => prev.filter((_, i) => i !== index));
     };
 
+    const handleDeleteColumn = (key: string) => {
+        setSeries(prev => prev.filter(s => s.key !== key));
+        setTableData(prev => 
+            prev.map(({ [key]: _, ...rest }) => rest)
+        );
+    };
+
+    const handleColumnLabelChange = (key: string, newLabel: string) => {
+        setSeries(prev => 
+            prev.map(s => s.key === key ? { ...s, label: newLabel } : s)
+        );
+    };
+
     const handleApplyData = () => {
         if (presentationId && slideId && layoutId && elementId) {
             updateElement(presentationId, slideId, layoutId, elementId, {
                 data: tableData,
+                series: series
             });
 
             if (onUpdate) {
-                onUpdate({ data: tableData });
+                onUpdate({ data: tableData, series: series });
             }
         }
     };
@@ -149,7 +199,7 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                 </div>
             </div>
 
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
                 <span className="block text-sm font-medium">Выравнивание</span>
                 <div className="flex space-x-2">
                     <button
@@ -186,66 +236,95 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                         </svg>
                     </button>
                 </div>
-            </div>
+            </div> */}
 
             <div className="space-y-2">
                 <div className="flex justify-between items-center">
                     <span className="block text-sm font-medium text-gray-700">Данные</span>
-                    <button
-                        type="button"
-                        className="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
-                        onClick={handleAddRow}
-                    >
-                        Добавить строку
-                    </button>
+                    <div className="space-x-2">
+                        <button
+                            type="button"
+                            className="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
+                            onClick={handleAddColumn}
+                        >
+                            Добавить столбец
+                        </button>
+                        <button
+                            type="button"
+                            className="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
+                            onClick={handleAddRow}
+                        >
+                            Добавить строку
+                        </button>
+                    </div>
                 </div>
 
-                <div className="overflow-hidden border border-gray-200 rounded-md">
-                    <table className="min-w-full divide-y divide-gray-200">
+                <div className="overflow-x-auto border border-gray-200 rounded-md">
+                    <table className="min-w-full divide-y divide-gray-200 table-fixed">
+                        <colgroup>
+                            <col className="w-[200px]" /> {/* Fixed width for name column */}
+                            {series.map(() => (
+                                <col className="w-[200px]" /> // Fixed width for data columns
+                            ))}
+                            <col className="w-[100px]" /> {/* Fixed width for actions column */}
+                        </colgroup>
                         <thead className="bg-gray-50">
                             <tr>
-                                <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                >
+                                <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 bg-gray-50">
                                     Название
                                 </th>
-                                <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                >
-                                    Значение
+                                {series.map((s) => (
+                                    <th key={s.key} className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <div className="flex items-center space-x-2">
+                                            <input
+                                                type="text"
+                                                className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                                value={s.label}
+                                                onChange={(e) => handleColumnLabelChange(s.key, e.target.value)}
+                                            />
+                                            {series.length > 1 && (
+                                                <button
+                                                    type="button"
+                                                    className="text-red-600 hover:text-red-900 flex-shrink-0"
+                                                    onClick={() => handleDeleteColumn(s.key)}
+                                                >
+                                                    ✕
+                                                </button>
+                                            )}
+                                        </div>
+                                    </th>
+                                ))}
+                                <th className="relative w-[100px] px-3 py-3">
+                                    <span className="sr-only">Actions</span>
                                 </th>
-                                <th
-                                    scope="col"
-                                    className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                />
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {tableData.map((row, index) => (
-                                <tr key={index}>
-                                    <td className="px-6 py-4 whitespace-nowrap">
+                            {tableData.map((row, rowIndex) => (
+                                <tr key={rowIndex}>
+                                    <td className="px-3 py-4 whitespace-nowrap sticky left-0 bg-white">
                                         <input
                                             type="text"
                                             className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                             value={row.name}
-                                            onChange={e => handleValueChange(index, 'name', e.target.value)}
+                                            onChange={e => handleValueChange(rowIndex, 'name', e.target.value)}
                                         />
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <input
-                                            type="number"
-                                            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                            value={row.value}
-                                            onChange={e => handleValueChange(index, 'value', e.target.value)}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    {series.map(s => (
+                                        <td key={s.key} className="px-3 py-4 whitespace-nowrap">
+                                            <input
+                                                type="number"
+                                                className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                                value={row[s.key]}
+                                                onChange={e => handleValueChange(rowIndex, s.key, e.target.value)}
+                                            />
+                                        </td>
+                                    ))}
+                                    <td className="px-3 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <button
                                             type="button"
                                             className="text-red-600 hover:text-red-900"
-                                            onClick={() => handleDeleteRow(index)}
+                                            onClick={() => handleDeleteRow(rowIndex)}
                                             disabled={tableData.length <= 1}
                                         >
                                             Удалить
@@ -258,7 +337,7 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                 </div>
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-end pt-4">
                 <button
                     type="button"
                     className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"

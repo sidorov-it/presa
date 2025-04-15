@@ -42,34 +42,40 @@ const ChartModal: React.FC<ChartModalProps> = ({ isOpen, onClose, elementId, pre
     if (!isOpen || !chartElement) return null;
 
     return (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-30 flex items-center justify-center">
-            <div className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] flex flex-col">
-                <div className="flex justify-between items-center border-b px-6 py-4">
-                    <h2 className="text-lg font-medium text-gray-900">Редактирование</h2>
+        <div className="fixed inset-0 z-50 overflow-hidden bg-black bg-opacity-30">
+            {/* Backdrop for closing */}
+            <div className="absolute inset-0" onClick={onClose} />
+            
+            {/* Bottom sheet */}
+            <div className="absolute inset-x-0 bottom-0 transform transition-transform duration-300 ease-in-out bg-white rounded-t-xl shadow-xl z-50">
+                {/* Handle/Pill for mobile feel */}
+                <div className="flex justify-center pt-4 pb-2">
+                    <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
+                </div>
+
+                {/* Header */}
+                <div className="flex justify-between items-center px-6 pb-4">
+                    <h2 className="text-lg font-medium text-gray-900">Редактирование диаграммы</h2>
                     <button type="button" className="text-gray-400 hover:text-gray-500" onClick={onClose}>
                         <span className="sr-only">Close</span>
                         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M6 18L18 6M6 6l12 12"
-                            />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
 
-                <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
+                {/* Content */}
+                <div className="flex flex-col lg:flex-row h-[calc(100vh-20vh)] overflow-hidden">
                     {/* Left panel - Chart preview */}
-                    <div className="w-full md:w-1/2 p-6 border-r overflow-auto">
+                    <div className="w-full lg:w-1/2 p-6 border-b lg:border-b-0 lg:border-r overflow-auto">
                         <h3 className="text-sm font-medium text-gray-700 mb-4">Предпросмотр</h3>
                         <div className="border border-gray-200 rounded-md p-4 bg-white">
-                            {chartElement && <Chart element={chartElement} />}
+                            {chartElement && <Chart element={chartElement} inSettings={true}/>}
                         </div>
                     </div>
 
                     {/* Right panel - Settings */}
-                    <div className="w-full md:w-1/2 overflow-auto">
+                    <div className="w-full lg:w-1/2 overflow-auto">
                         <ChartSettings
                             elementId={elementId}
                             presentationId={presentationId}
@@ -78,16 +84,6 @@ const ChartModal: React.FC<ChartModalProps> = ({ isOpen, onClose, elementId, pre
                             onUpdate={handleUpdate}
                         />
                     </div>
-                </div>
-
-                <div className="border-t px-6 py-4 flex justify-end">
-                    <button
-                        type="button"
-                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                        onClick={onClose}
-                    >
-                        Закрыть
-                    </button>
                 </div>
             </div>
         </div>

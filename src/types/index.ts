@@ -334,7 +334,15 @@ export interface VideoElement extends BaseElement {
 export interface ChartElement extends BaseElement {
     type: 'chart';
     chartType: 'bar' | 'line' | 'pie' | 'donut' | 'column';
-    data: any; // Данные для диаграммы
+    data: {
+        name: string;
+        [key: string]: string | number; // Allow any number of data series
+    }[];
+    series?: {
+        key: string;
+        label: string;
+        color?: string;
+    }[];
     alignment?: 'left' | 'center' | 'right';
     width?: number;
 }
