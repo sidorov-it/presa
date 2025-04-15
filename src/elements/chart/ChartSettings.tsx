@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChartElement } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
-import { useMenuStore } from '@/store/menuStore';
 
 import { FaChartBar } from 'react-icons/fa6';
 import { FaChartColumn } from 'react-icons/fa6';
@@ -23,9 +22,6 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
     );
 
     const updateElement = usePresentationStore(state => state.updateElement);
-
-    const [chartType, setChartType] = useState<'bar' | 'line' | 'pie' | 'donut' | 'column'>(element?.chartType || 'bar');
-
     // Initial state for table data with default rows and series
     const [tableData, setTableData] = useState<Array<{ [key: string]: string | number }>>([
         { name: 'Q1', 'Sales (Millions)': 220, Clients: 133 },
@@ -36,7 +32,7 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
 
     const [series, setSeries] = useState<Array<{ key: string; label: string }>>([
         { key: 'Sales (Millions)', label: 'Sales (Millions)' },
-        { key: 'Clients', label: 'Clients' }
+        { key: 'Clients', label: 'Clients' },
     ]);
 
     useEffect(() => {
@@ -58,8 +54,6 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
     }, [element]);
 
     const handleChangeChartType = (chartType: 'bar' | 'line' | 'pie' | 'donut' | 'column') => {
-        setChartType(chartType);
-
         if (presentationId && slideId && layoutId && elementId) {
             updateElement(presentationId, slideId, layoutId, elementId, {
                 chartType: chartType,
@@ -68,12 +62,6 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
             if (onUpdate) {
                 onUpdate({ chartType: chartType });
             }
-        }
-    };
-
-    const handleAlignmentChange = (alignment: 'left' | 'center' | 'right') => {
-        if (presentationId && slideId && layoutId && elementId) {
-            updateElement(presentationId, slideId, layoutId, elementId, { alignment });
         }
     };
 
@@ -104,10 +92,10 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
         const newKey = `series_${timestamp}`;
         const newLabel = `Серия ${series.length + 1}`;
         setSeries(prev => [...prev, { key: newKey, label: newLabel }]);
-        setTableData(prev => 
+        setTableData(prev =>
             prev.map(row => ({
                 ...row,
-                [newKey]: 0
+                [newKey]: 0,
             }))
         );
     };
@@ -118,22 +106,18 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
 
     const handleDeleteColumn = (key: string) => {
         setSeries(prev => prev.filter(s => s.key !== key));
-        setTableData(prev => 
-            prev.map(({ [key]: _, ...rest }) => rest)
-        );
+        setTableData(prev => prev.map(({ [key]: _, ...rest }) => rest));
     };
 
     const handleColumnLabelChange = (key: string, newLabel: string) => {
-        setSeries(prev => 
-            prev.map(s => s.key === key ? { ...s, label: newLabel } : s)
-        );
+        setSeries(prev => prev.map(s => (s.key === key ? { ...s, label: newLabel } : s)));
     };
 
     const handleApplyData = () => {
         if (presentationId && slideId && layoutId && elementId) {
             updateElement(presentationId, slideId, layoutId, elementId, {
                 data: tableData,
-                series: series
+                series: series,
             });
 
             if (onUpdate) {
@@ -263,7 +247,7 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                     <table className="min-w-full divide-y divide-gray-200 table-fixed">
                         <colgroup>
                             <col className="w-[200px]" />
-                            {series.map((s) => (
+                            {series.map(s => (
                                 <col key={s.key} className="w-[200px]" />
                             ))}
                             <col className="w-[100px]" />
@@ -276,16 +260,19 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                                 {series.map((s, colIndex) => {
                                     const isPieOrDonut = element?.chartType === 'pie' || element?.chartType === 'donut';
                                     const isUnusedColumn = isPieOrDonut && colIndex > 0;
-                                    
+
                                     return (
-                                        <th key={s.key} className={`px-3 py-3 text-left text-xs font-medium tracking-wider ${isUnusedColumn ? 'text-gray-400' : 'text-gray-500'}`}>
+                                        <th
+                                            key={s.key}
+                                            className={`px-3 py-3 text-left text-xs font-medium tracking-wider ${isUnusedColumn ? 'text-gray-400' : 'text-gray-500'}`}
+                                        >
                                             <div className="flex items-center space-x-2">
                                                 <div className="flex-1">
                                                     <input
                                                         type="text"
                                                         className={`block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${isUnusedColumn ? 'opacity-40' : ''}`}
                                                         value={s.label}
-                                                        onChange={(e) => handleColumnLabelChange(s.key, e.target.value)}
+                                                        onChange={e => handleColumnLabelChange(s.key, e.target.value)}
                                                         disabled={isUnusedColumn}
                                                     />
                                                 </div>
@@ -319,9 +306,10 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                                         />
                                     </td>
                                     {series.map((s, colIndex) => {
-                                        const isPieOrDonut = element?.chartType === 'pie' || element?.chartType === 'donut';
+                                        const isPieOrDonut =
+                                            element?.chartType === 'pie' || element?.chartType === 'donut';
                                         const isUnusedColumn = isPieOrDonut && colIndex > 0;
-                                        
+
                                         return (
                                             <td key={s.key} className="px-3 py-4 whitespace-nowrap">
                                                 <input

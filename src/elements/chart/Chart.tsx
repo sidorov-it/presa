@@ -376,7 +376,7 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
                                 verticalAlign={legendProps.verticalAlign}
                             />
                             {element.series?.map((serie, index) => (
-                                <Bar 
+                                <Bar
                                     key={serie.key}
                                     dataKey={serie.key}
                                     name={serie.label?.trim() || ' '}
@@ -393,8 +393,10 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
                     <ResponsiveContainer width="100%" height={300}>
                         <BarChart data={data} layout="vertical" margin={{ top: 5, right: 45, bottom: 5, left: 40 }}>
                             <CartesianGrid strokeDasharray="3 3" />
-                            {showLabels && <XAxis type="number" />}
-                            {showLabels && <YAxis dataKey="name" type="category" width={80} />}
+
+                            <XAxis type="number" hide={!showLabels} />
+                            <YAxis dataKey="name" type="category" hide={!showLabels} />
+
                             {showValues && <Tooltip />}
                             <Legend
                                 layout={legendProps.layout}
@@ -402,14 +404,14 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
                                 verticalAlign={legendProps.verticalAlign}
                             />
                             {element.series?.map((serie, index) => (
-                                <Bar 
+                                <Bar
                                     key={serie.key}
                                     dataKey={serie.key}
                                     name={serie.label?.trim() || ' '}
                                     fill={serie.color || COLORS[index % COLORS.length]}
-                                    label={{ 
+                                    label={{
                                         position: 'right',
-                                        formatter: (value) => showValues ? `${value}` : '',
+                                        formatter: (value: number) => showValues ? `${value}` : '',
                                         fill: '#666',
                                         fontSize: 12
                                     }}
@@ -433,9 +435,9 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
                                 verticalAlign={legendProps.verticalAlign}
                             />
                             {element.series?.map((serie, index) => (
-                                <Line 
+                                <Line
                                     key={serie.key}
-                                    type="monotone" 
+                                    type="monotone"
                                     dataKey={serie.key}
                                     name={serie.label?.trim() || ' '}
                                     stroke={serie.color || COLORS[index % COLORS.length]}
