@@ -129,7 +129,7 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
     };
 
     // Change chart type
-    const handleChangeChartType = (type: 'bar' | 'line' | 'pie' | 'donut') => {
+    const handleChangeChartType = (type: 'bar' | 'line' | 'pie' | 'donut' | 'column') => {
         if (presentationId && slideId && layoutId) {
             updateElement(presentationId, slideId, layoutId, element.id, {
                 chartType: type,
@@ -372,6 +372,33 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
                                 verticalAlign={legendProps.verticalAlign}
                             /> */}
                             <Bar dataKey="value" fill="#8884d8" label={getLabelProps()} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                );
+
+            case 'column':
+                return (
+                    <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={data} layout="vertical" margin={{ top: 5, right: 45, bottom: 5, left: 40 }}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            {showLabels && <XAxis type="number" />}
+                            {showLabels && <YAxis dataKey="name" type="category" width={80} />}
+                            {showValues && <Tooltip />}
+                            <Legend
+                                layout={legendProps.layout}
+                                align={legendProps.align}
+                                verticalAlign={legendProps.verticalAlign}
+                            />
+                            <Bar 
+                                dataKey="value" 
+                                fill="#8884d8" 
+                                label={{ 
+                                    position: 'right',
+                                    formatter: (value) => showValues ? `${value}` : '',
+                                    fill: '#666',
+                                    fontSize: 12
+                                }}
+                            />
                         </BarChart>
                     </ResponsiveContainer>
                 );
