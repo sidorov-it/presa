@@ -557,6 +557,7 @@ export interface Slide {
         width?: string;
         height?: string;
     };
+    contentAlignment?: 'top' | 'center' | 'bottom';
 }
 
 // Интерфейс презентации

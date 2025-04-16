@@ -124,8 +124,16 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 ...(slide?.imageUrl ? { backgroundImage: `url(${slide.imageUrl})` } : {}),
             };
         }
+
+        // Use background color from slide data
+        if (slide?.background?.type === 'color') {
+            return {
+                backgroundColor: slide.background.value,
+            };
+        }
+
         return {};
-    }, [slide?.imageUrl, slide?.templateType]);
+    }, [slide?.imageUrl, slide?.templateType, slide?.background]);
 
     const getSlideClassName = useCallback(() => {
         let className = styles.slideWrapper;
@@ -273,55 +281,81 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     // Calculate content style for layouts based on template
     const contentStyle: React.CSSProperties = useMemo(() => {
-        if (!slide?.templateType || !slide?.imageUrl) return {};
+        if (!slide) return {};
 
-        // Get stored image size or use default values
-        const imageWidth = slide.imageSize?.width || '33%';
-        const imageHeight = slide.imageSize?.height || '33%';
-        const remainingWidth = `${100 - parseFloat(imageWidth)}%`;
-        const remainingHeight = `${100 - parseFloat(imageHeight)}%`;
+        // Base styles
+        const baseStyle: React.CSSProperties = {
+            position: 'relative',
+            height: '100%',
+            width: '100%'
+        };
 
-        switch (slide.templateType) {
-            case 'imageTop':
-                return {
-                    position: 'relative',
-                    zIndex: 2,
-                    paddingTop: imageHeight,
-                    height: remainingHeight,
-                };
-            case 'imageBottom':
-                return {
-                    position: 'relative',
-                    zIndex: 2,
-                    paddingBottom: imageHeight,
-                    height: remainingHeight,
-                };
-            case 'imageLeft':
-                return {
-                    position: 'relative',
-                    zIndex: 2,
-                    marginLeft: imageWidth,
-                    width: remainingWidth,
-                };
-            case 'imageRight':
-                return {
-                    position: 'relative',
-                    zIndex: 2,
-                    width: remainingWidth,
-                };
-            // case 'imageBackground':
-            //     return {
-            //         position: 'relative',
-            //         zIndex: 2,
-            //         backgroundSize: 'cover',
-            //         backgroundPosition: 'center',
-            //         backgroundRepeat: 'no-repeat',
-            //         backgroundImage: `url(${slide.imageUrl})`,
-            //     };
-            default:
-                return {};
+        // Apply content alignment
+        if (slide.contentAlignment) {
+            baseStyle.display = 'flex';
+            baseStyle.flexDirection = 'column';
+            switch (slide.contentAlignment) {
+                case 'top':
+                    baseStyle.justifyContent = 'flex-start';
+                    break;
+                case 'center':
+                    baseStyle.justifyContent = 'center';
+                    break;
+                case 'bottom':
+                    baseStyle.justifyContent = 'flex-end';
+                    break;
+                default:
+                    baseStyle.justifyContent = 'center'; // Default to center
+            }
         }
-    }, [slide?.templateType, slide?.imageUrl, slide?.imageSize]);
+
+        // Additional styles for image templates
+        if (slide.templateType && slide.imageUrl) {
+            // Get stored image size or use default values
+            const imageWidth = slide.imageSize?.width || '33%';
+            const imageHeight = slide.imageSize?.height || '33%';
+            const remainingWidth = `${100 - parseFloat(imageWidth)}%`;
+            const remainingHeight = `${100 - parseFloat(imageHeight)}%`;
+
+            switch (slide.templateType) {
+                case 'imageTop':
+                    return {
+                        ...baseStyle,
+                        position: 'relative',
+                        zIndex: 2,
+                        paddingTop: imageHeight,
+                        height: remainingHeight,
+                    };
+                case 'imageBottom':
+                    return {
+                        ...baseStyle,
+                        position: 'relative',
+                        zIndex: 2,
+                        paddingBottom: imageHeight,
+                        height: remainingHeight,
+                    };
+                case 'imageLeft':
+                    return {
+                        ...baseStyle,
+                        position: 'relative',
+                        zIndex: 2,
+                        marginLeft: imageWidth,
+                        width: remainingWidth,
+                    };
+                case 'imageRight':
+                    return {
+                        ...baseStyle,
+                        position: 'relative',
+                        zIndex: 2,
+                        width: remainingWidth,
+                    };
+                default:
+                    return baseStyle;
+            }
+        }
+
+        return baseStyle;
+    }, [slide]);
 
     return (
         <div
@@ -377,11 +411,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                             slideId={slideId}
                             templateType={slide.templateType}
                             imageUrl={slide.imageUrl}
-                            // defaultSize={
-                            //     slide.templateType === 'imageTop' || slide.templateType === 'imageBottom'
-                            //         ? { height: '33%' }
-                            //         : { width: '33%' }
-                            // }
                             initialImageStyle={imageStyle}
                         />
                     )}

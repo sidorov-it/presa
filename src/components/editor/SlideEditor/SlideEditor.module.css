@@ -157,4 +157,6 @@
     width: 100%; 
     height: 100%; 
     padding: var(--card-inner-padding);
+    min-height: calc(min(calc(64.5em / 1), 100vw) / 1.7777777777777777);
+
 }
