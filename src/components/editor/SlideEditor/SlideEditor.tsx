@@ -9,7 +9,7 @@ import styles from './SlideEditor.module.css';
 import LayoutContent from '../LayoutContent/LayoutContent';
 import { DragDropTransactionHelper } from '@/contexts/DragDropTransactionHelper';
 import DragHandler from '../DragHandler';
-import TemplateButton from '../TemplateButton';
+import TemplateButton from '../TemplateButton/TemplateButton';
 import ResizableTemplateImage from '../ResizableTemplateImage';
 import { getNewEditorElement } from '@/elements/registry';
 import { useMenuStore } from '@/store/menuStore';
@@ -212,8 +212,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     );
 
     // Image rendering based on template type
-    const imageStyle = useMemo(() => {
-        if (!slide?.templateType || !slide?.imageUrl) return null;
+    const imageStyle: React.CSSProperties = useMemo(() => {
+        if (!slide?.templateType || !slide?.imageUrl) return {};
 
         const baseStyle: React.CSSProperties = {
             backgroundImage: `url(${slide.imageUrl})`,
@@ -265,14 +265,14 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 };
             case 'imageBackground':
                 // This is handled by slide background
-                return null;
+                return {};
             default:
-                return null;
+                return {};
         }
     }, [slide?.templateType, slide?.imageUrl]);
 
     // Calculate content style for layouts based on template
-    const contentStyle = useMemo(() => {
+    const contentStyle: React.CSSProperties = useMemo(() => {
         if (!slide?.templateType || !slide?.imageUrl) return {};
 
         // Get stored image size or use default values
@@ -293,6 +293,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 return {
                     position: 'relative',
                     zIndex: 2,
+                    paddingBottom: imageHeight,
                     height: remainingHeight,
                 };
             case 'imageLeft':
@@ -337,10 +338,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 }
             }}
         >
-            <div
-                className={`${getSlideClassName()} themed-slide`}
-                style={getSlideStyle()}
-            >
+            <div className={`${getSlideClassName()} themed-slide`} style={getSlideStyle()}>
                 <div className={`${styles.slideBorder} ${isSelected || isHovered ? styles.slideBorderMenuOpen : ''}`} />
                 <div ref={editorRef} className={`${styles.slideContent} themed-card`} style={{}}>
                     {(isSelected || slideMenuOpen || isHovered) && (

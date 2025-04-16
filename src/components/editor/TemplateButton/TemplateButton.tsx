@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import styles from './SlideEditor/SlideEditor.module.css';
 import { useTheme } from '@/components/providers/ThemeProvider';
-import SlideTemplateSelector from './SlideTemplateSelector';
+import SlideTemplateSelector from '../SlideTemplateSelector/SlideTemplateSelector';
+import styles from './TemplateButton.module.css';
 
 interface TemplateButtonProps {
     presentationId: string;
@@ -16,7 +16,7 @@ const TemplateButton: React.FC<TemplateButtonProps> = ({
     slideId,
     className = '',
     isHovered,
-    isSelected
+    isSelected,
 }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -37,8 +37,8 @@ const TemplateButton: React.FC<TemplateButtonProps> = ({
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
-                popupRef.current && 
-                buttonRef.current && 
+                popupRef.current &&
+                buttonRef.current &&
                 !popupRef.current.contains(event.target as Node) &&
                 !buttonRef.current.contains(event.target as Node)
             ) {
@@ -58,32 +58,10 @@ const TemplateButton: React.FC<TemplateButtonProps> = ({
     }, []);
 
     const buttonStyle: React.CSSProperties = {
-        position: 'absolute',
-        zIndex: 20,
-        borderRadius: '3px',
-        width: '25px',
-        height: '25px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
         border: isDarkMode ? '1px solid white' : '1px solid #666',
         backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.5)' : 'white',
         color: isDarkMode ? 'white' : '#333',
         opacity: isVisible ? 1 : 0,
-        transition: 'opacity 0.2s ease-in-out',
-    };
-
-    const popupStyle: React.CSSProperties = {
-        position: 'absolute',
-        top: '30px',
-        left: '0',
-        zIndex: 1000,
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-        backgroundColor: 'white',
-        borderRadius: '8px',
-        padding: '12px',
-        minWidth: '250px',
-        display: isOpen ? 'block' : 'none',
     };
 
     return (
@@ -94,7 +72,7 @@ const TemplateButton: React.FC<TemplateButtonProps> = ({
                     className={`${styles.templateButton} ${className}`}
                     style={buttonStyle}
                     onClick={handleClick}
-                    onKeyDown={(e) => {
+                    onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
                             handleClick(e as unknown as React.MouseEvent<HTMLDivElement>);
@@ -125,15 +103,12 @@ const TemplateButton: React.FC<TemplateButtonProps> = ({
             )}
 
             {isOpen && (
-                <div ref={popupRef} style={popupStyle}>
-                    <SlideTemplateSelector 
-                        presentationId={presentationId} 
-                        slideId={slideId} 
-                    />
+                <div ref={popupRef} style={{ display: isOpen ? 'block' : 'none' }} className={styles.popup}>
+                    <SlideTemplateSelector presentationId={presentationId} slideId={slideId} />
                 </div>
             )}
         </>
     );
 };
 
-export default TemplateButton; 
+export default TemplateButton;

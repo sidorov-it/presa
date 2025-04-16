@@ -5,11 +5,28 @@
     border-radius: 0;
 }
 
-.templateImage:hover .resizeHandleLeft,
-.templateImage:hover .resizeHandleRight,
-.templateImage:hover .resizeHandleTop,
-.templateImage:hover .resizeHandleBottom {
-    opacity: 1;
+.imageBackground {
+    border-radius: 0.4em;
+}
+
+.imageTop {
+    border-top-left-radius: 0.4em;
+    border-top-right-radius: 0.4em;
+}
+
+.imageBottom {
+    border-bottom-left-radius: 0.4em;
+    border-bottom-right-radius: 0.4em;
+}
+
+.imageLeft {
+    border-top-left-radius: 0.4em;
+    border-bottom-left-radius: 0.4em;
+}
+
+.imageRight {
+    border-top-right-radius: 0.4em;
+    border-bottom-right-radius: 0.4em;
 }
 
 .resizeHandleLeft,

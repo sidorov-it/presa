@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect, memo } from 'react';
+import React, { useState, useCallback, useRef, useEffect, memo, useMemo } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import styles from './ResizableTemplateImage.module.css';
 import deepEqual from 'deep-equal';
@@ -7,6 +7,8 @@ import deepEqual from 'deep-equal';
 const MIN_SIZE = 10;
 // Maximum size in percentage for image sections
 const MAX_SIZE = 90;
+// Default pixel height for top/bottom images
+const DEFAULT_HEIGHT_PX = 200;
 
 interface ResizableTemplateImageProps {
     presentationId: string;
@@ -34,13 +36,11 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     const storedSize =
         slide?.imageSize ||
         (slide?.templateType === 'imageTop' || slide?.templateType === 'imageBottom'
-            ? { height: '33%' }
+            ? { height: `${DEFAULT_HEIGHT_PX}px` }
             : { width: '33%' });
 
     // State for tracking resize operation
     const [isResizing, setIsResizing] = useState(false);
-    const [resizeDirection, setResizeDirection] = useState<'horizontal' | 'vertical' | null>(null);
-    const [startPos, setStartPos] = useState({ x: 0, y: 0 });
     const [currentSize, setCurrentSize] = useState(storedSize);
 
     // Refs for resize handling
@@ -91,12 +91,28 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     }, [templateType]);
 
     // Compute final image style including stored dimensions
-    const imageStyle = {
-        ...initialImageStyle,
-        ...(currentSize.width && { width: currentSize.width }),
-        ...(currentSize.height && { height: currentSize.height }),
-        zIndex: 10,
-    };
+    const imageStyle = useMemo(() => {
+        if (templateType === 'imageBackground') {
+            return {
+                ...initialImageStyle,
+                ...(currentSize.width && { width: currentSize.width }),
+                ...(currentSize.height && { height: currentSize.height }),
+                zIndex: 10,
+            };
+        } else if (templateType === 'imageTop' || templateType === 'imageBottom') {
+            return {
+                ...initialImageStyle,
+                ...(currentSize.height && { height: currentSize.height }),
+                zIndex: 10,
+            };
+        } else {
+            return {
+                ...initialImageStyle,
+                ...(currentSize.width && { width: currentSize.width }),
+                zIndex: 10,
+            };
+        }
+    }, [currentSize, initialImageStyle, templateType]);
 
     // Handle resize movement
     const handleResizeMove = useCallback((e: MouseEvent) => {
@@ -131,7 +147,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                 }
 
                 if (newWidth) {
-                    setCurrentSize(prev => ({ ...prev, width: newWidth }));
+                    setCurrentSize({ width: newWidth });
                 }
             }
 
@@ -139,20 +155,25 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                 let newHeight;
 
                 if (templateTypeRef.current === 'imageTop') {
-                    // For top image, increase height when dragging down
-                    const baseHeight = parseFloat(currentSizeRef.current.height || '33%');
-                    const parentHeight = parentRect.height;
-                    const pixelHeight = (baseHeight / 100) * parentHeight + deltaY;
-                    newHeight = `${Math.max(MIN_SIZE, Math.min(MAX_SIZE, (pixelHeight / parentHeight) * 100))}%`;
+                    // For top image, use pixels for height
+                    const currentHeightString = currentSizeRef.current.height || `${DEFAULT_HEIGHT_PX}px`;
+                    const baseHeight = parseFloat(currentHeightString);
+                    // If the height is in pixels, add deltaY directly
+                    const newHeightValue = baseHeight + deltaY;
+                    // Enforce a minimum and maximum pixel height
+                    newHeight = `${Math.max(50, Math.min(800, newHeightValue))}px`;
                 } else if (templateTypeRef.current === 'imageBottom') {
-                    const baseHeight = parseFloat(currentSizeRef.current.height || '33%');
-                    const parentHeight = parentRect.height;
-                    const pixelHeight = (baseHeight / 100) * parentHeight - deltaY;
-                    newHeight = `${Math.max(MIN_SIZE, Math.min(MAX_SIZE, (pixelHeight / parentHeight) * 100))}%`;
+                    // For bottom image, use pixels for height
+                    const currentHeightString = currentSizeRef.current.height || `${DEFAULT_HEIGHT_PX}px`;
+                    const baseHeight = parseFloat(currentHeightString);
+                    // For bottom image, decrease height when dragging up
+                    const newHeightValue = baseHeight - deltaY;
+                    // Enforce a minimum and maximum pixel height
+                    newHeight = `${Math.max(50, Math.min(800, newHeightValue))}px`;
                 }
 
                 if (newHeight) {
-                    setCurrentSize(prev => ({ ...prev, height: newHeight }));
+                    setCurrentSize({ height: newHeight });
                 }
             }
 
@@ -168,14 +189,13 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
             animationFrameIdRef.current = null;
         }
 
-        setResizeDirection(null);
         resizeDirectionRef.current = null;
         setIsResizing(false);
 
         // Remove global event listeners
         document.removeEventListener('mousemove', handleResizeMove);
         document.removeEventListener('mouseup', handleResizeEnd);
-    }, []);
+    }, [handleResizeMove]);
 
     // Handle resize start - must be defined after handleResizeMove and handleResizeEnd
     const handleResizeStart = useCallback(
@@ -185,9 +205,6 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
 
             const initialPos = { x: e.clientX, y: e.clientY };
             startPosRef.current = initialPos;
-            setStartPos(initialPos);
-            
-            setResizeDirection(direction);
             resizeDirectionRef.current = direction;
             setIsResizing(true);
 
@@ -206,37 +223,39 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
 
             if (!imageRef.current) return;
 
-            const step = e.shiftKey ? 5 : 2; // Larger step with shift key
             const parentRect = imageRef.current.parentElement?.getBoundingClientRect();
             if (!parentRect) return;
 
             if (direction === 'horizontal') {
+                const step = e.shiftKey ? 5 : 2; // Larger step with shift key
                 const currentWidth = parseFloat(currentSize.width || '33%');
                 const newWidth =
                     action === 'increase'
                         ? `${Math.min(MAX_SIZE, currentWidth + step)}%`
                         : `${Math.max(MIN_SIZE, currentWidth - step)}%`;
 
-                setCurrentSize(prev => ({ ...prev, width: newWidth }));
+                setCurrentSize({ width: newWidth });
             } else {
-                const currentHeight = parseFloat(currentSize.height || '33%');
-                const newHeight =
-                    action === 'increase'
-                        ? `${Math.min(MAX_SIZE, currentHeight + step)}%`
-                        : `${Math.max(MIN_SIZE, currentHeight - step)}%`;
+                // For vertical resizing (height), use pixels for top/bottom images
+                if (templateType === 'imageTop' || templateType === 'imageBottom') {
+                    const step = e.shiftKey ? 20 : 10; // Larger step with shift key
+                    const currentHeightString = currentSize.height || `${DEFAULT_HEIGHT_PX}px`;
+                    const currentHeight = parseFloat(currentHeightString);
+                    const newHeight =
+                        action === 'increase'
+                            ? `${Math.min(800, currentHeight + step)}px`
+                            : `${Math.max(50, currentHeight - step)}px`;
 
-                setCurrentSize(prev => ({ ...prev, height: newHeight }));
+                    setCurrentSize({ height: newHeight });
+                }
             }
 
             // Immediately update the slide with the new size
             updateSlide(presentationId, slideId, {
-                imageSize: {
-                    ...currentSize,
-                    ...(direction === 'horizontal' ? { width: currentSize.width } : { height: currentSize.height }),
-                },
+                imageSize: currentSize,
             });
         },
-        [currentSize, presentationId, slideId, updateSlide]
+        [currentSize, presentationId, slideId, templateType, updateSlide]
     );
 
     // Handle keyboard navigation
@@ -267,7 +286,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                 case 'Escape':
                     // Cancel resizing if the user presses Escape
                     setIsResizing(false);
-                    setResizeDirection(null);
+                    resizeDirectionRef.current = null;
                     break;
                 case 'Enter':
                 case ' ': // Space key
@@ -275,10 +294,10 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                     e.preventDefault();
                     if (!isResizing) {
                         setIsResizing(true);
-                        setResizeDirection(direction);
+                        resizeDirectionRef.current = direction;
                     } else {
                         setIsResizing(false);
-                        setResizeDirection(null);
+                        resizeDirectionRef.current = null;
                     }
                     break;
                 default:
@@ -303,7 +322,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     return (
         <div
             ref={imageRef}
-            className={styles.templateImage}
+            className={`${styles.templateImage} ${styles[templateType]}`}
             style={imageStyle}
             aria-label={`Resizable ${templateType} image template`}
             role="region"
@@ -352,9 +371,9 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                     tabIndex={0}
                     role="slider"
                     aria-label="Resize image height"
-                    aria-valuemin={MIN_SIZE}
-                    aria-valuemax={MAX_SIZE}
-                    aria-valuenow={parseInt(currentSize.height?.toString() || '33')}
+                    aria-valuemin={50}
+                    aria-valuemax={800}
+                    aria-valuenow={parseInt(currentSize.height?.toString() || `${DEFAULT_HEIGHT_PX}`)}
                     aria-orientation="vertical"
                 />
             )}
@@ -367,9 +386,9 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                     tabIndex={0}
                     role="slider"
                     aria-label="Resize image height"
-                    aria-valuemin={MIN_SIZE}
-                    aria-valuemax={MAX_SIZE}
-                    aria-valuenow={parseInt(currentSize.height?.toString() || '33')}
+                    aria-valuemin={50}
+                    aria-valuemax={800}
+                    aria-valuenow={parseInt(currentSize.height?.toString() || `${DEFAULT_HEIGHT_PX}`)}
                     aria-orientation="vertical"
                 />
             )}

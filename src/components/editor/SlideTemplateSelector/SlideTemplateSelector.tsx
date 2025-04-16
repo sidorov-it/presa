@@ -1,6 +1,7 @@
 import React from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { SLIDE_TEMPLATES } from '@/types';
+import styles from './SlideTemplateSelector.module.css';
 
 type SlideTemplateType = (typeof SLIDE_TEMPLATES)[number]['value'];
 
@@ -8,6 +9,8 @@ interface SlideTemplateSelectorProps {
     presentationId: string;
     slideId: string;
 }
+
+const DEFAULT_HEIGHT_PX = 200;
 
 const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentationId, slideId }) => {
     const slide = usePresentationStore(
@@ -18,13 +21,11 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
     const templateType = slide?.templateType || 'standard';
     const imageUrl = slide?.imageUrl || '';
 
-    const handleTemplateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value as SlideTemplateType;
-
+    const handleTemplateChange = (value: SlideTemplateType) => {
         // Set default image size based on template type
         let imageSize;
         if (value === 'imageTop' || value === 'imageBottom') {
-            imageSize = { height: '33%' };
+            imageSize = { height: `${DEFAULT_HEIGHT_PX}px` };
         } else if (value === 'imageLeft' || value === 'imageRight') {
             imageSize = { width: '33%' };
         }
@@ -73,23 +74,24 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
 
     return (
         <div className="flex flex-col gap-2 p-4 border rounded-lg bg-white shadow-sm">
-            <div className="flex flex-col gap-1">
-                <label htmlFor="slide-template-select" className="text-sm font-medium text-gray-700">
-                    Slide Template
-                </label>
-                <select
+            <div className="flex flex-row gap-1">
+                {/* <select
                     id="slide-template-select"
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     value={templateType}
                     onChange={handleTemplateChange}
                     aria-label="Select slide template"
-                >
-                    {SLIDE_TEMPLATES.map(t => (
-                        <option key={t.value} value={t.value}>
-                            {t.label}
-                        </option>
-                    ))}
-                </select>
+                > */}
+                {SLIDE_TEMPLATES.map(t => (
+                    <button
+                        key={t.value}
+                        className={`${styles.templateButton} ${templateType === t.value ? styles.active : ''}`}
+                        onClick={() => handleTemplateChange(t.value)}
+                    >
+                        <div className={`${styles.templateButtonIcon} ${styles[t.value]}`} />
+                    </button>
+                ))}
+                {/* </select> */}
             </div>
 
             {needsImage && (
