@@ -147,6 +147,21 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, tiptapRefs }
         }
     }, [tableRowIndex]);
 
+    const handleColorChange = useCallback((color: string) => {
+        tableRowElements.forEach(element => {
+            tiptapRefs.current.editors[element.id]?.editor.chain().focus(null, { scrollIntoView: false }).selectAll().setColor(color).blur().run();
+        });
+
+        // if (editor) {
+        //     editor.chain().focus(null, { scrollIntoView: false }).selectAll().setColor(color).blur().run();
+        // } else if (editors) {
+        //     editors.forEach(editor => {
+        //         editor.chain().focus(null, { scrollIntoView: false }).selectAll().setColor(color).blur().run();
+        //     });
+        // }
+
+    }, [tableRowElements, tiptapRefs]);
+
     return (
         <>
             <HeadingSelector
@@ -158,7 +173,7 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, tiptapRefs }
                 // lightThemeStyle={lightThemeStyle}
             />
             <ColorPicker
-                editors={tableRowElements.map(element => tiptapRefs.current.editors[element.id]?.editor)}
+                onColorChange={handleColorChange}
                 className={bubbleStyles.button}
             />
 

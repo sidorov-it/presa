@@ -125,14 +125,14 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
                 return true;
             }
 
-            // if (isOpen) {
-            //     useMenuStore.getState().closeMenu();
-            // }
-
             return false;
         },
         []
     );
+
+    const handleColorChange = useCallback((color: string) => {
+        editor.commands.setColor(color);
+    }, [editor]);
 
     return (
         <BubbleMenu
@@ -202,7 +202,7 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
                     )}
                 </div> */}
 
-                <ColorPicker editor={editor} className={styles.button} />
+                <ColorPicker onColorChange={handleColorChange} className={styles.button} />
 
                 <button
                     onClick={() => {

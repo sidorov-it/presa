@@ -8,6 +8,8 @@ import HeadingSelector from '@/components/settings/HeadingSelector/HeadingSelect
 import { Level } from '@tiptap/extension-heading';
 import { useShallow } from 'zustand/react/shallow';
 import isEditorPropertyConsistent from '@/utils/isEditorPropertyConsistent';
+import { ColorPicker } from '@/components/tiptap/ColorPicker';
+import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
 interface ColumnTableMenuProps {
     elementId?: string;
     presentationId?: string;
@@ -119,6 +121,12 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({ tableColumnIndex, tip
         }
     }, [tableColumnIndex]);
 
+    const handleColorChange = useCallback((color: string) => {
+        tableColumnElements.forEach(element => {
+            tiptapRefs.current.editors[element.id]?.editor.chain().focus(null, { scrollIntoView: false }).selectAll().setColor(color).blur().run();
+        });
+    }, [tableColumnElements, tiptapRefs]);
+
     const handleHeadingChange = useCallback(
         (level: number) => {
             tableColumnElements.forEach(element => {
@@ -142,6 +150,11 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({ tableColumnIndex, tip
                 handleHeadingChange={handleHeadingChange}
                 // lightThemeStyle={lightThemeStyle}
             />
+            <ColorPicker
+                onColorChange={handleColorChange}
+                className={bubbleStyles.button}
+            />
+
 
             {/* <ColorPicker
                 editors={tableColumnElements.map(element => tiptapRefs.current.editors[element.id]?.editor)}

@@ -28,18 +28,24 @@ const COLOR_PRESETS = [
     '#FFFFFF', // Белый
 ];
 
+type ColorPickerMode = 'icon' | 'card';
+
 export const ColorPicker = ({
-    editor,
-    editors,
     className,
+    onColorChange,
+    initialColor = '#000000',
+    mode = 'icon',
+    label = ''
 }: {
-    editor?: Editor;
-    editors?: Editor[];
     className?: string;
+    onColorChange: (color: string) => void;
+    initialColor?: string;
+    mode?: ColorPickerMode;
+    label?: string;
 }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [currentColor, setCurrentColor] = useState('#000000');
-    const [customColor, setCustomColor] = useState('#000000');
+    const [currentColor, setCurrentColor] = useState(initialColor);
+    const [customColor, setCustomColor] = useState(initialColor);
     const colorPickerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -59,13 +65,7 @@ export const ColorPicker = ({
     // Обработка выбора цвета из пресетов
     const handleColorSelect = (color: string) => {
         setCurrentColor(color);
-        if (editor) {
-            editor.chain().focus(null, { scrollIntoView: false }).selectAll().setColor(color).blur().run();
-        } else if (editors) {
-            editors.forEach(editor => {
-                editor.chain().focus(null, { scrollIntoView: false }).selectAll().setColor(color).blur().run();
-            });
-        }
+        onColorChange(color);
         setIsOpen(false);
     };
 
@@ -76,31 +76,48 @@ export const ColorPicker = ({
 
     const handleCustomColorSelect = () => {
         setCurrentColor(customColor);
-        if (editor) {
-            editor.chain().focus().setColor(customColor).run();
-        } else if (editors) {
-            editors.forEach(editor => {
-                editor.chain().focus().setColor(customColor).run();
-            });
-        }
+        onColorChange(customColor);
         setIsOpen(false);
+    };
+
+    const renderTriggerButton = () => {
+        if (mode === 'icon') {
+            return (
+                <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className={`${className || ''} ${styles.colorButton}`}
+                    aria-label="Выбрать цвет текста"
+                    aria-expanded={isOpen}
+                    style={{ color: currentColor }}
+                >
+                    <BiPalette size={16} />
+                    <span className={styles.colorIndicator} style={{ backgroundColor: currentColor }}></span>
+                </button>
+            );
+        }
+        
+        return (
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className={`${className || ''} ${styles.cardColorButton} flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md bg-white text-sm`}
+                aria-label={label || "Выбрать цвет"}
+                aria-expanded={isOpen}
+            >
+                <div className={`${styles.cardColorIndicator} w-4 h-4 rounded-sm`} style={{ backgroundColor: currentColor }}></div>
+                <span>{currentColor}</span>
+                <svg className="h-4 w-4 ml-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+            </button>
+        );
     };
 
     return (
         <div className={`${styles.colorPickerContainer} light-theme-only`} ref={colorPickerRef}>
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className={`${className || ''} ${styles.colorButton}`}
-                aria-label="Выбрать цвет текста"
-                aria-expanded={isOpen}
-                style={{ color: currentColor }}
-            >
-                <BiPalette size={16} />
-                <span className={styles.colorIndicator} style={{ backgroundColor: currentColor }}></span>
-            </button>
+            {renderTriggerButton()}
 
             {isOpen && (
-                <div className={`${styles.colorPopover} light-theme-only`}>
+                <div className={`${styles.colorPopover} light-theme-only ${mode === 'card' ? styles.cardPopover : ''}`}>
                     <div className={styles.colorGrid}>
                         {COLOR_PRESETS.map(color => (
                             <button

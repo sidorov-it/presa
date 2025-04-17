@@ -1,6 +1,5 @@
 .templateButton {
-    display: inline-flex
-;
+    display: inline-flex;
     appearance: none;
     -webkit-box-align: center;
     align-items: center;
@@ -45,12 +44,7 @@
     background: none;
 }
 
-.active, .active .templateButtonIcon {
-    border-color: var(--chakra-colors-trueblue-400);
-}
-
-.standard {
-}
+.standard {}
 
 .imageTop {
     border-top-width: 8px;
@@ -74,4 +68,47 @@
 
 .active .imageBackground {
     background-color: var(--chakra-colors-trueblue-400);
+}
+
+.active .imageTop,
+.active .imageBottom,
+.active .imageLeft,
+.active .imageRight {
+    border-color: var(--chakra-colors-trueblue-400);
+}
+
+.alignmentGroup {
+    display: flex;
+    overflow: hidden;
+    margin: 0 4px;
+    background-color: white;
+    /* padding: 0 12px; */
+}
+
+.alignmentGroup .button {
+    margin: 0;
+    padding: 8px 12px;
+    border: 1px solid #e0e0e0;
+    border-right: transparent;
+}
+
+.alignmentGroup .button:last-child {
+    padding-right: 12px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-right: 1px solid #e0e0e0;
+}
+
+.alignmentGroup .button:first-child {
+    padding-left: 12px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+
+.active,
+.active .button {
+    border-color: var(--chakra-colors-trueblue-400) !important;
+    border-right-width: 1px !important;
+    border-right-style: solid !important;
 }

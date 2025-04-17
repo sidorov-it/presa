@@ -175,6 +175,12 @@ const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, position }) => {
         useMenuStore.getState().deleteLayout();
     }, []);
 
+    const handleColorChange = useCallback((color: string) => {
+        tableElements.forEach(element => {
+            tiptapRefs.current.editors[element.id]?.editor.chain().focus(null, { scrollIntoView: false }).selectAll().setColor(color).blur().run();
+        });
+    }, [tableElements, tiptapRefs]);
+
     return (
         <BaseMenu position={position} className={'layout-menu'}>
             <HeadingSelector
@@ -186,7 +192,7 @@ const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, position }) => {
                 // lightThemeStyle={lightThemeStyle}
             />
             <ColorPicker
-                editors={tableElements.map(element => tiptapRefs.current.editors[element.id]?.editor)}
+                onColorChange={handleColorChange}
                 className={bubbleStyles.button}
             />
 

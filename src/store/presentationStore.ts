@@ -170,6 +170,8 @@ export interface PresentationState {
     ) => BaseElement[];
     getTableFirstElement: (presentationId: string, slideId: string, layoutId: string) => BaseElement | null;
 
+    getSlideElements: (presentationId: string, slideId: string) => BaseElement[];
+
     toggleItalicOnColumn: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => void;
     toggleUnderlineOnColumn: (
         presentationId: string,
@@ -179,8 +181,11 @@ export interface PresentationState {
     ) => void;
     clearStylesOnColumn: (presentationId: string, slideId: string, layoutId: string, tableColumnIndex: number) => void;
 
+    // getCommonTextColor: (presentationId: string, slideId: string, layoutId: string) => string;
     getCommonAlignment: (presentationId: string, slideId: string, layoutId: string) => string;
     getCommonHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>, elements: BaseElement[]) => number | null;
+    getCommonTextColor: (tiptapRefs: MutableRefObject<TipTapRefs>, elements: BaseElement[]) => string | null;
+    getCommonSlideTextColor: (tiptapRefs: MutableRefObject<TipTapRefs>, presentationId: string, slideId: string) => string | null;
     getCommonTableHeadingLevel: (
         tiptapRefs: MutableRefObject<TipTapRefs>,
         presentationId: string,
@@ -939,6 +944,12 @@ export const usePresentationStore = create<PresentationState>()(
                 return layout.elements[0];
             },
 
+            getSlideElements: (presentationId, slideId) => {
+                const slide = get().getSlide(presentationId, slideId);
+                if (!slide) return [];
+                return slide.layouts.flatMap(layout => layout.elements);
+            },
+
             getCommonAlignment: (presentationId, slideId, layoutId) => {
                 const layout = get().getLayout(presentationId, slideId, layoutId);
                 if (!layout) return null;
@@ -959,6 +970,22 @@ export const usePresentationStore = create<PresentationState>()(
                 );
                 const uniqueHeadingLevels = new Set(allHeadingLevels);
                 return uniqueHeadingLevels.size === 1 ? uniqueHeadingLevels.values().next().value : null;
+            },
+
+            getCommonTextColor: (tiptapRefs, elements) => {
+                const notEmptyEditors = elements.filter(
+                    element =>
+                        tiptapRefs.current.editors[element.id] && !tiptapRefs.current.editors[element.id].editor.isEmpty
+                );
+                const allTextColors = notEmptyEditors.map(element => tiptapRefs.current.editors[element.id]?.editor.getAttributes('color').color);
+                const uniqueTextColors = new Set(allTextColors);
+                return uniqueTextColors.size === 1 ? uniqueTextColors.values().next().value : null;
+            },
+
+            getCommonSlideTextColor: (tiptapRefs, presentationId, slideId) => {
+                const slide = get().getSlide(presentationId, slideId);
+                if (!slide) return null;
+                return get().getCommonTextColor(tiptapRefs, slide.layouts.flatMap(layout => layout.elements));
             },
 
             getCommonTableHeadingLevel: (tiptapRefs, presentationId, slideId, layoutId) => {

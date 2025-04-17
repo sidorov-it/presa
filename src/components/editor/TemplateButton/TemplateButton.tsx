@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, RefObject } from 'react';
 import { useTheme } from '@/components/providers/ThemeProvider';
 import SlideTemplateSelector from '../SlideTemplateSelector/SlideTemplateSelector';
 import styles from './TemplateButton.module.css';
+import { TipTapRefs } from '@/types';
 
 interface TemplateButtonProps {
     presentationId: string;
@@ -9,6 +10,7 @@ interface TemplateButtonProps {
     className?: string;
     isHovered: boolean;
     isSelected: boolean;
+    tiptapRefs: RefObject<TipTapRefs>;
 }
 
 const TemplateButton: React.FC<TemplateButtonProps> = ({
@@ -17,6 +19,7 @@ const TemplateButton: React.FC<TemplateButtonProps> = ({
     className = '',
     isHovered,
     isSelected,
+    tiptapRefs,
 }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -104,7 +107,7 @@ const TemplateButton: React.FC<TemplateButtonProps> = ({
 
             {isOpen && (
                 <div ref={popupRef} style={{ display: isOpen ? 'block' : 'none' }} className={styles.popup}>
-                    <SlideTemplateSelector presentationId={presentationId} slideId={slideId} />
+                    <SlideTemplateSelector presentationId={presentationId} slideId={slideId} tiptapRefs={tiptapRefs} />
                 </div>
             )}
         </>

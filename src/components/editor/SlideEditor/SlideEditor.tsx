@@ -221,14 +221,18 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     // Image rendering based on template type
     const imageStyle: React.CSSProperties = useMemo(() => {
-        if (!slide?.templateType || !slide?.imageUrl) return {};
+        if (!slide?.templateType) return {};
 
         const baseStyle: React.CSSProperties = {
-            backgroundImage: `url(${slide.imageUrl})`,
+            // backgroundImage: `url(${slide.imageUrl})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
         };
+
+        if (slide.imageUrl) {
+            baseStyle.backgroundImage = `url(${slide.imageUrl})`;
+        }
 
         switch (slide.templateType) {
             case 'imageTop':
@@ -310,7 +314,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         }
 
         // Additional styles for image templates
-        if (slide.templateType && slide.imageUrl) {
+        if (slide.templateType) {
             // Get stored image size or use default values
             const imageWidth = slide.imageSize?.width || '33%';
             const imageHeight = slide.imageSize?.height || '33%';
@@ -400,12 +404,13 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                                 slideId={slideId}
                                 isHovered={isHovered}
                                 isSelected={isSelected}
+                                tiptapRefs={tiptapRefs}
                             />
                         </>
                     )}
 
                     {/* Template image if needed */}
-                    {imageStyle && slide?.templateType && slide?.imageUrl && (
+                    {imageStyle && slide?.templateType && (
                         <ResizableTemplateImage
                             presentationId={presentationId}
                             slideId={slideId}

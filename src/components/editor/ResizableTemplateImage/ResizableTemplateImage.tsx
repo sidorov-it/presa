@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef, useEffect, memo, useMemo } from '
 import { usePresentationStore } from '@/store/presentationStore';
 import styles from './ResizableTemplateImage.module.css';
 import deepEqual from 'deep-equal';
+import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder';
 
 // Minimum size in percentage for image sections
 const MIN_SIZE = 10;
@@ -14,7 +15,7 @@ interface ResizableTemplateImageProps {
     presentationId: string;
     slideId: string;
     templateType: string;
-    imageUrl: string;
+    imageUrl?: string;
     initialImageStyle: React.CSSProperties;
 }
 
@@ -318,6 +319,9 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     // Get resize handles based on template type
     const resizeHandles = getResizeHandles();
 
+    if (templateType === 'standard') {
+        return null;
+    }
     // Render template image with resize handles
     return (
         <div
@@ -327,11 +331,19 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
             aria-label={`Resizable ${templateType} image template`}
             role="region"
         >
-            <img
-                src={imageUrl}
-                alt={`Template ${templateType}`}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
+            {imageUrl && (
+                <img
+                    src={imageUrl}
+                    alt={`Template ${templateType}`}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+            )}
+
+            {!imageUrl && (
+                <div className={styles.templateImagePlaceholder} style={{ width: '100%', height: '100%', objectFit: 'cover', backgroundColor: 'var(--chakra-colors-gray-300)' }}>
+                    <ImagePlaceholder onUpload={() => {}} onLink={() => {}} onGenerate={() => {}} />
+                </div>
+            )}
 
             {resizeHandles.includes('left') && (
                 <div
