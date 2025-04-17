@@ -14,6 +14,7 @@ import {
     EditorElement,
     TipTapRefs,
     ElementConfig,
+    BackgroundSettings,
 } from '@/types';
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 import { getNewEditorElement } from '@/elements/registry';
@@ -21,6 +22,7 @@ import debounce from 'lodash/debounce';
 import { generateId } from '@/utils/id';
 import deepDiff from '@/utils/deepDiff';
 import { MutableRefObject } from 'react';
+
 export interface PresentationState {
     presentations: IPresentation[];
     isLoading: boolean;
@@ -214,6 +216,10 @@ export interface PresentationState {
     redo: (presentationId: string) => void;
     canUndo: (presentationId: string) => boolean;
     canRedo: (presentationId: string) => boolean;
+
+    // Настройки фона презентации
+    getBackgroundSettings: (presentationId: string) => BackgroundSettings | undefined;
+    setBackgroundSettings: (presentationId: string, settings: { backgroundColor?: string; backgroundImage?: string }) => void;
 }
 
 // Create the store with properly configured middleware
@@ -2765,6 +2771,20 @@ export const usePresentationStore = create<PresentationState>()(
                 return useHistoryStore.getState().canRedo(presentationId);
             },
 
+
+            getBackgroundSettings: (presentationId: string) => {
+                const presentation = get().getPresentation(presentationId);
+                return presentation?.backgroundSettings || {};
+            },
+            setBackgroundSettings: (presentationId: string, settings: { backgroundColor?: string; backgroundImage?: string }) => {
+                const presentation = get().getPresentation(presentationId);
+                if (!presentation) return;
+                get().updatePresentation(presentationId, {
+                    backgroundSettings: { ...presentation.backgroundSettings, ...settings },
+                });
+            },
+        
+
             setFullState: (state: { presentations: IPresentation[] }) => {
                 // Direct setter for presentations array used by undo/redo operations
 
@@ -2813,6 +2833,19 @@ export const usePresentationStore = create<PresentationState>()(
                 const presentation = get().getPresentation(presentationId);
                 if (!presentation) return -1;
                 return presentation.slides.findIndex(slide => slide.id === slideId);
+            },
+
+            // Настройки фона презентации
+            getBackgroundSettings: (presentationId: string) => {
+                const presentation = get().getPresentation(presentationId);
+                return presentation?.backgroundSettings || {};
+            },
+            setBackgroundSettings: (presentationId: string, settings: { backgroundColor?: string; backgroundImage?: string }) => {
+                const presentation = get().getPresentation(presentationId);
+                if (!presentation) return;
+                get().updatePresentation(presentationId, {
+                    backgroundSettings: { ...presentation.backgroundSettings, ...settings },
+                });
             },
         }),
         {

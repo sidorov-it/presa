@@ -8,7 +8,9 @@ import DragDropIndicator from '@/components/DragDropIndicator';
 import SlideMenu from '../SlideMenu/SlideMenu';
 import { useMenuStore } from '@/store/menuStore';
 import { TipTapRefs } from '@/types';
-// import { useHistoryStore } from '@/store/historyStore';
+import BackgroundSettingsModal from './BackgroundSettingsModal';
+import { HiOutlineCog6Tooth } from "react-icons/hi2";
+import { useShallow } from 'zustand/react/shallow';
 
 interface EditorProps {
     presentationId: string;
@@ -50,6 +52,8 @@ const EditorContent: React.FC<{
 
 const Editor: React.FC<EditorProps> = ({ presentationId }) => {
     const [activeSlideId, setActiveSlideId] = useState<string | null>(null);
+    // const [isBgModalOpen, setIsBgModalOpen] = useState(false);
+    const backgroundSettings = usePresentationStore(useShallow(state => state.getBackgroundSettings(presentationId)));
 
     // const { getSlideIds, checkPresentationExists } = usePresentationStore();
     // Use specific selectors to only subscribe to needed state
@@ -97,25 +101,54 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
         return notFoundUI;
     }
 
+    // Формируем стили для фона
+    const editorBgStyle: React.CSSProperties = {
+        backgroundColor: backgroundSettings?.backgroundColor || undefined,
+        backgroundImage: backgroundSettings?.backgroundImage ? `url(${backgroundSettings.backgroundImage})` : undefined,
+        backgroundSize: backgroundSettings?.backgroundImage ? 'cover' : undefined,
+        backgroundPosition: backgroundSettings?.backgroundImage ? 'center' : undefined,
+        backgroundAttachment: backgroundSettings?.backgroundImage ? 'fixed' : undefined,
+        minHeight: '100vh',
+        transition: 'background 0.3s',
+    };
+
+    // const handleOpenBgModal = () => setIsBgModalOpen(true);
+    // const handleCloseBgModal = () => setIsBgModalOpen(false);
+    // const handleKeyDownCog = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    //     if (e.key === 'Enter' || e.key === ' ') {
+    //         e.preventDefault();
+    //         setIsBgModalOpen(true);
+    //     }
+    // };
+
     return (
         <DndProvider presentationId={presentationId}>
-            {/* <SlideMenuProvider presentationId={presentationId}> */}
-            {/* <button
-                    onClick={() => {
-                        console.log(useHistoryStore.getState().getHistoryDiff(presentationId))
-                    }}
-                >show diff history past</button>
+            {/* Header с кнопкой-шестерёнкой */}
+            {/* <div className="flex items-center justify-between px-4 py-2 border-b bg-white/80 sticky top-0 z-30">
+                <div className="font-semibold text-lg">Редактор презентации</div>
                 <button
-                    onClick={() => {
-                        console.log(useHistoryStore.getState().getHistoryDiff(presentationId, true))
-                    }}
-                >show diff history future</button> */}
-            <EditorContent
+                    type="button"
+                    className="ml-2 p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Настроить фон презентации"
+                    tabIndex={0}
+                    onClick={handleOpenBgModal}
+                    onKeyDown={handleKeyDownCog}
+                >
+                    <HiOutlineCog6Tooth className="w-6 h-6 text-gray-600" aria-hidden="true" />
+                </button>
+            </div> */}
+            <div style={editorBgStyle} className="min-h-screen flex flex-col">
+                <EditorContent
+                    presentationId={presentationId}
+                    activeSlideId={activeSlideId}
+                    onSlideSelect={handleSlideSelect}
+                />
+            </div>
+            {/* <BackgroundSettingsModal
+                isOpen={isBgModalOpen}
+                onClose={handleCloseBgModal}
                 presentationId={presentationId}
-                activeSlideId={activeSlideId}
-                onSlideSelect={handleSlideSelect}
-            />
-            {/* </SlideMenuProvider> */}
+            /> */}
         </DndProvider>
     );
 };

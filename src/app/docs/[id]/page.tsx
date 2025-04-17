@@ -17,11 +17,14 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { FaEye } from 'react-icons/fa';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
+import BackgroundSettingsModal from '@/components/editor/Editor/BackgroundSettingsModal';
+import { HiOutlineCog6Tooth } from 'react-icons/hi2';
 
 export default function PresentationEditorPage() {
     const params = useParams();
     const { id } = params;
     const { data: session, status } = useSession();
+    const [isBgModalOpen, setIsBgModalOpen] = useState(false);
 
     // Access store values individually to prevent unnecessary re-renders
     const loadPresentation = usePresentationStore(state => state.loadPresentation);
@@ -109,6 +112,15 @@ export default function PresentationEditorPage() {
             window.open(`/view/${presentation.id}`, '_blank');
         }
     }, [presentation?.id]);
+
+    const handleOpenBgModal = () => setIsBgModalOpen(true);
+    const handleCloseBgModal = () => setIsBgModalOpen(false);
+    const handleKeyDownCog = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setIsBgModalOpen(true);
+        }
+    };
 
     // Memoize the loading and not found UI to prevent re-renders
     const loadingUI = useMemo(
@@ -245,6 +257,16 @@ export default function PresentationEditorPage() {
                                 <span className="text-sm font-medium">Просмотр</span>
                             </button>
 
+                            <button
+                                type="button"
+                                className="ml-2 p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                aria-label="Настроить фон презентации"
+                                tabIndex={0}
+                                onClick={handleOpenBgModal}
+                                onKeyDown={handleKeyDownCog}
+                >
+                                <HiOutlineCog6Tooth className="w-6 h-6 text-gray-600" aria-hidden="true" />
+                            </button>
                             <UndoRedoControls presentationId={presentation.id} />
 
                             <div className="flex items-center space-x-2">
@@ -257,6 +279,13 @@ export default function PresentationEditorPage() {
                 </header>
                 <main className="flex-grow w-full themed-page">
                     <Editor presentationId={presentation.id} />
+
+                    <BackgroundSettingsModal
+                                isOpen={isBgModalOpen}
+                                onClose={handleCloseBgModal}
+                                presentationId={presentation.id}
+                            />
+
                 </main>
 
                 <footer className="bg-gray-100 border-t border-gray-200 py-2 px-4">

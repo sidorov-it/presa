@@ -560,6 +560,11 @@ export interface Slide {
     contentAlignment?: 'top' | 'center' | 'bottom';
 }
 
+export interface BackgroundSettings {
+    backgroundColor?: string;
+    backgroundImage?: string;
+}
+
 // Интерфейс презентации
 export interface IPresentation {
     id: string;
@@ -569,6 +574,7 @@ export interface IPresentation {
     themeId?: string | null;
     createdAt: number;
     updatedAt: number;
+    backgroundSettings?: BackgroundSettings;
 }
 
 // Definition for registry element configuration

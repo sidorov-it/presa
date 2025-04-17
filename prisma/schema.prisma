@@ -14,92 +14,98 @@ type EmailPreferences {
   emailUpdates Boolean
 }
 
+type BackgroundSettings {
+  backgroundColor String?
+  backgroundImage String?
+}
+
 model User {
-  id                  String         @id @default(auto()) @map("_id") @db.ObjectId
-  email               String         @unique
-  password            String
-  name                String
-  image               String?
-  isVerified          Boolean        @default(false)
-  role                String         @default("user")
-  resetPasswordToken  String?
+  id                   String            @id @default(auto()) @map("_id") @db.ObjectId
+  email                String            @unique
+  password             String
+  name                 String
+  image                String?
+  isVerified           Boolean           @default(false)
+  role                 String            @default("user")
+  resetPasswordToken   String?
   resetPasswordExpires DateTime?
-  emailPreferences    EmailPreferences?
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @updatedAt
-  presentations       Presentation[]
+  emailPreferences     EmailPreferences?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+  presentations        Presentation[]
 }
 
 model Presentation {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  description String?
-  slides      Json
-  themeId     String?   @db.ObjectId
-  userId      String    @db.ObjectId
-  user        User      @relation(fields: [userId], references: [id])
-  isDeleted   Boolean   @default(false)
-  deletedAt   DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id                 String              @id @default(auto()) @map("_id") @db.ObjectId
+  title              String
+  description        String?
+  slides             Json
+  themeId            String?             @db.ObjectId
+  userId             String              @db.ObjectId
+  user               User                @relation(fields: [userId], references: [id])
+  isDeleted          Boolean             @default(false)
+  deletedAt          DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  backgroundSettings BackgroundSettings?
 }
 
 type ThemeColors {
   // Accent Colors
-  primaryAccent      String
-  secondaryAccents   String[]
+  primaryAccent    String
+  secondaryAccents String[]
 
   // Text Colors
-  headingColor       String
-  textColor          String
+  headingColor String
+  textColor    String
 
   // Background Colors
-  slideBackground     String
-  pageBackground     String
+  slideBackground String
+  pageBackground  String
 }
 
 type ThemeTypography {
   // Headings
-  headingFont        String
-  headingWeight      Float
-  headingColor       String
+  headingFont   String
+  headingWeight Float
+  headingColor  String
 
   // Body Text
-  bodyFont           String
-  bodyWeight         Float
-  bodyColor          String
+  bodyFont   String
+  bodyWeight Float
+  bodyColor  String
 }
 
 type ThemeSlide {
-  borderRadius       String
-  shadow             String
-  border             String
-  borderColor        String
-  imageShape         String
+  borderRadius String
+  shadow       String
+  border       String
+  borderColor  String
+  imageShape   String
 }
 
 type ThemeBlocks {
-  backgroundColor    String
-  opacity            Float
-  borderWidth        String
-  shadow             String
+  backgroundColor String
+  opacity         Float
+  borderWidth     String
+  shadow          String
 }
 
 type ThemeButtons {
-  buttonColor        String
-  buttonShape        String
-  linkColor          String
+  buttonColor String
+  buttonShape String
+  linkColor   String
 }
 
 type ThemeDesign {
   // Slide Design
-  slide              ThemeSlide
-  
+  slide ThemeSlide
+
   // Blocks and Content
-  blocks             ThemeBlocks
-  
+  blocks ThemeBlocks
+
   // Buttons and Links
-  buttons            ThemeButtons
+  buttons ThemeButtons
 }
 
 model Theme {
@@ -112,4 +118,4 @@ model Theme {
   design      ThemeDesign
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
-} 
+}
