@@ -36,13 +36,13 @@
 
         --block-margin: 0.5rem;
         --grid-padding: 1.22em;
+        --grid-outline-solid: #5b5b5f;
 
         --card-font-scale: 1;
 
         --card-inner-padding-x: calc(3.5em / var(--card-font-scale, 1));
         --card-inner-padding-y: calc(2.75em / var(--card-font-scale, 1));
         --card-inner-padding: var(--card-inner-padding-y) var(--card-inner-padding-x);
-
 
 
 

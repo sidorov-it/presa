@@ -98,19 +98,19 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                 ...initialImageStyle,
                 ...(currentSize.width && { width: currentSize.width }),
                 ...(currentSize.height && { height: currentSize.height }),
-                zIndex: 10,
+                // zIndex: 10,
             };
         } else if (templateType === 'imageTop' || templateType === 'imageBottom') {
             return {
                 ...initialImageStyle,
                 ...(currentSize.height && { height: currentSize.height }),
-                zIndex: 10,
+                // zIndex: 10,
             };
         } else {
             return {
                 ...initialImageStyle,
                 ...(currentSize.width && { width: currentSize.width }),
-                zIndex: 10,
+                // zIndex: 10,
             };
         }
     }, [currentSize, initialImageStyle, templateType]);

@@ -46,6 +46,8 @@ export const ColorPicker = ({
     const [isOpen, setIsOpen] = useState(false);
     const [currentColor, setCurrentColor] = useState(initialColor);
     const [customColor, setCustomColor] = useState(initialColor);
+    const [hexInput, setHexInput] = useState(initialColor);
+    const [isHexValid, setIsHexValid] = useState(true);
     const colorPickerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -62,21 +64,45 @@ export const ColorPicker = ({
         };
     }, []);
 
-    // Обработка выбора цвета из пресетов
-    const handleColorSelect = (color: string) => {
-        setCurrentColor(color);
-        onColorChange(color);
-        setIsOpen(false);
+    // Валидация hex-цвета
+    const isValidHex = (hex: string) => {
+        return /^#([0-9A-Fa-f]{6})$/.test(hex);
     };
 
     // Обработка выбора цвета из палитры
     const handleCustomColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCustomColor(e.target.value);
+        setHexInput(e.target.value);
+        setIsHexValid(isValidHex(e.target.value));
+    };
+
+    // Обработка ручного ввода hex
+    const handleHexInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setHexInput(value);
+        setIsHexValid(isValidHex(value));
+        if (isValidHex(value)) {
+            setCustomColor(value);
+        }
     };
 
     const handleCustomColorSelect = () => {
-        setCurrentColor(customColor);
-        onColorChange(customColor);
+        if (!isValidHex(hexInput)) {
+            setIsHexValid(false);
+            return;
+        }
+        setCurrentColor(hexInput);
+        onColorChange(hexInput);
+        setIsOpen(false);
+    };
+
+    // Синхронизируем hexInput при выборе цвета из пресета
+    const handleColorSelect = (color: string) => {
+        setCurrentColor(color);
+        setCustomColor(color);
+        setHexInput(color);
+        setIsHexValid(true);
+        onColorChange(color);
         setIsOpen(false);
     };
 
@@ -138,11 +164,26 @@ export const ColorPicker = ({
                                 value={customColor}
                                 onChange={handleCustomColorChange}
                                 className={styles.colorInput}
+                                aria-label="Выбрать цвет на палитре"
                             />
-                            <button onClick={handleCustomColorSelect} className={styles.applyColorButton}>
+                            <input
+                                type="text"
+                                value={hexInput}
+                                onChange={handleHexInputChange}
+                                className={`${styles.hexInput} border rounded px-2 py-1 ml-2 w-24 focus:outline-none ${isHexValid ? 'border-gray-300' : 'border-red-500'}`}
+                                aria-label="Ввести hex-значение цвета"
+                                tabIndex={0}
+                                onKeyDown={e => { if (e.key === 'Enter') handleCustomColorSelect(); }}
+                                maxLength={7}
+                                placeholder="#000000"
+                            />
+                            <button onClick={handleCustomColorSelect} className={styles.applyColorButton} aria-label="Применить выбранный цвет">
                                 Применить
                             </button>
                         </div>
+                        {!isHexValid && (
+                            <div className="text-red-500 text-xs mt-1" role="alert">Введите корректный hex-цвет (#RRGGBB)</div>
+                        )}
                     </div>
                 </div>
             )}

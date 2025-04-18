@@ -443,7 +443,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     return (
         <div
-            className={`${className} ${isSelectedRow || isSelectedColumn ? styles.selectedCell : ''}`}
+            className={`${className} ${isSelectedRow || isSelectedColumn ? styles.selectedCell : ''} group-hover/multiCellLayout:outline-1`}
             data-cell-id={cell.id}
             data-cell="true"
             data-is-multi-cell={hasMultipleCells ? 'true' : 'false'}

@@ -113,6 +113,8 @@ export interface MenuState {
     getCommonRowHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>) => number | null;
     getCommonColumnHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>) => number | null;
 
+    deleteCell: () => void;
+
     equalizeTable: () => void;
 }
 
@@ -348,6 +350,15 @@ export const useMenuStore = create<MenuState>()(
                 if (presentationId && slideId && layoutId && columnId) {
                     const { alignColumnBottom: alignColumnBottomInStore } = usePresentationStore.getState();
                     alignColumnBottomInStore(presentationId, slideId, layoutId, columnId);
+                    get().closeMenu();
+                }
+            },
+
+            deleteCell: () => {
+                const { presentationId, slideId, layoutId, cellId } = get();
+                if (presentationId && slideId && layoutId && cellId) {
+                    const { deleteCell: deleteCellInStore } = usePresentationStore.getState();
+                    deleteCellInStore(presentationId, slideId, layoutId, cellId);
                     get().closeMenu();
                 }
             },

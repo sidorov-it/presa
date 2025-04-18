@@ -44,7 +44,7 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
         alignColumnTop,
         alignColumnCenter,
         alignColumnBottom,
-        deleteColumn,
+        deleteCell,
         getCell,
         getSlide,
         mergeSlideWithPrevious,
@@ -174,10 +174,10 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
         useMenuStore.getState().closeMenu();
     }, [alignColumnBottom]);
 
-    const handleDeleteColumn = useCallback(() => {
-        deleteColumn();
+    const handleDeleteCell = useCallback(() => {
+        deleteCell();
         useMenuStore.getState().closeMenu();
-    }, [deleteColumn]);
+    }, [deleteCell]);
 
     const handleMergeSlide = useCallback(() => {
         if (slideId) {
@@ -227,8 +227,8 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
                         />
                         <MenuItem
                             icon={<DeleteIcon />}
-                            label="Delete column"
-                            onClick={handleDeleteColumn}
+                            label="Delete cell"
+                            onClick={handleDeleteCell}
                             color="#f00"
                         />
                     </>

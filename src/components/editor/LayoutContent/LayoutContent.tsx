@@ -263,6 +263,8 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
 
     const isSelected = menuLayoutId === layout.id && menuElementId === null && menuCellId === null;
 
+    // const isHovered = isLayoutHovered || isSelected;
+
     return (
         <>
             <div

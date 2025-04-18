@@ -42,14 +42,16 @@
 }
 
 .multiCell {
-    border: 1px solid #e5e0df;
+    outline-width: 0px;
+    outline-color: var(--grid-outline-solid);
+    outline-style: solid;
     box-sizing: border-box;
     padding-inline-start: var(--grid-padding);
     padding-inline-end: var(--grid-padding);
 }
 
 .multiCellNoHover {
-    border: 1px solid transparent;
+    border: 2px solid transparent;
     box-sizing: border-box;
 }
 
