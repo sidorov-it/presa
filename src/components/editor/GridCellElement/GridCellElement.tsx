@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { RefObject, useCallback, useRef, useState, memo } from 'react';
+import React, { RefObject, useCallback, useRef, useState, memo, useEffect } from 'react';
 import { GridCell, Element, TipTapRefs, ElementConfig } from '@/types';
 import { useHandleDragStart } from '@/contexts/DragDropContext';
 import styles from './GridCellElement.module.css';
@@ -15,6 +15,7 @@ import { useMenuStore } from '@/store/menuStore';
 import { useShallow } from 'zustand/react/shallow';
 import adjustWidths from '@/utils/adjustWidths';
 import { OpenCustomMenuEvent } from '@/customEvents/OpenCustomMenuEvent';
+import { LayoutHoverEvent } from '@/customEvents/LayoutHoverEvent';
 
 export const useIsSelectedRow = (tableId: string, rowIndex: number) =>
     useMenuStore(state => state.tableRowIndex === rowIndex && state.tableId === tableId);
@@ -99,6 +100,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     // const [elementIsHovered, setElementIsHovered] = useState(false);
     const [cellIsHovered, setCellIsHovered] = useState(false);
+    const [layoutIsHovered, setLayoutIsHovered] = useState(false);
 
     const startXRef = useRef(0);
     const startWidthRef = useRef<number | null>(null);
@@ -240,11 +242,11 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         (element: Element, elementConfig: ElementConfig) => () => {
             const editor = tiptapRefs.current?.editors[element.id]?.editor;
 
-            if (elementConfig.customMenuType) {
+            if ('customMenuType' in elementConfig && elementConfig.customMenuType) {
                 document.dispatchEvent(
                     new OpenCustomMenuEvent({
                         elementId: element.id,
-                        elementType: elementConfig.customMenuType,
+                        elementType: elementConfig.customMenuType as MenuElementType,
                     })
                 );
             } else if (
@@ -441,9 +443,25 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         isTable &&
         ((deferredIsHoveredColumn && !isSelectedColumn && !hasSelectedColumn) || (isSelectedColumn && rowIndex === 0));
 
+    // Listen for layout hover events from parent
+    useEffect(() => {
+        const handleLayoutHover = (e: LayoutHoverEvent) => {
+            if (e.detail.layoutId === layoutId) {
+                setLayoutIsHovered(e.detail.isHovered);
+            }
+        };
+        
+        document.addEventListener('layoutHover', handleLayoutHover);
+        return () => {
+            document.removeEventListener('layoutHover', handleLayoutHover);
+        };
+    }, [layoutId]);
+
     return (
         <div
-            className={`${className} ${isSelectedRow || isSelectedColumn ? styles.selectedCell : ''} group-hover/multiCellLayout:outline-1`}
+            className={`${className} 
+                ${isSelectedRow || isSelectedColumn ? styles.selectedCell : ''} 
+                ${hasMultipleCells && !isTable && (cellIsHovered || layoutIsHovered) ? styles.cellBorderVisible : ''}`}
             data-cell-id={cell.id}
             data-cell="true"
             data-is-multi-cell={hasMultipleCells ? 'true' : 'false'}

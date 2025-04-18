@@ -9,6 +9,7 @@ import DragHandler from '../DragHandler';
 import { useMenuSelectedCell, useMenuSelectedElement, useMenuSelectedLayout, useMenuStore } from '@/store/menuStore';
 import { useShallow } from 'zustand/react/shallow';
 import adjustWidths from '@/utils/adjustWidths';
+import { LayoutHoverEvent } from '@/customEvents/LayoutHoverEvent';
 
 interface LayoutContentProps {
     layoutId: string;
@@ -52,13 +53,24 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     const handleMouseEnter = useCallback(() => {
         if (!isLayoutHovered) {
             setIsLayoutHovered(true);
+            // Dispatch custom event to notify cells
+            document.dispatchEvent(new LayoutHoverEvent({ 
+                layoutId: layout.id,
+                isHovered: true 
+            }));
         }
-    }, [isLayoutHovered]);
+    }, [isLayoutHovered, layout.id]);
+    
     const handleMouseLeave = useCallback(() => {
         if (isLayoutHovered) {
             setIsLayoutHovered(false);
+            // Dispatch custom event to notify cells
+            document.dispatchEvent(new LayoutHoverEvent({ 
+                layoutId: layout.id,
+                isHovered: false 
+            }));
         }
-    }, [isLayoutHovered]);
+    }, [isLayoutHovered, layout.id]);
 
     // Memoize grid properties to prevent recalculations
     const gridTemplateAreas = useMemo(() => generateGridTemplateAreas(layout.gridStructure), [layout.gridStructure]);

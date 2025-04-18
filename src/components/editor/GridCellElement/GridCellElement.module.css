@@ -23,6 +23,13 @@
     position: relative;
     box-sizing: border-box;
     border: 1px solid transparent;
+
+    /* width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center; */
 }
 
 .gridCellElement:hover .elementDragHandle {
@@ -48,6 +55,7 @@
     box-sizing: border-box;
     padding-inline-start: var(--grid-padding);
     padding-inline-end: var(--grid-padding);
+    /* padding: 8px; */
 }
 
 .multiCellNoHover {
@@ -198,4 +206,8 @@
 
 .selectedCell {
     background-color: #efebff;
+}
+
+.cellBorderVisible {
+    outline: 1px solid #999;
 }
