@@ -1,0 +1,28 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Application Architecture
+
+## Routing & Pages
+The application uses Next.js App Router architecture with the following structure:
+- [src/app/page.tsx](mdc:src/app/page.tsx): Main landing page
+- [src/app/(dashboard)](mdc:src/app/(dashboard)): Dashboard routes (authenticated)
+- [src/app/(auth)](mdc:src/app/(auth)): Authentication routes
+- [src/app/layout.tsx](mdc:src/app/layout.tsx): Root layout with providers
+
+## Components Organization
+- [src/components/ui](mdc:src/components/ui): Reusable UI components (buttons, inputs, etc.)
+- [src/components/editor](mdc:src/components/editor): Presentation editor components
+- [src/components/viewer](mdc:src/components/viewer): Presentation viewer components
+- [src/components/tiptap](mdc:src/components/tiptap): Rich text editor customizations
+
+## State Management
+The application uses Zustand for state management:
+- Editor state (current slide, selected elements)
+- User preferences
+- Application settings
+
+## Authentication
+NextAuth.js is used for authentication with MongoDB as the database.

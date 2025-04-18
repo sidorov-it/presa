@@ -1,0 +1,21 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Editor Functionality
+
+## Slide Elements
+The editor supports various elements for slides: text blocks, images, shapes, icons, charts, and videos.
+
+## Layout Management
+Supports layouts: single column, two/three columns, icon grids, image+text, and card grids.
+
+## Editing Features
+Features include drag-drop, resize, styling, grid alignment, and auto-adaptation.
+
+## AI Integration
+Includes text generation, image generation, and layout suggestions.
+
+## Export Options
+Supports PDF, PPTX, PNG images, and HTML web presentations.

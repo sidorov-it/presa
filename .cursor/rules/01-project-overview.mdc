@@ -1,0 +1,26 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Project Overview
+
+## Introduction
+Presa is a web-based presentation creation tool, similar to gamma.app. It allows users to create slides with AI assistance, edit them manually, and export them in various formats.
+
+## Project Structure
+- [src/app](mdc:src/app): Next.js app directory with routing configuration
+- [src/components](mdc:src/components): Reusable UI components
+- [src/elements](mdc:src/elements): Basic building blocks for slides
+- [src/store](mdc:src/store): State management using Zustand
+- [src/types](mdc:src/types): TypeScript type definitions
+- [src/utils](mdc:src/utils): Helper functions and utilities
+- [src/contexts](mdc:src/contexts): React context providers
+
+## Tech Stack
+- Framework: Next.js with React 19
+- Styling: TailwindCSS and CSS Modules
+- State Management: Zustand
+- Rich Text Editing: TipTap
+- Authentication: NextAuth
+- Database: MongoDB with Prisma

@@ -1,0 +1,28 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Testing & Utilities
+
+## Testing Framework
+- Jest for unit and integration tests
+- React Testing Library for component tests
+- Tests located in [src/test](mdc:src/test) and component folders
+
+## Utility Functions
+- [src/utils](mdc:src/utils): General utility functions
+- Helper functions for formatting, validation, and data transformation
+- Custom hooks for common patterns
+
+## Development Tools
+- ESLint for code linting
+- Prettier for code formatting
+- TypeScript for type checking
+- Jest for testing
+
+## Accessibility
+- Components follow WCAG guidelines
+- Focus management utilities
+- Screen reader support
+- Keyboard navigation

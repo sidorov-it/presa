@@ -1,0 +1,28 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Database & API Structure
+
+## Database
+- MongoDB with Prisma ORM
+- Schema defined in [prisma](mdc:prisma) directory
+- Main collections: Users, Presentations, Slides, Assets
+
+## API Structure
+- REST endpoints in [src/app/api](mdc:src/app/api)
+- Authentication handled by NextAuth.js
+- API routes follow RESTful conventions
+
+## Data Models
+- Presentations: Contains metadata and references to slides
+- Slides: Individual slides with layouts and elements
+- Elements: Components within slides (text, images, etc.)
+- Assets: Uploaded or generated files (images, PDFs)
+
+## API Operations
+- CRUD operations for presentations
+- User authentication and management
+- Asset uploads and management
+- Export functionality

@@ -1,0 +1,34 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Coding Conventions & Best Practices
+
+## TypeScript
+- Use TypeScript for all new code
+- Define interfaces for component props
+- Use type inference where possible
+- Export types from dedicated files in [src/types](mdc:src/types)
+
+## React Components
+- Use functional components with hooks
+- Name event handlers with `handle` prefix (e.g., `handleClick`)
+- Use destructuring for props
+- Group related state using objects
+- Prefer controlled components over uncontrolled
+
+## Styling
+- Use CSS Modules for styling
+
+## File Structure
+- One component per file
+- Group related components in folders
+- Use index files for exporting components
+- Keep files small and focused on a single responsibility
+
+## Naming Conventions
+- PascalCase for component names and interfaces
+- camelCase for variables, functions, and instances
+- UPPER_CASE for constants
+- Use descriptive, intention-revealing names
