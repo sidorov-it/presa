@@ -728,7 +728,7 @@ export const getElementConfig = (elementId: string): ElementConfig => {
         .find(element => element?.elementTypeId === elementId);
 
     if (!elementConfig) {
-        return {}
+        return {};
         // throw new Error(`Element with type ${elementId} not found in registry`);
     }
 

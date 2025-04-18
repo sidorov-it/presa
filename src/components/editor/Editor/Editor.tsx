@@ -8,8 +8,6 @@ import DragDropIndicator from '@/components/DragDropIndicator';
 import SlideMenu from '../SlideMenu/SlideMenu';
 import { useMenuStore } from '@/store/menuStore';
 import { TipTapRefs } from '@/types';
-import BackgroundSettingsModal from './BackgroundSettingsModal';
-import { HiOutlineCog6Tooth } from "react-icons/hi2";
 import { useShallow } from 'zustand/react/shallow';
 
 interface EditorProps {

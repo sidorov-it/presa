@@ -225,12 +225,7 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
                             onClick={handleAlignColumnBottom}
                             active={cell?.alignment === 'bottom'}
                         />
-                        <MenuItem
-                            icon={<DeleteIcon />}
-                            label="Delete cell"
-                            onClick={handleDeleteCell}
-                            color="#f00"
-                        />
+                        <MenuItem icon={<DeleteIcon />} label="Delete cell" onClick={handleDeleteCell} color="#f00" />
                     </>
                 );
             case 'slide':

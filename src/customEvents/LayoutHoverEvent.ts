@@ -12,6 +12,6 @@ export class LayoutHoverEvent extends CustomEvent<LayoutHoverEventDetail> {
 // Augment the global WindowEventMap to include our custom event
 declare global {
     interface WindowEventMap {
-        'layoutHover': LayoutHoverEvent;
+        layoutHover: LayoutHoverEvent;
     }
-} 
+}

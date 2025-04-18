@@ -44,44 +44,100 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
 
                 <TabsContent value="colors">
                     <div className="space-y-4">
-                        <div className="space-y-2">
-                            <Label>Основной акцент</Label>
-                            <ColorPicker
-                                value={theme.colors.primaryAccent}
-                                onChange={value => handleColorsChange({ primaryAccent: value })}
-                            />
+                        <div className="space-y-1">
+                            <div className="space-y-3">
+                                <div className="space-y-1">
+                                    <Label className="text-xs text-muted-foreground">Основной акцент</Label>
+                                    <ColorPicker
+                                        value={theme.colors.primaryAccent}
+                                        onChange={value => handleColorsChange({ primaryAccent: value })}
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <Label className="text-xs text-muted-foreground">Цвет заголовков</Label>
+                                    <ColorPicker
+                                        value={theme.colors.headingColor}
+                                        onChange={value => handleColorsChange({ headingColor: value })}
+                                    />
+                                </div>
+
+                                <div className="space-y-1">
+                                    <Label className="text-xs text-muted-foreground">Цвет текста</Label>
+                                    <ColorPicker
+                                        value={theme.colors.textColor}
+                                        onChange={value => handleColorsChange({ textColor: value })}
+                                    />
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <Label>Цвет заголовков</Label>
-                            <ColorPicker
-                                value={theme.colors.headingColor}
-                                onChange={value => handleColorsChange({ headingColor: value })}
-                            />
-                        </div>
+                        <div className="space-y-1">
+                            <Label className="text-sm font-medium">Фон слайда</Label>
+                            <div className="space-y-3">
+                                <div className="space-y-1">
+                                    <Label className="text-xs text-muted-foreground">Цвет фона слайда</Label>
+                                    <ColorPicker
+                                        value={theme.colors.slideBackground}
+                                        onChange={value => handleColorsChange({ slideBackground: value })}
+                                    />
+                                </div>
 
-                        <div className="space-y-2">
-                            <Label>Цвет текста</Label>
-                            <ColorPicker
-                                value={theme.colors.textColor}
-                                onChange={value => handleColorsChange({ textColor: value })}
-                            />
-                        </div>
+                                <div className="space-y-1">
+                                    <Label className="text-xs text-muted-foreground">Фон страницы</Label>
+                                    <div>
+                                        <Select
+                                            value={theme.colors.pageBackground.type}
+                                            onValueChange={value => {
+                                                const newType = value as 'color' | 'image';
+                                                handleColorsChange({
+                                                    pageBackground: {
+                                                        type: newType,
+                                                        color: theme.colors.pageBackground.color,
+                                                        imageUrl: theme.colors.pageBackground.imageUrl,
+                                                    },
+                                                });
+                                            }}
+                                        >
+                                            <SelectTrigger className="mb-2">
+                                                <SelectValue placeholder="Select background type" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="color">Color</SelectItem>
+                                                <SelectItem value="image">Image</SelectItem>
+                                            </SelectContent>
+                                        </Select>
 
-                        <div className="space-y-2">
-                            <Label>Фон слайда</Label>
-                            <ColorPicker
-                                value={theme.colors.slideBackground}
-                                onChange={value => handleColorsChange({ slideBackground: value })}
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label>Фон страницы</Label>
-                            <ColorPicker
-                                value={theme.colors.pageBackground}
-                                onChange={value => handleColorsChange({ pageBackground: value })}
-                            />
+                                        {theme.colors.pageBackground.type === 'color' ? (
+                                            <ColorPicker
+                                                value={theme.colors.pageBackground.color}
+                                                onChange={value =>
+                                                    handleColorsChange({
+                                                        pageBackground: {
+                                                            ...theme.colors.pageBackground,
+                                                            color: value,
+                                                        },
+                                                    })
+                                                }
+                                            />
+                                        ) : (
+                                            <Input
+                                                type="text"
+                                                value={theme.colors.pageBackground.imageUrl}
+                                                onChange={e =>
+                                                    handleColorsChange({
+                                                        pageBackground: {
+                                                            ...theme.colors.pageBackground,
+                                                            imageUrl: e.target.value,
+                                                            color: '',
+                                                        },
+                                                    })
+                                                }
+                                                placeholder="Insert image URL"
+                                            />
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </TabsContent>

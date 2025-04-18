@@ -55,7 +55,14 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 // Types for resize direction
 type ResizeDirection = 'top' | 'right' | 'bottom' | 'left' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
-const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, slideId, layoutId, inSettings = false }) => {
+const Chart: React.FC<ChartProps> = ({
+    element,
+    className = '',
+    presentationId,
+    slideId,
+    layoutId,
+    inSettings = false,
+}) => {
     const [isSelected, setIsSelected] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -349,7 +356,7 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
                     if (showValues) return `${value}`;
                     if (showLabels) return '';
                     return '';
-                }
+                },
             };
         };
 
@@ -411,9 +418,9 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
                                     fill={serie.color || COLORS[index % COLORS.length]}
                                     label={{
                                         position: 'right',
-                                        formatter: (value: number) => showValues ? `${value}` : '',
+                                        formatter: (value: number) => (showValues ? `${value}` : ''),
                                         fill: '#666',
-                                        fontSize: 12
+                                        fontSize: 12,
                                     }}
                                 />
                             ))}
@@ -450,12 +457,13 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
 
             case 'pie':
                 // Transform data for pie chart - use first series only
-                const pieData = element.series && element.series.length > 0
-                    ? data.map(item => ({
-                        name: item.name,
-                        value: Number(item[element.series[0].key])
-                    }))
-                    : data;
+                const pieData =
+                    element.series && element.series.length > 0
+                        ? data.map(item => ({
+                            name: item.name,
+                            value: Number(item[element.series[0].key]),
+                        }))
+                        : data;
                 return (
                     <ResponsiveContainer width="100%" height={300}>
                         <PieChart>
@@ -485,12 +493,13 @@ const Chart: React.FC<ChartProps> = ({ element, className = '', presentationId, 
 
             case 'donut':
                 // Transform data for donut chart - use first series only
-                const donutData = element.series && element.series.length > 0
-                    ? data.map(item => ({
-                        name: item.name,
-                        value: Number(item[element.series[0].key])
-                    }))
-                    : data;
+                const donutData =
+                    element.series && element.series.length > 0
+                        ? data.map(item => ({
+                            name: item.name,
+                            value: Number(item[element.series[0].key]),
+                        }))
+                        : data;
                 return (
                     <ResponsiveContainer width="100%" height={300}>
                         <PieChart>

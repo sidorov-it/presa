@@ -9,7 +9,11 @@ export type ThemeColors = {
 
     // Background Colors
     slideBackground: string;
-    pageBackground: string;
+    pageBackground: {
+        type: 'color' | 'image';
+        color: string;
+        imageUrl: string;
+    };
 };
 
 export type ThemeTypography = {

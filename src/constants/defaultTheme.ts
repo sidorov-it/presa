@@ -9,7 +9,11 @@ export const DEFAULT_THEME: Omit<Theme, 'id' | 'createdAt' | 'updatedAt'> = {
         headingColor: '#1f2937', // Dark gray
         textColor: '#4b5563', // Medium gray
         slideBackground: '#ffffff', // White
-        pageBackground: '#f3f4f6', // Light gray
+        pageBackground: {
+            type: 'color',
+            color: '#f3f4f6', // Light gray
+            imageUrl: '',
+        },
     },
     typography: {
         headingFont: 'inter',

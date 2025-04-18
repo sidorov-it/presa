@@ -45,7 +45,7 @@ const ChartModal: React.FC<ChartModalProps> = ({ isOpen, onClose, elementId, pre
         <div className="fixed inset-0 z-50 overflow-hidden bg-black bg-opacity-30">
             {/* Backdrop for closing */}
             <div className="absolute inset-0" onClick={onClose} />
-            
+
             {/* Bottom sheet */}
             <div className="absolute inset-x-0 bottom-0 transform transition-transform duration-300 ease-in-out bg-white rounded-t-xl shadow-xl z-50">
                 {/* Handle/Pill for mobile feel */}
@@ -59,7 +59,12 @@ const ChartModal: React.FC<ChartModalProps> = ({ isOpen, onClose, elementId, pre
                     <button type="button" className="text-gray-400 hover:text-gray-500" onClick={onClose}>
                         <span className="sr-only">Close</span>
                         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                            />
                         </svg>
                     </button>
                 </div>
@@ -70,7 +75,7 @@ const ChartModal: React.FC<ChartModalProps> = ({ isOpen, onClose, elementId, pre
                     <div className="w-full lg:w-1/2 p-6 border-b lg:border-b-0 lg:border-r overflow-auto">
                         <h3 className="text-sm font-medium text-gray-700 mb-4">Предпросмотр</h3>
                         <div className="border border-gray-200 rounded-md p-4 bg-white">
-                            {chartElement && <Chart element={chartElement} inSettings={true}/>}
+                            {chartElement && <Chart element={chartElement} inSettings={true} />}
                         </div>
                     </div>
 

@@ -1,4 +1,3 @@
-import { Editor } from '@tiptap/react';
 import { useState, useRef, useEffect } from 'react';
 import { BiPalette } from 'react-icons/bi';
 import styles from './ColorPicker.module.css';
@@ -35,7 +34,7 @@ export const ColorPicker = ({
     onColorChange,
     initialColor = '#000000',
     mode = 'icon',
-    label = ''
+    label = '',
 }: {
     className?: string;
     onColorChange: (color: string) => void;
@@ -121,18 +120,30 @@ export const ColorPicker = ({
                 </button>
             );
         }
-        
+
         return (
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={`${className || ''} ${styles.cardColorButton} flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md bg-white text-sm`}
-                aria-label={label || "Выбрать цвет"}
+                aria-label={label || 'Выбрать цвет'}
                 aria-expanded={isOpen}
             >
-                <div className={`${styles.cardColorIndicator} w-4 h-4 rounded-sm`} style={{ backgroundColor: currentColor }}></div>
+                <div
+                    className={`${styles.cardColorIndicator} w-4 h-4 rounded-sm`}
+                    style={{ backgroundColor: currentColor }}
+                ></div>
                 <span>{currentColor}</span>
-                <svg className="h-4 w-4 ml-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                <svg
+                    className="h-4 w-4 ml-auto"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                >
+                    <path
+                        fillRule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                    />
                 </svg>
             </button>
         );
@@ -173,16 +184,24 @@ export const ColorPicker = ({
                                 className={`${styles.hexInput} border rounded px-2 py-1 ml-2 w-24 focus:outline-none ${isHexValid ? 'border-gray-300' : 'border-red-500'}`}
                                 aria-label="Ввести hex-значение цвета"
                                 tabIndex={0}
-                                onKeyDown={e => { if (e.key === 'Enter') handleCustomColorSelect(); }}
+                                onKeyDown={e => {
+                                    if (e.key === 'Enter') handleCustomColorSelect();
+                                }}
                                 maxLength={7}
                                 placeholder="#000000"
                             />
-                            <button onClick={handleCustomColorSelect} className={styles.applyColorButton} aria-label="Применить выбранный цвет">
+                            <button
+                                onClick={handleCustomColorSelect}
+                                className={styles.applyColorButton}
+                                aria-label="Применить выбранный цвет"
+                            >
                                 Применить
                             </button>
                         </div>
                         {!isHexValid && (
-                            <div className="text-red-500 text-xs mt-1" role="alert">Введите корректный hex-цвет (#RRGGBB)</div>
+                            <div className="text-red-500 text-xs mt-1" role="alert">
+                                Введите корректный hex-цвет (#RRGGBB)
+                            </div>
                         )}
                     </div>
                 </div>

@@ -1,6 +1,6 @@
-import { FaRegImage } from "react-icons/fa6";
-import { FiUpload, FiLink2, FiZap, FiX, FiCheck } from "react-icons/fi";
-import React, { ChangeEvent, useRef, useState, useEffect } from "react";
+import { FaRegImage } from 'react-icons/fa6';
+import { FiUpload, FiLink2, FiZap, FiX, FiCheck } from 'react-icons/fi';
+import React, { ChangeEvent, useRef, useState, useEffect } from 'react';
 
 export type ImagePlaceholderProps = {
     onUpload: (file: File) => void;
@@ -10,8 +10,8 @@ export type ImagePlaceholderProps = {
 
 export const ImagePlaceholder = ({ onUpload, onLink, onGenerate }: ImagePlaceholderProps) => {
     const [showLinkPopup, setShowLinkPopup] = useState(false);
-    const [linkValue, setLinkValue] = useState("");
-    const [error, setError] = useState("");
+    const [linkValue, setLinkValue] = useState('');
+    const [error, setError] = useState('');
     const inputRef = useRef<HTMLInputElement>(null);
     const popupRef = useRef<HTMLDivElement>(null);
     const linkBtnRef = useRef<HTMLButtonElement>(null);
@@ -22,12 +22,13 @@ export const ImagePlaceholder = ({ onUpload, onLink, onGenerate }: ImagePlacehol
         }
     };
 
-    const handleKeyDown = (callback: () => void) => (event: React.KeyboardEvent<HTMLButtonElement | HTMLLabelElement>) => {
-        if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            callback();
-        }
-    };
+    const handleKeyDown =
+        (callback: () => void) => (event: React.KeyboardEvent<HTMLButtonElement | HTMLLabelElement>) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                callback();
+            }
+        };
 
     // Открыть попап и сфокусировать инпут
     const handleOpenLinkPopup = () => {
@@ -38,8 +39,8 @@ export const ImagePlaceholder = ({ onUpload, onLink, onGenerate }: ImagePlacehol
     // Закрыть попап
     const handleClosePopup = () => {
         setShowLinkPopup(false);
-        setLinkValue("");
-        setError("");
+        setLinkValue('');
+        setError('');
     };
 
     // Клик вне попапа
@@ -55,28 +56,28 @@ export const ImagePlaceholder = ({ onUpload, onLink, onGenerate }: ImagePlacehol
                 handleClosePopup();
             }
         };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [showLinkPopup]);
 
     // Esc для закрытия
     useEffect(() => {
         if (!showLinkPopup) return;
         const handleEsc = (e: KeyboardEvent) => {
-            if (e.key === "Escape") handleClosePopup();
+            if (e.key === 'Escape') handleClosePopup();
         };
-        document.addEventListener("keydown", handleEsc);
-        return () => document.removeEventListener("keydown", handleEsc);
+        document.addEventListener('keydown', handleEsc);
+        return () => document.removeEventListener('keydown', handleEsc);
     }, [showLinkPopup]);
 
     // Вставить ссылку
     const handleInsertLink = () => {
         if (!linkValue.trim()) {
-            setError("Введите ссылку");
+            setError('Введите ссылку');
             return;
         }
         if (!/^https?:\/\//.test(linkValue.trim())) {
-            setError("Ссылка должна начинаться с http:// или https://");
+            setError('Ссылка должна начинаться с http:// или https://');
             return;
         }
         onLink(linkValue.trim());
@@ -85,10 +86,10 @@ export const ImagePlaceholder = ({ onUpload, onLink, onGenerate }: ImagePlacehol
 
     // Enter в инпуте
     const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
+        if (e.key === 'Enter') {
             handleInsertLink();
         }
-        if (e.key === "Escape") {
+        if (e.key === 'Escape') {
             handleClosePopup();
         }
     };
@@ -161,7 +162,10 @@ export const ImagePlaceholder = ({ onUpload, onLink, onGenerate }: ImagePlacehol
                             className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                             placeholder="https://example.com/image.png"
                             value={linkValue}
-                            onChange={e => { setLinkValue(e.target.value); setError(""); }}
+                            onChange={e => {
+                                setLinkValue(e.target.value);
+                                setError('');
+                            }}
                             onKeyDown={handleInputKeyDown}
                             aria-label="Ссылка на изображение"
                         />

@@ -14,7 +14,22 @@ export const resetThemeStyles = (): void => {
     document.documentElement.style.setProperty('--heading-color', DEFAULT_THEME.colors.headingColor);
     document.documentElement.style.setProperty('--text-color', DEFAULT_THEME.colors.textColor);
     document.documentElement.style.setProperty('--slide-background', DEFAULT_THEME.colors.slideBackground);
-    document.documentElement.style.setProperty('--page-background', DEFAULT_THEME.colors.pageBackground);
+
+    // Set page background based on type
+    // image
+    if (DEFAULT_THEME.colors.pageBackground.type === 'color') {
+        document.documentElement.style.setProperty(
+            '--page-background-color',
+            DEFAULT_THEME.colors.pageBackground.color
+        );
+    } else {
+        document.documentElement.style.setProperty(
+            '--page-background-image',
+            `url(${DEFAULT_THEME.colors.pageBackground.imageUrl})`
+        );
+    }
+
+    document.documentElement.style.setProperty('--page-background-type', DEFAULT_THEME.colors.pageBackground.type);
 
     // Typography
     document.documentElement.style.setProperty(

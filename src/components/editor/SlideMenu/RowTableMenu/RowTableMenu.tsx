@@ -147,20 +147,28 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, tiptapRefs }
         }
     }, [tableRowIndex]);
 
-    const handleColorChange = useCallback((color: string) => {
-        tableRowElements.forEach(element => {
-            tiptapRefs.current.editors[element.id]?.editor.chain().focus(null, { scrollIntoView: false }).selectAll().setColor(color).blur().run();
-        });
+    const handleColorChange = useCallback(
+        (color: string) => {
+            tableRowElements.forEach(element => {
+                tiptapRefs.current.editors[element.id]?.editor
+                    .chain()
+                    .focus(null, { scrollIntoView: false })
+                    .selectAll()
+                    .setColor(color)
+                    .blur()
+                    .run();
+            });
 
-        // if (editor) {
-        //     editor.chain().focus(null, { scrollIntoView: false }).selectAll().setColor(color).blur().run();
-        // } else if (editors) {
-        //     editors.forEach(editor => {
-        //         editor.chain().focus(null, { scrollIntoView: false }).selectAll().setColor(color).blur().run();
-        //     });
-        // }
-
-    }, [tableRowElements, tiptapRefs]);
+            // if (editor) {
+            //     editor.chain().focus(null, { scrollIntoView: false }).selectAll().setColor(color).blur().run();
+            // } else if (editors) {
+            //     editors.forEach(editor => {
+            //         editor.chain().focus(null, { scrollIntoView: false }).selectAll().setColor(color).blur().run();
+            //     });
+            // }
+        },
+        [tableRowElements, tiptapRefs]
+    );
 
     return (
         <>
@@ -172,10 +180,7 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, tiptapRefs }
                 handleHeadingChange={handleHeadingChange}
                 // lightThemeStyle={lightThemeStyle}
             />
-            <ColorPicker
-                onColorChange={handleColorChange}
-                className={bubbleStyles.button}
-            />
+            <ColorPicker onColorChange={handleColorChange} className={bubbleStyles.button} />
 
             <MenuItem icon={<BiBold />} label="Bold" onClick={handleToggleBold} active={isBoldActive} />
             <MenuItem icon={<BiItalic />} label="Italic" onClick={handleToggleItalic} active={isItalicActive} />

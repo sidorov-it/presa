@@ -1,11 +1,9 @@
-import React, { MutableRefObject, RefObject, useCallback, useState } from 'react';
+import React, { MutableRefObject, useCallback, useState } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { SLIDE_TEMPLATES, TipTapRefs } from '@/types';
 import styles from './SlideTemplateSelector.module.css';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
-import { MdOutlineVerticalAlignTop, MdOutlineVerticalAlignCenter, MdOutlineVerticalAlignBottom } from "react-icons/md";
-import { useMenuStore } from '@/store/menuStore';
-import { getElementConfig } from '@/elements/registry';
+import { MdOutlineVerticalAlignTop, MdOutlineVerticalAlignCenter, MdOutlineVerticalAlignBottom } from 'react-icons/md';
 
 type SlideTemplateType = (typeof SLIDE_TEMPLATES)[number]['value'];
 type ContentAlignment = 'top' | 'center' | 'bottom';
@@ -31,7 +29,9 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
     const backgroundColor = slide?.background?.type === 'color' ? slide.background.value : DEFAULT_BACKGROUND_COLOR;
     const contentAlignment = slide?.contentAlignment || 'center';
 
-    const commonSlideTextColor = usePresentationStore.getState().getCommonSlideTextColor(tiptapRefs, presentationId, slideId);
+    const commonSlideTextColor = usePresentationStore
+        .getState()
+        .getCommonSlideTextColor(tiptapRefs, presentationId, slideId);
     const [textColor, setTextColor] = useState(commonSlideTextColor || DEFAULT_TEXT_COLOR);
 
     const handleTemplateChange = (value: SlideTemplateType) => {
@@ -68,19 +68,27 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
         }
     };
 
+    const handleTextColorChange = useCallback(
+        (color: string) => {
+            console.log('handleTextColorChange', color);
+            const elements = usePresentationStore.getState().getSlideElements(presentationId, slideId);
 
-    const handleTextColorChange = useCallback((color: string) => {
-        console.log('handleTextColorChange', color);
-        const elements = usePresentationStore.getState().getSlideElements(presentationId, slideId);
+            elements.forEach(element => {
+                if (tiptapRefs.current?.editors[element.id]) {
+                    tiptapRefs.current.editors[element.id]?.editor
+                        .chain()
+                        .focus(null, { scrollIntoView: false })
+                        .selectAll()
+                        .setColor(color)
+                        .blur()
+                        .run();
+                }
+            });
 
-        elements.forEach(element => {
-            if (tiptapRefs.current?.editors[element.id]) {
-                tiptapRefs.current.editors[element.id]?.editor.chain().focus(null, { scrollIntoView: false }).selectAll().setColor(color).blur().run();
-            }
-        });
-
-        setTextColor(color);
-    }, [tiptapRefs, presentationId, slideId]);
+            setTextColor(color);
+        },
+        [tiptapRefs, presentationId, slideId]
+    );
 
     const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const url = e.target.value;
@@ -160,7 +168,7 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                     </label>
                     <div className="flex items-center gap-2">
                         <ColorPicker
-                            onColorChange={(color) => handleBackgroundColorChange(color)}
+                            onColorChange={color => handleBackgroundColorChange(color)}
                             initialColor={backgroundColor}
                             mode="card"
                             label="Выбрать цвет фона"
@@ -176,7 +184,7 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                 </label>
                 <div className="flex items-center gap-2">
                     <ColorPicker
-                        onColorChange={(color) => handleTextColorChange(color)}
+                        onColorChange={color => handleTextColorChange(color)}
                         initialColor={textColor}
                         mode="card"
                         label="Выбрать цвет текста"
@@ -185,9 +193,7 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                 </div>
             </div>
             <div className="flex flex-row mt-2 justify-between items-center">
-                <label className="text-sm font-medium text-gray-700">
-                    Выравнивание контента
-                </label>
+                <label className="text-sm font-medium text-gray-700">Выравнивание контента</label>
                 <div className={`${styles.alignmentGroup}`}>
                     <button
                         onClick={() => handleContentAlignmentChange('top')}

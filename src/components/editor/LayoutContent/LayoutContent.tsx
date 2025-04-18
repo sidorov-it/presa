@@ -54,21 +54,25 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
         if (!isLayoutHovered) {
             setIsLayoutHovered(true);
             // Dispatch custom event to notify cells
-            document.dispatchEvent(new LayoutHoverEvent({ 
-                layoutId: layout.id,
-                isHovered: true 
-            }));
+            document.dispatchEvent(
+                new LayoutHoverEvent({
+                    layoutId: layout.id,
+                    isHovered: true,
+                })
+            );
         }
     }, [isLayoutHovered, layout.id]);
-    
+
     const handleMouseLeave = useCallback(() => {
         if (isLayoutHovered) {
             setIsLayoutHovered(false);
             // Dispatch custom event to notify cells
-            document.dispatchEvent(new LayoutHoverEvent({ 
-                layoutId: layout.id,
-                isHovered: false 
-            }));
+            document.dispatchEvent(
+                new LayoutHoverEvent({
+                    layoutId: layout.id,
+                    isHovered: false,
+                })
+            );
         }
     }, [isLayoutHovered, layout.id]);
 

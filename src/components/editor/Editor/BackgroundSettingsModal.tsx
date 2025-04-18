@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { HexAlphaColorPicker } from 'react-colorful';
 import { usePresentationStore } from '@/store/presentationStore';
 import { useShallow } from 'zustand/react/shallow';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
@@ -150,4 +149,4 @@ const BackgroundSettingsModal: React.FC<BackgroundSettingsModalProps> = ({ isOpe
     );
 };
 
-export default BackgroundSettingsModal; 
+export default BackgroundSettingsModal;

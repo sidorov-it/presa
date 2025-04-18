@@ -450,7 +450,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 setLayoutIsHovered(e.detail.isHovered);
             }
         };
-        
+
         document.addEventListener('layoutHover', handleLayoutHover);
         return () => {
             document.removeEventListener('layoutHover', handleLayoutHover);

@@ -56,3 +56,11 @@ export const ThemedBlock = ({ className, children, ...props }: HTMLAttributes<HT
         </div>
     );
 };
+
+export const ThemedPage = ({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) => {
+    return (
+        <div className={cn('themed-page', className)} {...props}>
+            {children}
+        </div>
+    );
+};

@@ -130,9 +130,12 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
         []
     );
 
-    const handleColorChange = useCallback((color: string) => {
-        editor.commands.setColor(color);
-    }, [editor]);
+    const handleColorChange = useCallback(
+        (color: string) => {
+            editor.commands.setColor(color);
+        },
+        [editor]
+    );
 
     return (
         <BubbleMenu

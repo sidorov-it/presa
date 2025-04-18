@@ -188,7 +188,11 @@ export interface PresentationState {
     getCommonAlignment: (presentationId: string, slideId: string, layoutId: string) => string;
     getCommonHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>, elements: BaseElement[]) => number | null;
     getCommonTextColor: (tiptapRefs: MutableRefObject<TipTapRefs>, elements: BaseElement[]) => string | null;
-    getCommonSlideTextColor: (tiptapRefs: MutableRefObject<TipTapRefs>, presentationId: string, slideId: string) => string | null;
+    getCommonSlideTextColor: (
+        tiptapRefs: MutableRefObject<TipTapRefs>,
+        presentationId: string,
+        slideId: string
+    ) => string | null;
     getCommonTableHeadingLevel: (
         tiptapRefs: MutableRefObject<TipTapRefs>,
         presentationId: string,
@@ -220,7 +224,10 @@ export interface PresentationState {
 
     // Настройки фона презентации
     getBackgroundSettings: (presentationId: string) => BackgroundSettings | undefined;
-    setBackgroundSettings: (presentationId: string, settings: { backgroundColor?: string; backgroundImage?: string }) => void;
+    setBackgroundSettings: (
+        presentationId: string,
+        settings: { backgroundColor?: string; backgroundImage?: string }
+    ) => void;
 }
 
 // Create the store with properly configured middleware
@@ -786,7 +793,9 @@ export const usePresentationStore = create<PresentationState>()(
                                                     if (layout.id === layoutId) {
                                                         return {
                                                             ...layout,
-                                                            elements: layout.elements.filter(element => element.cellId !== cellId),
+                                                            elements: layout.elements.filter(
+                                                                element => element.cellId !== cellId
+                                                            ),
                                                             gridStructure: {
                                                                 ...layout.gridStructure,
                                                                 rows: layout.gridStructure.rows.map(row => ({
@@ -819,7 +828,6 @@ export const usePresentationStore = create<PresentationState>()(
 
                     return updatedState;
                 });
-
 
                 get().saveChanges(presentationId);
             },
@@ -1044,7 +1052,9 @@ export const usePresentationStore = create<PresentationState>()(
                     element =>
                         tiptapRefs.current.editors[element.id] && !tiptapRefs.current.editors[element.id].editor.isEmpty
                 );
-                const allTextColors = notEmptyEditors.map(element => tiptapRefs.current.editors[element.id]?.editor.getAttributes('color').color);
+                const allTextColors = notEmptyEditors.map(
+                    element => tiptapRefs.current.editors[element.id]?.editor.getAttributes('color').color
+                );
                 const uniqueTextColors = new Set(allTextColors);
                 return uniqueTextColors.size === 1 ? uniqueTextColors.values().next().value : null;
             },
@@ -1052,7 +1062,10 @@ export const usePresentationStore = create<PresentationState>()(
             getCommonSlideTextColor: (tiptapRefs, presentationId, slideId) => {
                 const slide = get().getSlide(presentationId, slideId);
                 if (!slide) return null;
-                return get().getCommonTextColor(tiptapRefs, slide.layouts.flatMap(layout => layout.elements));
+                return get().getCommonTextColor(
+                    tiptapRefs,
+                    slide.layouts.flatMap(layout => layout.elements)
+                );
             },
 
             getCommonTableHeadingLevel: (tiptapRefs, presentationId, slideId, layoutId) => {
@@ -2151,7 +2164,7 @@ export const usePresentationStore = create<PresentationState>()(
                         slides: currentPresentation.slides.map(slide => (slide.id === slideId ? updatedSlide : slide)),
                     };
 
-                     // ???
+                    // ???
                     const updatedState = {
                         ...get(),
                         presentations: get().presentations.map(presentation =>
@@ -2832,19 +2845,20 @@ export const usePresentationStore = create<PresentationState>()(
                 return useHistoryStore.getState().canRedo(presentationId);
             },
 
-
             getBackgroundSettings: (presentationId: string) => {
                 const presentation = get().getPresentation(presentationId);
                 return presentation?.backgroundSettings || {};
             },
-            setBackgroundSettings: (presentationId: string, settings: { backgroundColor?: string; backgroundImage?: string }) => {
+            setBackgroundSettings: (
+                presentationId: string,
+                settings: { backgroundColor?: string; backgroundImage?: string }
+            ) => {
                 const presentation = get().getPresentation(presentationId);
                 if (!presentation) return;
                 get().updatePresentation(presentationId, {
                     backgroundSettings: { ...presentation.backgroundSettings, ...settings },
                 });
             },
-        
 
             setFullState: (state: { presentations: IPresentation[] }) => {
                 // Direct setter for presentations array used by undo/redo operations
@@ -2901,7 +2915,10 @@ export const usePresentationStore = create<PresentationState>()(
                 const presentation = get().getPresentation(presentationId);
                 return presentation?.backgroundSettings || {};
             },
-            setBackgroundSettings: (presentationId: string, settings: { backgroundColor?: string; backgroundImage?: string }) => {
+            setBackgroundSettings: (
+                presentationId: string,
+                settings: { backgroundColor?: string; backgroundImage?: string }
+            ) => {
                 const presentation = get().getPresentation(presentationId);
                 if (!presentation) return;
                 get().updatePresentation(presentationId, {

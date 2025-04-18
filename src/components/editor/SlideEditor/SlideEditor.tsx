@@ -291,7 +291,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         const baseStyle: React.CSSProperties = {
             position: 'relative',
             height: '100%',
-            width: '100%'
+            width: '100%',
         };
 
         // Apply content alignment

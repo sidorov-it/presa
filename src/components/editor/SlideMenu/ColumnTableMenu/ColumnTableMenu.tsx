@@ -121,11 +121,20 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({ tableColumnIndex, tip
         }
     }, [tableColumnIndex]);
 
-    const handleColorChange = useCallback((color: string) => {
-        tableColumnElements.forEach(element => {
-            tiptapRefs.current.editors[element.id]?.editor.chain().focus(null, { scrollIntoView: false }).selectAll().setColor(color).blur().run();
-        });
-    }, [tableColumnElements, tiptapRefs]);
+    const handleColorChange = useCallback(
+        (color: string) => {
+            tableColumnElements.forEach(element => {
+                tiptapRefs.current.editors[element.id]?.editor
+                    .chain()
+                    .focus(null, { scrollIntoView: false })
+                    .selectAll()
+                    .setColor(color)
+                    .blur()
+                    .run();
+            });
+        },
+        [tableColumnElements, tiptapRefs]
+    );
 
     const handleHeadingChange = useCallback(
         (level: number) => {
@@ -150,11 +159,7 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({ tableColumnIndex, tip
                 handleHeadingChange={handleHeadingChange}
                 // lightThemeStyle={lightThemeStyle}
             />
-            <ColorPicker
-                onColorChange={handleColorChange}
-                className={bubbleStyles.button}
-            />
-
+            <ColorPicker onColorChange={handleColorChange} className={bubbleStyles.button} />
 
             {/* <ColorPicker
                 editors={tableColumnElements.map(element => tiptapRefs.current.editors[element.id]?.editor)}

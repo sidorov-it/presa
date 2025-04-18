@@ -340,7 +340,15 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
             )}
 
             {!imageUrl && (
-                <div className={styles.templateImagePlaceholder} style={{ width: '100%', height: '100%', objectFit: 'cover', backgroundColor: 'var(--chakra-colors-gray-300)' }}>
+                <div
+                    className={styles.templateImagePlaceholder}
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        backgroundColor: 'var(--chakra-colors-gray-300)',
+                    }}
+                >
                     <ImagePlaceholder onUpload={() => {}} onLink={() => {}} onGenerate={() => {}} />
                 </div>
             )}

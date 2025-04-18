@@ -264,7 +264,7 @@ export default function PresentationEditorPage() {
                                 tabIndex={0}
                                 onClick={handleOpenBgModal}
                                 onKeyDown={handleKeyDownCog}
-                >
+                            >
                                 <HiOutlineCog6Tooth className="w-6 h-6 text-gray-600" aria-hidden="true" />
                             </button>
                             <UndoRedoControls presentationId={presentation.id} />
@@ -281,11 +281,10 @@ export default function PresentationEditorPage() {
                     <Editor presentationId={presentation.id} />
 
                     <BackgroundSettingsModal
-                                isOpen={isBgModalOpen}
-                                onClose={handleCloseBgModal}
-                                presentationId={presentation.id}
-                            />
-
+                        isOpen={isBgModalOpen}
+                        onClose={handleCloseBgModal}
+                        presentationId={presentation.id}
+                    />
                 </main>
 
                 <footer className="bg-gray-100 border-t border-gray-200 py-2 px-4">

@@ -4,7 +4,8 @@
   --heading-color: #1f2937;
   --text-color: #4b5563;
   --slide-background: #ffffff;
-  --page-background: #f3f4f6;
+  --page-background-color: #f3f4f6;
+  --page-background-type: color;
   
   --heading-font: 'Inter', sans-serif;
   --heading-weight: 600;
@@ -53,7 +54,7 @@
 }
 
 .themed-button {
-  background-color: var(--button-color);
+  background-color: var(--primary-accent);
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 0.375rem;
@@ -77,7 +78,7 @@
 }
 
 .themed-link {
-  color: var(--link-color);
+  color: var(--primary-accent);
   text-decoration: none;
 }
 
@@ -86,7 +87,14 @@
 }
 
 .themed-page {
-  background-color: var(--page-background);
+  background-color: var(--page-background-color);
+  background-image: var(--page-background-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100%;
+  border-color: var(--primary-accent);
 }
 
 .themed-slide {
@@ -103,3 +111,8 @@
   box-shadow: var(--block-shadow);
   padding: 1rem;
 } 
+
+.themed-card {
+  background-color: var(--slide-background);
+}
+

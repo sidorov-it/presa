@@ -39,7 +39,18 @@ export const ThemeProvider = ({ children, initialTheme }: ThemeProviderProps) =>
         document.documentElement.style.setProperty('--heading-color', theme.colors.headingColor);
         document.documentElement.style.setProperty('--text-color', theme.colors.textColor);
         document.documentElement.style.setProperty('--slide-background', theme.colors.slideBackground);
-        document.documentElement.style.setProperty('--page-background', theme.colors.pageBackground);
+
+        // Set page background based on type
+        if (theme.colors.pageBackground.type === 'color') {
+            document.documentElement.style.setProperty('--page-background-color', theme.colors.pageBackground.color);
+        } else {
+            // image
+            document.documentElement.style.setProperty(
+                '--page-background-image',
+                `url(${theme.colors.pageBackground.imageUrl})`
+            );
+        }
+        document.documentElement.style.setProperty('--page-background-type', theme.colors.pageBackground.type);
 
         // Typography
         document.documentElement.style.setProperty('--heading-font', `'${theme.typography.headingFont}', sans-serif`);

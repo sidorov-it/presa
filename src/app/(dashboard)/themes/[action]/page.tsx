@@ -27,7 +27,11 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
             headingColor: '#1f2937',
             textColor: '#4b5563',
             slideBackground: '#ffffff',
-            pageBackground: '#f3f4f6',
+            pageBackground: {
+                type: 'color',
+                color: '#f3f4f6',
+                imageUrl: '',
+            },
         },
         typography: {
             headingFont: 'inter',
@@ -71,7 +75,6 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
     const handleSave = async () => {
         try {
             if (params.action === 'new') {
-                // const { id, ...themeWithoutId } = theme;
                 await addTheme(theme);
                 toast.success('Theme created successfully');
             } else {
@@ -86,38 +89,37 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
     };
 
     return (
-        <div className="min-h-screen bg-background p-6 flex-1 space-y-4 p-4 md:p-8 pt-6">
-            <div className="mb-6 flex justify-between items-center">
-                <h1 className="text-3xl font-bold">{params.action === 'new' ? 'Новая тема' : 'Редактировать тему'}</h1>
-                <div className="flex gap-2">
-                    <Button onClick={handleSave}>Сохранить</Button>
-                    <Button onClick={() => router.push('/themes')}>Отменить</Button>
+        <div className="flex h-screen">
+            {/* Left section with editor */}
+            <div className="w-1/2 h-full overflow-auto p-8">
+                <div className="space-y-6">
+                    <div>
+                        <Label htmlFor="theme-name" className="mb-2 block">
+                            Название темы
+                        </Label>
+                        <Input
+                            id="theme-name"
+                            value={theme.name}
+                            onChange={e => setTheme({ ...theme, name: e.target.value })}
+                            placeholder="Введите название темы"
+                            className="w-full"
+                        />
+                    </div>
+
+                    <ThemeEditor theme={theme} onThemeChange={setTheme} />
+
+                    <div className="fixed bottom-0 left-0 w-1/2 p-4 bg-background border-t flex justify-between items-center">
+                        <Button variant="outline" onClick={() => router.push('/themes')}>
+                            Отменить
+                        </Button>
+                        <Button onClick={handleSave}>Сохранить</Button>
+                    </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-6">
-                    <div className="p-6 bg-card rounded-lg shadow-sm">
-                        <div className="mb-4">
-                            <Label htmlFor="theme-name" className="mb-2 block">
-                                Название темы
-                            </Label>
-                            <Input
-                                id="theme-name"
-                                value={theme.name}
-                                onChange={e => setTheme({ ...theme, name: e.target.value })}
-                                placeholder="Введите название темы"
-                                className="w-full"
-                            />
-                        </div>
-                        <ThemeEditor theme={theme} onThemeChange={setTheme} />
-                    </div>
-                </div>
-                <div className="space-y-6">
-                    <div className="p-6 bg-card rounded-lg shadow-sm">
-                        <ThemePreview theme={theme} />
-                    </div>
-                </div>
+            {/* Right section with preview */}
+            <div className="w-1/2 h-screen overflow-auto bg-muted border-l">
+                <ThemePreview theme={theme} />
             </div>
         </div>
     );
