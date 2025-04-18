@@ -18,6 +18,13 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
     const previewStyle = {
         // Base colors
         '--primary-accent': theme.colors.primaryAccent,
+        '--shapes-color': theme.colors.shapesColor,
+        '--buttons-color': theme.colors.buttonsColor,
+        '--links-color': theme.colors.linksColor,
+
+        '--accent-blocks-color': theme.colors.accentBlocksColor,
+        '--secondary-button-color': theme.colors.secondaryButtonColor,
+
         '--heading-color': theme.colors.headingColor,
         '--text-color': theme.colors.textColor,
         '--slide-background': theme.colors.slideBackground,
@@ -42,9 +49,9 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
         '--block-shadow': theme.design.blocks.shadow,
 
         // Button and link design
-        '--button-color': theme.design.buttons.buttonColor,
+        // '--button-color': theme.design.buttons.buttonColor,
         '--button-shape': theme.design.buttons.buttonShape,
-        '--link-color': theme.design.buttons.linkColor,
+        // '--link-color': theme.design.buttons.linkColor,
 
         // Set page background directly
         // background:
@@ -90,6 +97,63 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
                         Smart layouts
                     </ThemedHeading>
 
+                    <div className="flex gap-4 flex-wrap">
+                        <div
+                            style={{
+                                backgroundColor: theme.colors.accentBlocksColor,
+                                width: '200px',
+                                height: '100px',
+                                color: theme.colors.textColor,
+                            }}
+                        >
+                            accentBlocksColor
+                        </div>
+                        <div
+                            style={{
+                                backgroundColor: theme.colors.buttonsColor,
+                                width: '200px',
+                                height: '100px',
+                                color: theme.colors.textColor,
+
+                            }}
+                        >
+                            buttonsColor
+                        </div>
+                        <div
+                            style={{
+                                backgroundColor: theme.colors.linksColor,
+                                width: '200px',
+                                height: '100px',
+                                color: theme.colors.textColor,
+
+                            }}
+                        >
+                            linksColor
+                        </div>
+                        <div
+                            style={{
+                                backgroundColor: theme.colors.secondaryButtonColor,
+                                width: '200px',
+                                height: '100px',
+                                borderColor: theme.colors.primaryAccent,
+                                borderWidth: '1px',
+                                borderStyle: 'solid',
+                                color: theme.colors.primaryAccent,
+                                
+                            }}
+                        >
+                            secondaryButtonColor
+                        </div>
+                        <div
+                            style={{
+                                backgroundColor: theme.colors.primaryAccent,
+                                width: '200px',
+                                height: '100px',
+                            }}
+                        >
+                            primaryAccent
+                        </div>
+                    </div>
                     <div className="flex gap-4">
                         <ThemedCard className="flex-1 p-4 bg-primary rounded-md">
                             <ThemedText className="text-white font-medium">

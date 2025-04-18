@@ -3,6 +3,10 @@ export type ThemeColors = {
     primaryAccent: string;
     secondaryAccents: string[];
 
+    shapesColor: string;
+    buttonsColor: string;
+    linksColor: string;
+
     // Text Colors
     headingColor: string;
     textColor: string;
@@ -14,6 +18,10 @@ export type ThemeColors = {
         color: string;
         imageUrl: string;
     };
+
+    // Additional Colors
+    accentBlocksColor: string;
+    secondaryButtonColor: string;
 };
 
 export type ThemeTypography = {

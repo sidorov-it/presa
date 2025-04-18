@@ -12,6 +12,8 @@ import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { generateId } from '@/utils/id';
 
+import styles from './page.module.css';
+
 export default function ThemeEditorPage(props: { params: Promise<{ action: string }> }) {
     const params = use(props.params);
     const router = useRouter();
@@ -89,12 +91,12 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
     };
 
     return (
-        <div className="flex h-screen">
+        <div className={styles.container}>
             {/* Left section with editor */}
-            <div className="w-1/2 h-full overflow-auto p-8">
-                <div className="space-y-6">
+            <div className={styles.leftSection}>
+                <div className={styles.leftSectionContent}>
                     <div>
-                        <Label htmlFor="theme-name" className="mb-2 block">
+                        <Label htmlFor="theme-name" className={styles.label}>
                             Название темы
                         </Label>
                         <Input
@@ -102,23 +104,23 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
                             value={theme.name}
                             onChange={e => setTheme({ ...theme, name: e.target.value })}
                             placeholder="Введите название темы"
-                            className="w-full"
+                            className={styles.input}
                         />
                     </div>
 
                     <ThemeEditor theme={theme} onThemeChange={setTheme} />
 
-                    <div className="fixed bottom-0 left-0 w-1/2 p-4 bg-background border-t flex justify-between items-center">
+                    <div className={styles.bottomSection}>
                         <Button variant="outline" onClick={() => router.push('/themes')}>
                             Отменить
                         </Button>
-                        <Button onClick={handleSave}>Сохранить</Button>
+                        <Button variant="default" onClick={handleSave}>Сохранить</Button>
                     </div>
                 </div>
             </div>
 
             {/* Right section with preview */}
-            <div className="w-1/2 h-screen overflow-auto bg-muted border-l">
+            <div className={styles.rightSection}>
                 <ThemePreview theme={theme} />
             </div>
         </div>

@@ -11,6 +11,13 @@ export const resetThemeStyles = (): void => {
 
     // Base colors
     document.documentElement.style.setProperty('--primary-accent', DEFAULT_THEME.colors.primaryAccent);
+    document.documentElement.style.setProperty('--accent-blocks-color', DEFAULT_THEME.colors.accentBlocksColor);
+    document.documentElement.style.setProperty('--secondary-button-color', DEFAULT_THEME.colors.secondaryButtonColor);
+
+    document.documentElement.style.setProperty('--shapes-color', DEFAULT_THEME.colors.shapesColor);
+    document.documentElement.style.setProperty('--buttons-color', DEFAULT_THEME.colors.buttonsColor);
+    document.documentElement.style.setProperty('--links-color', DEFAULT_THEME.colors.linksColor);
+
     document.documentElement.style.setProperty('--heading-color', DEFAULT_THEME.colors.headingColor);
     document.documentElement.style.setProperty('--text-color', DEFAULT_THEME.colors.textColor);
     document.documentElement.style.setProperty('--slide-background', DEFAULT_THEME.colors.slideBackground);
@@ -64,9 +71,9 @@ export const resetThemeStyles = (): void => {
     document.documentElement.style.setProperty('--block-shadow', DEFAULT_THEME.design.blocks.shadow);
 
     // Button and link design
-    document.documentElement.style.setProperty('--button-color', DEFAULT_THEME.design.buttons.buttonColor);
+    // document.documentElement.style.setProperty('--button-color', DEFAULT_THEME.design.buttons.buttonColor);
     document.documentElement.style.setProperty('--button-shape', DEFAULT_THEME.design.buttons.buttonShape);
-    document.documentElement.style.setProperty('--link-color', DEFAULT_THEME.design.buttons.linkColor);
+    // document.documentElement.style.setProperty('--link-color', DEFAULT_THEME.design.buttons.linkColor);
 
     // Control variables (set to light theme defaults)
     document.documentElement.style.setProperty('--control-stroke', 'rgba(0, 0, 0, 0.2)');

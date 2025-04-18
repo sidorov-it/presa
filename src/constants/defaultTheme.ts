@@ -5,6 +5,9 @@ export const DEFAULT_THEME: Omit<Theme, 'id' | 'createdAt' | 'updatedAt'> = {
     description: 'A clean, modern default theme',
     colors: {
         primaryAccent: '#3b82f6', // Blue
+        shapesColor: '#00235cff',
+        buttonsColor: '#3f87fbff',
+        linksColor: '#146dffff',
         secondaryAccents: ['#60a5fa', '#93c5fd', '#bfdbfe'],
         headingColor: '#1f2937', // Dark gray
         textColor: '#4b5563', // Medium gray
@@ -14,6 +17,8 @@ export const DEFAULT_THEME: Omit<Theme, 'id' | 'createdAt' | 'updatedAt'> = {
             color: '#f3f4f6', // Light gray
             imageUrl: '',
         },
+        accentBlocksColor: '#3b82f6',
+        secondaryButtonColor: '#3f87fb',
     },
     typography: {
         headingFont: 'inter',

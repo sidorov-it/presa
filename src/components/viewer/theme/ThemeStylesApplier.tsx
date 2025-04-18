@@ -84,6 +84,12 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
             // Apply theme to the document root
             // Base colors
             document.documentElement.style.setProperty('--primary-accent', theme.colors.primaryAccent);
+            document.documentElement.style.setProperty('--shapes-color', theme.colors.shapesColor);
+            document.documentElement.style.setProperty('--buttons-color', theme.colors.buttonsColor);
+            document.documentElement.style.setProperty('--links-color', theme.colors.linksColor);
+            document.documentElement.style.setProperty('--accent-blocks-color', theme.colors.accentBlocksColor);
+            document.documentElement.style.setProperty('--secondary-button-color', theme.colors.secondaryButtonColor);
+
             document.documentElement.style.setProperty('--heading-color', theme.colors.headingColor);
             document.documentElement.style.setProperty('--text-color', theme.colors.textColor);
             document.documentElement.style.setProperty('--slide-background', theme.colors.slideBackground);
@@ -135,9 +141,9 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
             document.documentElement.style.setProperty('--block-shadow', theme.design.blocks.shadow);
 
             // Button and link design
-            document.documentElement.style.setProperty('--button-color', theme.design.buttons.buttonColor);
+            // document.documentElement.style.setProperty('--button-color', theme.design.buttons.buttonColor);
             document.documentElement.style.setProperty('--button-shape', theme.design.buttons.buttonShape);
-            document.documentElement.style.setProperty('--link-color', theme.design.buttons.linkColor);
+            // document.documentElement.style.setProperty('--link-color', theme.design.buttons.linkColor);
 
             // Check if the slide background is dark and set control variables accordingly
             const isDark = isColorDark(theme.colors.slideBackground);
