@@ -1,9 +1,25 @@
+// case FONT_SIZE_SMALL_TEXT:
+//     className = 'body-text small-text';
+//     break;
+// case FONT_SIZE_BIG_TEXT:
+//     className = 'body-text big-text';
+
+// case FONT_SIZE_BIG_HEADING:
+//     className = 'heading-text big-heading';
+//     break;
+// case FONT_SIZE_VERY_BIG_HEADING:
+//     className = 'heading-text very-big-heading';
+//     break;
+// default:
+//     className = 'body-text normal-text';
+//     break;
+
 const editorsDefaultContent = {
-    title: '<h1>Заголовок</h1>',
-    heading1: '<h2>Подзаголовок 1</h2>',
-    heading2: '<h3>Подзаголовок 2</h3>',
-    heading3: '<h4>Подзаголовок 3</h4>',
-    heading4: '<h5>Подзаголовок 4</h5>',
+    title: '<span class="heading-text title-text">Заголовок</span>',
+    heading1: '<span class="heading-text heading-1">Подзаголовок 1</span>',
+    heading2: '<span class="heading-text heading-2">Подзаголовок 2</span>',
+    heading3: '<span class="heading-text heading-3">Подзаголовок 3</span>',
+    heading4: '<span class="heading-text heading-4">Подзаголовок 4</span>',
     quote: '<blockquote>Цитата</blockquote>',
     table2x2: `
 <table>

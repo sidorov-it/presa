@@ -16,6 +16,7 @@ import { useShallow } from 'zustand/react/shallow';
 import adjustWidths from '@/utils/adjustWidths';
 import { OpenCustomMenuEvent } from '@/customEvents/OpenCustomMenuEvent';
 import { LayoutHoverEvent } from '@/customEvents/LayoutHoverEvent';
+import { HiPlus } from 'react-icons/hi2';
 
 export const useIsSelectedRow = (tableId: string, rowIndex: number) =>
     useMenuStore(state => state.tableRowIndex === rowIndex && state.tableId === tableId);
@@ -86,17 +87,15 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     );
 
     const isLastCell = usePresentationStore(
-        useShallow(
-            state => {
-                const layout = state.presentations
-                    .find(p => p.id === presentationId)
-                    ?.slides.find(s => s.id === slideId)
-                    ?.layouts.find(l => l.id === layoutId);
-                
-                return layout?.gridStructure.rows[0].cells[layout?.gridStructure.columns - 1]?.id === cell.id;
-            })
-    );
+        useShallow(state => {
+            const layout = state.presentations
+                .find(p => p.id === presentationId)
+                ?.slides.find(s => s.id === slideId)
+                ?.layouts.find(l => l.id === layoutId);
 
+            return layout?.gridStructure.rows[0].cells[layout?.gridStructure.columns - 1]?.id === cell.id;
+        })
+    );
 
     // const isLastCell = elementsIds[elementsIds.length - 1] === cell.id;
 
@@ -110,6 +109,8 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const [isResizing, setIsResizing] = useState(false);
 
     const handleDragStart = useHandleDragStart();
+
+    const layoutIsFocused = useMenuStore(state => state.focusedLayoutId === layoutId);
 
     // const [elementIsHovered, setElementIsHovered] = useState(false);
     const [cellIsHovered, setCellIsHovered] = useState(false);
@@ -470,11 +471,16 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         };
     }, [layoutId]);
 
+    const handleAddColumn = useCallback(() => {
+        usePresentationStore.getState().addColumnRight(presentationId, slideId, layoutId, columnIndex);
+        setCellIsHovered(false);
+    }, [presentationId, slideId, layoutId, columnIndex]);
+
     return (
         <div
             className={`${className} 
                 ${isSelectedRow || isSelectedColumn ? styles.selectedCell : ''} 
-                ${hasMultipleCells && !isTable && (cellIsHovered || layoutIsHovered) ? styles.cellBorderVisible : ''}`}
+                ${hasMultipleCells && !isTable && (cellIsHovered || layoutIsHovered || layoutIsFocused) ? styles.cellBorderVisible : ''}`}
             data-cell-id={cell.id}
             data-cell="true"
             data-is-multi-cell={hasMultipleCells ? 'true' : 'false'}
@@ -541,6 +547,12 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     className={`${styles.resizableBorder} ${isResizing ? styles.resizableBorderDragged : ''}`}
                     onMouseDown={handleResizeStart}
                 />
+            )}
+
+            {hasMultipleCells && !isTable && isLastCell && (layoutIsFocused || layoutIsHovered) && (
+                <button className={styles.addColumnIcon} onClick={handleAddColumn} title="Add column">
+                    <HiPlus className="w-4 h-4" />
+                </button>
             )}
 
             {isShowRowDragHandler && (

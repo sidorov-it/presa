@@ -36,6 +36,8 @@ export interface MenuState {
     tableColumnIndex: number | null;
     tableId: string | null;
 
+    focusedLayoutId: string | null;
+
     setPresentationId: (presentationId: string) => void;
 
     // Table hover actions
@@ -107,6 +109,9 @@ export interface MenuState {
 
     addColumnToTable: (tableColumnIndex: number) => void;
     deleteColumnFromTable: (tableColumnIndex: number) => void;
+
+    setFocusedLayoutId: (layoutId: string) => void;
+    resetFocusedLayoutId: () => void;
 
     getCommonHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>) => number | null;
     getCommonTableHeadingLevel: (tiptapRefs: MutableRefObject<TipTapRefs>) => number | null;
@@ -370,6 +375,14 @@ export const useMenuStore = create<MenuState>()(
                     deleteColumnInStore(presentationId, slideId, layoutId, columnId);
                     get().closeMenu();
                 }
+            },
+
+            setFocusedLayoutId: (layoutId: string) => {
+                set({ focusedLayoutId: layoutId });
+            },
+
+            resetFocusedLayoutId: () => {
+                set({ focusedLayoutId: null });
             },
 
             // Getter methods

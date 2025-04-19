@@ -281,6 +281,15 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
 
     // const isHovered = isLayoutHovered || isSelected;
 
+    const handleLayoutClick = useCallback(() => {
+        useMenuStore.getState().setFocusedLayoutId(layout.id);
+        document.addEventListener('click', (e) => {
+            if (e.target instanceof HTMLElement && !e.target.closest('[data-layout-id]')) {
+                useMenuStore.getState().resetFocusedLayoutId();
+            }
+        });
+    }, [layout.id]);
+
     return (
         <>
             <div
@@ -292,6 +301,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 aria-label={`Layout ${layout.id}`}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
+                onClickCapture={handleLayoutClick}
             >
                 {isSelected && <div className={styles.layoutSelected} />}
 

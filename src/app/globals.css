@@ -873,8 +873,8 @@
         }
     }
 
-    /* .ProseMirror p.is-editor-empty:first-child::before { */
-    .ProseMirror.ProseMirror-focused p.is-editor-empty:first-child::before {
+    .ProseMirror p.is-editor-empty:first-child::before {
+    /* .ProseMirror.ProseMirror-focused p.is-editor-empty:first-child::before { */
         content: attr(data-placeholder);
         float: left;
         color: #adb5bd;
@@ -886,8 +886,10 @@
         position: absolute;
         top: 0;
         left: 0;
-        font-size: 1rem !important;
-        line-height: 2.25rem !important;
+        font-size: inherit;
+        line-height: inherit;
+        /* font-size: 1rem !important;
+        line-height: 2.25rem !important; */
     }
 
     .ProseMirror:focus {

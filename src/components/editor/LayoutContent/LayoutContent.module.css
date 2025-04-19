@@ -123,13 +123,3 @@
     z-index: 30;
     background-color: var(--control-background, transparent);
 }
-
-.tableColumnResizeBorderDragged,
-.tableColumnResizeBorder:hover,
-.tableColumnResizeBorderActive {
-    background-color: var(--control-stroke, #806cff);
-}
-
-.layoutContentHovered {
-    outline: 1px solid var(--grid-outline-solid);
-}
