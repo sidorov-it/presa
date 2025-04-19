@@ -111,7 +111,8 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
                 editor.chain()
                     .focus()
                     .unsetAllMarks() // Очищаем все стили, включая fontSize
-                    // .setHeading({ level: 6 }) // Устанавливаем максимальный доступный уровень
+                    .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
+
                     .setFontSize(FONT_SIZE_TITLE) // Дополнительно устанавливаем больший размер шрифта
                     .run();
             } else if (level === BIG_HEADING_LEVEL) {
@@ -119,7 +120,7 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
                     editor.chain()
                         .focus()
                         .unsetAllMarks() // Очищаем все стили, включая fontSize
-                        // .setHeading({ level: 6 }) // Устанавливаем максимальный доступный уровень
+                        .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
                         .setFontSize(FONT_SIZE_BIG_HEADING) // Дополнительно устанавливаем больший размер шрифта
                         .run();
             } else if (level === VERY_BIG_HEADING_LEVEL) {
@@ -127,7 +128,8 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
                 editor.chain()
                     .focus()
                     .unsetAllMarks() // Очищаем все стили, включая fontSize
-                    // .setHeading({ level: 6 }) // Устанавливаем максимальный доступный уровень
+                    .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
+
                     .setFontSize(FONT_SIZE_VERY_BIG_HEADING) // Дополнительно устанавливаем больший размер шрифта
                     .run();
             } else {

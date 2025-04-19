@@ -34,7 +34,7 @@
 
         --radius: 0.5rem;
 
-        --block-margin: 0.5rem;
+        --block-margin: 1.125em;
         --grid-padding: 1.22em;
         --grid-outline-solid: #5b5b5f;
 
@@ -46,6 +46,8 @@
 
         --line-height-heading: 1.25;
         --line-height-body: 1.6;
+
+        --heading-font-weight: 700;
 
         --chakra-ring-inset: var(--chakra-empty,
                 /*!*/
@@ -527,9 +529,6 @@
     font-size: 1em;
 
     p,
-    h1,
-    h2,
-    h3,
     ul,
     li {
         @apply mt-0 mb-0 !important;
@@ -1179,38 +1178,38 @@
 .tiptap.ProseMirror h1 {
     font-size: 2.5em;
     line-height: var(--line-height-heading);
-    font-weight: 700;
+    font-weight: var(--heading-font-weight);
 }
 
 .tiptap.ProseMirror h2 {
     font-size: 2em;
     line-height: var(--line-height-heading);
-    font-weight: 700;
+    font-weight: var(--heading-font-weight);
 }
 
 .tiptap.ProseMirror h3 {
     font-size: 1.5em;
     line-height: var(--line-height-heading);
-    font-weight: 600;
+    font-weight: var(--heading-font-weight);
 }
 
 .tiptap.ProseMirror h4 {
     font-size: 1.25em;
     line-height: var(--line-height-heading);
-    font-weight: 600;
+    font-weight: var(--heading-font-weight);
 }
 
 .tiptap.ProseMirror h5 {
     font-size: 1.125em;
     line-height: var(--line-height-heading);
-    font-weight: 600;
+    font-weight: var(--heading-font-weight);
 }
 
 /* Стандартный большой заголовок */
 .tiptap.ProseMirror h6 {
     font-size: 2em;
     line-height: var(--line-height-heading);
-    font-weight: 700;
+    font-weight: var(--heading-font-weight);
 }
 
 .recharts-responsive-container *:focus {
@@ -1222,5 +1221,17 @@
 }
 
 .heading-text {
-    line-height: var(--line-height-heading);
+    line-height: var(--line-height-heading) !important;
+    margin-top: 0.375em !important;
+    margin-bottom: 0.375em !important;
+}
+
+span[style*="font-size: 5em"] {
+    font-weight: var(--heading-font-weight) ;
+}
+
+span[style*="font-size: 3.45em"],
+span[style*="font-size: 5em"],
+span[style*="font-size: 1.125em"] {
+    font-weight: var(--heading-font-weight);
 }

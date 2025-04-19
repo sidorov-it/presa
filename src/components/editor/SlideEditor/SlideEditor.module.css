@@ -22,8 +22,8 @@
     border-radius: 0.6em;
     width: 100%;
     cursor: text;
-    padding-right: 1rem;
-    padding-left: calc(1rem + 25px);
+    /* padding-right: 1rem; */
+    /* padding-left: calc(1rem + 25px); */
     margin-left: 0;
 }
 

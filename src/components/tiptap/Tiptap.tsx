@@ -92,6 +92,9 @@ const getExtensions = (
         history: false,
         heading: {
             levels: [1, 2, 3, 4],
+            HTMLAttributes: {
+                class: 'heading-text',
+            },
         },
         bulletList: {
             keepMarks: true,
