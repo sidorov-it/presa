@@ -802,6 +802,8 @@ export const usePresentationStore = create<PresentationState>()(
                                                                     ...row,
                                                                     cells: row.cells.filter(cell => cell.id !== cellId),
                                                                 })),
+                                                                columns: layout.gridStructure.columns - 1,
+                                                                columnWidths: getColumnWidths(layout.gridStructure.columns - 1),
                                                             },
                                                         };
                                                     }

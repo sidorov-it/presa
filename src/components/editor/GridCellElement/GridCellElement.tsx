@@ -85,7 +85,20 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         )
     );
 
-    const isLastCell = elementsIds[elementsIds.length - 1] === cell.id;
+    const isLastCell = usePresentationStore(
+        useShallow(
+            state => {
+                const layout = state.presentations
+                    .find(p => p.id === presentationId)
+                    ?.slides.find(s => s.id === slideId)
+                    ?.layouts.find(l => l.id === layoutId);
+                
+                return layout?.gridStructure.rows[0].cells[layout?.gridStructure.columns - 1]?.id === cell.id;
+            })
+    );
+
+
+    // const isLastCell = elementsIds[elementsIds.length - 1] === cell.id;
 
     const menuCellId = useMenuStore(state => state.cellId);
 
