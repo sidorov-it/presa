@@ -44,7 +44,8 @@
         --card-inner-padding-y: calc(2.75em / var(--card-font-scale, 1));
         --card-inner-padding: var(--card-inner-padding-y) var(--card-inner-padding-x);
 
-
+        --line-height-heading: 1.25;
+        --line-height-body: 1.6;
 
         --chakra-ring-inset: var(--chakra-empty,
                 /*!*/
@@ -521,6 +522,9 @@
     @apply focus:outline-none;
     @apply p-4;
     @apply prose prose-sm sm:prose lg:prose-lg xl:prose-xl;
+
+    line-height: inherit;
+    font-size: 1em;
 
     p,
     h1,
@@ -1166,6 +1170,57 @@
     margin-bottom: 0;
 }
 
+/* Custom text size styles */
+.tiptap .ProseMirror p {
+    font-size: 1rem;
+    line-height: var(--line-height-body);
+}
+
+.tiptap.ProseMirror h1 {
+    font-size: 2.5em;
+    line-height: var(--line-height-heading);
+    font-weight: 700;
+}
+
+.tiptap.ProseMirror h2 {
+    font-size: 2em;
+    line-height: var(--line-height-heading);
+    font-weight: 700;
+}
+
+.tiptap.ProseMirror h3 {
+    font-size: 1.5em;
+    line-height: var(--line-height-heading);
+    font-weight: 600;
+}
+
+.tiptap.ProseMirror h4 {
+    font-size: 1.25em;
+    line-height: var(--line-height-heading);
+    font-weight: 600;
+}
+
+.tiptap.ProseMirror h5 {
+    font-size: 1.125em;
+    line-height: var(--line-height-heading);
+    font-weight: 600;
+}
+
+/* Стандартный большой заголовок */
+.tiptap.ProseMirror h6 {
+    font-size: 2em;
+    line-height: var(--line-height-heading);
+    font-weight: 700;
+}
+
 .recharts-responsive-container *:focus {
     outline: none;
+}
+
+.body-text {
+    line-height: var(--line-height-body);
+}
+
+.heading-text {
+    line-height: var(--line-height-heading);
 }

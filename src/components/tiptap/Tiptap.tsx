@@ -25,6 +25,7 @@ import {
     EnterHandlerExtension,
     ArrowNavigationExtension,
     EditorWithMethods,
+    FontSizeExtension,
 } from './extensions/index';
 import {
     ButtonNode,
@@ -90,7 +91,7 @@ const getExtensions = (
         dropcursor: false,
         history: false,
         heading: {
-            levels: [1, 2, 3, 4, 5],
+            levels: [1, 2, 3, 4],
         },
         bulletList: {
             keepMarks: true,
@@ -101,7 +102,11 @@ const getExtensions = (
             keepAttributes: false,
         },
     }),
-    TextStyle,
+    // Text style extensions
+    TextStyle.configure(),
+    FontSizeExtension.configure({
+        types: ['textStyle'],
+    }),
     Color,
     Underline,
     TextAlign.configure({
@@ -305,7 +310,7 @@ const Tiptap = ({
         content: initialContent,
         editorProps: {
             attributes: {
-                class: `${styles.editor} custom-tiptap-editor no-dropcursor themed-text`,
+                class: `${styles.editor} custom-tiptap-editor no-dropcursor not-prose themed-text`,
             },
         },
         immediatelyRender: true,
@@ -424,29 +429,7 @@ const Tiptap = ({
     }, [editor]);
 
     return (
-        <div className="relative w-full" data-editor-id={id}>
-            {/* <FloatingMenu editor={editor} tippyOptions={{ duration: 100 }}>
-        <div className="bg-white shadow-lg rounded-md p-2 flex gap-2">
-          <button
-            onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-            className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('heading', { level: 1 }) ? 'bg-gray-200' : ''}`}
-          >
-            H1
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-            className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('heading', { level: 2 }) ? 'bg-gray-200' : ''}`}
-          >
-            H2
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleBulletList().run()}
-            className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('bulletList') ? 'bg-gray-200' : ''}`}
-          >
-            Список
-          </button>
-        </div>
-      </FloatingMenu> */}
+        <div className="relative w-full not-prose" data-editor-id={id}>
             {!elementConfig?.customMenu && <CommonBubbleMenu editor={editor} />}
             <div className="tiptap-editor-wrapper w-full">
                 {editor && (

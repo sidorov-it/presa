@@ -1,16 +1,6 @@
-import styles from './HeadingSelector.module.css';
 import { BiChevronDown } from 'react-icons/bi';
-
-const defaultHeadingLevels = [
-    { label: 'Текст', level: 0 },
-    { label: 'Заголовок 1', level: 1 },
-    { label: 'Заголовок 2', level: 2 },
-    { label: 'Заголовок 3', level: 3 },
-    { label: 'Заголовок 4', level: 4 },
-    { label: 'Заголовок 5', level: 5 },
-    { label: 'Дисплей', level: 6 },
-    { label: 'Монстр', level: 7 },
-];
+import { HEADING_LEVELS } from '@/consts';
+import styles from './HeadingSelector.module.css';
 
 export default function HeadingSelector({
     headingMenuRef,
@@ -18,7 +8,7 @@ export default function HeadingSelector({
     setIsHeadingMenuOpen,
     getCurrentHeadingLevel = () => 0,
     handleHeadingChange = () => {},
-    headingLevels = defaultHeadingLevels,
+    headingLevels = HEADING_LEVELS,
 }: {
     headingMenuRef?: React.RefObject<HTMLDivElement>;
     isHeadingMenuOpen: boolean;
@@ -34,6 +24,10 @@ export default function HeadingSelector({
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
     };
 
+    const findHeading = (level: number) => {
+        return headingLevels.find(item => item.level === level);
+    };
+
     return (
         <div className={styles.headingSelector} ref={headingMenuRef}>
             <button
@@ -42,7 +36,7 @@ export default function HeadingSelector({
                 aria-label="Выбрать тип текста"
                 aria-expanded={isHeadingMenuOpen}
             >
-                <span className={styles.selectText}>{headingLevels[getCurrentHeadingLevel()].label}</span>
+                <span className={styles.selectText}>{findHeading(getCurrentHeadingLevel())?.label}</span>
                 <BiChevronDown size={14} className={styles.chevron} />
             </button>
 

@@ -22,6 +22,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { EditorView } from '@tiptap/pm/view';
 import { EditorState } from '@tiptap/pm/state';
 import HeadingSelector from '../settings/HeadingSelector/HeadingSelector';
+import { HEADING_LEVELS, NORMAL_TEXT_LEVEL, SMALL_TEXT_LEVEL, BIG_TEXT_LEVEL, VERY_BIG_HEADING_LEVEL, BIG_HEADING_LEVEL, TITLE_LEVEL, FONT_SIZE_SMALL_TEXT, FONT_SIZE_BIG_TEXT, FONT_SIZE_TITLE, FONT_SIZE_BIG_HEADING, FONT_SIZE_VERY_BIG_HEADING } from '@/consts';
 
 export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
@@ -29,25 +30,47 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
 
     // const isOpen = useMenuIsOpen();
 
-    const headingLevels = [
-        { label: 'Текст', level: 0 },
-        { label: 'Заголовок 1', level: 1 },
-        { label: 'Заголовок 2', level: 2 },
-        { label: 'Заголовок 3', level: 3 },
-        { label: 'Заголовок 4', level: 4 },
-        { label: 'Заголовок 5', level: 5 },
-        { label: 'Дисплей', level: 6 },
-        { label: 'Монстр', level: 7 },
-    ];
-
-    // Определение текущего уровня заголовка
+    // Определение текущего уровня заголовка или размера текста
     const getCurrentHeadingLevel = useCallback(() => {
+        // Определяем текстовые стили для проверки fontSize
+        const marks = editor.getAttributes('textStyle');
+        
+        // Специальный случай для очень большого заголовка (h6 + fontSize: 3rem)
+        if (editor.isActive('heading', { level: 6 })) {
+            if (marks.fontSize === '3rem') {
+                return 7; // Очень большой заголовок
+            }
+            return 6; // Обычный h6
+        }
+        
+        // Check for other heading levels
         for (let i = 1; i <= 5; i++) {
             if (editor.isActive('heading', { level: i })) {
                 return i;
             }
         }
-        return 0; // Параграф (обычный текст)
+
+        if (editor.isActive('paragraph')) {
+            if (marks.fontSize) {
+                switch (marks.fontSize) {
+                    case FONT_SIZE_SMALL_TEXT:
+                        return SMALL_TEXT_LEVEL;
+                    case FONT_SIZE_BIG_TEXT:
+                        return BIG_TEXT_LEVEL;
+                    case FONT_SIZE_TITLE:
+                        return TITLE_LEVEL;
+                    case FONT_SIZE_BIG_HEADING:
+                        return BIG_HEADING_LEVEL;
+                    case FONT_SIZE_VERY_BIG_HEADING:
+                        return VERY_BIG_HEADING_LEVEL;
+                    default:
+                        return NORMAL_TEXT_LEVEL;
+                }
+            }
+            return NORMAL_TEXT_LEVEL; // Normal paragraph
+        }
+
+        return NORMAL_TEXT_LEVEL; // Default to normal text
     }, [editor]);
 
     // Закрытие выпадающего меню при клике вне его
@@ -66,16 +89,52 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
 
     const handleHeadingChange = useCallback(
         (level: number) => {
-            if (level === 0) {
-                editor.chain().focus().setParagraph().run();
-                // } else if (level === 6) {
-                //   editor.chain().focus().setDisplay().run();
-                // } else if (level === 7) {
-                //   editor.chain().focus().setMonster().run();
-            } else {
-                editor
-                    .chain()
+            if (level === NORMAL_TEXT_LEVEL) {
+                // Normal text - paragraph with default font size
+                editor.chain().focus().setParagraph().unsetFontSize().run();
+            } else if (level === SMALL_TEXT_LEVEL) {
+                // Small text - first clear heading format if it's active
+                editor.chain()
                     .focus()
+                    .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
+                    .setFontSize(FONT_SIZE_SMALL_TEXT)
+                    .run();
+            } else if (level === BIG_TEXT_LEVEL) {
+                // Large text - first clear heading format if it's active
+                editor.chain()
+                    .focus()
+                    .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
+                    .setFontSize(FONT_SIZE_BIG_TEXT)
+                    .run();
+            } else if (level === TITLE_LEVEL) {
+                // Очень большой заголовок - используем h6 с дополнительными стилями
+                editor.chain()
+                    .focus()
+                    .unsetAllMarks() // Очищаем все стили, включая fontSize
+                    // .setHeading({ level: 6 }) // Устанавливаем максимальный доступный уровень
+                    .setFontSize(FONT_SIZE_TITLE) // Дополнительно устанавливаем больший размер шрифта
+                    .run();
+            } else if (level === BIG_HEADING_LEVEL) {
+                    // Очень большой заголовок - используем h6 с дополнительными стилями
+                    editor.chain()
+                        .focus()
+                        .unsetAllMarks() // Очищаем все стили, включая fontSize
+                        // .setHeading({ level: 6 }) // Устанавливаем максимальный доступный уровень
+                        .setFontSize(FONT_SIZE_BIG_HEADING) // Дополнительно устанавливаем больший размер шрифта
+                        .run();
+            } else if (level === VERY_BIG_HEADING_LEVEL) {
+                // Очень большой заголовок - используем h6 с дополнительными стилями
+                editor.chain()
+                    .focus()
+                    .unsetAllMarks() // Очищаем все стили, включая fontSize
+                    // .setHeading({ level: 6 }) // Устанавливаем максимальный доступный уровень
+                    .setFontSize(FONT_SIZE_VERY_BIG_HEADING) // Дополнительно устанавливаем больший размер шрифта
+                    .run();
+            } else {
+                // Headings - first clear any font size styles
+                editor.chain()
+                    .focus()
+                    .unsetAllMarks() // Очищаем все стили, включая fontSize
                     .setHeading({ level: level as Level })
                     .run();
             }
@@ -175,35 +234,8 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
                     setIsHeadingMenuOpen={setIsHeadingMenuOpen}
                     getCurrentHeadingLevel={getCurrentHeadingLevel}
                     handleHeadingChange={handleHeadingChange}
-                    lightThemeStyle={lightThemeStyle}
-                    headingLevels={headingLevels}
+                    headingLevels={HEADING_LEVELS}
                 />
-                {/* <div className={styles.headingSelector} ref={headingMenuRef}>
-                    <button
-                        className={`${styles.button} ${styles.headingButton}`}
-                        onClick={() => setIsHeadingMenuOpen(!isHeadingMenuOpen)}
-                        aria-label="Выбрать тип текста"
-                        aria-expanded={isHeadingMenuOpen}
-                    >
-                        <span className={styles.selectText}>{headingLevels[getCurrentHeadingLevel()].label}</span>
-                        <BiChevronDown size={14} className={styles.chevron} />
-                    </button>
-
-                    {isHeadingMenuOpen && (
-                        <div className={styles.headingDropdown} style={lightThemeStyle}>
-                            {headingLevels.map((item) => (
-                                <button
-                                    key={item.level}
-                                    onClick={() => handleHeadingChange(item.level)}
-                                    className={`${styles.headingOption} ${getCurrentHeadingLevel() === item.level ? styles.activeHeading : ''}`}
-                                    style={{ color: '#333' }}
-                                >
-                                    {item.label}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                </div> */}
 
                 <ColorPicker onColorChange={handleColorChange} className={styles.button} />
 
