@@ -65,8 +65,6 @@
 
 /* Styles for multiple elements in a cell */
 .elementsContainer {
-    display: flex;
-    flex-direction: column;
     width: 100%;
     position: relative;
     /* padding: 1rem; */
@@ -210,4 +208,8 @@
 
 .cellBorderVisible {
     outline: 1px solid #999;
+}
+
+.elementContainer {
+    margin: 0.9em 0;
 }
