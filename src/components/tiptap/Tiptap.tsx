@@ -12,7 +12,7 @@ import Table from '@tiptap/extension-table';
 import TableRow from '@tiptap/extension-table-row';
 import TableHeader from '@tiptap/extension-table-header';
 import TableCell from '@tiptap/extension-table-cell';
-import TextStyle from '@tiptap/extension-text-style';
+// import TextStyle from '@tiptap/extension-text-style';
 import { Color } from '@tiptap/extension-color';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
@@ -27,6 +27,8 @@ import {
     EditorWithMethods,
     FontSizeExtension,
     CustomCodeExtension,
+    ParagraphExtension,
+    TextStyleExtension
 } from './extensions/index';
 import {
     ButtonNode,
@@ -110,31 +112,19 @@ const getExtensions = (
             // Disable the built-in code extension
             code: false,
             codeBlock: false,
+            paragraph: false
         }),
-        // Add the custom code extension 
-        // Code.configure({
-        //     HTMLAttributes: {
-        //         class: 'custom-code',
-        //     },
-        //     addCommands: () => {
-        //         return {
-        //             toggleCode: () => () => {
-        //                 return false
-        //             },
-        //         };
-        //     },
-        // }),
-        // Register the custom code extension
         CustomCodeExtension.configure({
             HTMLAttributes: {
                 class: 'custom-code',
             },
         }),
         // Text style extensions
-        TextStyle.configure(),
+        TextStyleExtension.configure({ mergeNestedSpanStyles: true }),
         FontSizeExtension.configure({
             types: ['textStyle'],
         }),
+        ParagraphExtension,
         Color,
         Underline,
         TextAlign.configure({

@@ -41,48 +41,67 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                         parseHTML: element => {
                             // Try to extract fontSize from style attribute or custom data attribute
                             const dataFontSize = element.getAttribute('data-font-size');
-                            if (dataFontSize) return dataFontSize;
-                            
-                            return element.style.fontSize?.replace(/['"]+/g, '');
+                            // if (dataFontSize) return dataFontSize;
+
+                            const classList = element.classList
+                            // if (classList) return classList;
+
+                            return {
+                                dataFontSize,
+                                classList,
+                            }
+                            // return element.style.fontSize?.replace(/['"]+/g, '');
                         },
                         renderHTML: attributes => {
-                            if (!attributes.fontSize) {
+                            if (typeof attributes.fontSize === 'string' && !attributes.fontSize) {
+                                return {};
+                            }
+
+                            if (!(typeof attributes.fontSize === 'string') && (!attributes.fontSize.dataFontSize && !attributes.fontSize.classList)) {
                                 return {};
                             }
 
                             let className;
 
-                            switch (attributes.fontSize) {
-                                case FONT_SIZE_SMALL_TEXT:
-                                    className = 'body-text small-text';
-                                    break;
-                                case FONT_SIZE_BIG_TEXT:
-                                    className = 'body-text big-text';
-                                    break;
-                                case FONT_SIZE_HEADING_4: // Heading 4
-                                    className = 'heading-text heading-4';
-                                    break;
-                                case FONT_SIZE_HEADING_3: // Heading 3
-                                    className = 'heading-text heading-3';
-                                    break; 
-                                case FONT_SIZE_HEADING_2: // Heading 2
-                                    className = 'heading-text heading-2';
-                                    break;
-                                case FONT_SIZE_HEADING_1: // Heading 1
-                                    className = 'heading-text heading-1';
-                                    break;
-                                case FONT_SIZE_TITLE:
-                                    className = 'heading-text title-text';
-                                    break;
-                                case FONT_SIZE_BIG_HEADING:
-                                    className = 'heading-text big-heading';
-                                    break;
-                                case FONT_SIZE_VERY_BIG_HEADING:
-                                    className = 'heading-text very-big-heading';
-                                    break;
-                                default:
-                                    className = 'body-text normal-text';
-                                    break;
+                            let fontSize = typeof attributes.fontSize === 'string' ? attributes.fontSize : attributes.fontSize.dataFontSize;
+
+                            if (fontSize) {
+                                switch (fontSize) {
+                                    case FONT_SIZE_SMALL_TEXT:
+                                        className = 'body-text small-text';
+                                        break;
+                                    case FONT_SIZE_BIG_TEXT:
+                                        className = 'body-text big-text';
+                                        break;
+                                    case FONT_SIZE_HEADING_4: // Heading 4
+                                        className = 'heading-text heading-4';
+                                        break;
+                                    case FONT_SIZE_HEADING_3: // Heading 3
+                                        className = 'heading-text heading-3';
+                                        break;
+                                    case FONT_SIZE_HEADING_2: // Heading 2
+                                        className = 'heading-text heading-2';
+                                        break;
+                                    case FONT_SIZE_HEADING_1: // Heading 1
+                                        className = 'heading-text heading-1';
+                                        break;
+                                    case FONT_SIZE_TITLE:
+                                        className = 'heading-text title-text';
+                                        break;
+                                    case FONT_SIZE_BIG_HEADING:
+                                        className = 'heading-text big-heading';
+                                        break;
+                                    case FONT_SIZE_VERY_BIG_HEADING:
+                                        className = 'heading-text very-big-heading';
+                                        break;
+                                    default:
+                                        className = 'body-text normal-text';
+                                        break;
+                                }
+                            }
+
+                            if (attributes.fontSize.classList) {
+                                className = attributes.fontSize.classList.toString();
                             }
 
                             return {
@@ -137,7 +156,7 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                                 break;
                             default:
                                 fontSizeValue = null;
-                        } 
+                        }
 
                         // First make sure we're in a paragraph and clear any existing format
                         // Then set the font size mark
