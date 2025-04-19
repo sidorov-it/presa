@@ -537,620 +537,620 @@
 
 /* Custom component styles */
 /* @layer components { */
-    .ProseMirror {
-        padding: 0 !important;
-        min-height: inherit;
-        outline: none;
-        cursor: text;
-        width: 100%;
+.ProseMirror {
+    padding: 0 !important;
+    min-height: inherit;
+    outline: none;
+    cursor: text;
+    width: 100%;
 
-        table {
-            @apply w-full border-collapse mb-4;
-        }
+    table {
+        @apply w-full border-collapse mb-4;
+    }
 
-        td {
-            @apply border border-gray-300 p-2 min-w-[100px];
-        }
+    td {
+        @apply border border-gray-300 p-2 min-w-[100px];
+    }
 
-        tr {
-            @apply border-b border-gray-300;
-        }
+    tr {
+        @apply border-b border-gray-300;
+    }
 
-        /* Опционально: стили для наведения и выделения */
-        td:hover {
-            @apply bg-gray-50;
-        }
+    /* Опционально: стили для наведения и выделения */
+    td:hover {
+        @apply bg-gray-50;
+    }
 
-        td.selected {
-            @apply bg-blue-50;
-        }
+    td.selected {
+        @apply bg-blue-50;
+    }
 
-        /* Общие стили для всех списков */
-        ul,
-        ol {
-            @apply mb-4 pl-6 space-y-1;
-        }
+    /* Общие стили для всех списков */
+    ul,
+    ol {
+        @apply mb-4 pl-6 space-y-1;
+    }
 
-        /* Маркированные списки */
+    /* Маркированные списки */
+    ul {
+        @apply list-disc;
+
         ul {
-            @apply list-disc;
-
-            ul {
-                @apply list-[circle] ml-4;
-            }
-
-            ul ul {
-                @apply list-[square];
-            }
+            @apply list-[circle] ml-4;
         }
 
-        /* Нумерованные списки */
+        ul ul {
+            @apply list-[square];
+        }
+    }
+
+    /* Нумерованные списки */
+    ol {
+        @apply list-decimal;
+
         ol {
-            @apply list-decimal;
-
-            ol {
-                @apply list-[lower-alpha] ml-4;
-            }
-
-            ol ol {
-                @apply list-[lower-roman];
-            }
+            @apply list-[lower-alpha] ml-4;
         }
 
-        /* Списки задач */
-        ul[data-type="taskList"] {
-            @apply list-none pl-2;
-
-            li {
-                @apply flex gap-2 items-start;
-
-                >label {
-                    @apply mt-1;
-                }
-
-                >div {
-                    @apply flex-1;
-                }
-
-                /* Чекбокс */
-                input[type="checkbox"] {
-                    @apply h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500;
-                }
-            }
+        ol ol {
+            @apply list-[lower-roman];
         }
+    }
 
-        /* Вложенные списки */
+    /* Списки задач */
+    ul[data-type="taskList"] {
+        @apply list-none pl-2;
+
         li {
-            @apply my-0.5;
+            @apply flex gap-2 items-start;
 
-            p {
-                @apply m-0;
+            >label {
+                @apply mt-1;
             }
 
-            >ul,
-            >ol {
-                @apply mt-1 mb-1;
-            }
-        }
-
-        /* Общие стили для всех блоков */
-        .box,
-        .note-box,
-        .info-box,
-        .warning-box,
-        .caution-box,
-        .success-box,
-        .question-box {
-            @apply p-4 rounded-lg mb-4 border;
-        }
-
-        /* Стили для каждого типа блока */
-        .box {
-            @apply bg-gray-50 border-gray-200;
-        }
-
-        .note-box {
-            @apply bg-blue-50 border-blue-200;
-        }
-
-        .info-box {
-            @apply bg-cyan-50 border-cyan-200;
-        }
-
-        .warning-box {
-            @apply bg-yellow-50 border-yellow-200;
-        }
-
-        .caution-box {
-            background-color: #f8d7da;
-            @apply bg-red-50 border-red-200;
-        }
-
-        .success-box {
-            @apply bg-green-50 border-green-200;
-        }
-
-        .question-box {
-            @apply bg-purple-50 border-purple-200;
-        }
-
-        /* Интерактивные элементы */
-        .interactive-button {
-            @apply px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 active:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
-        }
-
-        /* Стили для переключателя */
-        .toggle-wrapper {
-            @apply mb-4;
-
-            .toggle {
-                @apply flex items-center cursor-pointer;
-
-                input[type="checkbox"] {
-                    @apply sr-only;
-                }
-
-                .toggle-label {
-                    @apply relative pl-12 select-none;
-
-                    &:before {
-                        content: '';
-                        @apply absolute left-0 top-1/2 -translate-y-1/2 w-10 h-6 bg-gray-200 rounded-full transition-colors duration-200;
-                    }
-
-                    &:after {
-                        content: '';
-                        @apply absolute left-1 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full transition-transform duration-200;
-                    }
-                }
-
-                input:checked+.toggle-label {
-                    &:before {
-                        @apply bg-blue-500;
-                    }
-
-                    &:after {
-                        @apply translate-x-5;
-                    }
-                }
-
-                input:focus+.toggle-label {
-                    &:before {
-                        @apply ring-2 ring-blue-500 ring-offset-2;
-                    }
-                }
-            }
-        }
-
-        /* Темная тема */
-        .dark .ProseMirror {
-            .box {
-                @apply bg-gray-800 border-gray-700;
+            >div {
+                @apply flex-1;
             }
 
-            .note-box {
-                @apply bg-blue-900/20 border-blue-800;
-            }
-
-            .info-box {
-                @apply bg-cyan-900/20 border-cyan-800;
-            }
-
-            .warning-box {
-                @apply bg-yellow-900/20 border-yellow-800;
-            }
-
-            .caution-box {
-                @apply bg-red-900/20 border-red-800;
-            }
-
-            .success-box {
-                @apply bg-green-900/20 border-green-800;
-            }
-
-            .question-box {
-                @apply bg-purple-900/20 border-purple-800;
-            }
-
-            .interactive-button {
-                @apply bg-blue-600 hover:bg-blue-700 active:bg-blue-800;
-            }
-
-            .toggle-wrapper .toggle {
-                .toggle-label:before {
-                    @apply bg-gray-700;
-                }
-
-                input:checked+.toggle-label:before {
-                    @apply bg-blue-600;
-                }
+            /* Чекбокс */
+            input[type="checkbox"] {
+                @apply h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500;
             }
         }
     }
 
-    /* Styles for Details/Summary (Toggle) */
-    details.toggle-wrapper {
-        @apply border rounded-lg mb-4 overflow-hidden;
-    }
+    /* Вложенные списки */
+    li {
+        @apply my-0.5;
 
-    details.toggle-wrapper summary.toggle-header {
-        @apply flex items-center gap-2 p-3 cursor-pointer hover:bg-gray-50 list-none select-none;
-        user-select: none;
-    }
-
-    /* Remove default marker */
-    details.toggle-wrapper summary::-webkit-details-marker,
-    details.toggle-wrapper summary::marker {
-        display: none;
-    }
-
-    /* Add custom marker */
-    details.toggle-wrapper summary.toggle-header::before {
-        content: "▶";
-        @apply text-gray-500 transition-transform duration-200 mr-2;
-    }
-
-    details.toggle-wrapper[open] summary.toggle-header::before {
-        content: "▼";
-    }
-
-    details.toggle-wrapper summary .toggle-title {
-        @apply font-medium;
-    }
-
-    details.toggle-wrapper>div {
-        @apply px-4 pb-4;
-    }
-
-    /* Dark theme */
-    .dark details.toggle-wrapper {
-        @apply border-gray-700;
-    }
-
-    .dark details.toggle-wrapper summary.toggle-header {
-        @apply hover:bg-gray-800;
-    }
-
-
-    .details {
-        display: flex;
-        gap: 0.25rem;
-        margin: 1.5rem 0;
-        border: 1px solid var(--gray-3);
-        border-radius: 0.5rem;
-        padding: 0.5rem;
-
-        summary {
-            font-weight: 700;
-
-            &::marker {
-                display: none;
-                content: '';
-            }
+        p {
+            @apply m-0;
         }
 
-        >button {
-            align-items: center;
-            background: transparent;
-            border-radius: 4px;
-            display: flex;
-            font-size: 0.625rem;
-            height: 32px;
-            justify-content: center;
-            line-height: 1;
-            margin-top: 0.1rem;
-            padding: 0;
-            width: 32px;
-
-            &:hover {
-                background-color: var(--gray-3);
-            }
-
-            &::before {
-                content: '\25B6';
-            }
-
-
-        }
-
-        &.is-open>button::before {
-            transform: rotate(90deg);
-        }
-
-        >div {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            width: 100%;
-
-            >[data-type="detailsContent"]> :last-child {
-                margin-bottom: 0.5rem;
-            }
-        }
-
-        .details {
-            margin: 0.5rem 0;
+        >ul,
+        >ol {
+            @apply mt-1 mb-1;
         }
     }
 
-    .ProseMirror p.is-editor-empty:first-child::before {
-    /* .ProseMirror.ProseMirror-focused p.is-editor-empty:first-child::before { */
-        content: attr(data-placeholder);
-        float: left;
-        color: #adb5bd;
-        pointer-events: none;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        width: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        font-size: inherit;
-        line-height: inherit;
-        /* font-size: 1rem !important;
-        line-height: 2.25rem !important; */
+    /* Общие стили для всех блоков */
+    .box,
+    .note-box,
+    .info-box,
+    .warning-box,
+    .caution-box,
+    .success-box,
+    .question-box {
+        @apply p-4 rounded-lg mb-4 border;
     }
 
-    .ProseMirror:focus {
-        outline: none;
+    /* Стили для каждого типа блока */
+    .box {
+        @apply bg-gray-50 border-gray-200;
     }
 
-    /* Стили для кнопки */
-    button[data-type="button"] {
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
-        border-radius: 0.375rem;
-        color: #ffffff;
-        background-color: #3B82F6;
-        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 300ms;
-        transition-duration: 200ms;
+    .note-box {
+        @apply bg-blue-50 border-blue-200;
     }
 
-    button[data-type="button"]:hover {
-        background-color: #2563EB;
+    .info-box {
+        @apply bg-cyan-50 border-cyan-200;
+    }
+
+    .warning-box {
+        @apply bg-yellow-50 border-yellow-200;
+    }
+
+    .caution-box {
+        background-color: #f8d7da;
+        @apply bg-red-50 border-red-200;
+    }
+
+    .success-box {
+        @apply bg-green-50 border-green-200;
+    }
+
+    .question-box {
+        @apply bg-purple-50 border-purple-200;
+    }
+
+    /* Интерактивные элементы */
+    .interactive-button {
+        @apply px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 active:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
     }
 
     /* Стили для переключателя */
     .toggle-wrapper {
-        margin-bottom: 1rem;
-        border-radius: 0.5rem;
-        border-width: 1px;
+        @apply mb-4;
 
+        .toggle {
+            @apply flex items-center cursor-pointer;
 
-        .toggle-header {
-            display: flex;
-            padding: 0.75rem;
-            gap: 0.5rem;
-            align-items: center;
-            cursor: pointer;
-            user-select: none;
-
-
-            .toggle-icon {
-                color: #6B7280;
-                transition-property: transform;
-                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-                transition-duration: 300ms;
-                transition-duration: 200ms;
+            input[type="checkbox"] {
+                @apply sr-only;
             }
 
-            .toggle-title {
-                font-weight: 500;
+            .toggle-label {
+                @apply relative pl-12 select-none;
+
+                &:before {
+                    content: '';
+                    @apply absolute left-0 top-1/2 -translate-y-1/2 w-10 h-6 bg-gray-200 rounded-full transition-colors duration-200;
+                }
+
+                &:after {
+                    content: '';
+                    @apply absolute left-1 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full transition-transform duration-200;
+                }
             }
-        }
 
-        .toggle-header:hover {
-            background-color: #F9FAFB;
-        }
+            input:checked+.toggle-label {
+                &:before {
+                    @apply bg-blue-500;
+                }
 
-        .toggle-content {
-            padding-left: 1rem;
-            padding-right: 1rem;
-            padding-bottom: 1rem;
-            display: none !important;
-        }
+                &:after {
+                    @apply translate-x-5;
+                }
+            }
 
-        /* Use more specific selectors for opening/closing */
-        /* When the toggle-header has data-open="true" */
-        .toggle-header[data-open="true"]+.toggle-content {
-            display: block !important;
-        }
-
-        /* Селектор по классу для обратной совместимости */
-        .toggle-content.open {
-            display: block !important;
-        }
-
-        /* Темная тема */
-        .dark & {
-            border-color: #374151;
-
-            .toggle-header:hover {
-                background-color: #1F2937;
+            input:focus+.toggle-label {
+                &:before {
+                    @apply ring-2 ring-blue-500 ring-offset-2;
+                }
             }
         }
     }
 
-    /* Slash Command Menu Styles */
-    .slash-menu {
-        overflow-y: auto;
-        z-index: 50;
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
-        border-radius: 0.375rem;
-        width: 100%;
-        background-color: #ffffff;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        max-height: 300px;
-        border: 1px solid #3b82f6;
-        /* Blue outline */
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(59, 130, 246, 0.3);
-        min-width: 200px;
-    }
-
-    /* Element focus styles for keyboard navigation */
-    .element-focus {
-        outline: 3px solid #3b82f6 !important;
-        /* Blue outline */
-        border-radius: 4px;
-        position: relative;
-        z-index: 10;
-        animation: pulse-focus 1s ease-in-out;
-    }
-
-    @keyframes pulse-focus {
-        0% {
-            box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+    /* Темная тема */
+    .dark .ProseMirror {
+        .box {
+            @apply bg-gray-800 border-gray-700;
         }
 
-        70% {
-            box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+        .note-box {
+            @apply bg-blue-900/20 border-blue-800;
         }
 
-        100% {
-            box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+        .info-box {
+            @apply bg-cyan-900/20 border-cyan-800;
+        }
+
+        .warning-box {
+            @apply bg-yellow-900/20 border-yellow-800;
+        }
+
+        .caution-box {
+            @apply bg-red-900/20 border-red-800;
+        }
+
+        .success-box {
+            @apply bg-green-900/20 border-green-800;
+        }
+
+        .question-box {
+            @apply bg-purple-900/20 border-purple-800;
+        }
+
+        .interactive-button {
+            @apply bg-blue-600 hover:bg-blue-700 active:bg-blue-800;
+        }
+
+        .toggle-wrapper .toggle {
+            .toggle-label:before {
+                @apply bg-gray-700;
+            }
+
+            input:checked+.toggle-label:before {
+                @apply bg-blue-600;
+            }
+        }
+    }
+}
+
+/* Styles for Details/Summary (Toggle) */
+details.toggle-wrapper {
+    @apply border rounded-lg mb-4 overflow-hidden;
+}
+
+details.toggle-wrapper summary.toggle-header {
+    @apply flex items-center gap-2 p-3 cursor-pointer hover:bg-gray-50 list-none select-none;
+    user-select: none;
+}
+
+/* Remove default marker */
+details.toggle-wrapper summary::-webkit-details-marker,
+details.toggle-wrapper summary::marker {
+    display: none;
+}
+
+/* Add custom marker */
+details.toggle-wrapper summary.toggle-header::before {
+    content: "▶";
+    @apply text-gray-500 transition-transform duration-200 mr-2;
+}
+
+details.toggle-wrapper[open] summary.toggle-header::before {
+    content: "▼";
+}
+
+details.toggle-wrapper summary .toggle-title {
+    @apply font-medium;
+}
+
+details.toggle-wrapper>div {
+    @apply px-4 pb-4;
+}
+
+/* Dark theme */
+.dark details.toggle-wrapper {
+    @apply border-gray-700;
+}
+
+.dark details.toggle-wrapper summary.toggle-header {
+    @apply hover:bg-gray-800;
+}
+
+
+.details {
+    display: flex;
+    gap: 0.25rem;
+    margin: 1.5rem 0;
+    border: 1px solid var(--gray-3);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+
+    summary {
+        font-weight: 700;
+
+        &::marker {
+            display: none;
+            content: '';
         }
     }
 
-    .slash-menu-item {
-        display: flex;
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-        gap: 0.5rem;
-        font-size: 0.875rem;
-        line-height: 1.25rem;
-        color: #374151;
-        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 300ms;
-        cursor: pointer;
-    }
-
-    .slash-menu-item:hover {
-        background-color: #EFF6FF;
-    }
-
-    .slash-menu-item.selected {
-        color: #2563EB;
-        background-color: #EFF6FF;
-    }
-
-    .slash-menu-item-icon {
-        display: flex;
-        justify-content: center;
+    >button {
         align-items: center;
-        color: #3B82F6;
-        width: 20px;
-        height: 20px;
-    }
-
-    .slash-menu-item-label {
-        flex-grow: 1;
-        font-weight: 500;
-    }
-
-    .slash-menu-no-results {
-        padding: 0.75rem;
-        font-size: 0.875rem;
-        line-height: 1.25rem;
-        text-align: center;
-        color: #6B7280;
-    }
-
-    /* Dark mode support */
-    .dark .slash-menu {
-        border-color: #3B82F6;
-        background-color: #1F2937;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(59, 130, 246, 0.4);
-    }
-
-    .dark .slash-menu-item {
-        color: #D1D5DB;
-    }
-
-    .dark .slash-menu-item:hover {
-        background-color: #1E3A8A;
-        --bg-opacity: 0.3;
-    }
-
-    .dark .slash-menu-item.selected {
-        color: #60A5FA;
-        background-color: #1E3A8A;
-        --bg-opacity: 0.3;
-    }
-
-    .dark .slash-menu-item-icon {
-        color: #60A5FA;
-    }
-
-    .dark .slash-menu-no-results {
-        color: #9CA3AF;
-    }
-
-    .tiptap-editor-wrapper .tippy-box[data-theme~='light'] {
-        border-radius: 0.375rem;
-        background-color: #ffffff;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        border: none;
-        box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Tippy theme override */
-    .tippy-box[data-theme~='light'] {
-        border-radius: 0.375rem;
-        background-color: #ffffff;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        border: 1px solid #3b82f6;
-        box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.1);
-    }
-
-    .tippy-box[data-theme~='light'] .tippy-content {
+        background: transparent;
+        border-radius: 4px;
+        display: flex;
+        font-size: 0.625rem;
+        height: 32px;
+        justify-content: center;
+        line-height: 1;
+        margin-top: 0.1rem;
         padding: 0;
-        ;
+        width: 32px;
+
+        &:hover {
+            background-color: var(--gray-3);
+        }
+
+        &::before {
+            content: '\25B6';
+        }
+
+
     }
 
-    .dark .tippy-box[data-theme~='light'] {
-        background-color: #1F2937;
-        border: 1px solid #3b82f6;
-    }
-
-    .slash-menu-item.selected {
-        background-color: #EFF6FF;
-    }
-
-    .svg-inline--fa {
-        display: inline-block;
-        height: 1em;
-        overflow: visible;
-        vertical-align: -.125em;
-    }
-
-    .svg-inline--fa.fa-fw {
-        width: var(--fa-fw-width, 1.25em);
-    }
-
-    .fa-rotate-270 {
-        transform: rotate(270deg);
-    }
-
-    .fa-rotate-90 {
+    &.is-open>button::before {
         transform: rotate(90deg);
     }
 
-    .fa-rotate-180 {
-        transform: rotate(180deg);
+    >div {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+
+        >[data-type="detailsContent"]> :last-child {
+            margin-bottom: 0.5rem;
+        }
     }
+
+    .details {
+        margin: 0.5rem 0;
+    }
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+    /* .ProseMirror.ProseMirror-focused p.is-editor-empty:first-child::before { */
+    content: attr(data-placeholder);
+    float: left;
+    color: #adb5bd;
+    pointer-events: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: inherit;
+    line-height: inherit;
+    /* font-size: 1rem !important;
+        line-height: 2.25rem !important; */
+}
+
+.ProseMirror:focus {
+    outline: none;
+}
+
+/* Стили для кнопки */
+button[data-type="button"] {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-radius: 0.375rem;
+    color: #ffffff;
+    background-color: #3B82F6;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+    transition-duration: 200ms;
+}
+
+button[data-type="button"]:hover {
+    background-color: #2563EB;
+}
+
+/* Стили для переключателя */
+.toggle-wrapper {
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    border-width: 1px;
+
+
+    .toggle-header {
+        display: flex;
+        padding: 0.75rem;
+        gap: 0.5rem;
+        align-items: center;
+        cursor: pointer;
+        user-select: none;
+
+
+        .toggle-icon {
+            color: #6B7280;
+            transition-property: transform;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 300ms;
+            transition-duration: 200ms;
+        }
+
+        .toggle-title {
+            font-weight: 500;
+        }
+    }
+
+    .toggle-header:hover {
+        background-color: #F9FAFB;
+    }
+
+    .toggle-content {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-bottom: 1rem;
+        display: none !important;
+    }
+
+    /* Use more specific selectors for opening/closing */
+    /* When the toggle-header has data-open="true" */
+    .toggle-header[data-open="true"]+.toggle-content {
+        display: block !important;
+    }
+
+    /* Селектор по классу для обратной совместимости */
+    .toggle-content.open {
+        display: block !important;
+    }
+
+    /* Темная тема */
+    .dark & {
+        border-color: #374151;
+
+        .toggle-header:hover {
+            background-color: #1F2937;
+        }
+    }
+}
+
+/* Slash Command Menu Styles */
+.slash-menu {
+    overflow-y: auto;
+    z-index: 50;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-radius: 0.375rem;
+    width: 100%;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    max-height: 300px;
+    border: 1px solid #3b82f6;
+    /* Blue outline */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(59, 130, 246, 0.3);
+    min-width: 200px;
+}
+
+/* Element focus styles for keyboard navigation */
+.element-focus {
+    outline: 3px solid #3b82f6 !important;
+    /* Blue outline */
+    border-radius: 4px;
+    position: relative;
+    z-index: 10;
+    animation: pulse-focus 1s ease-in-out;
+}
+
+@keyframes pulse-focus {
+    0% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    }
+}
+
+.slash-menu-item {
+    display: flex;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #374151;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+    cursor: pointer;
+}
+
+.slash-menu-item:hover {
+    background-color: #EFF6FF;
+}
+
+.slash-menu-item.selected {
+    color: #2563EB;
+    background-color: #EFF6FF;
+}
+
+.slash-menu-item-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #3B82F6;
+    width: 20px;
+    height: 20px;
+}
+
+.slash-menu-item-label {
+    flex-grow: 1;
+    font-weight: 500;
+}
+
+.slash-menu-no-results {
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    text-align: center;
+    color: #6B7280;
+}
+
+/* Dark mode support */
+.dark .slash-menu {
+    border-color: #3B82F6;
+    background-color: #1F2937;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(59, 130, 246, 0.4);
+}
+
+.dark .slash-menu-item {
+    color: #D1D5DB;
+}
+
+.dark .slash-menu-item:hover {
+    background-color: #1E3A8A;
+    --bg-opacity: 0.3;
+}
+
+.dark .slash-menu-item.selected {
+    color: #60A5FA;
+    background-color: #1E3A8A;
+    --bg-opacity: 0.3;
+}
+
+.dark .slash-menu-item-icon {
+    color: #60A5FA;
+}
+
+.dark .slash-menu-no-results {
+    color: #9CA3AF;
+}
+
+.tiptap-editor-wrapper .tippy-box[data-theme~='light'] {
+    border-radius: 0.375rem;
+    background-color: #ffffff;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border: none;
+    box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Tippy theme override */
+.tippy-box[data-theme~='light'] {
+    border-radius: 0.375rem;
+    background-color: #ffffff;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #3b82f6;
+    box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.1);
+}
+
+.tippy-box[data-theme~='light'] .tippy-content {
+    padding: 0;
+    ;
+}
+
+.dark .tippy-box[data-theme~='light'] {
+    background-color: #1F2937;
+    border: 1px solid #3b82f6;
+}
+
+.slash-menu-item.selected {
+    background-color: #EFF6FF;
+}
+
+.svg-inline--fa {
+    display: inline-block;
+    height: 1em;
+    overflow: visible;
+    vertical-align: -.125em;
+}
+
+.svg-inline--fa.fa-fw {
+    width: var(--fa-fw-width, 1.25em);
+}
+
+.fa-rotate-270 {
+    transform: rotate(270deg);
+}
+
+.fa-rotate-90 {
+    transform: rotate(90deg);
+}
+
+.fa-rotate-180 {
+    transform: rotate(180deg);
+}
 
 /* } */
 
-.tiptap :where(blockquote):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
+.tiptap :where(blockquote):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
     font-style: unset;
 }
 
@@ -1158,15 +1158,15 @@
     padding: 1.125em;
 }
 
-.tiptap :where(blockquote p:first-of-type):not(:where([class~="not-prose"],[class~="not-prose"] *))::before {
+.tiptap :where(blockquote p:first-of-type):not(:where([class~="not-prose"], [class~="not-prose"] *))::before {
     content: none;
 }
 
-.tiptap :where(blockquote p:last-of-type):not(:where([class~="not-prose"],[class~="not-prose"] *))::after {
+.tiptap :where(blockquote p:last-of-type):not(:where([class~="not-prose"], [class~="not-prose"] *))::after {
     content: none;
 }
 
-.tiptap :where(h4):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
+.tiptap :where(h4):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
     margin-top: 0;
     margin-bottom: 0;
 }
@@ -1215,8 +1215,7 @@
     margin-bottom: 0.375em !important;
 }
 
-.big-text
-.title-text,
+.big-text .title-text,
 .big-heading,
 .very-big-heading {
     font-weight: var(--heading-font-weight);
@@ -1225,19 +1224,24 @@
 
 .small-text {
     font-size: 0.8em;
-} 
+}
+
 .normal-text {
     font-size: 1.125em;
 }
+
 .big-text {
     font-size: 1.25em;
 }
+
 .title-text {
     font-size: 3.45em;
 }
+
 .big-heading {
     font-size: 5em;
 }
+
 .very-big-heading {
     font-size: 7.5em;
 }
@@ -1281,4 +1285,10 @@
     margin-inline: -0.05em;
     box-decoration-break: clone;
     /* Inherit font size and font family */
-  }
+}
+
+button[data-state="active"] {
+    background-color: #3b82f6;
+    color: white;
+}
+

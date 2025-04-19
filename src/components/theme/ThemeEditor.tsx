@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Theme, ThemeColors, ThemeTypography, ThemeDesign } from '@/types/theme';
 import { ColorPicker } from '@/components/ui/ColorPicker/ColorPicker';
 import { Button } from '@/components/ui/Button';
+import styles from './ThemeEditor.module.css';
 
 interface ThemeEditorProps {
     theme: Theme;
@@ -151,402 +152,511 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
 
     return (
         <div className="w-full">
-            <Tabs defaultValue="colors" className="w-full">
-                <TabsList className="w-full grid grid-cols-3 mb-4">
+            <Tabs defaultValue="colors" className="flex">
+                <TabsList className="h-full pt-8">
                     <TabsTrigger value="colors">Цвета</TabsTrigger>
                     <TabsTrigger value="typography">Шрифты</TabsTrigger>
                     <TabsTrigger value="design">Дизайн</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="colors">
-                    <div className="space-y-4">
-                        <div className="space-y-1">
-                            <div className="space-y-3">
-                                <div className="space-y-1">
-                                    <Label className="text-xs text-muted-foreground">Основной акцент</Label>
-                                    <ColorPicker
-                                        value={theme.colors.primaryAccent}
-                                        onChange={value => {
-                                            const result = generateColorPalette(value);
-                                            handleColorsChange({
-                                                primaryAccent: value,
-                                                accentBlocksColor: result.accentBlocksColor,
-                                                // shapesColor: result.shapesColor,
-                                                buttonsColor: value,
-                                                linksColor: value,
-                                            });
-                                        }}
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <Label className="text-xs text-muted-foreground">Цвет заголовков</Label>
-                                    <ColorPicker
-                                        value={theme.colors.headingColor}
-                                        onChange={value => handleColorsChange({ headingColor: value })}
-                                    />
-                                </div>
-
-                                <div className="space-y-1">
-                                    <Label className="text-xs text-muted-foreground">Цвет текста</Label>
-                                    <ColorPicker
-                                        value={theme.colors.textColor}
-                                        onChange={value => handleColorsChange({ textColor: value })}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="space-y-1">
-                            <Label className="text-sm font-medium">Фон слайда</Label>
-                            <div className="space-y-3">
-                                <div className="space-y-1">
-                                    <Label className="text-xs text-muted-foreground">Цвет фона слайда</Label>
-                                    <ColorPicker
-                                        value={theme.colors.slideBackground}
-                                        onChange={value => {
-                                            const result = generateColorPalette(value);
-
-                                            handleColorsChange({
-                                                slideBackground: value,
-                                                secondaryButtonColor: result.secondaryButtonColor,
-                                                // shapesColor: result.shapesColor,
-                                            });
-                                        }}
-                                    />
-                                </div>
-
-                                <div className="space-y-1">
-                                    <Label className="text-xs text-muted-foreground">Фон страницы</Label>
-                                    <div>
-                                        <Select
-                                            value={theme.colors.pageBackground.type}
-                                            onValueChange={value => {
-                                                const newType = value as 'color' | 'image';
+                <div className="flex-1 pt-8">
+                    <TabsContent value="colors">
+                        <div className="space-y-4">
+                            <h3 className={styles.sectionTitle}>Цвета</h3>
+                            <h4 className={styles.sectionSubtitle}>Палитра</h4>
+                            <div className="space-y-1">
+                                <div className="space-y-3">
+                                    <div className="space-y-1">
+                                        <Label className="text-xs text-muted-foreground">Основной акцент</Label>
+                                        <ColorPicker
+                                            value={theme.colors.primaryAccent}
+                                            onChange={value => {
+                                                const result = generateColorPalette(value);
                                                 handleColorsChange({
-                                                    pageBackground: {
-                                                        type: newType,
-                                                        color: theme.colors.pageBackground.color,
-                                                        imageUrl: theme.colors.pageBackground.imageUrl,
-                                                    },
+                                                    primaryAccent: value,
+                                                    accentBlocksColor: result.accentBlocksColor,
+                                                    // shapesColor: result.shapesColor,
+                                                    buttonsColor: value,
+                                                    linksColor: value,
                                                 });
                                             }}
-                                        >
-                                            <SelectTrigger className="mb-2">
-                                                <SelectValue placeholder="Select background type" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="color">Color</SelectItem>
-                                                <SelectItem value="image">Image</SelectItem>
-                                            </SelectContent>
-                                        </Select>
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <Label className="text-xs text-muted-foreground">Цвет заголовков</Label>
+                                        <ColorPicker
+                                            value={theme.colors.headingColor}
+                                            onChange={value => handleColorsChange({ headingColor: value })}
+                                        />
+                                    </div>
 
-                                        {theme.colors.pageBackground.type === 'color' ? (
-                                            <ColorPicker
-                                                value={theme.colors.pageBackground.color}
-                                                onChange={value =>
+                                    <div className="space-y-1">
+                                        <Label className="text-xs text-muted-foreground">Цвет текста</Label>
+                                        <ColorPicker
+                                            value={theme.colors.textColor}
+                                            onChange={value => handleColorsChange({ textColor: value })}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-1">
+                                <Label className="text-sm font-medium">Фон слайда</Label>
+                                <div className="space-y-3">
+                                    <div className="space-y-1">
+                                        <Label className="text-xs text-muted-foreground">Цвет фона слайда</Label>
+                                        <ColorPicker
+                                            value={theme.colors.slideBackground}
+                                            onChange={value => {
+                                                const result = generateColorPalette(value);
+
+                                                handleColorsChange({
+                                                    slideBackground: value,
+                                                    secondaryButtonColor: result.secondaryButtonColor,
+                                                    // shapesColor: result.shapesColor,
+                                                });
+                                            }}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <Label className="text-xs text-muted-foreground">Фон страницы</Label>
+                                        <div>
+                                            <Select
+                                                value={theme.colors.pageBackground.type}
+                                                onValueChange={value => {
+                                                    const newType = value as 'color' | 'image';
                                                     handleColorsChange({
                                                         pageBackground: {
-                                                            ...theme.colors.pageBackground,
-                                                            color: value,
+                                                            type: newType,
+                                                            color: theme.colors.pageBackground.color,
+                                                            imageUrl: theme.colors.pageBackground.imageUrl,
                                                         },
-                                                    })
-                                                }
-                                            />
-                                        ) : (
-                                            <Input
-                                                type="text"
-                                                name="background-image"
-                                                value={theme.colors.pageBackground.imageUrl}
-                                                onChange={e =>
-                                                    handleColorsChange({
-                                                        pageBackground: {
-                                                            ...theme.colors.pageBackground,
-                                                            imageUrl: e.target.value,
-                                                            color: '',
-                                                        },
-                                                    })
-                                                }
-                                                placeholder="Insert image URL"
-                                            />
-                                        )}
+                                                    });
+                                                }}
+                                            >
+                                                <SelectTrigger className="mb-2">
+                                                    <SelectValue placeholder="Select background type" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="color">Color</SelectItem>
+                                                    <SelectItem value="image">Image</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+
+                                            {theme.colors.pageBackground.type === 'color' ? (
+                                                <ColorPicker
+                                                    value={theme.colors.pageBackground.color}
+                                                    onChange={value =>
+                                                        handleColorsChange({
+                                                            pageBackground: {
+                                                                ...theme.colors.pageBackground,
+                                                                color: value,
+                                                            },
+                                                        })
+                                                    }
+                                                />
+                                            ) : (
+                                                <Input
+                                                    type="text"
+                                                    name="background-image"
+                                                    value={theme.colors.pageBackground.imageUrl}
+                                                    onChange={e =>
+                                                        handleColorsChange({
+                                                            pageBackground: {
+                                                                ...theme.colors.pageBackground,
+                                                                imageUrl: e.target.value,
+                                                                color: '',
+                                                            },
+                                                        })
+                                                    }
+                                                    placeholder="Insert image URL"
+                                                />
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </TabsContent>
+                    </TabsContent>
 
-                <TabsContent value="typography">
-                    <div className="space-y-6">
-                        {/* Заголовки */}
-                        <div className="space-y-4">
-                            <Label className="font-semibold">Заголовки</Label>
-                            <div className="space-y-2">
-                                <Label>Шрифт</Label>
-                                <Select
-                                    value={theme.typography.headingFont}
-                                    onValueChange={v => handleTypographyChange({ headingFont: v })}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select font" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {['inter', 'roboto', 'raleway', 'open-sans'].map(f => (
-                                            <SelectItem key={f} value={f}>
-                                                {f}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Толщина</Label>
-                                <Select
-                                    value={String(theme.typography.headingWeight)}
-                                    onValueChange={v => handleTypographyChange({ headingWeight: Number(v) })}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {[100, 200, 300, 400, 500, 600, 700, 800, 900].map(w => (
-                                            <SelectItem key={w} value={String(w)}>
-                                                {w}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Цвет</Label>
-                                <ColorPicker
-                                    value={theme.typography.headingColor}
-                                    onChange={v => handleTypographyChange({ headingColor: v })}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Высота строки</Label>
-                                <Input
-                                    type="number"
-                                    step={0.01}
-                                    min={1}
-                                    max={2}
-                                    value={theme.typography.headingLineHeight}
-                                    onChange={e => handleTypographyChange({ headingLineHeight: parseFloat(e.target.value) })}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Промежуток между буквами</Label>
-                                <Input
-                                    type="number"
-                                    step={1}
-                                    min={-10}
-                                    max={10}
-                                    value={theme.typography.headingLetterSpacing}
-                                    onChange={e => handleTypographyChange({ headingLetterSpacing: parseInt(e.target.value) })}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Капитализация</Label>
-                                <div className="flex space-x-2">
-                                    <Button
-                                        variant={
-                                            theme.typography.headingCapitalization === 'none' ? 'outline' : 'secondary'
-                                        }
-                                        onClick={() => handleTypographyChange({ headingCapitalization: 'none' })}
+                    <TabsContent value="typography">
+                        <div className="space-y-6">
+                            {/* Заголовки */}
+                            <div className="space-y-4">
+                                <Label className="font-semibold">Заголовки</Label>
+                                <div className="space-y-2">
+                                    <Label>Шрифт</Label>
+                                    <Select
+                                        value={theme.typography.headingFont}
+                                        onValueChange={v => handleTypographyChange({ headingFont: v })}
                                     >
-                                        Aa
-                                    </Button>
-                                    <Button
-                                        variant={
-                                            theme.typography.headingCapitalization === 'uppercase'
-                                                ? 'secondary'
-                                                : 'outline'
-                                        }
-                                        onClick={() => handleTypographyChange({ headingCapitalization: 'uppercase' })}
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select font" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {['inter', 'roboto', 'raleway', 'open-sans'].map(f => (
+                                                <SelectItem key={f} value={f}>
+                                                    {f}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Толщина</Label>
+                                    <Select
+                                        value={String(theme.typography.headingWeight)}
+                                        onValueChange={v => handleTypographyChange({ headingWeight: Number(v) })}
                                     >
-                                        A
-                                    </Button>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {[100, 200, 300, 400, 500, 600, 700, 800, 900].map(w => (
+                                                <SelectItem key={w} value={String(w)}>
+                                                    {w}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Цвет</Label>
+                                    <ColorPicker
+                                        value={theme.typography.headingColor}
+                                        onChange={v => handleTypographyChange({ headingColor: v })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Высота строки</Label>
+                                    <Input
+                                        type="number"
+                                        step={0.01}
+                                        min={1}
+                                        max={2}
+                                        value={theme.typography.headingLineHeight}
+                                        onChange={e => handleTypographyChange({ headingLineHeight: parseFloat(e.target.value) })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Промежуток между буквами</Label>
+                                    <Input
+                                        type="number"
+                                        step={1}
+                                        min={-10}
+                                        max={10}
+                                        value={theme.typography.headingLetterSpacing}
+                                        onChange={e => handleTypographyChange({ headingLetterSpacing: parseInt(e.target.value) })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Капитализация</Label>
+                                    <div className="flex space-x-2">
+                                        <Button
+                                            variant={
+                                                theme.typography.headingCapitalization === 'none' ? 'outline' : 'secondary'
+                                            }
+                                            onClick={() => handleTypographyChange({ headingCapitalization: 'none' })}
+                                        >
+                                            Aa
+                                        </Button>
+                                        <Button
+                                            variant={
+                                                theme.typography.headingCapitalization === 'uppercase'
+                                                    ? 'secondary'
+                                                    : 'outline'
+                                            }
+                                            onClick={() => handleTypographyChange({ headingCapitalization: 'uppercase' })}
+                                        >
+                                            A
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                            {/* Текст */}
+                            <div className="space-y-4">
+                                <Label className="font-semibold">Текст</Label>
+                                <div className="space-y-2">
+                                    <Label>Шрифт</Label>
+                                    <Select
+                                        value={theme.typography.bodyFont}
+                                        onValueChange={v => handleTypographyChange({ bodyFont: v })}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select font" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {['inter', 'roboto', 'raleway', 'open-sans'].map(f => (
+                                                <SelectItem key={f} value={f}>
+                                                    {f}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Толщина</Label>
+                                    <Select
+                                        value={String(theme.typography.bodyWeight)}
+                                        onValueChange={v => handleTypographyChange({ bodyWeight: Number(v) })}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {[100, 200, 300, 400, 500, 600, 700, 800, 900].map(w => (
+                                                <SelectItem key={w} value={String(w)}>
+                                                    {w}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Цвет</Label>
+                                    <ColorPicker
+                                        value={theme.typography.bodyColor}
+                                        onChange={v => handleTypographyChange({ bodyColor: v })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Высота строки</Label>
+                                    <Input
+                                        type="number"
+                                        step={0.01}
+                                        min={1}
+                                        max={2}
+                                        value={theme.typography.bodyLineHeight}
+                                        onChange={e => handleTypographyChange({ bodyLineHeight: parseFloat(e.target.value) })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Промежуток между буквами</Label>
+                                    <Input
+                                        type="number"
+                                        step={1}
+                                        min={-10}
+                                        max={10}
+                                        value={theme.typography.bodyLetterSpacing}
+                                        onChange={e => handleTypographyChange({ bodyLetterSpacing: parseInt(e.target.value) })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Капитализация</Label>
+                                    <div className="flex space-x-2">
+                                        <Button
+                                            variant={
+                                                theme.typography.bodyCapitalization === 'none' ? 'outline' : 'secondary'
+                                            }
+                                            onClick={() => handleTypographyChange({ bodyCapitalization: 'none' })}
+                                        >
+                                            Aa
+                                        </Button>
+                                        <Button
+                                            variant={
+                                                theme.typography.bodyCapitalization === 'uppercase'
+                                                    ? 'secondary'
+                                                    : 'outline'
+                                            }
+                                            onClick={() => handleTypographyChange({ bodyCapitalization: 'uppercase' })}
+                                        >
+                                            A
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        {/* Текст */}
-                        <div className="space-y-4">
-                            <Label className="font-semibold">Текст</Label>
+                    </TabsContent>
+
+                    <TabsContent value="design">
+                        <div className="space-y-6">
+                            {/* Slide Design */}
                             <div className="space-y-2">
-                                <Label>Шрифт</Label>
-                                <Select
-                                    value={theme.typography.bodyFont}
-                                    onValueChange={v => handleTypographyChange({ bodyFont: v })}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select font" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {['inter', 'roboto', 'raleway', 'open-sans'].map(f => (
-                                            <SelectItem key={f} value={f}>
-                                                {f}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <Label>Радиус границы слайда</Label>
+                                <Input
+                                    type="text"
+                                    value={theme.design.slide.borderRadius}
+                                    onChange={e =>
+                                        handleDesignChange({
+                                            slide: { ...theme.design.slide, borderRadius: e.target.value },
+                                        })
+                                    }
+                                    placeholder="e.g., 8px"
+                                />
                             </div>
                             <div className="space-y-2">
-                                <Label>Толщина</Label>
-                                <Select
-                                    value={String(theme.typography.bodyWeight)}
-                                    onValueChange={v => handleTypographyChange({ bodyWeight: Number(v) })}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {[100, 200, 300, 400, 500, 600, 700, 800, 900].map(w => (
-                                            <SelectItem key={w} value={String(w)}>
-                                                {w}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <Label>Тень слайда</Label>
+                                <Input
+                                    type="text"
+                                    value={theme.design.slide.shadow}
+                                    onChange={e =>
+                                        handleDesignChange({
+                                            slide: { ...theme.design.slide, shadow: e.target.value },
+                                        })
+                                    }
+                                    placeholder="e.g., 0 1px 3px 0 rgba(0,0,0,0.1)"
+                                />
                             </div>
                             <div className="space-y-2">
-                                <Label>Цвет</Label>
+                                <Label>Граница слайда</Label>
+                                <Input
+                                    type="text"
+                                    value={theme.design.slide.border}
+                                    onChange={e =>
+                                        handleDesignChange({
+                                            slide: { ...theme.design.slide, border: e.target.value },
+                                        })
+                                    }
+                                    placeholder="e.g., 1px solid"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Цвет границы слайда</Label>
                                 <ColorPicker
-                                    value={theme.typography.bodyColor}
-                                    onChange={v => handleTypographyChange({ bodyColor: v })}
+                                    value={theme.design.slide.borderColor}
+                                    onChange={value =>
+                                        handleDesignChange({
+                                            slide: { ...theme.design.slide, borderColor: value },
+                                        })
+                                    }
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label>Высота строки</Label>
-                                <Input
-                                    type="number"
-                                    step={0.01}
-                                    min={1}
-                                    max={2}
-                                    value={theme.typography.bodyLineHeight}
-                                    onChange={e => handleTypographyChange({ bodyLineHeight: parseFloat(e.target.value) })}
+                                <Label>Форма изображения слайда</Label>
+                                <Select
+                                    value={theme.design.slide.imageShape}
+                                    onValueChange={value =>
+                                        handleDesignChange({
+                                            slide: { ...theme.design.slide, imageShape: value as ThemeDesign['slide']['imageShape'] },
+                                        })
+                                    }
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select image shape" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="square">Square</SelectItem>
+                                        <SelectItem value="rounded">Rounded</SelectItem>
+                                        <SelectItem value="circle">Circle</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* Block Design */}
+                            <div className="space-y-2">
+                                <Label>Цвет фона блоков</Label>
+                                <ColorPicker
+                                    value={theme.design.blocks.backgroundColor}
+                                    onChange={value =>
+                                        handleDesignChange({
+                                            blocks: { ...theme.design.blocks, backgroundColor: value },
+                                        })
+                                    }
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label>Промежуток между буквами</Label>
-                                <Input
-                                    type="number"
+                                <Label>Прозрачность блоков: {Math.round(theme.design.blocks.opacity * 100)}%</Label>
+                                <Slider
+                                    value={[theme.design.blocks.opacity * 100]}
+                                    onValueChange={([value]) =>
+                                        handleDesignChange({
+                                            blocks: { ...theme.design.blocks, opacity: value / 100 },
+                                        })
+                                    }
+                                    min={0}
+                                    max={100}
                                     step={1}
-                                    min={-10}
-                                    max={10}
-                                    value={theme.typography.bodyLetterSpacing}
-                                    onChange={e => handleTypographyChange({ bodyLetterSpacing: parseInt(e.target.value) })}
+                                    className="py-2"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label>Капитализация</Label>
-                                <div className="flex space-x-2">
-                                    <Button
-                                        variant={
-                                            theme.typography.bodyCapitalization === 'none' ? 'outline' : 'secondary'
-                                        }
-                                        onClick={() => handleTypographyChange({ bodyCapitalization: 'none' })}
-                                    >
-                                        Aa
-                                    </Button>
-                                    <Button
-                                        variant={
-                                            theme.typography.bodyCapitalization === 'uppercase'
-                                                ? 'secondary'
-                                                : 'outline'
-                                        }
-                                        onClick={() => handleTypographyChange({ bodyCapitalization: 'uppercase' })}
-                                    >
-                                        A
-                                    </Button>
-                                </div>
+                                <Label>Ширина границы блоков</Label>
+                                <Select
+                                    value={theme.design.blocks.borderWidth}
+                                    onValueChange={value =>
+                                        handleDesignChange({
+                                            blocks: {
+                                                ...theme.design.blocks,
+                                                borderWidth: value as ThemeDesign['blocks']['borderWidth'],
+                                            },
+                                        })
+                                    }
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select border width" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="none">None</SelectItem>
+                                        <SelectItem value="thin">Thin</SelectItem>
+                                        <SelectItem value="medium">Medium</SelectItem>
+                                        <SelectItem value="thick">Thick</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Тень блоков</Label>
+                                <Input
+                                    type="text"
+                                    value={theme.design.blocks.shadow}
+                                    onChange={e =>
+                                        handleDesignChange({
+                                            blocks: { ...theme.design.blocks, shadow: e.target.value },
+                                        })
+                                    }
+                                    placeholder="e.g., 0 1px 2px 0 rgba(0,0,0,0.05)"
+                                />
+                            </div>
+
+                            {/* Button and Link Design */}
+                            <div className="space-y-2">
+                                <Label>Цвет кнопок</Label>
+                                <ColorPicker
+                                    value={theme.design.buttons.buttonColor}
+                                    onChange={value =>
+                                        handleDesignChange({
+                                            buttons: { ...theme.design.buttons, buttonColor: value },
+                                        })
+                                    }
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Форма кнопки</Label>
+                                <Select
+                                    value={theme.design.buttons.buttonShape}
+                                    onValueChange={value =>
+                                        handleDesignChange({
+                                            buttons: {
+                                                ...theme.design.buttons,
+                                                buttonShape: value as ThemeDesign['buttons']['buttonShape'],
+                                            },
+                                        })
+                                    }
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select button shape" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="square">Square</SelectItem>
+                                        <SelectItem value="rounded">Rounded</SelectItem>
+                                        <SelectItem value="pill">Pill</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Цвет ссылок</Label>
+                                <ColorPicker
+                                    value={theme.design.buttons.linkColor}
+                                    onChange={value =>
+                                        handleDesignChange({
+                                            buttons: { ...theme.design.buttons, linkColor: value },
+                                        })
+                                    }
+                                />
                             </div>
                         </div>
-                    </div>
-                </TabsContent>
-
-                <TabsContent value="design">
-                    <div className="space-y-6">
-                        <div className="space-y-2">
-                            <Label>Радиус границы слайда</Label>
-                            <Input
-                                type="text"
-                                value={theme.design.slide.borderRadius}
-                                onChange={e =>
-                                    handleDesignChange({
-                                        slide: { ...theme.design.slide, borderRadius: e.target.value },
-                                    })
-                                }
-                                placeholder="e.g., 8px"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label>Прозрачность блоков: {Math.round(theme.design.blocks.opacity * 100)}%</Label>
-                            <Slider
-                                value={[theme.design.blocks.opacity * 100]}
-                                onValueChange={([value]) =>
-                                    handleDesignChange({
-                                        blocks: { ...theme.design.blocks, opacity: value / 100 },
-                                    })
-                                }
-                                min={0}
-                                max={100}
-                                step={1}
-                                className="py-2"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label>Ширина границы</Label>
-                            <Select
-                                value={theme.design.blocks.borderWidth}
-                                onValueChange={value =>
-                                    handleDesignChange({
-                                        blocks: {
-                                            ...theme.design.blocks,
-                                            borderWidth: value as ThemeDesign['blocks']['borderWidth'],
-                                        },
-                                    })
-                                }
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select border width" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="none">None</SelectItem>
-                                    <SelectItem value="thin">Thin</SelectItem>
-                                    <SelectItem value="medium">Medium</SelectItem>
-                                    <SelectItem value="thick">Thick</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label>Форма кнопки</Label>
-                            <Select
-                                value={theme.design.buttons.buttonShape}
-                                onValueChange={value =>
-                                    handleDesignChange({
-                                        buttons: {
-                                            ...theme.design.buttons,
-                                            buttonShape: value as ThemeDesign['buttons']['buttonShape'],
-                                        },
-                                    })
-                                }
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select button shape" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="square">Square</SelectItem>
-                                    <SelectItem value="rounded">Rounded</SelectItem>
-                                    <SelectItem value="pill">Pill</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-                </TabsContent>
+                    </TabsContent>
+                </div>
             </Tabs>
         </div>
     );
