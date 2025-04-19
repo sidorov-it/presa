@@ -24,9 +24,15 @@ export const DEFAULT_THEME: Omit<Theme, 'id' | 'createdAt' | 'updatedAt'> = {
         headingFont: 'inter',
         headingWeight: 600,
         headingColor: '#1f2937', // Dark gray
+        headingLineHeight: 1.25,
+        headingLetterSpacing: 0,
+        headingCapitalization: 'none',
         bodyFont: 'inter',
         bodyWeight: 400,
         bodyColor: '#4b5563', // Medium gray
+        bodyLineHeight: 1.25,
+        bodyLetterSpacing: 0,
+        bodyCapitalization: 'none',
     },
     design: {
         slide: {

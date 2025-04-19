@@ -29,11 +29,17 @@ export type ThemeTypography = {
     headingFont: string;
     headingWeight: number;
     headingColor: string;
+    headingLineHeight: number;
+    headingLetterSpacing: number;
+    headingCapitalization: 'none' | 'uppercase';
 
     // Body Text
     bodyFont: string;
     bodyWeight: number;
     bodyColor: string;
+    bodyLineHeight: number;
+    bodyLetterSpacing: number;
+    bodyCapitalization: 'none' | 'uppercase';
 };
 
 export type ThemeDesign = {

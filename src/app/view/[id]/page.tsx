@@ -112,7 +112,7 @@ export default async function PresentationView(props: { params: Promise<{ id: st
 
     return (
         <ThemeProvider initialTheme={theme}>
-            <div className="min-h-screen w-full py-10 px-4 themed-page">
+            <div className="min-h-screen w-full py-10 px-4">
                 <div className="max-w-6xl mx-auto space-y-20">
                     {presentation.slides.map((slide: Slide, index: number) => (
                         <div key={slide.id} id={`slide-${index + 1}`} className="scroll-mt-10">

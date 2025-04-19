@@ -65,6 +65,32 @@ export const ThemeProvider = ({ children, initialTheme }: ThemeProviderProps) =>
         document.documentElement.style.setProperty('--heading-weight', theme.typography.headingWeight.toString());
         document.documentElement.style.setProperty('--body-font', `'${theme.typography.bodyFont}', sans-serif`);
         document.documentElement.style.setProperty('--body-weight', theme.typography.bodyWeight.toString());
+        // New typography CSS vars for headings
+        document.documentElement.style.setProperty(
+            '--heading-line-height',
+            theme.typography.headingLineHeight.toString()
+        );
+        document.documentElement.style.setProperty(
+            '--heading-letter-spacing',
+            theme.typography.headingLetterSpacing + '%'
+        );
+        document.documentElement.style.setProperty(
+            '--heading-capitalization',
+            theme.typography.headingCapitalization
+        );
+        // New typography CSS vars for body text
+        document.documentElement.style.setProperty(
+            '--body-line-height',
+            theme.typography.bodyLineHeight.toString()
+        );
+        document.documentElement.style.setProperty(
+            '--body-letter-spacing',
+            theme.typography.bodyLetterSpacing + '%'
+        );
+        document.documentElement.style.setProperty(
+            '--body-capitalization',
+            theme.typography.bodyCapitalization
+        );
 
         // Slide design
         document.documentElement.style.setProperty('--slide-border-radius', theme.design.slide.borderRadius);

@@ -16,7 +16,7 @@ const PresentationThemeWrapper: React.FC<PresentationThemeWrapperProps> = ({ the
             <ThemeStylesApplier theme={theme} />
 
             {/* Render the server components inside */}
-            <div className="min-h-screen w-full py-10 px-4 themed-page">
+            <div className="min-h-screen w-full py-10 px-4">
                 <div className="max-w-6xl mx-auto space-y-20">{children}</div>
             </div>
         </>

@@ -277,7 +277,7 @@ export default function PresentationEditorPage() {
                         </div>
                     </div>
                 </header>
-                <main className="flex-grow w-full themed-page">
+                <main className="flex-grow w-full">
                     <Editor presentationId={presentation.id} />
 
                     <BackgroundSettingsModal

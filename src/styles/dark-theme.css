@@ -57,15 +57,6 @@
 }
 
 /* Buttons */
-.dark-theme button:not([class*="themed-"]) {
-  background-color: var(--button-bg);
-  color: var(--button-text);
-}
-
-.dark-theme button:not([class*="themed-"]):hover {
-  background-color: var(--button-hover);
-}
-
 /* Text elements */
 .dark-theme h1,
 .dark-theme h2,

@@ -5,6 +5,7 @@ import { Slider } from '@/components/ui/Slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
 import { Theme, ThemeColors, ThemeTypography, ThemeDesign } from '@/types/theme';
 import { ColorPicker } from '@/components/ui/ColorPicker/ColorPicker';
+import { Button } from '@/components/ui/Button';
 
 interface ThemeEditorProps {
     theme: Theme;
@@ -277,64 +278,189 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
 
                 <TabsContent value="typography">
                     <div className="space-y-6">
-                        <div className="space-y-2">
-                            <Label>Шрифт заголовков</Label>
-                            <Select
-                                value={theme.typography.headingFont}
-                                onValueChange={value => handleTypographyChange({ headingFont: value })}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select font" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="inter">Inter</SelectItem>
-                                    <SelectItem value="roboto">Roboto</SelectItem>
-                                    <SelectItem value="raleway">Raleway</SelectItem>
-                                    <SelectItem value="open-sans">Open Sans</SelectItem>
-                                </SelectContent>
-                            </Select>
+                        {/* Заголовки */}
+                        <div className="space-y-4">
+                            <Label className="font-semibold">Заголовки</Label>
+                            <div className="space-y-2">
+                                <Label>Шрифт</Label>
+                                <Select
+                                    value={theme.typography.headingFont}
+                                    onValueChange={v => handleTypographyChange({ headingFont: v })}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select font" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {['inter', 'roboto', 'raleway', 'open-sans'].map(f => (
+                                            <SelectItem key={f} value={f}>
+                                                {f}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Толщина</Label>
+                                <Select
+                                    value={String(theme.typography.headingWeight)}
+                                    onValueChange={v => handleTypographyChange({ headingWeight: Number(v) })}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {[100, 200, 300, 400, 500, 600, 700, 800, 900].map(w => (
+                                            <SelectItem key={w} value={String(w)}>
+                                                {w}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Цвет</Label>
+                                <ColorPicker
+                                    value={theme.typography.headingColor}
+                                    onChange={v => handleTypographyChange({ headingColor: v })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Высота строки</Label>
+                                <Input
+                                    type="number"
+                                    step={0.01}
+                                    min={1}
+                                    max={2}
+                                    value={theme.typography.headingLineHeight}
+                                    onChange={e => handleTypographyChange({ headingLineHeight: parseFloat(e.target.value) })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Промежуток между буквами</Label>
+                                <Input
+                                    type="number"
+                                    step={1}
+                                    min={-10}
+                                    max={10}
+                                    value={theme.typography.headingLetterSpacing}
+                                    onChange={e => handleTypographyChange({ headingLetterSpacing: parseInt(e.target.value) })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Капитализация</Label>
+                                <div className="flex space-x-2">
+                                    <Button
+                                        variant={
+                                            theme.typography.headingCapitalization === 'none' ? 'outline' : 'secondary'
+                                        }
+                                        onClick={() => handleTypographyChange({ headingCapitalization: 'none' })}
+                                    >
+                                        Aa
+                                    </Button>
+                                    <Button
+                                        variant={
+                                            theme.typography.headingCapitalization === 'uppercase'
+                                                ? 'secondary'
+                                                : 'outline'
+                                        }
+                                        onClick={() => handleTypographyChange({ headingCapitalization: 'uppercase' })}
+                                    >
+                                        A
+                                    </Button>
+                                </div>
+                            </div>
                         </div>
-
-                        <div className="space-y-2">
-                            <Label>Толщина заголовков: {theme.typography.headingWeight}</Label>
-                            <Slider
-                                value={[theme.typography.headingWeight]}
-                                onValueChange={([value]) => handleTypographyChange({ headingWeight: value })}
-                                min={100}
-                                max={900}
-                                step={100}
-                                className="py-2"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label>Шрифт текста</Label>
-                            <Select
-                                value={theme.typography.bodyFont}
-                                onValueChange={value => handleTypographyChange({ bodyFont: value })}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select font" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="inter">Inter</SelectItem>
-                                    <SelectItem value="roboto">Roboto</SelectItem>
-                                    <SelectItem value="raleway">Raleway</SelectItem>
-                                    <SelectItem value="open-sans">Open Sans</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label>Толщина текста: {theme.typography.bodyWeight}</Label>
-                            <Slider
-                                value={[theme.typography.bodyWeight]}
-                                onValueChange={([value]) => handleTypographyChange({ bodyWeight: value })}
-                                min={100}
-                                max={900}
-                                step={100}
-                                className="py-2"
-                            />
+                        {/* Текст */}
+                        <div className="space-y-4">
+                            <Label className="font-semibold">Текст</Label>
+                            <div className="space-y-2">
+                                <Label>Шрифт</Label>
+                                <Select
+                                    value={theme.typography.bodyFont}
+                                    onValueChange={v => handleTypographyChange({ bodyFont: v })}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select font" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {['inter', 'roboto', 'raleway', 'open-sans'].map(f => (
+                                            <SelectItem key={f} value={f}>
+                                                {f}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Толщина</Label>
+                                <Select
+                                    value={String(theme.typography.bodyWeight)}
+                                    onValueChange={v => handleTypographyChange({ bodyWeight: Number(v) })}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {[100, 200, 300, 400, 500, 600, 700, 800, 900].map(w => (
+                                            <SelectItem key={w} value={String(w)}>
+                                                {w}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Цвет</Label>
+                                <ColorPicker
+                                    value={theme.typography.bodyColor}
+                                    onChange={v => handleTypographyChange({ bodyColor: v })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Высота строки</Label>
+                                <Input
+                                    type="number"
+                                    step={0.01}
+                                    min={1}
+                                    max={2}
+                                    value={theme.typography.bodyLineHeight}
+                                    onChange={e => handleTypographyChange({ bodyLineHeight: parseFloat(e.target.value) })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Промежуток между буквами</Label>
+                                <Input
+                                    type="number"
+                                    step={1}
+                                    min={-10}
+                                    max={10}
+                                    value={theme.typography.bodyLetterSpacing}
+                                    onChange={e => handleTypographyChange({ bodyLetterSpacing: parseInt(e.target.value) })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Капитализация</Label>
+                                <div className="flex space-x-2">
+                                    <Button
+                                        variant={
+                                            theme.typography.bodyCapitalization === 'none' ? 'outline' : 'secondary'
+                                        }
+                                        onClick={() => handleTypographyChange({ bodyCapitalization: 'none' })}
+                                    >
+                                        Aa
+                                    </Button>
+                                    <Button
+                                        variant={
+                                            theme.typography.bodyCapitalization === 'uppercase'
+                                                ? 'secondary'
+                                                : 'outline'
+                                        }
+                                        onClick={() => handleTypographyChange({ bodyCapitalization: 'uppercase' })}
+                                    >
+                                        A
+                                    </Button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </TabsContent>

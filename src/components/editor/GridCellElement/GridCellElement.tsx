@@ -512,10 +512,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             )}
 
             <div className={`${styles.gridCell} ${alignmentClassName}`}>
-                <div
-                    className={`${styles.elementsContainer} themed-text`}
-                    data-is-multi-cell={hasMultipleCells ? 'true' : 'false'}
-                >
+                <div className={`${styles.elementsContainer}`} data-is-multi-cell={hasMultipleCells ? 'true' : 'false'}>
                     {elementsIds.map((elementId, idx) => (
                         <div
                             onClick={handleClickElement(elementId)}

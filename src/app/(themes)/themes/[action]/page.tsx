@@ -24,6 +24,11 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
         createdAt: new Date(),
         updatedAt: new Date(),
         colors: {
+            shapesColor: '#3b82f6',
+            buttonsColor: '#3b82f6',
+            linksColor: '#3b82f6',
+            accentBlocksColor: '#3b82f6',
+            secondaryButtonColor: '#3b82f6',
             primaryAccent: '#3b82f6',
             secondaryAccents: ['#60a5fa', '#93c5fd', '#bfdbfe'],
             headingColor: '#1f2937',
@@ -42,6 +47,12 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
             bodyWeight: 400,
             headingColor: '#1f2937',
             bodyColor: '#4b5563',
+            headingLineHeight: 1.5,
+            headingLetterSpacing: 0,
+            headingCapitalization: 'none',
+            bodyLineHeight: 1.5,
+            bodyLetterSpacing: 0,
+            bodyCapitalization: 'none',
         },
         design: {
             slide: {
@@ -114,7 +125,9 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
                         <Button variant="outline" onClick={() => router.push('/themes')}>
                             Отменить
                         </Button>
-                        <Button variant="default" onClick={handleSave}>Сохранить</Button>
+                        <Button variant="default" onClick={handleSave}>
+                            Сохранить
+                        </Button>
                     </div>
                 </div>
             </div>

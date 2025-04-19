@@ -328,7 +328,7 @@ const Tiptap = ({
         content: initialContent,
         editorProps: {
             attributes: {
-                class: `${styles.editor} custom-tiptap-editor no-dropcursor not-prose themed-text`,
+                class: `${styles.editor} custom-tiptap-editor no-dropcursor not-prose`,
             },
         },
         immediatelyRender: true,
@@ -455,7 +455,7 @@ const Tiptap = ({
                         editor={editor}
                         // eslint-disable-next-line jsx-a11y/no-autofocus
                         autoFocus={autoFocus}
-                        className="cursor-text w-full focus:outline-none themed-text"
+                        className="cursor-text w-full focus:outline-none"
                     />
                 )}
             </div>

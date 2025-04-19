@@ -376,9 +376,9 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 }
             }}
         >
-            <div className={`${getSlideClassName()} themed-slide`} style={getSlideStyle()}>
+            <div className={`${getSlideClassName()}`} style={getSlideStyle()}>
                 <div className={`${styles.slideBorder} ${isSelected || isHovered ? styles.slideBorderMenuOpen : ''}`} />
-                <div ref={editorRef} className={`${styles.slideContent} themed-card`} style={{}}>
+                <div ref={editorRef} className={`${styles.slideContent}`} style={{}}>
                     {(isSelected || slideMenuOpen || isHovered) && (
                         <>
                             <DragHandler
@@ -421,7 +421,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     )}
 
                     <div
-                        className={`${styles.slideContainer} themed-card`}
+                        className={styles.slideContainer}
                         data-slide-id={slideId}
                         onClick={handleSlideClick}
                         style={contentStyle}
@@ -443,7 +443,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     >
                         <div className={styles.buttons}>
                             <button
-                                className={`${styles.slideDividerButton} themed-button`}
+                                className={styles.slideDividerButton}
                                 onClick={handleAddSlideAfter}
                                 aria-label="Добавить слайд"
                             >
