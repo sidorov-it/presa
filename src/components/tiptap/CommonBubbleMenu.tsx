@@ -22,7 +22,28 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { EditorView } from '@tiptap/pm/view';
 import { EditorState } from '@tiptap/pm/state';
 import HeadingSelector from '../settings/HeadingSelector/HeadingSelector';
-import { HEADING_LEVELS, NORMAL_TEXT_LEVEL, SMALL_TEXT_LEVEL, BIG_TEXT_LEVEL, VERY_BIG_HEADING_LEVEL, BIG_HEADING_LEVEL, TITLE_LEVEL, FONT_SIZE_SMALL_TEXT, FONT_SIZE_BIG_TEXT, FONT_SIZE_TITLE, FONT_SIZE_BIG_HEADING, FONT_SIZE_VERY_BIG_HEADING } from '@/consts';
+import { 
+    HEADING_LEVELS, 
+    NORMAL_TEXT_LEVEL, 
+    SMALL_TEXT_LEVEL, 
+    BIG_TEXT_LEVEL, 
+    VERY_BIG_HEADING_LEVEL, 
+    BIG_HEADING_LEVEL, 
+    TITLE_LEVEL, 
+    FONT_SIZE_SMALL_TEXT, 
+    FONT_SIZE_BIG_TEXT, 
+    FONT_SIZE_TITLE, 
+    FONT_SIZE_BIG_HEADING, 
+    FONT_SIZE_VERY_BIG_HEADING,
+    FONT_SIZE_HEADING_1,
+    FONT_SIZE_HEADING_2,
+    FONT_SIZE_HEADING_3,
+    FONT_SIZE_HEADING_4,
+    HEADING_1_LEVEL,
+    HEADING_2_LEVEL,
+    HEADING_3_LEVEL,
+    HEADING_4_LEVEL
+} from '@/consts';
 
 export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
@@ -35,28 +56,24 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
         // Определяем текстовые стили для проверки fontSize
         const marks = editor.getAttributes('textStyle');
         
-        // Специальный случай для очень большого заголовка (h6 + fontSize: 3rem)
-        if (editor.isActive('heading', { level: 6 })) {
-            if (marks.fontSize === '3rem') {
-                return 7; // Очень большой заголовок
-            }
-            return 6; // Обычный h6
-        }
+        // Heading detection is no longer used since we're using the custom font size extension
+        // instead of the built-in heading extension
         
-        // Check for other heading levels
-        for (let i = 1; i <= 5; i++) {
-            if (editor.isActive('heading', { level: i })) {
-                return i;
-            }
-        }
-
-        if (editor.isActive('paragraph')) {
+        if (editor.isActive('paragraph') || true) { // Always check fontSize regardless of node type
             if (marks.fontSize) {
                 switch (marks.fontSize) {
                     case FONT_SIZE_SMALL_TEXT:
                         return SMALL_TEXT_LEVEL;
                     case FONT_SIZE_BIG_TEXT:
                         return BIG_TEXT_LEVEL;
+                    case FONT_SIZE_HEADING_4:
+                        return HEADING_4_LEVEL;
+                    case FONT_SIZE_HEADING_3:
+                        return HEADING_3_LEVEL;
+                    case FONT_SIZE_HEADING_2:
+                        return HEADING_2_LEVEL;
+                    case FONT_SIZE_HEADING_1:
+                        return HEADING_1_LEVEL;
                     case FONT_SIZE_TITLE:
                         return TITLE_LEVEL;
                     case FONT_SIZE_BIG_HEADING:
@@ -67,7 +84,6 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
                         return NORMAL_TEXT_LEVEL;
                 }
             }
-            return NORMAL_TEXT_LEVEL; // Normal paragraph
         }
 
         return NORMAL_TEXT_LEVEL; // Default to normal text
@@ -89,57 +105,63 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
 
     const handleHeadingChange = useCallback(
         (level: number) => {
-            if (level === NORMAL_TEXT_LEVEL) {
-                // Normal text - paragraph with default font size
-                editor.chain().focus().setParagraph().unsetFontSize().run();
-            } else if (level === SMALL_TEXT_LEVEL) {
-                // Small text - first clear heading format if it's active
-                editor.chain()
-                    .focus()
-                    .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
-                    .setFontSize(FONT_SIZE_SMALL_TEXT)
-                    .run();
-            } else if (level === BIG_TEXT_LEVEL) {
-                // Large text - first clear heading format if it's active
-                editor.chain()
-                    .focus()
-                    .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
-                    .setFontSize(FONT_SIZE_BIG_TEXT)
-                    .run();
-            } else if (level === TITLE_LEVEL) {
-                // Очень большой заголовок - используем h6 с дополнительными стилями
-                editor.chain()
-                    .focus()
-                    .unsetAllMarks() // Очищаем все стили, включая fontSize
-                    .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
+            // if (level === NORMAL_TEXT_LEVEL) {
+            //     // Normal text - paragraph with default font size
+            //     editor.chain().focus().setParagraph().unsetFontSize().run();
+            // } else if (level === SMALL_TEXT_LEVEL) {
+            //     // Small text - first clear heading format if it's active
+            //     editor.chain()
+            //         .focus()
+            //         // .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
+            //         .setFontSize(SMALL_TEXT_LEVEL)
+            //         .run();
+            // } else if (level === BIG_TEXT_LEVEL) {
+            //     // Large text - first clear heading format if it's active
+            //     editor.chain()
+            //         .focus()
+            //         // .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
+            //         .setFontSize(FONT_SIZE_BIG_TEXT)
+            //         .run();
+            // } else if (level === TITLE_LEVEL) {
+            //     // Очень большой заголовок - используем h6 с дополнительными стилями
+            //     editor.chain()
+            //         .focus()
+            //         .unsetAllMarks() // Очищаем все стили, включая fontSize
+            //         // .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
 
-                    .setFontSize(FONT_SIZE_TITLE) // Дополнительно устанавливаем больший размер шрифта
-                    .run();
-            } else if (level === BIG_HEADING_LEVEL) {
-                    // Очень большой заголовок - используем h6 с дополнительными стилями
-                    editor.chain()
-                        .focus()
-                        .unsetAllMarks() // Очищаем все стили, включая fontSize
-                        .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
-                        .setFontSize(FONT_SIZE_BIG_HEADING) // Дополнительно устанавливаем больший размер шрифта
-                        .run();
-            } else if (level === VERY_BIG_HEADING_LEVEL) {
-                // Очень большой заголовок - используем h6 с дополнительными стилями
-                editor.chain()
+            //         .setFontSize(FONT_SIZE_TITLE) // Дополнительно устанавливаем больший размер шрифта
+            //         .run();
+            // } else if (level === BIG_HEADING_LEVEL) {
+            //         // Очень большой заголовок - используем h6 с дополнительными стилями
+            //         editor.chain()
+            //             .focus()
+            //             .unsetAllMarks() // Очищаем все стили, включая fontSize
+            //             // .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
+            //             .setFontSize(FONT_SIZE_BIG_HEADING) // Дополнительно устанавливаем больший размер шрифта
+            //             .run();
+            // } else if (level === VERY_BIG_HEADING_LEVEL) {
+            //     // Очень большой заголовок - используем h6 с дополнительными стилями
+            //     editor.chain()
+            //         .focus()
+            //         .selectAll()
+            //         .unsetAllMarks() // Очищаем все стили, включая fontSize
+            //         // .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
+            //         .setFontSize(FONT_SIZE_VERY_BIG_HEADING) // Дополнительно устанавливаем больший размер шрифта
+            //         .blur()
+            //         .run();
+            // } else {
+            //     // Headings - first clear any font size styles
+            //     editor.chain()
+            //         .focus()
+            //         .unsetAllMarks() // Очищаем все стили, включая fontSize
+            //         .setHeading({ level: level as Level })
+            //         .run();
+            // }
+            editor.chain()
                     .focus()
-                    .unsetAllMarks() // Очищаем все стили, включая fontSize
-                    .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
-
-                    .setFontSize(FONT_SIZE_VERY_BIG_HEADING) // Дополнительно устанавливаем больший размер шрифта
+                    // .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
+                    .setFontSize(level)
                     .run();
-            } else {
-                // Headings - first clear any font size styles
-                editor.chain()
-                    .focus()
-                    .unsetAllMarks() // Очищаем все стили, включая fontSize
-                    .setHeading({ level: level as Level })
-                    .run();
-            }
             setIsHeadingMenuOpen(false);
         },
         [editor]

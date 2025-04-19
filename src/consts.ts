@@ -12,9 +12,14 @@ export const VERY_BIG_HEADING_LEVEL = -2;
 
 export const FONT_SIZE_SMALL_TEXT = '0.8em';
 export const FONT_SIZE_BIG_TEXT = '1.25em';
+export const FONT_SIZE_HEADING_4 = '1.25em';
+export const FONT_SIZE_HEADING_3 = '1.5em';
+export const FONT_SIZE_HEADING_2 = '2em';
+export const FONT_SIZE_HEADING_1 = '2.5em';
 export const FONT_SIZE_TITLE = '3.45em';
 export const FONT_SIZE_BIG_HEADING = '5em';
 export const FONT_SIZE_VERY_BIG_HEADING = '7.5em';
+
 
 export const HEADING_LEVELS = [
     { label: 'Маленький текст', level: SMALL_TEXT_LEVEL },

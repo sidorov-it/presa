@@ -513,7 +513,7 @@ export const ElementContent = ({
     return (
         <div
             key={element.id}
-            className={`${styles.elementContent} themed-text`}
+            className={`${styles.elementContent}`}
             data-element-id={element.id}
             onMouseEnter={() => {
                 if (!elementIsHovered) {

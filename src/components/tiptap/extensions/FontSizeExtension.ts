@@ -1,6 +1,7 @@
-import { FONT_SIZE_BIG_TEXT, FONT_SIZE_TITLE, FONT_SIZE_VERY_BIG_HEADING, FONT_SIZE_BIG_HEADING } from '@/consts';
+import { FONT_SIZE_BIG_TEXT, FONT_SIZE_TITLE, FONT_SIZE_VERY_BIG_HEADING, FONT_SIZE_BIG_HEADING, HEADING_4_LEVEL, BIG_HEADING_LEVEL, BIG_TEXT_LEVEL, HEADING_1_LEVEL, HEADING_2_LEVEL, HEADING_3_LEVEL, HEADING_5_LEVEL, NORMAL_TEXT_LEVEL, SMALL_TEXT_LEVEL, TITLE_LEVEL, VERY_BIG_HEADING_LEVEL, FONT_SIZE_HEADING_4, FONT_SIZE_HEADING_3, FONT_SIZE_HEADING_1, FONT_SIZE_HEADING_2 } from '@/consts';
 import { FONT_SIZE_SMALL_TEXT } from '@/consts';
 import { Extension } from '@tiptap/core';
+import { chain } from 'lodash';
 
 export type FontSizeOptions = {
     types: string[];
@@ -12,7 +13,7 @@ declare module '@tiptap/core' {
             /**
              * Set the font size
              */
-            setFontSize: (fontSize: string) => ReturnType;
+            setFontSize: (fontLevel: number) => ReturnType;
             /**
              * Unset the font size
              */
@@ -30,21 +31,6 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
         };
     },
 
-    addAttributes() {
-        return {
-            class: {
-                default: null,
-                // Take the attribute values
-                renderHTML: (attributes: any) => {
-                    // … and return an object with HTML attributes.
-                    return {
-                        class: `${attributes.class}`,
-                    }
-                },
-            },
-        }
-    },
-
     addGlobalAttributes() {
         return [
             {
@@ -52,7 +38,13 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                 attributes: {
                     fontSize: {
                         default: null,
-                        parseHTML: element => element.style.fontSize?.replace(/['"]+/g, ''),
+                        parseHTML: element => {
+                            // Try to extract fontSize from style attribute or custom data attribute
+                            const dataFontSize = element.getAttribute('data-font-size');
+                            if (dataFontSize) return dataFontSize;
+                            
+                            return element.style.fontSize?.replace(/['"]+/g, '');
+                        },
                         renderHTML: attributes => {
                             if (!attributes.fontSize) {
                                 return {};
@@ -60,19 +52,43 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
 
                             let className;
 
-                            if (!attributes.fontSize ||attributes.fontSize === FONT_SIZE_SMALL_TEXT || attributes.fontSize === FONT_SIZE_SMALL_TEXT || attributes.fontSize ===  FONT_SIZE_BIG_TEXT) {
-                                className = 'body-text';
-                            } else if (
-                                attributes.fontSize === FONT_SIZE_TITLE
-                                || attributes.fontSize === FONT_SIZE_BIG_HEADING
-                                || attributes.fontSize === FONT_SIZE_VERY_BIG_HEADING
-                            ) {
-                                className = 'heading-text';
+                            switch (attributes.fontSize) {
+                                case FONT_SIZE_SMALL_TEXT:
+                                    className = 'body-text small-text';
+                                    break;
+                                case FONT_SIZE_BIG_TEXT:
+                                    className = 'body-text big-text';
+                                    break;
+                                case FONT_SIZE_HEADING_4: // Heading 4
+                                    className = 'heading-text heading-4';
+                                    break;
+                                case FONT_SIZE_HEADING_3: // Heading 3
+                                    className = 'heading-text heading-3';
+                                    break; 
+                                case FONT_SIZE_HEADING_2: // Heading 2
+                                    className = 'heading-text heading-2';
+                                    break;
+                                case FONT_SIZE_HEADING_1: // Heading 1
+                                    className = 'heading-text heading-1';
+                                    break;
+                                case FONT_SIZE_TITLE:
+                                    className = 'heading-text title-text';
+                                    break;
+                                case FONT_SIZE_BIG_HEADING:
+                                    className = 'heading-text big-heading';
+                                    break;
+                                case FONT_SIZE_VERY_BIG_HEADING:
+                                    className = 'heading-text very-big-heading';
+                                    break;
+                                default:
+                                    className = 'body-text normal-text';
+                                    break;
                             }
 
                             return {
-                                style: `font-size: ${attributes.fontSize}`,
+                                // style: `font-size: ${attributes.fontSize}`,
                                 class: className,
+                                // 'data-font-size': attributes.fontSize,
                             };
                         },
                     },
@@ -86,7 +102,50 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
             setFontSize:
                 fontSize =>
                     ({ chain }) => {
-                        return chain().setMark('textStyle', { fontSize }).run();
+                        let fontSizeValue;
+
+                        switch (fontSize) {
+                            case SMALL_TEXT_LEVEL:
+                                fontSizeValue = FONT_SIZE_SMALL_TEXT;
+                                break;
+                            case NORMAL_TEXT_LEVEL:
+                                fontSizeValue = null; // Default font size
+                                break;
+                            case BIG_TEXT_LEVEL:
+                                fontSizeValue = FONT_SIZE_BIG_TEXT;
+                                break;
+                            case HEADING_4_LEVEL:
+                                fontSizeValue = FONT_SIZE_HEADING_4; // Heading 4 size
+                                break;
+                            case HEADING_3_LEVEL:
+                                fontSizeValue = FONT_SIZE_HEADING_3; // Heading 3 size
+                                break;
+                            case HEADING_2_LEVEL:
+                                fontSizeValue = FONT_SIZE_HEADING_2; // Heading 2 size
+                                break;
+                            case HEADING_1_LEVEL:
+                                fontSizeValue = FONT_SIZE_HEADING_1; // Heading 1 size
+                                break;
+                            case TITLE_LEVEL:
+                                fontSizeValue = FONT_SIZE_TITLE;
+                                break;
+                            case BIG_HEADING_LEVEL:
+                                fontSizeValue = FONT_SIZE_BIG_HEADING;
+                                break;
+                            case VERY_BIG_HEADING_LEVEL:
+                                fontSizeValue = FONT_SIZE_VERY_BIG_HEADING;
+                                break;
+                            default:
+                                fontSizeValue = null;
+                        } 
+
+                        // First make sure we're in a paragraph and clear any existing format
+                        // Then set the font size mark
+                        return chain()
+                            .focus()
+                            .setParagraph() // Ensures we're working with a paragraph
+                            .setMark('textStyle', { fontSize: fontSizeValue })
+                            .run();
                     },
             unsetFontSize:
                 () =>

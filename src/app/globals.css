@@ -1175,39 +1175,26 @@
     line-height: var(--line-height-body);
 }
 
-.tiptap.ProseMirror h1 {
+.tiptap.ProseMirror .heading-1 {
     font-size: 2.5em;
     line-height: var(--line-height-heading);
     font-weight: var(--heading-font-weight);
 }
 
-.tiptap.ProseMirror h2 {
+.tiptap.ProseMirror .heading-2 {
     font-size: 2em;
     line-height: var(--line-height-heading);
     font-weight: var(--heading-font-weight);
 }
 
-.tiptap.ProseMirror h3 {
+.tiptap.ProseMirror .heading-3 {
     font-size: 1.5em;
     line-height: var(--line-height-heading);
     font-weight: var(--heading-font-weight);
 }
 
-.tiptap.ProseMirror h4 {
+.tiptap.ProseMirror .heading-4 {
     font-size: 1.25em;
-    line-height: var(--line-height-heading);
-    font-weight: var(--heading-font-weight);
-}
-
-.tiptap.ProseMirror h5 {
-    font-size: 1.125em;
-    line-height: var(--line-height-heading);
-    font-weight: var(--heading-font-weight);
-}
-
-/* Стандартный большой заголовок */
-.tiptap.ProseMirror h6 {
-    font-size: 2em;
     line-height: var(--line-height-heading);
     font-weight: var(--heading-font-weight);
 }
@@ -1226,12 +1213,70 @@
     margin-bottom: 0.375em !important;
 }
 
-span[style*="font-size: 5em"] {
-    font-weight: var(--heading-font-weight) ;
-}
-
-span[style*="font-size: 3.45em"],
-span[style*="font-size: 5em"],
-span[style*="font-size: 1.125em"] {
+.big-text
+.title-text,
+.big-heading,
+.very-big-heading {
     font-weight: var(--heading-font-weight);
 }
+
+
+.small-text {
+    font-size: 0.8em;
+} 
+.normal-text {
+    font-size: 1.125em;
+}
+.big-text {
+    font-size: 1.25em;
+}
+.title-text {
+    font-size: 3.45em;
+}
+.big-heading {
+    font-size: 5em;
+}
+.very-big-heading {
+    font-size: 7.5em;
+}
+
+/* Custom heading classes for the FontSizeExtension */
+/* .heading-1 {
+    font-size: 2.5em;
+    font-weight: var(--heading-font-weight);
+    line-height: var(--line-height-heading);
+}
+.heading-2 {
+    font-size: 2em;
+    font-weight: var(--heading-font-weight);
+    line-height: var(--line-height-heading);
+}
+.heading-3 {
+    font-size: 1.5em;
+    font-weight: var(--heading-font-weight);
+    line-height: var(--line-height-heading);
+}
+.heading-4 {
+    font-size: 1.25em;
+    font-weight: var(--heading-font-weight);
+    line-height: var(--line-height-heading);
+} */
+
+.code {
+    background-color: var(--accent-blocks-color);
+    color: var(--body-color);
+    border-radius: 0.125em;
+    padding-inline: 0.05em;
+    margin-inline: -0.05em;
+    box-decoration-break: clone;
+}
+
+.custom-code {
+    background-color: var(--accent-blocks-color, rgba(0, 0, 0, 0.05));
+    color: inherit;
+    border-radius: 0.125em;
+    padding-inline: 0.05em;
+    margin-inline: -0.05em;
+    box-decoration-break: clone;
+    /* Inherit font size and font family */
+  }
