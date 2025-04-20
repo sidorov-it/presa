@@ -1,0 +1,56 @@
+.container {
+  position: relative;
+  display: inline-flex;
+}
+
+.button {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted-foreground);
+  transition: color 0.2s;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.button:hover {
+  color: var(--foreground);
+}
+
+.button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ring), 0 0 0 4px var(--ring-offset);
+}
+
+.icon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+/* Tippy.js custom styles */
+.tooltip {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  white-space: normal;
+  text-align: left;
+  padding: 0.5rem;
+}
+
+.container:hover .tooltip {
+  opacity: 1;
+}
+
+.arrow {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%) rotate(45deg);
+  top: 100%;
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: rgb(17, 24, 39);
+} 

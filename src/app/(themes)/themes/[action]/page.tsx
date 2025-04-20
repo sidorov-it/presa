@@ -125,7 +125,7 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
                         <Button variant="outline" onClick={() => router.push('/themes')}>
                             Отменить
                         </Button>
-                        <Button variant="default" onClick={handleSave}>
+                        <Button variant="destructive" onClick={handleSave}>
                             Сохранить
                         </Button>
                     </div>

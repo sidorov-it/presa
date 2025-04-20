@@ -7,11 +7,43 @@ import { Theme, ThemeColors, ThemeTypography, ThemeDesign } from '@/types/theme'
 import { ColorPicker } from '@/components/ui/ColorPicker/ColorPicker';
 import { Button } from '@/components/ui/Button';
 import styles from './ThemeEditor.module.css';
+import { InfoIcon } from '../ui/InfoIcon';
 
 interface ThemeEditorProps {
     theme: Theme;
     onThemeChange: (theme: Theme) => void;
 }
+
+const FONT_WEIGHTS = [
+    {
+        label: 'Thin',
+        value: 100,
+    },
+    {
+        label: 'Extra Light',
+        value: 200,
+    },
+    {
+        label: 'Light',
+        value: 300,
+    },
+    {
+        label: 'Regular',
+        value: 400,
+    },
+    {
+        label: 'Medium',
+        value: 500,
+    },
+    {
+        label: 'Semi Bold',
+        value: 600,
+    },
+    {
+        label: 'Bold',
+        value: 700,
+    },
+];
 
 export const generateColorPalette = (accentColor: string) => {
     // Convert hex to RGB
@@ -163,7 +195,10 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                     <TabsContent value="colors">
                         <div className="space-y-4">
                             <h3 className={styles.sectionTitle}>Цвета</h3>
-                            <h4 className={styles.sectionSubtitle}>Палитра</h4>
+                            <h4 className={styles.sectionSubtitle}>
+                                Палитра
+                                <InfoIcon tooltip="Эти цвета появляются в палитре цветов при использовании этой темы. Основной акцентный цвет используется по умолчанию для ссылок, кнопок и других элементов." />
+                            </h4>
                             <div className="space-y-1">
                                 <div className="space-y-3">
                                     <div className="space-y-1">
@@ -183,6 +218,55 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                                         />
                                     </div>
                                     <div className="space-y-1">
+                                        <Label className="text-xs text-muted-foreground">Дополнительные цвета</Label>
+                                        <div className="flex flex-col gap-2">
+                                            {theme.colors.additionalColors?.map((color, index) => (
+                                                <ColorPicker
+                                                    key={index}
+                                                    className="w-full"
+                                                    value={color}
+                                                    isShowRemoveIcon={true}
+                                                    onChange={value => {
+                                                        const updatedColors = [
+                                                            ...(theme.colors.additionalColors || []),
+                                                        ];
+                                                        updatedColors[index] = value;
+
+                                                        handleColorsChange({
+                                                            additionalColors: updatedColors,
+                                                        });
+                                                    }}
+                                                    handleRemove={() => {
+                                                        const updatedColors = [
+                                                            ...(theme.colors.additionalColors || []),
+                                                        ];
+                                                        updatedColors.splice(index, 1);
+
+                                                        handleColorsChange({
+                                                            additionalColors: updatedColors,
+                                                        });
+                                                    }}
+                                                />
+                                            ))}
+
+                                            <Button
+                                                variant="outline"
+                                                onClick={() =>
+                                                    handleColorsChange({
+                                                        additionalColors: [
+                                                            ...(theme.colors.additionalColors || []),
+                                                            '#000000',
+                                                        ],
+                                                    })
+                                                }
+                                            >
+                                                Добавить цвет
+                                            </Button>
+                                        </div>
+                                    </div>
+                                    <div className="mt-10">
+                                        <h4 className={styles.sectionSubtitle}>Текст</h4>
+
                                         <Label className="text-xs text-muted-foreground">Цвет заголовков</Label>
                                         <ColorPicker
                                             value={theme.colors.headingColor}
@@ -201,6 +285,8 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                             </div>
 
                             <div className="space-y-1">
+                                <h4 className={styles.sectionSubtitle}>Фон</h4>
+
                                 <Label className="text-sm font-medium">Фон слайда</Label>
                                 <div className="space-y-3">
                                     <div className="space-y-1">
@@ -284,7 +370,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                         <div className="space-y-6">
                             {/* Заголовки */}
                             <div className="space-y-4">
-                                <Label className="font-semibold">Заголовки</Label>
+                                <h4 className={styles.sectionSubtitle}>Заголовки</h4>
                                 <div className="space-y-2">
                                     <Label>Шрифт</Label>
                                     <Select
@@ -313,9 +399,9 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                                             <SelectValue placeholder="" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {[100, 200, 300, 400, 500, 600, 700, 800, 900].map(w => (
-                                                <SelectItem key={w} value={String(w)}>
-                                                    {w}
+                                            {FONT_WEIGHTS.map(w => (
+                                                <SelectItem key={w.value} value={String(w.value)}>
+                                                    {w.label}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -336,7 +422,9 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                                         min={1}
                                         max={2}
                                         value={theme.typography.headingLineHeight}
-                                        onChange={e => handleTypographyChange({ headingLineHeight: parseFloat(e.target.value) })}
+                                        onChange={e =>
+                                            handleTypographyChange({ headingLineHeight: parseFloat(e.target.value) })
+                                        }
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -347,15 +435,19 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                                         min={-10}
                                         max={10}
                                         value={theme.typography.headingLetterSpacing}
-                                        onChange={e => handleTypographyChange({ headingLetterSpacing: parseInt(e.target.value) })}
+                                        onChange={e =>
+                                            handleTypographyChange({ headingLetterSpacing: parseInt(e.target.value) })
+                                        }
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Капитализация</Label>
+                                    <Label>Регистр</Label>
                                     <div className="flex space-x-2">
                                         <Button
                                             variant={
-                                                theme.typography.headingCapitalization === 'none' ? 'outline' : 'secondary'
+                                                theme.typography.headingCapitalization === 'none'
+                                                    ? 'outline'
+                                                    : 'secondary'
                                             }
                                             onClick={() => handleTypographyChange({ headingCapitalization: 'none' })}
                                         >
@@ -367,7 +459,9 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                                                     ? 'secondary'
                                                     : 'outline'
                                             }
-                                            onClick={() => handleTypographyChange({ headingCapitalization: 'uppercase' })}
+                                            onClick={() =>
+                                                handleTypographyChange({ headingCapitalization: 'uppercase' })
+                                            }
                                         >
                                             A
                                         </Button>
@@ -405,9 +499,9 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                                             <SelectValue placeholder="" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {[100, 200, 300, 400, 500, 600, 700, 800, 900].map(w => (
-                                                <SelectItem key={w} value={String(w)}>
-                                                    {w}
+                                            {FONT_WEIGHTS.map(w => (
+                                                <SelectItem key={w.value} value={String(w.value)}>
+                                                    {w.label}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -428,7 +522,9 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                                         min={1}
                                         max={2}
                                         value={theme.typography.bodyLineHeight}
-                                        onChange={e => handleTypographyChange({ bodyLineHeight: parseFloat(e.target.value) })}
+                                        onChange={e =>
+                                            handleTypographyChange({ bodyLineHeight: parseFloat(e.target.value) })
+                                        }
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -439,7 +535,9 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                                         min={-10}
                                         max={10}
                                         value={theme.typography.bodyLetterSpacing}
-                                        onChange={e => handleTypographyChange({ bodyLetterSpacing: parseInt(e.target.value) })}
+                                        onChange={e =>
+                                            handleTypographyChange({ bodyLetterSpacing: parseInt(e.target.value) })
+                                        }
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -528,7 +626,10 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                                     value={theme.design.slide.imageShape}
                                     onValueChange={value =>
                                         handleDesignChange({
-                                            slide: { ...theme.design.slide, imageShape: value as ThemeDesign['slide']['imageShape'] },
+                                            slide: {
+                                                ...theme.design.slide,
+                                                imageShape: value as ThemeDesign['slide']['imageShape'],
+                                            },
                                         })
                                     }
                                 >

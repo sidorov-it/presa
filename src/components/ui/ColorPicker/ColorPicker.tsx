@@ -3,15 +3,19 @@ import { HexColorPicker } from 'react-colorful';
 import { Input } from '@/components/ui/Input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
 import { cn } from '@/lib/utils';
+
 import styles from './ColorPicker.module.css';
+import { MdDeleteOutline } from 'react-icons/md';
 
 interface ColorPickerProps {
     value: string;
     onChange: (value: string) => void;
     className?: string;
+    isShowRemoveIcon?: boolean;
+    handleRemove?: () => void;
 }
 
-export const ColorPicker = ({ value, onChange, className }: ColorPickerProps) => {
+export const ColorPicker = ({ value, onChange, className, isShowRemoveIcon = false, handleRemove }: ColorPickerProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const [inputValue, setInputValue] = useState(value);
 
@@ -79,14 +83,27 @@ export const ColorPicker = ({ value, onChange, className }: ColorPickerProps) =>
                     </div>
                 </PopoverContent>
             </Popover>
-            <Input
-                type="text"
-                value={inputValue}
-                onChange={handleInputChange}
-                onBlur={handleInputBlur}
-                className="flex-1"
-                aria-label="Код цвета"
-            />
+            <div className="relative flex-1">
+                <Input
+                    type="text"
+                    value={inputValue}
+                    onChange={handleInputChange}
+                    onBlur={handleInputBlur}
+                    className="flex-1"
+                    aria-label="Код цвета"
+                />
+                {isShowRemoveIcon && (
+                    <button
+                        type="button"
+                        onClick={handleRemove}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                        aria-label="Удалить цвет"
+                        tabIndex={0}
+                    >
+                        <MdDeleteOutline className="w-4 h-4 text-gray-500" />
+                    </button>
+                )}
+            </div>
         </div>
     );
 };
