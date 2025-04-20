@@ -20,6 +20,36 @@ export const FONT_SIZE_TITLE = '3.45em';
 export const FONT_SIZE_BIG_HEADING = '5em';
 export const FONT_SIZE_VERY_BIG_HEADING = '7.5em';
 
+export const FONT_WEIGHTS = [
+    {
+        label: 'Thin',
+        value: 100,
+    },
+    {
+        label: 'Extra Light',
+        value: 200,
+    },
+    {
+        label: 'Light',
+        value: 300,
+    },
+    {
+        label: 'Regular',
+        value: 400,
+    },
+    {
+        label: 'Medium',
+        value: 500,
+    },
+    {
+        label: 'Semi Bold',
+        value: 600,
+    },
+    {
+        label: 'Bold',
+        value: 700,
+    },
+];
 
 export const HEADING_LEVELS = [
     { label: 'Маленький текст', level: SMALL_TEXT_LEVEL },

@@ -1,21 +1,62 @@
-import * as React from 'react';
+import { Textarea as ChakraTextarea } from '@chakra-ui/react';
+import { forwardRef } from 'react';
 
-import { cn } from '@/lib/utils';
+export interface TextareaProps {
+  value?: string;
+  defaultValue?: string;
+  placeholder?: string;
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  variant?: 'outline' | 'filled' | 'flushed' | 'unstyled';
+  isDisabled?: boolean;
+  isInvalid?: boolean;
+  isReadOnly?: boolean;
+  isRequired?: boolean;
+  resize?: 'none' | 'horizontal' | 'vertical' | 'both';
+  errorBorderColor?: string;
+  focusBorderColor?: string;
+  onChange?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onBlur?: (event: React.FocusEvent<HTMLTextAreaElement>) => void;
+  onFocus?: (event: React.FocusEvent<HTMLTextAreaElement>) => void;
+  [key: string]: any;
+}
 
-export type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>;
-
-const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(({ className, ...props }, ref) => {
-    return (
-        <textarea
-            className={cn(
-                'flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
-                className
-            )}
-            ref={ref}
-            {...props}
-        />
-    );
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
+  value,
+  defaultValue,
+  placeholder,
+  size = 'md',
+  variant = 'outline',
+  isDisabled = false,
+  isInvalid = false,
+  isReadOnly = false,
+  isRequired = false,
+  resize = 'vertical',
+  errorBorderColor,
+  focusBorderColor,
+  onChange,
+  onBlur,
+  onFocus,
+  ...props
+}, ref) => {
+  return (
+    <ChakraTextarea
+      ref={ref}
+      value={value}
+      defaultValue={defaultValue}
+      placeholder={placeholder}
+      size={size}
+      variant={variant}
+      isDisabled={isDisabled}
+      isInvalid={isInvalid}
+      isReadOnly={isReadOnly}
+      isRequired={isRequired}
+      resize={resize}
+      errorBorderColor={errorBorderColor}
+      focusBorderColor={focusBorderColor}
+      onChange={onChange}
+      onBlur={onBlur}
+      onFocus={onFocus}
+      {...props}
+    />
+  );
 });
-Textarea.displayName = 'Textarea';
-
-export { Textarea };

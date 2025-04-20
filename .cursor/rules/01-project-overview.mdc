@@ -20,6 +20,7 @@ Presa is a web-based presentation creation tool, similar to gamma.app. It allows
 ## Tech Stack
 - Framework: Next.js with React 19
 - Styling: TailwindCSS and CSS Modules
+- Components: chakra-ui
 - State Management: Zustand
 - Rich Text Editing: TipTap
 - Authentication: NextAuth

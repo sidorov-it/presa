@@ -17,6 +17,7 @@ alwaysApply: true
 - Use destructuring for props
 - Group related state using objects
 - Prefer controlled components over uncontrolled
+- The latest version of chakra-ui is used for standard components (documentation: https://chakra-ui.com/docs/components/concepts/overview).
 
 ## Styling
 - Use CSS Modules for styling
