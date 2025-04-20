@@ -16,8 +16,17 @@ const PresentationThemeWrapper: React.FC<PresentationThemeWrapperProps> = ({ the
             <ThemeStylesApplier theme={theme} />
 
             {/* Render the server components inside */}
-            <div className="min-h-screen w-full py-10 px-4">
-                <div className="max-w-6xl mx-auto space-y-20">{children}</div>
+            <div
+                style={{
+                    paddingLeft: '1rem',
+                    paddingRight: '1rem',
+                    paddingTop: '2.5rem',
+                    paddingBottom: '2.5rem',
+                    width: '100%',
+                    minHeight: '100vh',
+                }}
+            >
+                <div style={{ marginTop: '5rem', maxWidth: '72rem' }}>{children}</div>
             </div>
         </>
     );

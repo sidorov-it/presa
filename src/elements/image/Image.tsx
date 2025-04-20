@@ -7,6 +7,7 @@ import { default as ImageComponent } from 'next/image';
 import { usePresentationStore } from '@/store/presentationStore';
 
 import styles from './Image.module.css';
+import { Spinner } from '@chakra-ui/react';
 
 interface ImageProps {
     element: ImageElement;
@@ -286,17 +287,11 @@ const Image: React.FC<ImageProps> = ({
                 }}
                 onClick={handleClickImage}
             >
-                {isLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-50 rounded">
-                        <div className="w-8 h-8 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-                    </div>
-                )}
+                {isLoading && <Spinner size="lg" />}
 
-                {error && <div className="text-red-500 text-center p-4 border border-red-200 rounded">{error}</div>}
+                {error && <div className={styles.error}>{error}</div>}
 
-                {isSelected && (
-                    <div className="absolute inset-0 border-2 border-blue-500 rounded pointer-events-none z-10"></div>
-                )}
+                {isSelected && <div className={styles.selectedBorder}></div>}
 
                 {element.src && isValidUrl(element.src) && (
                     <div className={`relative w-full ${styles.image}`}>

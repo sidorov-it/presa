@@ -283,7 +283,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
 
     const handleLayoutClick = useCallback(() => {
         useMenuStore.getState().setFocusedLayoutId(layout.id);
-        document.addEventListener('click', (e) => {
+        document.addEventListener('click', e => {
             if (e.target instanceof HTMLElement && !e.target.closest('[data-layout-id]')) {
                 useMenuStore.getState().resetFocusedLayoutId();
             }

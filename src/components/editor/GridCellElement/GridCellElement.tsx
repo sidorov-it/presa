@@ -548,7 +548,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
             {hasMultipleCells && !isTable && isLastCell && (layoutIsFocused || layoutIsHovered) && (
                 <button className={styles.addColumnIcon} onClick={handleAddColumn} title="Add column">
-                    <HiPlus className="w-4 h-4" />
+                    <HiPlus style={{ width: '1rem', height: '1rem' }} />
                 </button>
             )}
 

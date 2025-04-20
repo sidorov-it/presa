@@ -74,7 +74,7 @@ function Presentation({ presentationId, activeSlideId, onSlideSelect, tiptapRefs
     );
 
     return (
-        <div className="w-full">
+        <div style={{ width: '100%' }}>
             {slideIds.map(slideId => (
                 <SlideEditorWrapper
                     key={slideId}

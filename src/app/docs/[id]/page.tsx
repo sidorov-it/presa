@@ -8,7 +8,7 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { useSession } from 'next-auth/react';
 import Editor from '@/components/editor/Editor/Editor';
 import { IPresentation } from '@/types';
-import UndoRedoControls from '@/components/UndoRedoControls';
+import UndoRedoControls from '@/components/UndoRedoControls/UndoRedoControls';
 import { ThemeIcon } from '@/components/icons';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
 import { useThemeStore } from '@/store/themeStore';
@@ -17,8 +17,9 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { FaEye } from 'react-icons/fa';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
-import BackgroundSettingsModal from '@/components/editor/Editor/BackgroundSettingsModal';
+import BackgroundSettingsModal from '@/components/editor/BackgroundSettingsModal/BackgroundSettingsModal';
 import { HiOutlineCog6Tooth } from 'react-icons/hi2';
+import styles from './page.module.css';
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -125,8 +126,8 @@ export default function PresentationEditorPage() {
     // Memoize the loading and not found UI to prevent re-renders
     const loadingUI = useMemo(
         () => (
-            <div className="min-h-screen flex justify-center items-center bg-gray-50">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            <div className={styles.loadingContainer}>
+                <div className={styles.spinner}></div>
             </div>
         ),
         []
@@ -134,9 +135,9 @@ export default function PresentationEditorPage() {
 
     const notFoundUI = useMemo(
         () => (
-            <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50">
-                <h1 className="text-2xl font-bold text-gray-800 mb-4">Presentation Not Found</h1>
-                <p className="text-gray-600">
+            <div className={styles.notFoundContainer}>
+                <h1 className={styles.notFoundTitle}>Presentation Not Found</h1>
+                <p className={styles.notFoundText}>
                     The presentation you're looking for doesn't exist or you don't have access to it.
                 </p>
             </div>
@@ -149,32 +150,20 @@ export default function PresentationEditorPage() {
 
     return (
         <ThemeProvider initialTheme={currentTheme}>
-            <div className="min-h-screen flex flex-col">
-                {/* <header className="bg-white border-b border-gray-200 py-2 px-4">
-                <div className="container mx-auto flex items-center justify-between">
-                    <a href="/dashboard" className="text-xl font-bold text-blue-600">Presa</a>
-                    <div className="flex items-center space-x-2">
-                        {session?.user?.name && (
-                            <div className="text-sm text-gray-600">{session.user.name}</div>
-                        )}
-                    </div>
-                </div>
-            </header> */}
-
-                <header className="bg-white border-b border-gray-200 p-4">
-                    <div className="container mx-auto flex justify-between items-center">
-                        <div className="flex items-center gap-4">
-                            <Link href="/dashboard" className="text-2xl font-bold text-blue-600">
+            <div className={styles.container}>
+                <header className={styles.header}>
+                    <div className={styles.headerContent}>
+                        <div className={styles.headerLeft}>
+                            <Link href="/dashboard" className={styles.logo}>
                                 Presa
                             </Link>
-                            {/* <SaveStatus status={savingStatus} /> */}
                         </div>
 
-                        <div className="flex items-center space-x-4">
+                        <div className={styles.headerRight}>
                             <Popover open={isThemePopoverOpen} onOpenChange={setIsThemePopoverOpen}>
                                 <PopoverTrigger asChild>
                                     <div
-                                        className="flex items-center gap-2 cursor-pointer"
+                                        className={styles.themeButton}
                                         role="button"
                                         aria-label="Open theme selector"
                                         onClick={() => setIsThemePopoverOpen(!isThemePopoverOpen)}
@@ -184,16 +173,15 @@ export default function PresentationEditorPage() {
                                         <span>Тема</span>
                                     </div>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-72 p-3">
-                                    <div className="space-y-2">
-                                        <h3 className="text-sm font-medium">Выберите тему</h3>
-                                        <div className="grid gap-2">
-                                            {/* Default Theme Option */}
+                                <PopoverContent className={styles.popoverContent}>
+                                    <div>
+                                        <h3 className={styles.popoverTitle}>Выберите тему</h3>
+                                        <div className={styles.themeGrid}>
                                             <div
                                                 className={cn(
-                                                    'flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-100 border-b pb-3',
+                                                    styles.defaultThemeOption,
                                                     (!currentTheme || currentTheme.name === 'Default Theme') &&
-                                                        'bg-blue-50 ring-1 ring-blue-200'
+                                                        styles.themeOptionSelected
                                                 )}
                                                 onClick={handleSetDefaultTheme}
                                                 role="button"
@@ -201,22 +189,20 @@ export default function PresentationEditorPage() {
                                                 onKeyDown={e => e.key === 'Enter' && handleSetDefaultTheme()}
                                             >
                                                 <div
-                                                    className="w-5 h-5 rounded-full mr-2"
+                                                    className={styles.themeColorPreview}
                                                     style={{ backgroundColor: '#3b82f6' }}
                                                 />
-                                                <span className="font-medium">Стандартная тема</span>
-                                                <span className="ml-auto text-xs text-gray-500">По умолчанию</span>
+                                                <span>Стандартная тема</span>
+                                                <span className={styles.defaultLabel}>По умолчанию</span>
                                             </div>
 
-                                            {/* Custom Themes */}
                                             {themes.length > 0 ? (
                                                 themes.map(theme => (
                                                     <div
                                                         key={theme.id}
                                                         className={cn(
-                                                            'flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-100',
-                                                            currentTheme?.id === theme.id &&
-                                                                'bg-blue-50 ring-1 ring-blue-200'
+                                                            styles.themeOption,
+                                                            currentTheme?.id === theme.id && styles.themeOptionSelected
                                                         )}
                                                         onClick={() => handleThemeChange(theme)}
                                                         role="button"
@@ -224,22 +210,19 @@ export default function PresentationEditorPage() {
                                                         onKeyDown={e => e.key === 'Enter' && handleThemeChange(theme)}
                                                     >
                                                         <div
-                                                            className="w-5 h-5 rounded-full mr-2"
+                                                            className={styles.themeColorPreview}
                                                             style={{ backgroundColor: theme.colors.primaryAccent }}
                                                         />
                                                         <span>{theme.name}</span>
                                                     </div>
                                                 ))
                                             ) : (
-                                                <div className="text-sm text-gray-500 p-2">
+                                                <div className={styles.noThemesText}>
                                                     Нет доступных пользовательских тем
                                                 </div>
                                             )}
-                                            <div className="pt-2 mt-2 border-t border-gray-200">
-                                                <Link
-                                                    href="/themes"
-                                                    className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
-                                                >
+                                            <div className={styles.themeManageLink}>
+                                                <Link href="/themes" className={styles.themeManageLinkText}>
                                                     Управление темами
                                                 </Link>
                                             </div>
@@ -250,34 +233,32 @@ export default function PresentationEditorPage() {
 
                             <button
                                 onClick={handleViewPresentation}
-                                className="flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
+                                className={styles.viewButton}
                                 aria-label="View presentation"
                             >
                                 <FaEye size={16} />
-                                <span className="text-sm font-medium">Просмотр</span>
+                                <span className={styles.viewButtonText}>Просмотр</span>
                             </button>
 
                             <button
                                 type="button"
-                                className="ml-2 p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className={styles.settingsButton}
                                 aria-label="Настроить фон презентации"
                                 tabIndex={0}
                                 onClick={handleOpenBgModal}
                                 onKeyDown={handleKeyDownCog}
                             >
-                                <HiOutlineCog6Tooth className="w-6 h-6 text-gray-600" aria-hidden="true" />
+                                <HiOutlineCog6Tooth className={styles.settingsIcon} aria-hidden="true" />
                             </button>
                             <UndoRedoControls presentationId={presentation.id} />
 
-                            <div className="flex items-center space-x-2">
-                                {session?.user?.name && (
-                                    <div className="text-sm text-gray-600">{session.user.name}</div>
-                                )}
+                            <div className={styles.userInfo}>
+                                {session?.user?.name && <div className={styles.userName}>{session.user.name}</div>}
                             </div>
                         </div>
                     </div>
                 </header>
-                <main className="flex-grow w-full">
+                <main className={styles.main}>
                     <Editor presentationId={presentation.id} />
 
                     <BackgroundSettingsModal
@@ -287,10 +268,8 @@ export default function PresentationEditorPage() {
                     />
                 </main>
 
-                <footer className="bg-gray-100 border-t border-gray-200 py-2 px-4">
-                    <div className="container mx-auto text-center text-sm text-gray-600">
-                        Presa - Create beautiful presentations with AI
-                    </div>
+                <footer className={styles.footer}>
+                    <div className={styles.footerContent}>Presa - Create beautiful presentations with AI</div>
                 </footer>
             </div>
         </ThemeProvider>

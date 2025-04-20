@@ -1,0 +1,21 @@
+.container {
+    min-height: 100vh;
+    width: 100%;
+    padding: 2.5rem 1rem;
+}
+
+.content {
+    max-width: 72rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.slideList {
+    display: flex;
+    flex-direction: column;
+    gap: 5rem;
+}
+
+.slideWrapper {
+    scroll-margin-top: 2.5rem;
+} 

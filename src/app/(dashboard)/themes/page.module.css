@@ -1,0 +1,65 @@
+.container {
+    flex: 1;
+    padding: 1rem;
+    padding-top: 1.5rem;
+    margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+    .container {
+        padding: 2rem;
+        padding-top: 1.5rem;
+    }
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.title {
+    font-size: 1.875rem;
+    font-weight: 700;
+}
+
+.addButton {
+    display: flex;
+    align-items: center;
+}
+
+.buttonIcon {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+}
+
+.themesGrid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .themesGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .themesGrid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.cardActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.deleteIcon {
+    width: 1rem;
+    height: 1rem;
+} 

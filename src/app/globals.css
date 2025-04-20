@@ -53,7 +53,7 @@
                 /*!*/
                 /*!*/
             );
-        --chakra-ring-offset-width: 0px;
+        /* --chakra-ring-offset-width: 0px;
         --chakra-ring-offset-color: #fff;
         --chakra-ring-color: rgba(66, 153, 225, 0.6);
         --chakra-ring-offset-shadow: 0 0 #0000;
@@ -473,7 +473,7 @@
         --chakra-colors-trueblue-700: #0740df;
         --chakra-colors-trueblue-800: #0540ad;
         --chakra-colors-trueblue-900: #0b2e79;
-        --chakra-colors-trueblue-950: #002253;
+        --chakra-colors-trueblue-950: #002253; */
     }
 
     .dark {
@@ -1292,3 +1292,15 @@ button[data-state="active"] {
     color: white;
 }
 
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}

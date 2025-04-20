@@ -1,64 +1,47 @@
-import {
-    Popover as ChakraPopover,
-    PopoverTrigger as ChakraPopoverTrigger,
-    PopoverContent as ChakraPopoverContent,
-    PopoverHeader,
-    PopoverBody,
-    PopoverFooter,
-    PopoverArrow,
-    // PopoverCloseButton,
-} from '@chakra-ui/react';
-import { useState } from 'react';
+import * as React from 'react';
+import * as PopoverPrimitive from '@radix-ui/react-popover';
+import { cn } from '@/lib/utils';
 
 interface PopoverProps {
     trigger: React.ReactNode;
     content: React.ReactNode;
-    header?: React.ReactNode;
-    footer?: React.ReactNode;
     isOpen?: boolean;
     onOpen?: () => void;
     onClose?: () => void;
-    placement?: 'top' | 'right' | 'bottom' | 'left';
-    closeOnBlur?: boolean;
-    closeOnEsc?: boolean;
-    isLazy?: boolean;
-    [key: string]: any;
+    className?: string;
 }
 
-export const Popover = ({
-    trigger,
-    content,
-    header,
-    footer,
-    isOpen,
-    onOpen,
-    onClose,
-    // placement = 'bottom',
-    // closeOnBlur = true,
-    // closeOnEsc = true,
-    // isLazy = false,
-    ...props
-}: PopoverProps) => {
-    const [open, setOpen] = useState(isOpen);
+export const Popover = ({ trigger, content, isOpen, onOpen, onClose, className }: PopoverProps) => {
+    const handleOpenChange = (open: boolean) => {
+        if (open) {
+            onOpen?.();
+        } else {
+            onClose?.();
+        }
+    };
 
     return (
-        <ChakraPopover.Root
-            open={open}
-            onOpenChange={e => setOpen(e.open)}
-            // positioning={placement as PositioningOptions}
-            // closeOnBlur={closeOnBlur}
-            // closeOnEsc={closeOnEsc}
-            // isLazy={isLazy}
-            {...props}
-        >
-            <ChakraPopoverTrigger>{trigger}</ChakraPopoverTrigger>
-            <ChakraPopoverContent>
-                <PopoverArrow />
-                {/* <PopoverCloseButton /> */}
-                {header && <PopoverHeader>{header}</PopoverHeader>}
-                <PopoverBody>{content}</PopoverBody>
-                {footer && <PopoverFooter>{footer}</PopoverFooter>}
-            </ChakraPopoverContent>
-        </ChakraPopover.Root>
+        <PopoverPrimitive.Root open={isOpen} onOpenChange={handleOpenChange}>
+            <PopoverPrimitive.Trigger asChild>{trigger}</PopoverPrimitive.Trigger>
+            <PopoverPrimitive.Portal>
+                <PopoverPrimitive.Content
+                    className={cn(
+                        'z-50 w-64 rounded-md border bg-white p-4 shadow-md outline-none',
+                        'data-[state=open]:animate-in data-[state=closed]:animate-out',
+                        'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
+                        'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
+                        'data-[side=bottom]:slide-in-from-top-2',
+                        'data-[side=left]:slide-in-from-right-2',
+                        'data-[side=right]:slide-in-from-left-2',
+                        'data-[side=top]:slide-in-from-bottom-2',
+                        className
+                    )}
+                    sideOffset={5}
+                >
+                    {content}
+                    <PopoverPrimitive.Arrow />
+                </PopoverPrimitive.Content>
+            </PopoverPrimitive.Portal>
+        </PopoverPrimitive.Root>
     );
 };

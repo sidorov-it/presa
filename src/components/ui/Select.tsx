@@ -29,6 +29,7 @@ interface SelectComponentProps {
     label?: string;
     name?: string;
     onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+    className?: string;
     [key: string]: any;
 }
 
@@ -42,6 +43,7 @@ export const Select = ({
     variant = 'outline',
     name,
     onChange,
+    className = '',
     ...props
 }: SelectComponentProps) => {
     // Create collection from options
@@ -82,9 +84,9 @@ export const Select = ({
             variant={variant}
             value={value}
             onValueChange={handleValueChange}
+            className={`${className} pl-4 border border-gray-300 rounded-md`}
             {...props}
         >
-            {/* {name && <HiddenSelect name={name} />} */}
             {label && <SelectLabel>{label}</SelectLabel>}
             <SelectControl>
                 <SelectTrigger>

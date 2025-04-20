@@ -1,1 +1,1 @@
-export { default as ChartSettings } from './ChartSettings';
+export { default as ChartSettings } from './ChartSettings/ChartSettings';

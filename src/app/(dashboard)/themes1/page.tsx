@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Heading } from '@/components/ui/heading';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card/Card';
 import { Button } from '@/components/ui/Button';
 import { Plus } from 'lucide-react';
 
@@ -95,7 +95,7 @@ const ThemesPage = () => {
                         <CardContent>
                             <div className="aspect-video bg-white rounded-md border-2 border-gray-200 p-4">
                                 <div className={`h-2 ${theme.previewBg} rounded mb-2`} />
-                                <div className="space-y-2">
+                                <div style={{ marginTop: '0.5rem' }}>
                                     <div className="w-full h-1 bg-gray-100 rounded" />
                                     <div className="w-full h-1 bg-gray-100 rounded" />
                                 </div>

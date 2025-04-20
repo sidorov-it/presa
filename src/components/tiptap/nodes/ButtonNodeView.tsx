@@ -286,7 +286,7 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({ node, updateAttributes, delet
 
     return (
         <NodeViewWrapper>
-            <div ref={wrapperRef} className="relative button-node-wrapper">
+            <div ref={wrapperRef} style={{ position: 'relative' }}>
                 <div className={containerStyles}>
                     <button
                         ref={buttonRef}

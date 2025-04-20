@@ -1,21 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { resetThemeStyles } from '@/utils/themeUtils';
-import {
-    FaChalkboard,
-    FaHome,
-    FaPalette,
-    FaTrash,
-    FaCog,
-    FaCreditCard,
-    FaSignOutAlt,
-    FaBars,
-    FaTimes,
-} from 'react-icons/fa';
 
 export default function ThemesLayout({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
@@ -42,10 +30,10 @@ export default function ThemesLayout({ children }: { children: React.ReactNode }
     }, [pathname, previousPath]);
 
     return (
-        <div className="min-h-screen bg-gray-50 flex">
+        <div style={{ display: 'flex', minHeight: '100vh' }}>
             {/* Main content */}
-            <div className="flex-1 flex flex-col overflow-hidden">
-                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">{children}</main>
+            <div style={{ display: 'flex', overflow: 'hidden', flexDirection: 'column', flex: '1 1 0%' }}>
+                <main style={{ overflowY: 'auto', overflowX: 'hidden', flex: '1 1 0%' }}>{children}</main>
             </div>
         </div>
     );

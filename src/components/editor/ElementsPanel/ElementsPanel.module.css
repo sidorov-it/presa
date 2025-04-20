@@ -102,3 +102,72 @@
 :global(.dark-theme) .elementItem {
     background-color: var(--header-bg);
 }
+
+.subCategoryLabel {
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.subCategoryElements {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+.elementItemLabel {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    text-align: center;
+    color: #1F2937;
+}
+
+.popupMenuHeader {
+    margin-bottom: 0.75rem;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.popupMenuHeaderTitle {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.popupMenuHeaderCloseButton {
+    color: #9CA3AF;
+
+    &:hover {
+        color: #6B7280;
+    }
+
+    &:focus {
+        outline-style: none;
+    }
+}
+
+.elementsPanelCategories {
+    margin-top: 0.75rem; 
+    margin-top: 0.875rem;
+}
+
+.elementsPanelCategory {
+    position: relative; 
+}
+
+.elementsPanelTooltipText {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem; 
+    padding-left: 0.5rem;
+    padding-right: 0.5rem; 
+    border-radius: 0.25rem; 
+    font-size: 0.75rem;
+    line-height: 1rem; 
+    text-align: right; 
+    color: #ffffff; 
+    white-space: nowrap; 
+    background-color: #1F2937;
+}

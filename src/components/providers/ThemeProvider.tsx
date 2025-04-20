@@ -74,23 +74,11 @@ export const ThemeProvider = ({ children, initialTheme }: ThemeProviderProps) =>
             '--heading-letter-spacing',
             theme.typography.headingLetterSpacing + '%'
         );
-        document.documentElement.style.setProperty(
-            '--heading-capitalization',
-            theme.typography.headingCapitalization
-        );
+        document.documentElement.style.setProperty('--heading-capitalization', theme.typography.headingCapitalization);
         // New typography CSS vars for body text
-        document.documentElement.style.setProperty(
-            '--body-line-height',
-            theme.typography.bodyLineHeight.toString()
-        );
-        document.documentElement.style.setProperty(
-            '--body-letter-spacing',
-            theme.typography.bodyLetterSpacing + '%'
-        );
-        document.documentElement.style.setProperty(
-            '--body-capitalization',
-            theme.typography.bodyCapitalization
-        );
+        document.documentElement.style.setProperty('--body-line-height', theme.typography.bodyLineHeight.toString());
+        document.documentElement.style.setProperty('--body-letter-spacing', theme.typography.bodyLetterSpacing + '%');
+        document.documentElement.style.setProperty('--body-capitalization', theme.typography.bodyCapitalization);
 
         // Slide design
         document.documentElement.style.setProperty('--slide-border-radius', theme.design.slide.borderRadius);

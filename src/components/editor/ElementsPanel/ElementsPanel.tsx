@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useCallback, useState } from 'react';
@@ -49,13 +50,17 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
             <div>
                 {categoryData.subCategories ? (
                     // Для категорий с подкатегориями (например, basic)
-                    <div className="space-y-4">
+                    <div
+                        style={{
+                            marginTop: '1rem',
+                        }}
+                    >
                         {categoryData.subCategories.map(subCategory => (
                             <div key={subCategory.id}>
                                 {subCategory.label && (
-                                    <div className="text-sm font-semibold text-gray-900 mb-2">{subCategory.label}</div>
+                                    <div className={styles.subCategoryLabel}>{subCategory.label}</div>
                                 )}
-                                <div className="grid grid-cols-3 gap-2">
+                                <div className={styles.subCategoryElements}>
                                     {subCategory.elements.map(element => (
                                         <div
                                             key={element.elementTypeId}
@@ -66,7 +71,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
                                             onClick={() => handleButtonClick(element.elementTypeId)}
                                         >
                                             {element.Icon && <element.Icon />}
-                                            <div className="text-xs text-center text-gray-800">{element.label}</div>
+                                            <div className={styles.elementItemLabel}>{element.label}</div>
                                         </div>
                                     ))}
                                 </div>
@@ -75,7 +80,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
                     </div>
                 ) : (
                     // Для категорий без подкатегорий (например, image, video, charts)
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className={styles.subCategoryElements}>
                         {categoryData.elements!.map(element => (
                             <div
                                 key={element.elementTypeId}
@@ -84,7 +89,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
                                 onDragStart={e => handleDragStart(e, element)}
                                 aria-label={element.label}
                             >
-                                <div className="text-xs text-center text-gray-800">{element.label}</div>
+                                <div className={styles.elementItemLabel}>{element.label}</div>
                             </div>
                         ))}
                     </div>
@@ -98,13 +103,13 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
     return (
         <div className={styles.popupMenu}>
             <div className={styles.popupMenuContent}>
-                <div className="flex justify-between items-center mb-3">
-                    <h3 className="text-sm font-semibold text-gray-900">
+                <div className={styles.popupMenuHeader}>
+                    <h3 className={styles.popupMenuHeaderTitle}>
                         {elementsRegistry.find(cat => cat.id === category)?.label}
                     </h3>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-500 focus:outline-none"
+                        className={styles.popupMenuHeaderCloseButton}
                         aria-label="Закрыть"
                     >
                         <svg
@@ -147,9 +152,9 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ presentationId, slideId }
     return (
         <div className={styles.elementsPanel}>
             <div className={styles.elementsPanelContent}>
-                <div className="space-y-3">
+                <div className={styles.elementsPanelCategories}>
                     {elementsRegistry.map(category => (
-                        <div key={category.id} className="relative group">
+                        <div key={category.id} className={`${styles.elementsPanelCategory} group`}>
                             <button
                                 // className={`p-2 rounded-md flex items-center justify-center hover:bg-gray-100 transition-colors duration-200 ${activeCategory === category.id ? 'bg-blue-100 text-blue-600' : 'text-gray-600'}`}
                                 className={`${styles.elementsPanelIcon} ${activeCategory === category.id ? styles.elementsPanelIconActive : ''}`}
@@ -161,7 +166,7 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ presentationId, slideId }
 
                             {/* Всплывающая подсказка */}
                             <div className={`${styles.elementsPanelTooltip} group-hover:block`}>
-                                <div className="bg-gray-800 text-white text-xs py-1 px-2 rounded whitespace-nowrap text-right">
+                                <div className={styles.elementsPanelTooltipText}>
                                     {category.label}
                                 </div>
                             </div>

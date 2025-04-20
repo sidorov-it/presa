@@ -39,8 +39,26 @@ export default function Home() {
 
     // Иначе показываем список презентаций или предложение создать новую
     return (
-        <div className="min-h-screen flex justify-center items-center bg-gray-50">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div
+            style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '100vh',
+                backgroundColor: '#F9FAFB',
+            }}
+        >
+            <div
+                style={{
+                    borderRadius: '9999px',
+                    borderTopWidth: '2px',
+                    borderBottomWidth: '2px',
+                    borderColor: '#3B82F6',
+                    width: '3rem',
+                    height: '3rem',
+                    animation: 'spin 1s linear infinite',
+                }}
+            ></div>
         </div>
     );
 }

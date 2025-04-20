@@ -8,7 +8,7 @@ import { Theme } from '@/types/theme';
 import { useThemeStore } from '@/store/themeStore';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/Input/Input';
 import { Label } from '@/components/ui/Label';
 import { generateId } from '@/utils/id';
 

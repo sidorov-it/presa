@@ -10,6 +10,8 @@ import { useMenuStore } from '@/store/menuStore';
 import { TipTapRefs } from '@/types';
 import { useShallow } from 'zustand/react/shallow';
 
+import styles from './Editor.module.css';
+
 interface EditorProps {
     presentationId: string;
 }
@@ -26,7 +28,7 @@ const EditorContent: React.FC<{
     });
 
     return (
-        <div className="min-h-screen flex flex-col">
+        <div className={styles.editorContainer}>
             <SlidesList presentationId={presentationId} activeSlideId={activeSlideId} onSlideSelect={onSlideSelect} />
 
             <div>
@@ -69,8 +71,8 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
     // Memoize not found UI
     const notFoundUI = useMemo(
         () => (
-            <div className="min-h-screen flex items-center justify-center">
-                <p className="text-lg text-gray-500">Презентация не найдена</p>
+            <div className={styles.notFoundUI}>
+                <p className={styles.notFoundUIText}>Презентация не найдена</p>
             </div>
         ),
         []
@@ -121,32 +123,13 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
 
     return (
         <DndProvider presentationId={presentationId}>
-            {/* Header с кнопкой-шестерёнкой */}
-            {/* <div className="flex items-center justify-between px-4 py-2 border-b bg-white/80 sticky top-0 z-30">
-                <div className="font-semibold text-lg">Редактор презентации</div>
-                <button
-                    type="button"
-                    className="ml-2 p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    aria-label="Настроить фон презентации"
-                    tabIndex={0}
-                    onClick={handleOpenBgModal}
-                    onKeyDown={handleKeyDownCog}
-                >
-                    <HiOutlineCog6Tooth className="w-6 h-6 text-gray-600" aria-hidden="true" />
-                </button>
-            </div> */}
-            <div style={editorBgStyle} className="min-h-screen flex flex-col">
+            <div style={editorBgStyle} className={styles.editorContainer}>
                 <EditorContent
                     presentationId={presentationId}
                     activeSlideId={activeSlideId}
                     onSlideSelect={handleSlideSelect}
                 />
             </div>
-            {/* <BackgroundSettingsModal
-                isOpen={isBgModalOpen}
-                onClose={handleCloseBgModal}
-                presentationId={presentationId}
-            /> */}
         </DndProvider>
     );
 };

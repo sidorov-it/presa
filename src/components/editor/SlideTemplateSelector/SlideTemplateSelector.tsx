@@ -127,10 +127,10 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
     const showBackgroundColor = templateType !== 'imageBackground';
 
     return (
-        <div className="flex flex-col gap-2 p-4 border rounded-lg bg-white shadow-sm">
-            <div className="flex flex-col gap-2">
-                <h3 className="text-sm font-medium text-gray-700">Шаблон</h3>
-                <div className="flex flex-row gap-1">
+        <div className={styles.container}>
+            <div className={styles.templateSelector}>
+                <h3 className={styles.templateSelectorTitle}>Шаблон</h3>
+                <div className={styles.templateSelectorButtons}>
                     {SLIDE_TEMPLATES.map(t => (
                         <button
                             key={t.value}
@@ -145,14 +145,14 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
             </div>
 
             {needsImage && (
-                <div className="flex flex-col gap-1 mt-2">
-                    <label htmlFor="slide-image-url" className="text-sm font-medium text-gray-700">
+                <div className={styles.templateSelectorImage}>
+                    <label htmlFor="slide-image-url" className={styles.templateSelectorImageLabel}>
                         URL изображения
                     </label>
                     <input
                         id="slide-image-url"
                         type="text"
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        className={styles.templateSelectorImageInput}
                         value={imageUrl}
                         onChange={handleImageUrlChange}
                         placeholder="https://..."
@@ -162,38 +162,40 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
             )}
 
             {showBackgroundColor && (
-                <div className="flex flex-row mt-2 justify-between items-center">
-                    <label htmlFor="slide-background-color" className="text-sm font-medium text-gray-700">
+                <div className={styles.templateSelectorBackgroundColor}>
+                    <label htmlFor="slide-background-color" className={styles.templateSelectorBackgroundColorLabel}>
                         Цвет фона
                     </label>
-                    <div className="flex items-center gap-2">
+                    <div className={styles.templateSelectorBackgroundColorPicker}>
                         <ColorPicker
                             onColorChange={color => handleBackgroundColorChange(color)}
                             initialColor={backgroundColor}
                             mode="card"
                             label="Выбрать цвет фона"
-                            className="w-full"
+                            style={{ width: '100%' }}
                         />
                     </div>
                 </div>
             )}
 
-            <div className="flex flex-row mt-2 justify-between items-center">
-                <label htmlFor="slide-background-color" className="text-sm font-medium text-gray-700">
+            <div className={styles.templateSelectorTextColor}>
+                <label htmlFor="slide-background-color" className={styles.templateSelectorTextColorLabel}>
                     Цвет текста
                 </label>
-                <div className="flex items-center gap-2">
+                <div className={styles.templateSelectorTextColorPicker}>
                     <ColorPicker
                         onColorChange={color => handleTextColorChange(color)}
                         initialColor={textColor}
                         mode="card"
                         label="Выбрать цвет текста"
-                        className="w-full"
+                        style={{ width: '100%' }}
                     />
                 </div>
             </div>
-            <div className="flex flex-row mt-2 justify-between items-center">
-                <label className="text-sm font-medium text-gray-700">Выравнивание контента</label>
+            <div className={styles.templateSelectorTextColor}>
+                <label htmlFor="slide-background-color" className={styles.templateSelectorTextColorLabel}>
+                    Выравнивание контента
+                </label>
                 <div className={`${styles.alignmentGroup}`}>
                     <button
                         onClick={() => handleContentAlignmentChange('top')}

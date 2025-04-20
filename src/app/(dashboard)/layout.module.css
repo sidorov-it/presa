@@ -1,0 +1,159 @@
+.container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.mobileToggle {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 20;
+}
+
+@media (min-width: 1024px) {
+    .mobileToggle {
+        display: none;
+    }
+}
+
+.toggleButton {
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+    color: var(--color-text-light);
+}
+
+.toggleButton:hover {
+    color: white;
+    background-color: #374151;
+}
+
+.toggleButton:focus {
+    outline: none;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
+    width: 16rem;
+    transition: transform 0.3s;
+    transform: translateX(-100%);
+    background-color: #1f2937;
+    overflow-y: auto;
+}
+
+.sidebarOpen {
+    transform: translateX(0);
+}
+
+@media (min-width: 1024px) {
+    .sidebar {
+        position: static;
+        transform: none;
+    }
+}
+
+.logo {
+    display: flex;
+    margin-top: 2rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.logoText {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.nav {
+    margin-top: 2.5rem;
+}
+
+.userProfile {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-bottom: 2rem;
+}
+
+.userProfileCard {
+    display: flex;
+    padding: 0.5rem;
+    margin-left: 1rem;
+    align-items: center;
+    border-radius: 0.5rem;
+    background-color: #374151;
+}
+
+.userAvatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    background-color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+}
+
+.userName {
+    color: white;
+    font-weight: 500;
+}
+
+.userEmail {
+    color: #d1d5db;
+    font-size: var(--text-sm);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.menuItem {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    color: #f3f4f6;
+}
+
+.menuItem:hover {
+    background-color: #374151;
+}
+
+.menuItemActive {
+    background-color: #374151;
+}
+
+.menuIcon {
+    margin-right: 0.75rem;
+}
+
+.signOutButton {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    margin-top: 2.5rem;
+    color: #f3f4f6;
+    width: 100%;
+}
+
+.signOutButton:hover {
+    background-color: #374151;
+}
+
+.mainContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.mainArea {
+    flex: 1;
+    overflow-x: hidden;
+    overflow-y: auto;
+}

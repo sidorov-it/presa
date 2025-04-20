@@ -1,7 +1,7 @@
 import React, { CSSProperties, useRef, useEffect } from 'react';
 import { useMenuStore } from '@/store/menuStore';
 import { cn } from '@/lib/utils';
-
+import styles from './BaseMenu.module.css';
 export interface BaseMenuProps {
     children: React.ReactNode;
     position: { x: number; y: number; rect?: DOMRect };
@@ -71,16 +71,8 @@ export const BaseMenu: React.FC<BaseMenuProps> = ({ children, position, classNam
     if (!isOpen) return null;
 
     return (
-        <div
-            ref={menuRef}
-            className={cn(
-                'min-w-auto border border-[#e2e8f0] flex p-1 rounded-md bg-white shadow-lg',
-                'light-theme-only',
-                className
-            )}
-            style={menuStyle}
-        >
-            <ul className="flex items-center space-x-1">{children}</ul>
+        <div ref={menuRef} className={cn(styles.layoutMenu, 'light-theme-only', className)} style={menuStyle}>
+            <ul className={styles.layoutMenuList}>{children}</ul>
         </div>
     );
 };

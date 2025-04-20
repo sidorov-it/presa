@@ -17,23 +17,22 @@ import {
     BiAlignJustify,
     BiX,
 } from 'react-icons/bi';
-import { Level } from '@tiptap/extension-heading';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { EditorView } from '@tiptap/pm/view';
 import { EditorState } from '@tiptap/pm/state';
 import HeadingSelector from '../settings/HeadingSelector/HeadingSelector';
-import { 
-    HEADING_LEVELS, 
-    NORMAL_TEXT_LEVEL, 
-    SMALL_TEXT_LEVEL, 
-    BIG_TEXT_LEVEL, 
-    VERY_BIG_HEADING_LEVEL, 
-    BIG_HEADING_LEVEL, 
-    TITLE_LEVEL, 
-    FONT_SIZE_SMALL_TEXT, 
-    FONT_SIZE_BIG_TEXT, 
-    FONT_SIZE_TITLE, 
-    FONT_SIZE_BIG_HEADING, 
+import {
+    HEADING_LEVELS,
+    NORMAL_TEXT_LEVEL,
+    SMALL_TEXT_LEVEL,
+    BIG_TEXT_LEVEL,
+    VERY_BIG_HEADING_LEVEL,
+    BIG_HEADING_LEVEL,
+    TITLE_LEVEL,
+    FONT_SIZE_SMALL_TEXT,
+    FONT_SIZE_BIG_TEXT,
+    FONT_SIZE_TITLE,
+    FONT_SIZE_BIG_HEADING,
     FONT_SIZE_VERY_BIG_HEADING,
     FONT_SIZE_HEADING_1,
     FONT_SIZE_HEADING_2,
@@ -42,7 +41,7 @@ import {
     HEADING_1_LEVEL,
     HEADING_2_LEVEL,
     HEADING_3_LEVEL,
-    HEADING_4_LEVEL
+    HEADING_4_LEVEL,
 } from '@/consts';
 
 export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
@@ -55,11 +54,12 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
     const getCurrentHeadingLevel = useCallback(() => {
         // Определяем текстовые стили для проверки fontSize
         const marks = editor.getAttributes('textStyle');
-        
+
         // Heading detection is no longer used since we're using the custom font size extension
         // instead of the built-in heading extension
-        
-        if (editor.isActive('paragraph') || true) { // Always check fontSize regardless of node type
+
+        if (editor.isActive('paragraph')) {
+            // Always check fontSize regardless of node type
             if (marks.fontSize) {
                 switch (marks.fontSize) {
                     case FONT_SIZE_SMALL_TEXT:
@@ -157,11 +157,12 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
             //         .setHeading({ level: level as Level })
             //         .run();
             // }
-            editor.chain()
-                    .focus()
-                    // .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
-                    .setFontSize(level)
-                    .run();
+            editor
+                .chain()
+                .focus()
+                // .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
+                .setFontSize(level)
+                .run();
             setIsHeadingMenuOpen(false);
         },
         [editor]

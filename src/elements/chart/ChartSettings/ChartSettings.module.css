@@ -1,0 +1,240 @@
+.chartSettings {
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+
+.label {
+    display: block;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+}
+
+.buttons {
+    display: flex;
+    margin-left: 0.5rem;
+}
+
+.button {
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    border-width: 1px;
+    border-color: #D1D5DB;
+}
+
+.buttonActive {
+    border-color: #3B82F6;
+    background-color: #DBEAFE;
+}
+
+.icon {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.data {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dataLabel {
+    display: block;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.buttonData {
+    display: inline-flex;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    align-items: center;
+    border-radius: 0.375rem;
+    border-width: 1px;
+    border-color: #D1D5DB;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    color: #374151;
+    background-color: #ffffff;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+
+
+
+
+
+    &:hover {
+        background-color: #F9FAFB;
+    }
+}
+
+.tableContainer {
+    overflow-x: auto;
+    border-radius: 0.375rem;
+    border-width: 1px;
+    border-color: #E5E7EB;
+}
+
+.table {
+    border-top-width: 1px;
+    border-color: #E5E7EB;
+    min-width: 100%;
+    table-layout: fixed;
+}
+
+.tableHead {
+    background-color: #F9FAFB;
+}
+
+
+.firstTableHeadItem {
+    position: sticky;
+    left: 0;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-align: left;
+    color: #6B7280;
+    text-transform: uppercase;
+    background-color: #F9FAFB;
+}
+
+.tableHeadItem {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    text-align: left;
+    color: #6B7280;
+}
+
+.tableHeadItemUnused {
+    color: #9CA3AF;
+}
+
+.tableHeadItemInput {
+    display: block;
+    border-radius: 0.375rem;
+    border-color: #D1D5DB;
+    width: 100%;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+    @media (min-width: 640px) {
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+    }
+}
+
+.tableHeadItemInputUnused {
+    opacity: 0.4;
+}
+
+.lastTableHeadItem {
+    position: relative;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    width: 100px;
+}
+
+.tableHeadItemDeleteButton {
+    color: #DC2626;
+
+    &:hover {
+        color: #7F1D1D;
+    }
+}
+
+.tableBody {
+    border-top-width: 1px;
+    border-color: #E5E7EB;
+    background-color: #ffffff;
+}
+
+.tableBodyItem {
+    position: sticky;
+    left: 0;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    white-space: nowrap;
+    background-color: #ffffff;
+}
+
+.tableBodyItemInput {
+    display: block;
+    border-radius: 0.375rem;
+    border-color: #D1D5DB;
+    width: 100%;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+    @media (min-width: 640px) {
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+    }
+}
+
+.tableBodyItemDeleteButtonTd {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem; 
+    padding-top: 1rem;
+    padding-bottom: 1rem; 
+    font-size: 0.875rem;
+    line-height: 1.25rem; 
+    font-weight: 500; 
+    text-align: right; 
+    white-space: nowrap; 
+}
+
+.tableBodyItemDeleteButton {
+    color: #DC2626;
+
+    &:hover {
+        color: #7F1D1D;
+    }
+    
+}
+
+.applyButtonContainer {
+    display: flex; 
+    padding-top: 1rem; 
+    justify-content: flex-end; 
+}
+
+.applyButton {
+    display: inline-flex; 
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem; 
+    padding-left: 1rem;
+    padding-right: 1rem; 
+    align-items: center; 
+    border-radius: 0.375rem; 
+    border-width: 1px; 
+    border-color: transparent; 
+    font-size: 0.875rem;
+    line-height: 1.25rem; 
+    font-weight: 500; 
+    color: #ffffff; 
+    background-color: #2563EB; 
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); 
+
+    &:hover {
+        background-color: #1D4ED8;
+    }
+}

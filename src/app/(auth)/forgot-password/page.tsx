@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-
+import styles from './page.module.css';
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState('');
     const [isSubmitted, setIsSubmitted] = useState(false);
@@ -46,19 +46,31 @@ export default function ForgotPasswordPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8">
+        <div className={styles.page}>
+            <div className={styles.container}>
                 <div>
-                    <h1 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Восстановить пароль</h1>
-                    <p className="mt-2 text-center text-sm text-gray-600">Мы отправим вам ссылку для сброса пароля</p>
+                    <h1 className={styles.title}>Восстановить пароль</h1>
+                    <p className={styles.description}>Мы отправим вам ссылку для сброса пароля</p>
                 </div>
 
                 {isSubmitted ? (
-                    <div className="bg-green-50 p-4 rounded-md">
-                        <div className="flex">
-                            <div className="flex-shrink-0">
+                    <div className={styles.successContainer}>
+                        <div
+                            style={{
+                                display: 'flex',
+                            }}
+                        >
+                            <div
+                                style={{
+                                    flexShrink: 0,
+                                }}
+                            >
                                 <svg
-                                    className="h-5 w-5 text-green-400"
+                                    style={{
+                                        height: '1.25rem',
+                                        width: '1.25rem',
+                                        color: '#34D399',
+                                    }}
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 20 20"
                                     fill="currentColor"
@@ -71,18 +83,49 @@ export default function ForgotPasswordPage() {
                                     />
                                 </svg>
                             </div>
-                            <div className="ml-3">
-                                <h3 className="text-sm font-medium text-green-800">Ссылка для сброса отправлена</h3>
-                                <div className="mt-2 text-sm text-green-700">
+                            <div
+                                style={{
+                                    marginLeft: '0.75rem',
+                                }}
+                            >
+                                <h3
+                                    style={{
+                                        fontSize: '0.875rem',
+                                        lineHeight: '1.25rem',
+                                        fontWeight: '500',
+                                        color: '#065F46',
+                                    }}
+                                >
+                                    Ссылка для сброса отправлена
+                                </h3>
+                                <div
+                                    style={{
+                                        marginTop: '0.5rem',
+                                        fontSize: '0.875rem',
+                                        lineHeight: '1.25rem',
+                                        color: '#047857',
+                                    }}
+                                >
                                     <p>
                                         Мы отправили ссылку для сброса пароля на {email}. Пожалуйста, проверьте ваш
                                         почтовый ящик.
                                     </p>
                                 </div>
-                                <div className="mt-4">
+                                <div
+                                    style={{
+                                        marginTop: '1rem',
+                                    }}
+                                >
                                     <Link
                                         href="/login"
-                                        className="text-sm font-medium text-blue-600 hover:text-blue-500"
+                                        style={{
+                                            fontSize: '0.875rem',
+                                            lineHeight: '1.25rem',
+                                            fontWeight: '500',
+                                            color: '#3B82F6',
+                                            marginTop: '1rem',
+                                            marginBottom: '1rem',
+                                        }}
                                     >
                                         Вернуться на страницу входа
                                     </Link>
@@ -91,9 +134,14 @@ export default function ForgotPasswordPage() {
                         </div>
                     </div>
                 ) : (
-                    <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                    <form
+                        style={{
+                            marginTop: '1.5rem',
+                        }}
+                        onSubmit={handleSubmit}
+                    >
                         <div>
-                            <label htmlFor="email-address" className="sr-only">
+                            <label htmlFor="email-address" className={styles.label}>
                                 Email
                             </label>
                             <input
@@ -104,27 +152,31 @@ export default function ForgotPasswordPage() {
                                 required
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
-                                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                className={styles.input}
                                 placeholder="Email address"
                             />
                         </div>
 
-                        {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+                        {error && <div className={styles.error}>{error}</div>}
 
-                        <div className="flex items-center justify-between">
-                            <div className="text-sm">
-                                <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
+                        <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                marginTop: '1rem',
+                                marginBottom: '1rem',
+                            }}
+                        >
+                            <div style={{ fontSize: '0.875rem', lineHeight: '1.25rem' }}>
+                                <Link href="/login" className={styles.link}>
                                     Вернуться на страницу входа
                                 </Link>
                             </div>
                         </div>
 
                         <div>
-                            <button
-                                type="submit"
-                                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                disabled={isLoading}
-                            >
+                            <button type="submit" className={styles.button} disabled={isLoading}>
                                 {isLoading ? 'Отправляем ссылку...' : 'Отправить ссылку'}
                             </button>
                         </div>

@@ -1,24 +1,25 @@
-import { mergeAttributes, Node } from '@tiptap/core'
+/* eslint-disable indent */
+import { mergeAttributes, Node } from '@tiptap/core';
 
 export interface ParagraphOptions {
-  /**
-   * The HTML attributes for a paragraph node.
-   * @default {}
-   * @example { class: 'foo' }
-   */
-  HTMLAttributes: Record<string, any>,
+    /**
+     * The HTML attributes for a paragraph node.
+     * @default {}
+     * @example { class: 'foo' }
+     */
+    HTMLAttributes: Record<string, any>;
 }
 
 declare module '@tiptap/core' {
-  interface Commands<ReturnType> {
-    paragraph: {
-      /**
-       * Toggle a paragraph
-       * @example editor.commands.toggleParagraph()
-       */
-      setParagraph: () => ReturnType,
+    interface Commands<ReturnType> {
+        paragraph: {
+            /**
+             * Toggle a paragraph
+             * @example editor.commands.toggleParagraph()
+             */
+            setParagraph: () => ReturnType;
+        };
     }
-  }
 }
 
 /**
@@ -26,51 +27,53 @@ declare module '@tiptap/core' {
  * @see https://www.tiptap.dev/api/nodes/paragraph
  */
 export const Paragraph = Node.create<ParagraphOptions>({
-  name: 'paragraph',
+    name: 'paragraph',
 
-  priority: 1000,
+    priority: 1000,
 
-  addOptions() {
-    return {
-      HTMLAttributes: {},
-    }
-  },
+    addOptions() {
+        return {
+            HTMLAttributes: {},
+        };
+    },
 
-  group: 'block',
+    group: 'block',
 
-  content: 'inline*',
+    content: 'inline*',
 
-  parseHTML() {
-    return [
-        {
-            tag: 'p',
-            getAttrs: node => {
-                if (!(node instanceof HTMLElement)) return false;
+    parseHTML() {
+        return [
+            {
+                tag: 'p',
+                getAttrs: node => {
+                    if (!(node instanceof HTMLElement)) return false;
 
-                return {
-                //   level: Number(node.tagName[1]),
-                  class: node.className,
-                }
-              },
-        },
-    ]
-  },
+                    return {
+                        //   level: Number(node.tagName[1]),
+                        class: node.className,
+                    };
+                },
+            },
+        ];
+    },
 
-  renderHTML({ HTMLAttributes }) {
-    return ['p', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0]
-  },
+    renderHTML({ HTMLAttributes }) {
+        return ['p', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0];
+    },
 
-  addCommands() {
-    return {
-      setParagraph: () => ({ commands }) => {
-        return commands.setNode(this.name)
-      },
-    }
-  },
+    addCommands() {
+        return {
+            setParagraph:
+                () =>
+                ({ commands }) => {
+                    return commands.setNode(this.name);
+                },
+        };
+    },
 
-  addKeyboardShortcuts() {
-    return {
-      'Mod-Alt-0': () => this.editor.commands.setParagraph(),
-    }
-  },
-})
+    addKeyboardShortcuts() {
+        return {
+            'Mod-Alt-0': () => this.editor.commands.setParagraph(),
+        };
+    },
+});

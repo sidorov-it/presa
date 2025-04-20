@@ -1,0 +1,27 @@
+.radioItemContainer {
+    display: flex;
+    align-items: center;
+}
+
+.radioItem {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: var(--chakra-colors-trueblue-400);
+    margin-right: 8px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+
+.radioItem-subtle {
+    background-color: var(--chakra-colors-trueblue-400);
+}
+
+.radioItem-primary {
+    background-color: var(--chakra-colors-trueblue-400);
+}
+
+.radioItem-custom {
+    display: none;
+}

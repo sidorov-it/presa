@@ -1,0 +1,211 @@
+.radiusButton,
+.shadowButton {
+    width: 48px;
+    height: 48px;
+    border-radius: 24px;
+    border: 2px solid #e6e6e7;
+    background-color: #e6e6e7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.opacityButton,
+.imageShapeButton {
+    width: 92px;
+    height: 48px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid #e6e6e7;
+}
+
+.opacityButton {
+    background-color: #e6e6e7;
+
+}
+.imageShapeButton {
+    background-color: #fff;
+}
+
+.imageShapeButton {
+    display: flex;
+    flex-direction: row;
+}
+
+.imageShapeLeft,
+.imageShapeRight {
+    flex: 1;
+    height: 100%;
+    width: 100%;
+    display: block;
+}
+
+.imageShapeRight {
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 100%;
+    background: var(--chakra-colors-gray-200);
+    color: var(--chakra-colors-gray-500);
+    align-items: center;
+    justify-content: end;
+    mask-size: cover;
+    mask-repeat: no-repeat;
+    mask-position: left center;
+    justify-content: center;
+}
+
+.imageShape-default {
+
+}
+
+
+.imageShape-default {
+
+}
+
+.imageShape-fade {
+    mask-image: url(../../../../elements/masks/gradient-right.svg);
+}
+
+.imageShape-diagonal {
+    mask-image: url(../../../../elements/masks/diagonal-right.svg);
+}
+
+.imageShape-round {
+    mask-image: url(../../../../elements/masks/circle-right.svg);
+}
+
+.imageShape-round-inverse {
+    mask-image: url(../../../../elements/masks/circle-inverted-right.svg);
+}
+
+.imageShape-wiggle {
+    mask-image: url(../../../../elements/masks/wiggle-right.svg);
+}
+
+.opacityContent {
+    width: 92px;
+    height: 48px;
+    background-color: white;
+    position: absolute;
+    bottom: -30%;
+    left: -30%;
+}
+
+.imageShapeContentImage {
+    margin-left: 10px;
+}
+
+.imageShapeActive {
+    border-color: #60a5fa;
+
+}
+
+.radiusActive,
+.shadowActive,
+.opacityActive {
+    background-color: #bfdbfe;
+    border-color: #60a5fa;
+}
+
+.radiusContent,
+.shadowContent {
+    width: 48px;
+    height: 48px;
+    background-color: white;
+    position: absolute;
+}
+
+.radiusContent {
+    bottom: -30%;
+    left: -30%;
+}
+
+.shadowContent  {
+    top: -40%;
+    right: -40%;
+}
+
+.shadow-none {
+    box-shadow: none;
+}
+
+.shadow-sm {
+    box-shadow: var(--chakra-shadows-lg);
+}
+
+.shadow-md {
+    box-shadow: rgba(0, 0, 0, 0.4) 4px 4px 0px 0px;
+}
+
+.borderButtonGroup {
+    gap: 0;
+    border-radius: 0px;
+}
+
+.borderButton {
+    border-radius: 0px;
+    background-color: #e6e6e7;
+}
+
+
+.borderButton:first-child {
+    border-top-left-radius: 32px;
+    border-bottom-left-radius: 32px;
+}
+
+.borderButton:last-child {
+    border-top-right-radius: 32px;
+    border-bottom-right-radius: 32px;
+}
+
+
+.sectionTitle {
+    font-size: 24px;
+}
+
+
+.borderContent {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    --chakra-line-clamp: 1;
+    color: var(--chakra-colors-gray-600);
+}
+
+.borderBorder {
+    width: var(--chakra-sizes-6);
+    height: var(--chakra-sizes-0-5);
+    background: var(--chakra-colors-gray-900);
+    border-radius: var(--chakra-radii-md);
+}
+
+.border-none {
+    border: none;
+}
+
+.border-thin {
+    border: 1px solid;
+}
+
+.border-medium {
+    border: 2px solid;
+}
+
+.border-thick {
+    border: 4px solid;
+}
+
+.borderActive {
+    background-color: #bfdbfe;
+}

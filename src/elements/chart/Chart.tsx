@@ -287,27 +287,25 @@ const Chart: React.FC<ChartProps> = ({
     // Get alignment style
     const getAlignmentClass = () => {
         if (inSettings) {
-            return 'mx-auto';
+            return styles.mxAuto;
         }
 
         const align = element.alignment || horizontalAlignment;
         switch (align) {
             case 'left':
-                return 'mr-auto';
+                return styles.mrAuto;
             case 'center':
-                return 'mx-auto';
+                return styles.mxAuto;
             case 'right':
-                return 'ml-auto';
+                return styles.mlAuto;
             default:
-                return 'mx-auto'; // Default to center alignment
+                return styles.mxAuto; // Default to center alignment
         }
     };
 
     // Render the appropriate chart based on the chart type
     const renderChart = () => {
         // Get alignment from element or state
-        const alignment = element.alignment || horizontalAlignment;
-
         // Calculate legend properties based on legend position
         const getLegendProps = () => {
             let layout: LayoutType;
@@ -455,15 +453,17 @@ const Chart: React.FC<ChartProps> = ({
                     </ResponsiveContainer>
                 );
 
-            case 'pie':
+            case 'pie': {
                 // Transform data for pie chart - use first series only
-                const pieData =
-                    element.series && element.series.length > 0
-                        ? data.map(item => ({
-                            name: item.name,
-                            value: Number(item[element.series[0].key]),
-                        }))
-                        : data;
+                let pieData;
+                if (element.series && element.series.length > 0) {
+                    pieData = data.map(item => ({
+                        name: item.name,
+                        value: Number(item[element.series![0]!.key]),
+                    }));
+                } else {
+                    pieData = data;
+                }
                 return (
                     <ResponsiveContainer width="100%" height={300}>
                         <PieChart>
@@ -490,16 +490,20 @@ const Chart: React.FC<ChartProps> = ({
                         </PieChart>
                     </ResponsiveContainer>
                 );
-
-            case 'donut':
+            }
+            case 'donut': {
                 // Transform data for donut chart - use first series only
-                const donutData =
-                    element.series && element.series.length > 0
-                        ? data.map(item => ({
-                            name: item.name,
-                            value: Number(item[element.series[0].key]),
-                        }))
-                        : data;
+                let donutData;
+
+                if (element.series && element.series.length > 0) {
+                    donutData = data.map(item => ({
+                        name: item.name,
+                        value: Number(item[element.series![0]!.key]),
+                    }));
+                } else {
+                    donutData = data;
+                }
+
                 return (
                     <ResponsiveContainer width="100%" height={300}>
                         <PieChart>
@@ -527,13 +531,9 @@ const Chart: React.FC<ChartProps> = ({
                         </PieChart>
                     </ResponsiveContainer>
                 );
-
+            }
             default:
-                return (
-                    <div className="p-4 border border-dashed border-gray-300 rounded-md text-gray-500">
-                        Unsupported chart type: {element.chartType}
-                    </div>
-                );
+                return <div className={styles.unsupportedChartType}>Unsupported chart type: {element.chartType}</div>;
         }
     };
 
@@ -621,17 +621,16 @@ const Chart: React.FC<ChartProps> = ({
             <div className={styles.chartContainer}>
                 <div
                     ref={containerRef}
-                    className={`relative ${className} ${getAlignmentClass()}`}
+                    className={`${className} ${getAlignmentClass()}`}
                     style={{
+                        position: 'relative',
                         cursor: 'pointer',
                         maxWidth: element.width ? `${element.width}px` : '100%',
                     }}
                     onClick={handleClickChart}
                     data-element-id={element.id}
                 >
-                    {isSelected && (
-                        <div className="absolute inset-0 border-2 border-blue-500 rounded pointer-events-none z-10"></div>
-                    )}
+                    {isSelected && <div className={styles.selectedBorder}></div>}
 
                     {renderChart()}
 
@@ -701,7 +700,7 @@ const Chart: React.FC<ChartProps> = ({
             {isSettingsOpen && (
                 <div
                     ref={settingsRef}
-                    className={`${styles.chartSettingsPopup}`}
+                    className={styles.chartSettingsPopup}
                     style={{
                         top: '0',
                         left: '0',
@@ -710,92 +709,97 @@ const Chart: React.FC<ChartProps> = ({
                     }}
                 >
                     {/* Chart type selector */}
-                    <div className="flex justify-between mb-4">
+                    <div className={styles.chartTypeSelector}>
                         <div
-                            className={`p-2 rounded-md cursor-pointer ${element.chartType === 'bar' ? 'bg-blue-100' : 'hover:bg-gray-100'}`}
+                            className={`${styles.chartControlButton} ${element.chartType === 'bar' ? styles.chartControlButtonActive : ''}`}
                             onClick={() => handleChangeChartType('bar')}
                         >
-                            <FaChartColumn className="w-6 h-6" />
+                            <FaChartColumn className={styles.icon} />
                         </div>
 
                         <div
-                            className={`p-2 rounded-md cursor-pointer ${element.chartType === 'column' ? 'bg-blue-100' : 'hover:bg-gray-100'}`}
+                            className={`${styles.chartControlButton} ${element.chartType === 'column' ? styles.chartControlButtonActive : ''}`}
                             onClick={() => handleChangeChartType('column')}
                         >
-                            <FaChartBar className="w-6 h-6" />
+                            <FaChartBar className={styles.icon} />
                         </div>
 
                         <div
-                            className={`p-2 rounded-md cursor-pointer ${element.chartType === 'line' ? 'bg-blue-100' : 'hover:bg-gray-100'}`}
+                            className={`${styles.chartControlButton} ${element.chartType === 'line' ? styles.chartControlButtonActive : ''}`}
                             onClick={() => handleChangeChartType('line')}
                         >
-                            <FaChartLine className="w-6 h-6" />
+                            <FaChartLine className={styles.icon} />
                         </div>
                         <div
-                            className={`p-2 rounded-md cursor-pointer ${element.chartType === 'pie' ? 'bg-blue-100' : 'hover:bg-gray-100'}`}
+                            className={`${styles.chartControlButton} ${element.chartType === 'pie' ? styles.chartControlButtonActive : ''}`}
                             onClick={() => handleChangeChartType('pie')}
                         >
-                            <FaChartPie className="w-6 h-6" />
+                            <FaChartPie className={styles.icon} />
                         </div>
                         <div
-                            className={`p-2 rounded-md cursor-pointer ${element.chartType === 'donut' ? 'bg-blue-100' : 'hover:bg-gray-100'}`}
+                            className={`${styles.chartControlButton} ${element.chartType === 'donut' ? styles.chartControlButtonActive : ''}`}
                             onClick={() => handleChangeChartType('donut')}
                         >
-                            <PiChartDonutFill className="w-6 h-6" />
+                            <PiChartDonutFill className={styles.icon} />
                         </div>
                     </div>
 
                     {/* Show labels toggle */}
-                    <div className="mb-4">
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-700">Показывать метки</span>
+                    <div className={styles.settingContainer}>
+                        <div className={styles.settingItemContainer}>
+                            <span className={styles.text}>Показывать метки</span>
                             <div
-                                className={`w-10 h-6 flex items-center rounded-full p-1 cursor-pointer ${showLabels ? 'bg-blue-500 justify-end' : 'bg-gray-300 justify-start'}`}
+                                className={`${styles.showLabelsToggle} ${showLabels ? styles.showLabelsToggleActive : ''}`}
                                 onClick={() => handleToggleSettings('showLabels', !showLabels)}
                             >
-                                <div className="bg-white w-4 h-4 rounded-full shadow-md"></div>
+                                <div className={styles.settingItemToggle}></div>
                             </div>
                         </div>
                     </div>
 
                     {/* Show values toggle */}
-                    <div className="mb-4">
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-700">Показывать значения</span>
+                    <div className={styles.settingContainer}>
+                        <div className={styles.settingItemContainer}>
+                            <span className={styles.text}>Показывать значения</span>
                             <div
-                                className={`w-10 h-6 flex items-center rounded-full p-1 cursor-pointer ${showValues ? 'bg-blue-500 justify-end' : 'bg-gray-300 justify-start'}`}
+                                className={`${styles.showLabelsToggle} ${showValues ? styles.showLabelsToggleActive : ''}`}
                                 onClick={() => handleToggleSettings('showValues', !showValues)}
                             >
-                                <div className="bg-white w-4 h-4 rounded-full shadow-md"></div>
+                                <div className={styles.settingItemToggle}></div>
                             </div>
                         </div>
                     </div>
 
                     {/* Horizontal alignment */}
-                    <div className="mb-4 flex gap-4 items-center w-full justify-between">
-                        <span className="block text-sm font-medium text-gray-700 mb-1">Выравнивание</span>
-                        <div className="flex space-x-1">
+                    <div className={styles.settingAlignmentContainer}>
+                        <span className={styles.settingItemContainer}>Выравнивание</span>
+                        <div
+                            style={{
+                                display: 'flex',
+                                marginLeft: '0.25rem',
+                            }}
+                        >
                             <button
-                                className={`p-2 border rounded ${horizontalAlignment === 'left' ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-100'}`}
+                                className={`${styles.chartAlignmentButton} ${horizontalAlignment === 'left' ? styles.chartAlignmentButtonActive : ''}`}
                                 onClick={() => handleToggleSettings('horizontalAlignment', 'left')}
                             >
-                                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                <svg className={styles.buttonIcon} viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M3,3H21V5H3V3M3,7H15V9H3V7M3,11H21V13H3V11M3,15H15V17H3V15M3,19H21V21H3V19Z" />
                                 </svg>
                             </button>
                             <button
-                                className={`p-2 border rounded ${horizontalAlignment === 'center' ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-100'}`}
+                                className={`${styles.chartAlignmentButton} ${horizontalAlignment === 'center' ? styles.chartAlignmentButtonActive : ''}`}
                                 onClick={() => handleToggleSettings('horizontalAlignment', 'center')}
                             >
-                                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                <svg className={styles.buttonIcon} viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M3,3H21V5H3V3M7,7H17V9H7V7M3,11H21V13H3V11M7,15H17V17H7V15M3,19H21V21H3V19Z" />
                                 </svg>
                             </button>
                             <button
-                                className={`p-2 border rounded ${horizontalAlignment === 'right' ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-100'}`}
+                                className={`${styles.chartAlignmentButton} ${horizontalAlignment === 'right' ? styles.chartAlignmentButtonActive : ''}`}
                                 onClick={() => handleToggleSettings('horizontalAlignment', 'right')}
                             >
-                                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                <svg className={styles.buttonIcon} viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M3,3H21V5H3V3M9,7H21V9H9V7M3,11H21V13H3V11M9,15H21V17H9V15M3,19H21V21H3V19Z" />
                                 </svg>
                             </button>
@@ -803,11 +807,11 @@ const Chart: React.FC<ChartProps> = ({
                     </div>
 
                     {/* Legend position */}
-                    <div className="mb-4">
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-700">Положение легенды</span>
+                    <div className={styles.settingContainer}>
+                        <div className={styles.settingItemContainer}>
+                            <span className={styles.text}>Положение легенды</span>
                             <select
-                                className="ml-2 border border-gray-300 rounded p-1 text-sm"
+                                className={styles.chartAlignmentSelect}
                                 value={legendPosition}
                                 onChange={e => handleToggleSettings('legendPosition', e.target.value)}
                             >
@@ -820,11 +824,8 @@ const Chart: React.FC<ChartProps> = ({
                     </div>
 
                     {/* Edit data button */}
-                    <button
-                        className="w-full mt-2 px-4 py-2 bg-blue-600 text-white rounded flex items-center justify-center"
-                        onClick={handleOpenDataModal}
-                    >
-                        <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                    <button className={styles.editButton} onClick={handleOpenDataModal}>
+                        <svg className={styles.editButtonIcon} viewBox="0 0 24 24" fill="currentColor">
                             <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
                         </svg>
                         Редактировать данные

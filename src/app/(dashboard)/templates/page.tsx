@@ -4,9 +4,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
 import { Heading } from '@/components/ui/heading';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card/Card';
 import { Button } from '@/components/ui/Button';
 import { Plus } from 'lucide-react';
+import styles from './page.module.css';
 
 // Sample template data
 const TEMPLATES = [
@@ -83,25 +84,25 @@ const TemplatesPage = () => {
     };
 
     return (
-        <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-            <div className="flex items-center justify-between">
+        <div className={styles.container}>
+            <div className={styles.header}>
                 <Heading title="Templates" description="Manage your presentation templates" />
-                <Button onClick={handleCreateTemplate}>
-                    <Plus className="mr-2 h-4 w-4" />
+                <Button onClick={handleCreateTemplate} className={styles.addButton}>
+                    <Plus className={styles.buttonIcon} />
                     New Template
                 </Button>
             </div>
 
             {isLoading ? (
-                <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                <div className={styles.loadingContainer}>
+                    <div className={styles.spinner}></div>
                 </div>
             ) : (
-                <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                <div className={styles.templatesGrid}>
                     {TEMPLATES.map(template => (
                         <Card
                             key={template.id}
-                            className="hover:shadow-lg transition-shadow cursor-pointer"
+                            className={styles.templateCard}
                             onClick={() => handleTemplateSelect(template.id)}
                         >
                             <CardHeader>
@@ -109,7 +110,7 @@ const TemplatesPage = () => {
                                 <CardDescription>{template.description}</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className="aspect-video bg-gray-100 rounded-md"></div>
+                                <div className={styles.templatePreview}></div>
                             </CardContent>
                         </Card>
                     ))}

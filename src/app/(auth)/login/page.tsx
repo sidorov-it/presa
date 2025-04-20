@@ -5,6 +5,8 @@ import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import styles from './page.module.css';
+
 export default function LoginPage() {
     const router = useRouter();
     const [email, setEmail] = useState('');
@@ -46,20 +48,20 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8">
+        <div className={styles.loginPage}>
+            <div className={styles.loginContainer}>
                 <div>
-                    <h1 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Войти</h1>
-                    <p className="mt-2 text-center text-sm text-gray-600">
+                    <h1 className={styles.loginTitle}>Войти</h1>
+                    <p className={styles.loginDescription}>
                         или{' '}
-                        <Link href="/register" className="font-medium text-blue-600 hover:text-blue-500">
+                        <Link href="/register" className={styles.loginLink}>
                             создать новый аккаунт
                         </Link>
                     </p>
                 </div>
 
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    <div className="rounded-md shadow-sm -space-y-px">
+                <form className={styles.loginForm} onSubmit={handleSubmit}>
+                    <div className={styles.loginFormInput}>
                         <div>
                             <label htmlFor="email-address" className="sr-only">
                                 Email
@@ -72,7 +74,7 @@ export default function LoginPage() {
                                 required
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                className={`${styles.loginFormInputField} ${styles.loginFormInputFieldTop}`}
                                 placeholder="Email"
                             />
                         </div>
@@ -88,40 +90,36 @@ export default function LoginPage() {
                                 required
                                 value={password}
                                 onChange={e => setPassword(e.target.value)}
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                className={`${styles.loginFormInputField} ${styles.loginFormInputFieldBottom}`}
                                 placeholder="Пароль"
                             />
                         </div>
                     </div>
 
-                    {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+                    {error && <div className={styles.loginFormError}>{error}</div>}
 
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center">
+                    <div className={styles.loginFormRemember}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
                             <input
                                 id="remember-me"
                                 name="remember-me"
                                 type="checkbox"
-                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                className={styles.loginFormRememberCheckbox}
                             />
-                            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+                            <label htmlFor="remember-me" className={styles.loginFormRememberLabel}>
                                 Запомнить меня
                             </label>
                         </div>
 
-                        <div className="text-sm">
-                            <Link href="/forgot-password" className="font-medium text-blue-600 hover:text-blue-500">
+                        <div style={{ fontSize: '0.875rem', lineHeight: '1.25rem' }}>
+                            <Link href="/forgot-password" className={styles.loginFormRememberLink}>
                                 Забыли пароль?
                             </Link>
                         </div>
                     </div>
 
                     <div>
-                        <button
-                            type="submit"
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            disabled={isLoading}
-                        >
+                        <button type="submit" className={styles.loginFormButton} disabled={isLoading}>
                             {isLoading ? 'Входим...' : 'Войти'}
                         </button>
                     </div>

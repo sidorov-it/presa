@@ -1,8 +1,14 @@
 import { Theme, ThemeColors, ThemeTypography, ThemeDesign } from '@/types/theme';
 import { Tabs as ChakraTabs } from '@chakra-ui/react';
-import Colors from './Colors';
-import Fonts from './Fonts';
-import Design from './Design';
+import Colors from './components/Colors';
+import Fonts from './components/Fonts';
+import Design from './components/Design';
+import { useState } from 'react';
+import styles from './ThemeEditor.module.css';
+import { BiSolidColorFill } from 'react-icons/bi';
+import { FaFont } from 'react-icons/fa';
+import { MdOutlineDesignServices } from 'react-icons/md';
+
 interface ThemeEditorProps {
     theme: Theme;
     onThemeChange: (theme: Theme) => void;
@@ -148,40 +154,57 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
     const items = [
         {
             label: 'Цвета',
+            icon: <BiSolidColorFill />,
             content: <Colors theme={theme} handleColorsChange={handleColorsChange} />,
         },
         {
             label: 'Шрифты',
+            icon: <FaFont />,
             content: <Fonts theme={theme} handleTypographyChange={handleTypographyChange} />,
         },
         {
             label: 'Дизайн',
+            icon: <MdOutlineDesignServices />,
             content: <Design theme={theme} handleDesignChange={handleDesignChange} />,
         },
     ];
 
+    const [selectedTab, setSelectedTab] = useState(items[0].label);
+
     return (
-        <div className="w-full">
+        <div
+            style={{
+                width: '100%',
+            }}
+        >
             <ChakraTabs.Root
-                variant={'line'}
+                variant={'plain'}
                 size={'md'}
                 colorScheme={'blue'}
                 orientation="vertical"
                 // defaultIndex={0}
                 // index={index}
-                // onChange={onChange}
+                value={selectedTab}
+                onValueChange={e => setSelectedTab(e.value)}
                 // {...props}
             >
-                <ChakraTabs.List className="mt-4 mr-4 pr-4">
-                    {items.map((item: { label: string; content: React.ReactNode }, idx: number) => (
-                        <ChakraTabs.Trigger key={idx} value={item.label} className="pr-4">
-                            {item.label}
-                        </ChakraTabs.Trigger>
-                    ))}
+                <ChakraTabs.List className={styles.tabs}>
+                    {items.map(
+                        (item: { label: string; content: React.ReactNode; icon: React.ReactNode }, idx: number) => (
+                            <ChakraTabs.Trigger
+                                key={idx}
+                                value={item.label}
+                                className={`${styles.tab} ${selectedTab === item.label ? styles.selectedTab : ''}`}
+                            >
+                                {item.icon}
+                                {item.label}
+                            </ChakraTabs.Trigger>
+                        )
+                    )}
                 </ChakraTabs.List>
                 {items.map((item: { label: string; content: React.ReactNode }, idx: number) => (
-                    <ChakraTabs.Content value={item.label} key={idx}>
-                        {item.content}
+                    <ChakraTabs.Content value={item.label} key={idx} className={styles.tabContent}>
+                        <div>{item.content}</div>
                     </ChakraTabs.Content>
                 ))}
             </ChakraTabs.Root>

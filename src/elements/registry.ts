@@ -30,12 +30,12 @@ import QuoteBubbleMenu from '@/components/editor/Menus/BubbleMenus/QuoteBubbleMe
 import TableBubbleMenu from '@/components/editor/Menus/BubbleMenus/TableBubbleMenu';
 import ListBubbleMenu from '@/components/editor/Menus/BubbleMenus/ListBubbleMenu';
 import BoxBubbleMenu from '@/components/editor/Menus/BubbleMenus/BoxBubbleMenu';
-import DefaultBubbleMenu from '@/components/editor/Menus/BubbleMenus/DefaultBubbleMenu';
+import DefaultBubbleMenu from '@/components/editor/Menus/BubbleMenus/DefaultBubbleMenu/DefaultBubbleMenu';
 import ButtonMenu from '@/components/editor/Menus/ButtonMenu';
 
 // Import our new Image components
 import { ImageSettings } from './image';
-import ChartSettings from './chart/ChartSettings';
+import ChartSettings from './chart/ChartSettings/ChartSettings';
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 
 // Define component type enum to better categorize elements by their structure

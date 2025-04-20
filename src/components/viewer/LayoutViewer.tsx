@@ -25,14 +25,18 @@ const LayoutViewer = ({ layout, slideId }: LayoutViewerProps) => {
 
     return (
         <div
-            className="w-full h-full"
             style={{
+                height: '100%',
+                width: '100%',
                 ...layout.style,
             }}
         >
             <div
-                className="grid w-full h-full gap-4"
                 style={{
+                    display: 'grid',
+                    gap: '1rem',
+                    width: '100%',
+                    height: '100%',
                     gridTemplateColumns: getGridTemplateColumns(),
                     gridTemplateAreas: gridTemplateAreas,
                 }}
@@ -43,7 +47,7 @@ const LayoutViewer = ({ layout, slideId }: LayoutViewerProps) => {
                         const cellElements = layout.elements.filter(element => element.cellId === cell.id);
 
                         return (
-                            <div key={cell.id} className="relative">
+                            <div key={cell.id} style={{ position: 'relative' }}>
                                 {cellElements.map(element => (
                                     <ElementViewer
                                         key={element.id}

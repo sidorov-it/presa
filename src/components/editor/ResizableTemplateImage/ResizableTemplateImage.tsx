@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef, useEffect, memo, useMemo } from '
 import { usePresentationStore } from '@/store/presentationStore';
 import styles from './ResizableTemplateImage.module.css';
 import deepEqual from 'deep-equal';
-import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder';
+import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlaceholder';
 
 // Minimum size in percentage for image sections
 const MIN_SIZE = 10;

@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { HexColorPicker } from 'react-colorful';
-import { Input } from '@/components/ui/Input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
+import { Input } from '@/components/ui/Input/Input';
+import { Popover } from '@/components/ui/Popover';
 import { cn } from '@/lib/utils';
+import { MdDeleteOutline } from 'react-icons/md';
 
 import styles from './ColorPicker.module.css';
-import { MdDeleteOutline } from 'react-icons/md';
 
 interface ColorPickerProps {
     value: string;
@@ -15,11 +15,16 @@ interface ColorPickerProps {
     handleRemove?: () => void;
 }
 
-export const ColorPicker = ({ value, onChange, className, isShowRemoveIcon = false, handleRemove }: ColorPickerProps) => {
+export const ColorPicker = ({
+    value,
+    onChange,
+    className,
+    isShowRemoveIcon = false,
+    handleRemove,
+}: ColorPickerProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const [inputValue, setInputValue] = useState(value);
 
-    // Update input value when external value changes
     useEffect(() => {
         setInputValue(value);
     }, [value]);
@@ -33,74 +38,77 @@ export const ColorPicker = ({ value, onChange, className, isShowRemoveIcon = fal
         const newValue = e.target.value;
         setInputValue(newValue);
 
-        // Only update the actual color if it's a valid hex color
         if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(newValue)) {
             onChange(newValue);
         }
     };
 
     const handleInputBlur = () => {
-        // Revert to the valid value if the input is invalid
         if (!/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(inputValue)) {
             setInputValue(value);
         }
     };
 
-    return (
-        <div className={cn('flex items-center gap-2', className)}>
-            <Popover open={isOpen} onOpenChange={setIsOpen}>
-                <PopoverTrigger asChild>
-                    <button
-                        type="button"
-                        className="w-10 h-10 rounded border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                        style={{ backgroundColor: value }}
-                        aria-label="Выбрать цвет"
-                        tabIndex={0}
-                    />
-                </PopoverTrigger>
-                <PopoverContent className="w-64 p-3">
-                    <div className="space-y-3">
-                        <HexColorPicker
-                            color={value}
-                            onChange={handleColorChange}
-                            data-testid="color-picker"
-                            className={`${styles.colorPicker}`}
-                        />
+    const colorButton = (
+        <button
+            type="button"
+            className={styles.colorButton}
+            style={{ backgroundColor: value }}
+            aria-label="Выбрать цвет"
+            tabIndex={0}
+        />
+    );
 
-                        <div className="flex items-center gap-2">
-                            <div className="flex items-center gap-1">
-                                <div className="w-6 h-6 rounded" style={{ backgroundColor: value }} />
-                            </div>
-                            <Input
-                                type="text"
-                                value={inputValue}
-                                onChange={handleInputChange}
-                                onBlur={handleInputBlur}
-                                className="flex-1"
-                                aria-label="Код цвета"
-                            />
-                        </div>
-                    </div>
-                </PopoverContent>
-            </Popover>
-            <div className="relative flex-1">
+    const colorPickerContent = (
+        <div style={{ width: '100%' }}>
+            <HexColorPicker
+                color={value}
+                onChange={handleColorChange}
+                data-testid="color-picker"
+                className={styles.colorPicker}
+            />
+            <div className={styles.colorPickerContent}>
+                <div className={styles.colorPickerButton} style={{ backgroundColor: value }} />
                 <Input
                     type="text"
                     value={inputValue}
                     onChange={handleInputChange}
                     onBlur={handleInputBlur}
-                    className="flex-1"
+                    className={styles.colorPickerInput}
+                    size="sm"
                     aria-label="Код цвета"
                 />
-                {isShowRemoveIcon && (
+            </div>
+        </div>
+    );
+
+    return (
+        <div className={cn('flex items-center gap-2', className)}>
+            <Popover
+                trigger={colorButton}
+                content={colorPickerContent}
+                isOpen={isOpen}
+                onOpen={() => setIsOpen(true)}
+                onClose={() => setIsOpen(false)}
+            />
+            <div style={{ position: 'relative', flex: '1 1 0%' }}>
+                <Input
+                    type="text"
+                    value={inputValue}
+                    onChange={handleInputChange}
+                    onBlur={handleInputBlur}
+                    className={styles.colorPickerInput}
+                    aria-label="Код цвета"
+                />
+                {isShowRemoveIcon && handleRemove && (
                     <button
                         type="button"
                         onClick={handleRemove}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                        className={styles.removeButton}
                         aria-label="Удалить цвет"
                         tabIndex={0}
                     >
-                        <MdDeleteOutline className="w-4 h-4 text-gray-500" />
+                        <MdDeleteOutline className={styles.removeIcon} />
                     </button>
                 )}
             </div>

@@ -1,101 +1,271 @@
 .chartContainer {
-  width: 100%;
-  margin: 0 auto;
-  padding: 4px;
-  position: relative;
+    width: 100%;
+    margin: 0 auto;
+    padding: 4px;
+    position: relative;
 }
 
 .chartControls {
-  position: absolute;
-  top: 0;
-  right: 0;
-  display: flex;
-  gap: 4px;
-  z-index: 10;
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    gap: 4px;
+    z-index: 10;
 }
 
 .chartControlButton {
-  background-color: rgba(255, 255, 255, 0.8);
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .chartControlButton:hover {
-  background-color: rgba(255, 255, 255, 1);
-  border-color: #aaa;
+    background-color: rgba(255, 255, 255, 1);
+    border-color: #aaa;
 }
 
 .editButton {
-  background-color: #f0f9ff;
-  border-color: #93c5fd;
-  color: #2563eb;
+    background-color: #f0f9ff;
+    border-color: #93c5fd;
+    color: #2563eb;
 }
 
 /* Resize Dot Styles */
 .dot {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background-color: white;
-  border: 2px solid #3b82f6;
-  border-radius: 50%;
-  z-index: 20;
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: white;
+    border: 2px solid #3b82f6;
+    border-radius: 50%;
+    z-index: 20;
 }
 
 /* Top edge */
 .dotTopMiddle {
-  top: -4px;
-  left: calc(50% - 4px);
+    top: -4px;
+    left: calc(50% - 4px);
 }
 
 /* Right edge */
 .dotRightMiddle {
-  right: -4px;
-  top: calc(50% - 4px);
+    right: -4px;
+    top: calc(50% - 4px);
 }
 
 /* Bottom edge */
 .dotBottomMiddle {
-  bottom: -4px;
-  left: calc(50% - 4px);
+    bottom: -4px;
+    left: calc(50% - 4px);
 }
 
 /* Left edge */
 .dotLeftMiddle {
-  left: -4px;
-  top: calc(50% - 4px);
+    left: -4px;
+    top: calc(50% - 4px);
 }
 
 /* Corners */
 .dotTopLeft {
-  top: -4px;
-  left: -4px;
+    top: -4px;
+    left: -4px;
 }
 
 .dotTopRight {
-  top: -4px;
-  right: -4px;
+    top: -4px;
+    right: -4px;
 }
 
 .dotBottomLeft {
-  bottom: -4px;
-  left: -4px;
+    bottom: -4px;
+    left: -4px;
 }
 
 .dotBottomRight {
-  bottom: -4px;
-  right: -4px;
-} 
+    bottom: -4px;
+    right: -4px;
+}
 
 .chartSettingsPopup {
-  position: fixed; 
-  z-index: 50; 
-  padding: 1rem; 
-  border-radius: 0.5rem; 
-  background-color: #ffffff; 
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+    position: fixed;
+    z-index: 50;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background-color: #ffffff;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+}
+
+.unsupportedChartType {
+    padding: 1rem;
+    border-radius: 0.375rem;
+    border-width: 1px;
+    border-color: #D1D5DB;
+    border-style: dashed;
+    color: #6B7280;
+}
+
+.selectedBorder {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
+    border-radius: 0.25rem;
+    border-width: 2px;
+    border-color: #3B82F6;
+    pointer-events: none;
+}
+
+.icon {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.chartTypeSelector {
+    display: flex;
+    justify-content: space-between;
+}
+
+.chartControlButton {
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #F3F4F6;
+    }
+}
+
+.chartControlButtonActive {
+    background-color: #DBEAFE;
+
+    &:hover {
+        background-color: #DBEAFE;
+    }
+}
+
+.settingContainer {
+    margin-bottom: 1rem;
+}
+
+.settingItemContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.settingAlignmentContainer {
+    display: flex;
+    margin-bottom: 1rem;
+    gap: 1rem;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.text {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.settingItemToggle {
+    border-radius: 9999px;
+    width: 1rem;
+    height: 1rem;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.buttonIcon {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.chartAlignmentButton {
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    border-width: 1px;
+
+    &:hover {
+        background-color: #F3F4F6;
+    }
+}
+
+.chartAlignmentButtonActive {
+    border-color: #3B82F6;
+    background-color: #DBEAFE;
+
+    &:hover {
+        background-color: #DBEAFE;
+    }
+}
+
+.chartAlignmentSelect {
+    padding: 0.25rem;
+    margin-left: 0.5rem;
+    border-radius: 0.25rem;
+    border-width: 1px;
+    border-color: #D1D5DB;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
+.editButton {
+    display: flex;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-top: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0.25rem;
+    width: 100%;
+    color: #ffffff;
+    background-color: #2563EB;
+
+}
+
+.editButtonIcon {
+    margin-right: 0.5rem;
+    width: 1rem;
+    height: 1rem;
+}
+
+.showLabelsToggle {
+    display: flex; 
+    padding: 0.25rem; 
+    align-items: center; 
+    border-radius: 9999px; 
+    width: 2.5rem; 
+    height: 1.5rem; 
+    cursor: pointer;
+    justify-content: flex-start; 
+    background-color: #D1D5DB;  
+}
+
+.showLabelsToggleActive {
+    justify-content: flex-end; 
+    background-color: #3B82F6; 
+}
+
+.mrAuto {
+    margin-right: auto;
+}
+
+.mxAuto {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.mlAuto {
+    margin-left: auto;
 }

@@ -22,7 +22,6 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {
             variant = 'solid',
             size = 'md',
-            colorScheme = 'blue',
             isLoading = false,
             isDisabled = false,
             leftIcon,
@@ -41,7 +40,6 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                 ref={ref}
                 variant={variant}
                 size={size}
-                colorScheme={colorScheme}
                 loading={isLoading}
                 disabled={isDisabled}
                 loadingText={loadingText}

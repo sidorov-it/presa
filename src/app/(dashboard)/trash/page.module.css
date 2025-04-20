@@ -1,0 +1,166 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.header {
+    margin-bottom: 1.5rem;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.description {
+    color: #4b5563;
+    margin-top: 0.5rem;
+}
+
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 16rem;
+}
+
+.spinner {
+    height: 3rem;
+    width: 3rem;
+    border-radius: 9999px;
+    border-top: 2px solid var(--primary);
+    border-bottom: 2px solid var(--primary);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.emptyState {
+    background-color: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 2rem;
+    text-align: center;
+}
+
+.emptyIcon {
+    font-size: 2.5rem;
+    color: #9ca3af;
+    margin-bottom: 1rem;
+}
+
+.emptyIconContainer {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.emptyTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.emptyText {
+    color: #6b7280;
+}
+
+.table {
+    min-width: 100%;
+    background-color: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.tableHeader {
+    background-color: #f9fafb;
+}
+
+.tableHeaderCell {
+    padding: 0.75rem 1.5rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    color: #6b7280;
+}
+
+.tableHeaderCellRight {
+    composes: tableHeaderCell;
+    text-align: right;
+}
+
+.tableBody {
+    background-color: white;
+}
+
+.tableRow {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tableCell {
+    padding: 1rem 1.5rem;
+    white-space: nowrap;
+}
+
+.presentationTitle {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #111827;
+}
+
+.timeInfo {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.timeIcon {
+    margin-right: 0.25rem;
+    color: #9ca3af;
+}
+
+.slidesCount {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.actionButtons {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.restoreButton {
+    color: var(--primary);
+    margin-right: 1rem;
+    display: inline-flex;
+    align-items: center;
+}
+
+.restoreButton:hover {
+    color: var(--primary-dark);
+}
+
+.deleteButton {
+    color: #dc2626;
+    display: inline-flex;
+    align-items: center;
+}
+
+.deleteButton:hover {
+    color: #b91c1c;
+}
+
+.actionIcon {
+    margin-right: 0.25rem;
+    display: inline;
+} 

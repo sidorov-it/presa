@@ -1,8 +1,15 @@
 /** @type {import('postcss-load-config').Config} */
-const config = {
+export default {
   plugins: {
-    tailwindcss: {},
+    'postcss-import': {},
+    'postcss-preset-env': {
+      stage: 3,
+      features: {
+        'nesting-rules': true,
+        'custom-media-queries': true,
+        'media-query-ranges': true,
+      },
+    },
+    'postcss-flexbugs-fixes': {},
   },
 };
-
-export default config;

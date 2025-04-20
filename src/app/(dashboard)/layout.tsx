@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { resetThemeStyles } from '@/utils/themeUtils';
+import styles from './layout.module.css';
 import {
     FaChalkboard,
     FaHome,
@@ -16,6 +17,7 @@ import {
     FaBars,
     FaTimes,
 } from 'react-icons/fa';
+import { clsx } from 'clsx';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
@@ -83,38 +85,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex">
+        <div className={styles.container}>
             {/* Mobile sidebar toggle */}
-            <div className="lg:hidden fixed top-4 left-4 z-20">
-                <button
-                    onClick={toggleSidebar}
-                    className="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none"
-                >
+            <div className={styles.mobileToggle}>
+                <button onClick={toggleSidebar} className={styles.toggleButton}>
                     {sidebarOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
                 </button>
             </div>
 
             {/* Sidebar */}
-            <div
-                className={`${
-                    sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-                } lg:translate-x-0 fixed inset-y-0 left-0 z-10 w-64 transition duration-300 transform bg-gray-800 overflow-y-auto lg:static lg:inset-0`}
-            >
-                <div className="flex items-center justify-center mt-8">
-                    <div className="flex items-center">
-                        <span className="text-white text-2xl font-semibold">Presa</span>
+            <div className={clsx(styles.sidebar, sidebarOpen && styles.sidebarOpen)}>
+                <div className={styles.logo}>
+                    <div className={styles.logoText}>
+                        <span>Presa</span>
                     </div>
                 </div>
 
-                <nav className="mt-10">
-                    <div className="px-4 mb-8">
-                        <div className="flex items-center space-x-4 p-2 bg-gray-700 rounded-lg">
-                            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
-                                {session?.user?.name?.charAt(0)}
-                            </div>
+                <nav className={styles.nav}>
+                    <div className={styles.userProfile}>
+                        <div className={styles.userProfileCard}>
+                            <div className={styles.userAvatar}>{session?.user?.name?.charAt(0)}</div>
                             <div>
-                                <div className="text-white font-medium">{session?.user?.name}</div>
-                                <div className="text-gray-300 text-sm truncate">{session?.user?.email}</div>
+                                <div className={styles.userName}>{session?.user?.name}</div>
+                                <div className={styles.userEmail}>{session?.user?.email}</div>
                             </div>
                         </div>
                     </div>
@@ -125,21 +118,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             <Link
                                 key={item.path}
                                 href={item.path}
-                                className={`flex items-center px-6 py-3 text-gray-100 hover:bg-gray-700 ${
-                                    isActive ? 'bg-gray-700' : ''
-                                }`}
+                                className={clsx(styles.menuItem, isActive && styles.menuItemActive)}
                             >
-                                <span className="mr-3">{item.icon}</span>
+                                <span className={styles.menuIcon}>{item.icon}</span>
                                 <span>{item.label}</span>
                             </Link>
                         );
                     })}
 
-                    <button
-                        onClick={handleSignOut}
-                        className="flex items-center px-6 py-3 mt-10 text-gray-100 hover:bg-gray-700 w-full"
-                    >
-                        <span className="mr-3">
+                    <button onClick={handleSignOut} className={styles.signOutButton}>
+                        <span className={styles.menuIcon}>
                             <FaSignOutAlt size={20} />
                         </span>
                         <span>Выйти</span>
@@ -148,8 +136,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
 
             {/* Main content */}
-            <div className="flex-1 flex flex-col overflow-hidden">
-                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">{children}</main>
+            <div className={styles.mainContent}>
+                <main className={styles.mainArea}>{children}</main>
             </div>
         </div>
     );

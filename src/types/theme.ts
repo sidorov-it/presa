@@ -51,7 +51,7 @@ export type ThemeDesign = {
         shadow: string;
         border: string;
         borderColor: string;
-        imageShape: 'square' | 'rounded' | 'circle';
+        imageShape: 'default' | 'fade' | 'diagonal' | 'round' | 'round-inverse' | 'wiggle';
     };
 
     // Blocks and Content
@@ -59,6 +59,8 @@ export type ThemeDesign = {
         backgroundColor: string;
         opacity: number;
         borderWidth: 'thin' | 'medium' | 'thick' | 'none';
+        blockFillColorsType: 'subtle' | 'primary' | 'custom';
+        blockBackgroundCustomColors: string[];
         shadow: string;
     };
 

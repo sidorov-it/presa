@@ -1,0 +1,203 @@
+.container {
+    display: flex;
+    position: relative;
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0.5rem;
+    border-width: 1px;
+    border-color: #D1D5DB;
+    border-style: dashed;
+    width: 100%;
+    height: 100%;
+    background-color: #F9FAFB;
+}
+
+.imagePlaceholderIcon {
+    margin-bottom: 1.5rem;
+    font-size: 3.75rem;
+    line-height: 1;
+    color: #D1D5DB;
+}
+
+.imagePlaceholderButtons {
+    display: flex;
+    position: relative;
+    gap: 1rem;
+}
+
+.imagePlaceholderUploadButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 9999px;
+    border-width: 1px;
+    border-color: #E5E7EB;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: #ffffff;
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+    cursor: pointer;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+    &:hover {
+        background-color: #EFF6FF;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    }
+}
+
+.imagePlaceholderLinkButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 9999px;
+    border-width: 1px;
+    border-color: #E5E7EB;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: #ffffff;
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+    &:hover {
+        background-color: #ECFDF5;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    }
+}
+
+
+.linkIcon {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    color: #6B7280;
+
+
+}
+
+.imagePlaceholderGenerateButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 9999px;
+    border-width: 1px;
+    border-color: #E5E7EB;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: #ffffff;
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+    &:hover {
+        background-color: #F5F3FF;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    }
+}
+
+.generateIcon {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    color: #6B7280;
+}
+
+.imagePlaceholderLinkPopup {
+    display: flex;
+    position: absolute;
+    top: 3rem;
+    left: 50%;
+    z-index: 20;
+    padding: 1rem;
+    flex-direction: column;
+    gap: 0.75rem;
+    border-radius: 0.75rem;
+    border-width: 1px;
+    border-color: #E5E7EB;
+    background-color: #ffffff;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.imagePlaceholderLinkPopupCloseButton {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.25rem;
+    border-radius: 9999px;
+
+
+
+
+
+
+    &:hover {
+        background-color: #F3F4F6;
+    }
+
+}
+
+.imagePlaceholderLinkPopupCloseButtonIcon {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    color: #9CA3AF;
+}
+
+.imagePlaceholderLinkPopupTitle {
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+    color: #374151;
+
+}
+
+.imagePlaceholderLinkPopupInput {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    border-radius: 0.25rem;
+    border-width: 1px;
+    border-color: #D1D5DB;
+    width: 100%;
+}
+
+.imagePlaceholderLinkPopupError {
+    margin-top: -0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #EF4444;
+}
+
+.imagePlaceholderLinkPopupButton {
+    display: flex;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    margin-top: 0.25rem;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0.25rem;
+    width: 100%;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: #3B82F6;
+
+
+
+
+
+
+    &:hover {
+        background-color: #2563EB;
+    }
+
+}
+
+.imagePlaceholderLinkPopupButtonIcon {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+}

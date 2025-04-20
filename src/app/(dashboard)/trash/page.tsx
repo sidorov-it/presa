@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { FaTrashRestore, FaTrashAlt, FaRegClock } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { pluralize } from '@/utils/helpers';
+import styles from './page.module.css';
 
 interface DeletedPresentation {
     id: string;
@@ -96,76 +97,72 @@ export default function TrashPage() {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">Корзина</h1>
-                <p className="text-gray-600 mt-2">
+        <div className={styles.container}>
+            <div className={styles.header}>
+                <h1 className={styles.title}>Корзина</h1>
+                <p className={styles.description}>
                     Удаленные презентации хранятся 30 дней перед окончательным удалением
                 </p>
             </div>
 
             {isLoading && (
-                <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                <div className={styles.loadingContainer}>
+                    <div className={styles.spinner}></div>
                 </div>
             )}
             {!isLoading && deletedPresentations.length === 0 ? (
-                <div className="bg-white rounded-lg shadow-md p-8 text-center">
-                    <div className="mb-4 flex justify-center">
-                        <FaTrashAlt className="text-gray-400 text-4xl" />
+                <div className={styles.emptyState}>
+                    <div className={styles.emptyIconContainer}>
+                        <FaTrashAlt className={styles.emptyIcon} />
                     </div>
-                    <h2 className="text-xl font-semibold text-gray-700 mb-2">Ваша корзина пуста</h2>
-                    <p className="text-gray-500">Здесь будут отображаться удаленные презентации</p>
+                    <h2 className={styles.emptyTitle}>Ваша корзина пуста</h2>
+                    <p className={styles.emptyText}>Здесь будут отображаться удаленные презентации</p>
                 </div>
             ) : (
-                <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+                <div className={styles.table}>
+                    <table>
+                        <thead className={styles.tableHeader}>
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                    Презентация
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                    Удалено
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                    Слайды
-                                </th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-                                    Действия
-                                </th>
+                                <th className={styles.tableHeaderCell}>Презентация</th>
+                                <th className={styles.tableHeaderCell}>Удалено</th>
+                                <th className={styles.tableHeaderCell}>Слайды</th>
+                                <th className={styles.tableHeaderCellRight}>Действия</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className={styles.tableBody}>
                             {deletedPresentations.map(presentation => (
-                                <tr key={presentation.id}>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm font-medium text-gray-900">{presentation.title}</div>
+                                <tr key={presentation.id} className={styles.tableRow}>
+                                    <td className={styles.tableCell}>
+                                        <div className={styles.presentationTitle}>{presentation.title}</div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center text-sm text-gray-500">
-                                            <FaRegClock className="mr-1 text-gray-400" />
+                                    <td className={styles.tableCell}>
+                                        <div className={styles.timeInfo}>
+                                            <FaRegClock className={styles.timeIcon} />
                                             {formatRelativeTime(presentation.deletedAt)}
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {pluralize(presentation.slides.length, ['слайд', 'слайда', 'слайдов'])}
+                                    <td className={styles.tableCell}>
+                                        <div className={styles.slidesCount}>
+                                            {pluralize(presentation.slides.length, ['слайд', 'слайда', 'слайдов'])}
+                                        </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button
-                                            onClick={() => handleRestore(presentation.id)}
-                                            className="text-blue-600 hover:text-blue-900 mr-4"
-                                        >
-                                            <FaTrashRestore className="inline mr-1" />
-                                            Восстановить
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(presentation.id)}
-                                            className="text-red-600 hover:text-red-900"
-                                        >
-                                            <FaTrashAlt className="inline mr-1" />
-                                            Удалить
-                                        </button>
+                                    <td className={styles.tableCell}>
+                                        <div className={styles.actionButtons}>
+                                            <button
+                                                onClick={() => handleRestore(presentation.id)}
+                                                className={styles.restoreButton}
+                                            >
+                                                <FaTrashRestore className={styles.actionIcon} />
+                                                Восстановить
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(presentation.id)}
+                                                className={styles.deleteButton}
+                                            >
+                                                <FaTrashAlt className={styles.actionIcon} />
+                                                Удалить
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

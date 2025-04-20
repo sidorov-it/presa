@@ -1,7 +1,26 @@
-import { FONT_SIZE_BIG_TEXT, FONT_SIZE_TITLE, FONT_SIZE_VERY_BIG_HEADING, FONT_SIZE_BIG_HEADING, HEADING_4_LEVEL, BIG_HEADING_LEVEL, BIG_TEXT_LEVEL, HEADING_1_LEVEL, HEADING_2_LEVEL, HEADING_3_LEVEL, HEADING_5_LEVEL, NORMAL_TEXT_LEVEL, SMALL_TEXT_LEVEL, TITLE_LEVEL, VERY_BIG_HEADING_LEVEL, FONT_SIZE_HEADING_4, FONT_SIZE_HEADING_3, FONT_SIZE_HEADING_1, FONT_SIZE_HEADING_2 } from '@/consts';
+/* eslint-disable prettier/prettier */
+import {
+    FONT_SIZE_BIG_TEXT,
+    FONT_SIZE_TITLE,
+    FONT_SIZE_VERY_BIG_HEADING,
+    FONT_SIZE_BIG_HEADING,
+    HEADING_4_LEVEL,
+    BIG_HEADING_LEVEL,
+    BIG_TEXT_LEVEL,
+    HEADING_1_LEVEL,
+    HEADING_2_LEVEL,
+    HEADING_3_LEVEL,
+    NORMAL_TEXT_LEVEL,
+    SMALL_TEXT_LEVEL,
+    TITLE_LEVEL,
+    VERY_BIG_HEADING_LEVEL,
+    FONT_SIZE_HEADING_4,
+    FONT_SIZE_HEADING_3,
+    FONT_SIZE_HEADING_1,
+    FONT_SIZE_HEADING_2,
+} from '@/consts';
 import { FONT_SIZE_SMALL_TEXT } from '@/consts';
 import { Extension } from '@tiptap/core';
-import { chain } from 'lodash';
 
 export type FontSizeOptions = {
     types: string[];
@@ -43,13 +62,13 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                             const dataFontSize = element.getAttribute('data-font-size');
                             // if (dataFontSize) return dataFontSize;
 
-                            const classList = element.classList
+                            const classList = element.classList;
                             // if (classList) return classList;
 
                             return {
                                 dataFontSize,
                                 classList,
-                            }
+                            };
                             // return element.style.fontSize?.replace(/['"]+/g, '');
                         },
                         renderHTML: attributes => {
@@ -57,13 +76,20 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                                 return {};
                             }
 
-                            if (!(typeof attributes.fontSize === 'string') && (!attributes.fontSize.dataFontSize && !attributes.fontSize.classList)) {
+                            if (
+                                !(typeof attributes.fontSize === 'string') &&
+                                !attributes.fontSize.dataFontSize &&
+                                !attributes.fontSize.classList
+                            ) {
                                 return {};
                             }
 
                             let className;
 
-                            let fontSize = typeof attributes.fontSize === 'string' ? attributes.fontSize : attributes.fontSize.dataFontSize;
+                            const fontSize =
+                                typeof attributes.fontSize === 'string'
+                                    ? attributes.fontSize
+                                    : attributes.fontSize.dataFontSize;
 
                             if (fontSize) {
                                 switch (fontSize) {
@@ -169,11 +195,8 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
             unsetFontSize:
                 () =>
                     ({ chain }) => {
-                        return chain()
-                            .setMark('textStyle', { fontSize: null })
-                            .removeEmptyTextStyle()
-                            .run();
+                        return chain().setMark('textStyle', { fontSize: null }).removeEmptyTextStyle().run();
                     },
         };
     },
-}); 
+});

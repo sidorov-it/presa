@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import type { HSL } from './types.js';
 
 export const hexToHSL = (hex: string): HSL => {
@@ -11,6 +12,7 @@ export const hexToHSL = (hex: string): HSL => {
             min = Math.min(r, g, b);
         let h = 0,
             s,
+            // eslint-disable-next-line prefer-const
             l = (max + min) / 2;
         if (max == min) {
             h = s = 0; // achromatic
@@ -36,7 +38,7 @@ export const hexToHSL = (hex: string): HSL => {
         HSL.l = Math.round(l * 100);
         return HSL;
     } catch (error) {
-        console.log(hex);
+        console.log(error, hex);
         return { h: 0, s: 0, l: 0 };
     }
 };

@@ -5,6 +5,7 @@ import SlideViewer from '@/components/viewer/SlideViewer';
 import { Theme } from '@/types/theme';
 import { Slide } from '@/types';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
+import styles from './page.module.css';
 
 // Define metadata for the page
 export const generateMetadata = async (props: { params: Promise<{ id: string }> }) => {
@@ -112,13 +113,15 @@ export default async function PresentationView(props: { params: Promise<{ id: st
 
     return (
         <ThemeProvider initialTheme={theme}>
-            <div className="min-h-screen w-full py-10 px-4">
-                <div className="max-w-6xl mx-auto space-y-20">
-                    {presentation.slides.map((slide: Slide, index: number) => (
-                        <div key={slide.id} id={`slide-${index + 1}`} className="scroll-mt-10">
-                            <SlideViewer slide={slide} />
-                        </div>
-                    ))}
+            <div className={styles.container}>
+                <div className={styles.content}>
+                    <div className={styles.slideList}>
+                        {presentation.slides.map((slide: Slide, index: number) => (
+                            <div key={slide.id} id={`slide-${index + 1}`} className={styles.slideWrapper}>
+                                <SlideViewer slide={slide} />
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </ThemeProvider>

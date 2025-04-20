@@ -776,7 +776,7 @@ export const usePresentationStore = create<PresentationState>()(
 
                 const layout = get().getLayout(presentationId, slideId, layoutId);
                 if (!layout) return;
-                const cellElements = layout.elements.filter(element => element.cellId === cellId);
+                // const cellElements = layout.elements.filter(element => element.cellId === cellId);
                 layout.elements = layout.elements.filter(element => element.cellId !== cellId);
 
                 set(state => {
@@ -803,7 +803,9 @@ export const usePresentationStore = create<PresentationState>()(
                                                                     cells: row.cells.filter(cell => cell.id !== cellId),
                                                                 })),
                                                                 columns: layout.gridStructure.columns - 1,
-                                                                columnWidths: getColumnWidths(layout.gridStructure.columns - 1),
+                                                                columnWidths: getColumnWidths(
+                                                                    layout.gridStructure.columns - 1
+                                                                ),
                                                             },
                                                         };
                                                     }
@@ -2167,12 +2169,12 @@ export const usePresentationStore = create<PresentationState>()(
                     };
 
                     // ???
-                    const updatedState = {
-                        ...get(),
-                        presentations: get().presentations.map(presentation =>
-                            presentation.id === presentationId ? updatedPresentation : presentation
-                        ),
-                    };
+                    // const updatedState = {
+                    //     ...get(),
+                    //     presentations: get().presentations.map(presentation =>
+                    //         presentation.id === presentationId ? updatedPresentation : presentation
+                    //     ),
+                    // };
 
                     set(state => {
                         const updatedState = {

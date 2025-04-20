@@ -33,10 +33,12 @@ export default function ChartTesting() {
     };
 
     return (
-        <div className="p-8">
-            <h1 className="text-2xl font-bold mb-6">Chart Testing Page</h1>
+        <div style={{ padding: '2rem' }}>
+            <h1 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', lineHeight: '2rem', fontWeight: 700 }}>
+                Chart Testing Page
+            </h1>
 
-            <div className="mb-6">
+            <div style={{ marginBottom: '1.5rem' }}>
                 <button
                     className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                     onClick={handleOpenModal}

@@ -17,6 +17,8 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 
+import styles from './ElementViewer.module.css';
+
 // Default colors for charts
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
@@ -37,17 +39,21 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
             case 'editor':
                 // For text elements, render HTML content from 'content' property
                 return (
-                    <div className="w-full h-full tiptap" dangerouslySetInnerHTML={{ __html: element.content || '' }} />
+                    <div
+                        className="tiptap"
+                        style={{ width: '100%', height: '100%' }}
+                        dangerouslySetInnerHTML={{ __html: element.content || '' }}
+                    />
                 );
 
             case 'image':
                 // For image elements, render the image
                 return (
-                    <div className="w-full h-full flex items-center justify-center">
+                    <div className={styles.container}>
                         <img
                             src={element.url || ''}
                             alt={element.alt || 'Presentation image'}
-                            className="max-w-full max-h-full object-contain"
+                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                         />
                     </div>
                 );
@@ -71,7 +77,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                 switch (chartType) {
                     case 'bar':
                         return (
-                            <div className="w-full h-full flex items-center justify-center">
+                            <div className={styles.container}>
                                 <ResponsiveContainer width="100%" height={300}>
                                     <BarChart data={data}>
                                         <CartesianGrid strokeDasharray="3 3" />
@@ -87,7 +93,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
 
                     case 'line':
                         return (
-                            <div className="w-full h-full flex items-center justify-center">
+                            <div className={styles.container}>
                                 <ResponsiveContainer width="100%" height={300}>
                                     <LineChart data={data}>
                                         <CartesianGrid strokeDasharray="3 3" />
@@ -103,7 +109,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
 
                     case 'pie':
                         return (
-                            <div className="w-full h-full flex items-center justify-center">
+                            <div className={styles.container}>
                                 <ResponsiveContainer width="100%" height={300}>
                                     <PieChart>
                                         <Pie
@@ -129,7 +135,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
 
                     case 'donut':
                         return (
-                            <div className="w-full h-full flex items-center justify-center">
+                            <div className={styles.container}>
                                 <ResponsiveContainer width="100%" height={300}>
                                     <PieChart>
                                         <Pie
@@ -155,26 +161,17 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                         );
 
                     default:
-                        return (
-                            <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                Unsupported chart type
-                            </div>
-                        );
+                        return <div className={styles.container}>Unsupported chart type</div>;
                 }
             }
             default:
                 // For unsupported element types, render a placeholder
-                return (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                        Unsupported element type
-                    </div>
-                );
+                return <div className={styles.container}>Unsupported element type</div>;
         }
     };
 
     return (
         <div
-            className="w-full h-full"
             style={{
                 top: 0,
                 left: 0,

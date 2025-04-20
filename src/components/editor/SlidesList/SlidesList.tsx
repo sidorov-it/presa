@@ -1,8 +1,10 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useState, useRef, memo, useCallback } from 'react';
-import { Slide } from '@/types';
-import styles from './SlidesList.module.css';
 import { usePresentationStore } from '@/store/presentationStore';
+import { Slide } from '@/types';
+
+import styles from './SlidesList.module.css';
 
 // Memoized individual slide component to prevent unnecessary re-renders
 const SlideItem = memo(
@@ -53,20 +55,20 @@ const SlideItem = memo(
         return (
             <div
                 className={`
-                border-b border-gray-200 cursor-pointer transition-all
-                ${isActive ? 'bg-blue-50' : 'hover:bg-gray-50'}
-                ${isLastSlide ? 'border-b-0' : ''}
+                ${styles.slideContainer}
+                ${isActive ? styles.activeSlide : styles.hoverSlide}
+                ${isLastSlide ? styles.lastSlide : ''}
             `}
                 onClick={handleItemClick}
                 aria-label={`Слайд ${index + 1}: ${slideTitle}`}
                 onKeyDown={handleItemKeyDown}
             >
                 <div className={styles.slide}>
-                    <div className="flex items-center">
-                        <div className="flex-1">
-                            <p className="text-sm truncate max-w-[120px]">{slideTitle}</p>
-                            <div className="hidden w-full h-16 bg-gray-50 rounded mt-1.5 border border-gray-100 flex items-center justify-center">
-                                <span className="text-xs text-gray-400">Предпросмотр</span>
+                    <div className={styles.slideContent}>
+                        <div className={styles.slideTitle}>
+                            <p className={styles.slideTitleText}>{slideTitle}</p>
+                            <div className={styles.slidePreview}>
+                                <span className={styles.slidePreviewText}>Предпросмотр</span>
                             </div>
                         </div>
                     </div>
@@ -117,8 +119,8 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
 
     if (slides.length === 0) {
         return (
-            <div className="text-center py-4">
-                <p className="text-gray-500">Нет слайдов</p>
+            <div className={styles.noSlides}>
+                <p className={styles.noSlidesText}>Нет слайдов</p>
             </div>
         );
     }
@@ -126,9 +128,9 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
     // Collapsed view - just show the expand button
     if (isCollapsed) {
         return (
-            <div className="fixed left-0 top-1/2 transform -translate-y-1/2 z-40">
+            <div className={styles.collapsedPanel}>
                 <button
-                    className="bg-white p-1.5 shadow-sm rounded-r-md text-gray-600 hover:text-blue-600 transition-all duration-300"
+                    className={styles.collapsedPanelButton}
                     onClick={handleToggleCollapse}
                     aria-label="Развернуть панель слайдов"
                     tabIndex={0}
@@ -155,10 +157,10 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
     // Expanded view with the list of slides
     return (
         <div className={styles.leftPanel}>
-            <div className="flex justify-between items-center p-2 border-b border-gray-200">
-                <div className="flex items-center space-x-1">
+            <div className={styles.leftPanelHeader}>
+                <div className={styles.leftPanelHeaderButtons}>
                     <button
-                        className="p-1.5 text-blue-600 rounded hover:bg-gray-100"
+                        className={styles.leftPanelHeaderButton}
                         aria-label="Показать в виде таблицы"
                         tabIndex={0}
                     >
@@ -180,7 +182,7 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
                         </svg>
                     </button>
                     <button
-                        className="p-1.5 text-gray-500 rounded hover:bg-gray-100"
+                        className={styles.leftPanelHeaderButton}
                         aria-label="Показать список"
                         tabIndex={0}
                     >
@@ -205,7 +207,7 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
                     </button>
                 </div>
                 <button
-                    className="p-1.5 text-gray-500 hover:text-gray-700 rounded"
+                    className={styles.leftPanelHeaderButton}
                     onClick={handleToggleCollapse}
                     aria-label="Свернуть панель слайдов"
                     tabIndex={0}
@@ -228,8 +230,8 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
                 </button>
             </div>
 
-            <div ref={panelRef} className="flex-1 overflow-y-auto flex flex-col items-center justify-center">
-                <div className="w-full max-w-[220px] mx-auto bg-white shadow-sm rounded-md border border-gray-200 overflow-hidden">
+            <div ref={panelRef} className={styles.leftPanelContent}>
+                <div className={styles.leftPanelContentSlides}>
                     {slides.map((slide, index) => (
                         <SlideItem
                             key={slide.id}

@@ -1,0 +1,39 @@
+.saveStatusContainer {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.savingIcon {
+    color: #3B82F6;
+    animation: spin 1s linear infinite;
+}
+
+.savingText {
+    color: #4B5563; 
+}
+
+.savedIcon {
+    color: #10B981; 
+    animation: spin 1s linear infinite;
+}
+
+.savedText {
+    color: #10B981; 
+}
+
+.errorText {
+    color: #EF4444; 
+}

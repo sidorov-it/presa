@@ -1,0 +1,35 @@
+.menuItem {
+    width: 2.25rem; /* w-9 */
+    height: 2.25rem; /* h-9 */
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.menuItem:hover,
+.menuItem:focus {
+    background-color: var(--color-bg-light);
+    outline: none;
+}
+
+.menuItem:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.active {
+    background-color: var(--color-bg-dark);
+}
+
+.danger:hover {
+    background-color: #fee2e2;
+    color: #ef4444;
+}
+
+.iconWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+} 

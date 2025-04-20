@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { Heading } from '@/components/ui/heading';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/Card/Card';
 import { Button } from '@/components/ui/Button';
 import { Check } from 'lucide-react';
+import styles from './page.module.css';
 
 // Sample plan data
 const PLANS = [
@@ -79,77 +80,81 @@ const PaymentPage = () => {
     };
 
     return (
-        <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-            <div className="flex items-center justify-between">
+        <div className={styles.container}>
+            <div className={styles.header}>
                 <Heading title="Тарифные планы" description="Выберите идеальный план для ваших нужд" />
             </div>
 
-            <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
+            <div className={styles.plansGrid}>
                 {/* Free Plan */}
                 <Card>
                     <CardHeader>
                         <CardTitle>Бесплатный</CardTitle>
                         <CardDescription>Идеально для начала работы</CardDescription>
-                        <div className="mt-4">
-                            <span className="text-3xl font-bold">0₽</span>
-                            <span className="text-muted-foreground">/месяц</span>
+                        <div className={styles.planPrice}>
+                            <span className={styles.planPriceAmount}>0₽</span>
+                            <span className={styles.planPricePeriod}>/месяц</span>
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <ul className="space-y-2">
-                            <li className="flex items-center">
-                                <Check className="mr-2 h-4 w-4 text-green-500" />
+                        <ul className={styles.featuresList}>
+                            <li className={styles.featureItem}>
+                                <Check className={styles.featureIcon} />
                                 <span>3 презентации</span>
                             </li>
-                            <li className="flex items-center">
-                                <Check className="mr-2 h-4 w-4 text-green-500" />
+                            <li className={styles.featureItem}>
+                                <Check className={styles.featureIcon} />
                                 <span>Базовые шаблоны</span>
                             </li>
-                            <li className="flex items-center">
-                                <Check className="mr-2 h-4 w-4 text-green-500" />
+                            <li className={styles.featureItem}>
+                                <Check className={styles.featureIcon} />
                                 <span>Экспорт в PDF</span>
                             </li>
                         </ul>
                     </CardContent>
                     <CardFooter>
-                        <Button variant="outline" className="w-full" onClick={() => handleSubscribe('free')}>
+                        <Button
+                            variant="outline"
+                            className={styles.fullWidthButton}
+                            onClick={() => handleSubscribe('free')}
+                        >
                             Начать
                         </Button>
                     </CardFooter>
                 </Card>
 
                 {/* Pro Plan */}
-                <Card className="border-2 border-primary">
+                <Card className={styles.popularPlan}>
                     <CardHeader>
                         <CardTitle>Профессиональный</CardTitle>
                         <CardDescription>Лучший для профессионалов</CardDescription>
-                        <div className="mt-4">
-                            <span className="text-3xl font-bold">999₽</span>
-                            <span className="text-muted-foreground">/месяц</span>
+                        <div className={styles.planPrice}>
+                            <span className={styles.planPriceAmount}>999₽</span>
+                            <span className={styles.planPricePeriod}>/месяц</span>
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <ul className="space-y-2">
-                            <li className="flex items-center">
-                                <Check className="mr-2 h-4 w-4 text-green-500" />
+                        <ul className={styles.featuresList}>
+                            <li className={styles.featureItem}>
+                                <Check className={styles.featureIcon} />
                                 <span>Неограниченное количество презентаций</span>
                             </li>
-                            <li className="flex items-center">
-                                <Check className="mr-2 h-4 w-4 text-green-500" />
+                            <li className={styles.featureItem}>
+                                <Check className={styles.featureIcon} />
                                 <span>Премиум шаблоны</span>
                             </li>
-                            <li className="flex items-center">
-                                <Check className="mr-2 h-4 w-4 text-green-500" />
+                            <li className={styles.featureItem}>
+                                <Check className={styles.featureIcon} />
                                 <span>Индивидуальный брендинг</span>
                             </li>
-                            <li className="flex items-center">
-                                <Check className="mr-2 h-4 w-4 text-green-500" />
+                            <li className={styles.featureItem}>
+                                <Check className={styles.featureIcon} />
                                 <span>Приоритетная поддержка</span>
                             </li>
                         </ul>
                     </CardContent>
                     <CardFooter>
-                        <Button className="w-full" onClick={() => handleSubscribe('pro')}>
+                        <Button className={styles.fullWidthButton} onClick={() => handleSubscribe('pro')}>
                             Подписаться
                         </Button>
                     </CardFooter>
@@ -160,32 +165,36 @@ const PaymentPage = () => {
                     <CardHeader>
                         <CardTitle>Корпоративный</CardTitle>
                         <CardDescription>Для крупных организаций</CardDescription>
-                        <div className="mt-4">
-                            <span className="text-3xl font-bold">Индивидуально</span>
+                        <div className={styles.planPrice}>
+                            <span className={styles.planPriceAmount}>Индивидуально</span>
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <ul className="space-y-2">
-                            <li className="flex items-center">
-                                <Check className="mr-2 h-4 w-4 text-green-500" />
+                        <ul className={styles.featuresList}>
+                            <li className={styles.featureItem}>
+                                <Check className={styles.featureIcon} />
                                 <span>Все возможности Профессионального тарифа</span>
                             </li>
-                            <li className="flex items-center">
-                                <Check className="mr-2 h-4 w-4 text-green-500" />
+                            <li className={styles.featureItem}>
+                                <Check className={styles.featureIcon} />
                                 <span>Индивидуальные интеграции</span>
                             </li>
-                            <li className="flex items-center">
-                                <Check className="mr-2 h-4 w-4 text-green-500" />
+                            <li className={styles.featureItem}>
+                                <Check className={styles.featureIcon} />
                                 <span>Выделенная поддержка</span>
                             </li>
-                            <li className="flex items-center">
-                                <Check className="mr-2 h-4 w-4 text-green-500" />
+                            <li className={styles.featureItem}>
+                                <Check className={styles.featureIcon} />
                                 <span>SLA соглашение</span>
                             </li>
                         </ul>
                     </CardContent>
                     <CardFooter>
-                        <Button variant="outline" className="w-full" onClick={() => handleSubscribe('enterprise')}>
+                        <Button
+                            variant="outline"
+                            className={styles.fullWidthButton}
+                            onClick={() => handleSubscribe('enterprise')}
+                        >
                             Связаться с отделом продаж
                         </Button>
                     </CardFooter>

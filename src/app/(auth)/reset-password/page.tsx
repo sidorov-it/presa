@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import styles from './page.module.css';
 
 export default function ResetPasswordPage() {
     const router = useRouter();
@@ -96,18 +97,14 @@ export default function ResetPasswordPage() {
 
     if (isInvalidToken) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-md w-full space-y-8">
-                    <div>
-                        <h1 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                            Invalid or Expired Token
-                        </h1>
-                        <p className="mt-2 text-center text-sm text-gray-600">
-                            This password reset link is invalid or has expired.
-                        </p>
+            <div className={styles.container}>
+                <div className={styles.formWrapper}>
+                    <div className={styles.header}>
+                        <h1 className={styles.title}>Invalid or Expired Token</h1>
+                        <p className={styles.subtitle}>This password reset link is invalid or has expired.</p>
                     </div>
-                    <div className="text-center mt-4">
-                        <Link href="/forgot-password" className="font-medium text-blue-600 hover:text-blue-500">
+                    <div className={styles.header}>
+                        <Link href="/forgot-password" className={styles.link}>
                             Request a new password reset link
                         </Link>
                     </div>
@@ -117,19 +114,19 @@ export default function ResetPasswordPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8">
-                <div>
-                    <h1 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Set new password</h1>
-                    <p className="mt-2 text-center text-sm text-gray-600">Enter your new password below</p>
+        <div className={styles.container}>
+            <div className={styles.formWrapper}>
+                <div className={styles.header}>
+                    <h1 className={styles.title}>Set new password</h1>
+                    <p className={styles.subtitle}>Enter your new password below</p>
                 </div>
 
                 {isSuccess ? (
-                    <div className="bg-green-50 p-4 rounded-md">
-                        <div className="flex">
-                            <div className="flex-shrink-0">
+                    <div className={styles.successAlert}>
+                        <div style={{ display: 'flex' }}>
+                            <div style={{ flexShrink: 0 }}>
                                 <svg
-                                    className="h-5 w-5 text-green-400"
+                                    className={styles.successIcon}
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 20 20"
                                     fill="currentColor"
@@ -142,9 +139,9 @@ export default function ResetPasswordPage() {
                                     />
                                 </svg>
                             </div>
-                            <div className="ml-3">
-                                <h3 className="text-sm font-medium text-green-800">Password reset successful</h3>
-                                <div className="mt-2 text-sm text-green-700">
+                            <div className={styles.successContent}>
+                                <h3 className={styles.successTitle}>Password reset successful</h3>
+                                <div className={styles.successMessage}>
                                     <p>
                                         Your password has been reset successfully. You'll be redirected to the login
                                         page in a few seconds.
@@ -154,8 +151,8 @@ export default function ResetPasswordPage() {
                         </div>
                     </div>
                 ) : (
-                    <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                        <div className="rounded-md shadow-sm -space-y-px">
+                    <form className={styles.formContent} onSubmit={handleSubmit}>
+                        <div className={styles.inputGroup}>
                             <div>
                                 <label htmlFor="password" className="sr-only">
                                     New password
@@ -168,7 +165,7 @@ export default function ResetPasswordPage() {
                                     required
                                     value={password}
                                     onChange={e => setPassword(e.target.value)}
-                                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                    className={`${styles.input} ${styles.inputFirst}`}
                                     placeholder="New password"
                                 />
                             </div>
@@ -184,20 +181,16 @@ export default function ResetPasswordPage() {
                                     required
                                     value={confirmPassword}
                                     onChange={e => setConfirmPassword(e.target.value)}
-                                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                    className={`${styles.input} ${styles.inputLast}`}
                                     placeholder="Confirm new password"
                                 />
                             </div>
                         </div>
 
-                        {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+                        {error && <div className={styles.error}>{error}</div>}
 
                         <div>
-                            <button
-                                type="submit"
-                                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                disabled={isLoading}
-                            >
+                            <button type="submit" className={styles.submitButton} disabled={isLoading}>
                                 {isLoading ? 'Resetting password...' : 'Reset password'}
                             </button>
                         </div>

@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { Heading } from '@/components/ui/heading';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card/Card';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
+import styles from './page.module.css';
 
 // export const metadata = {
 //     title: "Settings",
@@ -242,28 +243,30 @@ const SettingsPage = () => {
 
     if (isLoading) {
         return (
-            <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 flex justify-center items-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            <div className={styles.container}>
+                <div className={styles.loadingSpinner}>
+                    <div className={styles.spinner}></div>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-            <div className="flex items-center justify-between">
+        <div className={styles.container}>
+            <div className={styles.header}>
                 <Heading title="Настройки" description="Управление настройками учетной записи и предпочтениями" />
             </div>
 
-            <div className="grid gap-4 grid-cols-1">
+            <div className={styles.settingsGrid}>
                 <Card>
                     <CardHeader>
                         <CardTitle>Настройки профиля</CardTitle>
                         <CardDescription>Обновление персональной информации</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        <form onSubmit={handleSaveProfile} className="space-y-4">
-                            <div className="space-y-2">
-                                <label htmlFor="name" className="text-sm font-medium">
+                    <CardContent className={styles.cardContent}>
+                        <form onSubmit={handleSaveProfile} className={styles.form}>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="name" className={styles.label}>
                                     Имя
                                 </label>
                                 <input
@@ -271,26 +274,24 @@ const SettingsPage = () => {
                                     id="name"
                                     value={name}
                                     onChange={e => setName(e.target.value)}
-                                    className="w-full px-3 py-2 border rounded-md"
+                                    className={styles.input}
                                     placeholder="John Doe"
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <label htmlFor="email" className="text-sm font-medium">
+                            <div className={styles.formGroup}>
+                                <label htmlFor="email" className={styles.label}>
                                     Email
                                 </label>
                                 <input
                                     type="email"
                                     id="email"
                                     value={session?.user?.email || ''}
-                                    className="w-full px-3 py-2 border rounded-md bg-gray-50"
+                                    className={`${styles.input} ${styles.inputDisabled}`}
                                     readOnly
                                 />
-                                <p className="text-xs text-muted-foreground">
-                                    Адрес электронной почты не может быть изменен
-                                </p>
+                                <p className={styles.helperText}>Адрес электронной почты не может быть изменен</p>
                             </div>
-                            <Button type="submit" disabled={isSaving}>
+                            <Button type="submit" disabled={isSaving} className={styles.submitButton}>
                                 {isSaving ? 'Сохранение...' : 'Сохранить профиль'}
                             </Button>
                         </form>
@@ -302,10 +303,10 @@ const SettingsPage = () => {
                         <CardTitle>Изменение пароля</CardTitle>
                         <CardDescription>Обновление пароля учетной записи</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        <form onSubmit={handleChangePassword} className="space-y-4">
-                            <div className="space-y-2">
-                                <label htmlFor="currentPassword" className="text-sm font-medium">
+                    <CardContent className={styles.cardContent}>
+                        <form onSubmit={handleChangePassword} className={styles.form}>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="currentPassword" className={styles.label}>
                                     Текущий пароль
                                 </label>
                                 <input
@@ -313,12 +314,12 @@ const SettingsPage = () => {
                                     id="currentPassword"
                                     value={currentPassword}
                                     onChange={e => setCurrentPassword(e.target.value)}
-                                    className="w-full px-3 py-2 border rounded-md"
+                                    className={styles.input}
                                     required
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <label htmlFor="newPassword" className="text-sm font-medium">
+                            <div className={styles.formGroup}>
+                                <label htmlFor="newPassword" className={styles.label}>
                                     Новый пароль
                                 </label>
                                 <input
@@ -326,13 +327,13 @@ const SettingsPage = () => {
                                     id="newPassword"
                                     value={newPassword}
                                     onChange={e => setNewPassword(e.target.value)}
-                                    className="w-full px-3 py-2 border rounded-md"
+                                    className={styles.input}
                                     required
                                     minLength={8}
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <label htmlFor="confirmPassword" className="text-sm font-medium">
+                            <div className={styles.formGroup}>
+                                <label htmlFor="confirmPassword" className={styles.label}>
                                     Подтвердить новый пароль
                                 </label>
                                 <input
@@ -340,11 +341,11 @@ const SettingsPage = () => {
                                     id="confirmPassword"
                                     value={confirmPassword}
                                     onChange={e => setConfirmPassword(e.target.value)}
-                                    className="w-full px-3 py-2 border rounded-md"
+                                    className={styles.input}
                                     required
                                 />
                             </div>
-                            <Button type="submit" disabled={isSaving}>
+                            <Button type="submit" disabled={isSaving} className={styles.submitButton}>
                                 {isSaving ? 'Изменение...' : 'Изменить пароль'}
                             </Button>
                         </form>
@@ -356,18 +357,18 @@ const SettingsPage = () => {
                         <CardTitle>Настройки электронной почты</CardTitle>
                         <CardDescription>Управление настройками уведомлений</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        <form onSubmit={handleEmailPreferences} className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <div className="space-y-0.5">
-                                    <label htmlFor="emailUpdates" className="text-sm font-medium">
+                    <CardContent className={styles.cardContent}>
+                        <form onSubmit={handleEmailPreferences} className={styles.form}>
+                            <div className={styles.emailPreferences}>
+                                <div>
+                                    <label htmlFor="emailUpdates" className={styles.label}>
                                         Обновления и уведомления
                                     </label>
-                                    <p className="text-sm text-muted-foreground">
+                                    <p className={styles.emailPreferencesDescription}>
                                         Получать электронные письма о продуктовых обновлениях и уведомлениях
                                     </p>
                                 </div>
-                                <div className="flex items-center space-x-2">
+                                <div className={styles.checkboxGroup}>
                                     <input
                                         type="checkbox"
                                         id="emailUpdates"
@@ -377,11 +378,11 @@ const SettingsPage = () => {
                                             console.log('Checkbox toggled to:', newValue);
                                             setEmailUpdates(newValue);
                                         }}
-                                        className="w-6 h-6"
+                                        className={styles.checkbox}
                                     />
                                 </div>
                             </div>
-                            <Button type="submit" disabled={isSaving} className="mt-4">
+                            <Button type="submit" disabled={isSaving} className={styles.submitButton}>
                                 {isSaving ? 'Сохранение...' : 'Сохранить настройки'}
                             </Button>
                         </form>

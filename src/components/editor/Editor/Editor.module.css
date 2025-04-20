@@ -1,3 +1,9 @@
+.editorContainer {
+    display: flex; 
+    flex-direction: column; 
+    min-height: 100vh; 
+}
+
 .slide {
     display: flex;
     top: 0px;
@@ -18,4 +24,17 @@
     margin: 0px auto;
     transition-property: transform, padding;
     transition-duration: 200ms;
+}
+
+.notFoundUI {
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    min-height: 100vh; 
+}
+
+.notFoundUIText {
+    font-size: 1.125rem;
+    line-height: 1.75rem; 
+    color: #6B7280; 
 }

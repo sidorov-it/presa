@@ -488,11 +488,7 @@ export const ElementContent = ({
                 );
             }
 
-            return (
-                <div className="p-4 border border-dashed border-gray-300 rounded-md text-gray-500">
-                    Unsupported element type: {element.elementTypeId}
-                </div>
-            );
+            return <div className={styles.unsupportedElement}>Unsupported element type: {element.elementTypeId}</div>;
         },
         [
             elementConfig,
@@ -507,6 +503,7 @@ export const ElementContent = ({
             presentationId,
             slideId,
             layoutId,
+            hasMultipleCells,
         ]
     );
 

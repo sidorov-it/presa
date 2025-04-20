@@ -1,10 +1,5 @@
-import {
-    Mark,
-    markInputRule,
-    markPasteRule,
-    mergeAttributes,
-} from '@tiptap/core'
-
+/* eslint-disable prettier/prettier */
+import { Mark, markInputRule, markPasteRule, mergeAttributes } from '@tiptap/core';
 
 function getSizeClasses(fontSize: string) {
     switch (fontSize) {
@@ -37,7 +32,7 @@ export interface CodeOptions {
      * @default {}
      * @example { class: 'foo' }
      */
-    HTMLAttributes: Record<string, any>,
+    HTMLAttributes: Record<string, any>;
 }
 
 declare module '@tiptap/core' {
@@ -46,16 +41,16 @@ declare module '@tiptap/core' {
             /**
              * Set a code mark
              */
-            setCode: () => ReturnType,
+            setCode: () => ReturnType;
             /**
              * Toggle inline code
              */
-            toggleCode: () => ReturnType,
+            toggleCode: () => ReturnType;
             /**
              * Unset a code mark
              */
-            unsetCode: () => ReturnType,
-        }
+            unsetCode: () => ReturnType;
+        };
     }
 }
 
@@ -68,12 +63,12 @@ declare module '@tiptap/core' {
  *  This ensures that any text between backticks is formatted as code,
  *  regardless of the surrounding characters (exception being another backtick).
  */
-export const inputRegex = /(^|[^`])`([^`]+)`(?!`)/
+export const inputRegex = /(^|[^`])`([^`]+)`(?!`)/;
 
 /**
  * Matches inline code while pasting.
  */
-export const pasteRegex = /(^|[^`])`([^`]+)`(?!`)/g
+export const pasteRegex = /(^|[^`])`([^`]+)`(?!`)/g;
 
 /**
  * This extension allows you to mark text as inline code.
@@ -85,7 +80,7 @@ export const Code = Mark.create<CodeOptions>({
     addOptions() {
         return {
             HTMLAttributes: {},
-        }
+        };
     },
 
     excludes: '_',
@@ -95,91 +90,95 @@ export const Code = Mark.create<CodeOptions>({
     exitable: true,
 
     parseHTML() {
-        return [
-            { tag: 'code' },
-        ]
+        return [{ tag: 'code' }];
     },
 
     renderHTML({ HTMLAttributes }) {
-        return ['code', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0]
+        return ['code', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0];
     },
 
     addCommands() {
         return {
-            setCode: () => ({ commands }) => {
-                return commands.setMark(this.name)
-            },
-            toggleCode: () => ({ commands, editor, state }) => {
-                const { from, to } = state.selection;
-                const isActive = editor.isActive('code');
+            setCode:
+                () =>
+                    ({ commands }) => {
+                        return commands.setMark(this.name);
+                    },
+            toggleCode:
+                () =>
+                    ({ commands, editor, state }) => {
+                        const { from, to } = state.selection;
+                        const isActive = editor.isActive('code');
 
-                if (isActive) {
-                    // If code is already active, just use the built-in command
-                    return commands.toggleMark('code');
-                }
+                        if (isActive) {
+                        // If code is already active, just use the built-in command
+                            return commands.toggleMark('code');
+                        }
 
-                // If not active, we need to capture font size information before applying code
-                // Get the font size class from the surrounding textStyle mark
-                const marks = editor.getAttributes('textStyle');
-                const sizeClasses = marks.fontSize ? getSizeClasses(marks.fontSize) : '';
+                        // If not active, we need to capture font size information before applying code
+                        // Get the font size class from the surrounding textStyle mark
+                        const marks = editor.getAttributes('textStyle');
+                        const sizeClasses = marks.fontSize ? getSizeClasses(marks.fontSize) : '';
 
-                const observer = new MutationObserver((mutations) => {
-                    // Process the mutations to find added code elements
-                    for (const mutation of mutations) {
-                        console.log('mutation', mutation);
-                        if (mutation.type === 'childList') {
-                            // Look for added code elements
-                            mutation.addedNodes.forEach(node => {
-                                if (node.nodeType === Node.ELEMENT_NODE) {
-                                    // Direct match if the node is a code element
-                                    if (node.nodeName === 'CODE' && node.classList.contains('custom-code')) {
-                                        // node.classList.add(sizeClasses);
-                                        sizeClasses.forEach(sizeClass => {
-                                            node.classList.add(sizeClass);
-                                        });
-                                        // node.className = `custom-code ${sizeClasses}`;
-                                        observer.disconnect();
-                                    }
+                        const observer = new MutationObserver(mutations => {
+                        // Process the mutations to find added code elements
+                            for (const mutation of mutations) {
+                                console.log('mutation', mutation);
+                                if (mutation.type === 'childList') {
+                                // Look for added code elements
+                                    mutation.addedNodes.forEach(node => {
+                                        if (node.nodeType === Node.ELEMENT_NODE) {
+                                        // Direct match if the node is a code element
+                                            if (node.nodeName === 'CODE' && node.classList.contains('custom-code')) {
+                                            // node.classList.add(sizeClasses);
+                                                sizeClasses.forEach(sizeClass => {
+                                                    node.classList.add(sizeClass);
+                                                });
+                                                // node.className = `custom-code ${sizeClasses}`;
+                                                observer.disconnect();
+                                            }
 
-                                    // Also check children if it's a container
-                                    const codeElements = (node as Element).querySelectorAll('code.custom-code');
-                                    codeElements.forEach(code => {
-                                        sizeClasses.forEach(sizeClass => {
-                                            code.classList.add(sizeClass);
-                                        });
-                                        // code.className = `custom-code ${sizeClasses}`;
-                                        observer.disconnect();
+                                            // Also check children if it's a container
+                                            const codeElements = (node as Element).querySelectorAll('code.custom-code');
+                                            codeElements.forEach(code => {
+                                                sizeClasses.forEach(sizeClass => {
+                                                    code.classList.add(sizeClass);
+                                                });
+                                                // code.className = `custom-code ${sizeClasses}`;
+                                                observer.disconnect();
+                                            });
+                                        }
                                     });
                                 }
-                            });
-                        }
-                    }
+                            }
 
-                    // Disconnect after processing
-                    observer.disconnect();
-                });
+                            // Disconnect after processing
+                            observer.disconnect();
+                        });
 
-                // Start observing the editor DOM
-                observer.observe(editor.view.dom, {
-                    childList: true,
-                    subtree: true,
-                    attributes: true,
-                    attributeFilter: ['class']
-                });
-                // Apply code mark
-                const result = commands.toggleMark('code');
-                return result;
-            },
-            unsetCode: () => ({ commands }) => {
-                return commands.unsetMark(this.name)
-            },
-        }
+                        // Start observing the editor DOM
+                        observer.observe(editor.view.dom, {
+                            childList: true,
+                            subtree: true,
+                            attributes: true,
+                            attributeFilter: ['class'],
+                        });
+                        // Apply code mark
+                        const result = commands.toggleMark('code');
+                        return result;
+                    },
+            unsetCode:
+                () =>
+                    ({ commands }) => {
+                        return commands.unsetMark(this.name);
+                    },
+        };
     },
 
     addKeyboardShortcuts() {
         return {
             'Mod-e': () => this.editor.commands.toggleCode(),
-        }
+        };
     },
 
     addInputRules() {
@@ -188,7 +187,7 @@ export const Code = Mark.create<CodeOptions>({
                 find: inputRegex,
                 type: this.type,
             }),
-        ]
+        ];
     },
 
     addPasteRules() {
@@ -197,6 +196,6 @@ export const Code = Mark.create<CodeOptions>({
                 find: pasteRegex,
                 type: this.type,
             }),
-        ]
+        ];
     },
-})
+});

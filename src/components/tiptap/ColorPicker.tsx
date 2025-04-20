@@ -134,7 +134,7 @@ export const ColorPicker = ({
                 ></div>
                 <span>{currentColor}</span>
                 <svg
-                    className="h-4 w-4 ml-auto"
+                    style={{ width: '1rem', height: '1rem' }}
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     fill="currentColor"
@@ -199,7 +199,15 @@ export const ColorPicker = ({
                             </button>
                         </div>
                         {!isHexValid && (
-                            <div className="text-red-500 text-xs mt-1" role="alert">
+                            <div
+                                style={{
+                                    marginTop: '0.25rem',
+                                    fontSize: '0.75rem',
+                                    lineHeight: '1rem',
+                                    color: '#EF4444',
+                                }}
+                                role="alert"
+                            >
                                 Введите корректный hex-цвет (#RRGGBB)
                             </div>
                         )}
