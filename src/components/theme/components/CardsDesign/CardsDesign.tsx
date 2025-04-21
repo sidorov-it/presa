@@ -1,14 +1,12 @@
 import { Label } from '@/components/ui/Label';
-import { ButtonGroup } from '@chakra-ui/react';
-import { Button } from '@/components/ui/Button';
 import ColorPicker from '@/components/ui/ColorPicker';
-import { Theme } from '@/types/theme';
+import { Theme, ThemeDesignShadow } from '@/types/theme';
 import { ThemeDesign } from '@/types/theme';
-import Tooltip from '@/components/tooltip/Tooltip';
-import { RxBorderNone } from 'react-icons/rx';
 import { FaRegImage } from 'react-icons/fa6';
 
 import styles from './CardsDesign.module.css';
+import BorderWidthSelector from '../BorderWidthSelector/BorderWidthSelector';
+import ShadowSelector from '../ShadowSelector/ShadowSelector';
 
 export default function CardsDesign({
     theme,
@@ -52,31 +50,14 @@ export default function CardsDesign({
             {/* Shadow */}
             <div>
                 <Label>Тень</Label>
-                <div style={{ display: 'flex', marginTop: '0.5rem', gap: '0.5rem' }}>
-                    {[
-                        { value: 'none', shadow: 'none' },
-                        { value: 'sm', shadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' },
-                        { value: 'md', shadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' },
-                    ].map(option => (
-                        <button
-                            key={option.value}
-                            onClick={() =>
-                                handleDesignChange({
-                                    slide: {
-                                        ...theme.design.slide,
-                                        shadow: option.value,
-                                    },
-                                })
-                            }
-                            className={`${styles.shadowButton} ${
-                                theme.design.slide.shadow === option.value ? styles.shadowActive : ''
-                            }`}
-                            aria-label={`Тень ${option.value}`}
-                        >
-                            <div className={`${styles.shadowContent} ${styles[`shadow-${option.value}`]}`} />
-                        </button>
-                    ))}
-                </div>
+                <ShadowSelector
+                    value={theme.design.slide.shadow}
+                    onChange={value =>
+                        handleDesignChange({
+                            slide: { ...theme.design.slide, shadow: value as ThemeDesignShadow },
+                        })
+                    }
+                />
             </div>
 
             {/* Border */}
@@ -84,7 +65,15 @@ export default function CardsDesign({
                 <Label>Граница</Label>
 
                 <div style={{ display: 'flex', marginTop: '0.5rem' }}>
-                    <ButtonGroup size="sm" variant="outline" className={styles.borderButtonGroup}>
+                    <BorderWidthSelector
+                        borderWidth={theme.design.slide.borderWidth}
+                        onChange={value =>
+                            handleDesignChange({
+                                slide: { ...theme.design.slide, borderWidth: value },
+                            })
+                        }
+                    />
+                    {/* <ButtonGroup size="sm" variant="outline" className={styles.borderButtonGroup}>
                         {[
                             { value: 'none', label: 'Нет' },
                             { value: 'thin', label: 'Тонкая' },
@@ -104,11 +93,11 @@ export default function CardsDesign({
                                         handleDesignChange({
                                             slide: {
                                                 ...theme.design.slide,
-                                                border: option.value,
+                                                borderWidth: option.value as 'none' | 'thin' | 'medium' | 'thick',
                                             },
                                         })
                                     }
-                                    className={`${styles.borderButton} ${theme.design.slide.border === option.value ? styles.borderActive : ''}`}
+                                    className={`${styles.borderButton} ${theme.design.slide.borderWidth === option.value ? styles.borderActive : ''}`}
                                     aria-label={`Граница ${option.label}`}
                                 >
                                     <p className={styles.borderContent}>
@@ -122,7 +111,7 @@ export default function CardsDesign({
                                 </Button>
                             </Tooltip>
                         ))}
-                    </ButtonGroup>
+                    </ButtonGroup> */}
                 </div>
             </div>
 
@@ -155,14 +144,14 @@ export default function CardsDesign({
                             key={option.value}
                             onClick={() =>
                                 handleDesignChange({
-                                    blocks: {
-                                        ...theme.design.blocks,
+                                    slide: {
+                                        ...theme.design.slide,
                                         opacity: option.value,
                                     },
                                 })
                             }
                             className={`${styles.opacityButton} ${
-                                theme.design.blocks.opacity === option.value ? styles.opacityActive : ''
+                                theme.design.slide.opacity === option.value ? styles.opacityActive : ''
                             }`}
                             aria-label={`Прозрачность ${option.value * 100}%`}
                         >

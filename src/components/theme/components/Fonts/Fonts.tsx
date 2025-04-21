@@ -6,10 +6,11 @@ import { CiLineHeight } from 'react-icons/ci';
 import { CgSpaceBetween } from 'react-icons/cg';
 import { FONT_WEIGHTS } from '@/consts';
 
-import { Label } from '../../ui/Label';
-import { Select } from '../../ui/Select';
+import { Label } from '../../../ui/Label';
+import { Select } from '../../../ui/Select';
 import { Input } from '@/components/ui/Input/Input';
-import styles from '../ThemeEditor.module.css';
+
+import styles from './Fonts.module.css';
 
 export default function Fonts({
     theme,
@@ -60,8 +61,8 @@ export default function Fonts({
                     </div>
 
                     <Accordion.Root collapsible className={styles.accordion}>
-                        <Accordion.Item key={'a'} value={'a'}>
-                            <Accordion.ItemTrigger>
+                        <Accordion.Item key={'a'} value={'a'} className={styles.accordionItem}>
+                            <Accordion.ItemTrigger className={styles.accordionItemTrigger}>
                                 <Span flex="1">Дополнительно</Span>
                                 <Accordion.ItemIndicator />
                             </Accordion.ItemTrigger>
@@ -152,8 +153,8 @@ export default function Fonts({
                         />
                     </div>
                     <Accordion.Root collapsible className={styles.accordion}>
-                        <Accordion.Item key={'a'} value={'a'}>
-                            <Accordion.ItemTrigger>
+                        <Accordion.Item key={'a'} value={'a'} className={styles.accordionItem}>
+                            <Accordion.ItemTrigger className={styles.accordionItemTrigger}>
                                 <Span flex="1">Дополнительно</Span>
                                 <Accordion.ItemIndicator />
                             </Accordion.ItemTrigger>

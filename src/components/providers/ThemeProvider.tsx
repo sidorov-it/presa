@@ -186,7 +186,7 @@ export const ThemeProvider = ({ children, initialTheme }: ThemeProviderProps) =>
     return (
         <ThemeContext.Provider value={value}>
             {/* Use ThemeStylesApplier to apply the theme directly */}
-            <ThemeStylesApplier theme={currentTheme} />
+            {/* <ThemeStylesApplier theme={currentTheme} /> */}
             {children}
         </ThemeContext.Provider>
     );

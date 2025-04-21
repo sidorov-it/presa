@@ -3,35 +3,36 @@
 import { useEffect, useRef } from 'react';
 import { Theme } from '@/types/theme';
 import { resetThemeStyles } from '@/utils/themeUtils';
+import { useTheme } from '@/context/ThemeContext';
 
 // Utility function to determine if a color is dark
-const isColorDark = (color: string): boolean => {
-    // Handle hex colors
-    if (color.startsWith('#')) {
-        const hex = color.replace('#', '');
-        const r = parseInt(hex.substring(0, 2), 16);
-        const g = parseInt(hex.substring(2, 4), 16);
-        const b = parseInt(hex.substring(4, 6), 16);
-        // Calculate perceived brightness using YIQ formula
-        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        return brightness < 128;
-    }
+// const isColorDark = (color: string): boolean => {
+//     // Handle hex colors
+//     if (color.startsWith('#')) {
+//         const hex = color.replace('#', '');
+//         const r = parseInt(hex.substring(0, 2), 16);
+//         const g = parseInt(hex.substring(2, 4), 16);
+//         const b = parseInt(hex.substring(4, 6), 16);
+//         // Calculate perceived brightness using YIQ formula
+//         const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+//         return brightness < 128;
+//     }
 
-    // Handle rgb/rgba colors
-    if (color.startsWith('rgb')) {
-        const rgbValues = color.match(/\d+/g);
-        if (rgbValues && rgbValues.length >= 3) {
-            const r = parseInt(rgbValues[0]);
-            const g = parseInt(rgbValues[1]);
-            const b = parseInt(rgbValues[2]);
-            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-            return brightness < 128;
-        }
-    }
+//     // Handle rgb/rgba colors
+//     if (color.startsWith('rgb')) {
+//         const rgbValues = color.match(/\d+/g);
+//         if (rgbValues && rgbValues.length >= 3) {
+//             const r = parseInt(rgbValues[0]);
+//             const g = parseInt(rgbValues[1]);
+//             const b = parseInt(rgbValues[2]);
+//             const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+//             return brightness < 128;
+//         }
+//     }
 
-    // Default to false for other color formats
-    return false;
-};
+//     // Default to false for other color formats
+//     return false;
+// };
 
 interface ThemeStylesApplierProps {
     theme: Theme | null;
@@ -40,7 +41,7 @@ interface ThemeStylesApplierProps {
 const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
     // Use ref to avoid re-applying the same theme
     const appliedThemeRef = useRef<string | null>(null);
-
+    const { isDarkMode } = useTheme();
     // Apply theme to the DOM when the component mounts or theme changes
     useEffect(() => {
         if (!theme) {
@@ -145,19 +146,16 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
             document.documentElement.style.setProperty('--button-shape', theme.design.buttons.buttonShape);
             // document.documentElement.style.setProperty('--link-color', theme.design.buttons.linkColor);
 
-            // Check if the slide background is dark and set control variables accordingly
-            const isDark = isColorDark(theme.colors.slideBackground);
-
             // Control variables - the single place these should be set dynamically
-            document.documentElement.style.setProperty('--control-stroke', isDark ? 'white' : 'rgba(0, 0, 0, 0.2)');
-            document.documentElement.style.setProperty('--control-icon', isDark ? 'white' : 'rgba(0, 0, 0, 0.6)');
+            document.documentElement.style.setProperty('--control-stroke', isDarkMode ? 'white' : 'rgba(0, 0, 0, 0.2)');
+            document.documentElement.style.setProperty('--control-icon', isDarkMode ? 'white' : 'rgba(0, 0, 0, 0.6)');
             document.documentElement.style.setProperty(
                 '--control-background',
-                isDark ? 'rgba(0, 0, 0, 0.5)' : 'transparent'
+                isDarkMode ? 'rgba(0, 0, 0, 0.5)' : 'transparent'
             );
 
             // Toggle dark-theme class on body for additional theme-specific styles
-            if (isDark) {
+            if (isDarkMode) {
                 document.body.classList.add('dark-theme');
             } else {
                 document.body.classList.remove('dark-theme');
@@ -179,7 +177,7 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
             appliedThemeRef.current = null;
             console.log('ThemeStylesApplier: Theme reset to defaults on unmount');
         };
-    }, [theme]);
+    }, [theme, isDarkMode]);
 
     // This component doesn't render anything
     return null;

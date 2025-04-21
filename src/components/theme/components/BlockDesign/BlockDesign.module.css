@@ -1,9 +1,9 @@
-.radioItemContainer {
+.radioItemTextContainer {
     display: flex;
     align-items: center;
 }
 
-.radioItem {
+.radioItemText {
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -14,14 +14,71 @@
 }
 
 
-.radioItem-subtle {
+.radioItemText-subtle {
     background-color: var(--chakra-colors-trueblue-400);
 }
 
-.radioItem-primary {
+.radioItemText-primary {
     background-color: var(--chakra-colors-trueblue-400);
 }
 
-.radioItem-custom {
+.radioItemText-custom {
     display: none;
+}
+
+.radioItem {
+    cursor: pointer;
+}
+
+
+
+
+.opacityButtonGroup {
+    gap: 0;
+    border-radius: 0px;
+}
+
+.opacityButton {
+    border-radius: 0px;
+    background-color: #e6e6e7;
+}
+
+
+.opacityButton:first-child {
+    border-top-left-radius: 32px;
+    border-bottom-left-radius: 32px;
+}
+
+.opacityButton:last-child {
+    border-top-right-radius: 32px;
+    border-bottom-right-radius: 32px;
+}
+
+
+.opacityContent {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    --chakra-line-clamp: 1;
+    color: var(--chakra-colors-gray-600);
+}
+
+.opacityBorder {
+    width: var(--chakra-sizes-6);
+    height: var(--chakra-sizes-0-5);
+    background: var(--chakra-colors-gray-900);
+    border-radius: var(--chakra-radii-md);
+}
+
+.opacity-fill {
+    background-color: var(--chakra-colors-trueblue-400);
+}
+
+.opacity-semi {
+    background-color: var(--chakra-colors-trueblue-400);
+}
+
+.opacityActive {
+    background-color: #bfdbfe;
 }

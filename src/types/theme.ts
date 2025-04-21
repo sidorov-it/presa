@@ -44,30 +44,34 @@ export type ThemeTypography = {
     bodyCapitalization: 'none' | 'uppercase';
 };
 
+export type ThemeDesignShadow = 'none' | 'sm' | 'md';
+export type ThemeDesignBorderWidth = 'none' | 'thin' | 'medium' | 'thick';
+export type ThemeDesignButtonShape = 'square' | 'capsule' | 'default' | 'rounded';
 export type ThemeDesign = {
     // Slide Design
     slide: {
         borderRadius: string;
-        shadow: string;
-        border: string;
+        shadow: ThemeDesignShadow;
+        borderWidth: ThemeDesignBorderWidth;
         borderColor: string;
+        opacity: number;
         imageShape: 'default' | 'fade' | 'diagonal' | 'round' | 'round-inverse' | 'wiggle';
     };
 
     // Blocks and Content
     blocks: {
         backgroundColor: string;
-        opacity: number;
-        borderWidth: 'thin' | 'medium' | 'thick' | 'none';
+        backgroundFillType: 'fill' | 'semi' | 'none';
+        borderWidth: ThemeDesignBorderWidth;
         blockFillColorsType: 'subtle' | 'primary' | 'custom';
         blockBackgroundCustomColors: string[];
-        shadow: string;
+        shadow: ThemeDesignShadow;
     };
 
     // Buttons and Links
     buttons: {
         buttonColor: string;
-        buttonShape: 'square' | 'rounded' | 'pill';
+        buttonShape: ThemeDesignButtonShape;
         linkColor: string;
     };
 };

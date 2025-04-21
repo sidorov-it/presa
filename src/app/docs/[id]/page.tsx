@@ -10,7 +10,7 @@ import Editor from '@/components/editor/Editor/Editor';
 import { IPresentation } from '@/types';
 import UndoRedoControls from '@/components/UndoRedoControls/UndoRedoControls';
 import { ThemeIcon } from '@/components/icons';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
+import { Popover } from '@/components/ui/Popover';
 import { useThemeStore } from '@/store/themeStore';
 import { Theme } from '@/types/theme';
 import { cn } from '@/lib/utils';
@@ -20,6 +20,7 @@ import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import BackgroundSettingsModal from '@/components/editor/BackgroundSettingsModal/BackgroundSettingsModal';
 import { HiOutlineCog6Tooth } from 'react-icons/hi2';
 import styles from './page.module.css';
+import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -150,6 +151,8 @@ export default function PresentationEditorPage() {
 
     return (
         <ThemeProvider initialTheme={currentTheme}>
+            <ThemeStylesApplier theme={currentTheme} />
+
             <div className={styles.container}>
                 <header className={styles.header}>
                     <div className={styles.headerContent}>
@@ -160,8 +163,11 @@ export default function PresentationEditorPage() {
                         </div>
 
                         <div className={styles.headerRight}>
-                            <Popover open={isThemePopoverOpen} onOpenChange={setIsThemePopoverOpen}>
-                                <PopoverTrigger asChild>
+                            <Popover
+                                isOpen={isThemePopoverOpen}
+                                onOpen={() => setIsThemePopoverOpen(true)}
+                                onClose={() => setIsThemePopoverOpen(false)}
+                                trigger={
                                     <div
                                         className={styles.themeButton}
                                         role="button"
@@ -172,8 +178,8 @@ export default function PresentationEditorPage() {
                                         <ThemeIcon />
                                         <span>Тема</span>
                                     </div>
-                                </PopoverTrigger>
-                                <PopoverContent className={styles.popoverContent}>
+                                }
+                                content={
                                     <div>
                                         <h3 className={styles.popoverTitle}>Выберите тему</h3>
                                         <div className={styles.themeGrid}>
@@ -228,8 +234,8 @@ export default function PresentationEditorPage() {
                                             </div>
                                         </div>
                                     </div>
-                                </PopoverContent>
-                            </Popover>
+                                }
+                            />
 
                             <button
                                 onClick={handleViewPresentation}

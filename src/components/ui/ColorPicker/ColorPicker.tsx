@@ -83,7 +83,7 @@ export const ColorPicker = ({
     );
 
     return (
-        <div className={cn('flex items-center gap-2', className)}>
+        <div className={cn(styles.colorPickerContainer, className)}>
             <Popover
                 trigger={colorButton}
                 content={colorPickerContent}

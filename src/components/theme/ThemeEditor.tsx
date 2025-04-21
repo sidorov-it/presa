@@ -1,13 +1,14 @@
 import { Theme, ThemeColors, ThemeTypography, ThemeDesign } from '@/types/theme';
 import { Tabs as ChakraTabs } from '@chakra-ui/react';
 import Colors from './components/Colors';
-import Fonts from './components/Fonts';
-import Design from './components/Design';
+import Fonts from './components/Fonts/Fonts';
+import Design from './components/Design/Design';
 import { useState } from 'react';
 import styles from './ThemeEditor.module.css';
 import { BiSolidColorFill } from 'react-icons/bi';
 import { FaFont } from 'react-icons/fa';
 import { MdOutlineDesignServices } from 'react-icons/md';
+import ButtonsDesign from './components/ButtonsDesign/ButtonsDesign';
 
 interface ThemeEditorProps {
     theme: Theme;
@@ -165,7 +166,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
         {
             label: 'Дизайн',
             icon: <MdOutlineDesignServices />,
-            content: <Design theme={theme} handleDesignChange={handleDesignChange} />,
+            content: <ButtonsDesign theme={theme} handleDesignChange={handleDesignChange} />,
         },
     ];
 

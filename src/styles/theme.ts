@@ -6,7 +6,7 @@ const config = defineConfig({
     cssVarsRoot: ':where(:root, :host)',
 
     // CSS variables prefix
-    cssVarsPrefix: 'ck',
+    // cssVarsPrefix: 'ck',
 
     // Theme configuration
     theme: {

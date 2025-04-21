@@ -2,10 +2,11 @@ import { ThemeDesign } from '@/types/theme';
 import { Theme } from '@/types/theme';
 import { Tabs as ChakraTabs } from '@chakra-ui/react';
 
-import styles from './Design.module.css';
 import { useState } from 'react';
-import CardsDesign from './CardsDesign/CardsDesign';
-import BlockDesign from './BlockDesign/BlockDesign';
+import CardsDesign from '../CardsDesign/CardsDesign';
+import BlockDesign from '../BlockDesign/BlockDesign';
+
+import styles from './Design.module.css';
 
 export default function Design({
     theme,
