@@ -437,19 +437,19 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                             />
                         ))}
                     </div>
+                </div>
 
-                    <div
-                        className={`${styles.slideDivider} ${isSelected || isHovered ? styles.slideDividerHovered : ''}`}
-                    >
-                        <div className={styles.buttons}>
-                            <button
-                                className={styles.slideDividerButton}
-                                onClick={handleAddSlideAfter}
-                                aria-label="Добавить слайд"
-                            >
-                                +
-                            </button>
-                        </div>
+                <div
+                    className={`${styles.slideDivider} ${isSelected || isHovered ? styles.slideDividerHovered : ''}`}
+                >
+                    <div className={styles.buttons}>
+                        <button
+                            className={styles.slideDividerButton}
+                            onClick={handleAddSlideAfter}
+                            aria-label="Добавить слайд"
+                        >
+                            +
+                        </button>
                     </div>
                 </div>
             </div>

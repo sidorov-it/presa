@@ -1152,6 +1152,7 @@ button[data-type="button"]:hover {
 
 .tiptap blockquote {
     padding: 1.125em;
+    border-left: 4px solid var(--presentation-accent-blocks-color);
 }
 
 .tiptap :where(blockquote p:first-of-type):not(:where([class~="not-prose"], [class~="not-prose"] *))::before {
@@ -1202,10 +1203,11 @@ button[data-type="button"]:hover {
 }
 
 .body-text {
-    line-height: var(--line-height-body);
+    line-height: var(--presentation-body-line-height);
+    color: var(--presentation-text-color);
 }
 
-/* --presentation-heading-capitalization
+/* --presentation-heading-capitaliza    tion
 none
 
 --presentation-heading-color
@@ -1231,6 +1233,19 @@ none
     color: var(--presentation-heading-color) !important;
     font-family: var(--presentation-heading-font) !important;
     letter-spacing: var(--presentation-heading-letter-spacing) !important;
+}
+
+a {
+    text-decoration-color: var(--presentation-link-color) !important;
+}
+
+a > .heading-text,
+a > .body-text {
+    color: var(--presentation-link-color) !important;
+}
+
+button {
+    cursor: pointer;
 }
 
 .big-text .title-text,
@@ -1326,4 +1341,13 @@ none
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border-width: 0;
+}
+
+.tiptap :where(a) {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.tiptap :where(a:not(:has(span))) {
+    color: var(--presentation-link-color) !important;
 }

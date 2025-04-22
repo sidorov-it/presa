@@ -3,6 +3,7 @@
 import { FaRegImage } from 'react-icons/fa6';
 import { FiUpload, FiLink2, FiZap, FiX, FiCheck } from 'react-icons/fi';
 import React, { ChangeEvent, useRef, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 export type ImagePlaceholderProps = {
     onUpload: (file: File) => void;
@@ -12,12 +13,126 @@ export type ImagePlaceholderProps = {
 
 import styles from './ImagePlaceholder.module.css';
 
-export const ImagePlaceholder = ({ onUpload, onLink, onGenerate }: ImagePlaceholderProps) => {
-    const [showLinkPopup, setShowLinkPopup] = useState(false);
+const LinkPopup = ({ 
+    onClose, 
+    onSubmit, 
+    buttonRef 
+}: { 
+    onClose: () => void; 
+    onSubmit: (url: string) => void;
+    buttonRef: React.RefObject<HTMLButtonElement>;
+}) => {
     const [linkValue, setLinkValue] = useState('');
     const [error, setError] = useState('');
     const inputRef = useRef<HTMLInputElement>(null);
     const popupRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        setTimeout(() => inputRef.current?.focus(), 50);
+    }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (
+                popupRef.current &&
+                !popupRef.current.contains(e.target as Node) &&
+                buttonRef.current &&
+                !buttonRef.current.contains(e.target as Node)
+            ) {
+                onClose();
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [onClose, buttonRef]);
+
+    useEffect(() => {
+        const handleEsc = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') onClose();
+        };
+        document.addEventListener('keydown', handleEsc);
+        return () => document.removeEventListener('keydown', handleEsc);
+    }, [onClose]);
+
+    const handleInsertLink = () => {
+        if (!linkValue.trim()) {
+            setError('Введите ссылку');
+            return;
+        }
+        if (!/^https?:\/\//.test(linkValue.trim())) {
+            setError('Ссылка должна начинаться с http:// или https://');
+            return;
+        }
+        onSubmit(linkValue.trim());
+    };
+
+    const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleInsertLink();
+        }
+        if (e.key === 'Escape') {
+            onClose();
+        }
+    };
+
+    // Calculate position relative to the button
+    const buttonRect = buttonRef.current?.getBoundingClientRect();
+    const popupStyle = buttonRect ? {
+        position: 'fixed' as const,
+        top: `${buttonRect.bottom + 8}px`,
+        left: `${buttonRect.left - 120 + buttonRect.width / 2}px`,
+        minWidth: '240px',
+        zIndex: 1000,
+    } : {};
+
+    return createPortal(
+        <div
+            ref={popupRef}
+            className={styles.imagePlaceholderLinkPopup}
+            style={popupStyle}
+            role="dialog"
+            aria-modal="true"
+        >
+            <button
+                type="button"
+                aria-label="Закрыть"
+                className={styles.imagePlaceholderLinkPopupCloseButton}
+                onClick={onClose}
+            >
+                <FiX className={styles.imagePlaceholderLinkPopupCloseButtonIcon} />
+            </button>
+            <div className={styles.imagePlaceholderLinkPopupTitle}>Вставьте ссылку</div>
+            <input
+                ref={inputRef}
+                type="url"
+                className={styles.imagePlaceholderLinkPopupInput}
+                placeholder="https://example.com/image.png"
+                value={linkValue}
+                onChange={e => {
+                    setLinkValue(e.target.value);
+                    setError('');
+                }}
+                onKeyDown={handleInputKeyDown}
+                aria-label="Ссылка на изображение"
+            />
+            {error && <div className={styles.imagePlaceholderLinkPopupError}>{error}</div>}
+            <button
+                type="button"
+                className={styles.imagePlaceholderLinkPopupButton}
+                onClick={handleInsertLink}
+                disabled={!linkValue.trim()}
+            >
+                <FiCheck className={styles.imagePlaceholderLinkPopupButtonIcon} />
+                Вставить
+            </button>
+        </div>,
+        document.body
+    );
+};
+
+export const ImagePlaceholder = ({ onUpload, onLink, onGenerate }: ImagePlaceholderProps) => {
+    const [showLinkPopup, setShowLinkPopup] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
     const linkBtnRef = useRef<HTMLButtonElement>(null);
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -33,70 +148,6 @@ export const ImagePlaceholder = ({ onUpload, onLink, onGenerate }: ImagePlacehol
                 callback();
             }
         };
-
-    // Открыть попап и сфокусировать инпут
-    const handleOpenLinkPopup = () => {
-        setShowLinkPopup(true);
-        setTimeout(() => inputRef.current?.focus(), 50);
-    };
-
-    // Закрыть попап
-    const handleClosePopup = () => {
-        setShowLinkPopup(false);
-        setLinkValue('');
-        setError('');
-    };
-
-    // Клик вне попапа
-    useEffect(() => {
-        if (!showLinkPopup) return;
-        const handleClickOutside = (e: MouseEvent) => {
-            if (
-                popupRef.current &&
-                !popupRef.current.contains(e.target as Node) &&
-                linkBtnRef.current &&
-                !linkBtnRef.current.contains(e.target as Node)
-            ) {
-                handleClosePopup();
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [showLinkPopup]);
-
-    // Esc для закрытия
-    useEffect(() => {
-        if (!showLinkPopup) return;
-        const handleEsc = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') handleClosePopup();
-        };
-        document.addEventListener('keydown', handleEsc);
-        return () => document.removeEventListener('keydown', handleEsc);
-    }, [showLinkPopup]);
-
-    // Вставить ссылку
-    const handleInsertLink = () => {
-        if (!linkValue.trim()) {
-            setError('Введите ссылку');
-            return;
-        }
-        if (!/^https?:\/\//.test(linkValue.trim())) {
-            setError('Ссылка должна начинаться с http:// или https://');
-            return;
-        }
-        onLink(linkValue.trim());
-        handleClosePopup();
-    };
-
-    // Enter в инпуте
-    const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            handleInsertLink();
-        }
-        if (e.key === 'Escape') {
-            handleClosePopup();
-        }
-    };
 
     return (
         <div className={styles.container}>
@@ -125,8 +176,8 @@ export const ImagePlaceholder = ({ onUpload, onLink, onGenerate }: ImagePlacehol
                     tabIndex={0}
                     aria-label="Вставить ссылку на изображение"
                     className={styles.imagePlaceholderLinkButton}
-                    onClick={handleOpenLinkPopup}
-                    onKeyDown={handleKeyDown(handleOpenLinkPopup)}
+                    onClick={() => setShowLinkPopup(true)}
+                    onKeyDown={handleKeyDown(() => setShowLinkPopup(true))}
                     ref={linkBtnRef}
                 >
                     <FiLink2 className={styles.linkIcon} />
@@ -142,48 +193,16 @@ export const ImagePlaceholder = ({ onUpload, onLink, onGenerate }: ImagePlacehol
                 >
                     <FiZap className={styles.generateIcon} />
                 </button>
-                {/* Dropdown-попап для ссылки */}
+                {/* Портал для попапа */}
                 {showLinkPopup && (
-                    <div
-                        ref={popupRef}
-                        className={styles.imagePlaceholderLinkPopup}
-                        style={{ minWidth: 260 }}
-                        role="dialog"
-                        aria-modal="true"
-                    >
-                        <button
-                            type="button"
-                            aria-label="Закрыть"
-                            className={styles.imagePlaceholderLinkPopupCloseButton}
-                            onClick={handleClosePopup}
-                        >
-                            <FiX className={styles.imagePlaceholderLinkPopupCloseButtonIcon} />
-                        </button>
-                        <div className={styles.imagePlaceholderLinkPopupTitle}>Вставьте ссылку на изображение</div>
-                        <input
-                            ref={inputRef}
-                            type="url"
-                            className={styles.imagePlaceholderLinkPopupInput}
-                            placeholder="https://example.com/image.png"
-                            value={linkValue}
-                            onChange={e => {
-                                setLinkValue(e.target.value);
-                                setError('');
-                            }}
-                            onKeyDown={handleInputKeyDown}
-                            aria-label="Ссылка на изображение"
-                        />
-                        {error && <div className={styles.imagePlaceholderLinkPopupError}>{error}</div>}
-                        <button
-                            type="button"
-                            className={styles.imagePlaceholderLinkPopupButton}
-                            onClick={handleInsertLink}
-                            disabled={!linkValue.trim()}
-                        >
-                            <FiCheck className={styles.imagePlaceholderLinkPopupButtonIcon} />
-                            Вставить
-                        </button>
-                    </div>
+                    <LinkPopup
+                        onClose={() => setShowLinkPopup(false)}
+                        onSubmit={(url) => {
+                            onLink(url);
+                            setShowLinkPopup(false);
+                        }}
+                        buttonRef={linkBtnRef}
+                    />
                 )}
             </div>
         </div>

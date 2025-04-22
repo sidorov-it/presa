@@ -230,7 +230,7 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({ node, updateAttributes, delet
 
     // Get button styles based on attributes
     const getButtonStyles = () => {
-        const { buttonStyle, color, alignment } = node.attrs;
+        const { buttonStyle, alignment } = node.attrs;
         const baseStyles = `${styles.button} `;
         let alignmentClass = styles.textCenter;
 

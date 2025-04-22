@@ -402,7 +402,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const handleClickElement = useCallback(
         (elementId: string) => (ev: React.MouseEvent<HTMLDivElement>) => {
             ev.stopPropagation();
-            if (tiptapRefs.current?.editors[elementId]?.editor) {
+            if (tiptapRefs.current?.editors[elementId]?.editor && !ev.target.closest('[data-type="link-editor"]')) {
                 tiptapRefs.current?.editors[elementId]?.editor.chain().focus().run();
             }
         },

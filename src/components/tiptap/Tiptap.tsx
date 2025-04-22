@@ -344,6 +344,7 @@ const Tiptap = ({
         onUpdate: ({ editor, transaction }) => {
             const html = editor.getHTML();
             const isEnterPress = transaction.getMeta('handleEnter');
+            console.log('onUpdate', html);
             onContentChange(html, isEnterPress);
         },
     });

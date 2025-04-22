@@ -34,7 +34,10 @@ const appliedVars = [
     '--presentation-button-radius',
     '--presentation-button-hover-color',
     '--presentation-page-background-color',
-    
+    '--presentation-link-color',
+    '--presentation-slide-image-mask-image-top',
+    '--presentation-slide-image-mask-image-left',
+    '--presentation-slide-image-mask-image-right',
 ];
 
 const ThemeDebugPopup: React.FC<ThemeDebugPopupProps> = ({ isOpen, onClose }) => {

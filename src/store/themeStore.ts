@@ -112,4 +112,19 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
             throw error;
         }
     },
+
+    loadTheme: async (themeId: string) => {
+        try {
+            const response = await fetch(`/api/themes/${themeId}`);
+            if (!response.ok) {
+                throw new Error('Failed to load themes');
+            }
+            const theme = await response.json();
+            return theme;
+        } catch (error) {
+            console.error('Failed to load themes:', error);
+            throw error;
+        }
+    },
+
 }));

@@ -79,7 +79,9 @@ export const Code = Mark.create<CodeOptions>({
 
     addOptions() {
         return {
-            HTMLAttributes: {},
+            HTMLAttributes: {
+                class: true,
+            },
         };
     },
 
@@ -118,8 +120,16 @@ export const Code = Mark.create<CodeOptions>({
                         // If not active, we need to capture font size information before applying code
                         // Get the font size class from the surrounding textStyle mark
                         const marks = editor.getAttributes('textStyle');
-                        const sizeClasses = marks.fontSize ? getSizeClasses(marks.fontSize) : '';
+                        
+                        let sizeClasses;
 
+                        if (marks.fontSize?.hasOwnProperty('classList')) {
+                            sizeClasses = marks.fontSize.classList.value.split(' ');
+                        } else {
+                            sizeClasses = marks.fontSize ? getSizeClasses(marks.fontSize) : '';
+
+                        }
+                        
                         const observer = new MutationObserver(mutations => {
                         // Process the mutations to find added code elements
                             for (const mutation of mutations) {
@@ -134,6 +144,8 @@ export const Code = Mark.create<CodeOptions>({
                                                 sizeClasses.forEach(sizeClass => {
                                                     node.classList.add(sizeClass);
                                                 });
+                                                console.log('added classes', sizeClasses);
+
                                                 // node.className = `custom-code ${sizeClasses}`;
                                                 observer.disconnect();
                                             }
@@ -144,6 +156,7 @@ export const Code = Mark.create<CodeOptions>({
                                                 sizeClasses.forEach(sizeClass => {
                                                     code.classList.add(sizeClass);
                                                 });
+                                                console.log('added classes', sizeClasses);
                                                 // code.className = `custom-code ${sizeClasses}`;
                                                 observer.disconnect();
                                             });

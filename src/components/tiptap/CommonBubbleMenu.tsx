@@ -92,7 +92,7 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
     // Закрытие выпадающего меню при клике вне его
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (headingMenuRef.current && !headingMenuRef.current.contains(event.target as Node)) {
+            if (headingMenuRef.current && !headingMenuRef.current.contains(event.target as Node) && isHeadingMenuOpen) {
                 setIsHeadingMenuOpen(false);
             }
         };
@@ -101,62 +101,10 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, []);
+    }, [isHeadingMenuOpen]);
 
     const handleHeadingChange = useCallback(
         (level: number) => {
-            // if (level === NORMAL_TEXT_LEVEL) {
-            //     // Normal text - paragraph with default font size
-            //     editor.chain().focus().setParagraph().unsetFontSize().run();
-            // } else if (level === SMALL_TEXT_LEVEL) {
-            //     // Small text - first clear heading format if it's active
-            //     editor.chain()
-            //         .focus()
-            //         // .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
-            //         .setFontSize(SMALL_TEXT_LEVEL)
-            //         .run();
-            // } else if (level === BIG_TEXT_LEVEL) {
-            //     // Large text - first clear heading format if it's active
-            //     editor.chain()
-            //         .focus()
-            //         // .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
-            //         .setFontSize(FONT_SIZE_BIG_TEXT)
-            //         .run();
-            // } else if (level === TITLE_LEVEL) {
-            //     // Очень большой заголовок - используем h6 с дополнительными стилями
-            //     editor.chain()
-            //         .focus()
-            //         .unsetAllMarks() // Очищаем все стили, включая fontSize
-            //         // .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
-
-            //         .setFontSize(FONT_SIZE_TITLE) // Дополнительно устанавливаем больший размер шрифта
-            //         .run();
-            // } else if (level === BIG_HEADING_LEVEL) {
-            //         // Очень большой заголовок - используем h6 с дополнительными стилями
-            //         editor.chain()
-            //             .focus()
-            //             .unsetAllMarks() // Очищаем все стили, включая fontSize
-            //             // .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
-            //             .setFontSize(FONT_SIZE_BIG_HEADING) // Дополнительно устанавливаем больший размер шрифта
-            //             .run();
-            // } else if (level === VERY_BIG_HEADING_LEVEL) {
-            //     // Очень большой заголовок - используем h6 с дополнительными стилями
-            //     editor.chain()
-            //         .focus()
-            //         .selectAll()
-            //         .unsetAllMarks() // Очищаем все стили, включая fontSize
-            //         // .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
-            //         .setFontSize(FONT_SIZE_VERY_BIG_HEADING) // Дополнительно устанавливаем больший размер шрифта
-            //         .blur()
-            //         .run();
-            // } else {
-            //     // Headings - first clear any font size styles
-            //     editor.chain()
-            //         .focus()
-            //         .unsetAllMarks() // Очищаем все стили, включая fontSize
-            //         .setHeading({ level: level as Level })
-            //         .run();
-            // }
             editor
                 .chain()
                 .focus()
@@ -251,6 +199,7 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
             }}
             updateDelay={0}
             shouldShow={shouldShow}
+            data-type="common-bubble-menu"
         >
             <div className={`${styles.bubbleMenu} light-theme-only`} style={lightThemeStyle}>
                 <HeadingSelector

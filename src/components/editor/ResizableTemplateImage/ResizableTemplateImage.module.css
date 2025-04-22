@@ -3,8 +3,15 @@
     overflow: hidden;
     position: relative;
     border-radius: 0;
-}
 
+    mask-size: cover;
+    mask-repeat: no-repeat;
+    /* mask-position: var(--presentation-slide-image-mask-position);
+    mask-image: var(--presentation-slide-image-mask-image); */
+}
+/* --presentation-slide-image-mask-position
+--presentation-slide-image-mask-image-left
+--presentation-slide-image-mask-image-right */
 .imageBackground {
     border-radius: 0.4em;
 }
@@ -12,21 +19,30 @@
 .imageTop {
     border-top-left-radius: 0.4em;
     border-top-right-radius: 0.4em;
+    mask-position: top center;
+    mask-image: var(--presentation-slide-image-mask-image-top);
+    
 }
 
 .imageBottom {
     border-bottom-left-radius: 0.4em;
     border-bottom-right-radius: 0.4em;
+    mask-position: bottom center;
+    mask-image: var(--presentation-slide-image-mask-image-bottom);
 }
 
 .imageLeft {
     border-top-left-radius: 0.4em;
     border-bottom-left-radius: 0.4em;
+    mask-position: left center;
+    mask-image: var(--presentation-slide-image-mask-image-left);
 }
 
 .imageRight {
     border-top-right-radius: 0.4em;
     border-bottom-right-radius: 0.4em;
+    mask-position: right center;
+    mask-image: var(--presentation-slide-image-mask-image-right);
 }
 
 .resizeHandleLeft,

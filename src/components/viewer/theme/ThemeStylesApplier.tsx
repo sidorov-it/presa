@@ -1,40 +1,27 @@
 'use client';
 
+import circleInvertedLeftImage from '@/elements/masks/circle-inverted-left.svg';
+import circleInvertedRightImage from '@/elements/masks/circle-inverted-right.svg';
+import circleLeftImage from '@/elements/masks/circle-left.svg';
+import circleRightImage from '@/elements/masks/circle-right.svg';
+import diagonalLeftImage from '@/elements/masks/diagonal-left.svg';
+import diagonalRightImage from '@/elements/masks/diagonal-right.svg';
+import gradientLeftImage from '@/elements/masks/gradient-left.svg';
+import gradientRightImage from '@/elements/masks/gradient-right.svg';
+import gradientTopImage from '@/elements/masks/gradient-top.svg';
+import wiggleLeftImage from '@/elements/masks/wiggle-left.svg';
+import wiggleRightImage from '@/elements/masks/wiggle-right.svg';
+import wiggleTopImage from '@/elements/masks/wiggle-top.svg';
+import diagonalTopImage from '@/elements/masks/diagonal-top.svg';
+import circleTopImage from '@/elements/masks/circle-top.svg';
+import circleInvertedTopImage from '@/elements/masks/circle-inverted-top.svg';
+
 import { useEffect, useRef } from 'react';
 import { Theme } from '@/types/theme';
 import { resetThemeStyles } from '@/utils/themeUtils';
 import { useTheme } from '@/context/ThemeContext';
 import getContrastTextColor from '@/utils/getContrastTextColor';
 import getHoverColor from '@/utils/getHoverColor';
-
-// Utility function to determine if a color is dark
-// const isColorDark = (color: string): boolean => {
-//     // Handle hex colors
-//     if (color.startsWith('#')) {
-//         const hex = color.replace('#', '');
-//         const r = parseInt(hex.substring(0, 2), 16);
-//         const g = parseInt(hex.substring(2, 4), 16);
-//         const b = parseInt(hex.substring(4, 6), 16);
-//         // Calculate perceived brightness using YIQ formula
-//         const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-//         return brightness < 128;
-//     }
-
-//     // Handle rgb/rgba colors
-//     if (color.startsWith('rgb')) {
-//         const rgbValues = color.match(/\d+/g);
-//         if (rgbValues && rgbValues.length >= 3) {
-//             const r = parseInt(rgbValues[0]);
-//             const g = parseInt(rgbValues[1]);
-//             const b = parseInt(rgbValues[2]);
-//             const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-//             return brightness < 128;
-//         }
-//     }
-
-//     // Default to false for other color formats
-//     return false;
-// };
 
 interface ThemeStylesApplierProps {
     theme: Theme | null;
@@ -120,10 +107,17 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
                 );
             }
 
-            document.documentElement.style.setProperty(
-                '--presentation-page-background-type',
-                theme.colors.pageBackground.type
-            );
+            if (theme.colors.pageBackground.type === 'color') {
+                document.documentElement.style.setProperty(
+                    '--presentation-page-background-color',
+                    theme.colors.pageBackground.color
+                );
+            } else {
+                document.documentElement.style.setProperty(
+                    '--presentation-page-background-image',
+                    `url(${theme.colors.pageBackground.imageUrl})`
+                );
+            }
 
             // Typography
             document.documentElement.style.setProperty(
@@ -216,10 +210,40 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
                 '--presentation-slide-border-color',
                 theme.design.slide.borderColor
             );
-            document.documentElement.style.setProperty(
-                '--presentation-slide-image-shape',
-                theme.design.slide.imageShape
-            );
+
+            let maskImageLeft = 'none';
+            let maskImageRight = 'none';
+            let maskImageTop = 'none';
+
+            if (theme.design.slide.imageShape === 'default') {
+                maskImageLeft = 'none';
+                maskImageRight = 'none';
+                maskImageTop = 'none';
+            } else if (theme.design.slide.imageShape === 'fade') {
+                maskImageLeft = `url(${gradientLeftImage.src})`;
+                maskImageRight = `url(${gradientRightImage.src})`;
+                maskImageTop = `url(${gradientTopImage.src})`;
+            } else if (theme.design.slide.imageShape === 'diagonal') {
+                maskImageLeft = `url(${diagonalLeftImage.src})`;
+                maskImageRight = `url(${diagonalRightImage.src})`;
+                maskImageTop = `url(${diagonalTopImage.src})`;
+            } else if (theme.design.slide.imageShape === 'round') {
+                maskImageLeft = `url(${circleLeftImage.src})`;
+                maskImageRight = `url(${circleRightImage.src})`;
+                maskImageTop = `url(${circleTopImage.src})`;
+            } else if (theme.design.slide.imageShape === 'round-inverse') {
+                maskImageLeft = `url(${circleInvertedLeftImage.src})`;
+                maskImageRight = `url(${circleInvertedRightImage.src})`;
+                maskImageTop = `url(${circleInvertedTopImage.src})`;
+            } else if (theme.design.slide.imageShape === 'wiggle') {
+                maskImageLeft = `url(${wiggleLeftImage.src})`;
+                maskImageRight = `url(${wiggleRightImage.src})`;
+                maskImageTop = `url(${wiggleTopImage.src})`;
+            }
+
+            document.documentElement.style.setProperty('--presentation-slide-image-mask-image-left', maskImageLeft);
+            document.documentElement.style.setProperty('--presentation-slide-image-mask-image-right', maskImageRight);
+            document.documentElement.style.setProperty('--presentation-slide-image-mask-image-top', maskImageTop);
 
             // Block design
             document.documentElement.style.setProperty(
@@ -271,20 +295,6 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
             }
 
             document.documentElement.style.setProperty('--presentation-link-color', theme.design.buttons.linkColor);
-
-            // Control variables - the single place these should be set dynamically
-            document.documentElement.style.setProperty(
-                '--presentation-control-stroke',
-                isDarkMode ? 'white' : 'rgba(0, 0, 0, 0.2)'
-            );
-            document.documentElement.style.setProperty(
-                '--presentation-control-icon',
-                isDarkMode ? 'white' : 'rgba(0, 0, 0, 0.6)'
-            );
-            document.documentElement.style.setProperty(
-                '--presentation-control-background',
-                isDarkMode ? 'rgba(0, 0, 0, 0.5)' : 'transparent'
-            );
 
             // Toggle dark-theme class on body for additional theme-specific styles
             if (isDarkMode) {

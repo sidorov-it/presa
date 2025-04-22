@@ -79,7 +79,7 @@ export const LinkEditor = ({ editor, className }: { editor: Editor; className?: 
     };
 
     return (
-        <div className={`${styles.linkEditorContainer} light-theme-only`} ref={linkEditorRef}>
+        <div className={`${styles.linkEditorContainer} light-theme-only`} data-type="link-editor" ref={linkEditorRef}>
             <button
                 onClick={toggleLinkEditor}
                 className={`${className || ''} ${editor.isActive('link') ? styles.active : ''}`}
@@ -101,6 +101,7 @@ export const LinkEditor = ({ editor, className }: { editor: Editor; className?: 
                             placeholder="Введите URL..."
                             className={styles.linkInput}
                             aria-label="URL ссылки"
+                            data-type="link-input"
                         />
                         <div className={styles.linkActions}>
                             <button onClick={applyLink} className={styles.applyButton} disabled={!url.trim()}>

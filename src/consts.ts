@@ -55,7 +55,7 @@ export const HEADING_LEVELS = [
     { label: 'Маленький текст', level: SMALL_TEXT_LEVEL },
     { label: 'Нормальный текст', level: NORMAL_TEXT_LEVEL },
     { label: 'Большой текст', level: BIG_TEXT_LEVEL },
-    { label: 'h4', level: HEADING_4_LEVEL },
+    // { label: 'h4', level: HEADING_4_LEVEL },
     { label: 'h3', level: HEADING_3_LEVEL },
     { label: 'h2', level: HEADING_2_LEVEL },
     { label: 'h1', level: HEADING_1_LEVEL },

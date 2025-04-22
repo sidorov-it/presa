@@ -17,7 +17,8 @@ import styles from './page.module.css';
 export default function ThemeEditorPage(props: { params: Promise<{ action: string }> }) {
     const params = use(props.params);
     const router = useRouter();
-    const { addTheme, updateTheme, themes } = useThemeStore();
+    const { addTheme, updateTheme, themes, loadTheme } = useThemeStore();
+
     const [theme, setTheme] = useState<Theme>({
         id: generateId(),
         name: '',
@@ -26,8 +27,6 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
         colors: {
             additionalColors: [],
             shapesColor: '#3b82f6',
-            buttonsColor: '#3b82f6',
-            linksColor: '#3b82f6',
             accentBlocksColor: '#3b82f6',
             secondaryButtonColor: '#3b82f6',
             primaryAccent: '#3b82f6',
@@ -82,12 +81,11 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
 
     useEffect(() => {
         if (params.action !== 'new') {
-            const existingTheme = themes.find(t => t.id === params.action);
-            if (existingTheme) {
-                setTheme(existingTheme);
-            }
+            loadTheme(params.action).then((theme: Theme) => {
+                setTheme(theme);
+            });
         }
-    }, [params.action, themes]);
+    }, [params.action]);
 
     const handleSave = async () => {
         try {
