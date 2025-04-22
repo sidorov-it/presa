@@ -7,6 +7,7 @@ import CardsDesign from '../CardsDesign/CardsDesign';
 import BlockDesign from '../BlockDesign/BlockDesign';
 
 import styles from './Design.module.css';
+import ButtonsDesign from '../ButtonsDesign/ButtonsDesign';
 
 export default function Design({
     theme,
@@ -15,7 +16,7 @@ export default function Design({
     theme: Theme;
     handleDesignChange: (design: Partial<ThemeDesign>) => void;
 }) {
-    const [selectedTab, setSelectedTab] = useState('cards');
+    const [selectedTab, setSelectedTab] = useState('Слайды');
 
     const items = [
         {
@@ -28,7 +29,7 @@ export default function Design({
         },
         {
             label: 'Кнопки и ссылки',
-            content: <CardsDesign theme={theme} handleDesignChange={handleDesignChange} />,
+            content: <ButtonsDesign theme={theme} handleDesignChange={handleDesignChange} />,
         },
     ];
 

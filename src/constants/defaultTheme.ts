@@ -4,10 +4,9 @@ export const DEFAULT_THEME: Omit<Theme, 'id' | 'createdAt' | 'updatedAt'> = {
     name: 'Default Theme',
     description: 'A clean, modern default theme',
     colors: {
+        additionalColors: [],
         primaryAccent: '#3b82f6', // Blue
         shapesColor: '#00235cff',
-        buttonsColor: '#3f87fbff',
-        linksColor: '#146dffff',
         secondaryAccents: ['#60a5fa', '#93c5fd', '#bfdbfe'],
         headingColor: '#1f2937', // Dark gray
         textColor: '#4b5563', // Medium gray

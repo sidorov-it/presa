@@ -4,6 +4,8 @@ import { useEffect, useRef } from 'react';
 import { Theme } from '@/types/theme';
 import { resetThemeStyles } from '@/utils/themeUtils';
 import { useTheme } from '@/context/ThemeContext';
+import getContrastTextColor from '@/utils/getContrastTextColor';
+import getHoverColor from '@/utils/getHoverColor';
 
 // Utility function to determine if a color is dark
 // const isColorDark = (color: string): boolean => {
@@ -92,8 +94,6 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
             });
 
             document.documentElement.style.setProperty('--presentation-shapes-color', theme.colors.shapesColor);
-            document.documentElement.style.setProperty('--presentation-buttons-color', theme.colors.buttonsColor);
-            document.documentElement.style.setProperty('--presentation-links-color', theme.colors.linksColor);
             document.documentElement.style.setProperty(
                 '--presentation-accent-blocks-color',
                 theme.colors.accentBlocksColor
@@ -152,10 +152,12 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
                 '--presentation-heading-letter-spacing',
                 theme.typography.headingLetterSpacing + '%'
             );
-            document.documentElement.style.setProperty(
-                '--presentation-heading-capitalization',
-                theme.typography.headingCapitalization
-            );
+
+            if (theme.typography.headingCapitalization === 'none') {
+                document.documentElement.style.setProperty('--presentation-heading-capitalization', 'none');
+            } else {
+                document.documentElement.style.setProperty('--presentation-heading-capitalization', 'uppercase');
+            }
             // New typography CSS vars for body text
             document.documentElement.style.setProperty(
                 '--presentation-body-line-height',
@@ -165,6 +167,13 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
                 '--presentation-body-letter-spacing',
                 theme.typography.bodyLetterSpacing + '%'
             );
+
+            if (theme.typography.bodyCapitalization === 'none') {
+                document.documentElement.style.setProperty('--presentation-body-capitalization', 'none');
+            } else {
+                document.documentElement.style.setProperty('--presentation-body-capitalization', 'uppercase');
+            }
+
             document.documentElement.style.setProperty(
                 '--presentation-body-capitalization',
                 theme.typography.bodyCapitalization
@@ -175,11 +184,34 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
                 '--presentation-slide-border-radius',
                 theme.design.slide.borderRadius
             );
-            document.documentElement.style.setProperty('--presentation-slide-shadow', theme.design.slide.shadow);
-            document.documentElement.style.setProperty(
-                '--presentation-slide-border-width',
-                theme.design.slide.borderWidth
-            );
+
+            const shadow = theme.design.slide.shadow;
+            if (shadow === 'none') {
+                document.documentElement.style.setProperty('--presentation-slide-shadow', 'none');
+            } else if (shadow === 'sm') {
+                document.documentElement.style.setProperty(
+                    '--presentation-slide-shadow',
+                    '0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+                );
+            } else if (shadow === 'md') {
+                document.documentElement.style.setProperty(
+                    '--presentation-slide-shadow',
+                    'rgba(0, 0, 0, 0.4) 4px 4px 0px 0px'
+                );
+            }
+
+            const borderWidth = theme.design.slide.borderWidth;
+
+            if (borderWidth === 'none') {
+                document.documentElement.style.setProperty('--presentation-slide-border-width', '0px');
+            } else if (borderWidth === 'thin') {
+                document.documentElement.style.setProperty('--presentation-slide-border-width', '1px');
+            } else if (borderWidth === 'medium') {
+                document.documentElement.style.setProperty('--presentation-slide-border-width', '2px');
+            } else if (borderWidth === 'thick') {
+                document.documentElement.style.setProperty('--presentation-slide-border-width', '3px');
+            }
+
             document.documentElement.style.setProperty(
                 '--presentation-slide-border-color',
                 theme.design.slide.borderColor
@@ -220,7 +252,24 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
 
             // Button and link design
             document.documentElement.style.setProperty('--presentation-button-color', theme.design.buttons.buttonColor);
-            document.documentElement.style.setProperty('--presentation-button-shape', theme.design.buttons.buttonShape);
+
+            const hoverColor = getHoverColor(theme.design.buttons.buttonColor, 15);
+            document.documentElement.style.setProperty('--presentation-button-hover-color', hoverColor);
+            document.documentElement.style.setProperty(
+                '--presentation-button-text-color',
+                getContrastTextColor(theme.design.buttons.buttonColor)
+            );
+
+            if (theme.design.buttons.buttonShape === 'square') {
+                document.documentElement.style.setProperty('--presentation-button-radius', '1.5px');
+            } else if (theme.design.buttons.buttonShape === 'capsule') {
+                document.documentElement.style.setProperty('--presentation-button-radius', 'var(--chakra-radii-full)');
+            } else if (theme.design.buttons.buttonShape === 'default') {
+                document.documentElement.style.setProperty('--presentation-button-radius', '4px');
+            } else if (theme.design.buttons.buttonShape === 'rounded') {
+                document.documentElement.style.setProperty('--presentation-button-radius', '8px');
+            }
+
             document.documentElement.style.setProperty('--presentation-link-color', theme.design.buttons.linkColor);
 
             // Control variables - the single place these should be set dynamically

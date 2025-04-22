@@ -19,7 +19,7 @@ export default function BlockDesign({
             }}
         >
             <div>
-                <Label>Цвет блока</Label>
+                <Label>Цвет кнопки</Label>
                 <ColorPicker
                     value={theme.design.buttons.buttonColor}
                     isShowRemoveIcon={true}

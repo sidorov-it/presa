@@ -49,7 +49,7 @@ export const ButtonNode = Node.create({
     },
 
     renderHTML({ HTMLAttributes }) {
-        return ['button', mergeAttributes(HTMLAttributes, { 'data-type': 'button' }), 0];
+        return ['button', mergeAttributes(HTMLAttributes, { 'data-type': 'button', class: 'presentation-button' }), 0];
     },
 
     addNodeView() {

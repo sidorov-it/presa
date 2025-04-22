@@ -24,6 +24,7 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
         createdAt: new Date(),
         updatedAt: new Date(),
         colors: {
+            additionalColors: [],
             shapesColor: '#3b82f6',
             buttonsColor: '#3b82f6',
             linksColor: '#3b82f6',
@@ -57,16 +58,19 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
         design: {
             slide: {
                 borderRadius: '8px',
-                shadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)',
-                border: '1px solid',
+                shadow: 'sm',
                 borderColor: '#e5e7eb',
-                imageShape: 'rounded',
+                imageShape: 'default',
+                borderWidth: 'thin',
+                opacity: 0.8,
             },
             blocks: {
                 backgroundColor: '#ffffff',
-                opacity: 0.8,
+                backgroundFillType: 'fill',
+                blockFillColorsType: 'subtle',
+                blockBackgroundCustomColors: [],
                 borderWidth: 'thin',
-                shadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+                shadow: 'sm',
             },
             buttons: {
                 buttonColor: '#3b82f6',

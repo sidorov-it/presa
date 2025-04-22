@@ -15,8 +15,6 @@ export const resetThemeStyles = (): void => {
     document.documentElement.style.setProperty('--secondary-button-color', DEFAULT_THEME.colors.secondaryButtonColor);
 
     document.documentElement.style.setProperty('--shapes-color', DEFAULT_THEME.colors.shapesColor);
-    document.documentElement.style.setProperty('--buttons-color', DEFAULT_THEME.colors.buttonsColor);
-    document.documentElement.style.setProperty('--links-color', DEFAULT_THEME.colors.linksColor);
 
     document.documentElement.style.setProperty('--heading-color', DEFAULT_THEME.colors.headingColor);
     document.documentElement.style.setProperty('--text-color', DEFAULT_THEME.colors.textColor);
@@ -50,12 +48,12 @@ export const resetThemeStyles = (): void => {
     // Slide design
     document.documentElement.style.setProperty('--slide-border-radius', DEFAULT_THEME.design.slide.borderRadius);
     document.documentElement.style.setProperty('--slide-shadow', DEFAULT_THEME.design.slide.shadow);
-    document.documentElement.style.setProperty('--slide-border', DEFAULT_THEME.design.slide.border);
+    // document.documentElement.style.setProperty('--slide-border', DEFAULT_THEME.design.slide.border);
     document.documentElement.style.setProperty('--slide-border-color', DEFAULT_THEME.design.slide.borderColor);
 
     // Block design
     document.documentElement.style.setProperty('--block-background', DEFAULT_THEME.design.blocks.backgroundColor);
-    document.documentElement.style.setProperty('--block-opacity', DEFAULT_THEME.design.blocks.opacity.toString());
+    // document.documentElement.style.setProperty('--block-opacity', DEFAULT_THEME.design.blocks.opacity.toString());
 
     // Handle block border width with proper indentation
     let blockBorderWidth = '0';

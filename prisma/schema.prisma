@@ -113,8 +113,6 @@ type ThemeColors {
   additionalColors String[]
   secondaryAccents String[]
   shapesColor      String
-  buttonsColor     String
-  linksColor       String
 
   // Text Colors
   headingColor String

@@ -6,8 +6,6 @@ export type ThemeColors = {
     secondaryAccents: string[];
 
     shapesColor: string;
-    buttonsColor: string;
-    linksColor: string;
 
     // Text Colors
     headingColor: string;

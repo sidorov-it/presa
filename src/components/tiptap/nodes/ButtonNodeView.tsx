@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import ButtonMenu from '@/components/editor/Menus/ButtonMenu';
 import { usePresentationStore } from '@/store/presentationStore';
 import { generateId } from '@/utils/id';
+import styles from './ButtonNode.module.css';
 
 const MENU_WIDTH = 300; // Ширина меню в пикселях (должна совпадать с CSS)
 const MARGIN = 16; // Отступ от краев экрана
@@ -230,14 +231,14 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({ node, updateAttributes, delet
     // Get button styles based on attributes
     const getButtonStyles = () => {
         const { buttonStyle, color, alignment } = node.attrs;
-        const baseStyles = 'py-2 px-4 rounded transition-all duration-200 min-w-[100px] hover:brightness-90 ';
-        let alignmentClass = 'text-center';
+        const baseStyles = `${styles.button} `;
+        let alignmentClass = styles.textCenter;
 
         // Set alignment
         if (alignment === 'left') {
-            alignmentClass = 'text-left';
+            alignmentClass = styles.textLeft;
         } else if (alignment === 'right') {
-            alignmentClass = 'text-right';
+            alignmentClass = styles.textRight;
         }
 
         // Set button style (filled or outlined)
@@ -245,19 +246,19 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({ node, updateAttributes, delet
             return {
                 className: `${baseStyles} ${alignmentClass}`,
                 style: {
-                    backgroundColor: color || '#3C3939',
-                    color: '#FFFFFF',
-                    border: 'none',
+                    // backgroundColor: color || '#3C3939',
+                    // color: '#FFFFFF',
+                    // border: 'none',
                     cursor: node.attrs.link && !showMenu ? 'pointer' : 'text',
                 },
             };
         } else {
             return {
-                className: `${baseStyles} ${alignmentClass} hover:bg-opacity-10`,
+                className: `${baseStyles} ${alignmentClass} ${styles.buttonOpacity}`,
                 style: {
                     backgroundColor: 'transparent',
-                    color: color || '#3C3939',
-                    border: `1px solid ${color || '#3C3939'}`,
+                    // color: color || '#3C3939',
+                    // border: `1px solid ${color || '#3C3939'}`,
                     cursor: node.attrs.link && !showMenu ? 'pointer' : 'text',
                 },
             };
@@ -267,15 +268,15 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({ node, updateAttributes, delet
     // Get container styles based on alignment
     const getContainerStyles = () => {
         const { alignment } = node.attrs;
-        let containerStyle = 'w-full flex';
+        let containerStyle = styles.container;
 
         // Set alignment for the button container
         if (alignment === 'left') {
-            containerStyle += ' justify-start';
+            containerStyle += ` ${styles.justifyStart}`;
         } else if (alignment === 'center') {
-            containerStyle += ' justify-center';
+            containerStyle += ` ${styles.justifyCenter}`;
         } else if (alignment === 'right') {
-            containerStyle += ' justify-end';
+            containerStyle += ` ${styles.justifyEnd}`;
         }
 
         return containerStyle;
@@ -306,7 +307,7 @@ const ButtonNodeView: React.FC<NodeViewProps> = ({ node, updateAttributes, delet
                         <div
                             contentEditable={isEditable}
                             suppressContentEditableWarning={true}
-                            className={isEditable ? 'cursor-text' : 'cursor-pointer'}
+                            className={isEditable ? styles.cursorText : styles.cursorPointer}
                         >
                             {node.textContent || 'Button text'}
                         </div>

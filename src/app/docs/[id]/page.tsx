@@ -21,6 +21,7 @@ import BackgroundSettingsModal from '@/components/editor/BackgroundSettingsModal
 import { HiOutlineCog6Tooth } from 'react-icons/hi2';
 import styles from './page.module.css';
 import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
+import ThemeDebugButton from '@/components/debug/ThemeDebugButton';
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -272,6 +273,8 @@ export default function PresentationEditorPage() {
                         onClose={handleCloseBgModal}
                         presentationId={presentation.id}
                     />
+                    
+                    <ThemeDebugButton />
                 </main>
 
                 <footer className={styles.footer}>

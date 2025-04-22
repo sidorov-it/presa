@@ -166,7 +166,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
         {
             label: 'Дизайн',
             icon: <MdOutlineDesignServices />,
-            content: <ButtonsDesign theme={theme} handleDesignChange={handleDesignChange} />,
+            content: <Design theme={theme} handleDesignChange={handleDesignChange} />,
         },
     ];
 

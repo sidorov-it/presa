@@ -4,7 +4,6 @@ import React, { createContext, useContext, useEffect, ReactNode, useState } from
 import { Theme } from '@/types/theme';
 import { useThemeStore } from '@/store/themeStore';
 import { isColorDark } from '@/context/ThemeContext';
-import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
 import { resetThemeStyles } from '@/utils/themeUtils';
 
 interface ThemeContextType {
@@ -38,8 +37,6 @@ export const ThemeProvider = ({ children, initialTheme }: ThemeProviderProps) =>
         document.documentElement.style.setProperty('--primary-accent', theme.colors.primaryAccent);
 
         document.documentElement.style.setProperty('--shapes-color', theme.colors.shapesColor);
-        document.documentElement.style.setProperty('--buttons-color', theme.colors.buttonsColor);
-        document.documentElement.style.setProperty('--links-color', theme.colors.linksColor);
 
         document.documentElement.style.setProperty('--accent-blocks-color', theme.colors.accentBlocksColor);
         document.documentElement.style.setProperty('--secondary-button-color', theme.colors.secondaryButtonColor);
@@ -87,7 +84,7 @@ export const ThemeProvider = ({ children, initialTheme }: ThemeProviderProps) =>
 
         // Block design
         document.documentElement.style.setProperty('--block-background', theme.design.blocks.backgroundColor);
-        document.documentElement.style.setProperty('--block-opacity', theme.design.blocks.opacity.toString());
+        // document.documentElement.style.setProperty('--block-opacity', theme.design.blocks.opacity.toString());
 
         let blockBorderWidth = '0';
         if (theme.design.blocks.borderWidth === 'thin') {
