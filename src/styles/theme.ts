@@ -18,6 +18,9 @@ const config = defineConfig({
             xl: '1200px',
         },
 
+        textStyles: {
+
+        },
         // Design tokens
         tokens: {
             colors: {

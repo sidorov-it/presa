@@ -113,71 +113,29 @@ export const Code = Mark.create<CodeOptions>({
                         const isActive = editor.isActive('code');
 
                         if (isActive) {
-                        // If code is already active, just use the built-in command
                             return commands.toggleMark('code');
                         }
 
-                        // If not active, we need to capture font size information before applying code
                         // Get the font size class from the surrounding textStyle mark
                         const marks = editor.getAttributes('textStyle');
-                        
                         let sizeClasses;
 
                         if (marks.fontSize?.hasOwnProperty('classList')) {
                             sizeClasses = marks.fontSize.classList.value.split(' ');
                         } else {
-                            sizeClasses = marks.fontSize ? getSizeClasses(marks.fontSize) : '';
-
+                            sizeClasses = marks.fontSize ? getSizeClasses(marks.fontSize) : [];
                         }
-                        
-                        const observer = new MutationObserver(mutations => {
-                        // Process the mutations to find added code elements
-                            for (const mutation of mutations) {
-                                console.log('mutation', mutation);
-                                if (mutation.type === 'childList') {
-                                // Look for added code elements
-                                    mutation.addedNodes.forEach(node => {
-                                        if (node.nodeType === Node.ELEMENT_NODE) {
-                                        // Direct match if the node is a code element
-                                            if (node.nodeName === 'CODE' && node.classList.contains('custom-code')) {
-                                            // node.classList.add(sizeClasses);
-                                                sizeClasses.forEach(sizeClass => {
-                                                    node.classList.add(sizeClass);
-                                                });
-                                                console.log('added classes', sizeClasses);
 
-                                                // node.className = `custom-code ${sizeClasses}`;
-                                                observer.disconnect();
-                                            }
-
-                                            // Also check children if it's a container
-                                            const codeElements = (node as Element).querySelectorAll('code.custom-code');
-                                            codeElements.forEach(code => {
-                                                sizeClasses.forEach(sizeClass => {
-                                                    code.classList.add(sizeClass);
-                                                });
-                                                console.log('added classes', sizeClasses);
-                                                // code.className = `custom-code ${sizeClasses}`;
-                                                observer.disconnect();
-                                            });
-                                        }
-                                    });
-                                }
-                            }
-
-                            // Disconnect after processing
-                            observer.disconnect();
+                        // First apply the code mark
+                        const preparedClasses = ['custom-code', ...(Array.isArray(sizeClasses) ? sizeClasses : [sizeClasses])].filter(Boolean).join(' ');
+                        const result = commands.toggleMark(this.name, {
+                            class: preparedClasses
                         });
 
-                        // Start observing the editor DOM
-                        observer.observe(editor.view.dom, {
-                            childList: true,
-                            subtree: true,
-                            attributes: true,
-                            attributeFilter: ['class'],
-                        });
-                        // Apply code mark
-                        const result = commands.toggleMark('code');
+                        // Ensure the editor state is updated
+                        editor.view.dispatch(editor.state.tr.setMeta('addToHistory', true));
+
+                        console.log('finished toggle code');
                         return result;
                     },
             unsetCode:

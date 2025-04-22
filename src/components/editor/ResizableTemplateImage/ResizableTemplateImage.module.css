@@ -1,17 +1,17 @@
-.templateImage {
-    border-radius: 0.4em;
+.container {
+    position: relative;
     overflow: hidden;
     position: relative;
     border-radius: 0;
+}
 
+.templateImage {
     mask-size: cover;
     mask-repeat: no-repeat;
-    /* mask-position: var(--presentation-slide-image-mask-position);
-    mask-image: var(--presentation-slide-image-mask-image); */
+    width: 100%;
+    height: 100%;
 }
-/* --presentation-slide-image-mask-position
---presentation-slide-image-mask-image-left
---presentation-slide-image-mask-image-right */
+
 .imageBackground {
     border-radius: 0.4em;
 }

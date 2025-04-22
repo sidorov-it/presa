@@ -38,6 +38,7 @@ const appliedVars = [
     '--presentation-slide-image-mask-image-top',
     '--presentation-slide-image-mask-image-left',
     '--presentation-slide-image-mask-image-right',
+    '--presentation-page-background-image',
 ];
 
 const ThemeDebugPopup: React.FC<ThemeDebugPopupProps> = ({ isOpen, onClose }) => {

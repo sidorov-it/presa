@@ -247,13 +247,13 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
                     <BiStrikethrough size={16} />
                 </button>
 
-                <button
+                {/* <button
                     onClick={() => editor.chain().focus().toggleCode().run()}
                     className={`${styles.button} ${editor.isActive('code') ? styles.active : ''}`}
                     aria-label="Код"
                 >
                     <BiCode size={16} />
-                </button>
+                </button> */}
 
                 <LinkEditor editor={editor} className={styles.button} />
 

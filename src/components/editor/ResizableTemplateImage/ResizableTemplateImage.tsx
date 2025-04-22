@@ -92,7 +92,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     }, [templateType]);
 
     // Compute final image style including stored dimensions
-    const imageStyle = useMemo(() => {
+    const containerStyle = useMemo(() => {
         if (templateType === 'imageBackground') {
             return {
                 ...initialImageStyle,
@@ -113,6 +113,29 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                 // zIndex: 10,
             };
         }
+    }, [currentSize, initialImageStyle]);
+
+    const imageStyle = useMemo(() => {
+        const { width, height, ...rest } = currentSize;
+        if (templateType === 'imageBackground') {
+            return {
+                // ...initialImageStyle,
+                ...rest,
+                // zIndex: 10,
+            };
+        } else if (templateType === 'imageTop' || templateType === 'imageBottom') {
+            return {
+                // ...initialImageStyle,
+                ...rest,
+                // zIndex: 10,
+            };
+        } else {
+            return {
+                // ...initialImageStyle,
+                ...rest,
+                // zIndex: 10,
+            };
+        }
     }, [currentSize, initialImageStyle, templateType]);
 
     // Handle resize movement
@@ -124,7 +147,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
         animationFrameIdRef.current = requestAnimationFrame(() => {
             if (!imageRef.current) return;
 
-            const parentRect = imageRef.current.parentElement?.getBoundingClientRect();
+            const parentRect = imageRef.current.parentElement?.parentElement?.getBoundingClientRect();
             if (!parentRect) return;
 
             const deltaX = e.clientX - startPosRef.current.x;
@@ -324,34 +347,36 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     }
     // Render template image with resize handles
     return (
-        <div
-            ref={imageRef}
-            className={`${styles.templateImage} ${styles[templateType]}`}
-            style={imageStyle}
-            aria-label={`Resizable ${templateType} image template`}
-            role="region"
-        >
-            {imageUrl && (
-                <img
-                    src={imageUrl}
-                    alt={`Template ${templateType}`}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-            )}
+        <div className={styles.container} style={containerStyle}>
+            <div
+                ref={imageRef}
+                className={`${styles.templateImage} ${styles[templateType]}`}
+                style={imageStyle}
+                aria-label={`Resizable ${templateType} image template`}
+                role="region"
+            >
+                {imageUrl && (
+                    <img
+                        src={imageUrl}
+                        alt={`Template ${templateType}`}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                )}
 
-            {!imageUrl && (
-                <div
-                    className={styles.templateImagePlaceholder}
-                    style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        backgroundColor: 'var(--chakra-colors-gray-300)',
-                    }}
-                >
-                    <ImagePlaceholder onUpload={() => {}} onLink={() => {}} onGenerate={() => {}} />
-                </div>
-            )}
+                {!imageUrl && (
+                    <div
+                        className={styles.templateImagePlaceholder}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            backgroundColor: 'var(--chakra-colors-gray-300)',
+                        }}
+                    >
+                        <ImagePlaceholder onUpload={() => { }} onLink={() => { }} onGenerate={() => { }} />
+                    </div>
+                )}
+            </div>
 
             {resizeHandles.includes('left') && (
                 <div
@@ -413,6 +438,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                 />
             )}
         </div>
+
     );
 };
 
