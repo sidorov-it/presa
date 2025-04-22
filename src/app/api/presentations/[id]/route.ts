@@ -7,24 +7,32 @@ import { getNewEditorElement } from '@/elements/registry';
 import { parsePresentation, stringifyJsonField } from '@/utils/json';
 
 // Get a specific presentation
-export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
-    const params = await props.params;
+export async function GET(
+    request: Request,
+    { params }: { params: { id: string } }
+) {
     try {
-        const id = params.id;
-
-        const presentation = await prisma.presentation.findUnique({
-            where: { id },
+        const presentationData = await prisma.presentation.findUnique({
+            where: { id: params.id },
         });
 
-        if (!presentation) {
-            return NextResponse.json({ error: 'Presentation not found' }, { status: 404 });
+        if (!presentationData) {
+            return NextResponse.json(
+                { error: 'Presentation not found' },
+                { status: 404 }
+            );
         }
 
-        // Use the utility function to parse the slides JSON
-        return NextResponse.json(parsePresentation(presentation));
+        // Parse the presentation data (convert JSON strings to objects)
+        const presentation = parsePresentation(presentationData);
+
+        return NextResponse.json(presentation, { status: 200 });
     } catch (error) {
         console.error('Error fetching presentation:', error);
-        return NextResponse.json({ error: 'Error fetching presentation' }, { status: 500 });
+        return NextResponse.json(
+            { error: 'Failed to fetch presentation' },
+            { status: 500 }
+        );
     }
 }
 

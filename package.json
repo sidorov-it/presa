@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@chakra-ui/next-js": "^2.4.2",
-    "@chakra-ui/react": "^3.16.0",
+    "@chakra-ui/react": "^3.16.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@pandacss/dev": "^0.53.4",
@@ -79,6 +79,8 @@
     "deep-equal": "^2.2.3",
     "eslint-plugin-unused-imports": "^4.1.4",
     "framer-motion": "^12.7.4",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.1",
     "lucide-react": "^0.486.0",
     "mongodb": "^6.15.0",
     "mongoose": "^8.13.1",

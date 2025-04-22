@@ -1,27 +1,58 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { Theme } from '@/types/theme';
 
 interface Params {
     id: string;
 }
 
-export async function GET(request: Request, props: { params: Promise<Params> }) {
-    const params = await props.params;
+export async function GET(
+    request: Request,
+    { params }: { params: { id: string } }
+) {
     try {
-        const { id } = params;
-
-        const theme = await prisma.theme.findUnique({
-            where: { id },
+        const themeData = await prisma.theme.findUnique({
+            where: { id: params.id },
         });
 
-        if (!theme) {
-            return NextResponse.json({ error: 'Theme not found' }, { status: 404 });
+        if (!themeData) {
+            return NextResponse.json(
+                { error: 'Theme not found' },
+                { status: 404 }
+            );
         }
 
-        return NextResponse.json(theme);
+        // Convert to proper Theme type with correct structure
+        const theme: Theme = {
+            id: themeData.id,
+            name: themeData.name,
+            description: themeData.description || undefined,
+            logo: themeData.logo || undefined,
+            colors: themeData.colors,
+            typography: {
+                ...themeData.typography,
+                // Ensure numbers are parsed correctly
+                headingWeight: Number(themeData.typography.headingWeight),
+                bodyWeight: Number(themeData.typography.bodyWeight),
+            },
+            design: {
+                slide: themeData.design.slide,
+                blocks: {
+                    ...themeData.design.blocks,
+                },
+                buttons: themeData.design.buttons,
+            },
+            createdAt: themeData.createdAt,
+            updatedAt: themeData.updatedAt,
+        };
+
+        return NextResponse.json({ theme }, { status: 200 });
     } catch (error) {
-        console.error('Failed to fetch theme:', error);
-        return NextResponse.json({ error: 'Failed to fetch theme' }, { status: 500 });
+        console.error('Error fetching theme:', error);
+        return NextResponse.json(
+            { error: 'Failed to fetch theme' },
+            { status: 500 }
+        );
     }
 }
 

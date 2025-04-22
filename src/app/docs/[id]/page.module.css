@@ -225,4 +225,9 @@
     line-height: 1.25rem;
     color: #6b7280;
     padding: 0.5rem;
+}
+
+.exportButtonWrapper {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
 } 

@@ -1,24 +1,30 @@
-import { notFound } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
-import { parsePresentation } from '@/utils/json';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import SlideViewer from '@/components/viewer/SlideViewer';
-import { Theme } from '@/types/theme';
-import { Slide } from '@/types';
+import { IPresentation, Slide } from '@/types';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
+import { Theme } from '@/types/theme';
+import { PdfExportDialog } from '@/components/export';
 import styles from './page.module.css';
 
 // Define metadata for the page
 export const generateMetadata = async (props: { params: Promise<{ id: string }> }) => {
     const params = await props.params;
     try {
-        const presentation = await prisma.presentation.findUnique({
-            where: { id: params.id },
-            select: { title: true },
-        });
+        const presentation = await fetch(`/api/presentations/${params.id}`);
+        if (!presentation.ok) {
+            throw new Error('Failed to load presentation');
+        }
+        
+        const data = await presentation.json();
+        const title = data.presentation?.title || 'Presentation Viewer';
+        const description = 'View the presentation in read-only mode';
 
         return {
-            title: presentation?.title || 'Presentation Viewer',
-            description: 'View the presentation in read-only mode',
+            title,
+            description,
         };
     } catch (error: any) {
         console.error('Failed to load presentation:', error);
@@ -29,89 +35,86 @@ export const generateMetadata = async (props: { params: Promise<{ id: string }> 
     }
 };
 
-// Server component for viewing a presentation
-export default async function PresentationView(props: { params: Promise<{ id: string }> }) {
-    const params = await props.params;
-    // Get presentation data from the database
-    let presentation;
-    let theme: Theme | null = null;
+export default function PresentationView() {
+    const params = useParams();
+    const { id } = params;
+    
+    const [presentation, setPresentation] = useState<IPresentation | null>(null);
+    const [theme, setTheme] = useState<Theme | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    try {
-        // Fetch presentation from database
-        const presentationData = await prisma.presentation.findUnique({
-            where: { id: params.id },
-        });
-
-        if (!presentationData) {
-            notFound();
-        }
-
-        // Parse the presentation data
-        presentation = parsePresentation(presentationData);
-
-        console.log('Presentation themeId:', presentation.themeId);
-
-        // Fetch theme if available
-        if (presentation.themeId) {
+    useEffect(() => {
+        // Function to fetch presentation data
+        const fetchPresentation = async () => {
             try {
-                // Directly fetch the theme using raw Prisma client to get full structure
-                const themeData = (await prisma.theme.findUnique({
-                    where: { id: presentation.themeId },
-                })) as Theme;
-
-                console.log('Theme data from DB:', JSON.stringify(themeData, null, 2));
-
-                if (themeData) {
-                    // Convert to proper Theme type with correct structure
-                    theme = {
-                        id: themeData.id,
-                        name: themeData.name,
-                        description: themeData.description || undefined,
-                        logo: themeData.logo || undefined,
-                        colors: themeData.colors,
-                        typography: {
-                            ...themeData.typography,
-                            // Ensure numbers are parsed correctly
-                            headingWeight: Number(themeData.typography.headingWeight),
-                            bodyWeight: Number(themeData.typography.bodyWeight),
-                        },
-                        design: {
-                            slide: themeData.design.slide,
-                            blocks: {
-                                ...themeData.design.blocks,
-                            },
-                            buttons: themeData.design.buttons,
-                        },
-                        createdAt: themeData.createdAt,
-                        updatedAt: themeData.updatedAt,
-                    };
-
-                    console.log('Theme object created:', theme!.name);
-                    console.log('Theme structure validation:', {
-                        hasColors: !!theme!.colors,
-                        hasTypography: !!theme!.typography,
-                        hasDesign: !!theme!.design,
-                        hasSlide: theme!.design && !!theme!.design.slide,
-                        hasBlocks: theme!.design && !!theme!.design.blocks,
-                        hasButtons: theme!.design && !!theme!.design.buttons,
-                    });
-                } else {
-                    console.log('Theme not found in database');
+                const response = await fetch(`/api/presentations/${id}`);
+                if (!response.ok) {
+                    throw new Error('Failed to load presentation');
                 }
-            } catch (themeError) {
-                console.error('Error fetching theme:', themeError);
+                
+                const data = await response.json();
+                setPresentation(data.presentation);
+                
+                // Fetch theme if available
+                if (data.presentation.themeId) {
+                    try {
+                        const themeResponse = await fetch(`/api/themes/${data.presentation.themeId}`);
+                        if (themeResponse.ok) {
+                            const themeData = await themeResponse.json();
+                            setTheme(themeData.theme);
+                        }
+                    } catch (themeError) {
+                        console.error('Error fetching theme:', themeError);
+                    }
+                }
+                
+                setIsLoading(false);
+            } catch (error) {
+                console.error('Error:', error);
+                setError('Failed to load presentation');
+                setIsLoading(false);
             }
-        } else {
-            console.log('No themeId in presentation');
+        };
+
+        if (id) {
+            fetchPresentation();
         }
-    } catch (error) {
-        console.error('Failed to load presentation:', error);
-        notFound();
+    }, [id]);
+
+    if (isLoading) {
+        return (
+            <div className={styles.loadingContainer}>
+                <div className={styles.spinner}></div>
+            </div>
+        );
+    }
+
+    if (error || !presentation) {
+        return (
+            <div className={styles.errorContainer}>
+                <h1 className={styles.errorTitle}>Presentation Not Found</h1>
+                <p className={styles.errorText}>
+                    {error || "The presentation you're looking for doesn't exist or you don't have access to it."}
+                </p>
+            </div>
+        );
     }
 
     return (
         <ThemeProvider initialTheme={theme}>
             <div className={styles.container}>
+                <div className={styles.header}>
+                    <h1 className={styles.title}>{presentation.title}</h1>
+                    
+                    <div className={styles.actions}>
+                        <PdfExportDialog
+                            presentation={presentation}
+                            buttonText="Export to PDF"
+                        />
+                    </div>
+                </div>
+                
                 <div className={styles.content}>
                     <div className={styles.slideList}>
                         {presentation.slides.map((slide: Slide, index: number) => (
