@@ -55,9 +55,9 @@ export default async function PresentationView(props: { params: Promise<{ id: st
         if (presentation.themeId) {
             try {
                 // Directly fetch the theme using raw Prisma client to get full structure
-                const themeData = await prisma.theme.findUnique({
+                const themeData = (await prisma.theme.findUnique({
                     where: { id: presentation.themeId },
-                });
+                })) as Theme;
 
                 console.log('Theme data from DB:', JSON.stringify(themeData, null, 2));
 
@@ -79,8 +79,6 @@ export default async function PresentationView(props: { params: Promise<{ id: st
                             slide: themeData.design.slide,
                             blocks: {
                                 ...themeData.design.blocks,
-                                // Ensure numbers are parsed correctly
-                                opacity: Number(themeData.design.blocks.opacity),
                             },
                             buttons: themeData.design.buttons,
                         },
@@ -88,14 +86,14 @@ export default async function PresentationView(props: { params: Promise<{ id: st
                         updatedAt: themeData.updatedAt,
                     };
 
-                    console.log('Theme object created:', theme.name);
+                    console.log('Theme object created:', theme!.name);
                     console.log('Theme structure validation:', {
-                        hasColors: !!theme.colors,
-                        hasTypography: !!theme.typography,
-                        hasDesign: !!theme.design,
-                        hasSlide: theme.design && !!theme.design.slide,
-                        hasBlocks: theme.design && !!theme.design.blocks,
-                        hasButtons: theme.design && !!theme.design.buttons,
+                        hasColors: !!theme!.colors,
+                        hasTypography: !!theme!.typography,
+                        hasDesign: !!theme!.design,
+                        hasSlide: theme!.design && !!theme!.design.slide,
+                        hasBlocks: theme!.design && !!theme!.design.blocks,
+                        hasButtons: theme!.design && !!theme!.design.buttons,
                     });
                 } else {
                     console.log('Theme not found in database');

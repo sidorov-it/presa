@@ -19,6 +19,63 @@ type BackgroundSettings {
   backgroundImage String?
 }
 
+enum BackgroundType {
+  color
+  image
+}
+
+enum Capitalization {
+  none
+  uppercase
+}
+
+enum ShadowSize {
+  none
+  sm
+  md
+}
+
+enum BorderWidth {
+  none
+  thin
+  medium
+  thick
+}
+
+enum ImageShape {
+  default
+  fade
+  diagonal
+  round
+  round_inverse
+  wiggle
+}
+
+enum BackgroundFillType {
+  fill
+  semi
+  none
+}
+
+enum BlockFillColorsType {
+  subtle
+  primary
+  custom
+}
+
+enum ButtonShape {
+  square
+  capsule
+  default
+  rounded
+}
+
+type PageBackground {
+  type     BackgroundType
+  color    String
+  imageUrl String
+}
+
 model User {
   id                   String            @id @default(auto()) @map("_id") @db.ObjectId
   email                String            @unique
@@ -53,7 +110,11 @@ model Presentation {
 type ThemeColors {
   // Accent Colors
   primaryAccent    String
+  additionalColors String[]
   secondaryAccents String[]
+  shapesColor      String
+  buttonsColor     String
+  linksColor       String
 
   // Text Colors
   headingColor String
@@ -61,39 +122,52 @@ type ThemeColors {
 
   // Background Colors
   slideBackground String
-  pageBackground  String
+  pageBackground  PageBackground
+
+  // Additional Colors
+  accentBlocksColor    String
+  secondaryButtonColor String
 }
 
 type ThemeTypography {
   // Headings
-  headingFont   String
-  headingWeight Float
-  headingColor  String
+  headingFont           String
+  headingWeight         Float
+  headingColor          String
+  headingLineHeight     Float
+  headingLetterSpacing  Float
+  headingCapitalization Capitalization
 
   // Body Text
-  bodyFont   String
-  bodyWeight Float
-  bodyColor  String
+  bodyFont           String
+  bodyWeight         Float
+  bodyColor          String
+  bodyLineHeight     Float
+  bodyLetterSpacing  Float
+  bodyCapitalization Capitalization
 }
 
 type ThemeSlide {
   borderRadius String
-  shadow       String
-  border       String
+  shadow       ShadowSize
+  borderWidth  BorderWidth
   borderColor  String
-  imageShape   String
+  opacity      Float
+  imageShape   ImageShape
 }
 
 type ThemeBlocks {
-  backgroundColor String
-  opacity         Float
-  borderWidth     String
-  shadow          String
+  backgroundColor             String
+  backgroundFillType          BackgroundFillType
+  borderWidth                 BorderWidth
+  blockFillColorsType         BlockFillColorsType
+  blockBackgroundCustomColors String[]
+  shadow                      ShadowSize
 }
 
 type ThemeButtons {
   buttonColor String
-  buttonShape String
+  buttonShape ButtonShape
   linkColor   String
 }
 

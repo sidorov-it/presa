@@ -83,7 +83,6 @@ export const ThemeProvider = ({ children, initialTheme }: ThemeProviderProps) =>
         // Slide design
         document.documentElement.style.setProperty('--slide-border-radius', theme.design.slide.borderRadius);
         document.documentElement.style.setProperty('--slide-shadow', theme.design.slide.shadow);
-        document.documentElement.style.setProperty('--slide-border', theme.design.slide.border);
         document.documentElement.style.setProperty('--slide-border-color', theme.design.slide.borderColor);
 
         // Block design

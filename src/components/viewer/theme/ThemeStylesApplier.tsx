@@ -84,73 +84,156 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
         try {
             // Apply theme to the document root
             // Base colors
-            document.documentElement.style.setProperty('--primary-accent', theme.colors.primaryAccent);
-            document.documentElement.style.setProperty('--shapes-color', theme.colors.shapesColor);
-            document.documentElement.style.setProperty('--buttons-color', theme.colors.buttonsColor);
-            document.documentElement.style.setProperty('--links-color', theme.colors.linksColor);
-            document.documentElement.style.setProperty('--accent-blocks-color', theme.colors.accentBlocksColor);
-            document.documentElement.style.setProperty('--secondary-button-color', theme.colors.secondaryButtonColor);
+            document.documentElement.style.setProperty('--presentation-primary-accent', theme.colors.primaryAccent);
 
-            document.documentElement.style.setProperty('--heading-color', theme.colors.headingColor);
-            document.documentElement.style.setProperty('--text-color', theme.colors.textColor);
-            document.documentElement.style.setProperty('--slide-background', theme.colors.slideBackground);
+            // Set secondary accent colors (limit to first 3)
+            theme.colors.secondaryAccents.slice(0, 3).forEach((color, index) => {
+                document.documentElement.style.setProperty(`--presentation-secondary-accent-${index + 1}`, color);
+            });
+
+            document.documentElement.style.setProperty('--presentation-shapes-color', theme.colors.shapesColor);
+            document.documentElement.style.setProperty('--presentation-buttons-color', theme.colors.buttonsColor);
+            document.documentElement.style.setProperty('--presentation-links-color', theme.colors.linksColor);
+            document.documentElement.style.setProperty(
+                '--presentation-accent-blocks-color',
+                theme.colors.accentBlocksColor
+            );
+            document.documentElement.style.setProperty(
+                '--presentation-secondary-button-color',
+                theme.colors.secondaryButtonColor
+            );
+
+            document.documentElement.style.setProperty('--presentation-heading-color', theme.colors.headingColor);
+            document.documentElement.style.setProperty('--presentation-text-color', theme.colors.textColor);
+            document.documentElement.style.setProperty('--presentation-slide-background', theme.colors.slideBackground);
 
             // Set page background based on type
             if (theme.colors.pageBackground.type === 'color') {
                 document.documentElement.style.setProperty(
-                    '--page-background-color',
+                    '--presentation-page-background-color',
                     theme.colors.pageBackground.color
                 );
             } else {
                 document.documentElement.style.setProperty(
-                    '--page-background-image',
+                    '--presentation-page-background-image',
                     `url(${theme.colors.pageBackground.imageUrl})`
                 );
             }
 
-            document.documentElement.style.setProperty('--page-background-type', theme.colors.pageBackground.type);
+            document.documentElement.style.setProperty(
+                '--presentation-page-background-type',
+                theme.colors.pageBackground.type
+            );
 
             // Typography
             document.documentElement.style.setProperty(
-                '--heading-font',
+                '--presentation-heading-font',
                 `'${theme.typography.headingFont}', sans-serif`
             );
-            document.documentElement.style.setProperty('--heading-weight', theme.typography.headingWeight.toString());
-            document.documentElement.style.setProperty('--body-font', `'${theme.typography.bodyFont}', sans-serif`);
-            document.documentElement.style.setProperty('--body-weight', theme.typography.bodyWeight.toString());
+            document.documentElement.style.setProperty(
+                '--presentation-heading-weight',
+                theme.typography.headingWeight.toString()
+            );
+            document.documentElement.style.setProperty(
+                '--presentation-body-font',
+                `'${theme.typography.bodyFont}', sans-serif`
+            );
+            document.documentElement.style.setProperty(
+                '--presentation-body-weight',
+                theme.typography.bodyWeight.toString()
+            );
+
+            // New typography CSS vars for headings
+            document.documentElement.style.setProperty(
+                '--presentation-heading-line-height',
+                theme.typography.headingLineHeight.toString()
+            );
+            document.documentElement.style.setProperty(
+                '--presentation-heading-letter-spacing',
+                theme.typography.headingLetterSpacing + '%'
+            );
+            document.documentElement.style.setProperty(
+                '--presentation-heading-capitalization',
+                theme.typography.headingCapitalization
+            );
+            // New typography CSS vars for body text
+            document.documentElement.style.setProperty(
+                '--presentation-body-line-height',
+                theme.typography.bodyLineHeight.toString()
+            );
+            document.documentElement.style.setProperty(
+                '--presentation-body-letter-spacing',
+                theme.typography.bodyLetterSpacing + '%'
+            );
+            document.documentElement.style.setProperty(
+                '--presentation-body-capitalization',
+                theme.typography.bodyCapitalization
+            );
 
             // Slide design
-            document.documentElement.style.setProperty('--slide-border-radius', theme.design.slide.borderRadius);
-            document.documentElement.style.setProperty('--slide-shadow', theme.design.slide.shadow);
-            document.documentElement.style.setProperty('--slide-border', theme.design.slide.border);
-            document.documentElement.style.setProperty('--slide-border-color', theme.design.slide.borderColor);
+            document.documentElement.style.setProperty(
+                '--presentation-slide-border-radius',
+                theme.design.slide.borderRadius
+            );
+            document.documentElement.style.setProperty('--presentation-slide-shadow', theme.design.slide.shadow);
+            document.documentElement.style.setProperty(
+                '--presentation-slide-border-width',
+                theme.design.slide.borderWidth
+            );
+            document.documentElement.style.setProperty(
+                '--presentation-slide-border-color',
+                theme.design.slide.borderColor
+            );
+            document.documentElement.style.setProperty(
+                '--presentation-slide-image-shape',
+                theme.design.slide.imageShape
+            );
 
             // Block design
-            document.documentElement.style.setProperty('--block-background', theme.design.blocks.backgroundColor);
-            document.documentElement.style.setProperty('--block-opacity', theme.design.blocks.opacity.toString());
+            document.documentElement.style.setProperty(
+                '--presentation-block-background',
+                theme.design.blocks.backgroundColor
+            );
+            document.documentElement.style.setProperty(
+                '--presentation-block-fill-type',
+                theme.design.blocks.backgroundFillType
+            );
+            document.documentElement.style.setProperty(
+                '--presentation-block-border-width',
+                theme.design.blocks.borderWidth
+            );
+            document.documentElement.style.setProperty(
+                '--presentation-block-fill-colors-type',
+                theme.design.blocks.blockFillColorsType
+            );
 
-            let blockBorderWidth = '0';
-            if (theme.design.blocks.borderWidth === 'thin') {
-                blockBorderWidth = '1px';
-            } else if (theme.design.blocks.borderWidth === 'medium') {
-                blockBorderWidth = '2px';
-            } else if (theme.design.blocks.borderWidth === 'thick') {
-                blockBorderWidth = '4px';
+            if (theme.design.blocks.blockFillColorsType === 'custom') {
+                theme.design.blocks.blockBackgroundCustomColors.forEach((color, index) => {
+                    document.documentElement.style.setProperty(
+                        `--presentation-block-background-custom-${index + 1}`,
+                        color
+                    );
+                });
             }
-            document.documentElement.style.setProperty('--block-border-width', blockBorderWidth);
 
-            document.documentElement.style.setProperty('--block-shadow', theme.design.blocks.shadow);
+            document.documentElement.style.setProperty('--presentation-block-shadow', theme.design.blocks.shadow);
 
             // Button and link design
-            // document.documentElement.style.setProperty('--button-color', theme.design.buttons.buttonColor);
-            document.documentElement.style.setProperty('--button-shape', theme.design.buttons.buttonShape);
-            // document.documentElement.style.setProperty('--link-color', theme.design.buttons.linkColor);
+            document.documentElement.style.setProperty('--presentation-button-color', theme.design.buttons.buttonColor);
+            document.documentElement.style.setProperty('--presentation-button-shape', theme.design.buttons.buttonShape);
+            document.documentElement.style.setProperty('--presentation-link-color', theme.design.buttons.linkColor);
 
             // Control variables - the single place these should be set dynamically
-            document.documentElement.style.setProperty('--control-stroke', isDarkMode ? 'white' : 'rgba(0, 0, 0, 0.2)');
-            document.documentElement.style.setProperty('--control-icon', isDarkMode ? 'white' : 'rgba(0, 0, 0, 0.6)');
             document.documentElement.style.setProperty(
-                '--control-background',
+                '--presentation-control-stroke',
+                isDarkMode ? 'white' : 'rgba(0, 0, 0, 0.2)'
+            );
+            document.documentElement.style.setProperty(
+                '--presentation-control-icon',
+                isDarkMode ? 'white' : 'rgba(0, 0, 0, 0.6)'
+            );
+            document.documentElement.style.setProperty(
+                '--presentation-control-background',
                 isDarkMode ? 'rgba(0, 0, 0, 0.5)' : 'transparent'
             );
 

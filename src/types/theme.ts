@@ -47,6 +47,10 @@ export type ThemeTypography = {
 export type ThemeDesignShadow = 'none' | 'sm' | 'md';
 export type ThemeDesignBorderWidth = 'none' | 'thin' | 'medium' | 'thick';
 export type ThemeDesignButtonShape = 'square' | 'capsule' | 'default' | 'rounded';
+export type ThemeDesignBackgroundFillType = 'fill' | 'semi' | 'none';
+export type ThemeDesignBlockFillColorsType = 'subtle' | 'primary' | 'custom';
+export type ThemeDesignImageShape = 'default' | 'fade' | 'diagonal' | 'round' | 'round-inverse' | 'wiggle';
+
 export type ThemeDesign = {
     // Slide Design
     slide: {
@@ -55,15 +59,15 @@ export type ThemeDesign = {
         borderWidth: ThemeDesignBorderWidth;
         borderColor: string;
         opacity: number;
-        imageShape: 'default' | 'fade' | 'diagonal' | 'round' | 'round-inverse' | 'wiggle';
+        imageShape: ThemeDesignImageShape;
     };
 
     // Blocks and Content
     blocks: {
         backgroundColor: string;
-        backgroundFillType: 'fill' | 'semi' | 'none';
+        backgroundFillType: ThemeDesignBackgroundFillType;
         borderWidth: ThemeDesignBorderWidth;
-        blockFillColorsType: 'subtle' | 'primary' | 'custom';
+        blockFillColorsType: ThemeDesignBlockFillColorsType;
         blockBackgroundCustomColors: string[];
         shadow: ThemeDesignShadow;
     };
