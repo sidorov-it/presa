@@ -8,11 +8,12 @@ export interface BaseMenuProps {
     className?: string;
     style?: CSSProperties;
     onClose?: () => void;
+    isForceOpen?: boolean;
 }
 
-export const BaseMenu: React.FC<BaseMenuProps> = ({ children, position, className, style, onClose }) => {
+export const BaseMenu: React.FC<BaseMenuProps> = ({ children, isForceOpen, position, className, style, onClose }) => {
     const menuRef = useRef<HTMLDivElement>(null);
-    const isOpen = useMenuStore(state => state.isOpen);
+    const isOpen = useMenuStore(state => state.isOpen) || isForceOpen;
 
     // Light theme styles
     const lightThemeStyle = {

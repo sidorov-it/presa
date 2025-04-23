@@ -36,16 +36,19 @@ export const DEFAULT_THEME: Omit<Theme, 'id' | 'createdAt' | 'updatedAt'> = {
     design: {
         slide: {
             borderRadius: '8px',
-            shadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)',
-            border: '1px solid',
+            shadow: 'sm',
+            borderWidth: 'thin',
             borderColor: '#e5e7eb', // Light gray border
-            imageShape: 'rounded',
+            imageShape: 'round',
+            opacity: 0.8,
         },
         blocks: {
             backgroundColor: '#ffffff', // White
-            opacity: 0.8,
+            backgroundFillType: 'fill',
             borderWidth: 'thin',
-            shadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+            shadow: 'sm',
+            blockFillColorsType: 'subtle',
+            blockBackgroundCustomColors: [],
         },
         buttons: {
             buttonColor: '#3b82f6', // Blue

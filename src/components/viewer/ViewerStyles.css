@@ -1,0 +1,102 @@
+/* Viewer-specific styles */
+
+/* Ensure content isn't editable and looks like the final presentation */
+.viewer-tiptap {
+    pointer-events: none;
+    user-select: text;
+    cursor: default;
+    width: 100%;
+    height: 100%;
+}
+
+/* Override TipTap editor styles for headings */
+.viewer-tiptap h1 {
+    color: var(--presentation-heading-color);
+    font-family: var(--presentation-heading-font);
+    font-weight: var(--presentation-heading-weight);
+    line-height: var(--presentation-heading-line-height);
+    letter-spacing: var(--presentation-heading-letter-spacing);
+    text-transform: var(--presentation-heading-capitalization);
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.viewer-tiptap h2 {
+    color: var(--presentation-heading-color);
+    font-family: var(--presentation-heading-font);
+    font-weight: var(--presentation-heading-weight);
+    line-height: var(--presentation-heading-line-height);
+    letter-spacing: var(--presentation-heading-letter-spacing);
+    text-transform: var(--presentation-heading-capitalization);
+    font-size: 2rem;
+    margin-bottom: 0.8rem;
+}
+
+.viewer-tiptap h3 {
+    color: var(--presentation-heading-color);
+    font-family: var(--presentation-heading-font);
+    font-weight: var(--presentation-heading-weight);
+    line-height: var(--presentation-heading-line-height);
+    letter-spacing: var(--presentation-heading-letter-spacing);
+    text-transform: var(--presentation-heading-capitalization);
+    font-size: 1.5rem;
+    margin-bottom: 0.6rem;
+}
+
+.viewer-tiptap p {
+    color: var(--presentation-text-color);
+    font-family: var(--presentation-body-font);
+    font-weight: var(--presentation-body-weight);
+    line-height: var(--presentation-body-line-height);
+    letter-spacing: var(--presentation-body-letter-spacing);
+    text-transform: var(--presentation-body-capitalization);
+    margin-bottom: 0.5rem;
+}
+
+.viewer-tiptap ul, 
+.viewer-tiptap ol {
+    color: var(--presentation-text-color);
+    font-family: var(--presentation-body-font);
+    margin-left: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.viewer-tiptap li {
+    margin-bottom: 0.25rem;
+}
+
+/* Customize links in viewer */
+.viewer-tiptap a {
+    color: var(--presentation-link-color);
+    text-decoration: underline;
+}
+
+/* Style buttons in viewer */
+.viewer-tiptap .button {
+    background-color: var(--presentation-button-color);
+    color: var(--presentation-button-text-color);
+    padding: 0.5rem 1rem;
+    border-radius: var(--presentation-button-radius);
+    display: inline-block;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    cursor: default;
+    pointer-events: none;
+}
+
+/* Style blocks/callouts in viewer */
+.viewer-tiptap blockquote,
+.viewer-tiptap .callout {
+    background-color: var(--presentation-block-background);
+    border-width: var(--presentation-block-border-width);
+    border-color: var(--presentation-primary-accent);
+    border-style: solid;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 0.25rem;
+}
+
+/* Apply proper image masks */
+.element-viewer img {
+} 

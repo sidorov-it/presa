@@ -448,7 +448,7 @@ const Tiptap = ({
 
     return (
         <div className="not-prose" style={{ position: 'relative', width: '100%' }} data-editor-id={id}>
-            {!elementConfig?.customMenu && <CommonBubbleMenu editor={editor} />}
+            {!elementConfig?.customMenu && <CommonBubbleMenu editor={editor} data-element-id={elementId} />}
             <div className="tiptap-editor-wrapper" style={{ width: '100%' }}>
                 {editor && (
                     <EditorContent

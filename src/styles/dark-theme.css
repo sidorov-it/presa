@@ -1,38 +1,32 @@
-/* Dark theme styles */
-.dark-theme {
-  /* Header */
+
+/* .dark-theme {
+
   --header-bg: #272525;
   --header-text: #ffffff;
   
-  /* Panels and UI components */
   --panel-bg: #2a2a2a;
   --panel-border: #444;
   --card-bg: #333;
   --input-bg: #444;
   --input-text: #fff;
   
-  /* Text colors */
   --primary-text: #ffffff;
   --secondary-text: #cccccc;
   --tertiary-text: #999999;
   
   --drag-handle-background: #2a2a2a;
-  /* Control elements - removed as they're now set dynamically in ThemeProvider.tsx */
-  
-  /* Buttons and interactive elements */
+
   --button-bg: #444;
   --button-text: #fff;
   --button-hover: #555;
 }
 
-/* Header and navigation */
 .dark-theme header,
 .dark-theme nav {
   background-color: var(--header-bg);
   color: var(--header-text);
 }
 
-/* Panels (slide list, elements panel, etc.) */
 .dark-theme .panel,
 .dark-theme aside {
   background-color: var(--panel-bg);
@@ -40,14 +34,12 @@
   color: var(--primary-text);
 }
 
-/* Cards and content containers */
 .dark-theme .card {
   background-color: var(--card-bg);
   border-color: var(--panel-border);
   color: var(--primary-text);
 }
 
-/* Inputs and form elements */
 .dark-theme input,
 .dark-theme select,
 .dark-theme textarea {
@@ -56,8 +48,6 @@
   border-color: var(--panel-border);
 }
 
-/* Buttons */
-/* Text elements */
 .dark-theme h1,
 .dark-theme h2,
 .dark-theme h3,
@@ -73,7 +63,6 @@
   color: var(--secondary-text);
 }
 
-/* DragHandler dark mode styles */
 .dark-theme .dragHandle {
   border-color: white !important;
   color: white !important;
@@ -87,32 +76,28 @@
 }
 
 
-/* Slide border selection in dark mode */
 .dark-theme .slideBorderSelected,
 .dark-theme .slideBorderMenuOpen {
   outline-color: white !important;
 }
 
-/* Add Items panel in dark mode */
 .dark-theme .elementsPanel {
   background-color: var(--panel-bg);
   color: var(--primary-text);
 }
 
-/* Slide list in dark mode */
 .dark-theme .slidesList {
   background-color: var(--panel-bg);
   color: var(--primary-text);
 }
 
-/* Slide thumbnails in dark mode */
 .dark-theme .slideThumbnail {
   border-color: var(--panel-border);
 }
 
 .dark-theme .slideThumbnail.active {
   border-color: white;
-}
+} */
 
 /* Bubble menu always stays light themed */
 .light-theme-only,
@@ -157,7 +142,7 @@
 }
 
 /* Ensure color picker overlays stay light */
-.dark-theme .colorPickerDropdown,
+/* .dark-theme .colorPickerDropdown,
 .dark-theme .headingDropdown,
 .dark-theme .linkEditorForm {
   background-color: white !important;
@@ -169,4 +154,4 @@
 .dark-theme .headingDropdown *,
 .dark-theme .linkEditorForm * {
   color: #333 !important;
-} 
+}  */

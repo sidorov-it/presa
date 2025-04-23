@@ -1,9 +1,14 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useState, useCallback, useRef, useEffect, memo, useMemo } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import styles from './ResizableTemplateImage.module.css';
 import deepEqual from 'deep-equal';
 import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlaceholder';
-
+import { BaseMenu, MenuItem } from '../SlideMenu/BaseMenu';
+import Portal from '@/components/Portal';
+import { DeleteIcon } from '@/components/icons';
+import { useMenuStore } from '@/store/menuStore';
 // Minimum size in percentage for image sections
 const MIN_SIZE = 10;
 // Maximum size in percentage for image sections
@@ -27,13 +32,41 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     // defaultSize,
     initialImageStyle,
 }) => {
+    const [isSelected, setIsSelected] = useState(false);
+
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const isMenuOpen = useMenuStore(state => state.isOpen);
+
+    const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+
     const updateSlide = usePresentationStore(state => state.updateSlide);
+
     const slide = usePresentationStore(
         useCallback(state => state.getSlide(presentationId, slideId), [presentationId, slideId])
     );
 
-    // Get stored size or use default
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(() => {
+        if (containerRef.current && isSelected) {
+            const clientRect = containerRef.current.getBoundingClientRect();
+            setMenuPosition({ x: clientRect.x + clientRect.width / 2, y: clientRect.y + window.scrollY });
+        }
+    }, [containerRef.current, isSelected]);
+
+    const clickOutside = useCallback((e: MouseEvent) => {
+        if (!e.target) return;
+        if (e.target instanceof HTMLElement && !e.target.closest(`.${styles.container}`)) {
+            setIsSelected(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        document.addEventListener('click', clickOutside);
+        return () => {
+            document.removeEventListener('click', clickOutside);
+        };
+    }, [clickOutside]);
+
     const storedSize =
         slide?.imageSize ||
         (slide?.templateType === 'imageTop' || slide?.templateType === 'imageBottom'
@@ -93,27 +126,28 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
 
     // Compute final image style including stored dimensions
     const containerStyle = useMemo(() => {
+        const { backgroundImage, ...rest } = initialImageStyle;
         if (templateType === 'imageBackground') {
             return {
-                ...initialImageStyle,
+                ...rest,
                 ...(currentSize.width && { width: currentSize.width }),
                 ...(currentSize.height && { height: currentSize.height }),
-                // zIndex: 10,
+                zIndex: 10,
             };
         } else if (templateType === 'imageTop' || templateType === 'imageBottom') {
             return {
-                ...initialImageStyle,
+                ...rest,
                 ...(currentSize.height && { height: currentSize.height }),
-                // zIndex: 10,
+                zIndex: 10,
             };
         } else {
             return {
-                ...initialImageStyle,
+                ...rest,
                 ...(currentSize.width && { width: currentSize.width }),
-                // zIndex: 10,
+                zIndex: 10,
             };
         }
-    }, [currentSize, initialImageStyle]);
+    }, [currentSize.height, currentSize.width, initialImageStyle, templateType]);
 
     const imageStyle = useMemo(() => {
         const { width, height, ...rest } = currentSize;
@@ -347,7 +381,33 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     }
     // Render template image with resize handles
     return (
-        <div className={styles.container} style={containerStyle}>
+        <div
+            className={`${styles.container} ${isSelected ? styles.selected : ''}`}
+            style={containerStyle}
+            ref={containerRef}
+            onClick={() => {
+                setIsSelected(true);
+                // useMenuStore.getState().openMenu({
+                //     slideId: slideId,
+                //     elementId: slideId,
+                //     // elementType: 'image',
+                // });
+            }}
+        >
+            {/* <Portal>
+                <BaseMenu position={menuPosition} isForceOpen={!!(isSelected && imageUrl)}>
+                    <MenuItem
+                        icon={<DeleteIcon />}
+                        label="Удалить изображение"
+                        onClick={() => {
+                            updateSlide(presentationId, slideId, {
+                                imageUrl: undefined,
+                            });
+                        }}
+                    />
+                </BaseMenu>
+            </Portal> */}
+
             <div
                 ref={imageRef}
                 className={`${styles.templateImage} ${styles[templateType]}`}
@@ -356,11 +416,17 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                 role="region"
             >
                 {imageUrl && (
-                    <img
-                        src={imageUrl}
-                        alt={`Template ${templateType}`}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
+                    <div
+                        className={styles.templateImage}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            backgroundImage: `url(${imageUrl})`,
+                        }}
+                    >
+                        {/* <Image src={imageUrl} alt={`Template ${templateType}`} fill /> */}
+                    </div>
                 )}
 
                 {!imageUrl && (
@@ -373,7 +439,15 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                             backgroundColor: 'var(--chakra-colors-gray-300)',
                         }}
                     >
-                        <ImagePlaceholder onUpload={() => { }} onLink={() => { }} onGenerate={() => { }} />
+                        <ImagePlaceholder
+                            onUpload={() => {}}
+                            onLink={(link: string) => {
+                                updateSlide(presentationId, slideId, {
+                                    imageUrl: link,
+                                });
+                            }}
+                            onGenerate={() => {}}
+                        />
                     </div>
                 )}
             </div>
@@ -438,7 +512,6 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                 />
             )}
         </div>
-
     );
 };
 

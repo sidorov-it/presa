@@ -2,6 +2,7 @@ import { BubbleMenu, Editor } from '@tiptap/react';
 import { ColorPicker } from './ColorPicker';
 import { LinkEditor } from './LinkEditor';
 import styles from './BubbleMenu.module.css';
+import Portal from '@/components/Portal';
 import {
     BiBold,
     BiItalic,
@@ -173,6 +174,7 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
         <BubbleMenu
             editor={editor}
             tippyOptions={{
+                appendTo: window.document.body,
                 placement: 'top-start',
                 showOnCreate: true,
                 interactive: true,

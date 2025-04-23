@@ -29,6 +29,43 @@ interface ElementViewerProps {
 }
 
 const ElementViewer = ({ element }: ElementViewerProps) => {
+    // Get element-specific styles
+    const getElementStyles = () => {
+        const baseStyles: React.CSSProperties = {
+            // Apply base element styles
+            // width: '100%',
+            // height: '100%',
+        };
+
+        // Apply opacity if defined
+        if (element.opacity !== undefined) {
+            baseStyles.opacity = element.opacity;
+        }
+
+        return baseStyles;
+    };
+
+    // Get text-specific theme styles
+    const getTextStyles = () => {
+        const isHeading = element.elementTypeId === 'heading';
+
+        const textStyles: React.CSSProperties = {
+            // Apply text styling from theme variables
+            color: isHeading ? 'var(--presentation-heading-color)' : 'var(--presentation-text-color)',
+            fontFamily: isHeading ? 'var(--presentation-heading-font)' : 'var(--presentation-body-font)',
+            fontWeight: isHeading ? 'var(--presentation-heading-weight)' : 'var(--presentation-body-weight)',
+            lineHeight: isHeading ? 'var(--presentation-heading-line-height)' : 'var(--presentation-body-line-height)',
+            letterSpacing: isHeading
+                ? 'var(--presentation-heading-letter-spacing)'
+                : 'var(--presentation-body-letter-spacing)',
+            textTransform: isHeading
+                ? ('var(--presentation-heading-capitalization)' as any)
+                : ('var(--presentation-body-capitalization)' as any),
+        };
+
+        return textStyles;
+    };
+
     // Render element based on its type
     const renderElementContent = () => {
         switch (element.elementTypeId) {
@@ -36,11 +73,11 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
             case 'heading':
             case 'paragraph':
             case 'editor':
-                // For text elements, render HTML content from 'content' property
+                // For text elements, render HTML content from 'content' property with theme styles
                 return (
                     <div
-                        className="tiptap"
-                        // style={{ width: '100%', height: '100%' }}
+                        className="tiptap viewer-tiptap"
+                        style={getTextStyles()}
                         dangerouslySetInnerHTML={{ __html: element.content || '' }}
                     />
                 );
@@ -52,7 +89,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                         <img
                             src={element.src || ''}
                             alt={element.alt || 'Presentation image'}
-                            style={{ /* width: '100%', height: '100%', */ objectFit: 'contain' }}
+                            style={{ objectFit: 'contain', width: '100%', height: '100%' }}
                         />
                     </div>
                 );
@@ -65,6 +102,15 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                 // For chart elements, render the appropriate chart
                 const chartElement = element as unknown as ChartElement;
                 const data = chartElement.data || [];
+
+                // Use theme accent colors for charts
+                const chartColors = [
+                    'var(--presentation-primary-accent, #8884d8)',
+                    'var(--presentation-secondary-accent-1, #00C49F)',
+                    'var(--presentation-secondary-accent-2, #FFBB28)',
+                    'var(--presentation-secondary-accent-3, #FF8042)',
+                    'var(--presentation-shapes-color, #82ca9d)',
+                ];
 
                 // Determine chart type
                 let chartType = 'bar';
@@ -84,7 +130,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                                         <YAxis />
                                         <Tooltip />
                                         <Legend />
-                                        <Bar dataKey="value" fill="#8884d8" />
+                                        <Bar dataKey="value" fill={chartColors[0]} />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
@@ -100,7 +146,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                                         <YAxis />
                                         <Tooltip />
                                         <Legend />
-                                        <Line type="monotone" dataKey="value" stroke="#8884d8" />
+                                        <Line type="monotone" dataKey="value" stroke={chartColors[0]} />
                                     </LineChart>
                                 </ResponsiveContainer>
                             </div>
@@ -118,11 +164,14 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                                             labelLine={true}
                                             label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                                             outerRadius={80}
-                                            fill="#8884d8"
+                                            fill={chartColors[0]}
                                             dataKey="value"
                                         >
                                             {data.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                <Cell
+                                                    key={`cell-${index}`}
+                                                    fill={chartColors[index % chartColors.length]}
+                                                />
                                             ))}
                                         </Pie>
                                         <Tooltip />
@@ -145,11 +194,14 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                                             label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                                             outerRadius={80}
                                             innerRadius={40}
-                                            fill="#8884d8"
+                                            fill={chartColors[0]}
                                             dataKey="value"
                                         >
                                             {data.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                <Cell
+                                                    key={`cell-${index}`}
+                                                    fill={chartColors[index % chartColors.length]}
+                                                />
                                             ))}
                                         </Pie>
                                         <Tooltip />
@@ -172,14 +224,11 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
     return (
         <div
             style={{
-                top: 0,
-                left: 0,
-                // width: '100%',
-                // height: '100%',
+                ...getElementStyles(),
                 zIndex: 0,
                 transform: 'none',
-                // opacity: element.opacity !== undefined ? element.opacity : 1,
             }}
+            className="element-viewer"
         >
             {renderElementContent()}
         </div>

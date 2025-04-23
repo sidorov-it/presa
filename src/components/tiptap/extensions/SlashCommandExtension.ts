@@ -285,6 +285,10 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
 
                     return {
                         onStart: props => {
+                            if (props.range.from !== 1 && props.range.to !== 2) {
+                                return;
+                            }
+
                             commandsList = new CommandsList(props, this.options.onAddElement);
 
                             // Use document.body directly as the tippy target
@@ -326,7 +330,7 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
                             }
                         },
                         onKeyDown: props => {
-                            if (props.event) {
+                            if (props.event && commandsList) {
                                 return commandsList.onKeyDown(props.event);
                             }
                             return false;

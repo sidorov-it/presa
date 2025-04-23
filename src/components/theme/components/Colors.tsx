@@ -33,7 +33,7 @@ export default function Colors({
                     <div>
                         <Label>Основной акцентный цвет</Label>
                         <ColorPicker
-                            value={theme.colors.primaryAccent}
+                            value={theme.colors?.primaryAccent}
                             onChange={color => handleColorsChange({ primaryAccent: color })}
                         />
                     </div>

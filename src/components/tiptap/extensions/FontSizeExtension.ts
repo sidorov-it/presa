@@ -77,6 +77,7 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                             }
 
                             if (
+                                attributes.fontSize &&
                                 !(typeof attributes.fontSize === 'string') &&
                                 !attributes.fontSize.dataFontSize &&
                                 !attributes.fontSize.classList
@@ -89,7 +90,7 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                             const fontSize =
                                 typeof attributes.fontSize === 'string'
                                     ? attributes.fontSize
-                                    : attributes.fontSize.dataFontSize;
+                                    : attributes.fontSize?.dataFontSize;
 
                             if (fontSize) {
                                 switch (fontSize) {
@@ -126,7 +127,7 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                                 }
                             }
 
-                            if (attributes.fontSize.classList) {
+                            if (attributes.fontSize?.classList) {
                                 className = attributes.fontSize.classList.toString();
                             }
 

@@ -6,20 +6,14 @@ interface Params {
     id: string;
 }
 
-export async function GET(
-    request: Request,
-    { params }: { params: { id: string } }
-) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
     try {
         const themeData = await prisma.theme.findUnique({
             where: { id: params.id },
         });
 
         if (!themeData) {
-            return NextResponse.json(
-                { error: 'Theme not found' },
-                { status: 404 }
-            );
+            return NextResponse.json({ error: 'Theme not found' }, { status: 404 });
         }
 
         // Convert to proper Theme type with correct structure
@@ -46,13 +40,10 @@ export async function GET(
             updatedAt: themeData.updatedAt,
         };
 
-        return NextResponse.json({ theme }, { status: 200 });
+        return NextResponse.json(theme, { status: 200 });
     } catch (error) {
         console.error('Error fetching theme:', error);
-        return NextResponse.json(
-            { error: 'Failed to fetch theme' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Failed to fetch theme' }, { status: 500 });
     }
 }
 
