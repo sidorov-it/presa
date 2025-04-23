@@ -1,37 +1,197 @@
-import { Slide } from '@/types';
+import React, { useMemo } from 'react';
+import { Layout, Slide } from '@/types';
 import LayoutViewer from './LayoutViewer';
+import styles from '../editor/SlideEditor/SlideEditor.module.css';
+import ViewerTemplateImage from './ViewerTemplateImage';
 
 interface SlideViewerProps {
     slide: Slide;
+    presentationId: string;
 }
 
-const SlideViewer = ({ slide }: SlideViewerProps) => {
+const SlideViewer: React.FC<SlideViewerProps> = ({ slide, presentationId }) => {
+    // Get slide background styling
+    const getSlideStyle = () => {
+        if (slide?.templateType === 'imageBackground') {
+            return {
+                ...(slide?.imageUrl ? { backgroundImage: `url(${slide.imageUrl})` } : {}),
+            };
+        }
+
+        // Use background color from slide data
+        if (slide?.background?.type === 'color') {
+            return {
+                backgroundColor: slide.background.value,
+            };
+        }
+
+        return {};
+    };
+
+    // Image rendering based on template type
+    const imageStyle: React.CSSProperties = useMemo(() => {
+        if (!slide?.templateType) return {};
+
+        const baseStyle: React.CSSProperties = {
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+        };
+
+        if (slide.imageUrl) {
+            baseStyle.backgroundImage = `url(${slide.imageUrl})`;
+        }
+
+        switch (slide.templateType) {
+            case 'imageTop':
+                return {
+                    ...baseStyle,
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '33%',
+                    zIndex: 1,
+                };
+            case 'imageBottom':
+                return {
+                    ...baseStyle,
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: '33%',
+                    zIndex: 1,
+                };
+            case 'imageLeft':
+                return {
+                    ...baseStyle,
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    width: '33%',
+                    zIndex: 1,
+                };
+            case 'imageRight':
+                return {
+                    ...baseStyle,
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    width: '33%',
+                    zIndex: 1,
+                };
+            case 'imageBackground':
+                // This is handled by slide background
+                return {};
+            default:
+                return {};
+        }
+    }, [slide?.templateType, slide?.imageUrl]);
+
+    // Calculate content style for layouts based on template
+    const contentStyle: React.CSSProperties = useMemo(() => {
+        if (!slide) return {};
+
+        // Base styles
+        const baseStyle: React.CSSProperties = {
+            position: 'relative',
+            height: '100%',
+            width: '100%',
+        };
+
+        // Apply content alignment
+        if (slide.contentAlignment) {
+            baseStyle.display = 'flex';
+            baseStyle.flexDirection = 'column';
+            switch (slide.contentAlignment) {
+                case 'top':
+                    baseStyle.justifyContent = 'flex-start';
+                    break;
+                case 'center':
+                    baseStyle.justifyContent = 'center';
+                    break;
+                case 'bottom':
+                    baseStyle.justifyContent = 'flex-end';
+                    break;
+                default:
+                    baseStyle.justifyContent = 'center'; // Default to center
+            }
+        }
+
+        // Additional styles for image templates
+        if (slide.templateType) {
+            // Get stored image size or use default values
+            const imageWidth = slide.imageSize?.width || '33%';
+            const imageHeight = slide.imageSize?.height || '33%';
+            const remainingWidth = `${100 - parseFloat(imageWidth)}%`;
+            const remainingHeight = `${100 - parseFloat(imageHeight)}%`;
+
+            switch (slide.templateType) {
+                case 'imageTop':
+                    return {
+                        ...baseStyle,
+                        position: 'relative',
+                        zIndex: 2,
+                        paddingTop: imageHeight,
+                        height: remainingHeight,
+                    };
+                case 'imageBottom':
+                    return {
+                        ...baseStyle,
+                        position: 'relative',
+                        zIndex: 2,
+                        paddingBottom: imageHeight,
+                        height: remainingHeight,
+                    };
+                case 'imageLeft':
+                    return {
+                        ...baseStyle,
+                        position: 'relative',
+                        zIndex: 2,
+                        marginLeft: imageWidth,
+                        width: remainingWidth,
+                    };
+                case 'imageRight':
+                    return {
+                        ...baseStyle,
+                        position: 'relative',
+                        zIndex: 2,
+                        width: remainingWidth,
+                    };
+                default:
+                    return baseStyle;
+            }
+        }
+
+        return baseStyle;
+    }, [slide]);
+
     return (
-        <div
-            style={{
-                position: 'relative',
-                width: '100%',
-                maxWidth: '72rem',
-                height: '100%',
-                transitionProperty: 'all',
-                transitionTimingFunction: ['cubic-bezier(0.4, 0, 0.2, 1)', 'cubic-bezier(0.4, 0, 0.2, 1)'],
-                transitionDuration: ['300ms', '300ms'],
-            }}
-        >
-            <div
-                style={{
-                    top: '0',
-                    right: '0',
-                    bottom: '0',
-                    left: '0',
-                    padding: '2rem',
-                    borderRadius: '0.5rem',
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-                }}
-            >
-                {slide.layouts.map(layout => (
-                    <LayoutViewer key={layout.id} layout={layout} slideId={slide.id} />
-                ))}
+        <div className={styles.slide}>
+            <div className={styles.slideWrapper} style={getSlideStyle()}>
+                <div className={styles.slideContent}>
+                    {/* Template image if needed */}
+                    {slide?.templateType && slide.templateType !== 'imageBackground' && (
+                        <ViewerTemplateImage
+                            templateType={slide.templateType}
+                            imageUrl={slide.imageUrl}
+                            imageStyle={imageStyle}
+                        />
+                    )}
+
+                    <div className={styles.slideContainer} style={contentStyle}>
+                        {slide.layouts.map((layout: Layout) => (
+                            <LayoutViewer 
+                                key={layout.id} 
+                                layout={layout} 
+                                slideId={slide.id} 
+                            />
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -31,7 +31,6 @@ interface ElementViewerProps {
 const ElementViewer = ({ element }: ElementViewerProps) => {
     // Render element based on its type
     const renderElementContent = () => {
-        console.log(element.elementTypeId);
         switch (element.elementTypeId) {
             case 'text':
             case 'heading':
@@ -41,7 +40,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                 return (
                     <div
                         className="tiptap"
-                        style={{ width: '100%', height: '100%' }}
+                        // style={{ width: '100%', height: '100%' }}
                         dangerouslySetInnerHTML={{ __html: element.content || '' }}
                     />
                 );
@@ -51,9 +50,9 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                 return (
                     <div className={styles.container}>
                         <img
-                            src={element.url || ''}
+                            src={element.src || ''}
                             alt={element.alt || 'Presentation image'}
-                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                            style={{ /* width: '100%', height: '100%', */ objectFit: 'contain' }}
                         />
                     </div>
                 );
@@ -175,8 +174,8 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
             style={{
                 top: 0,
                 left: 0,
-                width: '100%',
-                height: '100%',
+                // width: '100%',
+                // height: '100%',
                 zIndex: 0,
                 transform: 'none',
                 // opacity: element.opacity !== undefined ? element.opacity : 1,

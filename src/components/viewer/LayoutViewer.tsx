@@ -26,8 +26,8 @@ const LayoutViewer = ({ layout, slideId }: LayoutViewerProps) => {
     return (
         <div
             style={{
-                height: '100%',
-                width: '100%',
+                // height: '100%',
+                // width: '100%',
                 ...layout.style,
             }}
         >
@@ -35,8 +35,8 @@ const LayoutViewer = ({ layout, slideId }: LayoutViewerProps) => {
                 style={{
                     display: 'grid',
                     gap: '1rem',
-                    width: '100%',
-                    height: '100%',
+                    // width: '100%',
+                    // height: '100%',
                     gridTemplateColumns: getGridTemplateColumns(),
                     gridTemplateAreas: gridTemplateAreas,
                 }}
