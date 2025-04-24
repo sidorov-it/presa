@@ -1289,7 +1289,7 @@ button[data-type="button"]:hover {
 
 .tiptap blockquote {
     padding: 1.125em;
-    border-left: 4px solid var(--presentation-accent-blocks-color);
+    border-left: 4px solid var(--presentation-block-background-custom-1, var(--presentation-accent-blocks-color));
 }
 
 .tiptap :where(blockquote p:first-of-type):not(:where([class~="not-prose"], [class~="not-prose"] *))::before {
@@ -1453,7 +1453,7 @@ button {
 }
 
 .custom-code {
-    background-color: var(--accent-blocks-color, rgba(0, 0, 0, 0.05));
+    background-color: var(--presentation-block-background-custom-1, var(--presentation-accent-blocks-color));
     color: inherit;
     border-radius: 0.125em;
     padding-inline: 0.05em;

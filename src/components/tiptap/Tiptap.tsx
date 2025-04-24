@@ -46,6 +46,7 @@ import Link from '@tiptap/extension-link';
 import Details from '@tiptap-pro/extension-details';
 import DetailsContent from '@tiptap-pro/extension-details-content';
 import DetailsSummary from '@tiptap-pro/extension-details-summary';
+import { BlockquoteExtension } from './extensions/BlockquoteExtension';
 
 // Определяем типы пропсов
 interface TiptapProps {
@@ -99,6 +100,7 @@ const getExtensions = (
         //         class: 'heading-text',
         //     },
         // },
+        blockquote: false,
         heading: false,
         bulletList: {
             keepMarks: true,
@@ -116,6 +118,11 @@ const getExtensions = (
     CustomCodeExtension.configure({
         HTMLAttributes: {
             class: 'custom-code',
+        },
+    }),
+    BlockquoteExtension.configure({
+        HTMLAttributes: {
+            class: 'blockquote',
         },
     }),
     // Text style extensions

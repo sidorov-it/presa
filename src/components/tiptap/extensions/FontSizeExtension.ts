@@ -185,11 +185,9 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                                 fontSizeValue = null;
                         }
 
-                        // First make sure we're in a paragraph and clear any existing format
-                        // Then set the font size mark
+                        // Only set the font size mark without changing the block type
                         return chain()
                             .focus()
-                            .setParagraph() // Ensures we're working with a paragraph
                             .setMark('textStyle', { fontSize: fontSizeValue })
                             .run();
                     },

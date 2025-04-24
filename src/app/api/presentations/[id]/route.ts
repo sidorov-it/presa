@@ -7,20 +7,14 @@ import { getNewEditorElement } from '@/elements/registry';
 import { parsePresentation, stringifyJsonField } from '@/utils/json';
 
 // Get a specific presentation
-export async function GET(
-    request: Request,
-    { params }: { params: { id: string } }
-) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
     try {
         const presentationData = await prisma.presentation.findUnique({
             where: { id: params.id },
         });
 
         if (!presentationData) {
-            return NextResponse.json(
-                { error: 'Presentation not found' },
-                { status: 404 }
-            );
+            return NextResponse.json({ error: 'Presentation not found' }, { status: 404 });
         }
 
         // Parse the presentation data (convert JSON strings to objects)
@@ -29,10 +23,7 @@ export async function GET(
         return NextResponse.json(presentation, { status: 200 });
     } catch (error) {
         console.error('Error fetching presentation:', error);
-        return NextResponse.json(
-            { error: 'Failed to fetch presentation' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Failed to fetch presentation' }, { status: 500 });
     }
 }
 

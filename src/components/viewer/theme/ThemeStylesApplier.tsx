@@ -83,7 +83,8 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
             document.documentElement.style.setProperty('--presentation-shapes-color', theme.colors.shapesColor);
             document.documentElement.style.setProperty(
                 '--presentation-accent-blocks-color',
-                theme.colors.accentBlocksColor
+                theme.colors.primaryAccent
+                // theme.colors.accentBlocksColor 
             );
             document.documentElement.style.setProperty(
                 '--presentation-secondary-button-color',
@@ -258,12 +259,12 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
                 '--presentation-block-border-width',
                 theme.design.blocks.borderWidth
             );
-            document.documentElement.style.setProperty(
-                '--presentation-block-fill-colors-type',
-                theme.design.blocks.blockFillColorsType
-            );
-
-            if (theme.design.blocks.blockFillColorsType === 'custom') {
+            if (theme.design.blocks.blockFillColorsType !== 'custom') {
+                document.documentElement.style.setProperty(
+                    '--presentation-block-fill-colors-type',
+                    theme.design.blocks.blockFillColorsType
+                );
+            } else if (theme.design.blocks.blockFillColorsType === 'custom') {
                 theme.design.blocks.blockBackgroundCustomColors.forEach((color, index) => {
                     document.documentElement.style.setProperty(
                         `--presentation-block-background-custom-${index + 1}`,
@@ -295,6 +296,11 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
             }
 
             document.documentElement.style.setProperty('--presentation-link-color', theme.design.buttons.linkColor);
+
+            // document.documentElement.style.setProperty(
+            //     '--font-size',
+            //     "calc(".concat(i, " * var(--card-font-scale, 1) * var(--editor-font-size, 1rem) * ").concat(r, " * var(--viewport-scale-factor, 1.125))")
+            // );
 
             // Toggle dark-theme class on body for additional theme-specific styles
             if (isDarkMode) {

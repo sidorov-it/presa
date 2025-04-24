@@ -12,10 +12,10 @@ import BorderWidthSelector from '../BorderWidthSelector/BorderWidthSelector';
 import ShadowSelector from '../ShadowSelector/ShadowSelector';
 
 const blockFillColorsTypes = [
-    {
-        value: 'subtle',
-        label: 'Фон слайда',
-    },
+    // {
+    //     value: 'subtle',
+    //     label: 'Фон слайда',
+    // },
     {
         value: 'primary',
         label: 'Акцентный цвет',
