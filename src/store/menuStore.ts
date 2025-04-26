@@ -19,6 +19,8 @@ export interface MenuState {
     selectedRowIndex: number | null;
     selectedColumnIndex: number | null;
     selectedTableId: string | null;
+    selectedSmartLayoutItemId: string | null;
+    smartLayoutItemId: string | null;
 
     presentationId: string | null;
 
@@ -40,6 +42,7 @@ export interface MenuState {
 
     setPresentationId: (presentationId: string) => void;
 
+    setSelectedSmartLayoutItemId: (layoutId: string, elementId: string, smartLayoutItemId: string) => void;
     // Table hover actions
     setSelectedRowIndex: (tableId: string, rowIndex: number | null) => void;
     setSelectedColumnIndex: (tableId: string, columnIndex: number | null) => void;
@@ -57,6 +60,7 @@ export interface MenuState {
         tableRowIndex?: number | null;
         tableColumnIndex?: number | null;
         tableId?: string | null;
+        smartLayoutItemId?: string | null;
     }) => void;
     closeMenu: () => void;
     checkSlideMenuIsOpen: (slideId: string | null) => boolean;
@@ -135,6 +139,7 @@ export const useMenuStore = create<MenuState>()(
             selectedRowIndex: null,
             selectedColumnIndex: null,
             selectedTableId: null,
+            selectedSmartLayoutItemId: null,
 
             // Initial slide menu state
             isOpen: false,
@@ -148,8 +153,14 @@ export const useMenuStore = create<MenuState>()(
             tableRowIndex: null,
             tableColumnIndex: null,
             tableId: null,
+            smartLayoutItemId: null,
+
+            focusedLayoutId: null,
 
             setPresentationId: (presentationId: string) => set({ presentationId }),
+
+            setSelectedSmartLayoutItemId: (layoutId: string, elementId: string, smartLayoutItemId: string) =>
+                set({ selectedSmartLayoutItemId: smartLayoutItemId, focusedLayoutId: layoutId, elementId }),
 
             // Table hover actions
             setSelectedRowIndex: (tableId: string, rowIndex: number | null) => {
@@ -184,6 +195,7 @@ export const useMenuStore = create<MenuState>()(
                     tableRowIndex: menuData.tableRowIndex ?? null,
                     tableColumnIndex: menuData.tableColumnIndex ?? null,
                     tableId: menuData.tableId ?? null,
+                    smartLayoutItemId: menuData.smartLayoutItemId ?? null,
                 });
                 set({
                     isOpen: true,
@@ -198,6 +210,7 @@ export const useMenuStore = create<MenuState>()(
                     tableRowIndex: menuData.tableRowIndex ?? null,
                     tableColumnIndex: menuData.tableColumnIndex ?? null,
                     tableId: menuData.tableId ?? null,
+                    smartLayoutItemId: menuData.smartLayoutItemId ?? null,
                 });
             },
 
@@ -216,12 +229,18 @@ export const useMenuStore = create<MenuState>()(
                     tableColumnIndex: null,
                     tableId: null,
                     cellId: null,
+                    smartLayoutItemId: null,
                 });
             },
 
             checkSlideMenuIsOpen: slideId => {
                 const state = get();
-                return state.slideId === slideId && state.elementId === null && state.layoutId === null;
+                return (
+                    state.slideId === slideId &&
+                    state.elementId === null &&
+                    state.layoutId === null &&
+                    state.smartLayoutItemId === null
+                );
             },
 
             // Slide actions
@@ -378,7 +397,7 @@ export const useMenuStore = create<MenuState>()(
             },
 
             setFocusedLayoutId: (layoutId: string) => {
-                set({ focusedLayoutId: layoutId });
+                set({ focusedLayoutId: layoutId, elementId: null, selectedSmartLayoutItemId: null });
             },
 
             resetFocusedLayoutId: () => {

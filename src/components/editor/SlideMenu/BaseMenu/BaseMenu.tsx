@@ -1,3 +1,5 @@
+'use client';
+
 import React, { CSSProperties, useRef, useEffect } from 'react';
 import { useMenuStore } from '@/store/menuStore';
 import { cn } from '@/lib/utils';

@@ -1,0 +1,119 @@
+/* eslint-disable jsx-a11y/img-redundant-alt */
+import Tiptap from '@/components/tiptap/Tiptap';
+import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlaceholder';
+import { ImageShape, SmartLayoutItem, TipTapRefs } from '@/types';
+import { RefObject } from 'react';
+import ItemWrapper from '../../ItemWrapper/ItemWrapper';
+
+import styles from './Item.module.css';
+import { PlusIcon } from '@/components/icons';
+import { HiPlus } from 'react-icons/hi2';
+
+type ItemProps = {
+    item: SmartLayoutItem;
+    isElementFocused: boolean;
+    elementId: string;
+    tiptapRefs: RefObject<TipTapRefs>;
+    presentationId: string;
+    slideId: string;
+    layoutId: string;
+    align?: 'left' | 'center' | 'right';
+    imageShape?: ImageShape;
+    imageSize?: number;
+    handleImageChange: (itemId: string, imageUrl: string) => void;
+    handleTitleChange: (content: string) => void;
+    handleTextChange: (content: string) => void;
+    addItem: () => void;
+    isLastItem: boolean;
+};
+
+export default function Item({
+    item,
+    isElementFocused,
+    elementId,
+    tiptapRefs,
+    presentationId,
+    slideId,
+    layoutId,
+    handleTitleChange,
+    handleTextChange,
+    align,
+    imageShape,
+    imageSize = 1,
+    handleImageChange,
+    addItem,
+    isLastItem,
+}: ItemProps) {
+    const imageWidthCoof = 14;
+
+    const imageWidth = 30 + imageWidthCoof * (imageSize - 1);
+
+    return (
+        <ItemWrapper
+            presentationId={presentationId}
+            itemId={item.id}
+            slideId={slideId}
+            className={`${styles.item} ${align ? styles[align] : ''} ${isElementFocused ? styles.hovered : ''}`}
+            layoutId={layoutId}
+            elementId={elementId}
+        >
+            <div
+                className={`${styles.image} ${imageShape ? styles[imageShape] : ''}`}
+                style={{
+                    width: `${imageWidth}%`,
+                }}
+            >
+                {item.imageUrl ? (
+                    <img src={item.imageUrl} alt="image" />
+                ) : (
+                    <ImagePlaceholder
+                        onUpload={() => {}}
+                        onLink={value => handleImageChange(item.id, value)}
+                        onGenerate={() => {}}
+                    />
+                )}
+            </div>
+            <div className={styles.content}>
+                <div className={styles.text}>
+                    <Tiptap
+                        // key={element.id}
+                        elementId={elementId}
+                        tiptapRefs={tiptapRefs}
+                        id={elementId}
+                        placeholder="Заголовок"
+                        initialContent={item.title}
+                        onContentChange={handleTitleChange}
+                        presentationId={presentationId}
+                        slideId={slideId}
+                        layoutId={layoutId}
+                        customRefKey={`title-${elementId}-${item.id}`}
+                    />
+                </div>
+                <div className={styles.text}>
+                    <Tiptap
+                        // key={element.id}
+                        elementId={elementId}
+                        tiptapRefs={tiptapRefs}
+                        id={elementId}
+                        presentationId={presentationId}
+                        slideId={slideId}
+                        layoutId={layoutId}
+                        placeholder="Текст"
+                        initialContent={item.text}
+                        onContentChange={handleTextChange}
+                        customRefKey={`text-${elementId}-${item.id}`}
+                        onEnterPressed={() => {
+                            return true;
+                        }}
+                    />
+                </div>
+            </div>
+
+            {isLastItem && (
+                <div className={styles.addIcon} onClick={addItem}>
+                    <HiPlus style={{ width: '1rem', height: '1rem' }} />
+                </div>
+            )}
+        </ItemWrapper>
+    );
+}

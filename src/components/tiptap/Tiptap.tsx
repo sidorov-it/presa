@@ -65,7 +65,8 @@ interface TiptapProps {
     layoutId?: string;
     tiptapRefs: RefObject<TipTapRefs>;
     elementId: string;
-    elementConfig: ElementConfig;
+    elementConfig?: ElementConfig;
+    customRefKey?: string;
 }
 
 // Define the ref type
@@ -317,6 +318,7 @@ const Tiptap = ({
     tiptapRefs,
     elementId,
     elementConfig,
+    customRefKey,
 }: TiptapProps) => {
     const editor = useEditor({
         // autoFocus: !!autoFocus,
@@ -400,7 +402,7 @@ const Tiptap = ({
     // useImperativeHandle(ref, () => {
     if (tiptapRefs?.current) {
         // tiptapRefs.current.editors[elementId] = editor;
-        tiptapRefs.current.editors[elementId] = {
+        tiptapRefs.current.editors[customRefKey || elementId] = {
             editor,
             focus,
             getText: () => editor?.getText() ?? '',

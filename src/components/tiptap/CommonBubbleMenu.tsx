@@ -199,7 +199,7 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
                     ],
                 },
             }}
-            updateDelay={0}
+            updateDelay={50}
             shouldShow={shouldShow}
             data-type="common-bubble-menu"
         >

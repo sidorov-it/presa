@@ -15,6 +15,8 @@ import {
     TipTapRefs,
     ElementConfig,
     BackgroundSettings,
+    SmartLayoutType,
+    SmartLayoutElement,
 } from '@/types';
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 import { getNewEditorElement } from '@/elements/registry';
@@ -227,6 +229,38 @@ export interface PresentationState {
     setBackgroundSettings: (
         presentationId: string,
         settings: { backgroundColor?: string; backgroundImage?: string }
+    ) => void;
+
+    changeSmartLayout: (presentationId: string, slideId: string, layoutId: string, type: SmartLayoutType) => void;
+
+    removeSmartLayoutItem: (
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        elementId: string,
+        itemId: string
+    ) => void;
+    removeImageFromSmartLayoutItem: (
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        elementId: string,
+        itemId: string
+    ) => void;
+    addSmartLayoutItem: (
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        elementId: string,
+        itemId: string,
+        position: 'left' | 'right'
+    ) => void;
+    duplicateSmartLayoutItem: (
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        elementId: string,
+        itemId: string
     ) => void;
 }
 
@@ -2864,6 +2898,177 @@ export const usePresentationStore = create<PresentationState>()(
                 });
             },
 
+            removeSmartLayoutItem: (
+                presentationId: string,
+                slideId: string,
+                layoutId: string,
+                elementId: string,
+                itemId: string
+            ) => {
+                const presentation = get().getPresentation(presentationId);
+                if (!presentation) return;
+                get().updatePresentation(presentationId, {
+                    slides: presentation.slides.map(slide => {
+                        if (slide.id === slideId) {
+                            return {
+                                ...slide,
+                                layouts: slide.layouts.map(layout => {
+                                    if (layout.id === layoutId) {
+                                        return {
+                                            ...layout,
+                                            elements: layout.elements.map(element => {
+                                                if (element.id === elementId && 'items' in element) {
+                                                    (element as SmartLayoutElement).items = (
+                                                        element as SmartLayoutElement
+                                                    ).items.filter(item => item.id !== itemId);
+                                                }
+                                                return element;
+                                            }),
+                                        };
+                                    }
+                                    return layout;
+                                }),
+                            };
+                        }
+                        return slide;
+                    }),
+                });
+            },
+
+            removeImageFromSmartLayoutItem: (
+                presentationId: string,
+                slideId: string,
+                layoutId: string,
+                elementId: string,
+                itemId: string
+            ) => {
+                const presentation = get().getPresentation(presentationId);
+                if (!presentation) return;
+                get().updatePresentation(presentationId, {
+                    slides: presentation.slides.map(slide => {
+                        if (slide.id === slideId) {
+                            return {
+                                ...slide,
+                                layouts: slide.layouts.map(layout => {
+                                    if (layout.id === layoutId) {
+                                        return {
+                                            ...layout,
+                                            elements: layout.elements.map(element => {
+                                                if (element.id === elementId && 'items' in element) {
+                                                    (element as SmartLayoutElement).items = (
+                                                        element as SmartLayoutElement
+                                                    ).items.map(item => {
+                                                        if (item.id === itemId) {
+                                                            return { ...item, imageUrl: '' };
+                                                        }
+                                                        return item;
+                                                    });
+                                                }
+                                                return element;
+                                            }),
+                                        };
+                                    }
+                                    return layout;
+                                }),
+                            };
+                        }
+                        return slide;
+                    }),
+                });
+            },
+
+            addSmartLayoutItem: (
+                presentationId: string,
+                slideId: string,
+                layoutId: string,
+                elementId: string,
+                itemId: string,
+                position: 'left' | 'right'
+            ) => {
+                const presentation = get().getPresentation(presentationId);
+                if (!presentation) return;
+                get().updatePresentation(presentationId, {
+                    slides: presentation.slides.map(slide => {
+                        if (slide.id === slideId) {
+                            return {
+                                ...slide,
+                                layouts: slide.layouts.map(layout => {
+                                    if (layout.id === layoutId) {
+                                        const element = layout.elements.find(element => element.id === elementId);
+
+                                        if (!element) return layout;
+
+                                        const itemIndex = (element as SmartLayoutElement).items.findIndex(
+                                            item => item.id === itemId
+                                        );
+                                        const updatedItems = [...(element as SmartLayoutElement).items];
+                                        updatedItems.splice(position === 'left' ? itemIndex : itemIndex + 1, 0, {
+                                            id: generateId(),
+                                            imageUrl: '',
+                                            title: '',
+                                            text: '',
+                                        });
+                                        return {
+                                            ...layout,
+                                            elements: layout.elements.map(element =>
+                                                element.id === elementId ? { ...element, items: updatedItems } : element
+                                            ),
+                                        };
+                                    }
+                                    return layout;
+                                }),
+                            };
+                        }
+                        return slide;
+                    }),
+                });
+            },
+
+            duplicateSmartLayoutItem: (
+                presentationId: string,
+                slideId: string,
+                layoutId: string,
+                elementId: string,
+                itemId: string
+            ) => {
+                const presentation = get().getPresentation(presentationId);
+                if (!presentation) return;
+                get().updatePresentation(presentationId, {
+                    slides: presentation.slides.map(slide => {
+                        if (slide.id === slideId) {
+                            return {
+                                ...slide,
+                                layouts: slide.layouts.map(layout => {
+                                    if (layout.id === layoutId) {
+                                        const element = layout.elements.find(
+                                            element => element.id === elementId
+                                        ) as SmartLayoutElement;
+
+                                        const updatedItems = [...element.items];
+                                        const sourceItemIndex = updatedItems.findIndex(item => item.id === itemId);
+                                        if (sourceItemIndex === -1) return layout;
+                                        const sourceItem = updatedItems[sourceItemIndex];
+                                        updatedItems.splice(sourceItemIndex + 1, 0, {
+                                            ...sourceItem,
+                                            id: generateId(),
+                                        });
+
+                                        return {
+                                            ...layout,
+                                            elements: layout.elements.map(element =>
+                                                element.id === elementId ? { ...element, items: updatedItems } : element
+                                            ),
+                                        };
+                                    }
+                                    return layout;
+                                }),
+                            };
+                        }
+
+                        return slide;
+                    }),
+                });
+            },
             setFullState: (state: { presentations: IPresentation[] }) => {
                 // Direct setter for presentations array used by undo/redo operations
 
@@ -2912,22 +3117,6 @@ export const usePresentationStore = create<PresentationState>()(
                 const presentation = get().getPresentation(presentationId);
                 if (!presentation) return -1;
                 return presentation.slides.findIndex(slide => slide.id === slideId);
-            },
-
-            // Настройки фона презентации
-            getBackgroundSettings: (presentationId: string) => {
-                const presentation = get().getPresentation(presentationId);
-                return presentation?.backgroundSettings || {};
-            },
-            setBackgroundSettings: (
-                presentationId: string,
-                settings: { backgroundColor?: string; backgroundImage?: string }
-            ) => {
-                const presentation = get().getPresentation(presentationId);
-                if (!presentation) return;
-                get().updatePresentation(presentationId, {
-                    backgroundSettings: { ...presentation.backgroundSettings, ...settings },
-                });
             },
         }),
         {

@@ -23,6 +23,7 @@ import { Image } from '@/elements/image';
 import { useMenuStore } from '@/store/menuStore';
 import { useShallow } from 'zustand/react/shallow';
 import Chart from '@/elements/chart/Chart';
+import SmartLayout from '@/elements/smartLayout/SmartLayout';
 
 export const ElementContent = ({
     elementId,
@@ -59,7 +60,15 @@ export const ElementContent = ({
     const isCurrentEditorActive = useEditorStore(state => state.getActiveEditorId() === elementId);
     const elementConfig = useMemo(() => getElementConfig(element!.elementTypeId), [element]);
 
-    const isMenuOpenOnCurrentElement = useMenuStore(useShallow(state => state.elementId === elementId));
+    const isMenuOpenOnCurrentElement = useMenuStore(
+        useShallow(
+            state =>
+                state.elementId === elementId &&
+                (element.elementTypeId !== 'smart-layout' || state.selectedSmartLayoutItemId === null)
+        )
+    );
+
+    // const isSmartLayoutItemHovered = useMenuStore(useShallow(state => state.selectedSmartLayoutItemId === elementId));
 
     const [elementIsHovered, setElementIsHovered] = useState(false);
 
@@ -443,7 +452,7 @@ export const ElementContent = ({
     }, []);
 
     const renderElementContent = useCallback(
-        (element: Element) => {
+        (element: Element, isFocused: boolean) => {
             if (elementConfig.hasTextEditor) {
                 return (
                     <Tiptap
@@ -486,8 +495,18 @@ export const ElementContent = ({
                         hasMultipleCells={hasMultipleCells}
                     />
                 );
+            } else if (element.elementTypeId === 'smart-layout') {
+                return (
+                    <SmartLayout
+                        elementId={element.id}
+                        presentationId={presentationId}
+                        slideId={slideId}
+                        layoutId={layoutId}
+                        tiptapRefs={tiptapRefs}
+                        isFocused={isFocused}
+                    />
+                );
             }
-
             return <div className={styles.unsupportedElement}>Unsupported element type: {element.elementTypeId}</div>;
         },
         [
@@ -539,7 +558,10 @@ export const ElementContent = ({
                     />
                 )}
 
-                {renderElementContent(element)}
+                {renderElementContent(
+                    element as Element,
+                    isMenuOpenOnCurrentElement || isCurrentEditorActive || elementIsHovered
+                )}
             </div>
         </div>
     );

@@ -266,7 +266,7 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
     }
 
     if (elementType === 'layout' && layoutId && !isTable) {
-        return <LayoutMenu position={position} layoutId={layoutId} />;
+        return <LayoutMenu position={position} layoutId={layoutId} presentationId={presentation!.id} />;
     } else if (isTable && elementType === 'layout') {
         return <TableMenu position={position} tiptapRefs={tiptapRefs} />;
     }
@@ -281,6 +281,7 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
                     elementId={elementId}
                     presentationId={presentation!.id}
                     editor={activeEditor}
+                    tiptapRefs={tiptapRefs}
                 />
             ) : (
                 renderMenuItems()

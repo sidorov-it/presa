@@ -1,0 +1,11 @@
+.dragHandler {
+    top: -20px;
+}
+
+.selected {
+    outline: 2px solid #806cff;
+}
+
+.container {
+    position: relative;
+}

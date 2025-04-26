@@ -13,12 +13,12 @@ export type ImagePlaceholderProps = {
 
 import styles from './ImagePlaceholder.module.css';
 
-const LinkPopup = ({ 
-    onClose, 
-    onSubmit, 
-    buttonRef 
-}: { 
-    onClose: () => void; 
+const LinkPopup = ({
+    onClose,
+    onSubmit,
+    buttonRef,
+}: {
+    onClose: () => void;
     onSubmit: (url: string) => void;
     buttonRef: React.RefObject<HTMLButtonElement>;
 }) => {
@@ -77,13 +77,15 @@ const LinkPopup = ({
 
     // Calculate position relative to the button
     const buttonRect = buttonRef.current?.getBoundingClientRect();
-    const popupStyle = buttonRect ? {
-        position: 'fixed' as const,
-        top: `${buttonRect.bottom + 8}px`,
-        left: `${buttonRect.left - 120 + buttonRect.width / 2}px`,
-        minWidth: '240px',
-        zIndex: 1000,
-    } : {};
+    const popupStyle = buttonRect
+        ? {
+            position: 'fixed' as const,
+            top: `${buttonRect.bottom + 8}px`,
+            left: `${buttonRect.left - 120 + buttonRect.width / 2}px`,
+            minWidth: '240px',
+            zIndex: 1000,
+        }
+        : {};
 
     return createPortal(
         <div
@@ -197,7 +199,7 @@ export const ImagePlaceholder = ({ onUpload, onLink, onGenerate }: ImagePlacehol
                 {showLinkPopup && (
                     <LinkPopup
                         onClose={() => setShowLinkPopup(false)}
-                        onSubmit={(url) => {
+                        onSubmit={url => {
                             onLink(url);
                             setShowLinkPopup(false);
                         }}

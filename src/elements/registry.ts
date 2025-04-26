@@ -9,6 +9,9 @@ import {
     type GridCell,
     type Element,
     type GridRow,
+    SmartLayoutItem,
+    SmartLayoutElement,
+    ChartElement,
 } from '@/types';
 import {
     FaFont,
@@ -21,6 +24,7 @@ import {
     FaLink,
     FaQuoteLeft,
     FaToggleOn,
+    FaLayerGroup,
 } from 'react-icons/fa';
 import editorsDefaultContent from './textEditor/defaultContent';
 
@@ -37,6 +41,7 @@ import ButtonMenu from '@/components/editor/Menus/ButtonMenu';
 import { ImageSettings } from './image';
 import ChartSettings from './chart/ChartSettings/ChartSettings';
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
+import SmartLayoutSettings from './smartLayout/components/SmartLayoutSettings/SmartLayoutSettings';
 
 // Define component type enum to better categorize elements by their structure
 export enum ComponentStructureType {
@@ -170,9 +175,33 @@ export const getNewElement = (type: string): Omit<BaseElement, 'cellId'> | Layou
         } as Omit<ChartElement, 'cellId'>;
     }
 
+    if (type === 'smart-layout') {
+        return {
+            ...baseElement,
+            type: 'smart-layout',
+            layoutType: elementConfig?.defaultProps?.layoutType || 'bullets',
+            items: elementConfig?.defaultProps?.items || [],
+        } as Omit<SmartLayoutElement, 'cellId'>;
+    }
+
     // Return default text element for other types
     return baseElement as Omit<BaseElement, 'cellId'>;
 };
+
+const defaultSmartLayoutItems: SmartLayoutItem[] = [
+    {
+        id: 'item-1',
+        content: 'Item 1',
+    },
+    {
+        id: 'item-2',
+        content: 'Item 2',
+    },
+    {
+        id: 'item-3',
+        content: 'Item 3',
+    },
+];
 
 export const elementsRegistry: Category[] = [
     {
@@ -180,6 +209,26 @@ export const elementsRegistry: Category[] = [
         label: 'Базовые элементы',
         Icon: FaFont,
         subCategories: [
+            {
+                id: 'smart-layouts',
+                label: 'Smart Layouts',
+                elements: [
+                    {
+                        elementTypeId: 'smart-layout',
+                        label: 'Bullets',
+                        Icon: FaLayerGroup,
+                        componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
+                        hasTextEditor: false,
+                        MenuComponent: SmartLayoutSettings,
+                        // Component: SmartLayout,
+                        defaultProps: {
+                            type: 'images-with-text',
+                            items: [...defaultSmartLayoutItems],
+                            layoutType: 'images-with-text',
+                        },
+                    },
+                ],
+            },
             {
                 id: 'text',
                 label: 'Текст',

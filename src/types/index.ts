@@ -297,6 +297,27 @@ export interface BaseElement {
     elementTypeId: string;
 }
 
+export interface SmartLayoutItem {
+    id: string;
+    title: string;
+    text: string;
+    imageUrl?: string;
+    iconUrl?: string;
+    stats?: { value: string; label: string };
+    metadata?: Record<string, unknown>;
+}
+
+export type ImageShape = 'square' | 'landscape' | 'portrait' | 'circle';
+export interface SmartLayoutElement extends BaseElement {
+    type: 'smart-layout';
+    layoutType: SmartLayoutType;
+    items: SmartLayoutItem[];
+    columnSize: number;
+    align?: 'left' | 'center' | 'right';
+    imageShape?: ImageShape;
+    imageSize?: number;
+}
+
 // Элемент редактора Tiptap
 export interface EditorElement extends BaseElement {
     // type: 'editor';
@@ -369,6 +390,7 @@ export interface ButtonElement extends BaseElement {
 export type Element =
     // | TextElement
     | EditorElement
+    | SmartLayoutElement
     // | ListElement
     | ImageElement
     // | DividerElement
@@ -624,3 +646,14 @@ export type ElementMenuProps = {
 export { ComponentStructureType };
 
 export type MenuElementType = 'element' | 'cell' | 'layout' | 'slide' | 'editor' | 'row' | 'table' | 'column';
+
+export type SmartLayoutType =
+    | 'bullets'
+    | 'text-boxes'
+    | 'images-with-text'
+    | 'icon-with-text'
+    | 'timeline'
+    | 'arrow-flow'
+    | 'stats-grid'
+    | 'comparison'
+    | 'process-flow';

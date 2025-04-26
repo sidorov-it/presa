@@ -1,0 +1,11 @@
+.container {
+    display: grid;
+    gap: 3em 1.5em;
+}
+
+.focused {
+    outline: 2px solid #999;
+    outline-offset: 0.25em;
+    border-radius: var(--presentation-slide-border-radius);
+}
+

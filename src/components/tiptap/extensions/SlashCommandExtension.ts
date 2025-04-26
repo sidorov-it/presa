@@ -89,6 +89,7 @@ class CommandsList {
                 id: element.elementTypeId,
                 label: element.label,
                 icon: element.Icon ? element.Icon.name : undefined,
+                template: element.defaultProps?.type,
             }));
 
         // Filter based on the query

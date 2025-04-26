@@ -5,9 +5,6 @@ import { usePresentationStore } from '@/store/presentationStore';
 import styles from './ResizableTemplateImage.module.css';
 import deepEqual from 'deep-equal';
 import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlaceholder';
-import { BaseMenu, MenuItem } from '../SlideMenu/BaseMenu';
-import Portal from '@/components/Portal';
-import { DeleteIcon } from '@/components/icons';
 import { useMenuStore } from '@/store/menuStore';
 // Minimum size in percentage for image sections
 const MIN_SIZE = 10;
@@ -387,27 +384,8 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
             ref={containerRef}
             onClick={() => {
                 setIsSelected(true);
-                // useMenuStore.getState().openMenu({
-                //     slideId: slideId,
-                //     elementId: slideId,
-                //     // elementType: 'image',
-                // });
             }}
         >
-            {/* <Portal>
-                <BaseMenu position={menuPosition} isForceOpen={!!(isSelected && imageUrl)}>
-                    <MenuItem
-                        icon={<DeleteIcon />}
-                        label="Удалить изображение"
-                        onClick={() => {
-                            updateSlide(presentationId, slideId, {
-                                imageUrl: undefined,
-                            });
-                        }}
-                    />
-                </BaseMenu>
-            </Portal> */}
-
             <div
                 ref={imageRef}
                 className={`${styles.templateImage} ${styles[templateType]}`}
