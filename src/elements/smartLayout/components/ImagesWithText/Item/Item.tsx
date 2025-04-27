@@ -2,7 +2,7 @@
 import Tiptap from '@/components/tiptap/Tiptap';
 import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlaceholder';
 import { ImageShape, SmartLayoutElement, SmartLayoutItem, TipTapRefs } from '@/types';
-import { RefObject, useRef, useLayoutEffect, useState } from 'react';
+import { RefObject, useRef } from 'react';
 import ItemWrapper from '../../ItemWrapper/ItemWrapper';
 
 import styles from './Item.module.css';
@@ -88,11 +88,7 @@ export default function Item({
                 }}
             >
                 {!item.imageUrl && (
-                    <ImagePlaceholder
-                        onUpload={() => {}}
-                        onLink={value => handleImageChange(item.id, value)}
-                        onGenerate={() => {}}
-                    />
+                    <ImagePlaceholder onUpdateLink={(link: string) => handleImageChange(item.id, link)} />
                 )}
             </div>
             <div className={styles.content}>

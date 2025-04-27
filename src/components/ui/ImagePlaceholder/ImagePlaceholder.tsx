@@ -6,9 +6,7 @@ import React, { ChangeEvent, useRef, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 export type ImagePlaceholderProps = {
-    onUpload: (file: File) => void;
-    onLink: (url: string) => void;
-    onGenerate: () => void;
+    onUpdateLink: (link: string) => void;
 };
 
 import styles from './ImagePlaceholder.module.css';
@@ -77,15 +75,17 @@ const LinkPopup = ({
 
     // Calculate position relative to the button
     const buttonRect = buttonRef.current?.getBoundingClientRect();
-    const popupStyle = buttonRect
-        ? {
+
+    let popupStyle = {};
+    if (buttonRect) {
+        popupStyle = {
             position: 'fixed' as const,
             top: `${buttonRect.bottom + 8}px`,
             left: `${buttonRect.left - 120 + buttonRect.width / 2}px`,
             minWidth: '240px',
             zIndex: 1000,
-        }
-        : {};
+        };
+    }
 
     return createPortal(
         <div
@@ -132,16 +132,31 @@ const LinkPopup = ({
     );
 };
 
-export const ImagePlaceholder = ({ onUpload, onLink, onGenerate }: ImagePlaceholderProps) => {
+export const ImagePlaceholder = ({ onUpdateLink }: ImagePlaceholderProps) => {
     const [showLinkPopup, setShowLinkPopup] = useState(false);
-    const inputRef = useRef<HTMLInputElement>(null);
     const linkBtnRef = useRef<HTMLButtonElement>(null);
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
-            onUpload(event.target.files[0]);
+            const formData = new FormData();
+            formData.append('file', event.target.files[0]);
+
+            fetch('/api/assets/upload', {
+                method: 'POST',
+                body: formData,
+            }).then(response => {
+                response.json().then(data => {
+                    onUpdateLink(data.url);
+                });
+            });
+            // onUpload(event.target.files[0]);
         }
     };
+
+    const onGenerate = () => {
+        console.log('onGenerate');
+    };
+
 
     const handleKeyDown =
         (callback: () => void) => (event: React.KeyboardEvent<HTMLButtonElement | HTMLLabelElement>) => {
@@ -200,7 +215,7 @@ export const ImagePlaceholder = ({ onUpload, onLink, onGenerate }: ImagePlacehol
                     <LinkPopup
                         onClose={() => setShowLinkPopup(false)}
                         onSubmit={url => {
-                            onLink(url);
+                            onUpdateLink(url);
                             setShowLinkPopup(false);
                         }}
                         buttonRef={linkBtnRef}

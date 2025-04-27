@@ -42,7 +42,6 @@ import { ImageSettings } from './image';
 import ChartSettings from './chart/ChartSettings/ChartSettings';
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 import SmartLayoutSettings from './smartLayout/components/SmartLayoutSettings/SmartLayoutSettings';
-import { ImageShape } from '@prisma/client';
 
 // Define component type enum to better categorize elements by their structure
 export enum ComponentStructureType {
@@ -181,7 +180,11 @@ export const getNewElement = (type: string): Omit<BaseElement, 'cellId'> | Layou
             ...baseElement,
             type: 'smart-layout',
             layoutType: elementConfig?.defaultProps?.layoutType || 'bullets',
-            items: elementConfig?.defaultProps?.items || [],
+            items:
+                elementConfig?.defaultProps?.items?.map((item: SmartLayoutItem) => ({
+                    ...item,
+                    id: generateId(),
+                })) || [],
             columnSize: elementConfig?.defaultProps?.columnSize || 1,
             align: elementConfig?.defaultProps?.align || 'center',
             imageShape: elementConfig?.defaultProps?.imageShape || 'default',
@@ -193,23 +196,17 @@ export const getNewElement = (type: string): Omit<BaseElement, 'cellId'> | Layou
     return baseElement as Omit<BaseElement, 'cellId'>;
 };
 
-const defaultSmartLayoutItems: SmartLayoutItem[] = [
-    {
-        id: 'item1',
-        title: '',
-        text: '',
-    },
-    {
-        id: 'item2',
-        title: '',
-        text: '',
-    },
-    {
-        id: 'item3',
-        title: 'Item 3',
-        text: 'Item 3 text',
-    },
-];
+const defaultSmartLayoutItem = {
+    title: '',
+    text: '',
+};
+
+const getDefaultSmartLayoutItems = () => {
+    return Array.from({ length: 3 }, () => ({
+        ...defaultSmartLayoutItem,
+        id: generateId(),
+    }));
+};
 
 export const elementsRegistry: Category[] = [
     {
@@ -231,7 +228,7 @@ export const elementsRegistry: Category[] = [
                         // Component: SmartLayout,
                         defaultProps: {
                             type: 'images-with-text',
-                            items: [...defaultSmartLayoutItems],
+                            items: getDefaultSmartLayoutItems(),
                             layoutType: 'images-with-text',
                             columnSize: 18,
                             align: 'center',

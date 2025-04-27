@@ -418,13 +418,11 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                         }}
                     >
                         <ImagePlaceholder
-                            onUpload={() => {}}
-                            onLink={(link: string) => {
+                            onUpdateLink={(link: string) => {
                                 updateSlide(presentationId, slideId, {
                                     imageUrl: link,
                                 });
                             }}
-                            onGenerate={() => {}}
                         />
                     </div>
                 )}
