@@ -22,7 +22,7 @@ import { HiOutlineCog6Tooth } from 'react-icons/hi2';
 import styles from './page.module.css';
 import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
 import ThemeDebugButton from '@/components/debug/ThemeDebugButton';
-import { PdfExportDialog } from '@/components/export';
+// import { PdfExportDialog } from '@/components/export';
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -247,16 +247,16 @@ export default function PresentationEditorPage() {
                                 <FaEye size={16} />
                                 <span className={styles.viewButtonText}>Просмотр</span>
                             </button>
-                            
+
                             {/* PDF Export Button */}
-                            {presentation && (
+                            {/* {presentation && (
                                 <div className={styles.exportButtonWrapper}>
                                     <PdfExportDialog
                                         presentation={presentation}
                                         buttonText="Экспорт PDF"
                                     />
                                 </div>
-                            )}
+                            )} */}
 
                             <button
                                 type="button"

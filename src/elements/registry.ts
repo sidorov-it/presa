@@ -42,6 +42,7 @@ import { ImageSettings } from './image';
 import ChartSettings from './chart/ChartSettings/ChartSettings';
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 import SmartLayoutSettings from './smartLayout/components/SmartLayoutSettings/SmartLayoutSettings';
+import { ImageShape } from '@prisma/client';
 
 // Define component type enum to better categorize elements by their structure
 export enum ComponentStructureType {
@@ -181,6 +182,10 @@ export const getNewElement = (type: string): Omit<BaseElement, 'cellId'> | Layou
             type: 'smart-layout',
             layoutType: elementConfig?.defaultProps?.layoutType || 'bullets',
             items: elementConfig?.defaultProps?.items || [],
+            columnSize: elementConfig?.defaultProps?.columnSize || 1,
+            align: elementConfig?.defaultProps?.align || 'center',
+            imageShape: elementConfig?.defaultProps?.imageShape || 'default',
+            imageSize: elementConfig?.defaultProps?.imageSize || 100,
         } as Omit<SmartLayoutElement, 'cellId'>;
     }
 
@@ -190,16 +195,19 @@ export const getNewElement = (type: string): Omit<BaseElement, 'cellId'> | Layou
 
 const defaultSmartLayoutItems: SmartLayoutItem[] = [
     {
-        id: 'item-1',
-        content: 'Item 1',
+        id: 'item1',
+        title: '',
+        text: '',
     },
     {
-        id: 'item-2',
-        content: 'Item 2',
+        id: 'item2',
+        title: '',
+        text: '',
     },
     {
-        id: 'item-3',
-        content: 'Item 3',
+        id: 'item3',
+        title: 'Item 3',
+        text: 'Item 3 text',
     },
 ];
 
@@ -225,6 +233,10 @@ export const elementsRegistry: Category[] = [
                             type: 'images-with-text',
                             items: [...defaultSmartLayoutItems],
                             layoutType: 'images-with-text',
+                            columnSize: 18,
+                            align: 'center',
+                            imageShape: 'square',
+                            imageSize: 5,
                         },
                     },
                 ],

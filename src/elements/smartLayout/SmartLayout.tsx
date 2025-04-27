@@ -1,4 +1,4 @@
-import React, { RefObject } from 'react';
+import React, { RefObject, useCallback } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { FaCircle } from 'react-icons/fa';
 import { SmartLayoutElement, SmartLayoutItem, TipTapRefs } from '@/types';
@@ -21,10 +21,16 @@ const SmartLayout: React.FC<SmartLayoutProps> = ({
     tiptapRefs,
     isFocused,
 }) => {
-    const element = usePresentationStore(store =>
-        store.getElement(presentationId, slideId, layoutId, elementId)
-    ) as SmartLayoutElement;
-    const { layoutType = 'images-with-text', items = [] } = element;
+    const layoutType = usePresentationStore(store => {
+        const element = store.getElement(presentationId, slideId, layoutId, elementId);
+        return (element as SmartLayoutElement).layoutType;
+    });
+
+    // const element = usePresentationStore(store =>
+    //     store.getElement(presentationId, slideId, layoutId, elementId)
+    // ) as SmartLayoutElement;
+
+    // const { layoutType = 'images-with-text', items = [] } = element;
 
     const handleAddItem = () => {
         // const newItem: SmartLayoutItem = {
@@ -109,7 +115,7 @@ const SmartLayout: React.FC<SmartLayoutProps> = ({
         return <div>Image Text Grid</div>;
     };
 
-    const renderLayout = () => {
+    const renderLayout = useCallback(() => {
         switch (layoutType) {
             // case 'images-with-text':
             //     return <ImagesWithText items={items} />;
@@ -124,7 +130,7 @@ const SmartLayout: React.FC<SmartLayoutProps> = ({
             default:
                 return (
                     <ImagesWithText
-                        element={element}
+                        elementId={elementId}
                         tiptapRefs={tiptapRefs}
                         presentationId={presentationId}
                         slideId={slideId}
@@ -133,7 +139,7 @@ const SmartLayout: React.FC<SmartLayoutProps> = ({
                     />
                 );
         }
-    };
+    }, [elementId, isFocused, layoutId, layoutType, presentationId, slideId, tiptapRefs]);
 
     return (
         <div>

@@ -253,13 +253,13 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     );
 
     const handleClickElementDragHandle = useCallback(
-        (element: Element, elementConfig: ElementConfig) => () => {
-            const editor = tiptapRefs.current?.editors[element.id]?.editor;
+        (elementId: string, elementConfig: ElementConfig) => () => {
+            const editor = tiptapRefs.current?.editors[elementId]?.editor;
 
             if ('customMenuType' in elementConfig && elementConfig.customMenuType) {
                 document.dispatchEvent(
                     new OpenCustomMenuEvent({
-                        elementId: element.id,
+                        elementId,
                         elementType: elementConfig.customMenuType as MenuElementType,
                     })
                 );
@@ -274,7 +274,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     useEditorStore.getState().setActiveEditor(editor);
                     editor.chain().focus().selectAll().run();
                     handleMenuClick({
-                        elementId: element.id,
+                        elementId,
                         elementType: 'editor',
                         activeEditor: editor,
                     });
@@ -283,7 +283,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 }
             } else {
                 handleMenuClick({
-                    elementId: element.id,
+                    elementId,
                     elementType: 'element',
                     componentStructure: elementConfig.componentStructure,
                 });
@@ -293,21 +293,21 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     );
 
     const handleKeyDownElementDragHandle = useCallback(
-        (element: Element, elementConfig: ElementConfig) => (e: any) => {
+        (elementId: string, elementConfig: ElementConfig) => (e: any) => {
             if (e.key === 'Enter' || e.key === ' ') {
-                handleClickElementDragHandle(element, elementConfig)();
+                handleClickElementDragHandle(elementId, elementConfig)();
             }
         },
         [handleClickElementDragHandle]
     );
 
     const handleDragStartElementDragHandle = useCallback(
-        (element: Element) => (e: any) => {
+        (elementId: string) => (e: any) => {
             e.stopPropagation();
             handleDragStart(e, {
-                elementId: element.id,
+                elementId,
                 layoutId,
-                cellId: element.cellId,
+                cellId: cell.id,
             });
         },
         [handleDragStart, layoutId]
@@ -523,6 +523,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                         >
                             <ElementContent
                                 elementId={elementId}
+                                cellId={cell.id}
                                 handleClickElementDragHandle={handleClickElementDragHandle}
                                 handleKeyDownElementDragHandle={handleKeyDownElementDragHandle}
                                 handleDragStartElementDragHandle={handleDragStartElementDragHandle}

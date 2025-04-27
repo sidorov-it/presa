@@ -1,16 +1,16 @@
 /* eslint-disable jsx-a11y/img-redundant-alt */
 import Tiptap from '@/components/tiptap/Tiptap';
 import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlaceholder';
-import { ImageShape, SmartLayoutItem, TipTapRefs } from '@/types';
+import { ImageShape, SmartLayoutElement, SmartLayoutItem, TipTapRefs } from '@/types';
 import { RefObject } from 'react';
 import ItemWrapper from '../../ItemWrapper/ItemWrapper';
 
 import styles from './Item.module.css';
-import { PlusIcon } from '@/components/icons';
 import { HiPlus } from 'react-icons/hi2';
+import { usePresentationStore } from '@/store/presentationStore';
 
 type ItemProps = {
-    item: SmartLayoutItem;
+    itemId: string;
     isElementFocused: boolean;
     elementId: string;
     tiptapRefs: RefObject<TipTapRefs>;
@@ -28,7 +28,7 @@ type ItemProps = {
 };
 
 export default function Item({
-    item,
+    itemId,
     isElementFocused,
     elementId,
     tiptapRefs,
@@ -44,6 +44,11 @@ export default function Item({
     addItem,
     isLastItem,
 }: ItemProps) {
+    const item = usePresentationStore(state => {
+        const element = state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement;
+        return element.items.find(item => item.id === itemId);
+    }) as SmartLayoutItem;
+
     const imageWidthCoof = 14;
 
     const imageWidth = 30 + imageWidthCoof * (imageSize - 1);
@@ -81,7 +86,6 @@ export default function Item({
                         tiptapRefs={tiptapRefs}
                         id={elementId}
                         placeholder="Заголовок"
-                        initialContent={item.title}
                         onContentChange={handleTitleChange}
                         presentationId={presentationId}
                         slideId={slideId}
@@ -99,7 +103,6 @@ export default function Item({
                         slideId={slideId}
                         layoutId={layoutId}
                         placeholder="Текст"
-                        initialContent={item.text}
                         onContentChange={handleTextChange}
                         customRefKey={`text-${elementId}-${item.id}`}
                         onEnterPressed={() => {

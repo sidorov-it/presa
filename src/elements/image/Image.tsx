@@ -10,11 +10,11 @@ import styles from './Image.module.css';
 import { Spinner } from '@chakra-ui/react';
 
 interface ImageProps {
-    element: ImageElement;
+    elementId: string;
     className?: string;
-    presentationId?: string;
-    slideId?: string;
-    layoutId?: string;
+    presentationId: string;
+    slideId: string;
+    layoutId: string;
     hasMultipleCells?: boolean;
 }
 
@@ -22,13 +22,16 @@ interface ImageProps {
 type ResizeDirection = 'top' | 'right' | 'bottom' | 'left' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
 const Image: React.FC<ImageProps> = ({
-    element,
+    elementId,
     className = '',
     presentationId,
     slideId,
     layoutId,
     hasMultipleCells,
 }) => {
+    const element = usePresentationStore(state =>
+        state.getElement(presentationId, slideId, layoutId, elementId)
+    ) as ImageElement;
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isSelected, setIsSelected] = useState(false);

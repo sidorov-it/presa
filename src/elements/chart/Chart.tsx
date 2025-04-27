@@ -32,11 +32,11 @@ import styles from './Chart.module.css';
 import { LayoutType } from 'recharts/types/util/types';
 
 interface ChartProps {
-    element: ChartElement;
+    elementId: string;
     className?: string;
-    presentationId?: string;
-    slideId?: string;
-    layoutId?: string;
+    presentationId: string;
+    slideId: string;
+    layoutId: string;
     hasMultipleCells?: boolean;
     inSettings?: boolean;
 }
@@ -56,13 +56,16 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 type ResizeDirection = 'top' | 'right' | 'bottom' | 'left' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
 const Chart: React.FC<ChartProps> = ({
-    element,
+    elementId,
     className = '',
     presentationId,
     slideId,
     layoutId,
     inSettings = false,
 }) => {
+    const element = usePresentationStore(state =>
+        state.getElement(presentationId, slideId, layoutId, elementId)
+    ) as ChartElement;
     const [isSelected, setIsSelected] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);

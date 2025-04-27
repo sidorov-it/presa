@@ -10,8 +10,6 @@ import {
     TipTapRefs,
     EditorElement,
     ElementConfig,
-    ImageElement,
-    ChartElement,
 } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import { generateId } from '@/utils/id';
@@ -27,6 +25,7 @@ import SmartLayout from '@/elements/smartLayout/SmartLayout';
 
 export const ElementContent = ({
     elementId,
+    cellId,
     // elementIsHovered,
     // setElementIsHovered,
     handleClickElementDragHandle,
@@ -41,12 +40,13 @@ export const ElementContent = ({
     hasMultipleCells,
 }: {
     elementId: string;
+    cellId: string;
     // setElementIsHovered: (isHovered: boolean) => void;
     // activeEditorId?: string | null;
     // elementIsHovered: boolean;
-    handleClickElementDragHandle: (element: Element, elementConfig: ElementConfig) => (e: any) => void;
-    handleKeyDownElementDragHandle: (element: Element, elementConfig: ElementConfig) => (e: any) => void;
-    handleDragStartElementDragHandle: (element: Element) => (e: any) => void;
+    handleClickElementDragHandle: (elementId: string, elementConfig: ElementConfig) => (e: any) => void;
+    handleKeyDownElementDragHandle: (elementId: string, elementConfig: ElementConfig) => (e: any) => void;
+    handleDragStartElementDragHandle: (elementId: string) => (e: any) => void;
     slideId: string;
     tiptapRefs: RefObject<TipTapRefs>;
     dragHandleRef: RefObject<HTMLDivElement>;
@@ -55,16 +55,20 @@ export const ElementContent = ({
     isInTable: boolean;
     hasMultipleCells: boolean;
 }) => {
-    const element = usePresentationStore(state => state.getElement(presentationId, slideId, layoutId, elementId)!);
+    // const element = usePresentationStore(state => state.getElement(presentationId, slideId, layoutId, elementId)!);
+
+    const elementTypeId = usePresentationStore(
+        state => state.getElement(presentationId, slideId, layoutId, elementId)!.elementTypeId
+    );
 
     const isCurrentEditorActive = useEditorStore(state => state.getActiveEditorId() === elementId);
-    const elementConfig = useMemo(() => getElementConfig(element!.elementTypeId), [element]);
+    const elementConfig = useMemo(() => getElementConfig(elementTypeId), [elementTypeId]);
 
     const isMenuOpenOnCurrentElement = useMenuStore(
         useShallow(
             state =>
                 state.elementId === elementId &&
-                (element.elementTypeId !== 'smart-layout' || state.selectedSmartLayoutItemId === null)
+                (elementTypeId !== 'smart-layout' || state.selectedSmartLayoutItemId === null)
         )
     );
 
@@ -84,7 +88,7 @@ export const ElementContent = ({
     // }, [isElementToFocus]);
 
     const handleEnterPressed = useCallback(
-        (element: Element) => (contentBeforeCursor?: string, contentAfterCursor?: string) => {
+        (contentBeforeCursor?: string, contentAfterCursor?: string) => {
             // Start transaction at the beginning of the operation
             // Получаем текущий макет
             const presentation = usePresentationStore.getState().getPresentation(presentationId);
@@ -96,7 +100,7 @@ export const ElementContent = ({
             const layout = slide.layouts.find(l => l.id === layoutId);
             if (!layout) return;
 
-            const row = layout.gridStructure.rows.find(r => r.cells.find(c => c.id === element.cellId));
+            const row = layout.gridStructure.rows.find(r => r.cells.find(c => c.id === elementId));
 
             // в строке 1 элемент. создаем новую строку
             if (row!.cells.length === 1) {
@@ -129,7 +133,7 @@ export const ElementContent = ({
 
                 updatedLayouts.forEach(layout => {
                     layout.elements.forEach(el => {
-                        if (el.id === element.id) {
+                        if (el.id === elementId) {
                             return {
                                 ...el,
                                 content: contentBeforeCursor || '',
@@ -162,10 +166,10 @@ export const ElementContent = ({
                 }, 10);
             } else {
                 // в строке больше 1 элемента. просто добавляем новый элемент
-                const cell = row?.cells.find(c => c.id === element.cellId);
+                const cell = row?.cells.find(c => c.id === cellId);
                 if (!cell) return;
 
-                const newElementIndex = layout.elements.findIndex(e => e.id === element.id);
+                const newElementIndex = layout.elements.findIndex(e => e.id === elementId);
 
                 const newElement = getNewEditorElement(cell.id, contentAfterCursor);
 
@@ -189,11 +193,11 @@ export const ElementContent = ({
                 }, 10);
             }
         },
-        [presentationId, slideId, layoutId, tiptapRefs]
+        [presentationId, slideId, layoutId, elementId, tiptapRefs, cellId]
     );
 
     const handleEditorContentChange = useCallback(
-        (elementId: string) => (content: string, isEnterPress?: boolean) => {
+        (content: string, isEnterPress?: boolean) => {
             if (isEnterPress) {
                 useHistoryStore.getState().beginTransaction(presentationId, 'update content');
                 usePresentationStore.getState().updateElement(
@@ -219,11 +223,50 @@ export const ElementContent = ({
                 );
             }
         },
-        [slideId, layoutId, presentationId]
+        [presentationId, slideId, layoutId, elementId]
+    );
+
+    // Handler for adding new elements via slash command
+    const handleAddElement = useCallback(
+        (elementId: string) => (type: string) => {
+            if (type.startsWith('table-')) {
+                const tableLayout = getNewTableLayout(type);
+                if (tableLayout) {
+                    usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, tableLayout);
+                }
+            } else {
+                const elementData = getNewElement(type);
+
+                if (elementData) {
+                    const newElementWithCell = {
+                        ...elementData,
+                        cellId,
+                        id: elementId,
+                    };
+
+                    usePresentationStore
+                        .getState()
+                        .updateElement(
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            elementId,
+                            newElementWithCell as Partial<Element>
+                        );
+
+                    if (elementConfig.hasTextEditor) {
+                        tiptapRefs.current?.editors[elementId]?.editor.commands.setContent(
+                            (elementData as EditorElement).content
+                        );
+                    }
+                }
+            }
+        },
+        [presentationId, slideId, layoutId, cellId, elementConfig.hasTextEditor, tiptapRefs]
     );
 
     const handleBackspacePressed = useCallback(
-        (element: Element) => (isEmpty: boolean, textContent: string) => {
+        (isEmpty: boolean, textContent: string) => {
             const presentation = usePresentationStore.getState().getPresentation(presentationId);
             if (!presentation) return;
 
@@ -233,7 +276,7 @@ export const ElementContent = ({
             const layout = slide.layouts.find(l => l.id === layoutId);
             if (!layout) return;
 
-            const elementsInCell = layout.elements.filter(e => e.cellId === element.cellId);
+            const elementsInCell = layout.elements.filter(e => e.cellId === cellId);
 
             const slideIndex = presentation.slides.findIndex(s => s.id === slideId);
             const layoutIndex = slide.layouts.findIndex(l => l.id === layoutId);
@@ -286,11 +329,11 @@ export const ElementContent = ({
                 usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
             } else if (isMultiCellRow && elementsInCell.length === 1) {
                 const updatedLayout = { ...layout };
-                const updatedElements = updatedLayout.elements.filter(e => e.cellId !== element.cellId);
+                const updatedElements = updatedLayout.elements.filter(e => e.cellId !== cellId);
                 updatedLayout.elements = updatedElements;
 
                 const updatedCells = updatedLayout.gridStructure.rows[0].cells
-                    .filter(c => c.id !== element.cellId)
+                    .filter(c => c.id !== cellId)
                     .map((cell, index) => ({
                         ...cell,
                         column: index,
@@ -334,7 +377,7 @@ export const ElementContent = ({
             }
             // backspace в первом элементе в ячейке с несколькими элементами -> удаляем первый элемент. ставим фокус на следующем
             else if (isMultiCellRow && elementsInCell.length >= 1) {
-                const elementIndex = elementsInCell.findIndex(el => el.id === element.id);
+                const elementIndex = elementsInCell.findIndex(el => el.id === elementId);
                 if (elementIndex === 0 && !isEmpty) {
                     return;
                 } else if (elementIndex > 0) {
@@ -346,7 +389,7 @@ export const ElementContent = ({
 
                         editorToUpdate.editor.chain().focus('end').insertContent(textContent).run();
 
-                        usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, element.id);
+                        usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, elementId);
 
                         setTimeout(() => {
                             const updatedEditor = tiptapRefs.current?.editors[previousElement.id];
@@ -359,7 +402,7 @@ export const ElementContent = ({
                     }
                 } else {
                     const updatedLayout = { ...layout };
-                    const updatedElements = updatedLayout.elements.filter(e => e.id !== element.id);
+                    const updatedElements = updatedLayout.elements.filter(e => e.id !== elementId);
                     updatedLayout.elements = updatedElements;
                     usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
                 }
@@ -394,57 +437,7 @@ export const ElementContent = ({
                 }
             }
         },
-        [presentationId, slideId, layoutId, tiptapRefs]
-    );
-
-    // Handler for adding new elements via slash command
-    const handleAddElement = useCallback(
-        (elementId: string) => (type: string) => {
-            if (type.startsWith('table-')) {
-                const tableLayout = getNewTableLayout(type);
-                if (tableLayout) {
-                    usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, tableLayout);
-                }
-            } else {
-                const elementData = getNewElement(type);
-
-                if (elementData) {
-                    const newElementWithCell = {
-                        ...elementData,
-                        cellId: element.cellId,
-                        id: elementId,
-                    };
-
-                    usePresentationStore
-                        .getState()
-                        .updateElement(
-                            presentationId,
-                            slideId,
-                            layoutId,
-                            elementId,
-                            newElementWithCell as Partial<Element>
-                        );
-
-                    if (elementConfig.hasTextEditor) {
-                        tiptapRefs.current?.editors[elementId]?.editor.commands.setContent(
-                            (elementData as EditorElement).content
-                        );
-                    }
-                }
-            }
-        },
-        [presentationId, slideId, layoutId, element.cellId, elementConfig.hasTextEditor, tiptapRefs]
-    );
-
-    const getEditorContent = useCallback(
-        (element: Element): string => {
-            if (elementConfig.hasTextEditor) {
-                return (element as EditorElement).content;
-            }
-
-            return `<p>Неподдерживаемый тип элемента: ${element.elementTypeId}</p>`;
-        },
-        [elementConfig.hasTextEditor]
+        [presentationId, slideId, layoutId, cellId, elementId, tiptapRefs]
     );
 
     const handleBlur = useCallback(() => {
@@ -452,53 +445,53 @@ export const ElementContent = ({
     }, []);
 
     const renderElementContent = useCallback(
-        (element: Element, isFocused: boolean) => {
+        (elementId: string, isFocused: boolean) => {
             if (elementConfig.hasTextEditor) {
                 return (
                     <Tiptap
-                        key={element.id}
+                        key={elementId}
                         elementConfig={elementConfig}
-                        elementId={element.id}
+                        elementId={elementId}
                         tiptapRefs={tiptapRefs}
-                        id={element.id}
+                        id={elementId}
                         // autoFocus={isElementToFocus}
-                        initialContent={getEditorContent(element)}
-                        onEnterPressed={handleEnterPressed(element)}
-                        onBackspacePressed={handleBackspacePressed(element)}
-                        onContentChange={handleEditorContentChange(element.id)}
+                        // initialContent={getEditorContent(element)}
+                        onEnterPressed={handleEnterPressed}
+                        onBackspacePressed={handleBackspacePressed}
+                        onContentChange={handleEditorContentChange}
                         onBlur={handleBlur}
                         customBubbleMenuTrigger={dragHandleRef}
-                        onAddElement={handleAddElement(element.id)}
+                        onAddElement={handleAddElement(elementId)}
                         presentationId={presentationId}
                         slideId={slideId}
                         layoutId={layoutId}
                     />
                 );
-            } else if (element.elementTypeId === 'image') {
+            } else if (elementTypeId === 'image') {
                 return (
                     // eslint-disable-next-line jsx-a11y/alt-text
                     <Image
-                        element={element as ImageElement}
+                        elementId={elementId}
                         presentationId={presentationId}
                         slideId={slideId}
                         layoutId={layoutId}
                         hasMultipleCells={hasMultipleCells}
                     />
                 );
-            } else if (element.elementTypeId.includes('chart')) {
+            } else if (elementTypeId.includes('chart')) {
                 return (
                     <Chart
-                        element={element as ChartElement}
+                        elementId={elementId}
                         presentationId={presentationId}
                         slideId={slideId}
                         layoutId={layoutId}
                         hasMultipleCells={hasMultipleCells}
                     />
                 );
-            } else if (element.elementTypeId === 'smart-layout') {
+            } else if (elementTypeId === 'smart-layout') {
                 return (
                     <SmartLayout
-                        elementId={element.id}
+                        elementId={elementId}
                         presentationId={presentationId}
                         slideId={slideId}
                         layoutId={layoutId}
@@ -507,12 +500,12 @@ export const ElementContent = ({
                     />
                 );
             }
-            return <div className={styles.unsupportedElement}>Unsupported element type: {element.elementTypeId}</div>;
+            return <div className={styles.unsupportedElement}>Unsupported element type: {elementTypeId}</div>;
         },
         [
             elementConfig,
+            elementTypeId,
             tiptapRefs,
-            getEditorContent,
             handleEnterPressed,
             handleBackspacePressed,
             handleEditorContentChange,
@@ -528,9 +521,9 @@ export const ElementContent = ({
 
     return (
         <div
-            key={element.id}
+            key={elementId}
             className={`${styles.elementContent}`}
-            data-element-id={element.id}
+            data-element-id={elementId}
             onMouseEnter={() => {
                 if (!elementIsHovered) {
                     setElementIsHovered(true);
@@ -549,17 +542,17 @@ export const ElementContent = ({
                         slideId={slideId}
                         isActive={isMenuOpenOnCurrentElement}
                         dataAttributes={{
-                            'data-element-drag-handle': element.id,
+                            'data-element-drag-handle': elementId,
                         }}
                         ariaLabel="Drag this element"
-                        handleClick={handleClickElementDragHandle(element as Element, elementConfig)}
-                        handleKeyDown={handleKeyDownElementDragHandle(element as Element, elementConfig)}
-                        handleDragStart={handleDragStartElementDragHandle(element as Element)}
+                        handleClick={handleClickElementDragHandle(elementId, elementConfig)}
+                        handleKeyDown={handleKeyDownElementDragHandle(elementId, elementConfig)}
+                        handleDragStart={handleDragStartElementDragHandle(elementId)}
                     />
                 )}
 
                 {renderElementContent(
-                    element as Element,
+                    elementId,
                     isMenuOpenOnCurrentElement || isCurrentEditorActive || elementIsHovered
                 )}
             </div>
@@ -570,6 +563,7 @@ export const ElementContent = ({
 const ElementContentMemo = memo(ElementContent, (prevProps, nextProps) => {
     return (
         prevProps.elementId === nextProps.elementId &&
+        prevProps.cellId === nextProps.cellId &&
         prevProps.slideId === nextProps.slideId &&
         prevProps.layoutId === nextProps.layoutId &&
         // prevProps.isLastCell === nextProps.isLastCell &&

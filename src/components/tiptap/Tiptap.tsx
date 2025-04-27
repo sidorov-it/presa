@@ -40,17 +40,18 @@ import {
     SuccessBoxNode,
     QuestionBoxNode,
 } from './nodes';
-import { ElementConfig, TipTapRefs } from '@/types';
+import { ElementConfig, TipTapRefs, SmartLayoutElement, SmartLayoutItem } from '@/types';
 import CommonBubbleMenu from './CommonBubbleMenu';
 import Link from '@tiptap/extension-link';
 import Details from '@tiptap-pro/extension-details';
 import DetailsContent from '@tiptap-pro/extension-details-content';
 import DetailsSummary from '@tiptap-pro/extension-details-summary';
 import { BlockquoteExtension } from './extensions/BlockquoteExtension';
-
+import { usePresentationStore } from '@/store/presentationStore';
+import { EditorElement } from '@/types';
 // Определяем типы пропсов
 interface TiptapProps {
-    initialContent?: string;
+    // initialContent?: string;
     onEnterPressed?: (content?: any) => void;
     onBackspacePressed?: (isEmpty: boolean, textContent: string) => void;
     onBlur?: () => void;
@@ -60,9 +61,9 @@ interface TiptapProps {
     placeholder?: string;
     customBubbleMenuTrigger?: RefObject<HTMLElement>;
     onAddElement?: (type: string) => void;
-    presentationId?: string;
-    slideId?: string;
-    layoutId?: string;
+    presentationId: string;
+    slideId: string;
+    layoutId: string;
     tiptapRefs: RefObject<TipTapRefs>;
     elementId: string;
     elementConfig?: ElementConfig;
@@ -303,7 +304,6 @@ const getExtensions = (
 ];
 
 const Tiptap = ({
-    initialContent = '',
     onEnterPressed = () => {},
     onBackspacePressed = () => {},
     onContentChange = () => {},
@@ -320,6 +320,17 @@ const Tiptap = ({
     elementConfig,
     customRefKey,
 }: TiptapProps) => {
+    const element = usePresentationStore.getState().getElement(presentationId, slideId, layoutId, elementId);
+
+    let initialContent;
+    if (customRefKey) {
+        const [key, elementId, itemId] = customRefKey.split('-');
+        const item = (element as SmartLayoutElement)?.items.find(item => item.id === itemId) as SmartLayoutItem;
+        initialContent = item[key as keyof SmartLayoutItem] || '';
+    } else {
+        initialContent = (element as EditorElement)?.content || '';
+    }
+
     const editor = useEditor({
         // autoFocus: !!autoFocus,
         extensions: getExtensions(

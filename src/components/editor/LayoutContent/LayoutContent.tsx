@@ -26,9 +26,9 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     presentationId,
     slideId,
 }) => {
-    const { handleDragStart } = useDnd();
     const [isLayoutHovered, setIsLayoutHovered] = useState(false);
     const [isResizingColumn, setIsResizingColumn] = useState(false);
+    const { handleDragStart } = useDnd();
 
     const layoutRef = useRef<HTMLDivElement>(null);
     const animationFrameIdRef = useRef<number | null>(null);
