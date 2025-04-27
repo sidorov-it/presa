@@ -1,5 +1,5 @@
 import React, { MutableRefObject } from 'react';
-import { BaseMenu, MenuItem } from '@/components/editor/SlideMenu/BaseMenu';
+import { MenuItem } from '@/components/editor/SlideMenu/BaseMenu';
 import SmartLayoutColumnSizeSelector from '@/components/settings/SmartLayoutColumnSizeSelector/SmartLayoutColumnSizeSelector';
 import { usePresentationStore } from '@/store/presentationStore';
 import { SmartLayoutElement, ImageShape, TipTapRefs } from '@/types';
@@ -8,6 +8,7 @@ import SmartLayoutImageSizeSelector from '@/components/settings/SmartLayoutImage
 import styles from './SmartLayoutSettings.module.css';
 import { BiAlignLeft, BiAlignMiddle, BiAlignRight } from 'react-icons/bi';
 import { DeleteIcon } from '@/components/icons';
+import SmartLayoutTemplateSelector from '@/components/settings/SmartLayoutTemplateSelector/SmartLayoutTemplateSelector';
 
 interface SmartLayoutSettingsProps {
     slideId: string;
@@ -55,6 +56,12 @@ const SmartLayoutSettings: React.FC<SmartLayoutSettingsProps> = ({
 
     return (
         <>
+            <SmartLayoutTemplateSelector
+                layoutType={element.layoutType || 'grid'}
+                setLayoutType={value => {
+                    updateElement(presentationId, slideId, layoutId, elementId, { ...element, layoutType: value });
+                }}
+            />
             <SmartLayoutColumnSizeSelector
                 columnSize={element.columnSize}
                 setColumnSize={value => {

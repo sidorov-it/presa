@@ -1,5 +1,5 @@
 import { Slider } from '@chakra-ui/react';
-import { FaColumns, FaRegImage } from 'react-icons/fa';
+import { FaRegImage } from 'react-icons/fa';
 export default function SmartLayoutColumnSizeSelector({
     imageSize,
     setImageSize,

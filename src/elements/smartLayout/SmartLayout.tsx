@@ -117,8 +117,19 @@ const SmartLayout: React.FC<SmartLayoutProps> = ({
 
     const renderLayout = useCallback(() => {
         switch (layoutType) {
-            // case 'images-with-text':
-            //     return <ImagesWithText items={items} />;
+            case 'images-with-text':
+                return (
+                    <ImagesWithText
+                        elementId={elementId}
+                        tiptapRefs={tiptapRefs}
+                        presentationId={presentationId}
+                        slideId={slideId}
+                        layoutId={layoutId}
+                        isFocused={isFocused}
+                    />
+                );
+            case 'text-boxes':
+                return <div>Text Boxes</div>;
             // case 'bullets':
             //     return renderBulletsList();
             // case 'numbers':

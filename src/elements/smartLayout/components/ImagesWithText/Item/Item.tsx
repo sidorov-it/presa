@@ -63,13 +63,19 @@ export default function Item({
             elementId={elementId}
         >
             <div
-                className={`${styles.image} ${imageShape ? styles[imageShape] : ''}`}
+                className={`${styles.image} `}
                 style={{
                     width: `${imageWidth}%`,
                 }}
             >
                 {item.imageUrl ? (
-                    <img src={item.imageUrl} alt="image" />
+                    <div
+                        className={`${styles.image} ${imageShape ? styles[imageShape] : ''}`}
+                        style={{
+                            backgroundImage: `url(${item.imageUrl})`,
+                        }}
+                    />
+                    // <img src={item.imageUrl} alt="image" className={`${imageShape ? styles[imageShape] : ''}`} />
                 ) : (
                     <ImagePlaceholder
                         onUpload={() => {}}

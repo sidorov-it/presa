@@ -105,3 +105,13 @@
 .hovered > .addIcon {
     opacity: 1;
 }
+
+.image {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    width: 100%;
+    height: 100%;
+    transition-property: border-radius;
+    transition-duration: var(--chakra-transition-duration-normal);
+}

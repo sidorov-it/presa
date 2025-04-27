@@ -1,0 +1,71 @@
+/* Shape selector styles */
+.shapeSelect {
+    position: relative;
+    display: inline-block;
+    margin: 0 4px;
+}
+
+.shapeButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    cursor: pointer;
+    min-width: 120px;
+    justify-content: space-between;
+}
+
+.shapeButton:hover {
+    background-color: #f0f2f5;
+}
+
+.shapeDropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin-top: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+}
+
+.shapeOption {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    width: 100%;
+    border: none;
+    background: none;
+    text-align: left;
+}
+
+.shapeOption:hover {
+    background-color: #f0f2f5;
+}
+
+.shapeOption.selected {
+    background-color: #e6f7ff;
+    color: #1890ff;
+}
+
+.shapeIcon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+}
+
+.shapeLabel {
+    font-size: 14px;
+    color: inherit;
+}
