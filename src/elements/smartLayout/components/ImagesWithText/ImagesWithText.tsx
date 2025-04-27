@@ -5,11 +5,13 @@ import { SmartLayoutElement, SmartLayoutItem } from '@/types';
 
 import styles from './ImagesWithText.module.css';
 import { usePresentationStore } from '@/store/presentationStore';
-import { RefObject, useCallback } from 'react';
+import { RefObject, useCallback, useState } from 'react';
 import { TipTapRefs } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 import Item from './Item/Item';
 import { useShallow } from 'zustand/react/shallow';
+import { useDnd } from '@/contexts/DragDropContext';
+import { generateId } from '@/utils/id';
 
 export default function ImagesWithText({
     elementId,
@@ -26,6 +28,9 @@ export default function ImagesWithText({
     layoutId: string;
     isFocused: boolean;
 }) {
+    const { state: dndState } = useDnd();
+    const [dropIndicator, setDropIndicator] = useState<{ itemId: string; position: 'left' | 'right' } | null>(null);
+
     const columnSize = usePresentationStore(
         useShallow(state => {
             const element = state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement;
@@ -99,7 +104,7 @@ export default function ImagesWithText({
     );
 
     const addItem = useCallback(() => {
-        const newItemId = uuidv4();
+        const newItemId = generateId();
         const newItem: SmartLayoutItem = {
             id: newItemId,
             title: '<p><span class="heading-text heading-3"></span></p>',
@@ -114,30 +119,139 @@ export default function ImagesWithText({
         } as Partial<SmartLayoutElement>);
     }, [elementId, presentationId, slideId, layoutId]);
 
+    // Check if dragged item is from same smartLayout
+    const isDraggingFromSameLayout = useCallback(() => {
+        const { source } = dndState;
+        return (
+            dndState.dragState === 'dragging' &&
+            source.elementId === elementId &&
+            source.layoutId === layoutId &&
+            !!source.smartLayoutItemId
+        );
+    }, [dndState, elementId, layoutId]);
+
+    const handleDragOver = useCallback(
+        (e: React.DragEvent<HTMLDivElement>, targetItemId: string) => {
+            // Only allow if dragged from same smartLayout
+            if (!isDraggingFromSameLayout()) return;
+
+            e.preventDefault();
+
+            // Get the item DOM element
+            const itemElement = document.querySelector(`[data-smart-layout-item-id="${targetItemId}"]`);
+            if (!itemElement) return;
+
+            const rect = itemElement.getBoundingClientRect();
+            const isLeft = e.clientX < rect.left + rect.width / 2;
+
+            // Only allow left/right positioning for image-with-text layout
+            setDropIndicator({
+                itemId: targetItemId,
+                position: isLeft ? 'left' : 'right',
+            });
+        },
+        [isDraggingFromSameLayout]
+    );
+
+    const handleDragLeave = useCallback(() => {
+        setDropIndicator(null);
+    }, []);
+
+    const handleDrop = useCallback(
+        (e: React.DragEvent<HTMLDivElement>, targetItemId: string) => {
+            if (!isDraggingFromSameLayout() || !dropIndicator) return;
+
+            e.preventDefault();
+            setDropIndicator(null);
+
+            const draggedItemId = dndState.source.smartLayoutItemId;
+            if (!draggedItemId || draggedItemId === targetItemId) return;
+
+            // Get current element with items
+            const element = usePresentationStore
+                .getState()
+                .getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement;
+
+            if (!element || !element.items) return;
+
+            // Get indices of source and target
+            const sourceIndex = element.items.findIndex(item => item.id === draggedItemId);
+            const targetIndex = element.items.findIndex(item => item.id === targetItemId);
+
+            if (sourceIndex === -1 || targetIndex === -1) return;
+
+            // Create new items array by reordering
+            const newItems = [...element.items];
+            const [draggedItem] = newItems.splice(sourceIndex, 1);
+
+            // Calculate insert position based on drop indicator position
+            let insertPosition = targetIndex;
+            if (dropIndicator.position === 'right') {
+                insertPosition = targetIndex + (sourceIndex < targetIndex ? 0 : 1);
+            } else {
+                insertPosition = targetIndex - (sourceIndex > targetIndex ? 0 : 1);
+            }
+
+            // Ensure valid bounds
+            insertPosition = Math.max(0, Math.min(newItems.length, insertPosition));
+
+            // Insert item at new position
+            newItems.splice(insertPosition, 0, draggedItem);
+
+            // Update the layout with new order
+            usePresentationStore.getState().updateElement(presentationId, slideId, layoutId, elementId, {
+                items: newItems,
+            } as Partial<SmartLayoutElement>);
+        },
+        [
+            dndState.source.smartLayoutItemId,
+            dropIndicator,
+            elementId,
+            layoutId,
+            presentationId,
+            slideId,
+            isDraggingFromSameLayout,
+        ]
+    );
+
     return (
         <div
             className={`${styles.container} ${isFocused ? styles.focused : ''}`}
             style={{ gridTemplateColumns: `repeat(${columnSize}, minmax(0px, 1fr))` }}
         >
             {itemsIds?.map((itemId, index) => (
-                <Item
+                <div
                     key={itemId}
-                    isElementFocused={isFocused}
-                    itemId={itemId}
-                    elementId={elementId}
-                    tiptapRefs={tiptapRefs}
-                    presentationId={presentationId}
-                    slideId={slideId}
-                    layoutId={layoutId}
-                    align={align}
-                    imageShape={imageShape}
-                    imageSize={imageSize}
-                    handleImageChange={handleImageChange}
-                    handleTitleChange={handleContentChange(itemId, 'title')}
-                    handleTextChange={handleContentChange(itemId, 'text')}
-                    isLastItem={index === itemsIds.length - 1}
-                    addItem={addItem}
-                />
+                    className={styles.itemContainer}
+                    onDragOver={e => handleDragOver(e, itemId)}
+                    onDragLeave={handleDragLeave}
+                    onDrop={e => handleDrop(e, itemId)}
+                >
+                    {dropIndicator && dropIndicator.itemId === itemId && (
+                        <div
+                            className={`${styles.dropIndicator} ${
+                                dropIndicator.position === 'left' ? styles.left : styles.right
+                            }`}
+                        />
+                    )}
+                    <Item
+                        isElementFocused={isFocused}
+                        itemId={itemId}
+                        elementId={elementId}
+                        tiptapRefs={tiptapRefs}
+                        presentationId={presentationId}
+                        slideId={slideId}
+                        layoutId={layoutId}
+                        align={align}
+                        imageShape={imageShape}
+                        imageSize={imageSize}
+                        handleImageChange={handleImageChange}
+                        handleTitleChange={handleContentChange(itemId, 'title')}
+                        handleTextChange={handleContentChange(itemId, 'text')}
+                        isLastItem={index === itemsIds.length - 1}
+                        addItem={addItem}
+                    />
+                </div>
             ))}
         </div>
     );

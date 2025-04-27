@@ -63,6 +63,7 @@ function dndReducer(state: DndState, action: DndAction): DndState {
                     tableId: action.payload.tableId,
                     rowIndex: action.payload.rowIndex,
                     columnIndex: action.payload.columnIndex,
+                    smartLayoutItemId: action.payload.smartLayoutItemId,
                 },
                 // Clear any previous indicators and targets
                 target: { ...initialState.target },
@@ -232,6 +233,7 @@ type DndContextType = {
             tableId,
             rowIndex,
             columnIndex,
+            smartLayoutItemId,
         }: {
             elementId: string | null;
             layoutId?: string;
@@ -239,6 +241,7 @@ type DndContextType = {
             tableId?: string;
             rowIndex?: number;
             columnIndex?: number;
+            smartLayoutItemId?: string;
         }
     ) => void;
     handleNewElementDragStart: (e: React.DragEvent<HTMLDivElement>, elementId: string, defaultProps: any) => void;
@@ -311,9 +314,13 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             cellId?: string,
             tableId?: string,
             rowIndex?: number,
-            columnIndex?: number
+            columnIndex?: number,
+            smartLayoutItemId?: string
         ) => {
-            dispatch({ type: 'START_DRAG', payload: { elementId, layoutId, cellId, tableId, rowIndex, columnIndex } });
+            dispatch({
+                type: 'START_DRAG',
+                payload: { elementId, layoutId, cellId, tableId, rowIndex, columnIndex, smartLayoutItemId },
+            });
         },
         []
     );
@@ -377,6 +384,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 tableId,
                 rowIndex,
                 columnIndex,
+                smartLayoutItemId,
             }: {
                 elementId: string | null;
                 layoutId: string;
@@ -384,10 +392,12 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 tableId?: string;
                 rowIndex?: number;
                 columnIndex?: number;
+                smartLayoutItemId?: string;
             }
         ) => {
             e.stopPropagation();
-            startDrag(elementId, layoutId, cellId, tableId, rowIndex, columnIndex);
+
+            startDrag(elementId, layoutId, cellId, tableId, rowIndex, columnIndex, smartLayoutItemId);
 
             prevStateRef.current.source = {
                 elementId,
@@ -408,10 +418,11 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     tableId,
                     rowIndex,
                     columnIndex,
+                    smartLayoutItemId,
                 })
             );
         },
-        [startDrag]
+        [dispatch]
     );
 
     const handleNewElementDragStart = useCallback(

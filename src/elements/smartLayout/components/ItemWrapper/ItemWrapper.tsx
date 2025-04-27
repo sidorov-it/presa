@@ -5,6 +5,7 @@ import DragHandler from '@/components/editor/DragHandler';
 import { useMenuStore } from '@/store/menuStore';
 import styles from './ItemWrapper.module.css';
 import ImageWithTextItemMenu from '../ImagesWithText/ImageWithTextItemMenu/ImageWithTextItemMenu';
+import { useDnd } from '@/contexts/DragDropContext';
 
 export default function ItemWrapper({
     children,
@@ -28,6 +29,7 @@ export default function ItemWrapper({
     const isMenuOpen = useMenuStore(state => state.isOpen && state.smartLayoutItemId === itemId);
     const itemRef = useRef<HTMLDivElement>(null);
     const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
+    const { handleDragStart } = useDnd();
 
     useEffect(() => {
         if (itemRef.current && isMenuOpen) {
@@ -38,6 +40,34 @@ export default function ItemWrapper({
         }
     }, [itemRef, isMenuOpen]);
 
+    const handleItemDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+        // Use standard DnD structure but include smartLayoutItemId for identifying item within smartLayout
+        handleDragStart(e, {
+            elementId,
+            layoutId,
+            smartLayoutItemId: itemId,
+        });
+
+        // Set drag image for smoother UX (optional enhancement)
+        if (itemRef.current) {
+            const rect = itemRef.current.getBoundingClientRect();
+            const dragImage = document.createElement('div');
+            dragImage.className = styles.dragImage;
+            dragImage.style.width = `${rect.width}px`;
+            dragImage.style.height = `${rect.height}px`;
+            dragImage.innerText = 'Item';
+            document.body.appendChild(dragImage);
+
+            e.dataTransfer.setDragImage(dragImage, 0, 0);
+
+            // Clean up
+            setTimeout(() => {
+                document.body.removeChild(dragImage);
+            }, 0);
+        }
+    };
+
     return (
         <div
             className={`${styles.container} ${className} ${isSelected ? styles.selected : ''}`}
@@ -47,6 +77,7 @@ export default function ItemWrapper({
             onClick={() => {
                 useMenuStore.getState().setSelectedSmartLayoutItemId(layoutId, elementId, itemId);
             }}
+            data-smart-layout-item-id={itemId}
         >
             {(hovered || isSelected) && (
                 <DragHandler
@@ -57,7 +88,11 @@ export default function ItemWrapper({
                     ariaLabel="Drag handle"
                     handleClick={() => useMenuStore.getState().openMenu({ smartLayoutItemId: itemId })}
                     handleKeyDown={() => {}}
-                    handleDragStart={() => {}}
+                    handleDragStart={handleItemDragStart}
+                    dataAttributes={{
+                        'data-smart-layout-item-drag-handle': itemId,
+                    }}
+                    title="Drag to reorder item (items can only be moved within the same smartLayout)"
                 />
             )}
 

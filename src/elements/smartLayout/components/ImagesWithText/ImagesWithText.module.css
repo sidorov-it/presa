@@ -9,3 +9,32 @@
     border-radius: var(--presentation-slide-border-radius);
 }
 
+.itemContainer {
+    position: relative;
+    grid-column: span 6;
+}
+
+.dropIndicator {
+    position: absolute;
+    background-color: #806cff;
+    z-index: 10;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.dropIndicator.left {
+    left: -5px;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    border-radius: 2px;
+}
+
+.dropIndicator.right {
+    right: -5px;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    border-radius: 2px;
+}
+

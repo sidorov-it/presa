@@ -326,7 +326,7 @@ const Tiptap = ({
     if (customRefKey) {
         const [key, elementId, itemId] = customRefKey.split('-');
         const item = (element as SmartLayoutElement)?.items.find(item => item.id === itemId) as SmartLayoutItem;
-        initialContent = item[key as keyof SmartLayoutItem] || '';
+        initialContent = item?.[key as keyof SmartLayoutItem] || '';
     } else {
         initialContent = (element as EditorElement)?.content || '';
     }

@@ -6,6 +6,7 @@ export type DragSource = {
     tableId?: string | null;
     rowIndex?: number | null;
     columnIndex?: number | null;
+    smartLayoutItemId?: string | null;
 };
 
 export type Position = 'top' | 'bottom' | 'left' | 'right';
@@ -53,11 +54,12 @@ export type DndAction =
           type: 'START_DRAG';
           payload: {
               elementId: string | null;
-              layoutId?: string;
-              cellId?: string;
-              tableId?: string;
-              rowIndex?: number;
-              columnIndex?: number;
+              layoutId?: string | null;
+              cellId?: string | null;
+              tableId?: string | null;
+              rowIndex?: number | null;
+              columnIndex?: number | null;
+              smartLayoutItemId?: string | null;
           };
       }
     | { type: 'SET_DROP_TARGET'; payload: DropTarget }
