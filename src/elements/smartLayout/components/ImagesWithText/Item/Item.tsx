@@ -2,7 +2,7 @@
 import Tiptap from '@/components/tiptap/Tiptap';
 import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlaceholder';
 import { ImageShape, SmartLayoutElement, SmartLayoutItem, TipTapRefs } from '@/types';
-import { RefObject } from 'react';
+import { RefObject, useRef, useLayoutEffect, useState } from 'react';
 import ItemWrapper from '../../ItemWrapper/ItemWrapper';
 
 import styles from './Item.module.css';
@@ -25,6 +25,7 @@ type ItemProps = {
     handleTextChange: (content: string) => void;
     addItem: () => void;
     isLastItem: boolean;
+    columnsCount: number;
 };
 
 export default function Item({
@@ -38,20 +39,35 @@ export default function Item({
     handleTitleChange,
     handleTextChange,
     align,
-    imageShape,
     imageSize = 1,
+    imageShape,
     handleImageChange,
     addItem,
     isLastItem,
+    columnsCount,
 }: ItemProps) {
     const item = usePresentationStore(state => {
         const element = state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement;
         return element.items.find(item => item.id === itemId);
     }) as SmartLayoutItem;
 
-    const imageWidthCoof = 14;
+    const imageRef = useRef<HTMLDivElement>(null);
+    // const [imageWidth, setImageWidth] = useState(0);
 
+    // useLayoutEffect(() => {
+    //     if (imageRef.current) {
+    //         setImageWidth(imageRef.current.offsetWidth);
+    //     }
+    // }, [columnsCount]);
+
+    const imageWidthCoof = 14;
     const imageWidth = 30 + imageWidthCoof * (imageSize - 1);
+
+    // const imageWidth = 30 + imageWidthCoof * (imageSize - 1);
+
+    // let imageHeight = imageWidth;
+    // if (imageShape === 'portrait') imageHeight = (imageWidth * 16) / 9;
+    // if (imageShape === 'landscape') imageHeight = (imageWidth * 9) / 16;
 
     return (
         <ItemWrapper
@@ -63,20 +79,15 @@ export default function Item({
             elementId={elementId}
         >
             <div
-                className={`${styles.image} `}
+                ref={imageRef}
+                className={`${styles.image} ${imageShape ? styles[imageShape] : ''}`}
                 style={{
-                    width: `${imageWidth}%`,
+                    backgroundImage: item.imageUrl ? `url(${item.imageUrl})` : undefined,
+                    // height: imageHeight ? `${imageHeight}px` : undefined,
+                    width: imageWidth ? `calc(${imageWidth}% - 1em)` : undefined,
                 }}
             >
-                {item.imageUrl ? (
-                    <div
-                        className={`${styles.image} ${imageShape ? styles[imageShape] : ''}`}
-                        style={{
-                            backgroundImage: `url(${item.imageUrl})`,
-                        }}
-                    />
-                    // <img src={item.imageUrl} alt="image" className={`${imageShape ? styles[imageShape] : ''}`} />
-                ) : (
+                {!item.imageUrl && (
                     <ImagePlaceholder
                         onUpload={() => {}}
                         onLink={value => handleImageChange(item.id, value)}

@@ -100,7 +100,7 @@ export const ElementContent = ({
             const layout = slide.layouts.find(l => l.id === layoutId);
             if (!layout) return;
 
-            const row = layout.gridStructure.rows.find(r => r.cells.find(c => c.id === elementId));
+            const row = layout.gridStructure.rows.find(r => r.cells.find(c => c.id === cellId));
 
             // в строке 1 элемент. создаем новую строку
             if (row!.cells.length === 1) {

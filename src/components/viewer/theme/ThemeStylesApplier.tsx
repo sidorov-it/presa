@@ -84,7 +84,7 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
             document.documentElement.style.setProperty(
                 '--presentation-accent-blocks-color',
                 theme.colors.primaryAccent
-                // theme.colors.accentBlocksColor 
+                // theme.colors.accentBlocksColor
             );
             document.documentElement.style.setProperty(
                 '--presentation-secondary-button-color',
@@ -248,20 +248,31 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
 
             // Block design
             document.documentElement.style.setProperty(
-                '--presentation-block-background',
-                theme.design.blocks.backgroundColor
-            );
-            document.documentElement.style.setProperty(
                 '--presentation-block-fill-type',
                 theme.design.blocks.backgroundFillType
             );
-            document.documentElement.style.setProperty(
-                '--presentation-block-border-width',
-                theme.design.blocks.borderWidth
-            );
+
+            let blockBorderWidth = '0px';
+            if (theme.design.blocks.borderWidth === 'none') {
+                blockBorderWidth = '0px';
+            } else if (theme.design.blocks.borderWidth === 'thin') {
+                blockBorderWidth = '1px';
+            } else if (theme.design.blocks.borderWidth === 'medium') {
+                blockBorderWidth = '2px';
+            } else if (theme.design.blocks.borderWidth === 'thick') {
+                blockBorderWidth = '3px';
+            }
+
+            document.documentElement.style.setProperty('--presentation-block-border-width', blockBorderWidth);
+
             if (theme.design.blocks.blockFillColorsType !== 'custom') {
                 document.documentElement.style.setProperty(
-                    '--presentation-block-fill-colors-type',
+                    '--presentation-block-background',
+                    theme.colors.primaryAccent
+                );
+
+                document.documentElement.style.setProperty(
+                    '--presentation-block-background-custom-type',
                     theme.design.blocks.blockFillColorsType
                 );
             } else if (theme.design.blocks.blockFillColorsType === 'custom') {
@@ -271,6 +282,11 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
                         color
                     );
                 });
+
+                document.documentElement.style.setProperty(
+                    '--presentation-block-background-custom-count',
+                    theme.design.blocks.blockBackgroundCustomColors.length.toString()
+                );
             }
 
             document.documentElement.style.setProperty('--presentation-block-shadow', theme.design.blocks.shadow);

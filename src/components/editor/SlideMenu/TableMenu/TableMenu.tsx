@@ -12,7 +12,7 @@ import isEditorPropertyConsistent from '@/utils/isEditorPropertyConsistent';
 
 import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
 import { Level } from '@tiptap/extension-heading';
-import { DeleteIcon } from 'lucide-react';
+import { DeleteIcon } from '@/components/icons';
 
 interface TableMenuProps {
     presentationId?: string;

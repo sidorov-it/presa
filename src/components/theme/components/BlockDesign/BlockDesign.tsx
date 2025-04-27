@@ -1,15 +1,14 @@
 import { Label } from '@/components/ui/Label';
-import { Theme, ThemeDesignBorderWidth, ThemeDesignShadow } from '@/types/theme';
+import { Theme } from '@/types/theme';
 import { ThemeDesign } from '@/types/theme';
 import { ButtonGroup, RadioGroup, Span, Stack } from '@chakra-ui/react';
 import styles from './BlockDesign.module.css';
 import ColorPicker from '@/components/ui/ColorPicker';
 import { Button } from '@/components/ui/Button';
 import Tooltip from '@/components/tooltip/Tooltip';
-import { RxBorderNone } from 'react-icons/rx';
-import { BsCircleHalf, BsCircleFill, BsCircle } from 'react-icons/bs';
 import BorderWidthSelector from '../BorderWidthSelector/BorderWidthSelector';
 import ShadowSelector from '../ShadowSelector/ShadowSelector';
+import { BsCircle, BsCircleFill, BsCircleHalf } from 'react-icons/bs';
 
 const blockFillColorsTypes = [
     // {

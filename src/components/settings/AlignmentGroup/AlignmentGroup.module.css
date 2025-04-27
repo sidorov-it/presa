@@ -1,0 +1,41 @@
+/* Группа кнопок выравнивания */
+.alignmentGroup {
+    display: flex;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0 4px;
+    background-color: white !important;
+}
+
+.alignmentGroup .button {
+    border-radius: 0;
+    border-right: 1px solid #e0e0e0 !important;
+    margin: 0;
+}
+
+.alignmentGroup .button:last-child {
+    border-right: none;
+}
+
+.active {
+    background-color: #e6f7ff !important;
+    color: #1890ff !important;
+}
+
+.button {
+    border: none;
+    background-color: transparent;
+    border-radius: 4px;
+    padding: 6px 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+    color: #333 !important;
+}
+
+.button:hover {
+    background-color: #f0f2f5 !important;
+}

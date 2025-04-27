@@ -3,6 +3,7 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { FaCircle } from 'react-icons/fa';
 import { SmartLayoutElement, SmartLayoutItem, TipTapRefs } from '@/types';
 import ImagesWithText from '@/elements/smartLayout/components/ImagesWithText/ImagesWithText';
+import TextBoxes from '@/elements/smartLayout/components/TextBoxes/TextBoxes';
 
 interface SmartLayoutProps {
     elementId: string;
@@ -129,7 +130,16 @@ const SmartLayout: React.FC<SmartLayoutProps> = ({
                     />
                 );
             case 'text-boxes':
-                return <div>Text Boxes</div>;
+                return (
+                    <TextBoxes
+                        elementId={elementId}
+                        tiptapRefs={tiptapRefs}
+                        presentationId={presentationId}
+                        slideId={slideId}
+                        layoutId={layoutId}
+                        isFocused={isFocused}
+                    />
+                );
             // case 'bullets':
             //     return renderBulletsList();
             // case 'numbers':

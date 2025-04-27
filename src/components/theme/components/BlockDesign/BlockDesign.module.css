@@ -7,7 +7,7 @@
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background-color: var(--chakra-colors-trueblue-400);
+    background-color: var(--presentation-accent-blocks-color);
     margin-right: 8px;
     display: inline-block;
     cursor: pointer;

@@ -4,26 +4,33 @@ import { FaColumns } from 'react-icons/fa';
 export default function SmartLayoutColumnSizeSelector({
     columnSize,
     setColumnSize,
+    step,
+    min,
+    max,
+    defaultValue,
 }: {
     columnSize: number;
     setColumnSize: (columnSize: number) => void;
+    step: number;
+    min: number;
+    max: number;
+    defaultValue: number;
 }) {
-    const reversedSize = 24 - columnSize;
+    const reversedSize = max - columnSize;
 
     return (
         <div style={{ display: 'flex', gap: '10px' }}>
             <FaColumns size={16} />
             <Slider.Root
                 width="60px"
-                defaultValue={[12]}
+                defaultValue={[defaultValue]}
                 size="sm"
                 variant="outline"
-
-                step={6}
-                min={6}
-                max={24}
+                step={step}
+                min={min - step}
+                max={max - step}
                 value={[reversedSize]}
-                onValueChange={e => setColumnSize(24 - e.value[0])}
+                onValueChange={e => setColumnSize(max - e.value[0])}
             >
                 <Slider.Control>
                     <Slider.Track>

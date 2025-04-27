@@ -4,7 +4,6 @@ import { BaseMenu, MenuItem } from '../BaseMenu';
 import { AlignTopIcon, AlignCenterIcon, AlignBottomIcon, DeleteIcon } from '@/components/icons';
 
 import { useMenuSelectedSlide } from '@/store/menuStore';
-import { LayoutType } from '@/types';
 import SmartLayoutSwitcher from '../../SmartLayoutSwitcher/SmartLayoutSwitcher';
 
 interface LayoutMenuProps {
@@ -14,14 +13,12 @@ interface LayoutMenuProps {
 }
 
 export default function LayoutMenu({ position, layoutId, presentationId }: LayoutMenuProps) {
-    const { updateAlignLayout, deleteLayout, closeMenu, getLayout, changeTemplate } = useMenuStore();
+    const { updateAlignLayout, deleteLayout, closeMenu, getLayout } = useMenuStore();
 
     const commonAlignment = useMenuStore(state => state.getCommonAlignment());
 
     const slideId = useMenuSelectedSlide();
     const layout = slideId && layoutId ? getLayout(slideId, layoutId) : null;
-
-    const currentLayoutType = layout?.type || 'custom';
 
     const handleAlignTop = useCallback(() => {
         updateAlignLayout('top');
@@ -39,17 +36,9 @@ export default function LayoutMenu({ position, layoutId, presentationId }: Layou
     }, [updateAlignLayout, closeMenu]);
 
     const handleDeleteLayout = useCallback(() => {
-        deleteLayout(slideId, layoutId);
+        deleteLayout();
         closeMenu();
-    }, [slideId, layoutId, deleteLayout, closeMenu]);
-
-    const handleChangeTemplate = useCallback(
-        (templateType: LayoutType) => {
-            changeTemplate(templateType);
-            closeMenu();
-        },
-        [changeTemplate, closeMenu]
-    );
+    }, [deleteLayout, closeMenu]);
 
     if (!layout) {
         return null;

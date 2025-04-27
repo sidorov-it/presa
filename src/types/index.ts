@@ -313,9 +313,9 @@ export interface SmartLayoutElement extends BaseElement {
     layoutType: SmartLayoutType;
     items: SmartLayoutItem[];
     columnSize: number;
-    align?: 'left' | 'center' | 'right';
-    imageShape?: ImageShape;
-    imageSize?: number;
+    align: 'left' | 'center' | 'right';
+    imageShape: ImageShape;
+    imageSize: number;
 }
 
 // Элемент редактора Tiptap

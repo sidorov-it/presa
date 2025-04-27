@@ -7,7 +7,6 @@ import styles from './ImagesWithText.module.css';
 import { usePresentationStore } from '@/store/presentationStore';
 import { RefObject, useCallback, useState } from 'react';
 import { TipTapRefs } from '@/types';
-import { v4 as uuidv4 } from 'uuid';
 import Item from './Item/Item';
 import { useShallow } from 'zustand/react/shallow';
 import { useDnd } from '@/contexts/DragDropContext';
@@ -39,11 +38,11 @@ export default function ImagesWithText({
             const items = element.items || [];
 
             if (items.length === 1) {
-                columnSize = 6;
+                columnSize = 1;
             } else if (items.length === 2 && columnSize > 12) {
-                columnSize = 12;
+                columnSize = 2;
             } else if (items.length === 3 && columnSize > 18) {
-                columnSize = 18;
+                columnSize = 3;
             }
             return columnSize;
         })
@@ -217,7 +216,7 @@ export default function ImagesWithText({
     return (
         <div
             className={`${styles.container} ${isFocused ? styles.focused : ''}`}
-            style={{ gridTemplateColumns: `repeat(${columnSize}, minmax(0px, 1fr))` }}
+            style={{ gridTemplateColumns: `repeat(${columnSize * 6}, minmax(0px, 1fr))` }}
         >
             {itemsIds?.map((itemId, index) => (
                 <div
@@ -250,6 +249,7 @@ export default function ImagesWithText({
                         handleTextChange={handleContentChange(itemId, 'text')}
                         isLastItem={index === itemsIds.length - 1}
                         addItem={addItem}
+                        columnsCount={itemsIds.length}
                     />
                 </div>
             ))}
