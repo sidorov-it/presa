@@ -3,7 +3,8 @@ import SlideEditor from '../SlideEditor';
 import { memo, MutableRefObject } from 'react';
 import { PresentationState, usePresentationStore } from '@/store/presentationStore';
 import { useShallow } from 'zustand/react/shallow';
-
+import { Button } from '@/components/ui/Button';
+import styles from './Presentation.module.css';
 interface PresentationProps {
     presentationId: string;
     activeSlideId: string | null;
@@ -54,18 +55,6 @@ const SlideEditorWrapper = memo(
 SlideEditorWrapper.displayName = 'SlideEditorWrapper';
 
 function Presentation({ presentationId, activeSlideId, onSlideSelect, tiptapRefs }: PresentationProps) {
-    // Store editor references to avoid recreation
-
-    // Get only the slide IDs instead of full slide data
-    // Use a selector factory to avoid creating a new function on each render
-    // const slideIdsSelector = useCallback(
-    //     (state: PresentationState) => {
-    //         const presentation = state.presentations.find(p => p.id === presentationId);
-    //         return presentation ? presentation.slides.map(slide => slide.id) : [];
-    //     },
-    //     [presentationId]
-    // );
-
     const slideIds = usePresentationStore(
         useShallow((state: PresentationState) => {
             const presentation = state.presentations.find(p => p.id === presentationId);
@@ -75,6 +64,13 @@ function Presentation({ presentationId, activeSlideId, onSlideSelect, tiptapRefs
 
     return (
         <div style={{ width: '100%' }}>
+            {slideIds.length === 0 && (
+                <div className={styles.emptyContainer}>
+                    <Button onClick={() => usePresentationStore.getState().addSlide(presentationId)}>
+                        + Добавить слайд
+                    </Button>
+                </div>
+            )}
             {slideIds.map(slideId => (
                 <SlideEditorWrapper
                     key={slideId}

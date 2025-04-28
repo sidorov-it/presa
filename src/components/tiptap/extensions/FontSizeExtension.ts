@@ -41,6 +41,49 @@ declare module '@tiptap/core' {
     }
 }
 
+const fontSizeMapping = [
+    {
+        fontSize: FONT_SIZE_SMALL_TEXT,
+        className: 'small-text',
+    },
+    {
+        fontSize: FONT_SIZE_BIG_TEXT,
+        className: 'big-text',
+    },
+    {
+        fontSize: FONT_SIZE_HEADING_4, // Heading 4
+        className: 'heading-4',
+    },
+    {
+        fontSize: FONT_SIZE_HEADING_3, // Heading 3
+        className: 'heading-3',
+    },
+    {
+        fontSize: FONT_SIZE_HEADING_2, // Heading 2
+        className: 'heading-2',
+    },
+    {
+        fontSize: FONT_SIZE_HEADING_1, // Heading 1
+        className: 'heading-1',
+    },
+    {
+        fontSize: FONT_SIZE_TITLE,
+        className: 'title-text',
+    },
+    {
+        fontSize: FONT_SIZE_BIG_HEADING,
+        className: 'big-heading',
+    },
+    {
+        fontSize: FONT_SIZE_VERY_BIG_HEADING,
+        className: 'very-big-heading',
+    },
+    {
+        fontSize: null,
+        className: 'body-text normal-text',
+    },
+];
+
 export const FontSizeExtension = Extension.create<FontSizeOptions>({
     name: 'fontSize',
 
@@ -65,8 +108,22 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                             const classList = element.classList;
                             // if (classList) return classList;
 
+                            let fontSize;
+                            if (!dataFontSize) {
+                                const classes = classList.value.split(' ');
+
+                                const fontSizeInfo = fontSizeMapping.find(mapping =>
+                                    classes.includes(mapping.className)
+                                );
+
+                                if (fontSizeInfo) {
+                                    fontSize = fontSizeInfo.fontSize;
+                                }
+                            }
+
                             return {
                                 dataFontSize,
+                                fontSize,
                                 classList,
                             };
                             // return element.style.fontSize?.replace(/['"]+/g, '');
@@ -79,7 +136,7 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                             if (
                                 attributes.fontSize &&
                                 !(typeof attributes.fontSize === 'string') &&
-                                !attributes.fontSize.dataFontSize &&
+                                !attributes.fontSize.fontSize &&
                                 !attributes.fontSize.classList
                             ) {
                                 return {};
@@ -90,7 +147,7 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                             const fontSize =
                                 typeof attributes.fontSize === 'string'
                                     ? attributes.fontSize
-                                    : attributes.fontSize?.dataFontSize;
+                                    : attributes.fontSize?.fontSize;
 
                             if (fontSize) {
                                 switch (fontSize) {

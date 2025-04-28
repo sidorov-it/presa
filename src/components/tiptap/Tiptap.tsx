@@ -49,6 +49,7 @@ import DetailsSummary from '@tiptap-pro/extension-details-summary';
 import { BlockquoteExtension } from './extensions/BlockquoteExtension';
 import { usePresentationStore } from '@/store/presentationStore';
 import { EditorElement } from '@/types';
+import { MenuItem } from '@/elements/menuRegistry';
 // Определяем типы пропсов
 interface TiptapProps {
     // initialContent?: string;
@@ -60,7 +61,7 @@ interface TiptapProps {
     id?: string;
     placeholder?: string;
     customBubbleMenuTrigger?: RefObject<HTMLElement>;
-    onAddElement?: (type: string) => void;
+    onAddElement?: (menuItem: MenuItem) => void;
     presentationId: string;
     slideId: string;
     layoutId: string;
@@ -68,6 +69,7 @@ interface TiptapProps {
     elementId: string;
     elementConfig?: ElementConfig;
     customRefKey?: string;
+    standardEnterBehavior?: boolean;
 }
 
 // Define the ref type
@@ -90,7 +92,8 @@ const getExtensions = (
     tiptapRefs?: RefObject<{
         editors: Record<string, EditorWithMethods>;
         editorRefs: React.RefObject<HTMLDivElement>[];
-    }>
+    }>,
+    standardEnterBehavior?: boolean
 ) => [
     // Базовый набор расширений
     StarterKit.configure({
@@ -269,7 +272,8 @@ const getExtensions = (
         },
         (isEmpty, textContent) => {
             onBackspacePressed(isEmpty, textContent);
-        }
+        },
+        standardEnterBehavior
     ),
 
     // Arrow key navigation between editors
@@ -319,6 +323,7 @@ const Tiptap = ({
     elementId,
     elementConfig,
     customRefKey,
+    standardEnterBehavior = false,
 }: TiptapProps) => {
     const element = usePresentationStore.getState().getElement(presentationId, slideId, layoutId, elementId);
 
@@ -342,7 +347,8 @@ const Tiptap = ({
             slideId,
             layoutId,
             elementId,
-            tiptapRefs
+            tiptapRefs,
+            standardEnterBehavior,
         ),
         content: initialContent,
         editorProps: {

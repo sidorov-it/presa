@@ -3,14 +3,17 @@ import { Extension, JSONContent } from '@tiptap/core';
 // Создаем расширение для обработки нажатия Enter и Backspace
 export const EnterHandlerExtension = (
     onEnterPressed: (contentBeforeCursor?: JSONContent, contentAfterCursor?: JSONContent) => void,
-    onBackspacePressed: (isEmpty: boolean, content: string) => void
+    onBackspacePressed: (isEmpty: boolean, content: string) => void,
+    standardEnterBehavior: boolean = false
 ) => {
     return Extension.create({
         name: 'enterHandler',
         addKeyboardShortcuts() {
             return {
                 Enter: ({ editor }) => {
-                    console.log('Enter EnterHandlerExtension');
+                    if (standardEnterBehavior) {
+                        return false;
+                    }
                     const { state } = editor;
                     const { selection } = state;
                     const { $head } = selection;

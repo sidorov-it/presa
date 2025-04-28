@@ -117,13 +117,13 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
         [handleToggleCollapse]
     );
 
-    if (slides.length === 0) {
-        return (
-            <div className={styles.noSlides}>
-                <p className={styles.noSlidesText}>Нет слайдов</p>
-            </div>
-        );
-    }
+    // if (slides.length === 0) {
+    //     return (
+    //         <div className={styles.noSlides}>
+    //             <p className={styles.noSlidesText}>Нет слайдов</p>
+    //         </div>
+    //     );
+    // }
 
     // Collapsed view - just show the expand button
     if (isCollapsed) {
@@ -231,18 +231,25 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
             </div>
 
             <div ref={panelRef} className={styles.leftPanelContent}>
-                <div className={styles.leftPanelContentSlides}>
-                    {slides.map((slide, index) => (
-                        <SlideItem
-                            key={slide.id}
-                            slide={slide}
-                            index={index}
-                            isActive={slide.id === activeSlideId}
-                            isLastSlide={index === slides.length - 1}
-                            onSlideSelect={onSlideSelect}
-                        />
-                    ))}
-                </div>
+                {slides.length === 0 && (
+                    <div className={styles.emptyContainer}>
+                        <p className={styles.noSlidesText}>Нет слайдов</p>
+                    </div>
+                )}
+                {slides.length > 0 && (
+                    <div className={styles.leftPanelContentSlides}>
+                        {slides.map((slide, index) => (
+                            <SlideItem
+                                key={slide.id}
+                                slide={slide}
+                                index={index}
+                                isActive={slide.id === activeSlideId}
+                                isLastSlide={index === slides.length - 1}
+                                onSlideSelect={onSlideSelect}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );

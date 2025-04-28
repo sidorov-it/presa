@@ -661,8 +661,7 @@ em {
         }
     }
 
-    /* Общие стили для всех блоков */
-    .box,
+    /* .box,
     .note-box,
     .info-box,
     .warning-box,
@@ -675,7 +674,6 @@ em {
         border-width: 1px;
     }
 
-    /* Стили для каждого типа блока */
     .box {
         border-color: #E5E7EB;
         background-color: #F9FAFB;
@@ -709,7 +707,7 @@ em {
     .question-box {
         border-color: #E9D5FF;
         background-color: #E9D5FF;
-    }
+    } */
 
     /* Интерактивные элементы */
     .interactive-button {

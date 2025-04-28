@@ -1,7 +1,6 @@
 import { EditorWithMethods } from '@/components/tiptap/extensions/ArrowNavigationExtension';
 import { generateId } from '@/utils/id';
 import { IconType } from 'react-icons/lib';
-import { ComponentStructureType } from '@/elements/registry';
 
 export const SLIDE_TEMPLATES = [
     { value: 'standard', label: 'Standard (No Image)' },
@@ -386,6 +385,17 @@ export interface ButtonElement extends BaseElement {
     color: string;
 }
 
+export interface BoxElement extends BaseElement {
+    type: 'box';
+    content: string;
+    iconType?: string;
+    backgroundColor?: string;
+    Icon?: IconType;
+    customBackgroundColor?: string;
+    darkBackgroundColor?: string;
+    darkColor?: string;
+}
+
 // Объединенный тип элемента
 export type Element =
     // | TextElement
@@ -397,7 +407,8 @@ export type Element =
     // | IconElement
     | VideoElement
     | ChartElement
-    | ButtonElement;
+    | ButtonElement
+    | BoxElement;
 
 // Интерфейс макета с поддержкой объединения ячеек
 export interface Layout {
@@ -611,7 +622,7 @@ export interface ElementConfig {
     menuHeight?: number;
     openMenuOnFocus?: boolean;
     componentStructure: ComponentStructureType;
-    hasTextEditor: boolean;
+    hasTextEditor?: boolean;
     hasLimitedTextFormatting?: boolean;
     customMenu?: boolean;
 }
@@ -643,7 +654,14 @@ export type ElementMenuProps = {
     elementId: string;
 };
 
-export { ComponentStructureType };
+export enum ComponentStructureType {
+    // Pure text editor without wrapper
+    TEXT_EDITOR = 'text_editor',
+    // Text editor with wrapper (like box, summary, etc.)
+    WRAPPED_TEXT_EDITOR = 'wrapped_text_editor',
+    // Custom component without text editor
+    CUSTOM_COMPONENT = 'custom_component',
+}
 
 export type MenuElementType = 'element' | 'cell' | 'layout' | 'slide' | 'editor' | 'row' | 'table' | 'column';
 

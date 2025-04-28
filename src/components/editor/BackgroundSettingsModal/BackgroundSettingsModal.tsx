@@ -96,7 +96,6 @@ const BackgroundSettingsModal: React.FC<BackgroundSettingsModalProps> = ({ isOpe
                         initialColor={backgroundColor}
                         mode="card"
                         label="Выбрать цвет фона"
-                        style={{ width: '100%' }}
                     />
                 </div>
                 <div style={{ marginBottom: '1.5rem' }}>

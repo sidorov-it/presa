@@ -22,6 +22,8 @@ import { useMenuStore } from '@/store/menuStore';
 import { useShallow } from 'zustand/react/shallow';
 import Chart from '@/elements/chart/Chart';
 import SmartLayout from '@/elements/smartLayout/SmartLayout';
+import Box from '@/elements/box/Box';
+import { MenuItem } from '@/elements/menuRegistry';
 
 export const ElementContent = ({
     elementId,
@@ -228,14 +230,14 @@ export const ElementContent = ({
 
     // Handler for adding new elements via slash command
     const handleAddElement = useCallback(
-        (elementId: string) => (type: string) => {
-            if (type.startsWith('table-')) {
-                const tableLayout = getNewTableLayout(type);
+        (elementId: string) => (menuItem: MenuItem) => {
+            if (menuItem.elementTypeId.startsWith('table-')) {
+                const tableLayout = getNewTableLayout(menuItem.elementTypeId);
                 if (tableLayout) {
                     usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, tableLayout);
                 }
             } else {
-                const elementData = getNewElement(type);
+                const elementData = getNewElement(menuItem);
 
                 if (elementData) {
                     const newElementWithCell = {
@@ -326,6 +328,25 @@ export const ElementContent = ({
                 slide.layouts.length > 1 &&
                 isEmpty
             ) {
+                const previousLayout = slide.layouts[layoutIndex - 1];
+
+                if (previousLayout.gridStructure.columns === 1) {
+                    const elementInPreviousLayout = previousLayout.elements[previousLayout.elements.length - 1];
+                    const editorInPreviousLayout = tiptapRefs.current?.editors[elementInPreviousLayout.id];
+
+                    if (editorInPreviousLayout) {
+                        usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+
+                        setTimeout(() => {
+                            editorInPreviousLayout.editor.commands.focus('end');
+                        }, 10);
+                    } else {
+                        console.warn(
+                            `Editor instance ${elementInPreviousLayout.id} not found in tiptapRefs. Cannot merge content programmatically.`
+                        );
+                    }
+                }
+
                 usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
             } else if (isMultiCellRow && elementsInCell.length === 1) {
                 const updatedLayout = { ...layout };
@@ -442,6 +463,7 @@ export const ElementContent = ({
 
     const handleBlur = useCallback(() => {
         useEditorStore.getState().setActiveEditor(null);
+        useMenuStore.getState().closeMenu();
     }, []);
 
     const renderElementContent = useCallback(
@@ -497,6 +519,16 @@ export const ElementContent = ({
                         layoutId={layoutId}
                         tiptapRefs={tiptapRefs}
                         isFocused={isFocused}
+                    />
+                );
+            } else if (elementTypeId === 'box' || elementTypeId.endsWith('-box')) {
+                return (
+                    <Box
+                        elementId={elementId}
+                        presentationId={presentationId}
+                        slideId={slideId}
+                        layoutId={layoutId}
+                        tiptapRefs={tiptapRefs}
                     />
                 );
             }

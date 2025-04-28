@@ -38,10 +38,8 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
 
     const layout = usePresentationStore(useShallow(state => state.getLayout(presentationId, slideId, layoutId)))!;
 
-    // Use optimized selector hooks instead of full context
     const openMenu = useMenuStore.getState().openMenu;
 
-    // Get only the needed state from SlideMenu
     const menuLayoutId = useMenuSelectedLayout();
     const menuElementId = useMenuSelectedElement();
     const menuCellId = useMenuSelectedCell();

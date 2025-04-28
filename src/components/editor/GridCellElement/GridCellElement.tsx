@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { RefObject, useCallback, useRef, useState, memo, useEffect } from 'react';
-import { GridCell, Element, TipTapRefs, ElementConfig } from '@/types';
+import { GridCell, TipTapRefs, ElementConfig, ComponentStructureType } from '@/types';
 import { useHandleDragStart } from '@/contexts/DragDropContext';
 import styles from './GridCellElement.module.css';
 import { usePresentationStore } from '@/store/presentationStore';
@@ -10,7 +10,6 @@ import { MenuElementType } from '@/types';
 import { Editor } from '@tiptap/react';
 import DragHandler from '../DragHandler';
 import ElementContent from '../ElementContent/ElementContent';
-import { ComponentStructureType } from '@/elements/registry';
 import { useMenuStore } from '@/store/menuStore';
 import { useShallow } from 'zustand/react/shallow';
 import adjustWidths from '@/utils/adjustWidths';

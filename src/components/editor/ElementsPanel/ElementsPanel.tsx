@@ -2,11 +2,12 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useCallback, useState } from 'react';
-import { elementsRegistry, getNewElement } from '@/elements/registry';
+import { getNewElement } from '@/elements/registry';
 import styles from './ElementsPanel.module.css';
 import { useDnd } from '@/contexts/DragDropContext';
 import { usePresentationStore } from '@/store/presentationStore';
 import { BaseElement } from '@/types';
+import { menuRegistry } from '@/elements/menuRegistry';
 
 interface ElementsPanelProps {
     presentationId: string;
@@ -35,7 +36,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
     const getPopupContent = () => {
         if (!category) return null;
 
-        const categoryData = elementsRegistry.find(cat => cat.id === category);
+        const categoryData = menuRegistry.find(cat => cat.id === category);
         if (!categoryData) return null;
 
         const handleButtonClick = (category: string) => {
@@ -105,7 +106,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
             <div className={styles.popupMenuContent}>
                 <div className={styles.popupMenuHeader}>
                     <h3 className={styles.popupMenuHeaderTitle}>
-                        {elementsRegistry.find(cat => cat.id === category)?.label}
+                        {menuRegistry.find(cat => cat.id === category)?.label}
                     </h3>
                     <button
                         onClick={onClose}
@@ -153,7 +154,7 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ presentationId, slideId }
         <div className={styles.elementsPanel}>
             <div className={styles.elementsPanelContent}>
                 <div className={styles.elementsPanelCategories}>
-                    {elementsRegistry.map(category => (
+                    {menuRegistry.map(category => (
                         <div key={category.id} className={`${styles.elementsPanelCategory} group`}>
                             <button
                                 // className={`p-2 rounded-md flex items-center justify-center hover:bg-gray-100 transition-colors duration-200 ${activeCategory === category.id ? 'bg-blue-100 text-blue-600' : 'text-gray-600'}`}

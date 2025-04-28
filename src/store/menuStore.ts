@@ -1,8 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { usePresentationStore } from './presentationStore';
-import { BaseElement, GridCell, IPresentation, Layout, LayoutType, Slide } from '@/types';
-import { ComponentStructureType } from '@/elements/registry';
+import { BaseElement, ComponentStructureType, GridCell, IPresentation, Layout, LayoutType, Slide } from '@/types';
 import { MutableRefObject } from 'react';
 import { TipTapRefs } from '@/types';
 

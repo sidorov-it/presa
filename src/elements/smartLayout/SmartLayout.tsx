@@ -27,24 +27,7 @@ const SmartLayout: React.FC<SmartLayoutProps> = ({
         return (element as SmartLayoutElement).layoutType;
     });
 
-    // const element = usePresentationStore(store =>
-    //     store.getElement(presentationId, slideId, layoutId, elementId)
-    // ) as SmartLayoutElement;
-
-    // const { layoutType = 'images-with-text', items = [] } = element;
-
-    const handleAddItem = () => {
-        // const newItem: SmartLayoutItem = {
-        //     id: Math.random().toString(36).substr(2, 9),
-        //     content: 'New item',
-        // };
-        // setProps({ ...props, items: [...items, newItem] });
-    };
-
-    const handleUpdateItem = (id: string, content: string) => {
-        // const updatedItems = items.map((item: SmartLayoutItem) => (item.id === id ? { ...item, content } : item));
-        // setProps({ ...props, items: updatedItems });
-    };
+    const handleUpdateItem = (id: string, content: string) => {};
 
     const renderBulletsList = () => (
         <ul className="list-none space-y-2">

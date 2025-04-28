@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { BiPalette } from 'react-icons/bi';
 import styles from './ColorPicker.module.css';
+import { Button } from '../ui/Button';
 
 // Пресеты цветов, можно настроить под ваши нужды
 const COLOR_PRESETS = [
@@ -124,14 +125,11 @@ export const ColorPicker = ({
         return (
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`${className || ''} ${styles.cardColorButton} flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md bg-white text-sm`}
+                className={`${className || ''} ${styles.cardColorButton}`}
                 aria-label={label || 'Выбрать цвет'}
                 aria-expanded={isOpen}
             >
-                <div
-                    className={`${styles.cardColorIndicator} w-4 h-4 rounded-sm`}
-                    style={{ backgroundColor: currentColor }}
-                ></div>
+                <div className={`${styles.cardColorIndicator}`} style={{ backgroundColor: currentColor }}></div>
                 <span>{currentColor}</span>
                 <svg
                     style={{ width: '1rem', height: '1rem' }}
@@ -181,7 +179,7 @@ export const ColorPicker = ({
                                 type="text"
                                 value={hexInput}
                                 onChange={handleHexInputChange}
-                                className={`${styles.hexInput} border rounded px-2 py-1 ml-2 w-24 focus:outline-none ${isHexValid ? 'border-gray-300' : 'border-red-500'}`}
+                                className={`${styles.hexInput} ${isHexValid ? '' : styles.invalidHexInput}`}
                                 aria-label="Ввести hex-значение цвета"
                                 tabIndex={0}
                                 onKeyDown={e => {
@@ -190,13 +188,14 @@ export const ColorPicker = ({
                                 maxLength={7}
                                 placeholder="#000000"
                             />
-                            <button
-                                onClick={handleCustomColorSelect}
+                            <Button
                                 className={styles.applyColorButton}
                                 aria-label="Применить выбранный цвет"
+                                variant="secondary"
+                                onClick={handleCustomColorSelect}
                             >
                                 Применить
-                            </button>
+                            </Button>
                         </div>
                         {!isHexValid && (
                             <div

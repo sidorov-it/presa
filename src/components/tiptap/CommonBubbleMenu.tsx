@@ -2,13 +2,11 @@ import { BubbleMenu, Editor } from '@tiptap/react';
 import { ColorPicker } from './ColorPicker';
 import { LinkEditor } from './LinkEditor';
 import styles from './BubbleMenu.module.css';
-import Portal from '@/components/Portal';
 import {
     BiBold,
     BiItalic,
     BiUnderline,
     BiStrikethrough,
-    BiCode,
     BiListOl,
     BiListUl,
     BiCheckSquare,

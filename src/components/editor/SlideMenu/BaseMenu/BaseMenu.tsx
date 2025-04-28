@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import styles from './BaseMenu.module.css';
 export interface BaseMenuProps {
     children: React.ReactNode;
-    position: { x: number; y: number; rect?: DOMRect };
+    position?: { x: number; y: number; rect?: DOMRect };
     className?: string;
     style?: CSSProperties;
     onClose?: () => void;

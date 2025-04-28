@@ -1,7 +1,7 @@
 import { Extension } from '@tiptap/core';
 import Suggestion, { SuggestionProps } from '@tiptap/suggestion';
 import tippy, { Instance as TippyInstance } from 'tippy.js';
-import { elementsRegistry } from '@/elements/registry';
+import { MenuItem, menuRegistry } from '@/elements/menuRegistry';
 import { PluginKey } from '@tiptap/pm/state';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/themes/light-border.css';
@@ -26,7 +26,7 @@ const iconMap: Record<string, string> = {
         '<svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M396.8 352h22.4c6.4 0 12.8-6.4 12.8-12.8V108.8c0-6.4-6.4-12.8-12.8-12.8h-22.4c-6.4 0-12.8 6.4-12.8 12.8v230.4c0 6.4 6.4 12.8 12.8 12.8zm-192 0h22.4c6.4 0 12.8-6.4 12.8-12.8V140.8c0-6.4-6.4-12.8-12.8-12.8h-22.4c-6.4 0-12.8 6.4-12.8 12.8v198.4c0 6.4 6.4 12.8 12.8 12.8zm96 0h22.4c6.4 0 12.8-6.4 12.8-12.8V204.8c0-6.4-6.4-12.8-12.8-12.8h-22.4c-6.4 0-12.8 6.4-12.8 12.8v134.4c0 6.4 6.4 12.8 12.8 12.8zM496 400H48V80c0-8.84-7.16-16-16-16H16C7.16 64 0 71.16 0 80v336c0 17.67 14.33 32 32 32h464c8.84 0 16-7.16 16-16v-16c0-8.84-7.16-16-16-16zm-387.2-48h22.4c6.4 0 12.8-6.4 12.8-12.8v-70.4c0-6.4-6.4-12.8-12.8-12.8h-22.4c-6.4 0-12.8 6.4-12.8 12.8v70.4c0 6.4 6.4 12.8 12.8 12.8z"></path></svg>',
     FaToggleOn:
         '<svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 576 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M384 64H192C86 64 0 150 0 256s86 192 192 192h192c106 0 192-86 192-192S490 64 384 64zm0 320c-70.8 0-128-57.3-128-128 0-70.8 57.3-128 128-128 70.8 0 128 57.3 128 128 0 70.8-57.3 128-128 128z"></path></svg>',
-    FaLink: '<svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"></path></svg>',
+    FaLink: '<svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.37.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"></path></svg>',
     FaUpload:
         '<svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"></path></svg>',
     FaQrcode:
@@ -34,7 +34,7 @@ const iconMap: Record<string, string> = {
 };
 
 interface SlashCommandProps {
-    onAddElement: (type: string) => void;
+    onAddElement: (menuItem: MenuItem) => void;
 }
 
 // Helper function to get icon SVG based on name
@@ -50,22 +50,15 @@ const getIconSvg = (iconName: string): string => {
     );
 };
 
-// Type for element items
-interface ElementItem {
-    id: string;
-    label: string;
-    icon?: string;
-}
-
 class CommandsList {
     private element: HTMLElement;
     private props: SuggestionProps;
-    private items: ElementItem[];
+    private items: MenuItem[];
     private selectedIndex: number;
     private tippyInstance: TippyInstance | null;
-    private onAddElement: (type: string) => void;
+    private onAddElement: (menuItem: MenuItem) => void;
 
-    constructor(props: SuggestionProps, onAddElement: (type: string) => void) {
+    constructor(props: SuggestionProps, onAddElement: (menuItem: MenuItem) => void) {
         this.props = props;
         this.items = [];
         this.selectedIndex = 0;
@@ -78,19 +71,18 @@ class CommandsList {
 
     init() {
         // Get all elements from registry
-        this.items = elementsRegistry
+        this.items = menuRegistry
             .flatMap(category =>
                 category.subCategories
                     ? category.subCategories.flatMap(sub => sub.elements || [])
                     : category.elements || []
             )
-            .filter(element => element !== undefined)
-            .map(element => ({
-                id: element.elementTypeId,
-                label: element.label,
-                icon: element.Icon ? element.Icon.name : undefined,
-                template: element.defaultProps?.type,
-            }));
+            .filter(element => element !== undefined);
+        // .map(element => ({
+        //     id: element.elementTypeId,
+        //     label: element.label,
+        //     icon: element.Icon ? element.Icon.name : undefined,
+        // }));
 
         // Filter based on the query
         this.filterItems();
@@ -110,7 +102,7 @@ class CommandsList {
         }
 
         this.items = this.items.filter(
-            item => item.id.toLowerCase().includes(query) || item.label.toLowerCase().includes(query)
+            item => item.elementTypeId.toLowerCase().includes(query) || item.label.toLowerCase().includes(query)
         );
     }
 
@@ -128,12 +120,12 @@ class CommandsList {
         this.items.forEach((item, index) => {
             const itemElement = document.createElement('div');
             itemElement.className = `slash-menu-item ${index === this.selectedIndex ? 'selected' : ''}`;
-            itemElement.dataset.id = item.id;
+            itemElement.dataset.id = item.elementTypeId;
 
             // Create an icon with SVG content
             const iconElement = document.createElement('div');
             iconElement.className = 'slash-menu-item-icon';
-            iconElement.innerHTML = getIconSvg(item.icon || '');
+            iconElement.innerHTML = getIconSvg(item.Icon || '');
 
             const labelElement = document.createElement('div');
             labelElement.className = 'slash-menu-item-label';
@@ -221,8 +213,8 @@ class CommandsList {
     onSelect() {
         const item = this.items[this.selectedIndex];
         if (item) {
-            this.onAddElement(item.id);
-            this.props.command({ id: item.id });
+            this.onAddElement(item);
+            this.props.command({ id: item.elementTypeId });
             this.destroy();
         }
     }
@@ -264,7 +256,7 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
                 startOfLine: true,
                 items: ({ query }) => {
                     // Return filtered items based on query
-                    return elementsRegistry
+                    return menuRegistry
                         .flatMap(category =>
                             category.subCategories
                                 ? category.subCategories.flatMap(sub => sub.elements || [])
@@ -346,15 +338,7 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
                         },
                     };
                 },
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 command: ({ editor, range, props }) => {
-                    // Delete the slash command input
-                    // editor
-                    //     .chain()
-                    //     .focus()
-                    //     .deleteRange(range)
-                    //     .run();
-
                     return false;
                 },
             }),
