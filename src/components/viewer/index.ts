@@ -7,4 +7,4 @@ export { default as ViewerTemplateImage } from './ViewerTemplateImage';
 export { default as ThemedPresentationViewer } from './ThemedPresentationViewer';
 export { default as ThemedFullscreenViewer } from './ThemedFullscreenViewer';
 export { default as ThemeStylesApplier } from './theme/ThemeStylesApplier';
-export { default as ViewerProvider } from './ViewerProvider'; 
+export { default as ViewerProvider } from './ViewerProvider';

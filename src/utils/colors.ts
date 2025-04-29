@@ -68,13 +68,15 @@ export const getBlockColors = (
         options?.blockBgColor || (isSlideDark ? blockDefaults.darkBlockBgColor : blockDefaults.blockBgColor);
     let blockColor = tinycolor(blockBgColor);
 
-    // 3. Ensure block background color contrasts with slide background
-    let contrast = tinycolor.readability(slideColor, blockColor);
-    let attempts = 0;
-    while (contrast < 3 && attempts < 5) {
-        blockColor = isSlideDark ? blockColor.lighten(10) : blockColor.darken(10);
-        contrast = tinycolor.readability(slideColor, blockColor);
-        attempts++;
+    if (!options?.blockBgColor) {
+        // 3. Ensure block background color contrasts with slide background
+        let contrast = tinycolor.readability(slideColor, blockColor);
+        let attempts = 0;
+        while (contrast < 3 && attempts < 5) {
+            blockColor = isSlideDark ? blockColor.lighten(10) : blockColor.darken(10);
+            contrast = tinycolor.readability(slideColor, blockColor);
+            attempts++;
+        }
     }
     blockBgColor = blockColor.toRgbString();
 

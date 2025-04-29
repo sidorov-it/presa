@@ -284,7 +284,7 @@ export default function PresentationEditorPage() {
                         onClose={handleCloseBgModal}
                         presentationId={presentation.id}
                     />
-                    
+
                     <ThemeDebugButton />
                 </main>
 

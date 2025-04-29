@@ -439,9 +439,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     </div>
                 </div>
 
-                <div
-                    className={`${styles.slideDivider} ${isSelected || isHovered ? styles.slideDividerHovered : ''}`}
-                >
+                <div className={`${styles.slideDivider} ${isSelected || isHovered ? styles.slideDividerHovered : ''}`}>
                     <div className={styles.buttons}>
                         <button
                             className={styles.slideDividerButton}

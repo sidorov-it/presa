@@ -59,8 +59,8 @@ export default function BoxComponent({
     const slideBgColor = currentTheme?.colors.slideBackground;
 
     const { blockBgColor, iconColor, textColor } = useMemo(
-        () => getBlockColors(slideBgColor!, iconType!),
-        [slideBgColor, iconType]
+        () => getBlockColors(slideBgColor!, iconType!, { blockBgColor: customBackgroundColor }),
+        [slideBgColor, customBackgroundColor, iconType]
     );
 
     const elementConfig = getElementConfig(elementTypeId);

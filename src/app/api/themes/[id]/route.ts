@@ -6,7 +6,8 @@ interface Params {
     id: string;
 }
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     try {
         const themeData = await prisma.theme.findUnique({
             where: { id: params.id },

@@ -13,7 +13,7 @@ interface PdfExportButtonProps {
 const PdfExportButton: React.FC<PdfExportButtonProps> = ({
     presentation,
     filename = 'presentation.pdf',
-    buttonText = 'Export to PDF'
+    buttonText = 'Export to PDF',
 }) => {
     const [isExporting, setIsExporting] = useState(false);
 
@@ -46,4 +46,4 @@ const PdfExportButton: React.FC<PdfExportButtonProps> = ({
     );
 };
 
-export default PdfExportButton; 
+export default PdfExportButton;

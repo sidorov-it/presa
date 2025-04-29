@@ -298,7 +298,7 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
                                 maxWidth: 300,
                                 animation: 'shift-away',
                                 popperOptions: {
-                                    strategy: 'absolute',
+                                    strategy: 'fixed',
                                     modifiers: [
                                         {
                                             name: 'preventOverflow',

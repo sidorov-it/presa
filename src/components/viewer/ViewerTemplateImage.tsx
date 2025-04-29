@@ -6,11 +6,7 @@ interface ViewerTemplateImageProps {
     imageStyle: React.CSSProperties;
 }
 
-const ViewerTemplateImage: React.FC<ViewerTemplateImageProps> = ({
-    templateType,
-    imageUrl,
-    imageStyle,
-}) => {
+const ViewerTemplateImage: React.FC<ViewerTemplateImageProps> = ({ templateType, imageUrl, imageStyle }) => {
     if (!templateType || templateType === 'imageBackground' || !imageStyle) {
         return null;
     }
@@ -26,4 +22,4 @@ const ViewerTemplateImage: React.FC<ViewerTemplateImageProps> = ({
     );
 };
 
-export default ViewerTemplateImage; 
+export default ViewerTemplateImage;

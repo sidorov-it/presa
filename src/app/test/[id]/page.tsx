@@ -97,7 +97,7 @@ export default function PresentationEditorPage() {
         <ThemeProvider initialTheme={currentTheme}>
             <ThemeStylesApplier theme={currentTheme} />
 
-           <PresentationViewer presentation={presentation} />
+            <PresentationViewer presentation={presentation} />
         </ThemeProvider>
     );
 }

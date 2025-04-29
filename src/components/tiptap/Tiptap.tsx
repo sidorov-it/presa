@@ -348,7 +348,7 @@ const Tiptap = ({
             layoutId,
             elementId,
             tiptapRefs,
-            standardEnterBehavior,
+            standardEnterBehavior
         ),
         content: initialContent,
         editorProps: {

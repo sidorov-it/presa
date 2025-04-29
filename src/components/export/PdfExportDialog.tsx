@@ -12,7 +12,7 @@ import {
     NumberInput,
     Select,
     Field,
-    createListCollection
+    createListCollection,
 } from '@chakra-ui/react';
 import { FaFilePdf } from 'react-icons/fa';
 import { IPresentation } from '@/types';
@@ -23,56 +23,49 @@ interface PdfExportDialogProps {
     buttonText?: string;
 }
 
-const PdfExportDialog: React.FC<PdfExportDialogProps> = ({
-    presentation,
-    buttonText = 'Export to PDF'
-}) => {
+const PdfExportDialog: React.FC<PdfExportDialogProps> = ({ presentation, buttonText = 'Export to PDF' }) => {
     const { open, onOpen, onClose } = useDisclosure();
     const [isExporting, setIsExporting] = useState(false);
-    
+
     // Export options
     const [filename, setFilename] = useState(`${presentation.title || 'presentation'}.pdf`);
     const [paperSize, setPaperSize] = useState<PdfExportOptions['paperSize']>('a4');
     const [orientation, setOrientation] = useState<PdfExportOptions['orientation']>('landscape');
     const [includeSlideNumbers, setIncludeSlideNumbers] = useState(true);
     const [scale, setScale] = useState(2);
-    
+
     // Create collections for select components
     const paperSizeOptions = createListCollection({
         items: [
-            { label: "A4", value: "a4" },
-            { label: "Letter", value: "letter" },
-            { label: "Legal", value: "legal" }
+            { label: 'A4', value: 'a4' },
+            { label: 'Letter', value: 'letter' },
+            { label: 'Legal', value: 'legal' },
         ],
     });
-    
+
     const orientationOptions = createListCollection({
         items: [
-            { label: "Landscape", value: "landscape" },
-            { label: "Portrait", value: "portrait" }
+            { label: 'Landscape', value: 'landscape' },
+            { label: 'Portrait', value: 'portrait' },
         ],
     });
-    
+
     const handleExport = async () => {
         if (isExporting) return;
-        
+
         try {
             setIsExporting(true);
-            
-            await exportPresentationToPdf(
-                presentation, 
-                filename,
-                {
-                    paperSize,
-                    orientation,
-                    includeSlideNumbers,
-                    scale
-                }
-            );
-            
+
+            await exportPresentationToPdf(presentation, filename, {
+                paperSize,
+                orientation,
+                includeSlideNumbers,
+                scale,
+            });
+
             // Show success toast (implementation will need to be adjusted based on your app's toast system)
             console.log('Export successful', `"${filename}" has been downloaded.`);
-            
+
             onClose();
         } catch (error) {
             console.error('Error exporting presentation to PDF:', error);
@@ -82,21 +75,16 @@ const PdfExportDialog: React.FC<PdfExportDialogProps> = ({
             setIsExporting(false);
         }
     };
-    
+
     return (
         <Dialog.Root open={open}>
             <Dialog.Trigger asChild>
-                <Button 
-                    onClick={onOpen}
-                    colorScheme="blue"
-                    variant="solid"
-                    size="md"
-                >
+                <Button onClick={onOpen} colorScheme="blue" variant="solid" size="md">
                     <FaFilePdf style={{ marginRight: '8px' }} />
                     {buttonText}
                 </Button>
             </Dialog.Trigger>
-            
+
             <Portal>
                 <Dialog.Backdrop />
                 <Dialog.Positioner>
@@ -104,25 +92,25 @@ const PdfExportDialog: React.FC<PdfExportDialogProps> = ({
                         <Dialog.Header>
                             <Dialog.Title>Export Presentation to PDF</Dialog.Title>
                         </Dialog.Header>
-                        
+
                         <Dialog.Body>
                             <VStack gap="4" align="flex-start">
                                 <Field.Root>
                                     <Field.Label>Filename</Field.Label>
-                                    <Input 
+                                    <Input
                                         value={filename}
-                                        onChange={(e) => setFilename(e.target.value)}
+                                        onChange={e => setFilename(e.target.value)}
                                         placeholder="Enter filename"
                                     />
                                 </Field.Root>
-                                
+
                                 <HStack width="100%" gap="4">
                                     <Field.Root>
                                         <Field.Label>Paper Size</Field.Label>
-                                        <Select.Root 
+                                        <Select.Root
                                             collection={paperSizeOptions}
                                             defaultValue={[paperSize]}
-                                            onValueChange={(details) => {
+                                            onValueChange={details => {
                                                 if (details.value[0]) {
                                                     setPaperSize(details.value[0] as PdfExportOptions['paperSize']);
                                                 }
@@ -139,7 +127,7 @@ const PdfExportDialog: React.FC<PdfExportDialogProps> = ({
                                             <Portal>
                                                 <Select.Positioner>
                                                     <Select.Content>
-                                                        {paperSizeOptions.items.map((option) => (
+                                                        {paperSizeOptions.items.map(option => (
                                                             <Select.Item key={option.value} item={option}>
                                                                 {option.label}
                                                                 <Select.ItemIndicator />
@@ -150,13 +138,13 @@ const PdfExportDialog: React.FC<PdfExportDialogProps> = ({
                                             </Portal>
                                         </Select.Root>
                                     </Field.Root>
-                                    
+
                                     <Field.Root>
                                         <Field.Label>Orientation</Field.Label>
-                                        <Select.Root 
+                                        <Select.Root
                                             collection={orientationOptions}
                                             defaultValue={[orientation]}
-                                            onValueChange={(details) => {
+                                            onValueChange={details => {
                                                 if (details.value[0]) {
                                                     setOrientation(details.value[0] as PdfExportOptions['orientation']);
                                                 }
@@ -173,7 +161,7 @@ const PdfExportDialog: React.FC<PdfExportDialogProps> = ({
                                             <Portal>
                                                 <Select.Positioner>
                                                     <Select.Content>
-                                                        {orientationOptions.items.map((option) => (
+                                                        {orientationOptions.items.map(option => (
                                                             <Select.Item key={option.value} item={option}>
                                                                 {option.label}
                                                                 <Select.ItemIndicator />
@@ -185,15 +173,15 @@ const PdfExportDialog: React.FC<PdfExportDialogProps> = ({
                                         </Select.Root>
                                     </Field.Root>
                                 </HStack>
-                                
+
                                 <Field.Root>
                                     <Field.Label>Quality (Scale Factor)</Field.Label>
-                                    <NumberInput.Root 
+                                    <NumberInput.Root
                                         defaultValue={scale.toString()}
-                                        min={1} 
+                                        min={1}
                                         max={5}
                                         step={0.5}
-                                        onValueChange={(details) => {
+                                        onValueChange={details => {
                                             if (details.valueAsNumber !== undefined) {
                                                 setScale(details.valueAsNumber);
                                             }
@@ -206,11 +194,11 @@ const PdfExportDialog: React.FC<PdfExportDialogProps> = ({
                                         </NumberInput.Control>
                                     </NumberInput.Root>
                                 </Field.Root>
-                                
+
                                 <Field.Root>
                                     <Checkbox.Root
                                         defaultChecked={includeSlideNumbers}
-                                        onCheckedChange={(details) => {
+                                        onCheckedChange={details => {
                                             if (typeof details.checked === 'boolean') {
                                                 setIncludeSlideNumbers(details.checked);
                                             }
@@ -224,14 +212,14 @@ const PdfExportDialog: React.FC<PdfExportDialogProps> = ({
                                 </Field.Root>
                             </VStack>
                         </Dialog.Body>
-                        
+
                         <Dialog.Footer>
                             <Dialog.CloseTrigger asChild>
                                 <Button variant="ghost" mr={3}>
                                     Cancel
                                 </Button>
                             </Dialog.CloseTrigger>
-                            <Button 
+                            <Button
                                 colorScheme="blue"
                                 onClick={handleExport}
                                 disabled={isExporting}
@@ -240,7 +228,7 @@ const PdfExportDialog: React.FC<PdfExportDialogProps> = ({
                                 Export
                             </Button>
                         </Dialog.Footer>
-                        
+
                         <Dialog.CloseTrigger asChild>
                             <CloseButton position="absolute" top="3" right="3" size="sm" />
                         </Dialog.CloseTrigger>
@@ -251,4 +239,4 @@ const PdfExportDialog: React.FC<PdfExportDialogProps> = ({
     );
 };
 
-export default PdfExportDialog; 
+export default PdfExportDialog;

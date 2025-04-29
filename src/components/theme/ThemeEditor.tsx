@@ -8,7 +8,6 @@ import styles from './ThemeEditor.module.css';
 import { BiSolidColorFill } from 'react-icons/bi';
 import { FaFont } from 'react-icons/fa';
 import { MdOutlineDesignServices } from 'react-icons/md';
-import ButtonsDesign from './components/ButtonsDesign/ButtonsDesign';
 
 interface ThemeEditorProps {
     theme: Theme;

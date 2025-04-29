@@ -7,25 +7,22 @@ interface PresentationViewerProps {
     initialSlideIndex?: number;
 }
 
-const PresentationViewer: React.FC<PresentationViewerProps> = ({ 
-    presentation, 
-    initialSlideIndex = 0 
-}) => {
+const PresentationViewer: React.FC<PresentationViewerProps> = ({ presentation, initialSlideIndex = 0 }) => {
     const [currentSlideIndex, setCurrentSlideIndex] = useState(initialSlideIndex);
-    
+
     // Handle navigation between slides
     const handleNextSlide = () => {
         if (currentSlideIndex < presentation.slides.length - 1) {
             setCurrentSlideIndex(currentSlideIndex + 1);
         }
     };
-    
+
     const handlePreviousSlide = () => {
         if (currentSlideIndex > 0) {
             setCurrentSlideIndex(currentSlideIndex - 1);
         }
     };
-    
+
     // Handle keyboard navigation
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'ArrowRight' || e.key === 'PageDown') {
@@ -34,43 +31,42 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
             handlePreviousSlide();
         }
     };
-    
+
     // Current slide
     const currentSlide = presentation.slides[currentSlideIndex];
-    
+
     if (!currentSlide) {
         return <div>No slides to display</div>;
     }
-    
+
     return (
-        <div 
-            className="presentation-viewer" 
-            tabIndex={0} 
+        <div
+            className="presentation-viewer"
+            tabIndex={0}
             onKeyDown={handleKeyDown}
-            style={{ 
-                width: '100%', 
-                height: '100%', 
+            style={{
+                width: '100%',
+                height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
             }}
         >
             <div style={{ flex: 1, width: '100%', position: 'relative' }}>
-                <SlideViewer 
-                    slide={currentSlide} 
-                    presentationId={presentation.id} 
-                />
+                <SlideViewer slide={currentSlide} presentationId={presentation.id} />
             </div>
-            
+
             {/* Navigation controls */}
-            <div style={{ 
-                display: 'flex', 
-                justifyContent: 'center',
-                gap: '1rem',
-                marginTop: '1rem'
-            }}>
-                <button 
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    gap: '1rem',
+                    marginTop: '1rem',
+                }}
+            >
+                <button
                     onClick={handlePreviousSlide}
                     disabled={currentSlideIndex === 0}
                     aria-label="Previous slide"
@@ -81,17 +77,17 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
                         background: '#f0f0f0',
                         border: '1px solid #ccc',
                         cursor: 'pointer',
-                        opacity: currentSlideIndex === 0 ? 0.5 : 1
+                        opacity: currentSlideIndex === 0 ? 0.5 : 1,
                     }}
                 >
                     Previous
                 </button>
-                
+
                 <div style={{ margin: '0 1rem' }}>
                     {currentSlideIndex + 1} / {presentation.slides.length}
                 </div>
-                
-                <button 
+
+                <button
                     onClick={handleNextSlide}
                     disabled={currentSlideIndex === presentation.slides.length - 1}
                     aria-label="Next slide"
@@ -102,7 +98,7 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
                         background: '#f0f0f0',
                         border: '1px solid #ccc',
                         cursor: 'pointer',
-                        opacity: currentSlideIndex === presentation.slides.length - 1 ? 0.5 : 1
+                        opacity: currentSlideIndex === presentation.slides.length - 1 ? 0.5 : 1,
                     }}
                 >
                     Next

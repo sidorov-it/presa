@@ -7,7 +7,8 @@ import { getNewEditorElement } from '@/elements/registry';
 import { parsePresentation, stringifyJsonField } from '@/utils/json';
 
 // Get a specific presentation
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     try {
         const presentationData = await prisma.presentation.findUnique({
             where: { id: params.id },

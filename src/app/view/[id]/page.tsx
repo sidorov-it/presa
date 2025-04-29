@@ -17,7 +17,7 @@ export const generateMetadata = async (props: { params: Promise<{ id: string }> 
         if (!presentation.ok) {
             throw new Error('Failed to load presentation');
         }
-        
+
         const data = await presentation.json();
         const title = data.presentation?.title || 'Presentation Viewer';
         const description = 'View the presentation in read-only mode';
@@ -38,7 +38,7 @@ export const generateMetadata = async (props: { params: Promise<{ id: string }> 
 export default function PresentationView() {
     const params = useParams();
     const { id } = params;
-    
+
     const [presentation, setPresentation] = useState<IPresentation | null>(null);
     const [theme, setTheme] = useState<Theme | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -52,10 +52,10 @@ export default function PresentationView() {
                 if (!response.ok) {
                     throw new Error('Failed to load presentation');
                 }
-                
+
                 const data = await response.json();
                 setPresentation(data.presentation);
-                
+
                 // Fetch theme if available
                 if (data.presentation.themeId) {
                     try {
@@ -68,7 +68,7 @@ export default function PresentationView() {
                         console.error('Error fetching theme:', themeError);
                     }
                 }
-                
+
                 setIsLoading(false);
             } catch (error) {
                 console.error('Error:', error);
@@ -106,15 +106,12 @@ export default function PresentationView() {
             <div className={styles.container}>
                 <div className={styles.header}>
                     <h1 className={styles.title}>{presentation.title}</h1>
-                    
+
                     <div className={styles.actions}>
-                        <PdfExportDialog
-                            presentation={presentation}
-                            buttonText="Export to PDF"
-                        />
+                        <PdfExportDialog presentation={presentation} buttonText="Export to PDF" />
                     </div>
                 </div>
-                
+
                 <div className={styles.content}>
                     <div className={styles.slideList}>
                         {presentation.slides.map((slide: Slide, index: number) => (

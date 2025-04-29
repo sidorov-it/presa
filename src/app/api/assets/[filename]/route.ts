@@ -12,7 +12,8 @@ const MIME_TYPES: Record<string, string> = {
     gif: 'image/gif',
 };
 
-export const GET = async (req: NextRequest, { params }: { params: { filename: string } }) => {
+export const GET = async (req: NextRequest, props: { params: Promise<{ filename: string }> }) => {
+    const params = await props.params;
     const { filename } = params;
     const ext = filename.split('.').pop()?.toLowerCase();
     if (!ext || !ALLOWED_EXTENSIONS.includes(ext)) {

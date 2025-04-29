@@ -157,7 +157,6 @@ export const ImagePlaceholder = ({ onUpdateLink }: ImagePlaceholderProps) => {
         console.log('onGenerate');
     };
 
-
     const handleKeyDown =
         (callback: () => void) => (event: React.KeyboardEvent<HTMLButtonElement | HTMLLabelElement>) => {
             if (event.key === 'Enter' || event.key === ' ') {

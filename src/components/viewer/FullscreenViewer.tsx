@@ -8,11 +8,7 @@ interface FullscreenViewerProps {
     onClose?: () => void;
 }
 
-const FullscreenViewer: React.FC<FullscreenViewerProps> = ({
-    presentation,
-    initialSlideIndex = 0,
-    onClose,
-}) => {
+const FullscreenViewer: React.FC<FullscreenViewerProps> = ({ presentation, initialSlideIndex = 0, onClose }) => {
     const [currentSlideIndex, setCurrentSlideIndex] = useState(initialSlideIndex);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [controlsVisible, setControlsVisible] = useState(true);
@@ -48,20 +44,20 @@ const FullscreenViewer: React.FC<FullscreenViewerProps> = ({
     useEffect(() => {
         const handleMouseMove = () => {
             setControlsVisible(true);
-            
+
             if (mouseMoveTimeout) {
                 clearTimeout(mouseMoveTimeout);
             }
-            
+
             const timeout = setTimeout(() => {
                 setControlsVisible(false);
             }, 3000);
-            
+
             setMouseMoveTimeout(timeout);
         };
-        
+
         document.addEventListener('mousemove', handleMouseMove);
-        
+
         return () => {
             document.removeEventListener('mousemove', handleMouseMove);
             if (mouseMoveTimeout) {
@@ -230,4 +226,4 @@ const FullscreenViewer: React.FC<FullscreenViewerProps> = ({
     );
 };
 
-export default FullscreenViewer; 
+export default FullscreenViewer;
