@@ -8,9 +8,13 @@ import {
     FaRegChartBar,
     FaQuoteLeft,
     FaToggleOn,
+    FaLayerGroup,
 } from 'react-icons/fa';
 
 import editorsDefaultContent from './textEditor/defaultContent';
+import { ComponentStructureType } from '@/types';
+import SmartLayoutSettings from './smartLayout/components/SmartLayoutSettings/SmartLayoutSettings';
+import { generateId } from '@/utils/id';
 
 export interface MenuCategory {
     id: string;
@@ -106,7 +110,43 @@ export const BoxCategories = {
     ],
 };
 
+const defaultSmartLayoutItem = {
+    title: '',
+    text: '',
+};
+
+const getDefaultSmartLayoutItems = () => {
+    return Array.from({ length: 3 }, () => ({
+        ...defaultSmartLayoutItem,
+        id: generateId(),
+    }));
+};
 export const menuRegistry: MenuCategory[] = [
+    {
+        id: 'smart-layouts',
+        label: 'Шаблоны',
+        Icon: FaBox,
+        elements: [
+            {
+                elementTypeId: 'smart-layout',
+                label: 'Bullets',
+                Icon: FaLayerGroup,
+                // componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
+                // hasTextEditor: false,
+                // MenuComponent: SmartLayoutSettings,
+                // Component: SmartLayout,
+                defaultProps: {
+                    type: 'images-with-text',
+                    items: getDefaultSmartLayoutItems(),
+                    layoutType: 'images-with-text',
+                    columnSize: 18,
+                    align: 'center',
+                    imageShape: 'square',
+                    imageSize: 5,
+                },
+            },
+        ],
+    },
     {
         id: 'basic',
         label: 'Базовые элементы',

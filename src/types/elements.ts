@@ -16,6 +16,7 @@ export enum ElementType {
     BUTTON = 'button',
     EDITOR = 'editor',
     SHAPE = 'shape',
+    SMART_LAYOUT = 'smart-layout',
 }
 
 /**

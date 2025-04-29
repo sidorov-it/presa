@@ -37,6 +37,7 @@ export enum ElementType {
 
     // Special elements
     EDITOR = 'editor',
+    SMART_LAYOUT = 'smart-layout',
 }
 
 // This defines the content container type (elements can be placed in editors, tables, layouts, etc.)
