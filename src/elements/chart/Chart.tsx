@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 'use client';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChartElement } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import ChartModal from '@/components/editor/ChartModal';
@@ -241,6 +241,12 @@ const Chart: React.FC<ChartProps> = ({
         containerRef.current.style.maxWidth = `${width}px`;
     };
 
+    const handleRemoveChart = useCallback(() => {
+        if (presentationId && slideId && layoutId) {
+            usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+        }
+    }, [presentationId, slideId, layoutId]);
+
     // Handle resize end
     const handleResizeEnd = () => {
         if (!resizing) return;
@@ -307,7 +313,7 @@ const Chart: React.FC<ChartProps> = ({
     };
 
     // Render the appropriate chart based on the chart type
-    const renderChart = () => {
+    const renderChart = useCallback(() => {
         // Get alignment from element or state
         // Calculate legend properties based on legend position
         const getLegendProps = () => {
@@ -538,7 +544,7 @@ const Chart: React.FC<ChartProps> = ({
             default:
                 return <div className={styles.unsupportedChartType}>Unsupported chart type: {element.chartType}</div>;
         }
-    };
+    }, [element.chartType, element.series, legendPosition, showLabels, showValues, data]);
 
     // Calculate optimal position for settings popup
     const calculateSettingsPosition = () => {
@@ -832,6 +838,10 @@ const Chart: React.FC<ChartProps> = ({
                             <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
                         </svg>
                         Редактировать данные
+                    </button>
+
+                    <button className={styles.removeButton} onClick={handleRemoveChart}>
+                        Удалить
                     </button>
                 </div>
             )}

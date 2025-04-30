@@ -35,6 +35,12 @@
     color: #2563eb;
 }
 
+.removeButton {
+    background-color: red;
+    border-color: red;
+    color: white;
+}
+
 /* Resize Dot Styles */
 .dot {
     position: absolute;

@@ -84,7 +84,7 @@ const getExtensions = (
     onEnterPressed: (contentBeforeCursor?: string, contentAfterCursor?: string) => void,
     onBackspacePressed: (isEmpty: boolean, textContent: string) => void,
     placeholder: string,
-    onAddElement?: (type: string) => void,
+    onAddElement?: (menuItem: MenuItem) => void,
     presentationId?: string,
     slideId?: string,
     layoutId?: string,

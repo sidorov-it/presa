@@ -82,7 +82,7 @@
     display: flex;
     overflow: hidden;
     flex-direction: column;
-    height: calc(100vh-20vh);
+    height: calc(100vh - 20vh);
 
     @media (min-width: 1024px) {
         flex-direction: row;

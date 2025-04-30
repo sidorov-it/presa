@@ -1,20 +1,6 @@
-import {
-    FaFont,
-    FaTable,
-    FaList,
-    FaBox,
-    FaImage,
-    FaVideo,
-    FaRegChartBar,
-    FaQuoteLeft,
-    FaToggleOn,
-    FaLayerGroup,
-} from 'react-icons/fa';
+import { FaFont, FaTable, FaList, FaBox, FaImage, FaRegChartBar, FaQuoteLeft, FaLayerGroup } from 'react-icons/fa';
 
 import editorsDefaultContent from './textEditor/defaultContent';
-import { ComponentStructureType } from '@/types';
-import SmartLayoutSettings from './smartLayout/components/SmartLayoutSettings/SmartLayoutSettings';
-import { generateId } from '@/utils/id';
 
 export interface MenuCategory {
     id: string;
@@ -110,17 +96,6 @@ export const BoxCategories = {
     ],
 };
 
-const defaultSmartLayoutItem = {
-    title: '',
-    text: '',
-};
-
-const getDefaultSmartLayoutItems = () => {
-    return Array.from({ length: 3 }, () => ({
-        ...defaultSmartLayoutItem,
-        id: generateId(),
-    }));
-};
 export const menuRegistry: MenuCategory[] = [
     {
         id: 'smart-layouts',
@@ -129,17 +104,65 @@ export const menuRegistry: MenuCategory[] = [
         elements: [
             {
                 elementTypeId: 'smart-layout',
-                label: 'Bullets',
+                label: 'Изображения с текстом',
                 Icon: FaLayerGroup,
-                // componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
-                // hasTextEditor: false,
-                // MenuComponent: SmartLayoutSettings,
-                // Component: SmartLayout,
                 defaultProps: {
                     type: 'images-with-text',
-                    items: getDefaultSmartLayoutItems(),
+                    items: [
+                        {
+                            title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
+                            text: '<p>Описание</p>',
+                            imageUrl: '',
+                            iconUrl: '',
+                        },
+                        {
+                            title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
+                            text: '<p>Описание</p>',
+                            imageUrl: '',
+                            iconUrl: '',
+                        },
+                        {
+                            title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
+                            text: '<p>Описание</p>',
+                            imageUrl: '',
+                            iconUrl: '',
+                        },
+                    ],
                     layoutType: 'images-with-text',
                     columnSize: 18,
+                    align: 'center',
+                    imageShape: 'square',
+                    imageSize: 5,
+                },
+            },
+            {
+                elementTypeId: 'smart-layout',
+                label: 'Текстовые блоки',
+                Icon: FaLayerGroup,
+                defaultProps: {
+                    type: 'text-boxes',
+                    items: [
+                        {
+                            title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
+                            text: '<p>Описание</p>',
+                            imageUrl: '',
+                            iconUrl: '',
+                        },
+                        {
+                            title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
+                            text: '<p>Описание</p>',
+                            imageUrl: '',
+                            iconUrl: '',
+                        },
+                        {
+                            title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
+                            text: '<p>Описание</p>',
+                            imageUrl: '',
+                            iconUrl: '',
+                        },
+                    ],
+                    layoutType: 'text-boxes',
+                    columnSize: 3,
                     align: 'center',
                     imageShape: 'square',
                     imageSize: 5,
@@ -273,30 +296,30 @@ export const menuRegistry: MenuCategory[] = [
                 ],
             },
             BoxCategories,
-            {
-                id: 'interactive',
-                label: 'Интерактивные элементы',
-                elements: [
-                    {
-                        elementTypeId: 'button',
-                        label: 'Кнопка',
-                        Icon: FaBox,
-                        defaultProps: {
-                            textType: 'button',
-                            content: editorsDefaultContent.button,
-                        },
-                    },
-                    {
-                        elementTypeId: 'toggle',
-                        label: 'Переключатель',
-                        Icon: FaToggleOn,
-                        defaultProps: {
-                            textType: 'details',
-                            content: editorsDefaultContent.toggle,
-                        },
-                    },
-                ],
-            },
+            // {
+            //     id: 'interactive',
+            //     label: 'Интерактивные элементы',
+            //     elements: [
+            //         {
+            //             elementTypeId: 'button',
+            //             label: 'Кнопка',
+            //             Icon: FaBox,
+            //             defaultProps: {
+            //                 textType: 'button',
+            //                 content: editorsDefaultContent.button,
+            //             },
+            //         },
+            //         {
+            //             elementTypeId: 'toggle',
+            //             label: 'Переключатель',
+            //             Icon: FaToggleOn,
+            //             defaultProps: {
+            //                 textType: 'details',
+            //                 content: editorsDefaultContent.toggle,
+            //             },
+            //         },
+            //     ],
+            // },
         ],
     },
     {
@@ -315,12 +338,12 @@ export const menuRegistry: MenuCategory[] = [
                     width: undefined,
                 },
             },
-            {
-                elementTypeId: 'video',
-                label: 'Видео',
-                Icon: FaVideo,
-                defaultProps: { content: '' },
-            },
+            // {
+            //     elementTypeId: 'video',
+            //     label: 'Видео',
+            //     Icon: FaVideo,
+            //     defaultProps: { content: '' },
+            // },
         ],
     },
     {
@@ -340,6 +363,12 @@ export const menuRegistry: MenuCategory[] = [
                         { name: 'Q3', value: 359 },
                         { name: 'Q4', value: 500 },
                     ],
+                    series: [
+                        {
+                            key: 'value',
+                            label: 'value',
+                        },
+                    ],
                 },
             },
             {
@@ -353,6 +382,12 @@ export const menuRegistry: MenuCategory[] = [
                         { name: 'Q2', value: 458 },
                         { name: 'Q3', value: 359 },
                         { name: 'Q4', value: 500 },
+                    ],
+                    series: [
+                        {
+                            key: 'value',
+                            label: 'value',
+                        },
                     ],
                 },
             },
@@ -368,6 +403,12 @@ export const menuRegistry: MenuCategory[] = [
                         { name: 'Q3', value: 359 },
                         { name: 'Q4', value: 500 },
                     ],
+                    series: [
+                        {
+                            key: 'value',
+                            label: 'value',
+                        },
+                    ],
                 },
             },
             {
@@ -381,6 +422,12 @@ export const menuRegistry: MenuCategory[] = [
                         { name: 'Q2', value: 458 },
                         { name: 'Q3', value: 359 },
                         { name: 'Q4', value: 500 },
+                    ],
+                    series: [
+                        {
+                            key: 'value',
+                            label: 'value',
+                        },
                     ],
                 },
             },

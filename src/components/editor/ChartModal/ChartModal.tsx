@@ -83,7 +83,15 @@ const ChartModal: React.FC<ChartModalProps> = ({ isOpen, onClose, elementId, pre
                     <div className={styles.chartModalContentLeftPanel}>
                         <h3 className={styles.chartModalContentLeftPanelTitle}>Предпросмотр</h3>
                         <div className={styles.chartModalContentLeftPanelChart}>
-                            {chartElement && <Chart element={chartElement} inSettings={true} />}
+                            {chartElement && (
+                                <Chart
+                                    elementId={elementId}
+                                    presentationId={presentationId}
+                                    slideId={slideId}
+                                    layoutId={layoutId}
+                                    inSettings={true}
+                                />
+                            )}
                         </div>
                     </div>
 
