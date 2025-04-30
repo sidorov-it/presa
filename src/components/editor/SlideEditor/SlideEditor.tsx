@@ -196,27 +196,54 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     const handleSlideClick = useCallback(
         (e: React.MouseEvent) => {
-            if (slideLayoutIds.length === 1 && !menuElementId && !activeEditor) {
-                const layoutId = slideLayoutIds[0];
-                const layout = usePresentationStore.getState().getLayout(presentationId, slideId, layoutId);
-                if (layout?.elements.length === 1 && tiptapRefs.current?.editors[layout.elements[0].id]) {
-                    tiptapRefs.current?.editors[layout.elements[0].id]?.editor.chain().focus().run();
-                    return;
-                }
-            }
+            const slide = usePresentationStore.getState().getSlide(presentationId, slideId)!;
 
-            const rect = editorRef.current?.getBoundingClientRect();
-            if (rect) {
-                const positionY = e.clientY - (rect.top ?? 0);
-                const slideHeight = rect.height ?? 0;
-                const isClickBottom = slideHeight - positionY < 30;
+            const lastLayout = slide?.layouts[slide?.layouts.length - 1];
 
-                if (isClickBottom) {
+            const lastLayoutDomElement = document.querySelector(`[data-layout-id="${lastLayout.id}"]`);
+            const bottomBorderPosition = lastLayoutDomElement!.getBoundingClientRect().bottom;
+            const clickPosition = e.clientY;
+
+            if (clickPosition > bottomBorderPosition) {
+                if (lastLayout?.elements.length === 1) {
+                    const element = lastLayout.elements[0];
+
+                    const textsElementsTypes = ['text', 'heading', 'quote'];
+
+                    if (
+                        textsElementsTypes.includes(element.elementTypeId) &&
+                        tiptapRefs.current?.editors[lastLayout.elements[0].id]
+                    ) {
+                        tiptapRefs.current?.editors[lastLayout.elements[0].id]?.editor.chain().focus().run();
+                        return;
+                    }
+                } else {
                     createDefaultLayout();
                 }
             }
+            // createDefaultLayout();
+
+            // if (slideLayoutIds.length === 1 && !menuElementId && !activeEditor) {
+            //     const layoutId = slideLayoutIds[0];
+            //     const layout = usePresentationStore.getState().getLayout(presentationId, slideId, layoutId);
+            //     if (layout?.elements.length === 1 && tiptapRefs.current?.editors[layout.elements[0].id]) {
+            //         tiptapRefs.current?.editors[layout.elements[0].id]?.editor.chain().focus().run();
+            //         return;
+            //     }
+            // }
+
+            // const rect = editorRef.current?.getBoundingClientRect();
+            // if (rect) {
+            //     const positionY = e.clientY - (rect.top ?? 0);
+            //     const slideHeight = rect.height ?? 0;
+            //     const isClickBottom = slideHeight - positionY < 30;
+
+            //     if (isClickBottom) {
+            //         createDefaultLayout();
+            //     }
+            // }
         },
-        [slideLayoutIds, menuElementId, activeEditor, tiptapRefs, createDefaultLayout, presentationId, slideId]
+        [tiptapRefs, createDefaultLayout, presentationId, slideId]
     );
 
     // Image rendering based on template type
