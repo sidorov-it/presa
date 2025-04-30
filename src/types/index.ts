@@ -339,6 +339,7 @@ export interface ImageElement extends BaseElement {
     alt: string;
     alignment?: 'left' | 'center' | 'right';
     width?: number;
+    uploaded?: boolean;
 }
 
 // Элемент разделителя

@@ -8,6 +8,7 @@ import { ImageSettings } from './image';
 import ChartSettings from './chart/ChartSettings/ChartSettings';
 import SmartLayoutSettings from './smartLayout/components/SmartLayoutSettings/SmartLayoutSettings';
 import { ComponentStructureType } from '@/types';
+import ImageBubbleMenu from '@/components/editor/Menus/BubbleMenus/ImageBubbleMenu/ImageBubbleMenu';
 
 export interface ElementTypeConfig {
     elementTypeId: string;
@@ -94,7 +95,7 @@ export const elementTypes: Record<string, ElementTypeConfig> = {
         elementTypeId: 'image',
         componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
         hasTextEditor: false,
-        MenuComponent: ImageSettings,
+        MenuComponent: ImageBubbleMenu,
     },
     video: {
         elementTypeId: 'video',

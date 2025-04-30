@@ -37,6 +37,12 @@ export interface MenuState {
     tableColumnIndex: number | null;
     tableId: string | null;
 
+    sideMenuState: {
+        isOpen: boolean;
+        sideMenuId: string | null;
+        sideMenuData: any;
+    };
+
     focusedLayoutId: string | null;
 
     setPresentationId: (presentationId: string) => void;
@@ -61,6 +67,9 @@ export interface MenuState {
         tableId?: string | null;
         smartLayoutItemId?: string | null;
     }) => void;
+
+    openSideMenu: (sideMenuId: string, sideMenuData: any) => void;
+    closeSideMenu: () => void;
     closeMenu: () => void;
     checkSlideMenuIsOpen: (slideId: string | null) => boolean;
 
@@ -154,6 +163,12 @@ export const useMenuStore = create<MenuState>()(
             tableId: null,
             smartLayoutItemId: null,
 
+            sideMenuState: {
+                isOpen: false,
+                sideMenuId: null,
+                sideMenuData: null,
+            },
+
             focusedLayoutId: null,
 
             setPresentationId: (presentationId: string) => set({ presentationId }),
@@ -210,6 +225,30 @@ export const useMenuStore = create<MenuState>()(
                     tableColumnIndex: menuData.tableColumnIndex ?? null,
                     tableId: menuData.tableId ?? null,
                     smartLayoutItemId: menuData.smartLayoutItemId ?? null,
+                });
+            },
+
+            openSideMenu: (sideMenuId: string, sideMenuData: any) => {
+                console.log('openSideMenu', {
+                    sideMenuId,
+                    sideMenuData,
+                });
+                set({
+                    sideMenuState: {
+                        isOpen: true,
+                        sideMenuId,
+                        sideMenuData,
+                    },
+                });
+            },
+
+            closeSideMenu: () => {
+                set({
+                    sideMenuState: {
+                        isOpen: false,
+                        sideMenuId: null,
+                        sideMenuData: null,
+                    },
                 });
             },
 

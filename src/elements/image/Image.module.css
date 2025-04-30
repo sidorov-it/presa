@@ -106,3 +106,31 @@
     border-color: #3B82F6; 
     pointer-events: none; 
 }
+
+.left {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.right {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+.imageWrapper {
+    position: relative; 
+    width: 100%;
+}
+
+.image {
+    border-radius: var(--presentation-slide-border-radius); 
+    transition-property: opacity;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms; 
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); 
+}

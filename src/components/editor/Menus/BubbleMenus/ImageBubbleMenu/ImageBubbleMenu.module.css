@@ -1,0 +1,49 @@
+.alignmentGroup {
+    display: flex;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0 4px;
+    background-color: white;
+}
+
+.alignmentGroup .button {
+    border-radius: 0;
+    border-right: 1px solid #e0e0e0;
+    margin: 0;
+}
+
+.alignmentGroup .button:last-child {
+    border-right: none;
+}
+
+.button {
+    border: none;
+    background-color: transparent;
+    border-radius: 4px;
+    padding: 6px 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+    color: #333;
+}
+
+.button:hover {
+    background-color: #f0f2f5;
+}
+
+.active {
+    background-color: #e6f7ff;
+    color: #1890ff;
+}
+
+.deleteButton {
+    composes: button;
+    color: #ff4d4f;
+}
+
+.deleteButton:hover {
+    background-color: #fff1f0;
+} 

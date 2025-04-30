@@ -5,9 +5,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ImageElement } from '@/types';
 import { default as ImageComponent } from 'next/image';
 import { usePresentationStore } from '@/store/presentationStore';
+import { useMenuStore } from '@/store/menuStore';
+import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlaceholder';
 
 import styles from './Image.module.css';
-import { Spinner } from '@chakra-ui/react';
 
 interface ImageProps {
     elementId: string;
@@ -32,7 +33,6 @@ const Image: React.FC<ImageProps> = ({
     const element = usePresentationStore(state =>
         state.getElement(presentationId, slideId, layoutId, elementId)
     ) as ImageElement;
-    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isSelected, setIsSelected] = useState(false);
     const [resizing, setResizing] = useState(false);
@@ -47,24 +47,37 @@ const Image: React.FC<ImageProps> = ({
     const imageRef = useRef<HTMLImageElement>(null);
 
     const updateElement = usePresentationStore(state => state.updateElement);
+    const openMenu = useMenuStore(state => state.openMenu);
 
     const handleImageLoad = () => {
-        setIsLoading(false);
         // Сохраняем соотношение сторон изображения при загрузке
         if (containerRef.current) {
             const rect = containerRef.current.getBoundingClientRect();
             setAspectRatio(rect.width / rect.height);
+            setError(null);
         }
     };
 
     const handleImageError = () => {
-        setIsLoading(false);
         setError('Failed to load image');
     };
+
+    useEffect(() => {
+        if (element.src && isValidUrl(element.src)) {
+            setError(null);
+        }
+    }, [element.src]);
 
     const handleClickImage = (e: React.MouseEvent) => {
         e.stopPropagation();
         setIsSelected(true);
+
+        openMenu({
+            slideId: slideId,
+            elementId: elementId,
+            layoutId: layoutId,
+            elementType: 'element',
+        });
     };
 
     useEffect(() => {
@@ -182,23 +195,26 @@ const Image: React.FC<ImageProps> = ({
     const getAlignmentClass = () => {
         switch (element.alignment) {
             case 'left':
-                return 'mr-auto';
+                return styles.left;
             case 'center':
-                return 'mx-auto';
+                return styles.center;
             case 'right':
-                return 'ml-auto';
+                return styles.right;
             default:
-                return 'mx-auto'; // Default to center alignment
+                return styles.center; // Default to center alignment
         }
     };
 
     const isValidUrl = (url: string) => {
+        // Allow relative URLs starting with / or ./
+        if (url.startsWith('/') || url.startsWith('./')) {
+            return true;
+        }
+
         try {
             new URL(url);
             return true;
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (error) {
-            // console.error('Invalid URL:', error);
+        } catch {
             return false;
         }
     };
@@ -210,7 +226,6 @@ const Image: React.FC<ImageProps> = ({
         !hasMultipleCells &&
         containerRef.current?.parentElement &&
         imageRef.current &&
-        // !isSelected &&
         element.src &&
         isValidUrl(element.src)
     ) {
@@ -279,6 +294,10 @@ const Image: React.FC<ImageProps> = ({
         }
     };
 
+    // const handleUpdateLink = (link: string) => {
+    //     updateElement(presentationId, slideId, layoutId, elementId, { src: link });
+    // };
+
     return (
         <div className={styles.imageContainer}>
             <div
@@ -290,14 +309,14 @@ const Image: React.FC<ImageProps> = ({
                 }}
                 onClick={handleClickImage}
             >
-                {isLoading && <Spinner size="lg" />}
-
                 {error && <div className={styles.error}>{error}</div>}
 
                 {isSelected && <div className={styles.selectedBorder}></div>}
 
-                {element.src && isValidUrl(element.src) && (
-                    <div className={`relative w-full ${styles.image}`}>
+                {/* {!element.src || (!isValidUrl(element.src) && <ImagePlaceholder onUpdateLink={handleUpdateLink} />)} */}
+
+                {element.src && isValidUrl(element.src) && !error && (
+                    <div className={`${styles.imageWrapper}`}>
                         {!hasMultipleCells && leftTextWidth > 0 && (
                             <div
                                 className={`${styles.addTextPlaceholder} ${styles.leftTextPlaceholder}`}
@@ -312,13 +331,13 @@ const Image: React.FC<ImageProps> = ({
 
                         <ImageComponent
                             ref={imageRef}
-                            src={element.src || ''}
+                            src={element.src}
                             alt={element.alt || ''}
                             width={0}
                             height={0}
                             sizes="100vw"
                             style={{ width: '100%', height: 'auto' }}
-                            className={`rounded shadow-sm ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
+                            className={styles.image}
                             onLoad={handleImageLoad}
                             onError={handleImageError}
                         />
@@ -394,12 +413,6 @@ const Image: React.FC<ImageProps> = ({
                                 Кликните для добавления текста
                             </div>
                         )}
-                    </div>
-                )}
-
-                {(!element.src || !isValidUrl(element.src)) && (
-                    <div className={`text-gray-500 text-center p-4 border border-gray-200 rounded`}>
-                        {element.alt || 'Изображение не найдено'}
                     </div>
                 )}
             </div>
