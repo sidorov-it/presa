@@ -294,9 +294,9 @@ const Image: React.FC<ImageProps> = ({
         }
     };
 
-    // const handleUpdateLink = (link: string) => {
-    //     updateElement(presentationId, slideId, layoutId, elementId, { src: link });
-    // };
+    const handleUpdateLink = (link: string) => {
+        updateElement(presentationId, slideId, layoutId, elementId, { src: link });
+    };
 
     return (
         <div className={styles.imageContainer}>
@@ -313,7 +313,7 @@ const Image: React.FC<ImageProps> = ({
 
                 {isSelected && <div className={styles.selectedBorder}></div>}
 
-                {/* {!element.src || (!isValidUrl(element.src) && <ImagePlaceholder onUpdateLink={handleUpdateLink} />)} */}
+                {(!element.src || !isValidUrl(element.src)) && <ImagePlaceholder onUpdateLink={handleUpdateLink} />}
 
                 {element.src && isValidUrl(element.src) && !error && (
                     <div className={`${styles.imageWrapper}`}>
