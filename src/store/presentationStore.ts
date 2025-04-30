@@ -357,7 +357,7 @@ export const usePresentationStore = create<PresentationState>()(
 
             loadPresentationsList: async () => {
                 try {
-                    set({ isLoading: true, error: null });
+                    set({ isLoading: true, error: null, presentations: [] }); // Очищаем store перед загрузкой
 
                     const response = await fetch('/api/presentations');
                     if (!response.ok) {

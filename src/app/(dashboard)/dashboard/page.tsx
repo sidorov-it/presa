@@ -12,7 +12,6 @@ import { pluralize } from '@/utils/helpers';
 import styles from './page.module.css';
 
 export default function DashboardPage() {
-    // const { data: session } = useSession();
     const router = useRouter();
     const { presentations, createPresentation, loadPresentationsList, deletePresentation } = usePresentationStore();
     const { setCurrentTheme } = useThemeStore();
