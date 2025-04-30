@@ -129,7 +129,7 @@ export const menuRegistry: MenuCategory[] = [
                         },
                     ],
                     layoutType: 'images-with-text',
-                    columnSize: 18,
+                    columnSize: 3,
                     align: 'center',
                     imageShape: 'square',
                     imageSize: 5,

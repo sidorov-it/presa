@@ -62,7 +62,7 @@ export const LinkEditor = ({ editor, className }: { editor: Editor; className?: 
     };
 
     // Удаление ссылки
-    const removeLink = () => {
+    const deleteLink = () => {
         editor.chain().focus().unsetLink().run();
         setIsOpen(false);
     };
@@ -109,7 +109,7 @@ export const LinkEditor = ({ editor, className }: { editor: Editor; className?: 
                             </button>
                             {editor.isActive('link') && (
                                 <button
-                                    onClick={removeLink}
+                                    onClick={deleteLink}
                                     className={styles.removeButton}
                                     aria-label="Удалить ссылку"
                                 >

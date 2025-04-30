@@ -100,10 +100,11 @@
 .chartSettingsPopup {
     position: fixed;
     z-index: 50;
-    padding: 1rem;
+    padding: 0.75rem;
     border-radius: 0.5rem;
     background-color: #ffffff;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+    width: 240px;
 }
 
 .unsupportedChartType {
@@ -129,138 +130,185 @@
 }
 
 .icon {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1rem;
+    height: 1rem;
+    color: #6B7280;
+    flex-shrink: 0;
 }
 
 .chartTypeSelector {
     display: flex;
-    justify-content: space-between;
+    gap: 0.25rem;
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid #E5E7EB;
 }
 
 .chartControlButton {
-    padding: 0.5rem;
+    padding: 0.375rem;
     border-radius: 0.375rem;
     cursor: pointer;
+    color: #6B7280;
+    transition: all 0.15s ease;
 
     &:hover {
         background-color: #F3F4F6;
+        color: #374151;
     }
 }
 
 .chartControlButtonActive {
-    background-color: #DBEAFE;
+    background-color: #EFF6FF;
+    color: #2563EB;
 
     &:hover {
-        background-color: #DBEAFE;
+        background-color: #EFF6FF;
+        color: #2563EB;
     }
 }
 
 .settingContainer {
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 .settingItemContainer {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    min-height: 28px;
 }
 
-.settingAlignmentContainer {
+.settingItemLabel {
     display: flex;
-    margin-bottom: 1rem;
-    gap: 1rem;
-    justify-content: space-between;
     align-items: center;
-    width: 100%;
-}
-
-.text {
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    font-weight: 500;
+    gap: 0.5rem;
     color: #374151;
 }
 
-.settingItemToggle {
+.text {
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+}
+
+.showLabelsToggle {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    background-color: #E5E7EB;
     border-radius: 9999px;
-    width: 1rem;
-    height: 1rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.showLabelsToggleActive {
+    background-color: #2563EB;
+}
+
+.showLabelsToggleActive .icon {
+    color: #ffffff;
+}
+
+.settingItemToggle {
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    border-radius: 9999px;
+    width: 16px;
+    height: 16px;
     background-color: #ffffff;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.buttonIcon {
-    width: 1.25rem;
-    height: 1.25rem;
+.showLabelsToggleActive .settingItemToggle {
+    left: 18px;
 }
 
-.chartAlignmentButton {
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    border-width: 1px;
-
-    &:hover {
-        background-color: #F3F4F6;
-    }
+.alignmentButtons {
+    display: flex;
+    gap: 0.25rem;
 }
 
-.chartAlignmentButtonActive {
-    border-color: #3B82F6;
-    background-color: #DBEAFE;
+.alignmentButtons .showLabelsToggle {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+}
 
-    &:hover {
-        background-color: #DBEAFE;
-    }
+.alignmentButtons .icon {
+    width: 14px;
+    height: 14px;
 }
 
 .chartAlignmentSelect {
-    padding: 0.25rem;
-    margin-left: 0.5rem;
-    border-radius: 0.25rem;
-    border-width: 1px;
-    border-color: #D1D5DB;
-    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    border: 1px solid #E5E7EB;
+    font-size: 0.8125rem;
     line-height: 1.25rem;
+    color: #374151;
+    background-color: #ffffff;
+    cursor: pointer;
+    min-width: 100px;
+
+    &:hover {
+        border-color: #D1D5DB;
+    }
+
+    &:focus {
+        outline: none;
+        border-color: #2563EB;
+        ring: 2px solid rgba(37, 99, 235, 0.2);
+    }
 }
 
 .editButton {
     display: flex;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    margin-top: 0.5rem;
+    padding: 0.5rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0.5rem;
     justify-content: center;
     align-items: center;
-    border-radius: 0.25rem;
+    border-radius: 0.375rem;
     width: 100%;
     color: #ffffff;
     background-color: #2563EB;
+    font-size: 0.8125rem;
+    transition: all 0.15s ease;
+    border: none;
 
+    &:hover {
+        background-color: #1D4ED8;
+    }
+}
+
+.removeButton {
+    display: flex;
+    padding: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0.375rem;
+    width: 100%;
+    color: #DC2626;
+    background-color: #FEF2F2;
+    font-size: 0.8125rem;
+    transition: all 0.15s ease;
+    border: none;
+
+    &:hover {
+        background-color: #FEE2E2;
+    }
 }
 
 .editButtonIcon {
-    margin-right: 0.5rem;
-    width: 1rem;
-    height: 1rem;
-}
-
-.showLabelsToggle {
-    display: flex; 
-    padding: 0.25rem; 
-    align-items: center; 
-    border-radius: 9999px; 
-    width: 2.5rem; 
-    height: 1.5rem; 
-    cursor: pointer;
-    justify-content: flex-start; 
-    background-color: #D1D5DB;  
-}
-
-.showLabelsToggleActive {
-    justify-content: flex-end; 
-    background-color: #3B82F6; 
+    margin-right: 0.375rem;
+    width: 0.875rem;
+    height: 0.875rem;
+    color: currentColor;
 }
 
 .mrAuto {

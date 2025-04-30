@@ -102,11 +102,11 @@
 .selectedBorder {
     position: absolute; 
     top: 0;
-    right: 20px;
+    right: 0;
     bottom: 0;
-    left: 20px; 
+    left: 0; 
     z-index: 10; 
-    border-radius: 0.25rem; 
+    border-radius: var(--presentation-slide-border-radius); 
     border-width: 2px; 
     border-color: #3B82F6; 
     pointer-events: none; 

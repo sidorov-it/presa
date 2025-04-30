@@ -44,7 +44,7 @@ export default function ImagesWithText({
             } else if (items.length === 3 && columnSize > 18) {
                 columnSize = 3;
             }
-            return columnSize / 6;
+            return columnSize;
         })
     );
 

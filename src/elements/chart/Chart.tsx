@@ -21,10 +21,14 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 
-import { FaChartBar } from 'react-icons/fa6';
-import { FaChartColumn } from 'react-icons/fa6';
-import { FaChartLine, FaChartPie } from 'react-icons/fa';
+import { FaChartBar, FaChartColumn, FaChartLine, FaChartPie } from 'react-icons/fa6';
 import { PiChartDonutFill } from 'react-icons/pi';
+import { IoText } from 'react-icons/io5';
+import { IoMdColorPalette } from 'react-icons/io';
+import { LuAlignLeft, LuAlignCenter, LuAlignRight } from 'react-icons/lu';
+import { RiNumbersLine } from 'react-icons/ri';
+import { MdOutlineEdit } from 'react-icons/md';
+import { HiOutlineTrash } from 'react-icons/hi';
 
 import { OpenCustomMenuEvent } from '@/customEvents/OpenCustomMenuEvent';
 
@@ -756,7 +760,10 @@ const Chart: React.FC<ChartProps> = ({
                     {/* Show labels toggle */}
                     <div className={styles.settingContainer}>
                         <div className={styles.settingItemContainer}>
-                            <span className={styles.text}>Показывать метки</span>
+                            <div className={styles.settingItemLabel}>
+                                <IoText className={styles.icon} />
+                                <span className={styles.text}>Показывать метки</span>
+                            </div>
                             <div
                                 className={`${styles.showLabelsToggle} ${showLabels ? styles.showLabelsToggleActive : ''}`}
                                 onClick={() => handleToggleSettings('showLabels', !showLabels)}
@@ -769,7 +776,10 @@ const Chart: React.FC<ChartProps> = ({
                     {/* Show values toggle */}
                     <div className={styles.settingContainer}>
                         <div className={styles.settingItemContainer}>
-                            <span className={styles.text}>Показывать значения</span>
+                            <div className={styles.settingItemLabel}>
+                                <RiNumbersLine className={styles.icon} />
+                                <span className={styles.text}>Показывать значения</span>
+                            </div>
                             <div
                                 className={`${styles.showLabelsToggle} ${showValues ? styles.showLabelsToggleActive : ''}`}
                                 onClick={() => handleToggleSettings('showValues', !showValues)}
@@ -780,45 +790,42 @@ const Chart: React.FC<ChartProps> = ({
                     </div>
 
                     {/* Horizontal alignment */}
-                    <div className={styles.settingAlignmentContainer}>
-                        <span className={styles.settingItemContainer}>Выравнивание</span>
-                        <div
-                            style={{
-                                display: 'flex',
-                                marginLeft: '0.25rem',
-                            }}
-                        >
-                            <button
-                                className={`${styles.chartAlignmentButton} ${horizontalAlignment === 'left' ? styles.chartAlignmentButtonActive : ''}`}
-                                onClick={() => handleToggleSettings('horizontalAlignment', 'left')}
-                            >
-                                <svg className={styles.buttonIcon} viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M3,3H21V5H3V3M3,7H15V9H3V7M3,11H21V13H3V11M3,15H15V17H3V15M3,19H21V21H3V19Z" />
-                                </svg>
-                            </button>
-                            <button
-                                className={`${styles.chartAlignmentButton} ${horizontalAlignment === 'center' ? styles.chartAlignmentButtonActive : ''}`}
-                                onClick={() => handleToggleSettings('horizontalAlignment', 'center')}
-                            >
-                                <svg className={styles.buttonIcon} viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M3,3H21V5H3V3M7,7H17V9H7V7M3,11H21V13H3V11M7,15H17V17H7V15M3,19H21V21H3V19Z" />
-                                </svg>
-                            </button>
-                            <button
-                                className={`${styles.chartAlignmentButton} ${horizontalAlignment === 'right' ? styles.chartAlignmentButtonActive : ''}`}
-                                onClick={() => handleToggleSettings('horizontalAlignment', 'right')}
-                            >
-                                <svg className={styles.buttonIcon} viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M3,3H21V5H3V3M9,7H21V9H9V7M3,11H21V13H3V11M9,15H21V17H9V15M3,19H21V21H3V19Z" />
-                                </svg>
-                            </button>
+                    <div className={styles.settingContainer}>
+                        <div className={styles.settingItemContainer}>
+                            <div className={styles.settingItemLabel}>
+                                <IoMdColorPalette className={styles.icon} />
+                                <span className={styles.text}>Выравнивание</span>
+                            </div>
+                            <div className={styles.alignmentButtons}>
+                                <div
+                                    className={`${styles.showLabelsToggle} ${horizontalAlignment === 'left' ? styles.showLabelsToggleActive : ''}`}
+                                    onClick={() => handleToggleSettings('horizontalAlignment', 'left')}
+                                >
+                                    <LuAlignLeft className={styles.icon} />
+                                </div>
+                                <div
+                                    className={`${styles.showLabelsToggle} ${horizontalAlignment === 'center' ? styles.showLabelsToggleActive : ''}`}
+                                    onClick={() => handleToggleSettings('horizontalAlignment', 'center')}
+                                >
+                                    <LuAlignCenter className={styles.icon} />
+                                </div>
+                                <div
+                                    className={`${styles.showLabelsToggle} ${horizontalAlignment === 'right' ? styles.showLabelsToggleActive : ''}`}
+                                    onClick={() => handleToggleSettings('horizontalAlignment', 'right')}
+                                >
+                                    <LuAlignRight className={styles.icon} />
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     {/* Legend position */}
                     <div className={styles.settingContainer}>
                         <div className={styles.settingItemContainer}>
-                            <span className={styles.text}>Положение легенды</span>
+                            <div className={styles.settingItemLabel}>
+                                <IoText className={styles.icon} />
+                                <span className={styles.text}>Положение легенды</span>
+                            </div>
                             <select
                                 className={styles.chartAlignmentSelect}
                                 value={legendPosition}
@@ -834,13 +841,13 @@ const Chart: React.FC<ChartProps> = ({
 
                     {/* Edit data button */}
                     <button className={styles.editButton} onClick={handleOpenDataModal}>
-                        <svg className={styles.editButtonIcon} viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
-                        </svg>
+                        <MdOutlineEdit className={styles.editButtonIcon} />
                         Редактировать данные
                     </button>
 
+                    {/* Remove button */}
                     <button className={styles.removeButton} onClick={handleRemoveChart}>
+                        <HiOutlineTrash className={styles.editButtonIcon} />
                         Удалить
                     </button>
                 </div>

@@ -311,8 +311,6 @@ const Image: React.FC<ImageProps> = ({
             >
                 {error && <div className={styles.error}>{error}</div>}
 
-                {isSelected && <div className={styles.selectedBorder}></div>}
-
                 {(!element.src || !isValidUrl(element.src)) && <ImagePlaceholder onUpdateLink={handleUpdateLink} />}
 
                 {element.src && isValidUrl(element.src) && !error && (
@@ -329,18 +327,21 @@ const Image: React.FC<ImageProps> = ({
                             </div>
                         )}
 
-                        <ImageComponent
-                            ref={imageRef}
-                            src={element.src}
-                            alt={element.alt || ''}
-                            width={0}
-                            height={0}
-                            sizes="100vw"
-                            style={{ width: '100%', height: 'auto' }}
-                            className={styles.image}
-                            onLoad={handleImageLoad}
-                            onError={handleImageError}
-                        />
+                        <div style={{ position: 'relative' }}>
+                            <ImageComponent
+                                ref={imageRef}
+                                src={element.src}
+                                alt={element.alt || ''}
+                                width={0}
+                                height={0}
+                                sizes="100vw"
+                                style={{ width: '100%', height: 'auto' }}
+                                className={styles.image}
+                                onLoad={handleImageLoad}
+                                onError={handleImageError}
+                            />
+                            {isSelected && <div className={styles.selectedBorder}></div>}
+                        </div>
 
                         {isSelected && (
                             <>
