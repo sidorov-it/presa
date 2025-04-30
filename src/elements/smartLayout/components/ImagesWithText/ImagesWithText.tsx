@@ -106,8 +106,8 @@ export default function ImagesWithText({
         const newItemId = generateId();
         const newItem: SmartLayoutItem = {
             id: newItemId,
-            title: '<p><span class="heading-text heading-3"></span></p>',
-            text: '<p><span></span></p>',
+            title: '<p><span class="heading-text heading-3">Heading</span></p>',
+            text: '<p><span>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.</span></p>',
             imageUrl: '',
         };
         const element = usePresentationStore
@@ -166,24 +166,20 @@ export default function ImagesWithText({
             const draggedItemId = dndState.source.smartLayoutItemId;
             if (!draggedItemId || draggedItemId === targetItemId) return;
 
-            // Get current element with items
             const element = usePresentationStore
                 .getState()
                 .getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement;
 
             if (!element || !element.items) return;
 
-            // Get indices of source and target
             const sourceIndex = element.items.findIndex(item => item.id === draggedItemId);
             const targetIndex = element.items.findIndex(item => item.id === targetItemId);
 
             if (sourceIndex === -1 || targetIndex === -1) return;
 
-            // Create new items array by reordering
             const newItems = [...element.items];
             const [draggedItem] = newItems.splice(sourceIndex, 1);
 
-            // Calculate insert position based on drop indicator position
             let insertPosition = targetIndex;
             if (dropIndicator.position === 'right') {
                 insertPosition = targetIndex + (sourceIndex < targetIndex ? 0 : 1);
@@ -191,13 +187,10 @@ export default function ImagesWithText({
                 insertPosition = targetIndex - (sourceIndex > targetIndex ? 0 : 1);
             }
 
-            // Ensure valid bounds
             insertPosition = Math.max(0, Math.min(newItems.length, insertPosition));
 
-            // Insert item at new position
             newItems.splice(insertPosition, 0, draggedItem);
 
-            // Update the layout with new order
             usePresentationStore.getState().updateElement(presentationId, slideId, layoutId, elementId, {
                 items: newItems,
             } as Partial<SmartLayoutElement>);
