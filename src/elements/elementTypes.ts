@@ -4,7 +4,6 @@ import QuoteBubbleMenu from '@/components/editor/Menus/BubbleMenus/QuoteBubbleMe
 import TableBubbleMenu from '@/components/editor/Menus/BubbleMenus/TableBubbleMenu';
 import ListBubbleMenu from '@/components/editor/Menus/BubbleMenus/ListBubbleMenu';
 import ButtonMenu from '@/components/editor/Menus/ButtonMenu';
-import { ImageSettings } from './image';
 import ChartSettings from './chart/ChartSettings/ChartSettings';
 import SmartLayoutSettings from './smartLayout/components/SmartLayoutSettings/SmartLayoutSettings';
 import { ComponentStructureType } from '@/types';
@@ -17,6 +16,7 @@ export interface ElementTypeConfig {
     MenuComponent?: React.ComponentType<any>;
     customMenu?: boolean;
     hasLimitedTextFormatting?: boolean;
+    customMenuType?: string;
 }
 
 export const elementTypes: Record<string, ElementTypeConfig> = {
@@ -109,6 +109,7 @@ export const elementTypes: Record<string, ElementTypeConfig> = {
         componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
         hasTextEditor: false,
         MenuComponent: ChartSettings,
+        customMenuType: 'chart',
     },
 
     // Smart Layout
