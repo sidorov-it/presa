@@ -8,6 +8,8 @@ import {
     type Element,
     type GridRow,
     type ComponentStructureType,
+    type SmartLayoutElement,
+    type SmartLayoutItem,
 } from '@/types';
 import { elementTypes } from './elementTypes';
 import { MenuItem, menuRegistry } from './menuRegistry';
@@ -89,6 +91,12 @@ export const getNewElement = (menuItem: MenuItem): Omit<BaseElement, 'cellId'> |
         ...defaultProps,
     };
 
+    if (menuItem.elementTypeId === 'smart-layout') {
+        (element as SmartLayoutElement).items = menuItem.defaultProps?.items.map((item: SmartLayoutItem) => ({
+            ...item,
+            id: generateId(),
+        }));
+    }
     // Special handling for image elements
     // if (menuItem.elementTypeId === 'image') {
     //     return {

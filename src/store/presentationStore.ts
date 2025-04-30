@@ -158,7 +158,7 @@ export interface PresentationState {
 
     mergeSlideWithPrevious: (presentationId: string, slideId: string) => void;
 
-    addLayoutWithElement: (presentationId: string, slideId: string, element: ElementConfig) => void;
+    addLayoutWithElement: (presentationId: string, slideId: string, element: BaseElement) => void;
 
     getTableElements: (presentationId: string, slideId: string, layoutId: string) => BaseElement[];
     getTableColumnElements: (
