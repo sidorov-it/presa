@@ -28,7 +28,6 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { TipTapRefs } from '@/types';
 import TableMenu from './TableMenu/TableMenu';
 import { BaseMenu, MenuItem } from './BaseMenu';
-import { BiTrash } from 'react-icons/bi';
 
 const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tiptapRefs }) => {
     const {
@@ -233,7 +232,7 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
                     <>
                         <MenuItem icon={<DuplicateIcon />} label="Duplicate" onClick={duplicateSlide} />
                         {slideIndex > 0 && <MenuItem icon={<MergeIcon />} label="Merge" onClick={handleMergeSlide} />}
-                        <MenuItem icon={<BiTrash />} label="Delete" onClick={deleteSlide} color="#f00" />
+                        <MenuItem icon={<DeleteIcon />} label="Delete" onClick={deleteSlide} color="#f00" />
                     </>
                 );
             case 'row':

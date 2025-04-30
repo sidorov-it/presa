@@ -1,13 +1,14 @@
 'use client';
 
 import React from 'react';
-import { BiAlignLeft, BiAlignMiddle, BiAlignRight, BiEdit, BiTrash } from 'react-icons/bi';
+import { BiAlignLeft, BiAlignMiddle, BiAlignRight, BiEdit } from 'react-icons/bi';
 import { usePresentationStore } from '@/store/presentationStore';
 import { useMenuStore } from '@/store/menuStore';
 import { BaseMenu } from '../../../SlideMenu/BaseMenu';
 import { ImageElement } from '@/types';
 
 import styles from './ImageBubbleMenu.module.css';
+import DeleteIcon from '@/components/icons/DeleteIcon';
 
 interface ImageBubbleMenuProps {
     presentationId: string;
@@ -71,7 +72,7 @@ const ImageBubbleMenu: React.FC<ImageBubbleMenuProps> = ({ presentationId, slide
             </button>
 
             <button onClick={handleDelete} className={styles.deleteButton} aria-label="Удалить изображение">
-                <BiTrash size={16} />
+                <DeleteIcon />
             </button>
         </BaseMenu>
     );

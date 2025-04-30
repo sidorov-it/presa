@@ -302,7 +302,7 @@ const Image: React.FC<ImageProps> = ({
         <div className={styles.imageContainer}>
             <div
                 ref={containerRef}
-                className={`relative ${className} ${getAlignmentClass()}`}
+                className={`${className} ${getAlignmentClass()}`}
                 style={{
                     maxWidth: element.width ? `${element.width}px` : '100%',
                     cursor: 'default',

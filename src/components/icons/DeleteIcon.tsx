@@ -1,12 +1,12 @@
 import React from 'react';
 
-const DeleteIcon: React.FC = () => (
+const DeleteIcon: React.FC<{ color?: string }> = ({ color = 'red' }) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         style={{ width: '1rem', height: '1rem' }}
         fill="none"
         viewBox="0 0 24 24"
-        stroke="currentColor"
+        stroke={color}
     >
         <path
             strokeLinecap="round"

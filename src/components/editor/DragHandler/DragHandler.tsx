@@ -2,6 +2,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import styles from './DragHandler.module.css';
 import { useTheme } from '@/components/providers/ThemeProvider';
+import { BsThreeDotsVertical } from 'react-icons/bs';
 
 export default function DragHandler({
     isActive,
@@ -55,21 +56,12 @@ export default function DragHandler({
     };
 
     if (isDarkMode) {
-        if (isActive) {
-            dragHandlerStyle = {
-                ...dragHandlerStyle,
-                borderColor: 'white',
-                color: 'white',
-                backgroundColor: 'rgba(0, 0, 0, 0.7)',
-            };
-        } else {
-            dragHandlerStyle = {
-                ...dragHandlerStyle,
-                borderColor: 'white',
-                color: 'white',
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            };
-        }
+        dragHandlerStyle = {
+            ...dragHandlerStyle,
+            borderColor: 'white',
+            color: 'white',
+            backgroundColor: '#090808',
+        };
     }
 
     return (
@@ -84,7 +76,7 @@ export default function DragHandler({
             style={dragHandlerStyle}
             {...dataAttributes}
         >
-            ⋮
+            <BsThreeDotsVertical />
         </div>
     );
 }

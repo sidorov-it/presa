@@ -74,7 +74,13 @@ const SmartLayout: React.FC<SmartLayoutProps> = ({
     }, [elementId, isFocused, layoutId, layoutType, presentationId, slideId, tiptapRefs]);
 
     return (
-        <div>
+        <div
+            style={{
+                paddingLeft: '21px',
+                marginLeft: '-17px',
+                paddingRight: '21px',
+            }}
+        >
             {renderLayout()}
             {/* <button onClick={handleAddItem} className="mt-4 flex items-center gap-2 text-blue-500 hover:text-blue-600">
                 <FaPlus className="w-4 h-4" />

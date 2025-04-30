@@ -1,0 +1,38 @@
+.layoutMenu {
+    display: flex; 
+    flex-direction: column; 
+    gap: 1rem; 
+}
+
+.alignment {
+    padding-top: 1rem; 
+    border-top-width: 1px; 
+    border-color: #E5E7EB; 
+}
+
+.alignmentTitle {
+    margin-bottom: 0.5rem; 
+    font-size: 0.875rem;
+    line-height: 1.25rem; 
+    font-weight: 500; 
+    color: #374151; 
+}
+
+.alignmentItems {
+    display: flex; 
+    gap: 0.5rem;
+}
+
+.deleteLayout {
+    padding-top: 1rem; 
+    border-top-width: 1px; 
+    border-color: #E5E7EB; 
+}
+
+.deleteLayoutItem {
+    color: #DC2626;
+
+    &:hover {
+        color: #B91C1C; 
+    }
+}

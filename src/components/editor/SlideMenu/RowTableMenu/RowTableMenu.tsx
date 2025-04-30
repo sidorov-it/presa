@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, MutableRefObject, useMemo } from 'react';
-import { BiBold, BiItalic, BiUnderline, BiX, BiArrowToTop, BiArrowToBottom, BiTrash } from 'react-icons/bi';
+import { BiBold, BiItalic, BiUnderline, BiX, BiArrowToTop, BiArrowToBottom } from 'react-icons/bi';
 import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
 import HeadingSelector from '@/components/settings/HeadingSelector/HeadingSelector';
@@ -9,6 +9,7 @@ import { MenuItem } from '../BaseMenu';
 import { useShallow } from 'zustand/react/shallow';
 import { Level } from '@tiptap/extension-heading';
 import isEditorPropertyConsistent from '@/utils/isEditorPropertyConsistent';
+import DeleteIcon from '@/components/icons/DeleteIcon';
 interface RowTableMenuProps {
     elementId?: string;
     tableRowIndex?: number;
@@ -193,7 +194,7 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, tiptapRefs }
             <MenuItem icon={<BiX />} label="Clear formatting" onClick={handleClearStyles} />
             <MenuItem icon={<BiArrowToTop />} label="Add row above" onClick={handleAddRowAbove} />
             <MenuItem icon={<BiArrowToBottom />} label="Add row below" onClick={handleAddRowBelow} />
-            <MenuItem icon={<BiTrash />} label="Delete row" onClick={handleDeleteRow} color="#f00" />
+            <MenuItem icon={<DeleteIcon />} label="Delete row" onClick={handleDeleteRow} color="#f00" />
         </>
     );
 };

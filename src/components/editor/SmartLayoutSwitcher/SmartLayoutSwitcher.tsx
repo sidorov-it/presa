@@ -3,6 +3,8 @@ import { SmartLayoutType } from '@/types';
 import { useMenuStore } from '@/store/menuStore';
 import { usePresentationStore } from '@/store/presentationStore';
 
+import styles from './SmartLayoutSwitcher.module.css';
+
 interface SmartLayoutSwitcherProps {
     layoutId: string;
     slideId: string;
@@ -34,18 +36,17 @@ const SmartLayoutSwitcher: React.FC<SmartLayoutSwitcherProps> = ({ layoutId, sli
     };
 
     return (
-        <div className="flex flex-col gap-2 p-2 bg-white rounded-lg shadow-lg min-w-[200px]">
-            <div className="text-sm font-medium text-gray-700 mb-2">Layout Style</div>
-            <div className="grid grid-cols-3 gap-2">
+        <div className={styles.smartLayoutSwitcher}>
+            <div className={styles.smartLayoutSwitcherTitle}>Layout Style</div>
+            <div className={styles.smartLayoutSwitcherItems}>
                 {layoutOptions.map(option => (
                     <button
                         key={option.type}
                         onClick={() => handleLayoutChange(option.type)}
-                        className={`flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 transition-colors
-              ${layout.smartLayout?.type === option.type ? 'bg-blue-100 hover:bg-blue-200' : ''}`}
+                        className={`${styles.smartLayoutSwitcherItem} ${layout.smartLayout?.type === option.type ? styles.smartLayoutSwitcherItemActive : ''}`}
                     >
-                        <span className="text-2xl mb-1">{option.icon}</span>
-                        <span className="text-xs text-center">{option.label}</span>
+                        <span className={styles.smartLayoutSwitcherItemIcon}>{option.icon}</span>
+                        <span className={styles.smartLayoutSwitcherItemLabel}>{option.label}</span>
                     </button>
                 ))}
             </div>

@@ -5,7 +5,6 @@ import { Editor } from '@tiptap/react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { BoxElement } from '@/types';
 import SettingsSelector from '@/components/ui/SettingsSelector/SettingsSelector';
-import { BiTrash } from 'react-icons/bi';
 
 import styles from './BoxBubbleMenu.module.css';
 
@@ -21,6 +20,7 @@ import { BaseMenu } from '../../../SlideMenu/BaseMenu';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
 import { useMenuStore } from '@/store/menuStore';
 import { BoxCategories } from '@/elements/menuRegistry';
+import DeleteIcon from '@/components/icons/DeleteIcon';
 
 interface BubbleMenuProps {
     editor: Editor;
@@ -120,7 +120,7 @@ const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ presentationId, slideId, lay
             />
 
             <button onClick={handleDelete} className={styles.deleteButton} aria-label="Delete box">
-                <BiTrash size={20} />
+                <DeleteIcon />
             </button>
         </BaseMenu>
     );

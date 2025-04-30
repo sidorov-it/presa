@@ -1,3 +1,8 @@
+.imageContainer {
+    margin-left: -21px;
+    padding-left: 21px;
+}
+
 .dot {
     position: absolute; 
     z-index: 20; 
@@ -97,9 +102,9 @@
 .selectedBorder {
     position: absolute; 
     top: 0;
-    right: 0;
+    right: 20px;
     bottom: 0;
-    left: 0; 
+    left: 20px; 
     z-index: 10; 
     border-radius: 0.25rem; 
     border-width: 2px; 

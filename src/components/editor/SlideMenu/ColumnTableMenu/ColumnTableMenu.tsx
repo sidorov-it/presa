@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { BiBold, BiItalic, BiUnderline, BiX, BiArrowToLeft, BiArrowToRight, BiTrash } from 'react-icons/bi';
+import { BiBold, BiItalic, BiUnderline, BiX, BiArrowToLeft, BiArrowToRight } from 'react-icons/bi';
 import { useMenuStore } from '@/store/menuStore';
 import { TipTapRefs } from '@/types';
 import { MutableRefObject } from 'react';
@@ -10,6 +10,7 @@ import { useShallow } from 'zustand/react/shallow';
 import isEditorPropertyConsistent from '@/utils/isEditorPropertyConsistent';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
 import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
+import DeleteIcon from '@/components/icons/DeleteIcon';
 interface ColumnTableMenuProps {
     elementId?: string;
     presentationId?: string;
@@ -176,7 +177,7 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({ tableColumnIndex, tip
             <MenuItem icon={<BiX />} label="Clear formatting" onClick={handleClearStyles} />
             <MenuItem icon={<BiArrowToLeft />} label="Add column left" onClick={handleAddColumnLeft} />
             <MenuItem icon={<BiArrowToRight />} label="Add column right" onClick={handleAddColumnRight} />
-            <MenuItem icon={<BiTrash />} label="Delete column" onClick={handleDeleteColumn} color="#f00" />
+            <MenuItem icon={<DeleteIcon />} label="Delete column" onClick={handleDeleteColumn} color="#f00" />
         </>
     );
 };
