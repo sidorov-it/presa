@@ -2314,7 +2314,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
             // Move the row
             const [movedRow] = updatedGridStructure.rows.splice(sourceRowIndex, 1);
-            const insertIndex = tableRowPosition === 'top' ? targetRowIndex - 1 : targetRowIndex;
+            const insertIndex = tableRowPosition === 'top' ? targetRowIndex : targetRowIndex + 1;
             updatedGridStructure.rows.splice(insertIndex, 0, movedRow);
 
             // Update row indices

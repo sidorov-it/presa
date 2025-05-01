@@ -231,8 +231,8 @@ export const ElementContent = ({
     // Handler for adding new elements via slash command
     const handleAddElement = useCallback(
         (elementId: string) => (menuItem: MenuItem) => {
-            if (menuItem.elementTypeId.startsWith('table-')) {
-                const tableLayout = getNewTableLayout(menuItem.elementTypeId);
+            if (menuItem.elementTypeId.startsWith('table')) {
+                const tableLayout = getNewTableLayout(menuItem);
                 if (tableLayout) {
                     usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, tableLayout);
                 }

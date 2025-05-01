@@ -69,7 +69,6 @@ export async function POST(request: NextRequest) {
             layouts: [
                 {
                     id: layoutId,
-                    type: 'single-column',
                     elements: [
                         {
                             ...newElement,

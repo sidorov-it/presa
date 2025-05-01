@@ -120,7 +120,6 @@ export async function POST(req: NextRequest) {
             layouts: [
                 {
                     id: generateId(),
-                    type: 'single-column',
                     elements: [
                         {
                             ...getNewEditorElement(generateId()),

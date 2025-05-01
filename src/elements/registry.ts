@@ -15,21 +15,7 @@ import { elementTypes } from './elementTypes';
 import { MenuItem, menuRegistry } from './menuRegistry';
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 
-export const getNewTableLayout = (type: string): Layout | null => {
-    if (!type.startsWith('table-')) {
-        return null;
-    }
-
-    const menuItem = menuRegistry
-        .flatMap(category =>
-            category.subCategories ? category.subCategories.flatMap(sub => sub.elements) : category.elements
-        )
-        .find(element => element?.elementTypeId === type);
-
-    if (!menuItem) {
-        throw new Error(`Element with type ${type} not found in registry`);
-    }
-
+export const getNewTableLayout = (menuItem: MenuItem): Layout | null => {
     const tableLayout: Layout = {
         id: generateId(),
         elements: [],

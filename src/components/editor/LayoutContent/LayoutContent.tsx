@@ -143,13 +143,17 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
         [openMenu, slideId, layout.id]
     );
 
-    const handleAddColumn = useCallback(() => {
+    const handleAddColumn = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
         usePresentationStore
             .getState()
             .addColumnToTable(presentationId, slideId, layout.id, layout.gridStructure.columns);
     }, [layout, presentationId, slideId]);
 
-    const handleAddRow = useCallback(() => {
+    const handleAddRow = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
         usePresentationStore
             .getState()
             .addRowToTable(presentationId, slideId, layout.id, layout.gridStructure.rows.length);
