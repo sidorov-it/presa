@@ -264,7 +264,7 @@ export const ElementContent = ({
                 }
             }
         },
-        [presentationId, slideId, layoutId, cellId, elementConfig.hasTextEditor, tiptapRefs]
+        [presentationId, slideId, layoutId, cellId, elementConfig?.hasTextEditor, tiptapRefs]
     );
 
     const handleBackspacePressed = useCallback(
@@ -468,7 +468,7 @@ export const ElementContent = ({
 
     const renderElementContent = useCallback(
         (elementId: string, isFocused: boolean) => {
-            if (elementConfig.hasTextEditor) {
+            if (elementConfig!.hasTextEditor) {
                 return (
                     <Tiptap
                         key={elementId}
@@ -551,6 +551,9 @@ export const ElementContent = ({
         ]
     );
 
+    if (!elementConfig) {
+        return <div>Element config not found {elementTypeId}</div>;
+    }
     return (
         <div
             key={elementId}
@@ -570,7 +573,7 @@ export const ElementContent = ({
             <div className={`${styles.elementWrapper}`}>
                 {!isInTable && (isMenuOpenOnCurrentElement || isCurrentEditorActive || elementIsHovered) && (
                     <DragHandler
-                        className={styles.elementDragHandle}
+                        className={`${styles.elementDragHandle} ${hasMultipleCells ? styles.elementDragHandleMultipleCells : ''}`}
                         slideId={slideId}
                         isActive={isMenuOpenOnCurrentElement}
                         dataAttributes={{

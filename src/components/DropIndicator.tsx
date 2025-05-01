@@ -14,6 +14,8 @@ type IndicatorInfo = {
     position: 'top' | 'bottom' | 'left' | 'right' | null;
     type: IndicatorType;
     sourceType: 'element' | 'layout' | 'slide' | 'cell' | 'column' | 'row';
+    previousElementRect?: DOMRect | null;
+    nextElementRect?: DOMRect | null;
 };
 
 type IndicatorType = 'element' | 'layout' | 'slide' | 'cell' | 'column' | 'row';
@@ -74,6 +76,32 @@ const DropIndicator = () => {
 
             if (!layout) return null;
 
+            // Find previous and next elements for enhanced spacing
+            let previousElementRect = null;
+            let nextElementRect = null;
+
+            if (position === 'top' || position === 'bottom') {
+                // Get all elements in the same cell
+                const allElements = Array.from(cell.querySelectorAll('[data-element-id]')).map(el => ({
+                    id: el.getAttribute('data-element-id'),
+                    rect: el.getBoundingClientRect(),
+                }));
+
+                // Sort by vertical position
+                allElements.sort((a, b) => a.rect.top - b.rect.top);
+
+                // Find current element index
+                const currentIndex = allElements.findIndex(el => el.id === elementId);
+
+                if (position === 'top' && currentIndex > 0) {
+                    previousElementRect = allElements[currentIndex - 1].rect;
+                }
+
+                if (position === 'bottom' && currentIndex < allElements.length - 1) {
+                    nextElementRect = allElements[currentIndex + 1].rect;
+                }
+            }
+
             // Case 1: 1 element by 1 element
             const isSingleElementLayout = element.closest('[data-is-single-element-layout="true"]') !== null;
             if (isSingleElementLayout) {
@@ -82,6 +110,8 @@ const DropIndicator = () => {
                     position: position,
                     type: 'element' as IndicatorType,
                     sourceType,
+                    previousElementRect,
+                    nextElementRect,
                 };
             }
 
@@ -95,6 +125,8 @@ const DropIndicator = () => {
                         position: position,
                         type: 'element' as IndicatorType,
                         sourceType,
+                        previousElementRect,
+                        nextElementRect,
                     };
                 }
 
@@ -105,6 +137,8 @@ const DropIndicator = () => {
                         position: position,
                         type: 'element' as IndicatorType,
                         sourceType,
+                        previousElementRect,
+                        nextElementRect,
                     };
                 }
 
@@ -149,11 +183,37 @@ const DropIndicator = () => {
 
             // Case 3.2: top/bottom
             if (position === 'top' || position === 'bottom') {
+                const allLayouts = Array.from(layout.parentElement?.querySelectorAll('[data-layout-id]') || []).map(
+                    el => ({
+                        id: el.getAttribute('data-layout-id'),
+                        rect: el.getBoundingClientRect(),
+                    })
+                );
+
+                // Sort by vertical position
+                allLayouts.sort((a, b) => a.rect.top - b.rect.top);
+
+                // Find current element index
+                const currentIndex = allLayouts.findIndex(el => el.id === indicators.layoutIndicator);
+
+                let previousElementRect = null;
+                let nextElementRect = null;
+
+                if (position === 'top' && currentIndex > 0) {
+                    previousElementRect = allLayouts[currentIndex - 1].rect;
+                }
+
+                if (position === 'bottom' && currentIndex < allLayouts.length - 1) {
+                    nextElementRect = allLayouts[currentIndex + 1].rect;
+                }
+
                 return {
                     targetRect: rect,
                     position: position,
                     type: 'layout' as IndicatorType,
                     sourceType: 'layout',
+                    previousElementRect,
+                    nextElementRect,
                 };
             }
         }
@@ -259,14 +319,97 @@ const DropIndicator = () => {
     // Generate styles based on position and context
     const getIndicatorStyles = useCallback(() => {
         if (!indicatorInfo) return {};
-        const { targetRect, position, type } = indicatorInfo;
+        const { targetRect, position, type, previousElementRect, nextElementRect } = indicatorInfo;
+
+        // For between-element indicators (enhanced spacing)
+        if (type === 'element' && (position === 'top' || position === 'bottom')) {
+            // Create a thicker indicator between elements
+            const thickness = 6; // Increased thickness
+
+            let styles: React.CSSProperties = {
+                position: 'fixed',
+                zIndex: 9999,
+                pointerEvents: 'none',
+                backgroundColor: '#3b82f6', // Blue color
+                transition: 'all 150ms ease-in-out',
+                boxShadow: '0 0 6px rgba(59, 130, 246, 0.6)', // Enhanced glow
+                borderRadius: '3px',
+            };
+
+            if (position === 'top' && previousElementRect) {
+                // Place indicator between previous and current element
+                const gap = targetRect.top - previousElementRect.bottom;
+                const midPoint = previousElementRect.bottom + gap / 2;
+
+                styles = {
+                    ...styles,
+                    left: targetRect.left,
+                    top: midPoint - thickness / 2,
+                    width: targetRect.width,
+                    height: thickness,
+                };
+            } else if (position === 'bottom' && nextElementRect) {
+                // Place indicator between current and next element
+                const gap = nextElementRect.top - targetRect.bottom;
+                const midPoint = targetRect.bottom + gap / 2;
+
+                styles = {
+                    ...styles,
+                    left: targetRect.left,
+                    top: midPoint - thickness / 2,
+                    width: targetRect.width,
+                    height: thickness,
+                };
+            } else if (position === 'top') {
+                // Default top position when no previous element
+                if (!previousElementRect) {
+                    styles = {
+                        ...styles,
+                        left: targetRect.left,
+                        top: targetRect.top,
+                        width: targetRect.width,
+                        height: thickness,
+                    };
+                } else {
+                    styles = {
+                        ...styles,
+                        left: targetRect.left,
+                        top: targetRect.top + (targetRect.top - previousElementRect.bottom) / 2,
+                        width: targetRect.width,
+                        height: thickness,
+                    };
+                }
+            } else if (position === 'bottom') {
+                // Default bottom position when no next element
+                if (!nextElementRect) {
+                    styles = {
+                        ...styles,
+                        left: targetRect.left,
+                        top: targetRect.bottom,
+                        width: targetRect.width,
+                        height: thickness,
+                    };
+                } else {
+                    styles = {
+                        ...styles,
+                        left: targetRect.left,
+                        top: targetRect.bottom + (nextElementRect.top - targetRect.bottom) / 2,
+                        width: targetRect.width,
+                        height: thickness,
+                    };
+                }
+            }
+
+            return styles;
+        }
+
         // Increase thickness for better visibility
         let thickness;
 
         if (type === 'element') {
-            thickness = 3;
+            thickness = 4; // Increased from 3
         } else {
-            thickness = 4;
+            thickness = 5; // Increased from 4
         }
 
         const offset = 0;
@@ -310,23 +453,45 @@ const DropIndicator = () => {
                 backgroundColor: color,
             };
         } else if (position === 'top') {
-            styles = {
-                ...styles,
-                left: targetRect.left,
-                top: targetRect.top,
-                width: targetRect.width,
-                height: thickness,
-                backgroundColor: color,
-            };
+            if (!previousElementRect) {
+                styles = {
+                    ...styles,
+                    left: targetRect.left,
+                    top: targetRect.top,
+                    width: targetRect.width,
+                    height: thickness,
+                    backgroundColor: color,
+                };
+            } else {
+                styles = {
+                    ...styles,
+                    left: targetRect.left,
+                    top: targetRect.top - (targetRect.top - previousElementRect.bottom) / 2,
+                    width: targetRect.width,
+                    height: thickness,
+                    backgroundColor: color,
+                };
+            }
         } else if (position === 'bottom') {
-            styles = {
-                ...styles,
-                left: targetRect.left,
-                top: targetRect.bottom - thickness,
-                width: targetRect.width,
-                height: thickness,
-                backgroundColor: color,
-            };
+            if (!nextElementRect) {
+                styles = {
+                    ...styles,
+                    left: targetRect.left,
+                    top: targetRect.bottom - thickness,
+                    width: targetRect.width,
+                    height: thickness,
+                    backgroundColor: color,
+                };
+            } else {
+                styles = {
+                    ...styles,
+                    left: targetRect.left,
+                    top: targetRect.bottom + (nextElementRect.top - targetRect.bottom) / 2,
+                    width: targetRect.width,
+                    height: thickness,
+                    backgroundColor: color,
+                };
+            }
         } else if (type === 'slide') {
             // For slide indicators, highlight the whole slide
             styles = {
@@ -343,7 +508,9 @@ const DropIndicator = () => {
         return styles;
     }, [indicatorInfo]);
 
-    if (!visible || !indicatorInfo) return null;
+    if (!visible || !indicatorInfo) {
+        return null;
+    }
 
     const styles = getIndicatorStyles();
 

@@ -35,6 +35,10 @@
     left: -11px;
 }
 
+.elementDragHandleMultipleCells {
+    left: 2px;
+}
+
 .unsupportedElement {
     padding: 1rem; 
     border-radius: 0.375rem; 

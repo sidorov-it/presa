@@ -9,249 +9,6 @@ import { DndState, DndAction, DropTarget, Position } from '@/types/DragDropTypes
 import { getNewEditorElement, getNewElement } from '@/elements/registry';
 import { menuRegistry } from '@/elements/menuRegistry';
 
-// Helper types for drop target calculation
-type ElementInfo = {
-    node: HTMLElement;
-    rect: DOMRect;
-    id: string;
-};
-
-// Helper for calculating the best drop indicator position
-const calculateDropPosition = (
-    e: DragEvent,
-    nodes: {
-        elementNode?: HTMLElement | null;
-        cellNode?: HTMLElement | null;
-        layoutNode?: HTMLElement | null;
-        slideNode?: HTMLElement | null;
-    },
-    layoutType: {
-        isSingleCellSingleElement?: boolean;
-        isMultiCellRow?: boolean;
-    } = {},
-    findClosestElementsFn?: (
-        cellNode: HTMLElement,
-        mouseX: number,
-        mouseY: number
-    ) => {
-        element: ElementInfo | null;
-        position: Position;
-        gapSize: number;
-    } | null
-): {
-    targetType: 'element' | 'cell' | 'layout' | 'slide' | null;
-    targetId: string | null;
-    position: Position | null;
-} => {
-    const { elementNode, cellNode, layoutNode, slideNode } = nodes;
-    const { isSingleCellSingleElement, isMultiCellRow } = layoutType;
-
-    const mouseX = e.clientX;
-    const mouseY = e.clientY;
-
-    // Define thresholds for boundary detection
-    const LAYOUT_BOUNDARY_THRESHOLD = 0.15; // 15% of height for top/bottom layout boundaries
-    const HORIZONTAL_THRESHOLD = 0.2; // 20% of width for left/right cell boundaries
-    const ELEMENT_EDGE_THRESHOLD = 0.25; // 25% for top/bottom element boundaries
-
-    // OPTION 1: Layout boundaries take priority
-    if (layoutNode) {
-        const layoutRect = layoutNode.getBoundingClientRect();
-        const layoutTopThreshold = layoutRect.top + layoutRect.height * LAYOUT_BOUNDARY_THRESHOLD;
-        const layoutBottomThreshold = layoutRect.bottom - layoutRect.height * LAYOUT_BOUNDARY_THRESHOLD;
-
-        // If near layout boundaries, prioritize layout-level indicators
-        if (mouseY < layoutTopThreshold) {
-            return {
-                targetType: 'layout',
-                targetId: layoutNode.getAttribute('data-layout-id'),
-                position: 'top',
-            };
-        }
-
-        if (mouseY > layoutBottomThreshold) {
-            return {
-                targetType: 'layout',
-                targetId: layoutNode.getAttribute('data-layout-id'),
-                position: 'bottom',
-            };
-        }
-    }
-
-    // OPTION 2: Cell boundaries take priority in multi-cell layouts
-    if (isMultiCellRow && cellNode) {
-        const cellRect = cellNode.getBoundingClientRect();
-        const cellLeftThreshold = cellRect.left + cellRect.width * HORIZONTAL_THRESHOLD;
-        const cellRightThreshold = cellRect.right - cellRect.width * HORIZONTAL_THRESHOLD;
-
-        if (mouseX < cellLeftThreshold) {
-            return {
-                targetType: 'cell',
-                targetId: cellNode.getAttribute('data-cell-id'),
-                position: 'left',
-            };
-        }
-
-        if (mouseX > cellRightThreshold) {
-            return {
-                targetType: 'cell',
-                targetId: cellNode.getAttribute('data-cell-id'),
-                position: 'right',
-            };
-        }
-    }
-
-    // Check for empty space handling - when we're in a cell but not directly over an element
-    if (cellNode && !elementNode && findClosestElementsFn) {
-        const closestResult = findClosestElementsFn(cellNode, mouseX, mouseY);
-        if (closestResult) {
-            return {
-                targetType: 'element',
-                targetId: closestResult.element.id,
-                position: closestResult.position,
-            };
-        }
-    }
-
-    // OPTION 3: Element-level positioning
-    if (elementNode) {
-        const elementRect = elementNode.getBoundingClientRect();
-        const elementTopThreshold = elementRect.top + elementRect.height * ELEMENT_EDGE_THRESHOLD;
-        const elementBottomThreshold = elementRect.bottom - elementRect.height * ELEMENT_EDGE_THRESHOLD;
-
-        // Check for empty space handling in cell with multiple elements
-        if (cellNode) {
-            // Get all elements in the cell to check for gaps
-            const allElements = Array.from(cellNode.querySelectorAll('[data-element-id]'));
-            if (allElements.length > 1) {
-                // Get the element's position in the cell
-                const elements = allElements.map(el => ({
-                    node: el as HTMLElement,
-                    rect: el.getBoundingClientRect(),
-                    id: el.getAttribute('data-element-id'),
-                }));
-
-                // Sort elements by vertical position
-                elements.sort((a, b) => a.rect.top - b.rect.top);
-
-                // Find current element index and check for gaps
-                const currentIndex = elements.findIndex(el => el.id === elementNode.getAttribute('data-element-id'));
-
-                if (currentIndex > 0 && currentIndex < elements.length - 1) {
-                    // Check if we're in gap between elements
-                    const prevElement = elements[currentIndex - 1];
-                    const currentElement = elements[currentIndex];
-                    const nextElement = elements[currentIndex + 1];
-
-                    // Calculate gaps
-                    const gapAbove = currentElement.rect.top - prevElement.rect.bottom;
-                    const gapBelow = nextElement.rect.top - currentElement.rect.bottom;
-
-                    // If significant gap exists and mouse is in the gap
-                    if (gapAbove > 10 && mouseY < elementTopThreshold) {
-                        return {
-                            targetType: 'element',
-                            targetId: elementNode.getAttribute('data-element-id'),
-                            position: 'top',
-                        };
-                    }
-
-                    if (gapBelow > 10 && mouseY > elementBottomThreshold) {
-                        return {
-                            targetType: 'element',
-                            targetId: elementNode.getAttribute('data-element-id'),
-                            position: 'bottom',
-                        };
-                    }
-                }
-            }
-        }
-
-        // Element boundary detection (top, bottom, left, right)
-        // Calculate distances to each edge
-        const distanceToTop = Math.abs(mouseY - elementRect.top);
-        const distanceToBottom = Math.abs(mouseY - elementRect.bottom);
-        const distanceToLeft = Math.abs(mouseX - elementRect.left);
-        const distanceToRight = Math.abs(mouseX - elementRect.right);
-
-        // Find the closest edge
-        const minVertical = Math.min(distanceToTop, distanceToBottom);
-        const minHorizontal = Math.min(distanceToLeft, distanceToRight);
-
-        const thirdOfWidth = elementRect.width / 3;
-
-        // Determine if we should use horizontal or vertical positioning
-        // For single cell layouts, enable all sides
-        if (isSingleCellSingleElement) {
-            if (minHorizontal < thirdOfWidth) {
-                // Horizontal positioning takes precedence
-                if (distanceToLeft < distanceToRight) {
-                    return {
-                        targetType: 'cell',
-                        targetId: cellNode!.getAttribute('data-cell-id'),
-                        position: 'left',
-                    };
-                } else {
-                    return {
-                        targetType: 'cell',
-                        targetId: cellNode!.getAttribute('data-cell-id'),
-                        position: 'right',
-                    };
-                }
-            } else {
-                const parentLayoutNode = elementNode.closest('[data-layout-id]');
-
-                const layoutRect = parentLayoutNode!.getBoundingClientRect();
-                const layoutTopThreshold = layoutRect.top + layoutRect.height;
-                const layoutBottomThreshold = layoutRect.bottom - layoutRect.height;
-
-                // If near layout boundaries, prioritize layout-level indicators
-                if (mouseY < layoutTopThreshold) {
-                    return {
-                        targetType: 'layout',
-                        targetId: parentLayoutNode!.getAttribute('data-layout-id'),
-                        position: 'top',
-                    };
-                }
-
-                if (mouseY > layoutBottomThreshold) {
-                    return {
-                        targetType: 'layout',
-                        targetId: parentLayoutNode!.getAttribute('data-layout-id'),
-                        position: 'bottom',
-                    };
-                }
-            }
-        } else {
-            // Vertical positioning
-            if (distanceToTop < distanceToBottom) {
-                return {
-                    targetType: 'element',
-                    targetId: elementNode.getAttribute('data-element-id'),
-                    position: 'top',
-                };
-            } else {
-                return {
-                    targetType: 'element',
-                    targetId: elementNode.getAttribute('data-element-id'),
-                    position: 'bottom',
-                };
-            }
-        }
-    }
-
-    // Handle slide-level drop
-    if (slideNode && !elementNode && !cellNode && !layoutNode) {
-        return {
-            targetType: 'slide',
-            targetId: slideNode.getAttribute('data-slide-id'),
-            position: null,
-        };
-    }
-
-    return { targetType: null, targetId: null, position: null };
-};
-
 const initialState: DndState = {
     dragState: 'idle',
     source: {
@@ -696,7 +453,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             e.stopPropagation();
             dispatch({ type: 'START_DRAG_MENU_ITEM', payload: newElement });
         },
-        [getNewElementFromTypeId]
+        []
     );
 
     // Centralized drag over handling with document-level listeners
@@ -1296,10 +1053,6 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 (c: GridCell) => c.id === prevStateRef.current.target.cellId
             );
 
-            if (sourceCellIndex === targetCellIndex) {
-                return;
-            }
-
             const sourceCell = targetGridStructure.rows[0].cells[sourceCellIndex];
             const updatedCells = targetGridStructure.rows[0].cells.filter(
                 (c: GridCell) => c.id !== prevStateRef.current.source.cellId
@@ -1686,7 +1439,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             position: Position;
             elementTypeId: string;
         }) => {
-            const newElement = getNewElementFromTypeId(elementTypeId);
+            const newElement = getNewElement(elementTypeId);
             if (!newElement) return;
 
             const newLayout: Layout = getEmptyLayout();
@@ -2482,6 +2235,12 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
          *  Event  : Drag Over
          **************************/
         const handleDocumentDragOver = (e: DragEvent) => {
+            // console.log('[DragDropContext] dragover', {
+            //     x: e.clientX,
+            //     y: e.clientY,
+            //     dragState: state.dragState,
+            // });
+
             e.preventDefault();
 
             // Only process if we're dragging
@@ -2494,151 +2253,527 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
             // Get element under cursor
             const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
+            // console.warn('[DragDropContext] dragover – elemBelow', elemBelow);
+
             if (!elemBelow) {
                 console.log('[DragDropContext] dragover – nothing under cursor');
                 return;
             }
 
             // Find target elements with data attributes
-            const elementNode = elemBelow.closest('[data-element-id]') as HTMLElement;
-            const cellNode = elemBelow.closest('[data-cell-id]') as HTMLElement;
-            const rowNode = elemBelow.closest('[data-row-id]') as HTMLElement;
-            const layoutNode = elemBelow.closest('[data-layout-id]') as HTMLElement;
-            const slideNode = elemBelow.closest('[data-slide-id]') as HTMLElement;
+            const elementNode = elemBelow.closest('[data-element-id]');
+            const cellNode = elemBelow.closest('[data-cell-id]');
+            const rowNode = elemBelow.closest('[data-row-id]');
+            const layoutNode = elemBelow.closest('[data-layout-id]');
+            const slideNode = elemBelow.closest('[data-slide-id]');
 
             const elementId = elementNode?.getAttribute('data-element-id');
             const layoutId = layoutNode?.getAttribute('data-layout-id');
             const cellId = cellNode?.getAttribute('data-cell-id');
             const slideId = slideNode?.getAttribute('data-slide-id');
 
-            // Skip if hovering over source element/layout/cell
-            // if (
-            //     (elementId && elementId === state.source.elementId) ||
-            //     (layoutId && layoutId === state.source.layoutId && !elementId && !cellId) ||
-            //     (cellId && cellId === state.source.cellId && layoutId === state.source.layoutId)
-            // ) {
-            //     // Reset indicators and return
-            //     resetAllIndicators();
-            //     return;
-            // }
+            // console.log('[DragDropContext] dragover targets', {
+            //     elementId,
+            //     cellId,
+            //     layoutId,
+            //     slideId,
+            // });
+
+            // Check if we're over a slide container or similar with no direct elements below
+            // This means we're in the empty space between elements
+            // We need to find the closest layout by position
+            if (!elementNode && !cellNode && slideNode && state.dragState === 'dragging' && state.source.elementId) {
+                console.log('[DragDropContext] dragover – in empty space between elements');
+
+                // Find all layouts on the current slide
+                const slideLayouts = Array.from(slideNode.querySelectorAll('[data-layout-id]'));
+                if (slideLayouts.length === 0) {
+                    console.log('[DragDropContext] dragover – no layouts found on slide');
+                    return;
+                }
+
+                // Calculate distances from mouse to each layout's boundaries
+                const layoutsWithDistance: Array<{
+                    node: Element;
+                    layoutId: string;
+                    distanceY: number;
+                    distanceX: number;
+                    distance: number; // Combined distance metric
+                    isAbove: boolean;
+                    isToLeft: boolean;
+                    isToRight: boolean;
+                    nearestElementId: string | null;
+                }> = [];
+
+                // Current mouse position
+                const mouseY = e.clientY;
+                const mouseX = e.clientX;
+
+                slideLayouts.forEach(node => {
+                    const layoutRect = node.getBoundingClientRect();
+                    const layoutId = node.getAttribute('data-layout-id');
+
+                    if (!layoutId) return;
+
+                    // Get all elements in this layout
+                    const layoutElements = Array.from(node.querySelectorAll('[data-element-id]'));
+                    if (layoutElements.length === 0) return;
+
+                    // Find the closest element in this layout
+                    let closestElement: Element | null = null;
+                    let minDistanceY = Number.MAX_VALUE;
+                    let minDistanceX = Number.MAX_VALUE;
+                    let isAbove = false;
+                    let isToLeft = false;
+                    let isToRight = false;
+
+                    layoutElements.forEach(el => {
+                        const elRect = el.getBoundingClientRect();
+
+                        // Check if element is above or below mouse
+                        if (mouseY < elRect.top) {
+                            // Mouse is above element
+                            const distance = elRect.top - mouseY;
+                            if (distance < minDistanceY) {
+                                minDistanceY = distance;
+                                closestElement = el;
+                                isAbove = false; // Mouse is above, so element is below
+                            }
+                        } else if (mouseY > elRect.bottom) {
+                            // Mouse is below element
+                            const distance = mouseY - elRect.bottom;
+                            if (distance < minDistanceY) {
+                                minDistanceY = distance;
+                                closestElement = el;
+                                isAbove = true; // Mouse is below, so element is above
+                            }
+                        } else {
+                            // Mouse is inside element vertically
+                            minDistanceY = 0;
+                            closestElement = el;
+                            isAbove = mouseY < elRect.top + elRect.height / 2;
+                        }
+
+                        // Check if element is to left or right of mouse
+                        if (mouseX < elRect.left) {
+                            // Mouse is to the left of element
+                            const distance = elRect.left - mouseX;
+                            if (distance < minDistanceX) {
+                                minDistanceX = distance;
+                                closestElement = el;
+                                isToLeft = false; // Mouse is to left, element is to right
+                                isToRight = true;
+                            }
+                        } else if (mouseX > elRect.right) {
+                            // Mouse is to the right of element
+                            const distance = mouseX - elRect.right;
+                            if (distance < minDistanceX) {
+                                minDistanceX = distance;
+                                closestElement = el;
+                                isToLeft = true; // Mouse is to right, element is to left
+                                isToRight = false;
+                            }
+                        } else {
+                            // Mouse is inside element horizontally
+                            minDistanceX = 0;
+                            closestElement = el;
+                            isToLeft = mouseX < elRect.left + elRect.width / 2;
+                            isToRight = !isToLeft;
+                        }
+                    });
+
+                    if (closestElement) {
+                        // Calculate combined distance for better sorting
+                        // Using squared distance for more accurate calculations
+                        const distance = Math.sqrt(minDistanceX * minDistanceX + minDistanceY * minDistanceY);
+
+                        layoutsWithDistance.push({
+                            node,
+                            layoutId,
+                            distanceY: minDistanceY,
+                            distanceX: minDistanceX,
+                            distance,
+                            isAbove,
+                            isToLeft,
+                            isToRight,
+                            nearestElementId: closestElement.getAttribute('data-element-id'),
+                        });
+                    }
+                });
+
+                // Sort by combined distance (distance) ascending
+                layoutsWithDistance.sort((a, b) => a.distance - b.distance);
+
+                // Use the closest layout and element
+                if (layoutsWithDistance.length > 0) {
+                    const closest = layoutsWithDistance[0];
+                    console.log('[DragDropContext] dragover – found closest element', closest);
+
+                    if (closest.nearestElementId && closest.nearestElementId !== state.source.elementId) {
+                        // Get the element node
+                        // const nearestElementNode = slideNode.querySelector(
+                        //     `[data-element-id="${closest.nearestElementId}"]`
+                        // );
+
+                        const nearestLayoutNode = slideNode.querySelector(`[data-layout-id="${closest.layoutId}"]`);
+
+                        if (nearestLayoutNode) {
+                            // Process the drop target as if we were hovering over this element
+                            // with a position based on whether it's above or below
+                            let position: Position;
+
+                            // Determine if we should use vertical or horizontal positioning
+                            // If horizontal distance is significantly smaller than vertical, prefer horizontal positioning
+                            if (closest.distanceX < closest.distanceY * 0.8) {
+                                // Horizontal positioning takes precedence
+                                position = closest.isToLeft ? 'left' : 'right';
+                            } else {
+                                // Vertical positioning
+                                position = closest.isAbove ? 'bottom' : 'top';
+                            }
+
+                            // Only update if needed
+                            if (
+                                prevStateRef.current.indicators.elementIndicator !== closest.nearestElementId ||
+                                prevStateRef.current.indicators.elementPosition !== position
+                            ) {
+                                console.log('[DragDropContext] dragover – setting nearest element indicator', {
+                                    elementId: closest.nearestElementId,
+                                    position,
+                                });
+
+                                setLayoutIndicator(closest.layoutId, position);
+                                setElementIndicator(null, null);
+                                setSlideIndicator(null);
+
+                                // Update target state
+                                setDropTarget({
+                                    elementId: null,
+                                    layoutId: closest.layoutId,
+                                    position,
+                                });
+                            }
+
+                            return;
+                        }
+                    }
+                }
+            }
+
+            if (
+                // Hover on source element
+                (elementId && elementId === state.source.elementId) ||
+                // Hover on source layout but not on another element
+                (layoutId && layoutId === state.source.layoutId && !elementId) ||
+                // Hover inside same cell
+                (cellId && cellId === state.source.cellId && layoutId === state.source.layoutId)
+            ) {
+                console.log('[DragDropContext] dragover – reset indicators');
+                setElementIndicator(null, null);
+                setCellIndicator(null, null);
+                setLayoutIndicator(null, null);
+                setSlideIndicator(null);
+                setTableColumnIndicator(null, null, null, null);
+                setTableRowIndicator(null, null, null, null);
+                setDropTarget({
+                    elementId: null,
+                    layoutId: null,
+                    cellId: null,
+                    position: null,
+                });
+
+                prevStateRef.current = {
+                    ...state,
+                    indicators: {
+                        ...state.indicators,
+                        elementIndicator: null,
+                        elementPosition: null,
+                        cellIndicator: null,
+                        cellPosition: null,
+                        layoutIndicator: null,
+                        layoutPosition: null,
+                        slideIndicator: null,
+                        tableColumnIndicator: null,
+                        tableColumnPosition: null,
+                        tableRowIndicator: null,
+                        tableRowPosition: null,
+                    },
+                };
+
+                return;
+            }
+
+            const targetLayout = layoutId ? getLayout(layoutId) : undefined;
 
             // Get layout information to determine the appropriate target
-            const targetLayout = layoutId ? getLayout(layoutId) : undefined;
+            if (
+                state.source.layoutId &&
+                layoutId &&
+                state.source.layoutId !== layoutId &&
+                targetLayout?.hasSameCellsCount
+            ) {
+                const sourceLayout = getLayout(state.source.layoutId);
+                const targetLayout = getLayout(layoutId);
+
+                if (!sourceLayout || !targetLayout) {
+                    console.log('[DragDropContext] dragover – no sourceLayout or targetLayout');
+                    return;
+                }
+            }
+
             if (!targetLayout) {
                 console.log('[DragDropContext] dragover – no targetLayout found for id', layoutId);
                 return;
             }
 
-            // Determine context of the drag for special handling
-            const isSingleCellSingleElement = targetLayout.elements.length === 1;
-            const isMultiCellRow = targetLayout?.gridStructure.rows[0].cells.length > 1;
-            const isTable = !!targetLayout?.isTable;
+            // Determine context of the drag
+            const isSingleCellSingleElement =
+                targetLayout.type === 'single-column' && targetLayout.elements.length <= 1;
+            const isMultiCellRow = targetLayout.gridStructure.rows[0].cells.length > 1;
+            const isTable = !!targetLayout.isTable;
 
-            // Special case handling for table
-            if (isTable) {
-                processTableTarget(e, layoutId!, cellNode as HTMLElement);
-                return;
+            // Prioritize targets based on the context
+            // console.log('[DragDropContext] dragover context', {
+            //     isSingleCellSingleElement,
+            //     isMultiCellRow,
+            //     isTable,
+            // });
+
+            // Case 1: If we're over a single cell with a single element, we can drop on any side
+            if (isSingleCellSingleElement && elementId && elementId !== state.source.elementId) {
+                // console.log('[DragDropContext] dragover – processLayoutTarget (single cell / single element)');
+                processLayoutTarget(e, layoutId, layoutNode as HTMLElement, isMultiCellRow);
+            } else if (isTable) {
+                // console.log('[DragDropContext] dragover – processTableTarget');
+                processTableTarget(e, layoutId, cellNode as HTMLElement);
+            }
+            // Case 2: If we're over a cell in a multi-cell row, we can drop on left/right of cell
+            else if (isMultiCellRow && cellId && cellId !== state.source.cellId) {
+                // console.log('[DragDropContext] dragover – processCellTarget (multi-cell row)');
+                processCellTarget(e, cellId, layoutId, cellNode as HTMLElement, elementNode as HTMLElement, elementId);
+            } else if (isMultiCellRow && cellId !== state.source.cellId) {
+                // console.log('[DragDropContext] dragover – processLayoutTarget (multi-cell row)');
+                processLayoutTarget(e, layoutId, layoutNode as HTMLElement, isMultiCellRow);
             }
 
-            // Use the helper function to calculate drop position
-            const dropPosition = calculateDropPosition(
-                e,
-                { elementNode, cellNode, layoutNode, slideNode },
-                { isSingleCellSingleElement, isMultiCellRow },
-                // (cellNode, mouseX, mouseY) => findClosestElementsInCell(cellNode, mouseX, mouseY)
-                cellNode ? (cellNode, mouseX, mouseY) => findClosestElementsInCell(cellNode, mouseX, mouseY) : undefined
-            );
-
-            // Apply the calculated position by updating appropriate indicators
-            if (dropPosition.targetType === 'element' && dropPosition.targetId) {
-                // Set element indicator and clear others
-                setElementIndicator(dropPosition.targetId, dropPosition.position);
-                setCellIndicator(null, null);
-                setLayoutIndicator(null, null);
-                setSlideIndicator(null);
-                setTableColumnIndicator(null, null, null, null);
-                setTableRowIndicator(null, null, null, null);
-
-                // Update drop target state
-                setDropTarget({
-                    elementId: dropPosition.targetId,
-                    layoutId,
-                    cellId: elementNode?.closest('[data-cell-id]')?.getAttribute('data-cell-id') || null,
-                    position: dropPosition.position,
-                });
-            } else if (dropPosition.targetType === 'cell' && dropPosition.targetId) {
-                // Set cell indicator and clear others
-                setElementIndicator(null, null);
-                setCellIndicator(dropPosition.targetId, dropPosition.position);
-                setLayoutIndicator(null, null);
-                setSlideIndicator(null);
-                setTableColumnIndicator(null, null, null, null);
-                setTableRowIndicator(null, null, null, null);
-
-                // Update drop target state
-                setDropTarget({
-                    elementId: null,
-                    layoutId,
-                    cellId: dropPosition.targetId,
-                    position: dropPosition.position,
-                });
-            } else if (dropPosition.targetType === 'layout' && dropPosition.targetId) {
-                // Set layout indicator and clear others
-                setElementIndicator(null, null);
-                setCellIndicator(null, null);
-                setLayoutIndicator(dropPosition.targetId, dropPosition.position);
-                setSlideIndicator(null);
-                setTableColumnIndicator(null, null, null, null);
-                setTableRowIndicator(null, null, null, null);
-
-                // Update drop target state
-                setDropTarget({
-                    elementId: null,
-                    layoutId: dropPosition.targetId,
-                    cellId: null,
-                    position: dropPosition.position,
-                });
-            } else if (dropPosition.targetType === 'slide' && dropPosition.targetId) {
-                // Set slide indicator and clear others
+            // Case 3: If we're over an element, we can drop top/bottom of that element
+            else if (elementId && elementId !== state.source.elementId) {
+                // console.log('[DragDropContext] dragover – processElementTarget');
+                processElementTarget(e, elementId, layoutId, elementNode as HTMLElement);
+            } else if (layoutId && layoutId !== state.source.layoutId) {
+                // console.log('[DragDropContext] dragover – processLayoutTarget (default)');
+                processLayoutTarget(e, layoutId, layoutNode as HTMLElement, isMultiCellRow);
+            }
+            // Case 5: If we're over a slide, we can drop on the slide
+            else if (slideId && (!state.source.layoutId || getLayoutSlide(state.source.layoutId)?.id !== slideId)) {
+                console.log('[DragDropContext] dragover – setSlideIndicator', slideId);
+                setSlideIndicator(slideId);
                 setElementIndicator(null, null);
                 setCellIndicator(null, null);
                 setLayoutIndicator(null, null);
-                setSlideIndicator(dropPosition.targetId);
-                setTableColumnIndicator(null, null, null, null);
-                setTableRowIndicator(null, null, null, null);
-
-                // Update drop target state
                 setDropTarget({
                     elementId: null,
                     layoutId: null,
                     cellId: null,
-                    slideId: dropPosition.targetId,
+                    slideId,
                     position: null,
                 });
             } else {
-                // Not over a valid target or in empty space
+                // Not over a valid target
                 console.log('[DragDropContext] dragover – no valid target');
-                resetAllIndicators();
+                setElementIndicator(null, null);
+                setCellIndicator(null, null);
+                setLayoutIndicator(null, null);
+                setSlideIndicator(null);
+                setDropTarget({
+                    elementId: null,
+                    layoutId: null,
+                    cellId: null,
+                    position: null,
+                });
             }
-
-            // Update previous state reference for use in drop handler
-            updatePrevStateRef();
         };
 
-        // Helper function to reset all indicators
-        const resetAllIndicators = () => {
-            setElementIndicator(null, null);
-            setCellIndicator(null, null);
+        const processElementTarget = (e: DragEvent, elementId: string, layoutId: string, elementNode: HTMLElement) => {
+            // Get element dimensions
+            console.log('[DragDropContext] processElementTarget', { elementId, layoutId });
+            const rect = elementNode.getBoundingClientRect();
+
+            // Get layout to determine number of cells
+            const layout = getLayout(layoutId);
+            if (!layout) return;
+
+            const targetElement = layout.elements.find(el => el.id === elementId);
+            if (!targetElement) return;
+
+            // Find all elements in the same cell for better drop zone calculation
+            const cellId = targetElement.cellId;
+            const cellElements = layout.elements.filter(el => el.cellId === cellId);
+
+            // Sort elements by their vertical position
+            const elementsWithNodes = cellElements
+                .map(el => {
+                    const node = document.querySelector(`[data-element-id="${el.id}"]`);
+                    if (!node) return null;
+                    return {
+                        element: el,
+                        rect: node.getBoundingClientRect(),
+                    };
+                })
+                .filter(item => item !== null) as { element: BaseElement; rect: DOMRect }[];
+
+            // Sort by vertical position (top to bottom)
+            elementsWithNodes.sort((a, b) => a.rect.top - b.rect.top);
+
+            // Find current element index in the sorted list
+            const currentElementIndex = elementsWithNodes.findIndex(item => item.element.id === elementId);
+
+            // For single-cell layouts with one element, allow drops on all sides
+            const isSingleCellLayout = layout.gridStructure.rows[0].cells.length === 1;
+
+            // Calculate distances from edges
+            const distanceFromTop = e.clientY - rect.top;
+            const distanceFromBottom = rect.bottom - e.clientY;
+            const distanceFromLeft = e.clientX - rect.left;
+            const distanceFromRight = rect.right - e.clientX;
+
+            // Determine position based on mouse location and element gaps
+            let position: Position | null = null;
+
+            // Check which distance is smallest - this helps determine if we should
+            // prefer horizontal or vertical positioning
+            const minHorizontalDistance = Math.min(distanceFromLeft, distanceFromRight);
+            const minVerticalDistance = Math.min(distanceFromTop, distanceFromBottom);
+
+            // If horizontal distance is significantly smaller than vertical, use horizontal positioning
+            const shouldUseHorizontalPosition = minHorizontalDistance < minVerticalDistance * 0.7;
+
+            // If we're significantly closer to left/right edges than top/bottom,
+            // prefer left/right positioning
+            if (shouldUseHorizontalPosition) {
+                if (distanceFromLeft < distanceFromRight) {
+                    position = 'left';
+                } else {
+                    position = 'right';
+                }
+            } else {
+                // Otherwise, use the vertical positioning logic (existing code)
+                // Enhance the detection logic for top/bottom positions
+                if (currentElementIndex > 0 && currentElementIndex < elementsWithNodes.length) {
+                    // Check if we're between elements
+                    const prevElement = elementsWithNodes[currentElementIndex - 1];
+                    const currElement = elementsWithNodes[currentElementIndex];
+
+                    // Calculate and use the gap to create a more precise drop zone
+                    const gapAbove = currElement.rect.top - prevElement.rect.bottom;
+                    const halfGapAbove = prevElement.rect.bottom + gapAbove / 2;
+
+                    // If mouse is in the upper half of the element or in the gap above
+                    if (
+                        e.clientY < rect.top + rect.height / 2 ||
+                        (gapAbove > 0 && e.clientY >= prevElement.rect.bottom && e.clientY <= halfGapAbove)
+                    ) {
+                        position = 'top';
+                    }
+                }
+
+                if (currentElementIndex >= 0 && currentElementIndex < elementsWithNodes.length - 1) {
+                    // Check below the current element
+                    const currElement = elementsWithNodes[currentElementIndex];
+                    const nextElement = elementsWithNodes[currentElementIndex + 1];
+
+                    // Calculate and use the gap to create a more precise drop zone
+                    const gapBelow = nextElement.rect.top - currElement.rect.bottom;
+                    const halfGapBelow = currElement.rect.bottom + gapBelow / 2;
+
+                    // If mouse is in the lower half of the element or in the gap below
+                    if (
+                        position === null &&
+                        (e.clientY > rect.top + rect.height / 2 ||
+                            (gapBelow > 0 && e.clientY >= currElement.rect.bottom && e.clientY <= halfGapBelow))
+                    ) {
+                        position = 'bottom';
+                    }
+                }
+
+                // Handle edge cases (first or last element)
+                if (position === null) {
+                    // Increase detection area by adding a threshold for top/bottom
+                    const threshold = rect.height * 0.3; // Use 30% of element height as threshold
+
+                    // For the first element
+                    if (currentElementIndex === 0 && distanceFromTop < threshold) {
+                        position = 'top';
+                    }
+                    // For the last element
+                    else if (currentElementIndex === elementsWithNodes.length - 1 && distanceFromBottom < threshold) {
+                        position = 'bottom';
+                    }
+                    // For elements without clear position yet
+                    else {
+                        if (distanceFromTop < distanceFromBottom) {
+                            position = 'top';
+                        } else {
+                            position = 'bottom';
+                        }
+                    }
+                }
+            }
+
+            // If a position still hasn't been determined (unlikely at this point),
+            // fallback to the nearest edge
+            if (!position) {
+                // Find minimum distance from all edges
+                const minDistance = Math.min(distanceFromTop, distanceFromBottom, distanceFromLeft, distanceFromRight);
+
+                if (minDistance === distanceFromTop) {
+                    position = 'top';
+                } else if (minDistance === distanceFromBottom) {
+                    position = 'bottom';
+                } else if (minDistance === distanceFromLeft) {
+                    position = 'left';
+                } else if (minDistance === distanceFromRight) {
+                    position = 'right';
+                }
+            }
+
+            if (!position) return;
+
+            // Only update if state changed
+            if (
+                prevStateRef.current.indicators.elementIndicator === elementId &&
+                prevStateRef.current.indicators.elementPosition === position
+            ) {
+                return;
+            }
+
+            console.log('[DragDropContext] processElementTarget – set indicator', { position });
+
+            // Set indicators
+            setElementIndicator(elementId, position);
             setLayoutIndicator(null, null);
             setSlideIndicator(null);
-            setTableColumnIndicator(null, null, null, null);
-            setTableRowIndicator(null, null, null, null);
+
+            // Update target state
             setDropTarget({
-                elementId: null,
-                layoutId: null,
-                cellId: null,
-                position: null,
+                elementId,
+                layoutId,
+                cellId: targetElement.cellId,
+                position,
             });
+
+            // Update reference to previous state
+            prevStateRef.current = {
+                ...state,
+                indicators: {
+                    ...state.indicators,
+                    elementIndicator: elementId,
+                    elementPosition: position,
+                    layoutIndicator: null,
+                    layoutPosition: null,
+                    slideIndicator: null,
+                },
+            };
         };
 
         const processTableTarget = (e: DragEvent, tableId: string, cellNode: HTMLElement) => {
@@ -2789,89 +2924,337 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             };
         };
 
-        // Helper to update previous state reference
-        const updatePrevStateRef = () => {
+        const processCellTarget = (
+            e: DragEvent,
+            cellId: string,
+            layoutId: string,
+            cellNode: HTMLElement,
+            elementNode?: HTMLElement,
+            elementId?: string | null
+        ) => {
+            console.log('[DragDropContext] processCellTarget', { cellId, layoutId });
+            // Get cell dimensions
+            const rectCell = cellNode.getBoundingClientRect();
+
+            const distanceFromCellLeft = e.clientX - rectCell.left;
+            const distanceFromCellRight = rectCell.right - e.clientX;
+            const distanceFromCellTop = e.clientY - rectCell.top;
+            const distanceFromCellBottom = rectCell.bottom - e.clientY;
+
+            // Determine position based on closest edge
+            let position: Position | null = null;
+            let targetElement: 'cell' | 'element' | null = null;
+
+            let minDistance: number;
+            console.log('[DragDropContext] processCellTarget – elementNode', { elementNode });
+            if (elementNode) {
+                // For cell targets, we're primarily interested in left/right position
+
+                const rectElement = elementNode?.getBoundingClientRect();
+                const distanceFromElementLeft = e.clientX - rectElement.left;
+                const distanceFromElementRight = rectElement.right - e.clientX;
+                const distanceFromElementTop = e.clientY - rectElement.top;
+                const distanceFromElementBottom = rectElement.bottom - e.clientY;
+
+                minDistance = Math.min(
+                    distanceFromCellLeft,
+                    distanceFromCellRight,
+                    distanceFromCellTop,
+                    distanceFromCellBottom,
+                    distanceFromElementLeft,
+                    distanceFromElementRight,
+                    distanceFromElementTop,
+                    distanceFromElementBottom
+                );
+
+                if (minDistance === distanceFromCellTop) {
+                    position = 'top';
+                    targetElement = 'cell';
+                } else if (minDistance === distanceFromCellBottom) {
+                    position = 'bottom';
+                    targetElement = 'cell';
+                } else if (minDistance === distanceFromCellLeft) {
+                    position = 'left';
+                    targetElement = 'cell';
+                } else if (minDistance === distanceFromCellRight) {
+                    position = 'right';
+                    targetElement = 'cell';
+                } else if (minDistance === distanceFromElementTop) {
+                    position = 'top';
+                    targetElement = 'element';
+                } else if (minDistance === distanceFromElementBottom) {
+                    position = 'bottom';
+                    targetElement = 'element';
+                }
+            } else {
+                const distanceFromCellLeft = e.clientX - rectCell.left;
+                const distanceFromCellRight = rectCell.right - e.clientX;
+                const distanceFromCellTop = e.clientY - rectCell.top;
+                const distanceFromCellBottom = rectCell.bottom - e.clientY;
+
+                const onePercentWidth = rectCell.width / 100;
+                if (distanceFromCellLeft / onePercentWidth < 20) {
+                    position = 'left';
+                    targetElement = 'cell';
+                } else if (distanceFromCellRight / onePercentWidth < 20) {
+                    position = 'right';
+                    targetElement = 'cell';
+                } else {
+                    minDistance = Math.min(distanceFromCellTop, distanceFromCellBottom);
+                    if (minDistance === distanceFromCellTop) {
+                        position = 'top';
+                        targetElement = 'cell';
+                    } else if (minDistance === distanceFromCellBottom) {
+                        position = 'bottom';
+                        targetElement = 'cell';
+                    }
+                }
+            }
+
+            if (targetElement === 'cell') {
+                console.log('[DragDropContext] processCellTarget – target is cell', { position });
+                // Set indicators and clear others
+                setElementIndicator(null, null);
+                const layout = getLayout(layoutId);
+                if (!layout) return;
+                const cellElements = layout.elements.filter(el => el.cellId === cellId);
+
+                const lastElementInCell = cellElements[cellElements.length - 1];
+
+                if (position === 'top' || position === 'bottom') {
+                    setElementIndicator(lastElementInCell.id, position);
+                    setCellIndicator(null, null);
+                } else {
+                    setElementIndicator(null, null);
+                    setCellIndicator(cellId, position);
+                }
+                setLayoutIndicator(null, null);
+                setSlideIndicator(null);
+
+                // Update target state
+                setDropTarget({
+                    elementId: null,
+                    layoutId,
+                    cellId,
+                    position,
+                });
+
+                // Update previous state reference
+                prevStateRef.current = {
+                    ...state,
+                    target: {
+                        elementId: null,
+                        layoutId,
+                        cellId,
+                        position,
+                    },
+                    indicators: {
+                        ...state.indicators,
+                        elementIndicator: null,
+                        elementPosition: null,
+                        cellIndicator: cellId,
+                        cellPosition: position,
+                        layoutIndicator: null,
+                        layoutPosition: null,
+                        slideIndicator: null,
+                    },
+                };
+            } else if (targetElement === 'element' && elementId) {
+                console.log('[DragDropContext] processCellTarget – target is element', { position });
+                // Set indicators and clear others
+                setElementIndicator(elementId, position);
+                setCellIndicator(null, null);
+                setLayoutIndicator(null, null);
+                setSlideIndicator(null);
+
+                // Update target state
+                setDropTarget({
+                    elementId,
+                    layoutId,
+                    cellId: null,
+                    position,
+                });
+
+                // Update previous state reference
+                prevStateRef.current = {
+                    ...state,
+                    target: {
+                        elementId,
+                        layoutId,
+                        cellId: null,
+                        position,
+                    },
+                    indicators: {
+                        ...state.indicators,
+                        elementIndicator: elementId,
+                        elementPosition: position,
+                        layoutIndicator: null,
+                        layoutPosition: null,
+                        slideIndicator: null,
+                    },
+                };
+            }
+        };
+
+        const processCellInLayoutTarget = (
+            e: DragEvent,
+            cellId: string,
+            layoutId: string,
+            cellNode: HTMLElement,
+            position: Position
+        ) => {
+            console.log('[DragDropContext] processCellInLayoutTarget – target is cell', { position });
+            // Set indicators and clear others
+            setElementIndicator(null, null);
+            const layout = getLayout(layoutId);
+            if (!layout) return;
+            const cellElements = layout.elements.filter(el => el.cellId === cellId);
+
+            const lastElementInCell = cellElements[cellElements.length - 1];
+
+            if (position === 'top' || position === 'bottom') {
+                setElementIndicator(lastElementInCell.id, position);
+                setCellIndicator(null, null);
+            } else {
+                setElementIndicator(null, null);
+                setCellIndicator(cellId, position);
+            }
+            setLayoutIndicator(null, null);
+            setSlideIndicator(null);
+
+            // Update target state
+            setDropTarget({
+                elementId: null,
+                layoutId,
+                cellId,
+                position,
+            });
+
+            // Update previous state reference
             prevStateRef.current = {
                 ...state,
+                target: {
+                    elementId: null,
+                    layoutId,
+                    cellId,
+                    position,
+                },
                 indicators: {
                     ...state.indicators,
+                    elementIndicator: null,
+                    elementPosition: null,
+                    cellIndicator: cellId,
+                    cellPosition: position,
+                    layoutIndicator: null,
+                    layoutPosition: null,
+                    slideIndicator: null,
                 },
             };
         };
 
-        // Helper for finding the closest elements in a cell (for empty space detection)
-        const findClosestElementsInCell = (cellNode: HTMLElement, mouseX: number, mouseY: number) => {
-            if (!cellNode) return null;
+        const processLayoutTarget = (
+            e: DragEvent,
+            layoutId: string,
+            layoutNode: HTMLElement,
+            isMultiCellRow?: boolean
+        ) => {
+            console.log('[DragDropContext] processLayoutTarget', { layoutId, isMultiCellRow, date: Date.now() });
 
-            // Get all elements in the cell
-            const elements = Array.from(cellNode.querySelectorAll('[data-element-id]'))
-                .map(el => ({
-                    node: el as HTMLElement,
-                    rect: el.getBoundingClientRect(),
-                    id: el.getAttribute('data-element-id'),
-                }))
-                .filter(el => el.id && el.id !== state.source.elementId); // Exclude source element
+            // Get layout dimensions
+            const rect = layoutNode.getBoundingClientRect();
+            const layout = getLayout(layoutId);
+            if (!layout) return;
 
-            if (elements.length === 0) return null;
+            // Calculate distances from edges
+            const distanceFromTop = e.clientY - rect.top;
+            const distanceFromBottom = rect.bottom - e.clientY;
+            const distanceFromLeft = e.clientX - rect.left;
+            const distanceFromRight = rect.right - e.clientX;
 
-            // Sort by vertical position (top to bottom)
-            elements.sort((a, b) => a.rect.top - b.rect.top);
+            // Increase detection area with threshold
+            const verticalThreshold = rect.height * 0.25; // 25% of height for top/bottom
+            const horizontalThreshold = rect.width * 0.15; // 15% of width for left/right
 
-            // Find elements above and below mouse position
-            const elementsAbove = elements.filter(el => el.rect.bottom < mouseY);
-            const elementsBelow = elements.filter(el => el.rect.top > mouseY);
+            // Adjust distances with thresholds
+            const adjustedDistanceFromTop = distanceFromTop < verticalThreshold ? 0 : distanceFromTop;
+            const adjustedDistanceFromBottom = distanceFromBottom < verticalThreshold ? 0 : distanceFromBottom;
+            const adjustedDistanceFromLeft = distanceFromLeft < horizontalThreshold ? 0 : distanceFromLeft;
+            const adjustedDistanceFromRight = distanceFromRight < horizontalThreshold ? 0 : distanceFromRight;
 
-            const closestAbove = elementsAbove.length > 0 ? elementsAbove[elementsAbove.length - 1] : null;
-            const closestBelow = elementsBelow.length > 0 ? elementsBelow[0] : null;
+            // Find minimum distance with thresholds applied
+            const minDistance = Math.min(
+                adjustedDistanceFromTop,
+                adjustedDistanceFromBottom,
+                adjustedDistanceFromLeft,
+                adjustedDistanceFromRight
+            );
 
-            // Calculate gap sizes
-            const gapAbove = closestAbove ? mouseY - closestAbove.rect.bottom : null;
-            const gapBelow = closestBelow ? closestBelow.rect.top - mouseY : null;
-
-            // Determine best position based on gaps
-            if (gapAbove !== null && gapBelow !== null) {
-                // Mouse is between two elements
-                if (gapAbove < gapBelow) {
-                    return { element: closestAbove, position: 'bottom', gapSize: gapAbove };
-                } else {
-                    return { element: closestBelow, position: 'top', gapSize: gapBelow };
-                }
-            } else if (gapAbove !== null) {
-                // Mouse is below all elements
-                return { element: closestAbove, position: 'bottom', gapSize: gapAbove };
-            } else if (gapBelow !== null) {
-                // Mouse is above all elements
-                return { element: closestBelow, position: 'top', gapSize: gapBelow };
-            }
-
-            // Fallback to closest element by euclidean distance
-            let closestElement = null;
-            let minDistance = Number.MAX_VALUE;
+            // Determine position based on closest edge
             let position: Position | null = null;
 
-            elements.forEach(el => {
-                // Calculate distance to each edge
-                const distToTop = Math.abs(mouseY - el.rect.top);
-                const distToBottom = Math.abs(mouseY - el.rect.bottom);
-                const distToLeft = Math.abs(mouseX - el.rect.left);
-                const distToRight = Math.abs(mouseX - el.rect.right);
+            if (minDistance === adjustedDistanceFromTop || distanceFromTop < verticalThreshold) {
+                position = 'top';
+            } else if (minDistance === adjustedDistanceFromBottom || distanceFromBottom < verticalThreshold) {
+                position = 'bottom';
+            } else if (minDistance === adjustedDistanceFromLeft || distanceFromLeft < horizontalThreshold) {
+                position = 'left';
+            } else if (minDistance === adjustedDistanceFromRight || distanceFromRight < horizontalThreshold) {
+                position = 'right';
+            }
 
-                // Find minimum distance
-                const minEdgeDist = Math.min(distToTop, distToBottom, distToLeft, distToRight);
+            if (
+                !position ||
+                (prevStateRef.current.indicators.layoutIndicator === layoutId &&
+                    prevStateRef.current.indicators.layoutPosition === position)
+            ) {
+                return;
+            }
 
-                if (minEdgeDist < minDistance) {
-                    minDistance = minEdgeDist;
-                    closestElement = el;
+            // Only update if position is valid and state changed
 
-                    // Determine position relative to closest edge
-                    if (minEdgeDist === distToTop) position = 'top';
-                    else if (minEdgeDist === distToBottom) position = 'bottom';
-                    else if (minEdgeDist === distToLeft) position = 'left';
-                    else if (minEdgeDist === distToRight) position = 'right';
+            if (position === 'left' || position === 'right') {
+                const layout = getLayout(layoutId);
+                if (!layout) return;
+
+                let cellIndex: number = 0;
+
+                if (isMultiCellRow) {
+                    cellIndex = position === 'left' ? 0 : layout.gridStructure.rows[0].cells.length - 1;
                 }
+
+                const cellId = layout.gridStructure.rows[0].cells[cellIndex].id;
+                const cellNode = document.querySelector(`[data-cell-id="${cellId}"]`);
+
+                if (!cellNode) return;
+
+                processCellInLayoutTarget(e, cellId, layoutId, cellNode as HTMLElement, position);
+                return;
+            }
+            // Set indicators
+            setLayoutIndicator(layoutId, position);
+            setElementIndicator(null, null);
+            setSlideIndicator(null);
+
+            // Update target state
+            setDropTarget({
+                elementId: null,
+                layoutId,
+                cellId: null,
+                position,
             });
 
-            return closestElement && position ? { element: closestElement, position, gapSize: minDistance } : null;
+            // Update reference to previous state
+            prevStateRef.current = {
+                ...state,
+                indicators: {
+                    ...state.indicators,
+                    layoutIndicator: layoutId,
+                    layoutPosition: position,
+                    elementIndicator: null,
+                    elementPosition: null,
+                    slideIndicator: null,
+                },
+            };
         };
 
         // Document-level drop handler

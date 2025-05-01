@@ -478,7 +478,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     return (
         <div
             className={`${className} 
-                ${isSelectedRow || isSelectedColumn ? styles.selectedCell : ''} 
+                ${isSelectedRow || isSelectedColumn ? styles.selectedCell : ''}
                 ${hasMultipleCells && !isTable && (cellIsHovered || layoutIsHovered || layoutIsFocused) ? styles.cellBorderVisible : ''}`}
             data-cell-id={cell.id}
             data-cell="true"

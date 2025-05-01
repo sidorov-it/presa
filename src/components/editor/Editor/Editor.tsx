@@ -5,6 +5,7 @@ import ElementsPanel from '@/components/editor/ElementsPanel/ElementsPanel';
 import { DndProvider } from '@/contexts/DragDropContext';
 import Presentation from '../Presentation';
 import DragDropIndicator from '@/components/DragDropIndicator';
+import DragDropDebugInfo from '@/components/DragDropDebugInfo';
 import SlideMenu from '../SlideMenu/SlideMenu';
 import { useMenuStore } from '@/store/menuStore';
 import { TipTapRefs } from '@/types';
@@ -46,6 +47,8 @@ const EditorContent: React.FC<{
             <SlideMenu tiptapRefs={tiptapRefs} />
             {/* Global drag-drop indicator */}
             <DragDropIndicator />
+            {/* Debug information panel */}
+            <DragDropDebugInfo />
         </div>
     );
 });

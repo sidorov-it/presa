@@ -172,10 +172,10 @@ export const getComponentStructureType = (elementId: string): ComponentStructure
     return elementType?.componentStructure;
 };
 
-export const getElementConfig = (elementId: string): ElementConfig => {
+export const getElementConfig = (elementId: string): ElementConfig | undefined => {
     const elementType = elementTypes[elementId];
-    if (!elementType) {
-        throw new Error(`Element type ${elementId} not found in registry`);
-    }
+    // if (!elementType) {
+    //     throw new Error(`Element type ${elementId} not found in registry`);
+    // }
     return elementType;
 };
