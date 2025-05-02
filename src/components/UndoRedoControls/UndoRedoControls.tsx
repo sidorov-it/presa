@@ -1,28 +1,29 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, MutableRefObject } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
-
+import { TipTapRefs } from '@/types';
 import styles from './UndoRedoControls.module.css';
 
 interface UndoRedoControlsProps {
     presentationId: string;
     className?: string;
+    tiptapRefs: MutableRefObject<TipTapRefs>;
 }
 
-const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, className = '' }) => {
+const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, className = '', tiptapRefs }) => {
     const canUndoOperation = usePresentationStore(state => state.canUndo(presentationId));
     const canRedoOperation = usePresentationStore(state => state.canRedo(presentationId));
 
     const handleUndo = useCallback(() => {
         if (canUndoOperation) {
-            usePresentationStore.getState().undo(presentationId);
+            usePresentationStore.getState().undo(presentationId, tiptapRefs);
         }
-    }, [canUndoOperation, presentationId]);
+    }, [canUndoOperation, presentationId, tiptapRefs]);
 
     const handleRedo = useCallback(() => {
         if (canRedoOperation) {
-            usePresentationStore.getState().redo(presentationId);
+            usePresentationStore.getState().redo(presentationId, tiptapRefs);
         }
-    }, [canRedoOperation, presentationId]);
+    }, [canRedoOperation, presentationId, tiptapRefs]);
 
     // Handle keyboard shortcuts
     useEffect(() => {

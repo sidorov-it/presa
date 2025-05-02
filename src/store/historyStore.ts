@@ -1,7 +1,11 @@
+import { MutableRefObject } from 'react';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import deepDiff from 'deep-diff';
+import { BaseElement, TipTapRefs } from '@/types';
 import { usePresentationStore } from './presentationStore';
-import deepDiff from '@/utils/deepDiff';
+import getValueByPath from '@/utils/getValueByPath';
+import { getElementConfig } from '@/elements/registry';
 
 // Define history action types
 export type HistoryAction = {
@@ -15,11 +19,12 @@ export type HistoryAction = {
     position?: 'left' | 'right'; // which position was modified (if applicable)
     cellId?: string; // which cell was modified (if applicable)
     columnId?: string; // which cell was modified (if applicable)
-    before: any; // state before the change
-    after: any; // state after the change
+    changes: deepDiff.Diff<any, any>[]; // generated diffs between before and after states
     timestamp: number; // when the action happened
     transactionId?: string; // ID to group related actions
     isTextElement?: boolean; // whether the element is a text element
+    before?: any; // original state (kept for debugging)
+    after?: any; // updated state (kept for debugging)
 };
 
 interface HistoryState {
@@ -35,7 +40,7 @@ interface HistoryState {
     activeTransactions: {
         [presentationId: string]: {
             transactionId: string;
-            actions: Omit<HistoryAction, 'timestamp'>[];
+            actions: Omit<HistoryAction, 'timestamp' | 'changes'>[];
             description: string;
         } | null;
     };
@@ -52,7 +57,9 @@ interface HistoryState {
     beginTransaction: (presentationId: string, description: string) => string;
 
     // Record an action as part of an active transaction
-    recordTransactionAction: (action: Omit<HistoryAction, 'timestamp' | 'transactionId'>) => void;
+    recordTransactionAction: (
+        action: Omit<HistoryAction, 'timestamp' | 'transactionId' | 'changes'> & { before: any; after: any }
+    ) => void;
 
     // Commit all actions in a transaction as a single history entry
     commitTransaction: (presentationId: string) => void;
@@ -61,10 +68,10 @@ interface HistoryState {
     cancelTransaction: (presentationId: string) => void;
 
     // Undo the last action
-    undo: (presentationId: string) => void;
+    undo: (presentationId: string, tiptapRefs: MutableRefObject<TipTapRefs>) => void;
 
     // Redo the last undone action
-    redo: (presentationId: string) => void;
+    redo: (presentationId: string, tiptapRefs: MutableRefObject<TipTapRefs>) => void;
 
     // Check if undo is available
     canUndo: (presentationId: string) => boolean;
@@ -77,7 +84,7 @@ interface HistoryState {
 
     // Get presentation history
     getHistory: (presentationId: string) => HistoryAction[];
-    getHistoryDiff: (presentationId: string) => void;
+    getHistoryDiff: (presentationId: string, future?: boolean) => void;
 
     // Check if there's an active transaction
     hasActiveTransaction: (presentationId: string) => boolean;
@@ -89,6 +96,29 @@ const MAX_HISTORY_LENGTH = 50;
 // Generate a transaction ID
 const generateTransactionId = () => {
     return Math.random().toString(36).substring(2, 15);
+};
+
+// Apply diffs to a state object (for redo operations)
+const applyDiffs = (state: any, diffs: deepDiff.Diff<any, any>[]) => {
+    const newState = JSON.parse(JSON.stringify(state));
+
+    diffs.forEach(diff => {
+        deepDiff.applyChange(newState, undefined, diff);
+    });
+
+    return newState;
+};
+
+// Revert diffs from a state object (for undo operations)
+const revertDiffs = (state: any, diffs: deepDiff.Diff<any, any>[]) => {
+    const newState = JSON.parse(JSON.stringify(state));
+
+    // Apply diffs in reverse order for undo
+    for (let i = diffs.length - 1; i >= 0; i--) {
+        deepDiff.revertChange(newState, {}, diffs[i]);
+    }
+
+    return newState;
 };
 
 export const useHistoryStore = create<HistoryState>()(
@@ -128,14 +158,20 @@ export const useHistoryStore = create<HistoryState>()(
                 const transactionId = generateTransactionId();
 
                 console.debug('begin transaction', description);
+                const transactionAction: {
+                    transactionId: string;
+                    actions: Omit<HistoryAction, 'timestamp' | 'changes'>[];
+                    description: string;
+                } = {
+                    transactionId,
+                    actions: [],
+                    description,
+                };
+
                 set(state => ({
                     activeTransactions: {
-                        ...state.activeTransactions,
-                        [presentationId]: {
-                            transactionId,
-                            actions: [],
-                            description,
-                        },
+                        ...(state.activeTransactions as any),
+                        [presentationId]: [transactionAction],
                     },
                 }));
 
@@ -157,7 +193,7 @@ export const useHistoryStore = create<HistoryState>()(
                     activeTransactions: {
                         ...state.activeTransactions,
                         [presentationId]: {
-                            ...activeTransaction,
+                            ...(activeTransaction as any),
                             actions: [...activeTransaction.actions, action],
                         },
                     },
@@ -177,10 +213,6 @@ export const useHistoryStore = create<HistoryState>()(
                             },
                         };
 
-                        // const diff1 = deepDiff(state.get, updatedState);
-                        // console.log('diff1', diff1);
-
-                        // console.debug('commit transaction', state, updatedState);
                         return updatedState;
                     });
                     return;
@@ -190,6 +222,11 @@ export const useHistoryStore = create<HistoryState>()(
                 const firstAction = activeTransaction.actions[0];
                 const lastAction = activeTransaction.actions[activeTransaction.actions.length - 1];
 
+                // Generate diffs using deep-diff library
+                const changes = deepDiff.diff(firstAction.before, lastAction.after) || [];
+
+                console.log('deep-diff changes', changes);
+
                 const combinedAction: HistoryAction = {
                     type: firstAction.type,
                     description: activeTransaction.description,
@@ -197,10 +234,11 @@ export const useHistoryStore = create<HistoryState>()(
                     slideId: firstAction.slideId,
                     layoutId: firstAction.layoutId,
                     elementId: firstAction.elementId,
-                    before: firstAction.before,
-                    after: lastAction.after,
+                    changes,
                     timestamp: Date.now(),
                     transactionId: activeTransaction.transactionId,
+                    before: firstAction.before,
+                    after: lastAction.after,
                 };
 
                 // Record the combined action
@@ -265,10 +303,16 @@ export const useHistoryStore = create<HistoryState>()(
                     get().initHistory(presentationId);
                 }
 
+                // Generate changes using deep-diff library
+                const changes = deepDiff.diff(action.before, action.after) || [];
+
+                console.log('deep-diff changes', changes);
+
                 set(state => {
                     // When a new action is recorded, future is cleared
-                    const historyEntry = {
+                    const historyEntry: HistoryAction = {
                         ...action,
+                        changes,
                         timestamp: Date.now(),
                     };
 
@@ -292,7 +336,7 @@ export const useHistoryStore = create<HistoryState>()(
                 });
             },
 
-            undo: (presentationId: string) => {
+            undo: (presentationId: string, tiptapRefs: MutableRefObject<TipTapRefs>) => {
                 // If there's an active transaction, cancel it
                 if (get().activeTransactions[presentationId]) {
                     console.log('Cancelling active transaction before undo');
@@ -323,10 +367,36 @@ export const useHistoryStore = create<HistoryState>()(
                     const newPast = presentationHistory.past.slice(0, -1);
                     const newFuture = [lastAction, ...presentationHistory.future];
 
-                    // Restore the entire state to what it was before this action
-                    if (lastAction.before && typeof lastAction.before === 'object') {
-                        console.log('Restoring state to:', lastAction.before);
-                        // Directly restore the full state
+                    // Get the current state
+                    const currentState = { presentations: presentationStore.presentations };
+
+                    lastAction.changes.forEach(change => {
+                        if (change.kind === 'E') {
+                            const lastKey = change.path?.[change.path.length - 1];
+
+                            if (lastKey === 'content') {
+                                const changedObject = getValueByPath(
+                                    currentState,
+                                    change.path!.slice(0, -1)
+                                ) as BaseElement;
+
+                                const elementConfig = getElementConfig(changedObject.elementTypeId);
+
+                                if (elementConfig?.hasTextEditor) {
+                                    tiptapRefs.current.editors?.[changedObject.id]?.editor.commands.setContent(
+                                        change.lhs
+                                    );
+                                }
+                            }
+                        }
+                    });
+
+                    if (lastAction.changes && lastAction.changes.length > 0) {
+                        // Use deep-diff to revert changes
+                        const restoredState = revertDiffs(currentState, lastAction.changes);
+                        presentationStore.setFullState(restoredState);
+                    } else if (lastAction.before) {
+                        // Fallback to using the before state if available
                         presentationStore.setFullState(lastAction.before);
                     }
 
@@ -342,7 +412,7 @@ export const useHistoryStore = create<HistoryState>()(
                 });
             },
 
-            redo: (presentationId: string) => {
+            redo: (presentationId: string, tiptapRefs: MutableRefObject<TipTapRefs>) => {
                 // If there's an active transaction, cancel it
                 if (get().activeTransactions[presentationId]) {
                     get().cancelTransaction(presentationId);
@@ -362,11 +432,42 @@ export const useHistoryStore = create<HistoryState>()(
                     const newFuture = presentationHistory.future.slice(1);
                     const newPast = [...presentationHistory.past, nextAction];
 
-                    // Restore the entire state to what it was after this action
-                    if (nextAction.after && typeof nextAction.after === 'object') {
-                        // Directly restore the full state
+                    // Get the current state
+                    const currentState = { presentations: presentationStore.presentations };
+
+                    nextAction.changes.forEach(change => {
+                        if (change.kind === 'E') {
+                            const lastKey = change.path?.[change.path.length - 1];
+
+                            if (lastKey === 'content') {
+                                const changedObject = getValueByPath(
+                                    currentState,
+                                    change.path!.slice(0, -1)
+                                ) as BaseElement;
+
+                                const elementConfig = getElementConfig(changedObject.elementTypeId);
+
+                                if (elementConfig?.hasTextEditor) {
+                                    tiptapRefs.current.editors?.[changedObject.id]?.editor.commands.setContent(
+                                        change.rhs
+                                    );
+                                }
+                            }
+                        }
+                    });
+
+                    if (nextAction.changes && nextAction.changes.length > 0) {
+                        // Use deep-diff to apply changes
+                        const restoredState = applyDiffs(currentState, nextAction.changes);
+                        presentationStore.setFullState(restoredState);
+                    } else if (nextAction.after) {
+                        // Fallback to using the after state if available
                         presentationStore.setFullState(nextAction.after);
                     }
+
+                    // if (nextAction.isTextElement && nextAction.elementId) {
+                    //     tiptapRefs.current.editors?.[nextAction.elementId]?.editor.commands.undo();
+                    // }
 
                     return {
                         history: {
@@ -418,8 +519,9 @@ export const useHistoryStore = create<HistoryState>()(
                 const presentationHistory = get().history[presentationId];
 
                 const key = future ? 'future' : 'past';
-                presentationHistory[key].forEach(pastState => {
-                    console.log(deepDiff(pastState.before, pastState.after));
+                presentationHistory[key].forEach(action => {
+                    console.log('Action:', action.description);
+                    console.log('Changes:', action.changes);
                 });
             },
 

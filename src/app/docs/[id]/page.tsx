@@ -1,13 +1,13 @@
 /* eslint-disable jsx-a11y/interactive-supports-focus */
 'use client';
 
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
 // import Editor from '@/components/editor/Editor';
 import { useSession } from 'next-auth/react';
 import Editor from '@/components/editor/Editor/Editor';
-import { IPresentation } from '@/types';
+import { IPresentation, TipTapRefs } from '@/types';
 import UndoRedoControls from '@/components/UndoRedoControls/UndoRedoControls';
 import { ThemeIcon } from '@/components/icons';
 import { Popover } from '@/components/ui/Popover';
@@ -40,6 +40,11 @@ export default function PresentationEditorPage() {
     const currentTheme = useThemeStore(state => state.currentTheme);
     const setCurrentTheme = useThemeStore(state => state.setCurrentTheme);
     const getDefaultTheme = useThemeStore(state => state.getDefaultTheme);
+
+    const tiptapRefs = useRef<TipTapRefs>({
+        editors: {},
+        editorRefs: [],
+    });
 
     const [isLoading, setIsLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
@@ -268,7 +273,7 @@ export default function PresentationEditorPage() {
                             >
                                 <HiOutlineCog6Tooth className={styles.settingsIcon} aria-hidden="true" />
                             </button>
-                            <UndoRedoControls presentationId={presentation.id} />
+                            <UndoRedoControls presentationId={presentation.id} tiptapRefs={tiptapRefs} />
 
                             <div className={styles.userInfo}>
                                 {session?.user?.name && <div className={styles.userName}>{session.user.name}</div>}
@@ -277,7 +282,7 @@ export default function PresentationEditorPage() {
                     </div>
                 </header>
                 <main className={styles.main}>
-                    <Editor presentationId={presentation.id} />
+                    <Editor presentationId={presentation.id} tiptapRefs={tiptapRefs} />
 
                     <BackgroundSettingsModal
                         isOpen={isBgModalOpen}

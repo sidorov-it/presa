@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, MutableRefObject } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import SlidesList from '@/components/editor/SlidesList';
 import ElementsPanel from '@/components/editor/ElementsPanel/ElementsPanel';
@@ -15,6 +15,7 @@ import styles from './Editor.module.css';
 
 interface EditorProps {
     presentationId: string;
+    tiptapRefs: MutableRefObject<TipTapRefs>;
 }
 
 // Separate content component that only re-renders when its specific props change
@@ -22,12 +23,8 @@ const EditorContent: React.FC<{
     presentationId: string;
     activeSlideId: string | null;
     onSlideSelect: (slideId: string, scroll?: boolean) => void;
-}> = React.memo(({ presentationId, activeSlideId, onSlideSelect }) => {
-    const tiptapRefs = useRef<TipTapRefs>({
-        editors: {},
-        editorRefs: [],
-    });
-
+    tiptapRefs: MutableRefObject<TipTapRefs>;
+}> = React.memo(({ presentationId, activeSlideId, onSlideSelect, tiptapRefs }) => {
     return (
         <div className={styles.editorContainer}>
             <SlidesList presentationId={presentationId} activeSlideId={activeSlideId} onSlideSelect={onSlideSelect} />
@@ -53,7 +50,7 @@ const EditorContent: React.FC<{
     );
 });
 
-const Editor: React.FC<EditorProps> = ({ presentationId }) => {
+const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
     const [activeSlideId, setActiveSlideId] = useState<string | null>(null);
     // const [isBgModalOpen, setIsBgModalOpen] = useState(false);
     const backgroundSettings = usePresentationStore(useShallow(state => state.getBackgroundSettings(presentationId)));
@@ -130,6 +127,7 @@ const Editor: React.FC<EditorProps> = ({ presentationId }) => {
                 <EditorContent
                     presentationId={presentationId}
                     activeSlideId={activeSlideId}
+                    tiptapRefs={tiptapRefs}
                     onSlideSelect={handleSlideSelect}
                 />
             </div>

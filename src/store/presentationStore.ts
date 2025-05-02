@@ -34,7 +34,7 @@ export interface PresentationState {
     version: number;
     incrementVersion: () => void;
 
-    recordAction: (action: Omit<HistoryAction, 'timestamp' | 'transactionId'>) => void;
+    recordAction: (action: Omit<HistoryAction, 'timestamp' | 'transactionId' | 'changes'> & { before: any; after: any }) => void;
 
     // Работа с презентациями
     createPresentation: (title: string) => Promise<string>;
@@ -220,8 +220,8 @@ export interface PresentationState {
     equalizeTable: (presentationId: string, slideId: string, layoutId: string) => void;
 
     // Undo/Redo operations
-    undo: (presentationId: string) => void;
-    redo: (presentationId: string) => void;
+    undo: (presentationId: string, tiptapRefs: MutableRefObject<TipTapRefs>) => void;
+    redo: (presentationId: string, tiptapRefs: MutableRefObject<TipTapRefs>) => void;
     canUndo: (presentationId: string) => boolean;
     canRedo: (presentationId: string) => boolean;
 
@@ -309,7 +309,7 @@ export const usePresentationStore = create<PresentationState>()(
                 }
             }, 1000),
 
-            recordAction: (action: Omit<HistoryAction, 'timestamp' | 'transactionId'>) => {
+            recordAction: (action: Omit<HistoryAction, 'timestamp' | 'transactionId' | 'changes'> & { before: any; after: any }) => {
                 const historyStore = useHistoryStore.getState();
                 if (historyStore.hasActiveTransaction(action.presentationId)) {
                     // Don't record individual actions during a transaction
@@ -2878,12 +2878,12 @@ export const usePresentationStore = create<PresentationState>()(
             },
 
             // Undo/Redo operations - delegate to history store
-            undo: (presentationId: string) => {
-                useHistoryStore.getState().undo(presentationId);
+            undo: (presentationId: string, tiptapRefs: MutableRefObject<TipTapRefs>) => {
+                useHistoryStore.getState().undo(presentationId, tiptapRefs);
             },
 
-            redo: (presentationId: string) => {
-                useHistoryStore.getState().redo(presentationId);
+            redo: (presentationId: string, tiptapRefs: MutableRefObject<TipTapRefs>) => {
+                useHistoryStore.getState().redo(presentationId, tiptapRefs);
             },
 
             canUndo: (presentationId: string) => {
