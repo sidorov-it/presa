@@ -7,6 +7,7 @@ import { Inter } from 'next/font/google';
 import { NextAuthProvider } from '@/components/providers/NextAuthProvider';
 import { Provider } from '@/components/ui/provider';
 import SideMenuRenderer from '@/components/editor/Menus/SideMenuRenderer/SideMenuRenderer';
+import HistoryDebugPopup from '@/components/ui/HistoryDebugPopup';
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] });
 
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <Provider>
                         {children}
                         <SideMenuRenderer />
+                        <HistoryDebugPopup />
                     </Provider>
                 </NextAuthProvider>
             </body>

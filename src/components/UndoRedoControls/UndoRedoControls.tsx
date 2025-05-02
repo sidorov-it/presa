@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 
 import styles from './UndoRedoControls.module.css';
@@ -9,29 +9,20 @@ interface UndoRedoControlsProps {
 }
 
 const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, className = '' }) => {
-    const { undo, redo } = usePresentationStore();
+    const canUndoOperation = usePresentationStore(state => state.canUndo(presentationId));
+    const canRedoOperation = usePresentationStore(state => state.canRedo(presentationId));
 
-    // const canUndoOperation = canUndo(presentationId);
-    // const canRedoOperation = canRedo(presentationId);
-
-    const canUndoOperation = false;
-    const canRedoOperation = false;
-
-    const handleUndo = () => {
-        console.log('UndoRedoControls: handleUndo');
-        console.log('canUndoOperation', canUndoOperation);
+    const handleUndo = useCallback(() => {
         if (canUndoOperation) {
-            undo(presentationId);
+            usePresentationStore.getState().undo(presentationId);
         }
-    };
+    }, [canUndoOperation, presentationId]);
 
-    const handleRedo = () => {
-        console.log('UndoRedoControls: handleRedo');
-        console.log('canRedoOperation', canRedoOperation);
+    const handleRedo = useCallback(() => {
         if (canRedoOperation) {
-            redo(presentationId);
+            usePresentationStore.getState().redo(presentationId);
         }
-    };
+    }, [canRedoOperation, presentationId]);
 
     // Handle keyboard shortcuts
     useEffect(() => {
@@ -56,7 +47,7 @@ const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, cla
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [canUndoOperation, canRedoOperation, presentationId, undo, redo, handleUndo, handleRedo]);
+    }, [canUndoOperation, canRedoOperation, presentationId, handleUndo, handleRedo]);
 
     return (
         <div className={`flex items-center gap-2 ${className}`}>

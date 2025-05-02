@@ -114,7 +114,8 @@ export interface PresentationState {
         layoutId: string,
         elementId: string,
         data: Partial<Element>,
-        createHistoryEntry?: boolean
+        createHistoryEntry?: boolean,
+        isTextElement?: boolean
     ) => void;
     deleteElement: (presentationId: string, slideId: string, layoutId: string, elementId: string) => void;
     duplicateElement: (presentationId: string, slideId: string, elementId: string) => void;
@@ -1988,8 +1989,16 @@ export const usePresentationStore = create<PresentationState>()(
                     return updatedState;
                 });
             },
-            updateElement: (presentationId, slideId, layoutId, elementId, data, createHistoryEntry = true) => {
-                const beforeState = { ...get() };
+            updateElement: (
+                presentationId,
+                slideId,
+                layoutId,
+                elementId,
+                data,
+                createHistoryEntry = true,
+                isTextElement = false
+            ) => {
+                const beforeStatePresentations = JSON.parse(JSON.stringify(get().presentations));
 
                 const currentPresentation = get().getPresentation(presentationId);
                 if (!currentPresentation) return;
@@ -2047,7 +2056,8 @@ export const usePresentationStore = create<PresentationState>()(
                         slideId,
                         layoutId,
                         elementId,
-                        before: { presentations: beforeState.presentations },
+                        isTextElement,
+                        before: { presentations: beforeStatePresentations },
                         after: { presentations: get().presentations },
                     });
                 } else {
@@ -2058,7 +2068,8 @@ export const usePresentationStore = create<PresentationState>()(
                         slideId,
                         layoutId,
                         elementId,
-                        before: { presentations: beforeState.presentations },
+                        isTextElement,
+                        before: { presentations: beforeStatePresentations },
                         after: { presentations: newState.presentations },
                     });
                 }

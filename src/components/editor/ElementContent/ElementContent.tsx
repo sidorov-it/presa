@@ -210,6 +210,7 @@ export const ElementContent = ({
                     {
                         content: content,
                     } as Partial<Element>,
+                    true,
                     true
                 );
             } else {
@@ -221,7 +222,8 @@ export const ElementContent = ({
                     {
                         content: content,
                     } as Partial<Element>,
-                    false
+                    false,
+                    true
                 );
             }
         },

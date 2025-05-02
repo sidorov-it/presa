@@ -19,6 +19,7 @@ export type HistoryAction = {
     after: any; // state after the change
     timestamp: number; // when the action happened
     transactionId?: string; // ID to group related actions
+    isTextElement?: boolean; // whether the element is a text element
 };
 
 interface HistoryState {
@@ -43,7 +44,9 @@ interface HistoryState {
     initHistory: (presentationId: string) => void;
 
     // Record a new action in the history
-    recordAction: (action: Omit<HistoryAction, 'timestamp' | 'transactionId'>) => void;
+    recordAction: (
+        action: Omit<HistoryAction, 'timestamp' | 'transactionId' | 'changes'> & { before: any; after: any }
+    ) => void;
 
     // Start a transaction (group of actions that will be treated as one)
     beginTransaction: (presentationId: string, description: string) => string;
@@ -314,8 +317,7 @@ export const useHistoryStore = create<HistoryState>()(
                         presentationId: lastAction.presentationId,
                         slideId: lastAction.slideId,
                         elementId: lastAction.elementId,
-                        before: JSON.stringify(lastAction.before),
-                        after: JSON.stringify(lastAction.after),
+                        isTextElement: lastAction.isTextElement,
                     });
 
                     const newPast = presentationHistory.past.slice(0, -1);

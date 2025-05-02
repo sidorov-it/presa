@@ -98,7 +98,7 @@ export default function BoxComponent({
                 onContentChange={(content: string) => {
                     usePresentationStore.getState().updateElement(presentationId, slideId, layoutId, elementId, {
                         content,
-                    });
+                    }, true, true);
                 }}
             />
         </Box>

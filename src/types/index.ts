@@ -308,6 +308,7 @@ export interface SmartLayoutItem {
 }
 
 export type ImageShape = 'square' | 'landscape' | 'portrait' | 'circle';
+
 export interface SmartLayoutElement extends BaseElement {
     type: 'smart-layout';
     layoutType: SmartLayoutType;
@@ -320,17 +321,9 @@ export interface SmartLayoutElement extends BaseElement {
 
 // Элемент редактора Tiptap
 export interface EditorElement extends BaseElement {
-    // type: 'editor';
     content: string;
     placeholder?: string;
 }
-
-// Элемент списка
-// export interface ListElement extends BaseElement {
-//     type: 'list';
-//     items: string[];
-//     listType: 'bullet' | 'numbered';
-// }
 
 // Элемент изображения
 export interface ImageElement extends BaseElement {
@@ -340,25 +333,6 @@ export interface ImageElement extends BaseElement {
     alignment?: 'left' | 'center' | 'right';
     width?: number;
     uploaded?: boolean;
-}
-
-// Элемент разделителя
-// export interface DividerElement extends BaseElement {
-//     type: 'divider';
-// }
-
-// Элемент иконки
-// export interface IconElement extends BaseElement {
-//     type: 'icon';
-//     iconName: string;
-// }
-
-// Элемент видео
-export interface VideoElement extends BaseElement {
-    type: 'video';
-    src: string;
-    autoplay: boolean;
-    controls: boolean;
 }
 
 // Элемент диаграммы
@@ -378,7 +352,6 @@ export interface ChartElement extends BaseElement {
     width?: number;
 }
 
-// Элемент кнопки
 export interface ButtonElement extends BaseElement {
     type: 'button';
     link: string;
@@ -407,7 +380,6 @@ export type Element =
     | ImageElement
     // | DividerElement
     // | IconElement
-    | VideoElement
     | ChartElement
     | ButtonElement
     | BoxElement;

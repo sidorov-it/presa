@@ -73,9 +73,17 @@ export default function TextBoxes({
                 item.id === itemId ? { ...item, [key]: content } : item
             );
 
-            usePresentationStore.getState().updateElement(presentationId, slideId, layoutId, elementId, {
-                items: updatedItems,
-            } as Partial<SmartLayoutElement>);
+            usePresentationStore.getState().updateElement(
+                presentationId,
+                slideId,
+                layoutId,
+                elementId,
+                {
+                    items: updatedItems,
+                } as Partial<SmartLayoutElement>,
+                true,
+                true
+            );
         },
         [elementId, presentationId, slideId, layoutId]
     );
