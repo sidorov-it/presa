@@ -1,7 +1,6 @@
 import React, { RefObject, useState, useCallback, useMemo, memo, useRef } from 'react';
 import { GridRow, GridCell, TipTapRefs } from '@/types';
 import { useDnd } from '@/contexts/DragDropContext';
-import { generateGridTemplateAreas, generateGridTemplateColumns } from '@/types';
 import GridCellElement from '../GridCellElement';
 import styles from './LayoutContent.module.css';
 import { usePresentationStore } from '@/store/presentationStore';
@@ -10,6 +9,8 @@ import { useMenuSelectedCell, useMenuSelectedElement, useMenuSelectedLayout, use
 import { useShallow } from 'zustand/react/shallow';
 import adjustWidths from '@/utils/adjustWidths';
 import { LayoutHoverEvent } from '@/customEvents/LayoutHoverEvent';
+import generateGridTemplateAreas from '@/utils/generateGridTemplateAreas';
+import generateGridTemplateColumns from '@/utils/generateGridTemplateColumns';
 
 interface LayoutContentProps {
     layoutId: string;

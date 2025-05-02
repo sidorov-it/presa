@@ -1,8 +1,9 @@
-import { generateGridTemplateAreas, Layout } from '@/types';
+import { Layout } from '@/types';
 import ElementViewer from './ElementViewer';
 import { useMemo } from 'react';
 import { ViewerElement } from '@/types/elements';
 import { type Element } from '@/types';
+import generateGridTemplateAreas from '@/utils/generateGridTemplateAreas';
 
 interface LayoutViewerProps {
     layout: Layout;
