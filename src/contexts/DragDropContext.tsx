@@ -1046,14 +1046,16 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             // если в source layout была 1 ячейка, то удаляем layout
             // если в source layout больше 1 ячейки, то обновляем cells в source layout
             // и если это был 1 элемент в ячейке, то создаем пустой редактор в source cell
-            const sourceElement = sourceLayout.elements.find(e => e.id === prevStateRef.current.source.elementId);
-            const sourceCell = sourceLayout.gridStructure.rows[0].cells.find(c => c.id === sourceElement?.cellId);
+            // const sourceCell = sourceLayout.elements.find(e => e.id === prevStateRef.current.source.cellId);
+            const sourceCell = sourceLayout.gridStructure.rows[0].cells.find(
+                c => c.id === prevStateRef.current.source.cellId
+            );
 
             const targetCell = targetLayout.gridStructure.rows[0].cells.find(
                 c => c.id === prevStateRef.current.target.cellId
             );
 
-            if (!sourceElement || !sourceCell || !targetCell) return;
+            if (!sourceCell || !targetCell) return;
 
             const newCellId = generateId();
             const newCell: GridCell = {
@@ -1102,20 +1104,51 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
             const updatedSourceCells = sourceLayout.gridStructure.rows[0].cells.filter(c => c.id !== sourceCell.id);
 
-            DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
-                elements: updatedSourceElements,
-                gridStructure: {
-                    ...sourceLayout.gridStructure,
-                    rows: [
-                        {
-                            ...sourceLayout.gridStructure.rows[0],
-                            cells: updatedSourceCells,
-                        },
-                    ],
-                    columns: sourceLayout.gridStructure.columns - 1,
-                    columnWidths: getColumnWidths(sourceLayout.gridStructure.columns - 1),
-                },
-            });
+            const sourceLayoutIndex = sourceSlide.layouts.findIndex(l => l.id === sourceLayout.id);
+
+            if (updatedSourceCells.length === 1) {
+                updatedSourceElements.forEach((element, index) => {
+                    const newLayout: Layout = getEmptyLayout();
+
+                    const newCellId = generateId();
+                    const newCell: GridCell = {
+                        id: newCellId,
+                        row: 1,
+                        column: 1,
+                    };
+
+                    newLayout.gridStructure.rows[0].cells.push(newCell);
+                    newLayout.elements.push({
+                        ...element,
+                        cellId: newCellId,
+                    } as BaseElement);
+
+                    DragDropTransactionHelper.addLayout(
+                        presentationId,
+                        sourceSlide.id,
+                        newLayout,
+                        sourceLayoutIndex + index
+                    );
+                });
+
+                DragDropTransactionHelper.deleteLayout(presentationId, sourceSlide.id, sourceLayout.id);
+                // осталась 1 ячейка. все элементы ячейки раскладываем в отдельные layout
+            } else {
+                DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
+                    elements: updatedSourceElements,
+                    gridStructure: {
+                        ...sourceLayout.gridStructure,
+                        rows: [
+                            {
+                                ...sourceLayout.gridStructure.rows[0],
+                                cells: updatedSourceCells,
+                            },
+                        ],
+                        columns: sourceLayout.gridStructure.columns - 1,
+                        columnWidths: getColumnWidths(sourceLayout.gridStructure.columns - 1),
+                    },
+                });
+            }
         },
         [presentationId]
     );

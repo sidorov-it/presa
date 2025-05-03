@@ -2,7 +2,7 @@ import { MutableRefObject } from 'react';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import deepDiff from 'deep-diff';
-import { BaseElement, TipTapRefs } from '@/types';
+import { BaseElement, EditorElement, TipTapRefs } from '@/types';
 import { usePresentationStore } from './presentationStore';
 import getValueByPath from '@/utils/getValueByPath';
 import { getElementConfig } from '@/elements/registry';
@@ -371,31 +371,48 @@ export const useHistoryStore = create<HistoryState>()(
                     // Get the current state
                     const currentState = { presentations: presentationStore.presentations };
 
+                    // First collect all text editor elements and their paths that need updates
+                    const textEditorUpdates: {
+                        elementId: string;
+                        content: any;
+                        pathToElement: string[];
+                    }[] = [];
+
                     lastAction.changes.forEach(change => {
                         if (change.kind === 'E') {
                             const lastKey = change.path?.[change.path.length - 1];
 
                             if (lastKey === 'content') {
-                                const changedObject = getValueByPath(
-                                    currentState,
-                                    change.path!.slice(0, -1)
-                                ) as BaseElement;
+                                const pathToElement = change.path!.slice(0, -1);
+                                const changedObject = getValueByPath(currentState, pathToElement) as BaseElement;
 
                                 const elementConfig = getElementConfig(changedObject.elementTypeId);
 
                                 if (elementConfig?.hasTextEditor) {
-                                    tiptapRefs.current.editors?.[changedObject.id]?.editor.commands.setContent(
-                                        change.lhs
-                                    );
+                                    textEditorUpdates.push({
+                                        elementId: changedObject.id,
+                                        content: change.lhs,
+                                        pathToElement,
+                                    });
                                 }
                             }
                         }
                     });
 
+                    // Then update the state
                     if (lastAction.changes && lastAction.changes.length > 0) {
                         // Use deep-diff to revert changes
                         const restoredState = revertDiffs(currentState, lastAction.changes);
                         presentationStore.setFullState(restoredState);
+
+                        textEditorUpdates.forEach(update => {
+                            const element = getValueByPath(currentState, update.pathToElement) as EditorElement;
+                            if (tiptapRefs.current.editors?.[update.elementId]?.editor) {
+                                tiptapRefs.current.editors[update.elementId].editor.commands.setContent(
+                                    element.content
+                                );
+                            }
+                        });
                     } else if (lastAction.before) {
                         // Fallback to using the before state if available
                         presentationStore.setFullState(lastAction.before);
@@ -436,27 +453,35 @@ export const useHistoryStore = create<HistoryState>()(
                     // Get the current state
                     const currentState = { presentations: presentationStore.presentations };
 
+                    // First collect all text editor elements and their paths that need updates
+                    const textEditorUpdates: {
+                        elementId: string;
+                        content: any;
+                        pathToElement: string[];
+                    }[] = [];
+
                     nextAction.changes.forEach(change => {
                         if (change.kind === 'E') {
                             const lastKey = change.path?.[change.path.length - 1];
 
                             if (lastKey === 'content') {
-                                const changedObject = getValueByPath(
-                                    currentState,
-                                    change.path!.slice(0, -1)
-                                ) as BaseElement;
+                                const pathToElement = change.path!.slice(0, -1);
+                                const changedObject = getValueByPath(currentState, pathToElement) as BaseElement;
 
                                 const elementConfig = getElementConfig(changedObject.elementTypeId);
 
                                 if (elementConfig?.hasTextEditor) {
-                                    tiptapRefs.current.editors?.[changedObject.id]?.editor.commands.setContent(
-                                        change.rhs
-                                    );
+                                    textEditorUpdates.push({
+                                        elementId: changedObject.id,
+                                        content: change.rhs,
+                                        pathToElement,
+                                    });
                                 }
                             }
                         }
                     });
 
+                    // Then update the state
                     if (nextAction.changes && nextAction.changes.length > 0) {
                         // Use deep-diff to apply changes
                         const restoredState = applyDiffs(currentState, nextAction.changes);
@@ -466,9 +491,13 @@ export const useHistoryStore = create<HistoryState>()(
                         presentationStore.setFullState(nextAction.after);
                     }
 
-                    if (nextAction.isTextElement && nextAction.elementId) {
-                        tiptapRefs.current.editors?.[nextAction.elementId]?.editor.commands.undo();
-                    }
+                    // Finally update all text editors with their new content
+                    textEditorUpdates.forEach(update => {
+                        const element = getValueByPath(currentState, update.pathToElement) as EditorElement;
+                        if (tiptapRefs.current.editors?.[update.elementId]?.editor) {
+                            tiptapRefs.current.editors[update.elementId].editor.commands.setContent(element.content);
+                        }
+                    });
 
                     return {
                         history: {
