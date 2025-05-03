@@ -7,7 +7,7 @@ import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 import { DragDropTransactionHelper } from './DragDropTransactionHelper';
 import { DndState, DndAction, DropTarget, Position } from '@/types/DragDropTypes';
 import { getNewEditorElement, getNewElement } from '@/elements/registry';
-import { menuRegistry } from '@/elements/menuRegistry';
+import { MenuItem, menuRegistry } from '@/elements/menuRegistry';
 
 // Helper types for drop target calculation
 type ElementInfo = {
@@ -286,6 +286,8 @@ const initialState: DndState = {
     newElement: {
         id: null,
         defaultProps: null,
+        elementTypeId: null,
+        elementVariant: null,
     },
     isReadyToDrop: false,
 };
@@ -489,7 +491,7 @@ type DndContextType = {
             smartLayoutItemId?: string;
         }
     ) => void;
-    handleNewElementDragStart: (e: React.DragEvent<HTMLDivElement>, elementId: string, defaultProps: any) => void;
+    handleNewElementDragStart: (e: React.DragEvent<HTMLDivElement>, element: MenuItem) => void;
     isDragging: () => boolean;
     getElement: (elementId: string, layoutId: string) => BaseElement | undefined;
     getLayout: (layoutId: string) => Layout | undefined;
@@ -670,13 +672,20 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         [dispatch]
     );
 
-    const getNewElementFromTypeId = useCallback((elementTypeId: string) => {
+    const getNewElementFromTypeId = useCallback((elementTypeId: string, elementVariant?: string | null) => {
         // Find the MenuItem in the registry based on elementTypeId
-        const menuItem = menuRegistry
-            .flatMap(category =>
-                category.subCategories ? category.subCategories.flatMap(sub => sub.elements) : category.elements || []
-            )
-            .find(element => element?.elementTypeId === elementTypeId);
+        const items = menuRegistry.flatMap(category =>
+            category.subCategories ? category.subCategories.flatMap(sub => sub.elements) : category.elements || []
+        );
+
+        let menuItem;
+        if (elementVariant) {
+            menuItem = items.find(
+                element => element?.elementTypeId === elementTypeId && element?.elementVariant === elementVariant
+            );
+        } else {
+            menuItem = items.find(element => element?.elementTypeId === elementTypeId);
+        }
 
         if (!menuItem) {
             console.error(`Element with type ${elementTypeId} not found in registry`);
@@ -686,18 +695,15 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         return getNewElement(menuItem);
     }, []);
 
-    const handleNewElementDragStart = useCallback(
-        (e: React.DragEvent<HTMLDivElement>, elementTypeId: string, defaultProps: any) => {
-            const newElement = getNewElementFromTypeId(elementTypeId);
-            if (!newElement) {
-                console.error(`Element with type ${elementTypeId} not found in registry`);
-                return;
-            }
-            e.stopPropagation();
-            dispatch({ type: 'START_DRAG_MENU_ITEM', payload: newElement });
-        },
-        [getNewElementFromTypeId]
-    );
+    const handleNewElementDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, element: MenuItem) => {
+        const newElement = getNewElement(element);
+        if (!newElement) {
+            console.error(`Element with type ${element.elementTypeId} not found in registry`);
+            return;
+        }
+        e.stopPropagation();
+        dispatch({ type: 'START_DRAG_MENU_ITEM', payload: newElement });
+    }, []);
 
     // Centralized drag over handling with document-level listeners
     const processAddElementToCell = useCallback(
@@ -959,12 +965,14 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             targetLayout,
             targetSlide,
             elementTypeId,
+            elementVariant,
         }: {
             targetLayout: Layout;
             targetSlide: Slide;
             elementTypeId: string;
+            elementVariant?: string;
         }) => {
-            const newElement = getNewElementFromTypeId(elementTypeId);
+            const newElement = getNewElementFromTypeId(elementTypeId, elementVariant);
 
             if (!newElement) {
                 return;
@@ -1366,7 +1374,10 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
             const targetLayout = getLayout(prevStateRef.current.target.layoutId);
 
-            const newElement = getNewElementFromTypeId(prevStateRef.current.newElement.id);
+            const newElement = getNewElementFromTypeId(
+                prevStateRef.current.newElement.elementTypeId!,
+                prevStateRef.current.newElement.elementVariant
+            );
 
             if (!targetLayout || !newElement) {
                 return;
@@ -1680,14 +1691,26 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             targetSlide,
             position,
             elementTypeId,
+            elementVariant,
         }: {
             targetLayout: Layout;
             targetSlide: Slide;
             position: Position;
             elementTypeId: string;
+            elementVariant?: string | null;
         }) => {
-            const newElement = getNewElementFromTypeId(elementTypeId);
+            const newElement = getNewElementFromTypeId(elementTypeId, elementVariant);
             if (!newElement) return;
+
+            if (newElement.elementTypeId.startsWith('table')) {
+                const targetLayoutIndex = targetSlide.layouts.findIndex(l => l.id === targetLayout.id);
+                if (targetLayoutIndex === -1) return;
+
+                const newLayoutIndex = position === 'top' ? targetLayoutIndex : targetLayoutIndex + 1;
+
+                DragDropTransactionHelper.addLayout(presentationId, targetSlide.id, newElement, newLayoutIndex);
+                return;
+            }
 
             const newLayout: Layout = getEmptyLayout();
 
@@ -1710,7 +1733,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             const newLayoutIndex = position === 'top' ? targetLayoutIndex : targetLayoutIndex + 1;
             DragDropTransactionHelper.addLayout(presentationId, targetSlide.id, newLayout, newLayoutIndex);
         },
-        [presentationId]
+        [getNewElementFromTypeId, presentationId]
     );
 
     const processSlideDrop = useCallback(() => {
@@ -1749,7 +1772,8 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 targetLayout,
                 targetSlide,
                 position: prevStateRef.current.indicators.layoutPosition,
-                elementTypeId: prevStateRef.current.newElement.id,
+                elementTypeId: prevStateRef.current.newElement.elementTypeId!,
+                elementVariant: prevStateRef.current.newElement.elementVariant,
             });
             return;
         } else if (isSourceLayoutOnly) {
@@ -2122,7 +2146,8 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             processAddElementToSiblingCell({
                 targetLayout,
                 targetSlide,
-                elementTypeId: prevStateRef.current.newElement.id!,
+                elementTypeId: prevStateRef.current.newElement.elementTypeId!,
+                elementVariant: prevStateRef.current.newElement.elementVariant!,
             });
             console.log('drop new element', prevStateRef.current.newElement);
         } else {
@@ -2453,25 +2478,18 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             processColumnDrop();
         } else if (Number.isInteger(prevStateRef.current.source.rowIndex)) {
             processTableRowDrop();
-        } else if (prevStateRef.current.indicators.elementIndicator) {
-            processElementDrop();
-        } else if (prevStateRef.current.indicators.cellIndicator) {
-            processCellDrop();
-        } else if (prevStateRef.current.indicators.layoutIndicator) {
-            processLayoutDrop();
-        } else if (prevStateRef.current.indicators.slideIndicator) {
-            processSlideDrop();
+            // } else if (prevStateRef.current.indicators.elementIndicator) {
+            //     processElementDrop();
+            // } else if (prevStateRef.current.indicators.cellIndicator) {
+            //     processCellDrop();
+            // } else if (prevStateRef.current.indicators.layoutIndicator) {
+            //     processLayoutDrop();
+            // } else if (prevStateRef.current.indicators.slideIndicator) {
+            //     processSlideDrop();
         }
 
         dispatch({ type: 'COMPLETE_DROP' });
-    }, [
-        processCellDrop,
-        processElementDrop,
-        processLayoutDrop,
-        processSlideDrop,
-        processColumnDrop,
-        processTableRowDrop,
-    ]);
+    }, [processColumnDrop, processTableRowDrop]);
     // ... existing code ...
 
     useEffect(() => {

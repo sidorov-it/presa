@@ -8,20 +8,12 @@ import SettingsSelector from '@/components/ui/SettingsSelector/SettingsSelector'
 
 import styles from './BoxBubbleMenu.module.css';
 
-import {
-    BsInfoCircle,
-    BsExclamationTriangle,
-    BsExclamationCircle,
-    BsCheckCircle,
-    BsQuestionCircle,
-} from 'react-icons/bs';
-import { MdNotes } from 'react-icons/md';
 import { BaseMenu } from '../../../SlideMenu/BaseMenu';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
 import { useMenuStore } from '@/store/menuStore';
 import { BoxCategories } from '@/elements/menuRegistry';
 import DeleteIcon from '@/components/icons/DeleteIcon';
-
+import { BoxIconOptions } from './BoxIconOptions';
 interface BubbleMenuProps {
     editor: Editor;
     presentationId: string;
@@ -29,45 +21,6 @@ interface BubbleMenuProps {
     layoutId: string;
     elementId: string;
 }
-
-export const IconOptions = [
-    {
-        id: 'note-box',
-        label: 'Заметка',
-        Icon: MdNotes,
-        defaultIconColor: '#3f3f5a',
-    },
-    {
-        id: 'info-box',
-        label: 'Информационный блок',
-        Icon: BsInfoCircle,
-        defaultIconColor: '#006ed6',
-    },
-    {
-        id: 'warning-box',
-        label: 'Предупреждение',
-        Icon: BsExclamationTriangle,
-        defaultIconColor: '#b29500',
-    },
-    {
-        id: 'caution-box',
-        label: 'Опасность',
-        Icon: BsExclamationCircle,
-        defaultIconColor: '#eb0000',
-    },
-    {
-        id: 'success-box',
-        label: 'Успех',
-        Icon: BsCheckCircle,
-        defaultIconColor: '#0c3f8d',
-    },
-    {
-        id: 'question-box',
-        label: 'Вопрос',
-        Icon: BsQuestionCircle,
-        defaultIconColor: '#7a7a7a',
-    },
-];
 
 const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ presentationId, slideId, layoutId, elementId }) => {
     const element = usePresentationStore(state =>
@@ -110,7 +63,7 @@ const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ presentationId, slideId, lay
 
     return (
         <BaseMenu>
-            <SettingsSelector value={element.iconType || 'box'} setValue={handleIconChange} options={IconOptions} />
+            <SettingsSelector value={element.iconType || 'box'} setValue={handleIconChange} options={BoxIconOptions} />
 
             <ColorPicker
                 initialColor={element.backgroundColor || '#FFFFFF'}

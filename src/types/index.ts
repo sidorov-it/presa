@@ -311,7 +311,7 @@ export type ImageShape = 'square' | 'landscape' | 'portrait' | 'circle';
 
 export interface SmartLayoutElement extends BaseElement {
     type: 'smart-layout';
-    layoutType: SmartLayoutType;
+    elementVariant: SmartLayoutType;
     items: SmartLayoutItem[];
     columnSize: number;
     align: 'left' | 'center' | 'right';
@@ -338,7 +338,7 @@ export interface ImageElement extends BaseElement {
 // Элемент диаграммы
 export interface ChartElement extends BaseElement {
     type: 'chart';
-    chartType: 'bar' | 'line' | 'pie' | 'donut' | 'column';
+    elementVariant: 'bar' | 'line' | 'pie' | 'donut' | 'column';
     data: {
         name: string;
         [key: string]: string | number; // Allow any number of data series

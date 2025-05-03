@@ -11,7 +11,6 @@
     pointer-events: auto;
 }
 
-
 .elementsPanelContent {
     padding-left: 0.25rem;
     padding-right: 0.25rem;
@@ -37,11 +36,12 @@
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
 }
 
-
 .popupMenuContent {
-    padding: 1rem;
+    padding: 0.5rem;
     border-radius: 0.5rem;
-    width: 20rem;
+    width: 28rem;
+    max-height: 80vh;
+    overflow-y: auto;
     background-color: #ffffff;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
@@ -50,6 +50,19 @@
     background-color: var(--header-bg) !important;
 }
 
+.popupMenuBody {
+    margin-top: 0.5rem;
+}
+
+.subCategoriesContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.subCategoryWrapper {
+    margin-bottom: 0.25rem;
+}
 
 .elementsPanelIcon {
     display: flex;
@@ -71,6 +84,11 @@
     background-color: #F3F4F6;
 }
 
+.elementsPanelIcon:focus {
+    outline: 2px solid #2563EB;
+    outline-offset: 2px;
+}
+
 .elementsPanelIconActive {
     color: #2563EB;
     background-color: #DBEAFE;
@@ -87,28 +105,55 @@
 }
 
 .elementItem {
-    padding: 0.5rem;
+    padding: 0.75rem 0.25rem;
     border-radius: 0.5rem;
     border-width: 1px;
     border-color: #E5E7EB;
     background-color: #ffffff;
     cursor: grab;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    transition: all 0.2s ease-in-out;
+}
 
-    &:hover {
-        border-color: #3B82F6;
-    }
+.elementItem:hover {
+    border-color: #3B82F6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.elementItem:focus {
+    outline: none;
+    border-color: #2563EB;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
 }
 
 :global(.dark-theme) .elementItem {
     background-color: var(--header-bg);
+    border-color: #374151;
+}
+
+:global(.dark-theme) .elementItem:hover {
+    border-color: #60A5FA;
+}
+
+.elementItemIcon {
+    font-size: 1.25rem;
+    color: #4B5563;
 }
 
 .subCategoryLabel {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
     font-size: 0.875rem;
     line-height: 1.25rem;
     font-weight: 600;
     color: #111827;
+}
+
+:global(.dark-theme) .subCategoryLabel {
+    color: #E5E7EB;
 }
 
 .subCategoryElements {
@@ -122,36 +167,66 @@
     line-height: 1rem;
     text-align: center;
     color: #1F2937;
+    font-weight: 500;
+}
+
+:global(.dark-theme) .elementItemLabel {
+    color: #D1D5DB;
 }
 
 .popupMenuHeader {
+    display: flex;
     margin-bottom: 0.75rem;
     justify-content: space-between;
     align-items: center;
+    border-bottom: 1px solid #E5E7EB;
+    padding-bottom: 0.75rem;
+}
+
+:global(.dark-theme) .popupMenuHeader {
+    border-color: #374151;
 }
 
 .popupMenuHeaderTitle {
-    font-size: 0.875rem;
-    line-height: 1.25rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
     font-weight: 600;
     color: #111827;
 }
 
+:global(.dark-theme) .popupMenuHeaderTitle {
+    color: #F3F4F6;
+}
+
 .popupMenuHeaderCloseButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: #9CA3AF;
+    border-radius: 0.375rem;
+    padding: 0.25rem;
+    transition: all 0.2s ease;
+}
 
-    &:hover {
-        color: #6B7280;
-    }
+.popupMenuHeaderCloseButton:hover {
+    color: #6B7280;
+    background-color: #F3F4F6;
+}
 
-    &:focus {
-        outline-style: none;
-    }
+.popupMenuHeaderCloseButton:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+:global(.dark-theme) .popupMenuHeaderCloseButton:hover {
+    background-color: #374151;
+    color: #E5E7EB;
 }
 
 .elementsPanelCategories {
-    margin-top: 0.75rem; 
-    margin-top: 0.875rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .elementsPanelCategory {
@@ -170,4 +245,8 @@
     color: #ffffff; 
     white-space: nowrap; 
     background-color: #1F2937;
+}
+
+:global(.dark-theme) .elementsPanelTooltipText {
+    background-color: #4B5563;
 }

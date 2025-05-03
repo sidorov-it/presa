@@ -1,3 +1,5 @@
+import { BaseElement, Layout } from '.';
+
 // Define DnD export types
 export type DragSource = {
     elementId: string | null;
@@ -45,6 +47,8 @@ export type DndState = {
     isReadyToDrop: boolean;
     newElement: {
         id: string | null;
+        elementTypeId: string | null;
+        elementVariant: string | null;
         defaultProps: any;
     };
 };
@@ -88,5 +92,5 @@ export type DndAction =
     | { type: 'COMPLETE_DROP' }
     | { type: 'CANCEL_DRAG' }
     | { type: 'SET_READY_TO_DROP'; payload: boolean }
-    | { type: 'START_DRAG_MENU_ITEM'; payload: { id: string | null; defaultProps: any } }
+    | { type: 'START_DRAG_MENU_ITEM'; payload: Layout | Omit<BaseElement, 'cellId'> }
     | { type: 'SET_COLUMN_INDICATOR'; payload: { columnId: string | null; position: Position | null } };

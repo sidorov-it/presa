@@ -2880,10 +2880,12 @@ export const usePresentationStore = create<PresentationState>()(
             // Undo/Redo operations - delegate to history store
             undo: (presentationId: string, tiptapRefs: MutableRefObject<TipTapRefs>) => {
                 useHistoryStore.getState().undo(presentationId, tiptapRefs);
+                get().saveChanges(presentationId);
             },
 
             redo: (presentationId: string, tiptapRefs: MutableRefObject<TipTapRefs>) => {
                 useHistoryStore.getState().redo(presentationId, tiptapRefs);
+                get().saveChanges(presentationId);
             },
 
             canUndo: (presentationId: string) => {

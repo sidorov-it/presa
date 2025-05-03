@@ -1,7 +1,6 @@
 import React, { RefObject, useCallback } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
-import { FaCircle } from 'react-icons/fa';
-import { SmartLayoutElement, SmartLayoutItem, TipTapRefs } from '@/types';
+import { SmartLayoutElement, TipTapRefs } from '@/types';
 import ImagesWithText from '@/elements/smartLayout/components/ImagesWithText/ImagesWithText';
 import TextBoxes from '@/elements/smartLayout/components/TextBoxes/TextBoxes';
 
@@ -22,13 +21,13 @@ const SmartLayout: React.FC<SmartLayoutProps> = ({
     tiptapRefs,
     isFocused,
 }) => {
-    const layoutType = usePresentationStore(store => {
+    const elementVariant = usePresentationStore(store => {
         const element = store.getElement(presentationId, slideId, layoutId, elementId);
-        return (element as SmartLayoutElement).layoutType;
+        return (element as SmartLayoutElement).elementVariant;
     });
 
     const renderLayout = useCallback(() => {
-        switch (layoutType) {
+        switch (elementVariant) {
             case 'images-with-text':
                 return (
                     <ImagesWithText
@@ -71,7 +70,7 @@ const SmartLayout: React.FC<SmartLayoutProps> = ({
                     />
                 );
         }
-    }, [elementId, isFocused, layoutId, layoutType, presentationId, slideId, tiptapRefs]);
+    }, [elementId, isFocused, layoutId, elementVariant, presentationId, slideId, tiptapRefs]);
 
     return (
         <div

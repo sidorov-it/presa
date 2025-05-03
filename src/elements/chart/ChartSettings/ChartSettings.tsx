@@ -55,14 +55,14 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
         }
     }, [element]);
 
-    const handleChangeChartType = (chartType: 'bar' | 'line' | 'pie' | 'donut' | 'column') => {
+    const handleChangeChartType = (elementVariant: 'bar' | 'line' | 'pie' | 'donut' | 'column') => {
         if (presentationId && slideId && layoutId && elementId) {
             updateElement(presentationId, slideId, layoutId, elementId, {
-                chartType: chartType,
+                elementVariant,
             });
 
             if (onUpdate) {
-                onUpdate({ chartType: chartType });
+                onUpdate({ elementVariant });
             }
         }
     };
@@ -137,7 +137,7 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                 <div className={styles.buttons}>
                     <button
                         type="button"
-                        className={`${styles.button} ${element.chartType === 'bar' ? styles.buttonActive : ''}`}
+                        className={`${styles.button} ${element.elementVariant === 'bar' ? styles.buttonActive : ''}`}
                         onClick={() => handleChangeChartType('bar')}
                         aria-label="Bar chart"
                         tabIndex={0}
@@ -147,7 +147,7 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
 
                     <button
                         type="button"
-                        className={`${styles.button} ${element.chartType === 'column' ? styles.buttonActive : ''}`}
+                        className={`${styles.button} ${element.elementVariant === 'column' ? styles.buttonActive : ''}`}
                         onClick={() => handleChangeChartType('column')}
                         aria-label="Column chart"
                         tabIndex={0}
@@ -157,7 +157,7 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
 
                     <button
                         type="button"
-                        className={`${styles.button} ${element.chartType === 'line' ? styles.buttonActive : ''}`}
+                        className={`${styles.button} ${element.elementVariant === 'line' ? styles.buttonActive : ''}`}
                         onClick={() => handleChangeChartType('line')}
                         aria-label="Line chart"
                         tabIndex={0}
@@ -166,7 +166,7 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                     </button>
                     <button
                         type="button"
-                        className={`${styles.button} ${element.chartType === 'pie' ? styles.buttonActive : ''}`}
+                        className={`${styles.button} ${element.elementVariant === 'pie' ? styles.buttonActive : ''}`}
                         onClick={() => handleChangeChartType('pie')}
                         aria-label="Pie chart"
                         tabIndex={0}
@@ -175,7 +175,7 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                     </button>
                     <button
                         type="button"
-                        className={`${styles.button} ${element.chartType === 'donut' ? styles.buttonActive : ''}`}
+                        className={`${styles.button} ${element.elementVariant === 'donut' ? styles.buttonActive : ''}`}
                         onClick={() => handleChangeChartType('donut')}
                         aria-label="Donut chart"
                         tabIndex={0}
@@ -217,7 +217,7 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                                     Название
                                 </th>
                                 {series.map((s, colIndex) => {
-                                    const isPieOrDonut = element?.chartType === 'pie' || element?.chartType === 'donut';
+                                    const isPieOrDonut = element?.elementVariant === 'pie' || element?.elementVariant === 'donut';
                                     const isUnusedColumn = isPieOrDonut && colIndex > 0;
 
                                     return (
@@ -266,7 +266,7 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                                     </td>
                                     {series.map((s, colIndex) => {
                                         const isPieOrDonut =
-                                            element?.chartType === 'pie' || element?.chartType === 'donut';
+                                            element?.elementVariant === 'pie' || element?.elementVariant === 'donut';
                                         const isUnusedColumn = isPieOrDonut && colIndex > 0;
 
                                         return (

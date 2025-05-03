@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, MutableRefObject } from 'react';
+import React, { useCallback, useEffect, MutableRefObject, useState } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { TipTapRefs } from '@/types';
 import styles from './UndoRedoControls.module.css';
+import { useHistoryStore } from '@/store/historyStore';
 
 interface UndoRedoControlsProps {
     presentationId: string;
@@ -10,20 +11,33 @@ interface UndoRedoControlsProps {
 }
 
 const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, className = '', tiptapRefs }) => {
-    const canUndoOperation = usePresentationStore(state => state.canUndo(presentationId));
-    const canRedoOperation = usePresentationStore(state => state.canRedo(presentationId));
+    const [activePresentation, setActivePresentation] = useState<string | null>(null);
+
+    const historyStore = useHistoryStore();
+    const presentationStore = usePresentationStore();
+    const presentations = presentationStore.presentations;
+
+    useEffect(() => {
+        if (presentations.length > 0 && !activePresentation) {
+            // Use the first presentation in the list as active
+            setActivePresentation(presentations[0]?.id || null);
+        }
+    }, [presentations, activePresentation]);
+
+    const hasUndo = historyStore.canUndo(activePresentation);
+    const hasRedo = historyStore.canRedo(activePresentation);
 
     const handleUndo = useCallback(() => {
-        if (canUndoOperation) {
+        if (hasUndo) {
             usePresentationStore.getState().undo(presentationId, tiptapRefs);
         }
-    }, [canUndoOperation, presentationId, tiptapRefs]);
+    }, [hasUndo, presentationId, tiptapRefs]);
 
     const handleRedo = useCallback(() => {
-        if (canRedoOperation) {
+        if (hasRedo) {
             usePresentationStore.getState().redo(presentationId, tiptapRefs);
         }
-    }, [canRedoOperation, presentationId, tiptapRefs]);
+    }, [hasRedo, presentationId, tiptapRefs]);
 
     // Handle keyboard shortcuts
     useEffect(() => {
@@ -48,14 +62,14 @@ const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, cla
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [canUndoOperation, canRedoOperation, presentationId, handleUndo, handleRedo]);
+    }, [hasUndo, hasRedo, presentationId, handleUndo, handleRedo]);
 
     return (
         <div className={`flex items-center gap-2 ${className}`}>
             <button
                 className={styles.undoButton}
                 onClick={handleUndo}
-                disabled={!canUndoOperation}
+                disabled={!hasUndo}
                 aria-label="Undo"
                 title="Undo (Ctrl+Z)"
                 tabIndex={0}
@@ -87,7 +101,7 @@ const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, cla
             <button
                 className={styles.redoButton}
                 onClick={handleRedo}
-                disabled={!canRedoOperation}
+                disabled={!hasRedo}
                 aria-label="Redo"
                 title="Redo (Ctrl+Y)"
                 tabIndex={0}

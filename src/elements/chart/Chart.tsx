@@ -147,7 +147,7 @@ const Chart: React.FC<ChartProps> = ({
     const handleChangeChartType = (type: 'bar' | 'line' | 'pie' | 'donut' | 'column') => {
         if (presentationId && slideId && layoutId) {
             updateElement(presentationId, slideId, layoutId, element.id, {
-                chartType: type,
+                elementVariant: type,
             });
         }
     };
@@ -379,7 +379,7 @@ const Chart: React.FC<ChartProps> = ({
             return;
         };
 
-        switch (element.chartType) {
+        switch (element.elementVariant) {
             case 'bar':
                 return (
                     <ResponsiveContainer width="100%" height={300}>
@@ -546,9 +546,11 @@ const Chart: React.FC<ChartProps> = ({
                 );
             }
             default:
-                return <div className={styles.unsupportedChartType}>Unsupported chart type: {element.chartType}</div>;
+                return (
+                    <div className={styles.unsupportedChartType}>Unsupported chart type: {element.elementVariant}</div>
+                );
         }
-    }, [element.chartType, element.series, legendPosition, showLabels, showValues, data]);
+    }, [element.elementVariant, element.series, legendPosition, showLabels, showValues, data]);
 
     // Calculate optimal position for settings popup
     const calculateSettingsPosition = () => {
@@ -724,33 +726,33 @@ const Chart: React.FC<ChartProps> = ({
                     {/* Chart type selector */}
                     <div className={styles.chartTypeSelector}>
                         <div
-                            className={`${styles.chartControlButton} ${element.chartType === 'bar' ? styles.chartControlButtonActive : ''}`}
+                            className={`${styles.chartControlButton} ${element.elementVariant === 'bar' ? styles.chartControlButtonActive : ''}`}
                             onClick={() => handleChangeChartType('bar')}
                         >
                             <FaChartColumn className={styles.icon} />
                         </div>
 
                         <div
-                            className={`${styles.chartControlButton} ${element.chartType === 'column' ? styles.chartControlButtonActive : ''}`}
+                            className={`${styles.chartControlButton} ${element.elementVariant === 'column' ? styles.chartControlButtonActive : ''}`}
                             onClick={() => handleChangeChartType('column')}
                         >
                             <FaChartBar className={styles.icon} />
                         </div>
 
                         <div
-                            className={`${styles.chartControlButton} ${element.chartType === 'line' ? styles.chartControlButtonActive : ''}`}
+                            className={`${styles.chartControlButton} ${element.elementVariant === 'line' ? styles.chartControlButtonActive : ''}`}
                             onClick={() => handleChangeChartType('line')}
                         >
                             <FaChartLine className={styles.icon} />
                         </div>
                         <div
-                            className={`${styles.chartControlButton} ${element.chartType === 'pie' ? styles.chartControlButtonActive : ''}`}
+                            className={`${styles.chartControlButton} ${element.elementVariant === 'pie' ? styles.chartControlButtonActive : ''}`}
                             onClick={() => handleChangeChartType('pie')}
                         >
                             <FaChartPie className={styles.icon} />
                         </div>
                         <div
-                            className={`${styles.chartControlButton} ${element.chartType === 'donut' ? styles.chartControlButtonActive : ''}`}
+                            className={`${styles.chartControlButton} ${element.elementVariant === 'donut' ? styles.chartControlButtonActive : ''}`}
                             onClick={() => handleChangeChartType('donut')}
                         >
                             <PiChartDonutFill className={styles.icon} />

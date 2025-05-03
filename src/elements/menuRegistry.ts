@@ -1,7 +1,12 @@
-import { FaFont, FaTable, FaList, FaBox, FaImage, FaRegChartBar, FaQuoteLeft, FaLayerGroup } from 'react-icons/fa';
+import { FaFont, FaTable, FaList, FaImage, FaQuoteLeft, FaRegAddressCard, FaHeading, FaListOl, FaChartBar, FaChartPie, FaBox } from 'react-icons/fa';
+import { FaRegChartBar } from "react-icons/fa6";
 
 import editorsDefaultContent from './textEditor/defaultContent';
-
+import { PiTextColumns } from 'react-icons/pi';
+import { LuHeading1, LuHeading2, LuHeading3, LuHeading4 } from 'react-icons/lu';
+import { FaListCheck } from 'react-icons/fa6';
+import { BoxIconOptions } from '@/components/editor/Menus/BubbleMenus/BoxBubbleMenu/BoxIconOptions';
+import { TbChartDonutFilled } from 'react-icons/tb';
 export interface MenuCategory {
     id: string;
     label: string;
@@ -21,6 +26,7 @@ export interface MenuItem {
     label: string;
     Icon?: React.ComponentType;
     defaultProps?: Record<string, any>;
+    elementVariant?: string;
 }
 
 export const BoxCategories = {
@@ -29,8 +35,9 @@ export const BoxCategories = {
     elements: [
         {
             elementTypeId: 'box',
-            label: 'Блок с заметкой',
-            Icon: FaBox,
+            label: 'Примечание',
+            Icon: BoxIconOptions.find(option => option.id === 'note-box')?.Icon,
+            elementVariant: 'note-box',
             defaultProps: {
                 iconType: 'note-box',
                 content: editorsDefaultContent.box,
@@ -40,8 +47,9 @@ export const BoxCategories = {
         },
         {
             elementTypeId: 'box',
-            label: 'Информационный блок',
-            Icon: FaBox,
+            label: 'Информация',
+            Icon: BoxIconOptions.find(option => option.id === 'info-box')?.Icon,
+            elementVariant: 'info-box',
             defaultProps: {
                 iconType: 'info-box',
                 content: editorsDefaultContent.infoBox,
@@ -51,8 +59,9 @@ export const BoxCategories = {
         },
         {
             elementTypeId: 'box',
-            label: 'Блок с предупреждением',
-            Icon: FaBox,
+            label: 'Предупреждение',
+            Icon: BoxIconOptions.find(option => option.id === 'warning-box')?.Icon,
+            elementVariant: 'warning-box',
             defaultProps: {
                 iconType: 'warning-box',
                 content: editorsDefaultContent.warningBox,
@@ -62,8 +71,9 @@ export const BoxCategories = {
         },
         {
             elementTypeId: 'box',
-            label: 'Блок с предостережением',
-            Icon: FaBox,
+            label: 'Предостережение',
+            Icon: BoxIconOptions.find(option => option.id === 'caution-box')?.Icon,
+            elementVariant: 'caution-box',
             defaultProps: {
                 iconType: 'caution-box',
                 content: editorsDefaultContent.cautionBox,
@@ -73,8 +83,9 @@ export const BoxCategories = {
         },
         {
             elementTypeId: 'box',
-            label: 'Блок с успехом',
-            Icon: FaBox,
+            label: 'Успех',
+            Icon: BoxIconOptions.find(option => option.id === 'success-box')?.Icon,
+            elementVariant: 'success-box',
             defaultProps: {
                 iconType: 'success-box',
                 content: editorsDefaultContent.successBox,
@@ -84,8 +95,9 @@ export const BoxCategories = {
         },
         {
             elementTypeId: 'box',
-            label: 'Блок с вопросом',
-            Icon: FaBox,
+            label: 'Вопрос',
+            Icon: BoxIconOptions.find(option => option.id === 'question-box')?.Icon,
+            elementVariant: 'question-box',
             defaultProps: {
                 iconType: 'question-box',
                 content: editorsDefaultContent.questionBox,
@@ -99,15 +111,15 @@ export const BoxCategories = {
 export const menuRegistry: MenuCategory[] = [
     {
         id: 'smart-layouts',
-        label: 'Шаблоны',
+        label: 'Структурные блоки',
         Icon: FaBox,
         elements: [
             {
                 elementTypeId: 'smart-layout',
                 label: 'Изображения с текстом',
-                Icon: FaLayerGroup,
+                Icon: FaRegAddressCard,
+                elementVariant: 'images-with-text',
                 defaultProps: {
-                    type: 'images-with-text',
                     items: [
                         {
                             title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
@@ -128,7 +140,6 @@ export const menuRegistry: MenuCategory[] = [
                             iconUrl: '',
                         },
                     ],
-                    layoutType: 'images-with-text',
                     columnSize: 3,
                     align: 'center',
                     imageShape: 'square',
@@ -138,9 +149,9 @@ export const menuRegistry: MenuCategory[] = [
             {
                 elementTypeId: 'smart-layout',
                 label: 'Текстовые блоки',
-                Icon: FaLayerGroup,
+                Icon: PiTextColumns,
+                elementVariant: 'text-boxes',
                 defaultProps: {
-                    type: 'text-boxes',
                     items: [
                         {
                             title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
@@ -161,7 +172,6 @@ export const menuRegistry: MenuCategory[] = [
                             iconUrl: '',
                         },
                     ],
-                    layoutType: 'text-boxes',
                     columnSize: 3,
                     align: 'center',
                     imageShape: 'square',
@@ -183,42 +193,49 @@ export const menuRegistry: MenuCategory[] = [
                         elementTypeId: 'text',
                         label: 'Текст',
                         Icon: FaFont,
+                        elementVariant: 'text',
                         defaultProps: { textType: 'text', content: '' },
                     },
                     {
                         elementTypeId: 'heading',
                         label: 'Заголовок',
-                        Icon: FaFont,
+                        Icon: FaHeading,
+                        elementVariant: 'heading',
                         defaultProps: { textType: 'heading', level: 1, content: editorsDefaultContent.title },
                     },
                     {
                         elementTypeId: 'heading',
                         label: 'Подзаголовок 1',
-                        Icon: FaFont,
+                        Icon: LuHeading1,
+                        elementVariant: 'heading1',
                         defaultProps: { textType: 'heading', level: 2, content: editorsDefaultContent.heading1 },
                     },
                     {
                         elementTypeId: 'heading',
                         label: 'Подзаголовок 2',
-                        Icon: FaFont,
+                        Icon: LuHeading2,
+                        elementVariant: 'heading2',
                         defaultProps: { textType: 'heading', level: 3, content: editorsDefaultContent.heading2 },
                     },
                     {
                         elementTypeId: 'heading',
                         label: 'Подзаголовок 3',
-                        Icon: FaFont,
+                        Icon: LuHeading3,
+                        elementVariant: 'heading3',
                         defaultProps: { textType: 'heading', level: 4, content: editorsDefaultContent.heading3 },
                     },
                     {
                         elementTypeId: 'heading',
                         label: 'Подзаголовок 4',
-                        Icon: FaFont,
+                        Icon: LuHeading4,
+                        elementVariant: 'heading4',
                         defaultProps: { textType: 'heading', level: 5, content: editorsDefaultContent.heading4 },
                     },
                     {
                         elementTypeId: 'quote',
                         label: 'Цитата',
                         Icon: FaQuoteLeft,
+                        elementVariant: 'quote',
                         defaultProps: { textType: 'quote', content: editorsDefaultContent.quote },
                     },
                 ],
@@ -231,6 +248,7 @@ export const menuRegistry: MenuCategory[] = [
                         elementTypeId: 'table',
                         label: 'Таблица 2x2',
                         Icon: FaTable,
+                        elementVariant: 'table2x2',
                         defaultProps: {
                             textType: 'table',
                             content: editorsDefaultContent.table2x2,
@@ -243,6 +261,7 @@ export const menuRegistry: MenuCategory[] = [
                         elementTypeId: 'table',
                         label: 'Таблица 3x3',
                         Icon: FaTable,
+                        elementVariant: 'table3x3',
                         defaultProps: {
                             textType: 'table',
                             content: editorsDefaultContent.table3x3,
@@ -255,6 +274,7 @@ export const menuRegistry: MenuCategory[] = [
                         elementTypeId: 'table',
                         label: 'Таблица 4x4',
                         Icon: FaTable,
+                        elementVariant: 'table4x4',
                         defaultProps: {
                             textType: 'table',
                             content: editorsDefaultContent.table4x4,
@@ -280,7 +300,7 @@ export const menuRegistry: MenuCategory[] = [
                     {
                         elementTypeId: 'numbered-list',
                         label: 'Нумерованный список',
-                        Icon: FaList,
+                        Icon: FaListOl,
                         defaultProps: {
                             content: editorsDefaultContent.numeredList,
                         },
@@ -288,7 +308,7 @@ export const menuRegistry: MenuCategory[] = [
                     {
                         elementTypeId: 'todo-list',
                         label: 'Список задач',
-                        Icon: FaList,
+                        Icon: FaListCheck,
                         defaultProps: {
                             content: editorsDefaultContent.todoList,
                         },
@@ -296,30 +316,6 @@ export const menuRegistry: MenuCategory[] = [
                 ],
             },
             BoxCategories,
-            // {
-            //     id: 'interactive',
-            //     label: 'Интерактивные элементы',
-            //     elements: [
-            //         {
-            //             elementTypeId: 'button',
-            //             label: 'Кнопка',
-            //             Icon: FaBox,
-            //             defaultProps: {
-            //                 textType: 'button',
-            //                 content: editorsDefaultContent.button,
-            //             },
-            //         },
-            //         {
-            //             elementTypeId: 'toggle',
-            //             label: 'Переключатель',
-            //             Icon: FaToggleOn,
-            //             defaultProps: {
-            //                 textType: 'details',
-            //                 content: editorsDefaultContent.toggle,
-            //             },
-            //         },
-            //     ],
-            // },
         ],
     },
     {
@@ -349,14 +345,14 @@ export const menuRegistry: MenuCategory[] = [
     {
         id: 'charts',
         label: 'Диаграммы',
-        Icon: FaRegChartBar,
+        Icon: FaChartBar,
         elements: [
             {
                 elementTypeId: 'chart',
                 label: 'Столбчатая диаграмма',
-                Icon: FaRegChartBar,
+                Icon: FaChartBar,
+                elementVariant: 'bar',
                 defaultProps: {
-                    chartType: 'bar',
                     data: [
                         { name: 'Q1', value: 220 },
                         { name: 'Q2', value: 458 },
@@ -375,8 +371,8 @@ export const menuRegistry: MenuCategory[] = [
                 elementTypeId: 'chart',
                 label: 'Линейная диаграмма',
                 Icon: FaRegChartBar,
+                elementVariant: 'line',
                 defaultProps: {
-                    chartType: 'line',
                     data: [
                         { name: 'Q1', value: 220 },
                         { name: 'Q2', value: 458 },
@@ -394,9 +390,9 @@ export const menuRegistry: MenuCategory[] = [
             {
                 elementTypeId: 'chart',
                 label: 'Круговая диаграмма',
-                Icon: FaRegChartBar,
+                Icon: FaChartPie,
+                elementVariant: 'pie',
                 defaultProps: {
-                    chartType: 'pie',
                     data: [
                         { name: 'Q1', value: 220 },
                         { name: 'Q2', value: 458 },
@@ -414,9 +410,9 @@ export const menuRegistry: MenuCategory[] = [
             {
                 elementTypeId: 'chart',
                 label: 'Кольцевая диаграмма',
-                Icon: FaRegChartBar,
+                Icon: TbChartDonutFilled,
+                elementVariant: 'donut',
                 defaultProps: {
-                    chartType: 'donut',
                     data: [
                         { name: 'Q1', value: 220 },
                         { name: 'Q2', value: 458 },

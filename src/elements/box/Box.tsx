@@ -4,12 +4,13 @@ import { Box } from '@chakra-ui/react';
 import { getElementConfig } from '../registry';
 import Tiptap from '@/components/tiptap/Tiptap';
 import { RefObject, useMemo, useState, useEffect } from 'react';
-import { IconOptions } from '@/components/editor/Menus/BubbleMenus/BoxBubbleMenu/BoxBubbleMenu';
+
 import { useShallow } from 'zustand/react/shallow';
 
 import styles from './Box.module.css';
 import { getBlockColors } from '@/utils/colors';
 import { useThemeStore } from '@/store/themeStore';
+import { BoxIconOptions } from '@/components/editor/Menus/BubbleMenus/BoxBubbleMenu/BoxIconOptions';
 
 export default function BoxComponent({
     elementId,
@@ -65,7 +66,7 @@ export default function BoxComponent({
 
     const elementConfig = getElementConfig(elementTypeId);
 
-    const IconInfo = IconOptions.find(option => option.id === iconType);
+    const IconInfo = BoxIconOptions.find(option => option.id === iconType);
     const IconComponent = IconInfo?.Icon;
     // const iconColor = IconInfo?.defaultIconColor;
 
@@ -96,9 +97,17 @@ export default function BoxComponent({
                 layoutId={layoutId}
                 standardEnterBehavior={true}
                 onContentChange={(content: string) => {
-                    usePresentationStore.getState().updateElement(presentationId, slideId, layoutId, elementId, {
-                        content,
-                    }, true, true);
+                    usePresentationStore.getState().updateElement(
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        elementId,
+                        {
+                            content,
+                        },
+                        true,
+                        true
+                    );
                 }}
             />
         </Box>

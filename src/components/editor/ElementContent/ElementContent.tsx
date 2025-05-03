@@ -234,7 +234,7 @@ export const ElementContent = ({
     const handleAddElement = useCallback(
         (elementId: string) => (menuItem: MenuItem) => {
             if (menuItem.elementTypeId.startsWith('table')) {
-                const tableLayout = getNewTableLayout(menuItem);
+                const tableLayout = getNewElement(menuItem);
                 if (tableLayout) {
                     usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, tableLayout);
                 }
@@ -258,7 +258,7 @@ export const ElementContent = ({
                             newElementWithCell as Partial<Element>
                         );
 
-                    if (elementConfig.hasTextEditor) {
+                    if (elementConfig?.hasTextEditor) {
                         tiptapRefs.current?.editors[elementId]?.editor.commands.setContent(
                             (elementData as EditorElement).content
                         );

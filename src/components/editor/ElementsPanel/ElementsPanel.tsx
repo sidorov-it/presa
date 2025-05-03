@@ -7,14 +7,14 @@ import styles from './ElementsPanel.module.css';
 import { useDnd } from '@/contexts/DragDropContext';
 import { usePresentationStore } from '@/store/presentationStore';
 import { BaseElement } from '@/types';
-import { menuRegistry } from '@/elements/menuRegistry';
+import { menuRegistry, MenuItem } from '@/elements/menuRegistry';
 
 interface ElementsPanelProps {
     presentationId: string;
     slideId: string;
 }
 
-type CategoryType = 'basic' | 'image' | 'video' | 'charts';
+type CategoryType = 'basic' | 'media' | 'charts' | 'smart-layouts';
 
 interface PopupMenuProps {
     isOpen: boolean;
@@ -28,8 +28,16 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
     // Обработчики для drag-n-drop
     const { handleNewElementDragStart } = useDnd();
 
-    const handleDragStart = (e: React.DragEvent<HTMLDivElement>, element: any) => {
-        handleNewElementDragStart(e, element.id, element.defaultProps);
+    const handleDragStart = (e: React.DragEvent<HTMLDivElement>, element: MenuItem) => {
+        handleNewElementDragStart(e, element);
+    };
+
+    // Функция для добавления элемента при клике
+    const handleElementClick = (element: MenuItem) => {
+        const newElement = getNewElement(element);
+        usePresentationStore
+            .getState()
+            .addLayoutWithElement(presentationId, slideId, newElement as unknown as BaseElement);
     };
 
     // Функция для получения содержимого на основе категории
@@ -39,37 +47,32 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
         const categoryData = menuRegistry.find(cat => cat.id === category);
         if (!categoryData) return null;
 
-        const handleButtonClick = (category: string) => {
-            console.log(category);
-            const newElement = getNewElement(category);
-            usePresentationStore
-                .getState()
-                .addLayoutWithElement(presentationId, slideId, newElement as unknown as BaseElement);
-        };
-
         return (
-            <div>
+            <div className={styles.popupMenuBody}>
                 {categoryData.subCategories ? (
                     // Для категорий с подкатегориями (например, basic)
-                    <div
-                        style={{
-                            marginTop: '1rem',
-                        }}
-                    >
+                    <div className={styles.subCategoriesContainer}>
                         {categoryData.subCategories.map(subCategory => (
-                            <div key={subCategory.id}>
+                            <div key={subCategory.id} className={styles.subCategoryWrapper}>
                                 {subCategory.label && (
                                     <div className={styles.subCategoryLabel}>{subCategory.label}</div>
                                 )}
                                 <div className={styles.subCategoryElements}>
                                     {subCategory.elements.map(element => (
                                         <div
-                                            key={element.elementTypeId}
-                                            className={`${styles.elementItem}`}
+                                            key={element.label}
+                                            className={styles.elementItem}
                                             draggable
                                             onDragStart={e => handleDragStart(e, element)}
+                                            onClick={() => handleElementClick(element)}
                                             aria-label={`${subCategory.label}: ${element.label}`}
-                                            onClick={() => handleButtonClick(element.elementTypeId)}
+                                            tabIndex={0}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                    e.preventDefault();
+                                                    handleElementClick(element);
+                                                }
+                                            }}
                                         >
                                             {element.Icon && <element.Icon />}
                                             <div className={styles.elementItemLabel}>{element.label}</div>
@@ -80,16 +83,25 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
                         ))}
                     </div>
                 ) : (
-                    // Для категорий без подкатегорий (например, image, video, charts)
+                    // Для категорий без подкатегорий (например, media, charts, smart-layouts)
                     <div className={styles.subCategoryElements}>
                         {categoryData.elements!.map(element => (
                             <div
-                                key={element.elementTypeId}
-                                className={`${styles.elementItem}`}
+                                key={element.label}
+                                className={styles.elementItem}
                                 draggable
                                 onDragStart={e => handleDragStart(e, element)}
+                                onClick={() => handleElementClick(element)}
                                 aria-label={element.label}
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        handleElementClick(element);
+                                    }
+                                }}
                             >
+                                {element.Icon && <element.Icon className={styles.elementItemIcon} />}
                                 <div className={styles.elementItemLabel}>{element.label}</div>
                             </div>
                         ))}
@@ -138,7 +150,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
 const ElementsPanel: React.FC<ElementsPanelProps> = ({ presentationId, slideId }) => {
     const [activeCategory, setActiveCategory] = useState<CategoryType | null>(null);
 
-    const handleButtonClick = (category: CategoryType) => {
+    const handleCategoryClick = (category: CategoryType) => {
         if (activeCategory === category) {
             setActiveCategory(null);
         } else {
@@ -157,10 +169,10 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ presentationId, slideId }
                     {menuRegistry.map(category => (
                         <div key={category.id} className={`${styles.elementsPanelCategory} group`}>
                             <button
-                                // className={`p-2 rounded-md flex items-center justify-center hover:bg-gray-100 transition-colors duration-200 ${activeCategory === category.id ? 'bg-blue-100 text-blue-600' : 'text-gray-600'}`}
                                 className={`${styles.elementsPanelIcon} ${activeCategory === category.id ? styles.elementsPanelIconActive : ''}`}
-                                onClick={() => handleButtonClick(category.id as CategoryType)}
+                                onClick={() => handleCategoryClick(category.id as CategoryType)}
                                 aria-label={category.label}
+                                aria-pressed={activeCategory === category.id}
                             >
                                 {category.Icon && <category.Icon />}
                             </button>

@@ -19,11 +19,11 @@ const HistoryDebugPopup = () => {
     const [activePresentation, setActivePresentation] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<'past' | 'future'>('past');
     const [expandedDiffs, setExpandedDiffs] = useState<Record<string, boolean>>({});
-    
+
     const historyStore = useHistoryStore();
     const presentationStore = usePresentationStore();
     const presentations = presentationStore.presentations;
-    
+
     // Get the active presentation from the list of presentations
     useEffect(() => {
         if (presentations.length > 0 && !activePresentation) {
@@ -42,7 +42,7 @@ const HistoryDebugPopup = () => {
         };
 
         window.addEventListener('keydown', handleKeyPress);
-        
+
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
@@ -70,12 +70,12 @@ const HistoryDebugPopup = () => {
     // Extract a single presentation from the state object
     const extractPresentation = (stateObj: any) => {
         if (!stateObj) return null;
-        
+
         // If it follows the new format with presentations array
         if (stateObj.presentations && Array.isArray(stateObj.presentations) && stateObj.presentations.length > 0) {
             return stateObj.presentations[0];
         }
-        
+
         // For legacy format or if stateObj is already a presentation
         return stateObj;
     };
@@ -83,42 +83,48 @@ const HistoryDebugPopup = () => {
     // Format the diff result for display
     const formatDiff = (diffResult: any, parentPath: string[] = []): DiffItem[] => {
         if (!diffResult || typeof diffResult !== 'object') return [];
-        
+
         return Object.entries(diffResult).flatMap(([key, value]: [string, any]) => {
             const currentPath = [...parentPath, key];
-            
+
             if (value === null || typeof value !== 'object') {
                 return [];
             }
-            
+
             if ('onlyInObj1' in value) {
-                return [{
-                    key,
-                    path: currentPath,
-                    type: 'removed',
-                    before: value.onlyInObj1,
-                }];
+                return [
+                    {
+                        key,
+                        path: currentPath,
+                        type: 'removed',
+                        before: value.onlyInObj1,
+                    },
+                ];
             }
-            
+
             if ('onlyInObj2' in value) {
-                return [{
-                    key,
-                    path: currentPath, 
-                    type: 'added',
-                    after: value.onlyInObj2,
-                }];
+                return [
+                    {
+                        key,
+                        path: currentPath,
+                        type: 'added',
+                        after: value.onlyInObj2,
+                    },
+                ];
             }
-            
+
             if ('obj1' in value && 'obj2' in value) {
-                return [{
-                    key,
-                    path: currentPath,
-                    type: 'changed',
-                    before: value.obj1,
-                    after: value.obj2,
-                }];
+                return [
+                    {
+                        key,
+                        path: currentPath,
+                        type: 'changed',
+                        before: value.obj1,
+                        after: value.obj2,
+                    },
+                ];
             }
-            
+
             // Recursively process nested diffs
             return formatDiff(value, currentPath);
         });
@@ -129,7 +135,7 @@ const HistoryDebugPopup = () => {
     const hasUndo = historyStore.canUndo(activePresentation);
     const hasRedo = historyStore.canRedo(activePresentation);
     const isTransactionActive = historyStore.hasActiveTransaction(activePresentation);
-    
+
     // Get the history for the active presentation
     const presentationHistory = historyStore.history[activePresentation] || { past: [], future: [] };
     const historyItems = activeTab === 'past' ? presentationHistory.past : presentationHistory.future;
@@ -138,7 +144,7 @@ const HistoryDebugPopup = () => {
         // Extract the actual presentation objects from the before/after states
         const beforePresentation = extractPresentation(item.before);
         const afterPresentation = extractPresentation(item.after);
-        
+
         // Calculate the diff
         const diff = deepDiff(beforePresentation, afterPresentation);
         const formattedDiff = formatDiff(diff);
@@ -151,7 +157,7 @@ const HistoryDebugPopup = () => {
         const formatJSON = (value: any): string => {
             if (value === undefined) return 'undefined';
             if (value === null) return 'null';
-            
+
             try {
                 // For objects and arrays, format with indentation
                 if (typeof value === 'object') {
@@ -159,7 +165,7 @@ const HistoryDebugPopup = () => {
                 }
                 // For primitive values, return as is
                 return String(value);
-            } catch (err) {
+            } catch {
                 return String(value);
             }
         };
@@ -209,9 +215,7 @@ const HistoryDebugPopup = () => {
             <div key={index} className={styles.historyItem}>
                 <div className={styles.historyItemHeader}>
                     <span className={styles.historyItemTitle}>{item.description}</span>
-                    <span className={styles.historyItemTime}>
-                        {new Date(item.timestamp).toLocaleTimeString()}
-                    </span>
+                    <span className={styles.historyItemTime}>{new Date(item.timestamp).toLocaleTimeString()}</span>
                 </div>
                 <div className={styles.historyItemDetails}>
                     <div className={styles.detailLabel}>Type:</div>
@@ -246,7 +250,7 @@ const HistoryDebugPopup = () => {
                     )}
                 </div>
 
-                <button 
+                <button
                     className={styles.diffButton}
                     onClick={() => toggleDiff(itemId)}
                     aria-label={isDiffExpanded ? 'Hide diff' : 'Show diff'}

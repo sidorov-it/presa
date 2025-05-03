@@ -74,10 +74,10 @@ interface HistoryState {
     redo: (presentationId: string, tiptapRefs: MutableRefObject<TipTapRefs>) => void;
 
     // Check if undo is available
-    canUndo: (presentationId: string) => boolean;
+    canUndo: (presentationId: string | null) => boolean;
 
     // Check if redo is available
-    canRedo: (presentationId: string) => boolean;
+    canRedo: (presentationId: string | null) => boolean;
 
     // Clear history for a presentation
     clearHistory: (presentationId: string) => void;
@@ -114,7 +114,8 @@ const revertDiffs = (state: any, diffs: deepDiff.Diff<any, any>[]) => {
     const newState = JSON.parse(JSON.stringify(state));
 
     // Apply diffs in reverse order for undo
-    for (let i = diffs.length - 1; i >= 0; i--) {
+    // for (let i = diffs.length - 1; i >= 0; i--) {
+    for (let i = 0; i < diffs.length; i++) {
         deepDiff.revertChange(newState, {}, diffs[i]);
     }
 
@@ -171,7 +172,7 @@ export const useHistoryStore = create<HistoryState>()(
                 set(state => ({
                     activeTransactions: {
                         ...(state.activeTransactions as any),
-                        [presentationId]: [transactionAction],
+                        [presentationId]: transactionAction,
                     },
                 }));
 
@@ -465,9 +466,9 @@ export const useHistoryStore = create<HistoryState>()(
                         presentationStore.setFullState(nextAction.after);
                     }
 
-                    // if (nextAction.isTextElement && nextAction.elementId) {
-                    //     tiptapRefs.current.editors?.[nextAction.elementId]?.editor.commands.undo();
-                    // }
+                    if (nextAction.isTextElement && nextAction.elementId) {
+                        tiptapRefs.current.editors?.[nextAction.elementId]?.editor.commands.undo();
+                    }
 
                     return {
                         history: {
@@ -481,14 +482,20 @@ export const useHistoryStore = create<HistoryState>()(
                 });
             },
 
-            canUndo: (presentationId: string) => {
-                const presentationHistory = get().history[presentationId];
-                return !!presentationHistory && presentationHistory.past.length > 0;
+            canUndo: (presentationId: string | null) => {
+                if (presentationId) {
+                    const presentationHistory = get().history[presentationId];
+                    return !!presentationHistory && presentationHistory.past.length > 0;
+                }
+                return false;
             },
 
-            canRedo: (presentationId: string) => {
-                const presentationHistory = get().history[presentationId];
-                return !!presentationHistory && presentationHistory.future.length > 0;
+            canRedo: (presentationId: string | null) => {
+                if (presentationId) {
+                    const presentationHistory = get().history[presentationId];
+                    return !!presentationHistory && presentationHistory.future.length > 0;
+                }
+                return false;
             },
 
             clearHistory: (presentationId: string) => {

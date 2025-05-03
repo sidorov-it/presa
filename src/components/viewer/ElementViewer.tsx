@@ -1,5 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
-import { Element, ChartElement } from '@/types';
+import { ChartElement } from '@/types';
 import { ViewerElement } from '@/types/elements';
 import {
     BarChart,
@@ -23,7 +22,7 @@ import styles from './ElementViewer.module.css';
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
 interface ElementViewerProps {
-    element: Element & ViewerElement;
+    element: ChartElement & ViewerElement;
     slideId: string;
     layoutId: string;
 }
@@ -112,14 +111,8 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                     'var(--presentation-shapes-color, #82ca9d)',
                 ];
 
-                // Determine chart type
-                let chartType = 'bar';
-                if (element.elementTypeId === 'line-chart') chartType = 'line';
-                else if (element.elementTypeId === 'pie-chart') chartType = 'pie';
-                else if (element.elementTypeId === 'donut-chart') chartType = 'donut';
-
                 // Render the appropriate chart
-                switch (chartType) {
+                switch (element.elementVariant) {
                     case 'bar':
                         return (
                             <div className={styles.container}>

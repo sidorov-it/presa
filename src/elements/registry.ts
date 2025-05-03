@@ -15,98 +15,122 @@ import { elementTypes } from './elementTypes';
 import { MenuItem, menuRegistry } from './menuRegistry';
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 
-export const getNewTableLayout = (menuItem: MenuItem): Layout | null => {
-    const tableLayout: Layout = {
-        id: generateId(),
-        elements: [],
-        gridStructure: {
-            rows: menuItem.defaultProps?.rows || 2,
-            columns: menuItem.defaultProps?.columns || 2,
-            columnWidths: getColumnWidths(menuItem.defaultProps?.columns || 2),
-        },
-        type: 'table',
-        style: {},
-        isTable: true,
-    };
+// export const getNewTableLayout = (menuItem: MenuItem): Layout | null => {
+//     const tableLayout: Layout = {
+//         id: generateId(),
+//         elements: [],
+//         gridStructure: {
+//             rows: menuItem.defaultProps?.rows || 2,
+//             columns: menuItem.defaultProps?.columns || 2,
+//             columnWidths: getColumnWidths(menuItem.defaultProps?.columns || 2),
+//         },
+//         type: 'table',
+//         style: {},
+//         isTable: true,
+//     };
 
-    const rows: GridRow[] = [];
-    const elements: BaseElement[] = [];
+//     const rows: GridRow[] = [];
+//     const elements: BaseElement[] = [];
 
-    for (let rowIndex = 0; rowIndex < menuItem.defaultProps?.rows; rowIndex++) {
-        const cells: GridCell[] = [];
+//     for (let rowIndex = 0; rowIndex < menuItem.defaultProps?.rows; rowIndex++) {
+//         const cells: GridCell[] = [];
 
-        const row: GridRow = {
-            id: generateId(),
-            cells: [],
-        };
+//         const row: GridRow = {
+//             id: generateId(),
+//             cells: [],
+//         };
 
-        for (let columnIndex = 0; columnIndex < menuItem.defaultProps?.columns; columnIndex++) {
-            const cellId = generateId();
+//         for (let columnIndex = 0; columnIndex < menuItem.defaultProps?.columns; columnIndex++) {
+//             const cellId = generateId();
 
-            const cell: GridCell = {
-                id: cellId,
-                row: rowIndex,
-                column: columnIndex,
-            };
-            cells.push(cell);
+//             const cell: GridCell = {
+//                 id: cellId,
+//                 row: rowIndex,
+//                 column: columnIndex,
+//             };
+//             cells.push(cell);
 
-            const cellElement = getNewEditorElement(cellId);
-            elements.push(cellElement);
-        }
+//             const cellElement = getNewEditorElement(cellId);
+//             elements.push(cellElement);
+//         }
 
-        row.cells = cells;
-        rows.push(row);
-    }
-    tableLayout.gridStructure.rows = rows;
-    tableLayout.elements = elements as Element[];
+//         row.cells = cells;
+//         rows.push(row);
+//     }
+//     tableLayout.gridStructure.rows = rows;
+//     tableLayout.elements = elements as Element[];
 
-    return tableLayout;
-};
+//     return tableLayout;
+// };
 
 export const getNewElement = (menuItem: MenuItem): Omit<BaseElement, 'cellId'> | Layout | null => {
-    const { elementTypeId, defaultProps, ...rest } = menuItem;
+    const { elementTypeId, elementVariant, defaultProps, ...rest } = menuItem;
 
-    // if (!elementType) {
-    //     throw new Error(`Element type ${menuItem.elementTypeId} not found in element types registry`);
-    // }
-
-    // Base properties for all elements
-    const element = {
-        id: generateId(8),
-        elementTypeId: menuItem.elementTypeId,
-        ...defaultProps,
-    };
-
-    if (menuItem.elementTypeId === 'smart-layout') {
-        (element as SmartLayoutElement).items = menuItem.defaultProps?.items.map((item: SmartLayoutItem) => ({
-            ...item,
+    if (menuItem.elementTypeId.startsWith('table')) {
+        const tableLayout: Layout = {
             id: generateId(),
-        }));
+            elements: [],
+            elementTypeId: menuItem.elementTypeId,
+            elementVariant: menuItem.elementVariant,
+            gridStructure: {
+                rows: menuItem.defaultProps?.rows || 2,
+                columns: menuItem.defaultProps?.columns || 2,
+                columnWidths: getColumnWidths(menuItem.defaultProps?.columns || 2),
+            },
+            type: 'table',
+            style: {},
+            isTable: true,
+        };
+
+        const rows: GridRow[] = [];
+        const elements: BaseElement[] = [];
+
+        for (let rowIndex = 0; rowIndex < menuItem.defaultProps?.rows; rowIndex++) {
+            const cells: GridCell[] = [];
+
+            const row: GridRow = {
+                id: generateId(),
+                cells: [],
+            };
+
+            for (let columnIndex = 0; columnIndex < menuItem.defaultProps?.columns; columnIndex++) {
+                const cellId = generateId();
+
+                const cell: GridCell = {
+                    id: cellId,
+                    row: rowIndex,
+                    column: columnIndex,
+                };
+                cells.push(cell);
+
+                const cellElement = getNewEditorElement(cellId);
+                elements.push(cellElement);
+            }
+
+            row.cells = cells;
+            rows.push(row);
+        }
+        tableLayout.gridStructure.rows = rows;
+        tableLayout.elements = elements as Element[];
+
+        return tableLayout;
+    } else {
+        const element = {
+            id: generateId(8),
+            elementTypeId,
+            elementVariant,
+            ...defaultProps,
+        };
+    
+        if (menuItem.elementTypeId === 'smart-layout') {
+            (element as SmartLayoutElement).items = menuItem.defaultProps?.items.map((item: SmartLayoutItem) => ({
+                ...item,
+                id: generateId(),
+            }));
+        }
+
+        return element as Omit<BaseElement, 'cellId'>;
     }
-    // Special handling for image elements
-    // if (menuItem.elementTypeId === 'image') {
-    //     return {
-    //         ...baseElement,
-    //         type: 'image',
-    //         src: menuItem.defaultProps?.src || '',
-    //         alt: menuItem.defaultProps?.alt || '',
-    //         alignment: menuItem.defaultProps?.alignment || 'center',
-    //         width: menuItem.defaultProps?.width || undefined,
-    //     } as Omit<ImageElement, 'cellId'>;
-    // }
-
-    // // Special handling for chart elements
-    // if (menuItem.elementTypeId === 'chart') {
-    //     return {
-    //         ...baseElement,
-    //         type: 'chart',
-    //         chartType: menuItem.defaultProps?.chartType || 'bar',
-    //         data: menuItem.defaultProps?.data || [],
-    //     } as Omit<ChartElement, 'cellId'>;
-    // }
-
-    // Return default element with menu item's default props
-    return element as Omit<BaseElement, 'cellId'>;
 };
 
 // Helper to get appropriate menu based on element and context
