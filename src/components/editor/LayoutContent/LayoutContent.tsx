@@ -39,6 +39,9 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
 
     const layout = usePresentationStore(useShallow(state => state.getLayout(presentationId, slideId, layoutId)))!;
 
+    // Get resize state from the store for smooth column resizing
+    const resizeState = usePresentationStore(useShallow(state => state.resizeState));
+
     const openMenu = useMenuStore.getState().openMenu;
 
     const menuLayoutId = useMenuSelectedLayout();
@@ -78,10 +81,13 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     // Memoize grid properties to prevent recalculations
     const gridTemplateAreas = useMemo(() => generateGridTemplateAreas(layout.gridStructure), [layout.gridStructure]);
 
-    const gridTemplateColumns = useMemo(
-        () => generateGridTemplateColumns(layout.gridStructure),
-        [layout.gridStructure]
-    );
+    const gridTemplateColumns = useMemo(() => {
+        // Use temporary column widths if this layout is being resized
+        if (resizeState.isResizing && resizeState.layoutId === layoutId && resizeState.columnWidths) {
+            return resizeState.columnWidths.join(' ');
+        }
+        return generateGridTemplateColumns(layout.gridStructure);
+    }, [layout.gridStructure, resizeState, layoutId]);
 
     // Memoize layout properties
     const hasMultipleCellsInRow = useMemo(
@@ -200,8 +206,12 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 const newWidthPercentage = (newWidth / totalWidth) * 100;
 
                 const columns = layout.gridStructure.columns;
+
+                // Use the current resize state's column widths if available
                 const columnWidths =
-                    layout.gridStructure.columnWidths || Array(columns).fill(`${(100 / columns).toFixed(2)}%`);
+                    (resizeState.isResizing && resizeState.layoutId === layoutId && resizeState.columnWidths) ||
+                    layout.gridStructure.columnWidths ||
+                    Array(columns).fill(`${(100 / columns).toFixed(2)}%`);
 
                 const currentColumnIndex = resizeColumnIndexRef.current;
                 const isLastColumn = currentColumnIndex === columns - 2; // -2 because we're resizing between columns
@@ -219,17 +229,11 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                     columns
                 );
 
-                const updatedGridStructure = {
-                    ...layout.gridStructure,
-                    columnWidths: newColumnWidths,
-                };
-
-                usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, {
-                    gridStructure: updatedGridStructure,
-                });
+                // Update the temporary column widths in the store instead of updating the layout directly
+                usePresentationStore.getState().updateTempColumnWidths(newColumnWidths);
             });
         },
-        [presentationId, slideId, layoutId]
+        [presentationId, slideId, layoutId, resizeState]
     );
 
     const handleResizeEndTableColumn = useCallback(() => {
@@ -238,6 +242,9 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
             animationFrameIdRef.current = null;
         }
 
+        // Commit the changes to the real store
+        usePresentationStore.getState().endResize(presentationId, slideId, layoutId);
+
         startWidthRef.current = null;
         resizeColumnIndexRef.current = null;
 
@@ -245,45 +252,50 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
         document.removeEventListener('mouseup', handleResizeEndTableColumn);
 
         setIsResizingColumn(false);
-    }, [handleResizeMoveTableColumn]);
+    }, [handleResizeMoveTableColumn, presentationId, slideId, layoutId]);
 
     const handleResizeStartTableColumn = useCallback(
         (e: React.MouseEvent<HTMLDivElement>, columnIndex: number) => {
             e.preventDefault();
             e.stopPropagation();
 
-            const leftBorder = layoutRef.current?.getBoundingClientRect().left || 0;
+            if (!layoutRef.current) return;
+
+            const leftBorder = layoutRef.current.getBoundingClientRect().left;
             const initialX = e.clientX - leftBorder;
             startXRef.current = initialX;
 
-            // Get the current column width
-            const presentation = usePresentationStore.getState().getPresentation(presentationId);
-            if (!presentation) return;
+            const cellElements = layoutRef.current.querySelectorAll('[data-cell="true"]');
+            const width = Array.from(cellElements)
+                .filter((cell, idx) => idx === columnIndex)
+                .reduce((acc, cell) => acc + (cell as HTMLElement).offsetWidth, 0);
 
-            const slide = presentation.slides.find(s => s.id === slideId);
-            if (!slide) return;
-
-            const layout = slide.layouts.find(l => l.id === layoutId);
-            if (!layout || !layout.gridStructure) return;
-
-            const columnWidths =
-                layout.gridStructure.columnWidths ||
-                Array(layout.gridStructure.columns).fill(`${(100 / layout.gridStructure.columns).toFixed(2)}%`);
-
-            const currentColumnWidth = parseFloat(columnWidths[columnIndex].match(/^([\d.]+)%$/)?.[1] || '0');
-            const totalWidth = layoutRef.current?.offsetWidth || 0;
-            const padding = 16;
-            const columnWidthPx = (totalWidth - padding * 2) * (currentColumnWidth / 100);
-
-            startWidthRef.current = columnWidthPx;
+            startWidthRef.current = width;
             resizeColumnIndexRef.current = columnIndex;
+
+            // Get the current column widths to store for resizing
+            const presentation = usePresentationStore.getState().getPresentation(presentationId);
+            if (presentation) {
+                const slide = presentation.slides.find(s => s.id === slideId);
+                if (slide) {
+                    const layout = slide.layouts.find(l => l.id === layoutId);
+                    if (layout && layout.gridStructure) {
+                        const columns = layout.gridStructure.columns;
+                        const originalWidths =
+                            layout.gridStructure.columnWidths || Array(columns).fill(`${(100 / columns).toFixed(2)}%`);
+
+                        // Start the resize operation in the store
+                        usePresentationStore.getState().startResize(layoutId, originalWidths);
+                    }
+                }
+            }
 
             document.addEventListener('mousemove', handleResizeMoveTableColumn);
             document.addEventListener('mouseup', handleResizeEndTableColumn);
 
             setIsResizingColumn(true);
         },
-        [handleResizeEndTableColumn, handleResizeMoveTableColumn, presentationId, slideId, layoutId]
+        [handleResizeMoveTableColumn, handleResizeEndTableColumn, presentationId, slideId, layoutId]
     );
 
     const isSelected = menuLayoutId === layout.id && menuElementId === null && menuCellId === null;

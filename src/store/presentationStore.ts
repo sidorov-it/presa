@@ -264,6 +264,20 @@ export interface PresentationState {
         elementId: string,
         itemId: string
     ) => void;
+
+    // Temporary state for resize operations
+    resizeState: {
+        isResizing: boolean;
+        layoutId: string | null;
+        columnWidths: string[] | null;
+        originalColumnWidths: string[] | null;
+    };
+
+    // Resize state actions
+    startResize: (layoutId: string, columnWidths: string[]) => void;
+    updateTempColumnWidths: (columnWidths: string[]) => void;
+    endResize: (presentationId: string, slideId: string, layoutId: string) => void;
+    cancelResize: () => void;
 }
 
 // Create the store with properly configured middleware
@@ -3106,6 +3120,115 @@ export const usePresentationStore = create<PresentationState>()(
                 const presentation = get().getPresentation(presentationId);
                 if (!presentation) return -1;
                 return presentation.slides.findIndex(slide => slide.id === slideId);
+            },
+
+            // Temporary state for resize operations
+            resizeState: {
+                isResizing: false,
+                layoutId: null,
+                columnWidths: null,
+                originalColumnWidths: null,
+            },
+
+            // Resize state actions
+            startResize: (layoutId: string, columnWidths: string[]) => {
+                set({
+                    resizeState: {
+                        isResizing: true,
+                        layoutId,
+                        columnWidths: [...columnWidths],
+                        originalColumnWidths: [...columnWidths],
+                    },
+                });
+            },
+
+            updateTempColumnWidths: (columnWidths: string[]) => {
+                set(state => ({
+                    resizeState: {
+                        ...state.resizeState,
+                        columnWidths: [...columnWidths],
+                    },
+                }));
+            },
+
+            endResize: (presentationId: string, slideId: string, layoutId: string) => {
+                const { columnWidths, originalColumnWidths, isResizing, layoutId: currentLayoutId } = get().resizeState;
+
+                if (isResizing && columnWidths && currentLayoutId === layoutId) {
+                    const beforeState = { ...get() };
+
+                    set(state => {
+                        const updatedState = {
+                            presentations: state.presentations.map(presentation => {
+                                if (presentation.id !== presentationId) return presentation;
+
+                                return {
+                                    ...presentation,
+                                    slides: presentation.slides.map(slide => {
+                                        if (slide.id !== slideId) return slide;
+
+                                        return {
+                                            ...slide,
+                                            layouts: slide.layouts.map(layout => {
+                                                if (layout.id !== layoutId) return layout;
+
+                                                return {
+                                                    ...layout,
+                                                    gridStructure: {
+                                                        ...layout.gridStructure,
+                                                        columnWidths: [...columnWidths],
+                                                    },
+                                                };
+                                            }),
+                                        };
+                                    }),
+                                };
+                            }),
+                            resizeState: {
+                                isResizing: false,
+                                layoutId: null,
+                                columnWidths: null,
+                                originalColumnWidths: null,
+                            },
+                        };
+
+                        get().recordAction({
+                            type: 'layout',
+                            description: 'Resize columns',
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            before: { presentations: beforeState.presentations },
+                            after: { presentations: updatedState.presentations },
+                        });
+
+                        return updatedState;
+                    });
+
+                    // Save changes automatically
+                    get().saveChanges(presentationId);
+                } else {
+                    // Reset resize state if conditions not met
+                    set({
+                        resizeState: {
+                            isResizing: false,
+                            layoutId: null,
+                            columnWidths: null,
+                            originalColumnWidths: null,
+                        },
+                    });
+                }
+            },
+
+            cancelResize: () => {
+                set({
+                    resizeState: {
+                        isResizing: false,
+                        layoutId: null,
+                        columnWidths: null,
+                        originalColumnWidths: null,
+                    },
+                });
             },
         }),
         {

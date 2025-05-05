@@ -14,7 +14,6 @@ import { useMenuStore } from '@/store/menuStore';
 import { useShallow } from 'zustand/react/shallow';
 import adjustWidths from '@/utils/adjustWidths';
 import { OpenCustomMenuEvent } from '@/customEvents/OpenCustomMenuEvent';
-import { LayoutHoverEvent } from '@/customEvents/LayoutHoverEvent';
 import { HiPlus } from 'react-icons/hi2';
 
 export const useIsSelectedRow = (tableId: string, rowIndex: number) =>
@@ -96,7 +95,12 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         })
     );
 
-    // const isLastCell = elementsIds[elementsIds.length - 1] === cell.id;
+    // Get resize state from the store
+    const {
+        isResizing: storeIsResizing,
+        columnWidths: storeColumnWidths,
+        layoutId: storeLayoutId,
+    } = usePresentationStore(state => state.resizeState);
 
     const menuCellId = useMenuStore(state => state.cellId);
 
@@ -181,8 +185,11 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
                 const columns = layout.gridStructure.columns;
 
+                // Use columnWidths from the store if available, otherwise fallback to layout
                 const columnWidths =
-                    layout.gridStructure.columnWidths || Array(columns).fill(`${(100 / columns).toFixed(2)}%`);
+                    (storeIsResizing && storeLayoutId === layoutId && storeColumnWidths) ||
+                    layout.gridStructure.columnWidths ||
+                    Array(columns).fill(`${(100 / columns).toFixed(2)}%`);
 
                 const currentColumnIndex = cell.column - 1;
 
@@ -199,17 +206,11 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     columns
                 );
 
-                const updatedGridStructure = {
-                    ...layout.gridStructure,
-                    columnWidths: newColumnWidths,
-                };
-
-                usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, {
-                    gridStructure: updatedGridStructure,
-                });
+                // Update the temporary column widths in the store
+                usePresentationStore.getState().updateTempColumnWidths(newColumnWidths);
             });
         },
-        [presentationId, isLastCell, slideId, layoutId]
+        [presentationId, isLastCell, slideId, layoutId, storeIsResizing, storeLayoutId, storeColumnWidths]
     );
 
     const handleResizeEnd = useCallback(() => {
@@ -218,6 +219,9 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             animationFrameIdRef.current = null;
         }
 
+        // Commit the changes to the real store
+        usePresentationStore.getState().endResize(presentationId, slideId, layoutId);
+
         startWidthRef.current = null;
         resizebleElementRef.current = null;
 
@@ -225,7 +229,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         document.removeEventListener('mouseup', handleResizeEnd);
 
         setIsResizing(false);
-    }, [handleResizeMove]);
+    }, [handleResizeMove, layoutId, presentationId, slideId]);
 
     const handleResizeStart = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
@@ -243,14 +247,32 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 resizebleElementRef.current = cellElement.getAttribute('data-cell-id');
             }
 
+            // Get the current column widths to store for resizing
+            const presentation = usePresentationStore.getState().getPresentation(presentationId);
+            if (presentation) {
+                const slide = presentation.slides.find(s => s.id === slideId);
+                if (slide) {
+                    const layout = slide.layouts.find(l => l.id === layoutId);
+                    if (layout && layout.gridStructure) {
+                        const columns = layout.gridStructure.columns;
+                        const originalWidths =
+                            layout.gridStructure.columnWidths || Array(columns).fill(`${(100 / columns).toFixed(2)}%`);
+
+                        // Start the resize operation in the store
+                        usePresentationStore.getState().startResize(layoutId, originalWidths);
+                    }
+                }
+            }
+
             document.addEventListener('mousemove', handleResizeMove);
             document.addEventListener('mouseup', handleResizeEnd);
 
             setIsResizing(true);
         },
-        [handleResizeEnd, handleResizeMove]
+        [handleResizeEnd, handleResizeMove, layoutId, presentationId, slideId]
     );
 
+    // Restore element drag handlers
     const handleClickElementDragHandle = useCallback(
         (elementId: string, elementConfig: ElementConfig) => () => {
             const editor = tiptapRefs.current?.editors[elementId]?.editor;
@@ -309,8 +331,34 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 cellId: cell.id,
             });
         },
-        [handleDragStart, layoutId]
+        [handleDragStart, layoutId, cell.id]
     );
+
+    // Handle click events on elements
+    const handleClickElement = useCallback(
+        (elementId: string) => (ev: React.MouseEvent<HTMLDivElement>) => {
+            ev.stopPropagation();
+            const target = ev.target as HTMLElement;
+            if (tiptapRefs.current?.editors[elementId]?.editor && !target.closest('[data-type="link-editor"]')) {
+                tiptapRefs.current?.editors[elementId]?.editor.chain().focus().run();
+            }
+        },
+        [tiptapRefs]
+    );
+
+    // Listen for layout hover events from parent
+    useEffect(() => {
+        const handleLayoutHover = (e: CustomEvent<{ layoutId: string; isHovered: boolean }>) => {
+            if (e.detail.layoutId === layoutId) {
+                setLayoutIsHovered(e.detail.isHovered);
+            }
+        };
+
+        document.addEventListener('layoutHover', handleLayoutHover as EventListener);
+        return () => {
+            document.removeEventListener('layoutHover', handleLayoutHover as EventListener);
+        };
+    }, [layoutId]);
 
     let alignmentClassName = '';
     if (cell.alignment === 'top') {
@@ -398,16 +446,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         });
     }, [slideId, layoutId, rowIndex]);
 
-    const handleClickElement = useCallback(
-        (elementId: string) => (ev: React.MouseEvent<HTMLDivElement>) => {
-            ev.stopPropagation();
-            if (tiptapRefs.current?.editors[elementId]?.editor && !ev.target.closest('[data-type="link-editor"]')) {
-                tiptapRefs.current?.editors[elementId]?.editor.chain().focus().run();
-            }
-        },
-        [tiptapRefs]
-    );
-
     const handleClickGridCell = useCallback(
         (ev: React.MouseEvent<HTMLDivElement>) => {
             ev.stopPropagation();
@@ -455,20 +493,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const isShowColumnDragHandler =
         isTable &&
         ((deferredIsHoveredColumn && !isSelectedColumn && !hasSelectedColumn) || (isSelectedColumn && rowIndex === 0));
-
-    // Listen for layout hover events from parent
-    useEffect(() => {
-        const handleLayoutHover = (e: LayoutHoverEvent) => {
-            if (e.detail.layoutId === layoutId) {
-                setLayoutIsHovered(e.detail.isHovered);
-            }
-        };
-
-        document.addEventListener('layoutHover', handleLayoutHover);
-        return () => {
-            document.removeEventListener('layoutHover', handleLayoutHover);
-        };
-    }, [layoutId]);
 
     const handleAddColumn = useCallback(() => {
         usePresentationStore.getState().addColumnRight(presentationId, slideId, layoutId, columnIndex);
