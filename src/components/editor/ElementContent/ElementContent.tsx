@@ -15,7 +15,7 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { generateId } from '@/utils/id';
 import { useEditorStore } from '@/store/editorStore';
 import { useHistoryStore } from '@/store/historyStore';
-import { getElementConfig, getNewEditorElement, getNewElement, getNewTableLayout } from '@/elements/registry';
+import { getElementConfig, getNewEditorElement, getNewElement } from '@/elements/registry';
 import { getColumnWidths } from '../SlideEditor/SlideEditor';
 import { Image } from '@/elements/image';
 import { useMenuStore } from '@/store/menuStore';

@@ -42,7 +42,6 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({ presentation, i
     return (
         <div
             className="presentation-viewer"
-            tabIndex={0}
             onKeyDown={handleKeyDown}
             style={{
                 width: '100%',

@@ -12,7 +12,7 @@ import {
     type SmartLayoutItem,
 } from '@/types';
 import { elementTypes } from './elementTypes';
-import { MenuItem, menuRegistry } from './menuRegistry';
+import { MenuItem } from './menuRegistry';
 import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 
 // export const getNewTableLayout = (menuItem: MenuItem): Layout | null => {
@@ -64,7 +64,7 @@ import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
 // };
 
 export const getNewElement = (menuItem: MenuItem): Omit<BaseElement, 'cellId'> | Layout | null => {
-    const { elementTypeId, elementVariant, defaultProps, ...rest } = menuItem;
+    const { elementTypeId, elementVariant, defaultProps } = menuItem;
 
     if (menuItem.elementTypeId.startsWith('table')) {
         const tableLayout: Layout = {
@@ -121,7 +121,7 @@ export const getNewElement = (menuItem: MenuItem): Omit<BaseElement, 'cellId'> |
             elementVariant,
             ...defaultProps,
         };
-    
+
         if (menuItem.elementTypeId === 'smart-layout') {
             (element as SmartLayoutElement).items = menuItem.defaultProps?.items.map((item: SmartLayoutItem) => ({
                 ...item,

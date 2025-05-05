@@ -109,6 +109,13 @@ const applyDiffs = (state: any, diffs: deepDiff.Diff<any, any>[]) => {
     return newState;
 };
 
+const diffFilter = (path: string[], key: string) => {
+    if (path.length === 0 && ['updatedAt', 'createdAt'].includes(key)) {
+        return false;
+    }
+    return true;
+};
+
 // Revert diffs from a state object (for undo operations)
 const revertDiffs = (state: any, diffs: deepDiff.Diff<any, any>[]) => {
     const newState = JSON.parse(JSON.stringify(state));
@@ -224,7 +231,7 @@ export const useHistoryStore = create<HistoryState>()(
                 const lastAction = activeTransaction.actions[activeTransaction.actions.length - 1];
 
                 // Generate diffs using deep-diff library
-                const changes = deepDiff.diff(firstAction.before, lastAction.after) || [];
+                const changes = deepDiff.diff(firstAction.before, lastAction.after, diffFilter) || [];
 
                 console.log('deep-diff changes', changes);
 
@@ -305,7 +312,7 @@ export const useHistoryStore = create<HistoryState>()(
                 }
 
                 // Generate changes using deep-diff library
-                const changes = deepDiff.diff(action.before, action.after) || [];
+                const changes = deepDiff.diff(action.before, action.after, diffFilter) || [];
 
                 console.log('deep-diff changes', changes);
 

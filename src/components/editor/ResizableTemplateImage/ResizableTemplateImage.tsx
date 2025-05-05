@@ -5,12 +5,9 @@ import { usePresentationStore } from '@/store/presentationStore';
 import styles from './ResizableTemplateImage.module.css';
 import deepEqual from 'deep-equal';
 import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlaceholder';
-import { useMenuStore } from '@/store/menuStore';
-// Minimum size in percentage for image sections
+
 const MIN_SIZE = 10;
-// Maximum size in percentage for image sections
 const MAX_SIZE = 90;
-// Default pixel height for top/bottom images
 const DEFAULT_HEIGHT_PX = 200;
 
 interface ResizableTemplateImageProps {
@@ -26,29 +23,17 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     slideId,
     templateType,
     imageUrl,
-    // defaultSize,
     initialImageStyle,
 }) => {
     const [isSelected, setIsSelected] = useState(false);
 
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const isMenuOpen = useMenuStore(state => state.isOpen);
-
-    const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
-
     const updateSlide = usePresentationStore(state => state.updateSlide);
 
     const slide = usePresentationStore(
         useCallback(state => state.getSlide(presentationId, slideId), [presentationId, slideId])
     );
-
-    useEffect(() => {
-        if (containerRef.current && isSelected) {
-            const clientRect = containerRef.current.getBoundingClientRect();
-            setMenuPosition({ x: clientRect.x + clientRect.width / 2, y: clientRect.y + window.scrollY });
-        }
-    }, [containerRef.current, isSelected]);
 
     const clickOutside = useCallback((e: MouseEvent) => {
         if (!e.target) return;

@@ -13,7 +13,6 @@ import {
     getPredefinedGridStructures,
     EditorElement,
     TipTapRefs,
-    ElementConfig,
     BackgroundSettings,
     SmartLayoutType,
     SmartLayoutElement,
@@ -34,7 +33,9 @@ export interface PresentationState {
     version: number;
     incrementVersion: () => void;
 
-    recordAction: (action: Omit<HistoryAction, 'timestamp' | 'transactionId' | 'changes'> & { before: any; after: any }) => void;
+    recordAction: (
+        action: Omit<HistoryAction, 'timestamp' | 'transactionId' | 'changes'> & { before: any; after: any }
+    ) => void;
 
     // Работа с презентациями
     createPresentation: (title: string) => Promise<string>;
@@ -309,7 +310,9 @@ export const usePresentationStore = create<PresentationState>()(
                 }
             }, 1000),
 
-            recordAction: (action: Omit<HistoryAction, 'timestamp' | 'transactionId' | 'changes'> & { before: any; after: any }) => {
+            recordAction: (
+                action: Omit<HistoryAction, 'timestamp' | 'transactionId' | 'changes'> & { before: any; after: any }
+            ) => {
                 const historyStore = useHistoryStore.getState();
                 if (historyStore.hasActiveTransaction(action.presentationId)) {
                     // Don't record individual actions during a transaction
@@ -2193,33 +2196,6 @@ export const usePresentationStore = create<PresentationState>()(
 
                     const newElement = getNewEditorElement(newColumnId);
                     const updatedElements = [...currentLayout.elements, newElement];
-
-                    const updatedSlide = {
-                        ...currentSlide,
-                        layouts: currentSlide.layouts.map(layout => {
-                            if (layout.id === layoutId) {
-                                return {
-                                    ...layout,
-                                    gridStructure: updatedGridStructure,
-                                    elements: updatedElements,
-                                };
-                            }
-                            return layout;
-                        }),
-                    };
-
-                    const updatedPresentation = {
-                        ...currentPresentation,
-                        slides: currentPresentation.slides.map(slide => (slide.id === slideId ? updatedSlide : slide)),
-                    };
-
-                    // ???
-                    // const updatedState = {
-                    //     ...get(),
-                    //     presentations: get().presentations.map(presentation =>
-                    //         presentation.id === presentationId ? updatedPresentation : presentation
-                    //     ),
-                    // };
 
                     set(state => {
                         const updatedState = {

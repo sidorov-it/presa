@@ -17,7 +17,7 @@ import styles from './page.module.css';
 export default function ThemeEditorPage(props: { params: Promise<{ action: string }> }) {
     const params = use(props.params);
     const router = useRouter();
-    const { addTheme, updateTheme, themes, loadTheme } = useThemeStore();
+    const { addTheme, updateTheme, loadTheme } = useThemeStore();
 
     const [theme, setTheme] = useState<Theme>({
         id: generateId(),
@@ -81,11 +81,13 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
 
     useEffect(() => {
         if (params.action !== 'new') {
-            loadTheme(params.action).then((theme: Theme) => {
-                setTheme(theme);
+            loadTheme(params.action).then((theme: Theme | null) => {
+                if (theme) {
+                    setTheme(theme);
+                }
             });
         }
-    }, [params.action]);
+    }, [loadTheme, params.action]);
 
     const handleSave = async () => {
         try {

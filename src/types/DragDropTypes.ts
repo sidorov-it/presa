@@ -1,5 +1,3 @@
-import { BaseElement, Layout } from '.';
-
 // Define DnD export types
 export type DragSource = {
     elementId: string | null;
@@ -9,6 +7,7 @@ export type DragSource = {
     rowIndex?: number | null;
     columnIndex?: number | null;
     smartLayoutItemId?: string | null;
+    slideId?: string | null;
 };
 
 export type Position = 'top' | 'bottom' | 'left' | 'right';
@@ -21,9 +20,16 @@ export type DropTarget = {
     tableId?: string | null;
     columnIndex?: number | null;
     rowIndex?: number | null;
+    slideId?: string | null;
 };
 
 export type DragState = 'idle' | 'dragging' | 'dropping';
+
+// Добавим тип для положения мыши
+export type MousePosition = {
+    x: number;
+    y: number;
+};
 
 export type DndState = {
     dragState: DragState;
@@ -35,6 +41,7 @@ export type DndState = {
         layoutIndicator: string | null;
         layoutPosition: Position | null;
         slideIndicator: string | null;
+        slidePosition: Position | null;
         cellIndicator: string | null;
         cellPosition: Position | null;
         tableColumnIndicator: number | null;
@@ -51,6 +58,7 @@ export type DndState = {
         elementVariant: string | null;
         defaultProps: any;
     };
+    lastMousePosition?: MousePosition | null; // Добавляем lastMousePosition
 };
 
 export type DndAction =
@@ -64,6 +72,7 @@ export type DndAction =
               rowIndex?: number | null;
               columnIndex?: number | null;
               smartLayoutItemId?: string | null;
+              slideId?: string | null;
           };
       }
     | { type: 'SET_DROP_TARGET'; payload: DropTarget }
@@ -88,9 +97,14 @@ export type DndAction =
           };
       }
     | { type: 'SET_LAYOUT_INDICATOR'; payload: { layoutId: string | null; position: Position | null } }
-    | { type: 'SET_SLIDE_INDICATOR'; payload: string | null }
+    | { type: 'SET_SLIDE_INDICATOR'; payload: { slideId: string | null; position: Position | null } }
+    | { type: 'SET_COLUMN_INDICATOR'; payload: { columnId: string | null; position: Position | null } }
     | { type: 'COMPLETE_DROP' }
     | { type: 'CANCEL_DRAG' }
     | { type: 'SET_READY_TO_DROP'; payload: boolean }
-    | { type: 'START_DRAG_MENU_ITEM'; payload: Layout | Omit<BaseElement, 'cellId'> }
-    | { type: 'SET_COLUMN_INDICATOR'; payload: { columnId: string | null; position: Position | null } };
+    | {
+          type: 'START_DRAG_MENU_ITEM';
+          payload: { id: string; defaultProps: any; elementTypeId: string; elementVariant: string };
+      }
+    | { type: 'SET_MOUSE_POSITION'; payload: MousePosition }
+    | { type: 'SET_INDICATORS'; payload: Partial<DndState['indicators']> };

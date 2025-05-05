@@ -13,8 +13,8 @@ import TemplateButton from '../TemplateButton/TemplateButton';
 import ResizableTemplateImage from '../ResizableTemplateImage';
 import { getNewEditorElement } from '@/elements/registry';
 import { useMenuStore } from '@/store/menuStore';
-import { useEditorStore } from '@/store/editorStore';
 import deepEqual from 'deep-equal';
+import { useDnd } from '@/contexts/DragDropContext';
 
 interface SlideEditorProps {
     slideLayoutIds: string[];
@@ -23,6 +23,8 @@ interface SlideEditorProps {
     isSelected: boolean;
     tiptapRefs: RefObject<TipTapRefs>;
     slideId: string;
+    isActive?: boolean;
+    slideNumber: number;
 }
 
 interface ColumnWidthOptions {
@@ -62,13 +64,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     presentationId,
     handleSelectSlide,
     isSelected,
+    isActive,
+    slideNumber,
 }) => {
     const editorRef = useRef<HTMLDivElement>(null);
     const [isHovered, setIsHovered] = useState(false);
-
-    const menuElementId = useMenuStore(state => state.elementId);
-    const { activeEditor } = useEditorStore();
-
     const openMenu = useMenuStore.getState().openMenu;
     const checkSlideMenuIsOpen = useMenuStore.getState().checkSlideMenuIsOpen;
 
@@ -366,20 +366,31 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         return baseStyle;
     }, [slide]);
 
+    // Add useDnd hook
+    const { state, handleDragStart } = useDnd();
+
+    // Добавляем проверку на активный индикатор для слайда
+    const isDropTarget = state.indicators.slideIndicator === slideId;
+
     return (
         <div
-            className={`${styles.slide}`}
+            className={`${styles.slide} ${isSelected ? styles.selected : ''} ${isActive ? styles.active : ''} ${
+                isDropTarget ? 'active-slide-drop-target' : ''
+            }`}
             onClick={handleSlideWrapperClick}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             role="button"
             tabIndex={0}
-            aria-label={`Slide ${slideId}`}
+            aria-label={`Slide ${slideNumber}`}
             onKeyDown={e => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     handleSlideWrapperClick(e as unknown as React.MouseEvent);
                 }
             }}
+            data-slide-dragging={
+                state?.dragState === 'dragging' && state.source.slideId === slideId ? 'true' : undefined
+            }
         >
             <div className={`${getSlideClassName()}`} style={getSlideStyle()}>
                 <div className={`${styles.slideBorder} ${isSelected || isHovered ? styles.slideBorderMenuOpen : ''}`} />
@@ -390,7 +401,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                                 className={styles.slideDragHandle}
                                 slideId={slideId}
                                 isActive={slideMenuOpen}
-                                ariaLabel="Открыть меню слайда"
+                                ariaLabel="Drag or open slide menu"
                                 dataAttributes={{
                                     'data-slide-drag-handle': slideId,
                                 }}
@@ -401,7 +412,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                                     }
                                 }}
                                 handleDragStart={e => {
-                                    e.preventDefault();
+                                    // Start slide drag instead of preventing default
+                                    handleDragStart(e, { elementId: null, slideId });
                                 }}
                             />
                             <TemplateButton

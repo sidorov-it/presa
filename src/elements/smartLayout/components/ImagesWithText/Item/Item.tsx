@@ -25,7 +25,6 @@ type ItemProps = {
     handleTextChange: (content: string) => void;
     addItem: () => void;
     isLastItem: boolean;
-    columnsCount: number;
 };
 
 export default function Item({
@@ -44,7 +43,6 @@ export default function Item({
     handleImageChange,
     addItem,
     isLastItem,
-    columnsCount,
 }: ItemProps) {
     const item = usePresentationStore(state => {
         const element = state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement;
@@ -52,22 +50,9 @@ export default function Item({
     }) as SmartLayoutItem;
 
     const imageRef = useRef<HTMLDivElement>(null);
-    // const [imageWidth, setImageWidth] = useState(0);
-
-    // useLayoutEffect(() => {
-    //     if (imageRef.current) {
-    //         setImageWidth(imageRef.current.offsetWidth);
-    //     }
-    // }, [columnsCount]);
 
     const imageWidthCoof = 14;
     const imageWidth = 30 + imageWidthCoof * (imageSize - 1);
-
-    // const imageWidth = 30 + imageWidthCoof * (imageSize - 1);
-
-    // let imageHeight = imageWidth;
-    // if (imageShape === 'portrait') imageHeight = (imageWidth * 16) / 9;
-    // if (imageShape === 'landscape') imageHeight = (imageWidth * 9) / 16;
 
     return (
         <ItemWrapper

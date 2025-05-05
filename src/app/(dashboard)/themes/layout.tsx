@@ -8,7 +8,6 @@ import { resetThemeStyles } from '@/utils/themeUtils';
 export default function ThemesLayout({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
     const pathname = usePathname();
-    const [sidebarOpen, setSidebarOpen] = useState(false);
     const [previousPath, setPreviousPath] = useState<string | null>(null);
 
     // Track path changes to detect when leaving editor pages

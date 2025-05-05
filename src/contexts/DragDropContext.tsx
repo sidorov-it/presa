@@ -105,11 +105,20 @@ const calculateDropPosition = (
     if (cellNode && !elementNode && findClosestElementsFn) {
         const closestResult = findClosestElementsFn(cellNode, mouseX, mouseY);
         if (closestResult) {
-            return {
-                targetType: 'element',
-                targetId: closestResult.element.id,
-                position: closestResult.position,
-            };
+            if (closestResult.element) {
+                return {
+                    targetType: 'element',
+                    targetId: closestResult.element.id,
+                    position: closestResult.position,
+                };
+            } else {
+                // Если element не найден, вернуть null в качестве targetType
+                return {
+                    targetType: null,
+                    targetId: null,
+                    position: null,
+                };
+            }
         }
     }
 
@@ -175,7 +184,6 @@ const calculateDropPosition = (
         const distanceToRight = Math.abs(mouseX - elementRect.right);
 
         // Find the closest edge
-        const minVertical = Math.min(distanceToTop, distanceToBottom);
         const minHorizontal = Math.min(distanceToLeft, distanceToRight);
 
         const thirdOfWidth = elementRect.width / 3;
@@ -241,7 +249,24 @@ const calculateDropPosition = (
     }
 
     // Handle slide-level drop
+    if (
+        slideNode &&
+        (prevStateRef.current.source.slideId || slideNode.getAttribute('data-slide-dragging') === 'true')
+    ) {
+        const slideRect = slideNode.getBoundingClientRect();
+        // Determine if we're in the top or bottom half of the slide
+        const slidePosition = mouseY < slideRect.top + slideRect.height / 2 ? 'top' : 'bottom';
+
+        return {
+            targetType: 'slide',
+            targetId: slideNode.getAttribute('data-slide-id'),
+            position: slidePosition,
+        };
+    }
+
+    // Если мы перетаскиваем не слайд и мы над "пустым пространством" слайда (нет элементов/ячеек/макетов)
     if (slideNode && !elementNode && !cellNode && !layoutNode) {
+        // Мы над слайдом, но не над элементами - это может быть пустое пространство слайда
         return {
             targetType: 'slide',
             targetId: slideNode.getAttribute('data-slide-id'),
@@ -274,6 +299,7 @@ const initialState: DndState = {
         layoutIndicator: null,
         layoutPosition: null,
         slideIndicator: null,
+        slidePosition: null,
         cellIndicator: null,
         cellPosition: null,
         tableColumnIndicator: null,
@@ -290,6 +316,7 @@ const initialState: DndState = {
         elementVariant: null,
     },
     isReadyToDrop: false,
+    lastMousePosition: null,
 };
 
 const prevStateRef = {
@@ -311,6 +338,7 @@ function dndReducer(state: DndState, action: DndAction): DndState {
                     rowIndex: action.payload.rowIndex,
                     columnIndex: action.payload.columnIndex,
                     smartLayoutItemId: action.payload.smartLayoutItemId,
+                    slideId: action.payload.slideId, // Add slideId
                 },
                 // Clear any previous indicators and targets
                 target: { ...initialState.target },
@@ -333,6 +361,30 @@ function dndReducer(state: DndState, action: DndAction): DndState {
                 ...state,
                 target: action.payload,
             };
+            break;
+        case 'SET_INDICATORS':
+            updatedState = {
+                ...state,
+                indicators: {
+                    elementIndicator: action.payload.elementIndicator || null,
+                    elementPosition: action.payload.elementPosition || null,
+                    layoutIndicator: action.payload.layoutIndicator || null,
+                    layoutPosition: action.payload.layoutPosition || null,
+                    slideIndicator: action.payload.slideIndicator || null,
+                    slidePosition: action.payload.slidePosition || null,
+                    cellIndicator: action.payload.cellIndicator || null,
+                    cellPosition: action.payload.cellPosition || null,
+                    tableColumnIndicator: action.payload.tableColumnIndicator || null,
+                    tableColumnPosition: action.payload.tableColumnPosition || null,
+                    tableRowIndicator: action.payload.tableRowIndicator || null,
+                    tableRowPosition: action.payload.tableRowPosition || null,
+                    tableId: action.payload.tableId || null,
+                    cellId: action.payload.cellId || null,
+                },
+            };
+
+            console.log('action', action);
+            console.log('updatedState', updatedState);
             break;
         case 'SET_ELEMENT_INDICATOR':
             updatedState = {
@@ -359,7 +411,19 @@ function dndReducer(state: DndState, action: DndAction): DndState {
                 ...state,
                 indicators: {
                     ...state.indicators,
-                    slideIndicator: action.payload,
+                    slideIndicator: action.payload.slideId,
+                    slidePosition: action.payload.position,
+                    // Clear other indicators
+                    elementIndicator: null,
+                    elementPosition: null,
+                    layoutIndicator: null,
+                    layoutPosition: null,
+                    cellIndicator: null,
+                    cellPosition: null,
+                    tableColumnIndicator: null,
+                    tableColumnPosition: null,
+                    tableRowIndicator: null,
+                    tableRowPosition: null,
                 },
             };
             break;
@@ -427,6 +491,12 @@ function dndReducer(state: DndState, action: DndAction): DndState {
                 isReadyToDrop: action.payload,
             };
             break;
+        case 'SET_MOUSE_POSITION':
+            updatedState = {
+                ...state,
+                lastMousePosition: action.payload,
+            };
+            break;
         default:
             return state;
     }
@@ -462,13 +532,23 @@ const getEmptyLayout = () => {
 // Create context
 type DndContextType = {
     state: DndState;
-    startDrag: (elementId: string, layoutId: string, cellId?: string) => void;
+    startDrag: (
+        elementId: string | null,
+        layoutId: string,
+        cellId?: string,
+        tableId?: string,
+        rowIndex?: number,
+        columnIndex?: number,
+        smartLayoutItemId?: string,
+        slideId?: string
+    ) => void;
     setDropTarget: (target: DropTarget) => void;
-    setElementIndicator: (elementId: string | null, position: Position | null) => void;
-    setCellIndicator: (cellId: string | null, position: Position | null) => void;
-    setLayoutIndicator: (layoutId: string | null, position: Position | null) => void;
-    setSlideIndicator: (slideId: string | null) => void;
-    setColumnIndicator: (columnId: string | null, position: Position | null) => void;
+    // setElementIndicator: (elementId: string | null, position: Position | null) => void;
+    // setCellIndicator: (cellId: string | null, position: Position | null) => void;
+    // setLayoutIndicator: (layoutId: string | null, position: Position | null) => void;
+    // setSlideIndicator: (slideId: string | null, position: Position | null) => void;
+    // setColumnIndicator: (columnId: string | null, position: Position | null) => void;
+    setIndicators: (indicators: DndState['indicators']) => void;
     completeDrop: () => void;
     cancelDrag: () => void;
     handleDragStart: (
@@ -481,14 +561,16 @@ type DndContextType = {
             rowIndex,
             columnIndex,
             smartLayoutItemId,
+            slideId,
         }: {
             elementId: string | null;
-            layoutId?: string;
+            layoutId?: string | undefined;
             cellId?: string;
             tableId?: string;
             rowIndex?: number;
             columnIndex?: number;
             smartLayoutItemId?: string;
+            slideId?: string;
         }
     ) => void;
     handleNewElementDragStart: (e: React.DragEvent<HTMLDivElement>, element: MenuItem) => void;
@@ -562,11 +644,12 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             tableId?: string,
             rowIndex?: number,
             columnIndex?: number,
-            smartLayoutItemId?: string
+            smartLayoutItemId?: string,
+            slideId?: string // Add slideId parameter
         ) => {
             dispatch({
                 type: 'START_DRAG',
-                payload: { elementId, layoutId, cellId, tableId, rowIndex, columnIndex, smartLayoutItemId },
+                payload: { elementId, layoutId, cellId, tableId, rowIndex, columnIndex, smartLayoutItemId, slideId },
             });
         },
         []
@@ -576,38 +659,42 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         dispatch({ type: 'SET_DROP_TARGET', payload: target });
     }, []);
 
-    const setElementIndicator = useCallback((elementId: string | null, position: Position | null) => {
-        dispatch({ type: 'SET_ELEMENT_INDICATOR', payload: { elementId, position } });
-    }, []);
+    // const setElementIndicator = useCallback((elementId: string | null, position: Position | null) => {
+    //     dispatch({ type: 'SET_ELEMENT_INDICATOR', payload: { elementId, position } });
+    // }, []);
 
-    const setCellIndicator = useCallback((cellId: string | null, position: Position | null) => {
-        dispatch({ type: 'SET_CELL_INDICATOR', payload: { cellId, position } });
-    }, []);
+    // const setCellIndicator = useCallback((cellId: string | null, position: Position | null) => {
+    //     dispatch({ type: 'SET_CELL_INDICATOR', payload: { cellId, position } });
+    // }, []);
 
-    const setTableColumnIndicator = useCallback(
-        (cellId: string | null, columnIndex: number | null, position: Position | null, tableId: string | null) => {
-            dispatch({ type: 'SET_TABLE_COLUMN_INDICATOR', payload: { cellId, columnIndex, position, tableId } });
-        },
-        []
-    );
+    // const setTableColumnIndicator = useCallback(
+    //     (cellId: string | null, columnIndex: number | null, position: Position | null, tableId: string | null) => {
+    //         dispatch({ type: 'SET_TABLE_COLUMN_INDICATOR', payload: { cellId, columnIndex, position, tableId } });
+    //     },
+    //     []
+    // );
 
-    const setTableRowIndicator = useCallback(
-        (cellId: string | null, rowIndex: number | null, position: Position | null, tableId: string | null) => {
-            dispatch({ type: 'SET_TABLE_ROW_INDICATOR', payload: { cellId, rowIndex, position, tableId } });
-        },
-        []
-    );
+    // const setTableRowIndicator = useCallback(
+    //     (cellId: string | null, rowIndex: number | null, position: Position | null, tableId: string | null) => {
+    //         dispatch({ type: 'SET_TABLE_ROW_INDICATOR', payload: { cellId, rowIndex, position, tableId } });
+    //     },
+    //     []
+    // );
 
-    const setLayoutIndicator = useCallback((layoutId: string | null, position: Position | null) => {
-        dispatch({ type: 'SET_LAYOUT_INDICATOR', payload: { layoutId, position } });
-    }, []);
+    // const setLayoutIndicator = useCallback((layoutId: string | null, position: Position | null) => {
+    //     dispatch({ type: 'SET_LAYOUT_INDICATOR', payload: { layoutId, position } });
+    // }, []);
 
-    const setSlideIndicator = useCallback((slideId: string | null) => {
-        dispatch({ type: 'SET_SLIDE_INDICATOR', payload: slideId });
-    }, []);
+    // const setSlideIndicator = useCallback((slideId: string | null, position: Position | null) => {
+    //     dispatch({ type: 'SET_SLIDE_INDICATOR', payload: { slideId, position } });
+    // }, []);
 
-    const setColumnIndicator = useCallback((columnId: string | null, position: Position | null) => {
-        dispatch({ type: 'SET_COLUMN_INDICATOR', payload: { columnId, position } });
+    // const setColumnIndicator = useCallback((columnId: string | null, position: Position | null) => {
+    //     dispatch({ type: 'SET_COLUMN_INDICATOR', payload: { columnId, position } });
+    // }, []);
+
+    const setIndicators = useCallback((indicators: Partial<DndState['indicators']>) => {
+        dispatch({ type: 'SET_INDICATORS', payload: indicators });
     }, []);
 
     const cancelDrag = useCallback(() => {
@@ -632,28 +719,57 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 rowIndex,
                 columnIndex,
                 smartLayoutItemId,
+                slideId, // Add slideId parameter
             }: {
                 elementId: string | null;
-                layoutId: string;
+                layoutId?: string | undefined;
                 cellId?: string;
                 tableId?: string;
                 rowIndex?: number;
                 columnIndex?: number;
                 smartLayoutItemId?: string;
+                slideId?: string; // Add slideId type
             }
         ) => {
             e.stopPropagation();
 
-            startDrag(elementId, layoutId, cellId, tableId, rowIndex, columnIndex, smartLayoutItemId);
-
-            prevStateRef.current.source = {
-                elementId,
-                layoutId,
-                cellId,
-                tableId,
-                rowIndex,
-                columnIndex,
-            };
+            // Start drag operation with the provided parameters
+            if (slideId) {
+                // If slideId is provided, we're dragging a slide
+                startDrag(null, '', undefined, undefined, undefined, undefined, undefined, slideId);
+                prevStateRef.current = {
+                    ...state,
+                    source: {
+                        elementId: null,
+                        layoutId: null,
+                        cellId: null,
+                        tableId: null,
+                        rowIndex: null,
+                        columnIndex: null,
+                        slideId, // Set the sourceSlideId
+                    },
+                    target: { ...initialState.target },
+                    indicators: { ...initialState.indicators },
+                    newElement: { ...initialState.newElement },
+                };
+            } else {
+                // Otherwise handle normal element/layout/cell dragging
+                startDrag(elementId, layoutId!, cellId, tableId, rowIndex, columnIndex, smartLayoutItemId);
+                prevStateRef.current = {
+                    ...state,
+                    source: {
+                        elementId,
+                        layoutId,
+                        cellId,
+                        tableId,
+                        rowIndex,
+                        columnIndex,
+                    },
+                    target: { ...initialState.target },
+                    indicators: { ...initialState.indicators },
+                    newElement: { ...initialState.newElement },
+                };
+            }
 
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData(
@@ -666,6 +782,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     rowIndex,
                     columnIndex,
                     smartLayoutItemId,
+                    slideId, // Include slideId in the data
                 })
             );
         },
@@ -747,7 +864,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 const updatedTargetElements = [...targetLayout.elements].filter(el => el.id !== element.id);
                 updatedTargetElements.splice(targetIndex, 0, updatedElement);
 
-                console.log('updatedTargetElements', updatedTargetElements);
+                // console.log('updatedTargetElements', updatedTargetElements);
                 DragDropTransactionHelper.updateLayout(presentationId, targetSlide.id, targetLayout.id, {
                     elements: updatedTargetElements,
                 });
@@ -903,7 +1020,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 const updatedTargetElements = [...targetLayout.elements].filter(el => el.id !== draggedElement.id);
                 updatedTargetElements.splice(targetIndex, 0, updatedElement);
 
-                console.log('updatedTargetElements', updatedTargetElements);
+                // console.log('updatedTargetElements', updatedTargetElements);
                 DragDropTransactionHelper.updateLayout(presentationId, targetSlide.id, targetLayout.id, {
                     elements: updatedTargetElements,
                 });
@@ -1398,7 +1515,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         }
 
         if (isNewElement) {
-            console.log('drop new element', prevStateRef.current.newElement);
+            // console.log('drop new element', prevStateRef.current.newElement);
 
             if (!prevStateRef.current.newElement.id) {
                 console.warn('No element id found for new element');
@@ -1424,14 +1541,16 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             const targetElement = targetLayout.elements.find(e => e.id === prevStateRef.current.target.elementId);
             if (!targetElement) return;
 
-            // Change the position of source cell
-            processAddElementToCell({
-                element: newElement,
-                targetLayout,
-                targetElement,
-                targetSlide,
-                position,
-            });
+            // Добавляем проверку на тип newElement перед вызовом processAddElementToCell
+            if ('elementTypeId' in newElement) {
+                processAddElementToCell({
+                    element: newElement,
+                    targetLayout,
+                    targetElement,
+                    targetSlide,
+                    position,
+                });
+            }
         } else {
             if (!prevStateRef.current.source.layoutId) {
                 return;
@@ -1735,7 +1854,8 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             const newElement = getNewElementFromTypeId(elementTypeId, elementVariant);
             if (!newElement) return;
 
-            if (newElement.elementTypeId.startsWith('table')) {
+            // Проверяем, имеет ли newElement свойство elementTypeId
+            if ('elementTypeId' in newElement && newElement.elementTypeId.startsWith('table')) {
                 const targetLayoutIndex = targetSlide.layouts.findIndex(l => l.id === targetLayout.id);
                 if (targetLayoutIndex === -1) return;
 
@@ -1770,8 +1890,54 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
     );
 
     const processSlideDrop = useCallback(() => {
-        // TODO: Implement slide drop
-    }, []);
+        // Check if we have necessary slide indicators
+        if (!prevStateRef.current.source.slideId || !prevStateRef.current.indicators.slideIndicator) {
+            return;
+        }
+
+        const sourceSlideId = prevStateRef.current.source.slideId;
+        const targetSlideId = prevStateRef.current.indicators.slideIndicator;
+        const position = prevStateRef.current.indicators.slidePosition;
+
+        // Don't do anything if source and target are the same
+        if (sourceSlideId === targetSlideId) {
+            return;
+        }
+
+        const presentation = usePresentationStore.getState().getPresentation(presentationId);
+
+        if (!presentation) {
+            console.warn('Presentation not found');
+            return;
+        }
+
+        // Find the indices of source and target slides
+        const sourceIndex = presentation.slides.findIndex(slide => slide.id === sourceSlideId);
+        const targetIndex = presentation.slides.findIndex(slide => slide.id === targetSlideId);
+
+        if (sourceIndex === -1 || targetIndex === -1) {
+            console.warn('Source or target slide not found');
+            return;
+        }
+
+        // Calculate the insertion index based on the position
+        const insertIndex = position === 'top' ? targetIndex : targetIndex + 1;
+
+        // Clone and reorder the slides
+        const updatedSlides = [...presentation.slides];
+        const [movedSlide] = updatedSlides.splice(sourceIndex, 1);
+
+        // If moving from before to after, adjust index for the removed item
+        let adjustedInsertIndex = insertIndex;
+        if (sourceIndex < targetIndex) {
+            adjustedInsertIndex -= 1;
+        }
+
+        updatedSlides.splice(adjustedInsertIndex, 0, movedSlide);
+
+        // Update the presentation with the new slide order
+        usePresentationStore.getState().reorderSlides(presentationId, sourceIndex, adjustedInsertIndex);
+    }, [presentationId]);
 
     // Implementation of processLayoutDrop
     const processLayoutDrop = useCallback(() => {
@@ -2182,7 +2348,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 elementTypeId: prevStateRef.current.newElement.elementTypeId!,
                 elementVariant: prevStateRef.current.newElement.elementVariant!,
             });
-            console.log('drop new element', prevStateRef.current.newElement);
+            // console.log('drop new element', prevStateRef.current.newElement);
         } else {
             if (!prevStateRef.current.source.layoutId) {
                 return;
@@ -2338,12 +2504,13 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             },
         });
 
+        setIndicators({});
         // Clear column indicator
-        setColumnIndicator(null, null);
+        // setColumnIndicator(null, null);
 
         // Commit the transaction
         DragDropTransactionHelper.commitDragOperation(presentationId);
-    }, [getLayout, getLayoutSlide, presentationId, setColumnIndicator]);
+    }, [getLayout, getLayoutSlide, presentationId, setIndicators]);
 
     const processTableRowDrop = useCallback(() => {
         if (!prevStateRef.current.source.tableId || !prevStateRef.current.target.tableId) {
@@ -2501,29 +2668,24 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         }
     }, [getLayout, getLayoutSlide, presentationId]);
 
+    // Update the completeDrop function to process slide drops
     const completeDrop = useCallback(() => {
         if (prevStateRef.current.dragState !== 'dragging') {
             return;
         }
 
         // Check if source cellId is a column
-        if (prevStateRef.current.source.cellId?.startsWith('column-')) {
-            processColumnDrop();
-        } else if (Number.isInteger(prevStateRef.current.source.rowIndex)) {
-            processTableRowDrop();
-            // } else if (prevStateRef.current.indicators.elementIndicator) {
-            //     processElementDrop();
-            // } else if (prevStateRef.current.indicators.cellIndicator) {
-            //     processCellDrop();
-            // } else if (prevStateRef.current.indicators.layoutIndicator) {
-            //     processLayoutDrop();
-            // } else if (prevStateRef.current.indicators.slideIndicator) {
-            //     processSlideDrop();
-        }
+        // if (prevStateRef.current.source.cellId?.startsWith('column-')) {
+        //     processColumnDrop();
+        // } else if (Number.isInteger(prevStateRef.current.source.rowIndex)) {
+        //     processTableRowDrop();
+        // } else if (prevStateRef.current.indicators.slideIndicator && prevStateRef.current.source.slideId) {
+        //     // Process slide drops
+        //     DragDropTransactionHelper.wrapInTransaction(presentationId, 'Reorder slides', () => processSlideDrop());
+        // }
 
         dispatch({ type: 'COMPLETE_DROP' });
-    }, [processColumnDrop, processTableRowDrop]);
-    // ... existing code ...
+    }, [processColumnDrop, processTableRowDrop, processSlideDrop, presentationId]);
 
     useEffect(() => {
         let lastProcessedTime = 0;
@@ -2538,6 +2700,12 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             // Only process if we're dragging
             if (state.dragState !== 'dragging') return;
 
+            // Сохраняем позицию мыши
+            dispatch({
+                type: 'SET_MOUSE_POSITION',
+                payload: { x: e.clientX, y: e.clientY },
+            });
+
             // Apply throttling to improve performance
             const now = Date.now();
             if (now - lastProcessedTime < THROTTLE_INTERVAL) return;
@@ -2546,21 +2714,17 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             // Get element under cursor
             const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
             if (!elemBelow) {
-                console.log('[DragDropContext] dragover – nothing under cursor');
+                // console.log('[DragDropContext] dragover – nothing under cursor');
                 return;
             }
 
             // Find target elements with data attributes
             const elementNode = elemBelow.closest('[data-element-id]') as HTMLElement;
             const cellNode = elemBelow.closest('[data-cell-id]') as HTMLElement;
-            const rowNode = elemBelow.closest('[data-row-id]') as HTMLElement;
             const layoutNode = elemBelow.closest('[data-layout-id]') as HTMLElement;
             const slideNode = elemBelow.closest('[data-slide-id]') as HTMLElement;
 
-            const elementId = elementNode?.getAttribute('data-element-id');
             const layoutId = layoutNode?.getAttribute('data-layout-id');
-            const cellId = cellNode?.getAttribute('data-cell-id');
-            const slideId = slideNode?.getAttribute('data-slide-id');
 
             // Skip if hovering over source element/layout/cell
             // if (
@@ -2573,10 +2737,195 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             //     return;
             // }
 
+            if (prevStateRef.current.source.slideId && slideNode) {
+                // Перетаскивание слайда к слайду - обрабатываем отдельно
+                if (prevStateRef.current.source.slideId === slideNode.getAttribute('data-slide-id')) {
+                    return;
+                }
+
+                const targetSlideId = slideNode.getAttribute('data-slide-id');
+
+                // Определение позиции (сверху или снизу слайда)
+                const slideRect = slideNode.getBoundingClientRect();
+                const position = e.clientY < slideRect.top + slideRect.height / 2 ? 'top' : 'bottom';
+
+                setIndicators({ slideIndicator: targetSlideId, slidePosition: position });
+
+                // Set slide indicator and clear others
+                // setElementIndicator(null, null);
+                // setCellIndicator(null, null);
+                // setLayoutIndicator(null, null);
+                // setSlideIndicator(targetSlideId!, position);
+                // setTableColumnIndicator(null, null, null, null);
+                // setTableRowIndicator(null, null, null, null);
+
+                // Update drop target state
+                setDropTarget({
+                    elementId: null,
+                    layoutId: null,
+                    cellId: null,
+                    slideId: targetSlideId,
+                    position: position,
+                });
+
+                // Мы уже обработали перетаскивание слайда, возвращаемся
+                return;
+            }
+
+            // Если мы перетаскиваем не слайд, но находимся над слайдом - нам нужно найти элементы внутри слайда
+            // Если нет layoutId, но есть слайд, проверим, есть ли элементы внутри слайда
+            if (!layoutId && slideNode && !prevStateRef.current.source.slideId) {
+                // Возможно мы только начали наводить на слайд, поищем элементы внутри него
+                const layoutsInSlide = slideNode.querySelectorAll('[data-layout-id]');
+                if (layoutsInSlide.length > 0) {
+                    // Проверим каждый макет, может быть мы находимся над ним
+                    for (const layout of Array.from(layoutsInSlide)) {
+                        const layoutRect = layout.getBoundingClientRect();
+                        // Если мышь находится над макетом
+                        if (
+                            e.clientX >= layoutRect.left &&
+                            e.clientX <= layoutRect.right &&
+                            e.clientY >= layoutRect.top &&
+                            e.clientY <= layoutRect.bottom
+                        ) {
+                            // Используем этот макет, но не изменяем константы
+                            const foundLayoutId = layout.getAttribute('data-layout-id');
+                            if (foundLayoutId) {
+                                // Используем узлы с новыми именами
+                                const foundLayoutNode = layout as HTMLElement;
+                                // Получаем информацию о макете и продолжаем с новыми переменными
+                                const targetLayout = foundLayoutId ? getLayout(foundLayoutId) : undefined;
+                                if (!targetLayout) {
+                                    // console.log('[DragDropContext] dragover – no targetLayout found for id', foundLayoutId);
+                                    return;
+                                }
+
+                                // Determine context of the drag for special handling
+                                const isSingleCellSingleElement = targetLayout.elements.length === 1;
+                                const isMultiCellRow = targetLayout?.gridStructure.rows[0].cells.length > 1;
+                                const isTable = !!targetLayout?.isTable;
+
+                                // Special case handling for table
+                                if (isTable) {
+                                    processTableTarget(e, foundLayoutId, cellNode as HTMLElement);
+                                    return;
+                                }
+
+                                // Use the helper function to calculate drop position with our new node
+                                const dropPosition = calculateDropPosition(
+                                    e,
+                                    { elementNode, cellNode, layoutNode: foundLayoutNode, slideNode },
+                                    { isSingleCellSingleElement, isMultiCellRow },
+                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                    // @ts-expect-error
+                                    cellNode ? findClosestElementsInCellLocal : undefined
+                                );
+
+                                // Apply the calculated position by updating appropriate indicators using the new values
+                                // ... обработка dropPosition аналогично уже существующему коду
+                                if (dropPosition.targetType === 'element' && dropPosition.targetId) {
+                                    // Set element indicator and clear others
+                                    setIndicators({
+                                        elementIndicator: dropPosition.targetId,
+                                        elementPosition: dropPosition.position,
+                                    });
+                                    // setElementIndicator(dropPosition.targetId, dropPosition.position);
+                                    // setCellIndicator(null, null);
+                                    // setLayoutIndicator(null, null);
+                                    // setSlideIndicator(null, null);
+                                    // setTableColumnIndicator(null, null, null, null);
+                                    // setTableRowIndicator(null, null, null, null);
+
+                                    // Update drop target state
+                                    setDropTarget({
+                                        elementId: dropPosition.targetId,
+                                        layoutId: foundLayoutId,
+                                        cellId:
+                                            elementNode?.closest('[data-cell-id]')?.getAttribute('data-cell-id') ||
+                                            null,
+                                        position: dropPosition.position,
+                                    });
+                                } else if (dropPosition.targetType === 'cell' && dropPosition.targetId) {
+                                    // Set cell indicator and clear others
+                                    setIndicators({
+                                        cellIndicator: dropPosition.targetId,
+                                        cellPosition: dropPosition.position,
+                                    });
+
+                                    // setElementIndicator(null, null);
+                                    // setCellIndicator(dropPosition.targetId, dropPosition.position);
+                                    // setLayoutIndicator(null, null);
+                                    // setSlideIndicator(null, null);
+                                    // setTableColumnIndicator(null, null, null, null);
+                                    // setTableRowIndicator(null, null, null, null);
+
+                                    // Update drop target state
+                                    setDropTarget({
+                                        elementId: null,
+                                        layoutId: foundLayoutId,
+                                        cellId: dropPosition.targetId,
+                                        position: dropPosition.position,
+                                    });
+                                } else if (dropPosition.targetType === 'layout' && dropPosition.targetId) {
+                                    setIndicators({
+                                        layoutIndicator: dropPosition.targetId,
+                                        layoutPosition: dropPosition.position,
+                                    });
+                                    // Set layout indicator and clear others
+                                    // setElementIndicator(null, null);
+                                    // setCellIndicator(null, null);
+                                    // setLayoutIndicator(dropPosition.targetId, dropPosition.position);
+                                    // setSlideIndicator(null, null);
+                                    // setTableColumnIndicator(null, null, null, null);
+                                    // setTableRowIndicator(null, null, null, null);
+
+                                    // Update drop target state
+                                    setDropTarget({
+                                        elementId: null,
+                                        layoutId: dropPosition.targetId,
+                                        cellId: null,
+                                        position: dropPosition.position,
+                                    });
+                                } else if (dropPosition.targetType === 'slide' && dropPosition.targetId) {
+                                    // Set slide indicator and clear others
+                                    setIndicators({
+                                        slideIndicator: dropPosition.targetId,
+                                        slidePosition: dropPosition.position,
+                                    });
+                                    // setElementIndicator(null, null);
+                                    // setCellIndicator(null, null);
+                                    // setLayoutIndicator(null, null);
+                                    // setSlideIndicator(dropPosition.targetId, dropPosition.position);
+                                    // setTableColumnIndicator(null, null, null, null);
+                                    // setTableRowIndicator(null, null, null, null);
+
+                                    // Update drop target state
+                                    setDropTarget({
+                                        elementId: null,
+                                        layoutId: null,
+                                        cellId: null,
+                                        slideId: dropPosition.targetId,
+                                        position: dropPosition.position,
+                                    });
+                                } else {
+                                    // Not over a valid target or in empty space
+                                    // console.log('[DragDropContext] dragover – no valid target');
+                                    resetAllIndicators();
+                                }
+
+                                // Update previous state reference for use in drop handler
+                                updatePrevStateRef();
+                                return; // После обработки выходим из функции
+                            }
+                        }
+                    }
+                }
+            }
+
             // Get layout information to determine the appropriate target
             const targetLayout = layoutId ? getLayout(layoutId) : undefined;
             if (!targetLayout) {
-                console.log('[DragDropContext] dragover – no targetLayout found for id', layoutId);
+                // console.log('[DragDropContext] dragover – no targetLayout found for id', layoutId);
                 return;
             }
 
@@ -2591,24 +2940,32 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 return;
             }
 
+            const findClosestElementsInCellLocal = (cellNode: HTMLElement, mouseX: number, mouseY: number) =>
+                findClosestElementsInCell(cellNode, mouseX, mouseY);
+
             // Use the helper function to calculate drop position
             const dropPosition = calculateDropPosition(
                 e,
                 { elementNode, cellNode, layoutNode, slideNode },
                 { isSingleCellSingleElement, isMultiCellRow },
-                // (cellNode, mouseX, mouseY) => findClosestElementsInCell(cellNode, mouseX, mouseY)
-                cellNode ? (cellNode, mouseX, mouseY) => findClosestElementsInCell(cellNode, mouseX, mouseY) : undefined
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
+                cellNode ? findClosestElementsInCellLocal : undefined
             );
 
             // Apply the calculated position by updating appropriate indicators
             if (dropPosition.targetType === 'element' && dropPosition.targetId) {
                 // Set element indicator and clear others
-                setElementIndicator(dropPosition.targetId, dropPosition.position);
-                setCellIndicator(null, null);
-                setLayoutIndicator(null, null);
-                setSlideIndicator(null);
-                setTableColumnIndicator(null, null, null, null);
-                setTableRowIndicator(null, null, null, null);
+                setIndicators({
+                    elementIndicator: dropPosition.targetId,
+                    elementPosition: dropPosition.position,
+                });
+                // setElementIndicator(dropPosition.targetId, dropPosition.position);
+                // setCellIndicator(null, null);
+                // setLayoutIndicator(null, null);
+                // setSlideIndicator(null, null);
+                // setTableColumnIndicator(null, null, null, null);
+                // setTableRowIndicator(null, null, null, null);
 
                 // Update drop target state
                 setDropTarget({
@@ -2619,12 +2976,16 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 });
             } else if (dropPosition.targetType === 'cell' && dropPosition.targetId) {
                 // Set cell indicator and clear others
-                setElementIndicator(null, null);
-                setCellIndicator(dropPosition.targetId, dropPosition.position);
-                setLayoutIndicator(null, null);
-                setSlideIndicator(null);
-                setTableColumnIndicator(null, null, null, null);
-                setTableRowIndicator(null, null, null, null);
+                setIndicators({
+                    cellIndicator: dropPosition.targetId,
+                    cellPosition: dropPosition.position,
+                });
+                // setElementIndicator(null, null);
+                // setCellIndicator(dropPosition.targetId, dropPosition.position);
+                // setLayoutIndicator(null, null);
+                // setSlideIndicator(null, null);
+                // setTableColumnIndicator(null, null, null, null);
+                // setTableRowIndicator(null, null, null, null);
 
                 // Update drop target state
                 setDropTarget({
@@ -2634,13 +2995,17 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     position: dropPosition.position,
                 });
             } else if (dropPosition.targetType === 'layout' && dropPosition.targetId) {
+                setIndicators({
+                    layoutIndicator: dropPosition.targetId,
+                    layoutPosition: dropPosition.position,
+                });
                 // Set layout indicator and clear others
-                setElementIndicator(null, null);
-                setCellIndicator(null, null);
-                setLayoutIndicator(dropPosition.targetId, dropPosition.position);
-                setSlideIndicator(null);
-                setTableColumnIndicator(null, null, null, null);
-                setTableRowIndicator(null, null, null, null);
+                // setElementIndicator(null, null);
+                // setCellIndicator(null, null);
+                // setLayoutIndicator(dropPosition.targetId, dropPosition.position);
+                // setSlideIndicator(null, null);
+                // setTableColumnIndicator(null, null, null, null);
+                // setTableRowIndicator(null, null, null, null);
 
                 // Update drop target state
                 setDropTarget({
@@ -2651,12 +3016,16 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 });
             } else if (dropPosition.targetType === 'slide' && dropPosition.targetId) {
                 // Set slide indicator and clear others
-                setElementIndicator(null, null);
-                setCellIndicator(null, null);
-                setLayoutIndicator(null, null);
-                setSlideIndicator(dropPosition.targetId);
-                setTableColumnIndicator(null, null, null, null);
-                setTableRowIndicator(null, null, null, null);
+                setIndicators({
+                    slideIndicator: dropPosition.targetId,
+                    slidePosition: dropPosition.position,
+                });
+                // setElementIndicator(null, null);
+                // setCellIndicator(null, null);
+                // setLayoutIndicator(null, null);
+                // setSlideIndicator(dropPosition.targetId, dropPosition.position);
+                // setTableColumnIndicator(null, null, null, null);
+                // setTableRowIndicator(null, null, null, null);
 
                 // Update drop target state
                 setDropTarget({
@@ -2664,11 +3033,11 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     layoutId: null,
                     cellId: null,
                     slideId: dropPosition.targetId,
-                    position: null,
+                    position: dropPosition.position,
                 });
             } else {
                 // Not over a valid target or in empty space
-                console.log('[DragDropContext] dragover – no valid target');
+                // console.log('[DragDropContext] dragover – no valid target');
                 resetAllIndicators();
             }
 
@@ -2678,12 +3047,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
         // Helper function to reset all indicators
         const resetAllIndicators = () => {
-            setElementIndicator(null, null);
-            setCellIndicator(null, null);
-            setLayoutIndicator(null, null);
-            setSlideIndicator(null);
-            setTableColumnIndicator(null, null, null, null);
-            setTableRowIndicator(null, null, null, null);
+            setIndicators({});
             setDropTarget({
                 elementId: null,
                 layoutId: null,
@@ -2693,12 +3057,12 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         };
 
         const processTableTarget = (e: DragEvent, tableId: string, cellNode: HTMLElement) => {
-            console.log('[DragDropContext] processTableTarget', { tableId });
+            // console.log('[DragDropContext] processTableTarget', { tableId });
 
             const layout = getLayout(tableId);
 
             if (!layout || !layout.isTable || !cellNode) {
-                console.log('[DragDropContext] processTableTarget – invalid layout/cell');
+                // console.log('[DragDropContext] processTableTarget – invalid layout/cell');
                 return;
             }
 
@@ -2729,13 +3093,22 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     position = 'bottom';
                 }
 
-                setElementIndicator(null, null);
-                setCellIndicator(null, null);
-                setLayoutIndicator(null, null);
-                setSlideIndicator(null);
-                setTableColumnIndicator(null, null, null, null);
+                setIndicators({
+                    cellId: firstCellInRow.id,
+                    tableRowIndicator: targetRowIndex,
+                    tableRowPosition: position,
+                    tableId: tableId,
+                    tableColumnIndicator: null,
+                    tableColumnPosition: null,
+                });
 
-                setTableRowIndicator(firstCellInRow.id, targetRowIndex, position, tableId);
+                // setElementIndicator(null, null);
+                // setCellIndicator(null, null);
+                // setLayoutIndicator(null, null);
+                // setSlideIndicator(null, null);
+                // setTableColumnIndicator(null, null, null, null);
+
+                // setTableRowIndicator(firstCellInRow.id, targetRowIndex, position, tableId);
 
                 setDropTarget({
                     elementId: null,
@@ -2799,13 +3172,20 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 position = 'right';
             }
 
-            setElementIndicator(null, null);
-            setCellIndicator(null, null);
-            setLayoutIndicator(null, null);
-            setSlideIndicator(null);
-            setTableRowIndicator(null, null, null, null);
+            setIndicators({
+                cellId: firstCellInColumn.id,
+                tableColumnIndicator: firstCellInColumn.column,
+                tableColumnPosition: position,
+                tableId: tableId,
+            });
 
-            setTableColumnIndicator(firstCellInColumn.id, firstCellInColumn.column, position, tableId);
+            // setElementIndicator(null, null);
+            // setCellIndicator(null, null);
+            // setLayoutIndicator(null, null);
+            // setSlideIndicator(null, null);
+            // setTableRowIndicator(null, null, null, null);
+
+            // setTableColumnIndicator(firstCellInColumn.id, firstCellInColumn.column, position, tableId);
 
             setDropTarget({
                 elementId: null,
@@ -2842,10 +3222,63 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
         // Helper to update previous state reference
         const updatePrevStateRef = () => {
+            // Получаем значения текущих индикаторов из DOM
+            const elementIndicator = document
+                .querySelector('[data-element-indicator="true"]')
+                ?.getAttribute('data-element-id');
+            const layoutIndicator = document
+                .querySelector('[data-layout-indicator="true"]')
+                ?.getAttribute('data-layout-id');
+            const slideIndicator = document
+                .querySelector('[data-slide-id].active-slide-drop-target')
+                ?.getAttribute('data-slide-id');
+            const cellIndicator = document.querySelector('[data-cell-indicator="true"]')?.getAttribute('data-cell-id');
+
+            // Определяем позицию индикатора по классам или атрибутам
+            let elementPosition = null;
+            let layoutPosition = null;
+            let slidePosition = null;
+            let cellPosition = null;
+
+            // Определяем позиции на основе классов индикаторов
+            if (elementIndicator) {
+                const elementNode = document.querySelector(`[data-element-id="${elementIndicator}"]`);
+                elementPosition = elementNode?.getAttribute('data-indicator-position') || null;
+            }
+
+            if (slideIndicator) {
+                const slideRect = document
+                    .querySelector(`[data-slide-id="${slideIndicator}"]`)
+                    ?.getBoundingClientRect();
+                if (slideRect) {
+                    const mouseY = state.lastMousePosition?.y || 0;
+                    slidePosition = mouseY < slideRect.top + slideRect.height / 2 ? 'top' : 'bottom';
+                }
+            }
+
+            if (layoutIndicator) {
+                const layoutNode = document.querySelector(`[data-layout-id="${layoutIndicator}"]`);
+                layoutPosition = layoutNode?.getAttribute('data-indicator-position') || null;
+            }
+
+            if (cellIndicator) {
+                const cellNode = document.querySelector(`[data-cell-id="${cellIndicator}"]`);
+                cellPosition = cellNode?.getAttribute('data-indicator-position') || null;
+            }
+
+            // Объединяем текущее состояние с новыми индикаторами
             prevStateRef.current = {
                 ...state,
                 indicators: {
                     ...state.indicators,
+                    elementIndicator: elementIndicator || state.indicators.elementIndicator,
+                    elementPosition: elementPosition || state.indicators.elementPosition,
+                    layoutIndicator: layoutIndicator || state.indicators.layoutIndicator,
+                    layoutPosition: layoutPosition || state.indicators.layoutPosition,
+                    slideIndicator: slideIndicator || state.indicators.slideIndicator,
+                    slidePosition: slidePosition || state.indicators.slidePosition,
+                    cellIndicator: cellIndicator || state.indicators.cellIndicator,
+                    cellPosition: cellPosition || state.indicators.cellPosition,
                 },
             };
         };
@@ -2964,6 +3397,10 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     DragDropTransactionHelper.wrapInTransaction(presentationId, 'Reposition tables column', () =>
                         processTableColumnDrop()
                     );
+                } else if (prevStateRef.current.source.cellId?.startsWith('column-')) {
+                    processColumnDrop();
+                } else if (Number.isInteger(prevStateRef.current.source.rowIndex)) {
+                    processTableRowDrop();
                 }
 
                 // Complete the drop operation
@@ -2974,20 +3411,20 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         // Escape key handler
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape' && state.dragState === 'dragging') {
-                console.log('[DragDropContext] escape pressed – cancelling drag');
+                // console.log('[DragDropContext] escape pressed – cancelling drag');
                 cancelDrag();
             }
         };
 
         // Add global event listeners
-        console.log('[DragDropContext] adding global listeners');
+        // console.log('[DragDropContext] adding global listeners');
         document.addEventListener('dragover', handleDocumentDragOver);
         document.addEventListener('drop', handleDocumentDrop);
         document.addEventListener('keydown', handleKeyDown);
 
         // Cleanup
         return () => {
-            console.log('[DragDropContext] removing global listeners (cleanup)');
+            // console.log('[DragDropContext] removing global listeners (cleanup)');
             document.removeEventListener('dragover', handleDocumentDragOver);
             document.removeEventListener('drop', handleDocumentDrop);
             document.removeEventListener('keydown', handleKeyDown);
@@ -2999,10 +3436,10 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         state,
         getLayout,
         getLayoutSlide,
-        setElementIndicator,
-        setCellIndicator,
-        setLayoutIndicator,
-        setSlideIndicator,
+        // setElementIndicator,
+        // setCellIndicator,
+        // setLayoutIndicator,
+        // setSlideIndicator,
         setDropTarget,
         completeDrop,
         presentationId,
@@ -3011,10 +3448,11 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         processCellDrop,
         processElementDrop,
         cancelDrag,
-        setColumnIndicator,
-        setTableColumnIndicator,
-        setTableRowIndicator,
+        // setColumnIndicator,
+        // setTableColumnIndicator,
+        // setTableRowIndicator,
         processTableColumnDrop,
+        setIndicators,
     ]);
 
     // Memoize the context value to prevent unnecessary re-renders
@@ -3023,11 +3461,11 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             state,
             startDrag,
             setDropTarget,
-            setElementIndicator,
-            setCellIndicator,
-            setLayoutIndicator,
-            setSlideIndicator,
-            setColumnIndicator,
+            // setElementIndicator,
+            // setCellIndicator,
+            // setLayoutIndicator,
+            // setSlideIndicator,
+            // setColumnIndicator,
             completeDrop,
             cancelDrag,
             handleDragStart,
@@ -3044,11 +3482,6 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             state,
             startDrag,
             setDropTarget,
-            setElementIndicator,
-            setCellIndicator,
-            setLayoutIndicator,
-            setSlideIndicator,
-            setColumnIndicator,
             completeDrop,
             cancelDrag,
             handleDragStart,
@@ -3062,6 +3495,54 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             setReadyToDrop,
         ]
     );
+
+    // Добавим эффект для установки атрибутов на элементы с индикаторами
+    useEffect(() => {
+        // Сначала очистим предыдущие атрибуты
+        document.querySelectorAll('[data-element-indicator="true"]').forEach(el => {
+            el.removeAttribute('data-element-indicator');
+            el.removeAttribute('data-indicator-position');
+        });
+        document.querySelectorAll('[data-layout-indicator="true"]').forEach(el => {
+            el.removeAttribute('data-layout-indicator');
+            el.removeAttribute('data-indicator-position');
+        });
+        document.querySelectorAll('[data-cell-indicator="true"]').forEach(el => {
+            el.removeAttribute('data-cell-indicator');
+            el.removeAttribute('data-indicator-position');
+        });
+
+        // Установим новые атрибуты
+        if (state.indicators.elementIndicator) {
+            const element = document.querySelector(`[data-element-id="${state.indicators.elementIndicator}"]`);
+            if (element) {
+                element.setAttribute('data-element-indicator', 'true');
+                if (state.indicators.elementPosition) {
+                    element.setAttribute('data-indicator-position', state.indicators.elementPosition);
+                }
+            }
+        }
+
+        if (state.indicators.layoutIndicator) {
+            const layout = document.querySelector(`[data-layout-id="${state.indicators.layoutIndicator}"]`);
+            if (layout) {
+                layout.setAttribute('data-layout-indicator', 'true');
+                if (state.indicators.layoutPosition) {
+                    layout.setAttribute('data-indicator-position', state.indicators.layoutPosition);
+                }
+            }
+        }
+
+        if (state.indicators.cellIndicator) {
+            const cell = document.querySelector(`[data-cell-id="${state.indicators.cellIndicator}"]`);
+            if (cell) {
+                cell.setAttribute('data-cell-indicator', 'true');
+                if (state.indicators.cellPosition) {
+                    cell.setAttribute('data-indicator-position', state.indicators.cellPosition);
+                }
+            }
+        }
+    }, [state.indicators]);
 
     return <DndContext.Provider value={contextValue}>{children}</DndContext.Provider>;
 };

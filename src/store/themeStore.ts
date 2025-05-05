@@ -10,6 +10,7 @@ interface ThemeState {
     updateTheme: (theme: Theme) => Promise<void>;
     deleteTheme: (themeId: string) => Promise<void>;
     loadThemes: () => Promise<void>;
+    loadTheme: (themeId: string) => Promise<Theme | null>;
     getDefaultTheme: () => Theme;
 }
 

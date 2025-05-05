@@ -6,11 +6,10 @@ import ViewerTemplateImage from './ViewerTemplateImage';
 
 interface SlideViewerProps {
     slide: Slide;
-    presentationId: string;
     themeClassName?: string;
 }
 
-const SlideViewer: React.FC<SlideViewerProps> = ({ slide, presentationId, themeClassName = '' }) => {
+const SlideViewer: React.FC<SlideViewerProps> = ({ slide, themeClassName = '' }) => {
     // Get slide background styling
     const getSlideStyle = () => {
         // Base style with CSS variables

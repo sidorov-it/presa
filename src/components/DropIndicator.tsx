@@ -311,6 +311,48 @@ const DropIndicator = () => {
             };
         }
 
+        // Handle slide indicators
+        if (indicators.slideIndicator && indicators.slidePosition) {
+            const slide = document.querySelector(`[data-slide-id="${indicators.slideIndicator}"]`);
+            if (!slide) return null;
+
+            const rect = slide.getBoundingClientRect();
+            const position = indicators.slidePosition;
+
+            // Find previous and next slides for enhanced spacing
+            let previousElementRect = null;
+            let nextElementRect = null;
+
+            // Get all slides in the presentation
+            const allSlides = Array.from(document.querySelectorAll('[data-slide-id]')).map(el => ({
+                id: el.getAttribute('data-slide-id'),
+                rect: el.getBoundingClientRect(),
+            }));
+
+            // Sort by vertical position
+            allSlides.sort((a, b) => a.rect.top - b.rect.top);
+
+            // Find current slide index
+            const currentIndex = allSlides.findIndex(el => el.id === indicators.slideIndicator);
+
+            if (position === 'top' && currentIndex > 0) {
+                previousElementRect = allSlides[currentIndex - 1].rect;
+            }
+
+            if (position === 'bottom' && currentIndex < allSlides.length - 1) {
+                nextElementRect = allSlides[currentIndex + 1].rect;
+            }
+
+            return {
+                targetRect: rect,
+                position: position,
+                type: 'slide' as IndicatorType,
+                sourceType: 'slide',
+                previousElementRect,
+                nextElementRect,
+            };
+        }
+
         return null;
     };
 
@@ -493,16 +535,53 @@ const DropIndicator = () => {
                 };
             }
         } else if (type === 'slide') {
-            // For slide indicators, highlight the whole slide
-            styles = {
-                ...styles,
-                left: targetRect.left - 2,
-                top: targetRect.top - 2,
-                width: targetRect.width + 4,
-                height: targetRect.height + 4,
-                border: `${thickness}px solid ${color}`,
-                borderRadius: '4px',
-            };
+            // Special styling for slide indicators
+            const thickness = 6; // Thicker line for slides
+
+            if (position === 'top') {
+                styles = {
+                    ...styles,
+                    left: targetRect.left,
+                    top: targetRect.top - thickness / 2,
+                    width: targetRect.width,
+                    height: thickness,
+                    backgroundColor: color,
+                    boxShadow: '0 0 6px rgba(59, 130, 246, 0.6)',
+                    borderRadius: '3px',
+                };
+            } else if (position === 'bottom') {
+                styles = {
+                    ...styles,
+                    left: targetRect.left,
+                    top: targetRect.bottom - thickness / 2,
+                    width: targetRect.width,
+                    height: thickness,
+                    backgroundColor: color,
+                    boxShadow: '0 0 6px rgba(59, 130, 246, 0.6)',
+                    borderRadius: '3px',
+                };
+            }
+
+            // If we have info about neighboring slides, position the indicator in the gap
+            if (position === 'top' && previousElementRect) {
+                const gap = targetRect.top - previousElementRect.bottom;
+                const midPoint = previousElementRect.bottom + gap / 2;
+
+                styles = {
+                    ...styles,
+                    top: midPoint - thickness / 2,
+                };
+            } else if (position === 'bottom' && nextElementRect) {
+                const gap = nextElementRect.top - targetRect.bottom;
+                const midPoint = targetRect.bottom + gap / 2;
+
+                styles = {
+                    ...styles,
+                    top: midPoint - thickness / 2,
+                };
+            }
+
+            return styles;
         }
 
         return styles;

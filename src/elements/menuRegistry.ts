@@ -1,5 +1,17 @@
-import { FaFont, FaTable, FaList, FaImage, FaQuoteLeft, FaRegAddressCard, FaHeading, FaListOl, FaChartBar, FaChartPie, FaBox } from 'react-icons/fa';
-import { FaRegChartBar } from "react-icons/fa6";
+import {
+    FaFont,
+    FaTable,
+    FaList,
+    FaImage,
+    FaQuoteLeft,
+    FaRegAddressCard,
+    FaHeading,
+    FaListOl,
+    FaChartBar,
+    FaChartPie,
+    FaBox,
+} from 'react-icons/fa';
+import { FaRegChartBar } from 'react-icons/fa6';
 
 import editorsDefaultContent from './textEditor/defaultContent';
 import { PiTextColumns } from 'react-icons/pi';
