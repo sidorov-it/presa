@@ -241,6 +241,7 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
                         elementId={elementId ?? undefined}
                         tableRowIndex={tableRowIndex ?? undefined}
                         tiptapRefs={tiptapRefs}
+                        presentationId={presentation!.id}
                     />
                 );
             case 'column':
@@ -249,6 +250,7 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
                         elementId={elementId ?? undefined}
                         tableColumnIndex={tableColumnIndex ?? undefined}
                         tiptapRefs={tiptapRefs}
+                        presentationId={presentation!.id}
                     />
                 );
             default:
@@ -265,9 +267,9 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
     }
 
     if (elementType === 'layout' && layoutId && !isTable) {
-        return <LayoutMenu position={position} layoutId={layoutId} presentationId={presentation!.id} />;
+        return <LayoutMenu position={position} layoutId={layoutId} />;
     } else if (isTable && elementType === 'layout') {
-        return <TableMenu position={position} tiptapRefs={tiptapRefs} />;
+        return <TableMenu position={position} tiptapRefs={tiptapRefs} presentationId={presentation!.id} />;
     }
 
     return (

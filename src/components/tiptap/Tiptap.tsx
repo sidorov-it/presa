@@ -56,7 +56,7 @@ interface TiptapProps {
     onEnterPressed?: (content?: any) => void;
     onBackspacePressed?: (isEmpty: boolean, textContent: string) => void;
     onBlur?: () => void;
-    onContentChange?: (content: string, isEnterPress?: boolean) => void;
+    onContentChange?: (content: string, isEnterPress?: boolean, isTransaction?: boolean) => void;
     autoFocus?: boolean;
     id?: string;
     placeholder?: string;
@@ -370,8 +370,9 @@ const Tiptap = ({
         onUpdate: ({ editor, transaction }) => {
             const html = editor.getHTML();
             const isEnterPress = transaction.getMeta('handleEnter');
+            const isTransaction = transaction.getMeta('transaction');
             console.log('onUpdate', html);
-            onContentChange(html, isEnterPress);
+            onContentChange(html, isEnterPress, isTransaction);
         },
     });
 

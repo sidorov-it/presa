@@ -24,11 +24,11 @@ const LAYOUT_TYPES = [
 ];
 
 export default function SmartLayoutTemplateSelector({
-    layoutType,
-    setLayoutType,
+    elementVariant,
+    setElementVariant,
 }: {
-    layoutType: string;
-    setLayoutType: (layoutType: string) => void;
+    elementVariant: string;
+    setElementVariant: (elementVariant: string) => void;
 }) {
-    return <SettingsSelector value={layoutType} setValue={setLayoutType} options={LAYOUT_TYPES} />;
+    return <SettingsSelector value={elementVariant} setValue={setElementVariant} options={LAYOUT_TYPES} />;
 }

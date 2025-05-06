@@ -104,12 +104,7 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
 
     const handleHeadingChange = useCallback(
         (level: number) => {
-            editor
-                .chain()
-                .focus()
-                // .setParagraph() // Сначала устанавливаем параграф, чтобы сбросить любой заголовок
-                .setFontSize(level)
-                .run();
+            editor.chain().focus(null, { scrollIntoView: false }).selectAll().setFontSize(level).blur().run();
             setIsHeadingMenuOpen(false);
         },
         [editor]

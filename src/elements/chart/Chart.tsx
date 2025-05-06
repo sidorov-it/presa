@@ -194,7 +194,7 @@ const Chart: React.FC<ChartProps> = ({
     };
 
     // Handle resize start
-    const handleResizeStart = (e: React.MouseEvent, direction: ResizeDirection) => {
+    const handleResizeStart = useCallback((e: React.MouseEvent, direction: ResizeDirection) => {
         e.preventDefault();
         e.stopPropagation();
         setResizing(true);
@@ -209,41 +209,44 @@ const Chart: React.FC<ChartProps> = ({
 
         setStartX(e.clientX);
         setStartY(e.clientY);
-    };
+    }, []);
 
     // Handle resize movement
-    const handleResizeMove = (e: MouseEvent) => {
-        if (!resizing || !resizeDirection || !containerRef.current) return;
+    const handleResizeMove = useCallback(
+        (e: MouseEvent) => {
+            if (!resizing || !resizeDirection || !containerRef.current) return;
 
-        const deltaX = e.clientX - startX;
-        const deltaY = e.clientY - startY;
-        let newWidth = startWidth;
-        let newHeight = startHeight;
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+            let newWidth = startWidth;
+            let newHeight = startHeight;
 
-        // Determine width change based on direction
-        if (resizeDirection.includes('right')) {
-            newWidth = startWidth + deltaX;
-        } else if (resizeDirection.includes('left')) {
-            newWidth = startWidth - deltaX;
-        } else if (resizeDirection === 'top' || resizeDirection === 'bottom') {
-            // For top and bottom points, use Y change
-            // and recalculate width based on aspect ratio
-            if (resizeDirection === 'top') {
-                newHeight = startHeight - deltaY;
-            } else {
-                // bottom
-                newHeight = startHeight + deltaY;
+            // Determine width change based on direction
+            if (resizeDirection.includes('right')) {
+                newWidth = startWidth + deltaX;
+            } else if (resizeDirection.includes('left')) {
+                newWidth = startWidth - deltaX;
+            } else if (resizeDirection === 'top' || resizeDirection === 'bottom') {
+                // For top and bottom points, use Y change
+                // and recalculate width based on aspect ratio
+                if (resizeDirection === 'top') {
+                    newHeight = startHeight - deltaY;
+                } else {
+                    // bottom
+                    newHeight = startHeight + deltaY;
+                }
+                // Recalculate width, preserving aspect ratio
+                newWidth = newHeight * aspectRatio;
             }
-            // Recalculate width, preserving aspect ratio
-            newWidth = newHeight * aspectRatio;
-        }
 
-        // Ensure minimum width (150px)
-        const width = Math.max(150, newWidth);
+            // Ensure minimum width (150px)
+            const width = Math.max(150, newWidth);
 
-        // Update container max-width in the DOM
-        containerRef.current.style.maxWidth = `${width}px`;
-    };
+            // Update container max-width in the DOM
+            containerRef.current.style.maxWidth = `${width}px`;
+        },
+        [resizing, resizeDirection, startWidth, startHeight, aspectRatio, startX, startY]
+    );
 
     const handleRemoveChart = useCallback(() => {
         if (presentationId && slideId && layoutId) {
@@ -252,7 +255,7 @@ const Chart: React.FC<ChartProps> = ({
     }, [presentationId, slideId, layoutId]);
 
     // Handle resize end
-    const handleResizeEnd = () => {
+    const handleResizeEnd = useCallback(() => {
         if (!resizing) return;
 
         setResizing(false);
@@ -263,7 +266,7 @@ const Chart: React.FC<ChartProps> = ({
             const newWidth = containerRef.current.clientWidth;
             updateElement(presentationId, slideId, layoutId, element.id, { width: newWidth });
         }
-    };
+    }, [resizing, presentationId, slideId, layoutId, updateElement, element.id]);
 
     useEffect(() => {
         if (resizing) {
@@ -275,7 +278,7 @@ const Chart: React.FC<ChartProps> = ({
             window.removeEventListener('mousemove', handleResizeMove);
             window.removeEventListener('mouseup', handleResizeEnd);
         };
-    }, [resizing, resizeDirection]);
+    }, [resizing, resizeDirection, handleResizeMove, handleResizeEnd]);
 
     // Get cursor style based on resize direction
     const getResizeCursor = (direction: ResizeDirection): string => {

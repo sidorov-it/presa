@@ -2090,9 +2090,9 @@ export const usePresentationStore = create<PresentationState>()(
                         after: { presentations: newState.presentations },
                     });
                 }
+                get().saveChanges(presentationId);
 
                 // Автосохранение после обновления элемента
-                get().saveChanges(presentationId);
             },
 
             deleteElement: (presentationId, slideId, layoutId, elementId) => {
@@ -2327,6 +2327,18 @@ export const usePresentationStore = create<PresentationState>()(
                                 return presentation;
                             }),
                         };
+
+                        useHistoryStore.getState().recordAction({
+                            type: 'column',
+                            description: 'Add columns',
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            // cellId: newColumnId,
+                            // position: 'right',
+                            before: { presentations: beforeState.presentations },
+                            after: updatedState,
+                        });
 
                         return updatedState;
                     });

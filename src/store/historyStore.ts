@@ -231,7 +231,7 @@ export const useHistoryStore = create<HistoryState>()(
                 const lastAction = activeTransaction.actions[activeTransaction.actions.length - 1];
 
                 // Generate diffs using deep-diff library
-                const changes = deepDiff.diff(firstAction.before, lastAction.after, diffFilter) || [];
+                const changes = deepDiff.diff(firstAction.before, lastAction.after) || [];
 
                 console.log('deep-diff changes', changes);
 
@@ -312,7 +312,7 @@ export const useHistoryStore = create<HistoryState>()(
                 }
 
                 // Generate changes using deep-diff library
-                const changes = deepDiff.diff(action.before, action.after, diffFilter) || [];
+                const changes = deepDiff.diff(action.before, action.after) || [];
 
                 console.log('deep-diff changes', changes);
 
@@ -413,11 +413,9 @@ export const useHistoryStore = create<HistoryState>()(
                         presentationStore.setFullState(restoredState);
 
                         textEditorUpdates.forEach(update => {
-                            const element = getValueByPath(currentState, update.pathToElement) as EditorElement;
+                            const element = getValueByPath(restoredState, update.pathToElement) as EditorElement;
                             if (tiptapRefs.current.editors?.[update.elementId]?.editor) {
-                                tiptapRefs.current.editors[update.elementId].editor.commands.setContent(
-                                    element.content
-                                );
+                                tiptapRefs.current.editors[update.elementId].editor.commands.setContent(update.content);
                             }
                         });
                     } else if (lastAction.before) {
@@ -500,9 +498,8 @@ export const useHistoryStore = create<HistoryState>()(
 
                     // Finally update all text editors with their new content
                     textEditorUpdates.forEach(update => {
-                        const element = getValueByPath(currentState, update.pathToElement) as EditorElement;
                         if (tiptapRefs.current.editors?.[update.elementId]?.editor) {
-                            tiptapRefs.current.editors[update.elementId].editor.commands.setContent(element.content);
+                            tiptapRefs.current.editors[update.elementId].editor.commands.setContent(update.content);
                         }
                     });
 

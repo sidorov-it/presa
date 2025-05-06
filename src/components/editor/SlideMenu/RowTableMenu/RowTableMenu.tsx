@@ -7,16 +7,17 @@ import { useMenuStore } from '@/store/menuStore';
 import { TipTapRefs } from '@/types';
 import { MenuItem } from '../BaseMenu';
 import { useShallow } from 'zustand/react/shallow';
-import { Level } from '@tiptap/extension-heading';
 import isEditorPropertyConsistent from '@/utils/isEditorPropertyConsistent';
 import DeleteIcon from '@/components/icons/DeleteIcon';
+import { useHistoryStore } from '@/store/historyStore';
 interface RowTableMenuProps {
     elementId?: string;
     tableRowIndex?: number;
     tiptapRefs: MutableRefObject<TipTapRefs>;
+    presentationId: string;
 }
 
-const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, tiptapRefs }) => {
+const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, presentationId, tiptapRefs }) => {
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
 
@@ -67,64 +68,125 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, tiptapRefs }
 
     const handleHeadingChange = useCallback(
         (level: number) => {
+            useHistoryStore.getState().beginTransaction(presentationId, 'Change font size');
+
             tableRowElements.forEach(element => {
                 tiptapRefs.current.editors[element.id]?.editor
                     .chain()
-                    .setHeading({ level: level as Level })
+                    .setMeta('transaction', true)
+                    .focus(null, { scrollIntoView: false })
+                    .selectAll()
+                    .setFontSize(level)
+                    .blur()
                     .run();
             });
+            useHistoryStore.getState().commitTransaction(presentationId);
             setLocalHeadingLevel(level);
         },
-        [tableRowElements, tiptapRefs]
+        [tableRowElements, tiptapRefs, presentationId]
     );
 
     const handleToggleBold = useCallback(() => {
+        useHistoryStore.getState().beginTransaction(presentationId, 'Toggle bold');
+
         tableRowElements.forEach(element => {
             const editor = tiptapRefs.current.editors[element.id]?.editor;
             if (editor) {
                 if (isBoldActive) {
-                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().unsetBold().blur().run();
+                    editor
+                        .chain()
+                        .setMeta('transaction', true)
+                        .focus(null, { scrollIntoView: false })
+                        .selectAll()
+                        .unsetBold()
+                        .blur()
+                        .run();
                 } else {
-                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().setBold().blur().run();
+                    editor
+                        .chain()
+                        .setMeta('transaction', true)
+                        .focus(null, { scrollIntoView: false })
+                        .selectAll()
+                        .setBold()
+                        .blur()
+                        .run();
                 }
             }
         });
-    }, [tableRowElements, tiptapRefs, isBoldActive]);
+        useHistoryStore.getState().commitTransaction(presentationId);
+    }, [tableRowElements, tiptapRefs, isBoldActive, presentationId]);
 
     const handleToggleItalic = useCallback(() => {
+        useHistoryStore.getState().beginTransaction(presentationId, 'Toggle italic');
+
         tableRowElements.forEach(element => {
             const editor = tiptapRefs.current.editors[element.id]?.editor;
             if (editor) {
                 if (isItalicActive) {
-                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().unsetItalic().blur().run();
+                    editor
+                        .chain()
+                        .setMeta('transaction', true)
+                        .focus(null, { scrollIntoView: false })
+                        .selectAll()
+                        .unsetItalic()
+                        .blur()
+                        .run();
                 } else {
-                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().setItalic().blur().run();
+                    editor
+                        .chain()
+                        .setMeta('transaction', true)
+                        .focus(null, { scrollIntoView: false })
+                        .selectAll()
+                        .setItalic()
+                        .blur()
+                        .run();
                 }
             }
         });
-    }, [tableRowElements, tiptapRefs, isItalicActive]);
+        useHistoryStore.getState().commitTransaction(presentationId);
+    }, [tableRowElements, tiptapRefs, isItalicActive, presentationId]);
 
     const handleToggleUnderline = useCallback(() => {
+        useHistoryStore.getState().beginTransaction(presentationId, 'Toggle underline');
+
         tableRowElements.forEach(element => {
             const editor = tiptapRefs.current.editors[element.id]?.editor;
             if (editor) {
                 if (isUnderlineActive) {
-                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().unsetUnderline().blur().run();
+                    editor
+                        .chain()
+                        .setMeta('transaction', true)
+                        .focus(null, { scrollIntoView: false })
+                        .selectAll()
+                        .unsetUnderline()
+                        .blur()
+                        .run();
                 } else {
-                    editor.chain().focus(null, { scrollIntoView: false }).selectAll().setUnderline().blur().run();
+                    editor
+                        .chain()
+                        .setMeta('transaction', true)
+                        .focus(null, { scrollIntoView: false })
+                        .selectAll()
+                        .setUnderline()
+                        .blur()
+                        .run();
                 }
             }
         });
-    }, [tableRowElements, tiptapRefs, isUnderlineActive]);
+        useHistoryStore.getState().commitTransaction(presentationId);
+    }, [tableRowElements, tiptapRefs, isUnderlineActive, presentationId]);
 
     const handleClearStyles = useCallback(() => {
+        useHistoryStore.getState().beginTransaction(presentationId, 'Clear styles');
+
         tableRowElements.forEach(element => {
             const editor = tiptapRefs.current.editors[element.id]?.editor;
             if (editor) {
-                editor.chain().clearNodes().unsetAllMarks().run();
+                editor.chain().setMeta('transaction', true).clearNodes().unsetAllMarks().run();
             }
         });
-    }, [tableRowElements, tiptapRefs]);
+        useHistoryStore.getState().commitTransaction(presentationId);
+    }, [tableRowElements, tiptapRefs, presentationId]);
 
     // Table row operations
     const handleAddRowAbove = useCallback(() => {
@@ -150,25 +212,20 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, tiptapRefs }
 
     const handleColorChange = useCallback(
         (color: string) => {
+            useHistoryStore.getState().beginTransaction(presentationId, 'Change color');
             tableRowElements.forEach(element => {
                 tiptapRefs.current.editors[element.id]?.editor
                     .chain()
+                    .setMeta('transaction', true)
                     .focus(null, { scrollIntoView: false })
                     .selectAll()
                     .setColor(color)
                     .blur()
                     .run();
             });
-
-            // if (editor) {
-            //     editor.chain().focus(null, { scrollIntoView: false }).selectAll().setColor(color).blur().run();
-            // } else if (editors) {
-            //     editors.forEach(editor => {
-            //         editor.chain().focus(null, { scrollIntoView: false }).selectAll().setColor(color).blur().run();
-            //     });
-            // }
+            useHistoryStore.getState().commitTransaction(presentationId);
         },
-        [tableRowElements, tiptapRefs]
+        [presentationId, tableRowElements, tiptapRefs]
     );
 
     return (

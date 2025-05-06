@@ -23,7 +23,7 @@ const SmartLayoutSettings: React.FC<SmartLayoutSettingsProps> = ({
         state => state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement
     );
 
-    if (element.layoutType === 'images-with-text') {
+    if (element.elementVariant === 'images-with-text') {
         return (
             <ImageWithTextSettings
                 element={element}
@@ -34,7 +34,7 @@ const SmartLayoutSettings: React.FC<SmartLayoutSettingsProps> = ({
                 tiptapRefs={tiptapRefs}
             />
         );
-    } else if (element.layoutType === 'text-boxes') {
+    } else if (element.elementVariant === 'text-boxes') {
         return (
             <TextBoxesSettings
                 element={element}

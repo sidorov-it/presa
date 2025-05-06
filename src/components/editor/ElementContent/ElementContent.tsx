@@ -199,7 +199,7 @@ export const ElementContent = ({
     );
 
     const handleEditorContentChange = useCallback(
-        (content: string, isEnterPress?: boolean) => {
+        (content: string, isEnterPress?: boolean, isTransaction?: boolean) => {
             if (isEnterPress) {
                 useHistoryStore.getState().beginTransaction(presentationId, 'update content');
                 usePresentationStore.getState().updateElement(
@@ -222,7 +222,7 @@ export const ElementContent = ({
                     {
                         content: content,
                     } as Partial<Element>,
-                    false,
+                    !!isTransaction,
                     true
                 );
             }

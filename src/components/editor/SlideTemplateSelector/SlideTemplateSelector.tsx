@@ -4,6 +4,7 @@ import { SLIDE_TEMPLATES, TipTapRefs } from '@/types';
 import styles from './SlideTemplateSelector.module.css';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
 import { MdOutlineVerticalAlignTop, MdOutlineVerticalAlignCenter, MdOutlineVerticalAlignBottom } from 'react-icons/md';
+import { useHistoryStore } from '@/store/historyStore';
 
 type SlideTemplateType = (typeof SLIDE_TEMPLATES)[number]['value'];
 type ContentAlignment = 'top' | 'center' | 'bottom';
@@ -73,10 +74,12 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
             console.log('handleTextColorChange', color);
             const elements = usePresentationStore.getState().getSlideElements(presentationId, slideId);
 
+            useHistoryStore.getState().beginTransaction(presentationId, 'change text color');
             elements.forEach(element => {
                 if (tiptapRefs.current?.editors[element.id]) {
                     tiptapRefs.current.editors[element.id]?.editor
                         .chain()
+                        .setMeta('transaction', true)
                         .focus(null, { scrollIntoView: false })
                         .selectAll()
                         .setColor(color)
@@ -84,6 +87,8 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                         .run();
                 }
             });
+
+            useHistoryStore.getState().commitTransaction(presentationId);
 
             setTextColor(color);
         },

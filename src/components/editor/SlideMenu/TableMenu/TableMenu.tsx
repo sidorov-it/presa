@@ -11,16 +11,16 @@ import { useShallow } from 'zustand/react/shallow';
 import isEditorPropertyConsistent from '@/utils/isEditorPropertyConsistent';
 
 import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
-import { Level } from '@tiptap/extension-heading';
 import { DeleteIcon } from '@/components/icons';
+import { useHistoryStore } from '@/store/historyStore';
 
 interface TableMenuProps {
-    presentationId?: string;
+    presentationId: string;
     tiptapRefs: MutableRefObject<TipTapRefs>;
     position: { x: number; y: number; rect?: DOMRect };
 }
 
-const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, position }) => {
+const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, presentationId, position }) => {
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
 
@@ -79,22 +79,30 @@ const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, position }) => {
 
     const handleHeadingChange = useCallback(
         (level: number) => {
+            useHistoryStore.getState().beginTransaction(presentationId, 'Change font size');
             tableElements.forEach(element => {
                 tiptapRefs.current.editors[element.id]?.editor
                     .chain()
-                    .setHeading({ level: level as Level })
+                    .setMeta('transaction', true)
+                    .focus(null, { scrollIntoView: false })
+                    .selectAll()
+                    .setFontSize(level)
+                    .blur()
                     .run();
             });
+            useHistoryStore.getState().commitTransaction(presentationId);
             setLocalHeadingLevel(level);
         },
-        [tableElements, tiptapRefs]
+        [tableElements, tiptapRefs, presentationId]
     );
 
     const handleToggleBold = useCallback(() => {
+        useHistoryStore.getState().beginTransaction(presentationId, 'Toggle bold');
         tableElements.forEach(element => {
             if (isBoldActive) {
                 tiptapRefs.current.editors[element.id]?.editor
                     .chain()
+                    .setMeta('transaction', true)
                     .focus(null, { scrollIntoView: false })
                     .selectAll()
                     .unsetBold()
@@ -110,13 +118,16 @@ const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, position }) => {
                     .run();
             }
         });
-    }, [tableElements, tiptapRefs, isBoldActive]);
+        useHistoryStore.getState().commitTransaction(presentationId);
+    }, [tableElements, tiptapRefs, isBoldActive, presentationId]);
 
     const handleToggleItalic = useCallback(() => {
+        useHistoryStore.getState().beginTransaction(presentationId, 'Toggle italic');
         tableElements.forEach(element => {
             if (isItalicActive) {
                 tiptapRefs.current.editors[element.id]?.editor
                     .chain()
+                    .setMeta('transaction', true)
                     .focus(null, { scrollIntoView: false })
                     .selectAll()
                     .unsetItalic()
@@ -125,6 +136,7 @@ const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, position }) => {
             } else {
                 tiptapRefs.current.editors[element.id]?.editor
                     .chain()
+                    .setMeta('transaction', true)
                     .focus(null, { scrollIntoView: false })
                     .selectAll()
                     .setItalic()
@@ -132,13 +144,16 @@ const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, position }) => {
                     .run();
             }
         });
-    }, [tableElements, tiptapRefs, isItalicActive]);
+        useHistoryStore.getState().commitTransaction(presentationId);
+    }, [tableElements, tiptapRefs, isItalicActive, presentationId]);
 
     const handleToggleUnderline = useCallback(() => {
+        useHistoryStore.getState().beginTransaction(presentationId, 'Toggle underline');
         tableElements.forEach(element => {
             if (isUnderlineActive) {
                 tiptapRefs.current.editors[element.id]?.editor
                     .chain()
+                    .setMeta('transaction', true)
                     .focus(null, { scrollIntoView: false })
                     .selectAll()
                     .unsetUnderline()
@@ -147,6 +162,7 @@ const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, position }) => {
             } else {
                 tiptapRefs.current.editors[element.id]?.editor
                     .chain()
+                    .setMeta('transaction', true)
                     .focus(null, { scrollIntoView: false })
                     .selectAll()
                     .setUnderline()
@@ -154,18 +170,22 @@ const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, position }) => {
                     .run();
             }
         });
-    }, [tableElements, tiptapRefs, isUnderlineActive]);
+        useHistoryStore.getState().commitTransaction(presentationId);
+    }, [tableElements, tiptapRefs, isUnderlineActive, presentationId]);
 
     const handleClearStyles = useCallback(() => {
+        useHistoryStore.getState().beginTransaction(presentationId, 'Clear styles');
         tableElements.forEach(element => {
             tiptapRefs.current.editors[element.id]?.editor
                 .chain()
+                .setMeta('transaction', true)
                 .focus(null, { scrollIntoView: false })
                 .selectAll()
                 .unsetAllMarks()
                 .run();
         });
-    }, [tableElements, tiptapRefs]);
+        useHistoryStore.getState().commitTransaction(presentationId);
+    }, [tableElements, tiptapRefs, presentationId]);
 
     const handleEqualize = useCallback(() => {
         useMenuStore.getState().equalizeTable();
@@ -177,17 +197,20 @@ const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, position }) => {
 
     const handleColorChange = useCallback(
         (color: string) => {
+            useHistoryStore.getState().beginTransaction(presentationId, 'Change color');
             tableElements.forEach(element => {
                 tiptapRefs.current.editors[element.id]?.editor
                     .chain()
+                    .setMeta('transaction', true)
                     .focus(null, { scrollIntoView: false })
                     .selectAll()
                     .setColor(color)
                     .blur()
                     .run();
             });
+            useHistoryStore.getState().commitTransaction(presentationId);
         },
-        [tableElements, tiptapRefs]
+        [tableElements, tiptapRefs, presentationId]
     );
 
     return (

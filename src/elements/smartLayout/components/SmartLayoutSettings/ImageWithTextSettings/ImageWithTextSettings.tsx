@@ -9,6 +9,7 @@ import {
     ImageShape,
     Layout,
     SmartLayoutElement,
+    SmartLayoutType,
     TipTapRefs,
 } from '@/types';
 import { MutableRefObject, useCallback } from 'react';
@@ -18,6 +19,7 @@ import { DeleteIcon } from '@/components/icons';
 import { generateId } from '@/utils/id';
 import { getNewEditorElement } from '@/elements/registry';
 import { useMenuStore } from '@/store/menuStore';
+import { useHistoryStore } from '@/store/historyStore';
 
 export default function ImageWithTextSettings({
     element,
@@ -37,6 +39,7 @@ export default function ImageWithTextSettings({
     const updateElement = usePresentationStore(state => state.updateElement);
 
     const handleAlignment = (alignment: 'left' | 'center' | 'right') => {
+        useHistoryStore.getState().beginTransaction(presentationId, 'Change alignment');
         updateElement(presentationId, slideId, layoutId, elementId, {
             ...element,
             align: alignment,
@@ -45,6 +48,7 @@ export default function ImageWithTextSettings({
         element.items?.forEach(item => {
             tiptapRefs.current.editors[`title-${elementId}-${item.id}`]?.editor
                 .chain()
+                .setMeta('transaction', true)
                 .focus()
                 .setTextAlign(alignment)
                 .blur()
@@ -52,11 +56,13 @@ export default function ImageWithTextSettings({
 
             tiptapRefs.current.editors[`text-${elementId}-${item.id}`]?.editor
                 .chain()
+                .setMeta('transaction', true)
                 .focus()
                 .setTextAlign(alignment)
                 .blur()
                 .run();
         });
+        useHistoryStore.getState().commitTransaction(presentationId);
     };
 
     const handleDeleteElement = useCallback(() => {
@@ -108,9 +114,12 @@ export default function ImageWithTextSettings({
     return (
         <>
             <SmartLayoutTemplateSelector
-                layoutType={element.layoutType || 'grid'}
-                setLayoutType={value => {
-                    updateElement(presentationId, slideId, layoutId, elementId, { ...element, layoutType: value });
+                elementVariant={element.elementVariant || 'grid'}
+                setElementVariant={value => {
+                    updateElement(presentationId, slideId, layoutId, elementId, {
+                        ...element,
+                        elementVariant: value as SmartLayoutType,
+                    });
                 }}
             />
             <SmartLayoutColumnSizeSelector
