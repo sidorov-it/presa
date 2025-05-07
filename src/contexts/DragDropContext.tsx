@@ -9,6 +9,8 @@ import { DndState, DndAction, DropTarget, Position } from '@/types/DragDropTypes
 import { getNewEditorElement, getNewElement } from '@/elements/registry';
 import { MenuItem, menuRegistry } from '@/elements/menuRegistry';
 
+const cloneDeep = (obj: any) => JSON.parse(JSON.stringify(obj));
+
 // Helper types for drop target calculation
 type ElementInfo = {
     node: HTMLElement;
@@ -341,9 +343,9 @@ function dndReducer(state: DndState, action: DndAction): DndState {
                     slideId: action.payload.slideId, // Add slideId
                 },
                 // Clear any previous indicators and targets
-                target: { ...initialState.target },
-                indicators: { ...initialState.indicators },
-                newElement: { ...initialState.newElement },
+                target: cloneDeep(initialState.target),
+                indicators: cloneDeep(initialState.indicators),
+                newElement: cloneDeep(initialState.newElement),
             };
             break;
 
@@ -351,8 +353,8 @@ function dndReducer(state: DndState, action: DndAction): DndState {
             updatedState = {
                 ...state,
                 dragState: 'dragging',
-                target: { ...initialState.target },
-                indicators: { ...initialState.indicators },
+                target: cloneDeep(initialState.target),
+                indicators: cloneDeep(initialState.indicators),
                 newElement: action.payload,
             };
             break;
@@ -748,9 +750,9 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                         columnIndex: null,
                         slideId, // Set the sourceSlideId
                     },
-                    target: { ...initialState.target },
-                    indicators: { ...initialState.indicators },
-                    newElement: { ...initialState.newElement },
+                    target: cloneDeep(initialState.target),
+                    indicators: cloneDeep(initialState.indicators),
+                    newElement: cloneDeep(initialState.newElement),
                 };
             } else {
                 // Otherwise handle normal element/layout/cell dragging
@@ -765,9 +767,9 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                         rowIndex,
                         columnIndex,
                     },
-                    target: { ...initialState.target },
-                    indicators: { ...initialState.indicators },
-                    newElement: { ...initialState.newElement },
+                    target: cloneDeep(initialState.target),
+                    indicators: cloneDeep(initialState.indicators),
+                    newElement: cloneDeep(initialState.newElement),
                 };
             }
 
@@ -786,7 +788,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 })
             );
         },
-        [dispatch]
+        [startDrag, state]
     );
 
     const getNewElementFromTypeId = useCallback((elementTypeId: string, elementVariant?: string | null) => {
@@ -894,7 +896,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
             const updatedSourceElements = sourceLayout.elements
                 .filter(e => e.cellId === draggedCell.id)
-                .map(el => ({ ...el, cellId: targetCellId }));
+                .map(el => cloneDeep({ ...el, cellId: targetCellId }));
             const updatedLayoutElements = sourceLayout.elements.filter(e => e.cellId !== draggedCell.id);
 
             const updatedElements =
@@ -936,7 +938,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
             const updatedSourceDraggedElements = sourceLayout.elements
                 .filter(e => e.cellId === draggedCell.id)
-                .map(el => ({ ...el, cellId: targetCellId }));
+                .map(el => cloneDeep({ ...el, cellId: targetCellId }));
 
             const elementsInTargetCell = targetLayout.elements.filter(e => e.cellId === targetCellId);
             const targetElementIndex = elementsInTargetCell.findIndex(e => e.id === targetElement.id);
@@ -1668,7 +1670,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         // const targetIndex = tableColumnPosition === 'left' ? prevStateRef.current.target.columnIndex : prevStateRef.current.target.columnIndex! + 1;
 
         if (sourceLayout.id === targetLayout.id) {
-            const updatedGridStructure = sourceLayout.gridStructure;
+            const updatedGridStructure = cloneDeep(sourceLayout.gridStructure);
 
             const updatedRows = updatedGridStructure.rows.map(row => {
                 const targetCellId = row.cells[prevStateRef.current.target.columnIndex!].id;
@@ -1700,7 +1702,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 gridStructure: updatedGridStructure,
             });
         } else {
-            const updatedSourceGridStructure = { ...sourceLayout.gridStructure };
+            const updatedSourceGridStructure = JSON.parse(JSON.stringify(sourceLayout.gridStructure));
 
             const movedCells: GridCell[] = [];
 
@@ -1755,7 +1757,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             // обновляем gridStructure в target layout
             // пересчитываем columnWidths в target layout
 
-            const updatedTargetGridStructure = { ...targetLayout.gridStructure };
+            const updatedTargetGridStructure = cloneDeep(targetLayout.gridStructure);
             const countRows = updatedTargetGridStructure.rows.length;
 
             const newEditors: BaseElement[] = [];
@@ -2308,7 +2310,10 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                     e => e.cellId !== prevStateRef.current.source.cellId
                 );
                 DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
-                    gridStructure: { ...updatedSourceGridStructure, columnWidths: updatedSourceColumnWidths },
+                    gridStructure: cloneDeep({
+                        ...updatedSourceGridStructure,
+                        columnWidths: updatedSourceColumnWidths,
+                    }),
                     elements: updatedSourceElements,
                 });
             }
@@ -2528,7 +2533,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
 
         if (sourceLayout.id === targetLayout.id) {
             // Moving rows within the same table
-            const updatedGridStructure = { ...sourceLayout.gridStructure };
+            const updatedGridStructure = JSON.parse(JSON.stringify(sourceLayout.gridStructure));
             const sourceRowIndex = prevStateRef.current.source.rowIndex!;
             const targetRowIndex = prevStateRef.current.target.rowIndex!;
 
@@ -2556,8 +2561,8 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             });
         } else {
             // Moving rows between different tables
-            const updatedSourceGridStructure = { ...sourceLayout.gridStructure };
-            const updatedTargetGridStructure = { ...targetLayout.gridStructure };
+            const updatedSourceGridStructure = JSON.parse(JSON.stringify(sourceLayout.gridStructure));
+            const updatedTargetGridStructure = JSON.parse(JSON.stringify(targetLayout.gridStructure));
 
             const sourceRowIndex = prevStateRef.current.source.rowIndex!;
             const targetRowIndex = prevStateRef.current.target.rowIndex!;
@@ -3398,9 +3403,13 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                         processTableColumnDrop()
                     );
                 } else if (prevStateRef.current.source.cellId?.startsWith('column-')) {
-                    processColumnDrop();
+                    DragDropTransactionHelper.wrapInTransaction(presentationId, 'Reposition tables column', () =>
+                        processColumnDrop()
+                    );
                 } else if (Number.isInteger(prevStateRef.current.source.rowIndex)) {
-                    processTableRowDrop();
+                    DragDropTransactionHelper.wrapInTransaction(presentationId, 'Reposition tables row', () =>
+                        processTableRowDrop()
+                    );
                 }
 
                 // Complete the drop operation
