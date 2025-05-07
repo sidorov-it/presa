@@ -442,3 +442,5 @@ export const menuRegistry: MenuCategory[] = [
         ],
     },
 ];
+
+export const TEXT_ELEMENT_TYPES = ['text', 'heading', 'quote', 'bullet-list', 'numbered-list', 'todo-list'];

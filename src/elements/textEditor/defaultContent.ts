@@ -85,18 +85,18 @@ const editorsDefaultContent = {
 </table>`,
     lists: `
 <ul>
-    <li>A list item</li>
-    <li>And another one</li>
+    <li>Элемент списка</li>
+    <li>Еще один элемент списка</li>
 </ul>`,
     numeredList: `
 <ol>
-    <li>A list item</li>
-    <li>And another one</li>
+    <li>Первый элемент списка</li>
+    <li>Второй элемент списка</li>
 </ol>`,
     todoList: `
 <ul data-type="taskList">
-    <li data-type="taskItem" data-checked="true">A list item</li>
-    <li data-type="taskItem" data-checked="false">And another one</li>
+    <li data-type="taskItem" data-checked="true">Первый элемент списка</li>
+    <li data-type="taskItem" data-checked="false">Второй элемент списка</li>
 </ul>`,
     box: `<p>Простой блок текста</p>`,
     noteBox: `<p>Важная заметка</p>`,

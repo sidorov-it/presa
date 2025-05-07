@@ -6,6 +6,7 @@ import { BaseElement, EditorElement, TipTapRefs } from '@/types';
 import { usePresentationStore } from './presentationStore';
 import getValueByPath from '@/utils/getValueByPath';
 import { getElementConfig } from '@/elements/registry';
+import { TEXT_ELEMENT_TYPES } from '@/elements/menuRegistry';
 
 // Define history action types
 export type HistoryAction = {
@@ -109,13 +110,6 @@ const applyDiffs = (state: any, diffs: deepDiff.Diff<any, any>[]) => {
     return newState;
 };
 
-const diffFilter = (path: string[], key: string) => {
-    if (path.length === 0 && ['updatedAt', 'createdAt'].includes(key)) {
-        return false;
-    }
-    return true;
-};
-
 // Revert diffs from a state object (for undo operations)
 const revertDiffs = (state: any, diffs: deepDiff.Diff<any, any>[]) => {
     const newState = JSON.parse(JSON.stringify(state));
@@ -136,10 +130,10 @@ const findTextElements = (state: any) => {
         presentation.slides.forEach((slide: any) => {
             slide.layouts.forEach((layout: any) => {
                 layout.elements.forEach((element: any) => {
-                    if (element.elementTypeId === 'text') {
+                    if (TEXT_ELEMENT_TYPES.includes(element.elementTypeId)) {
                         textElements.push({
                             id: element.id,
-                            content: element.content
+                            content: element.content,
                         });
                     }
                 });
