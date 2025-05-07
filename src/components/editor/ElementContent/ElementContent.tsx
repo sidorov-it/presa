@@ -202,29 +202,29 @@ export const ElementContent = ({
         (content: string, isEnterPress?: boolean, isTransaction?: boolean) => {
             if (isEnterPress) {
                 useHistoryStore.getState().beginTransaction(presentationId, 'update content');
-                usePresentationStore.getState().updateElement(
+                usePresentationStore.getState().updateElement({
                     presentationId,
                     slideId,
                     layoutId,
                     elementId,
-                    {
-                        content: content,
-                    } as Partial<Element>,
-                    true,
-                    true
-                );
+                    data: {
+                        content,
+                    },
+                    createHistoryEntry: true,
+                    isTextElement: true,
+                });
             } else {
-                usePresentationStore.getState().updateElement(
+                usePresentationStore.getState().updateElement({
                     presentationId,
                     slideId,
                     layoutId,
                     elementId,
-                    {
-                        content: content,
-                    } as Partial<Element>,
-                    !!isTransaction,
-                    true
-                );
+                    data: {
+                        content,
+                    },
+                    createHistoryEntry: !!isTransaction,
+                    isTextElement: true,
+                });
             }
         },
         [presentationId, slideId, layoutId, elementId]
@@ -248,15 +248,15 @@ export const ElementContent = ({
                         id: elementId,
                     };
 
-                    usePresentationStore
-                        .getState()
-                        .updateElement(
-                            presentationId,
-                            slideId,
-                            layoutId,
-                            elementId,
-                            newElementWithCell as Partial<Element>
-                        );
+                    usePresentationStore.getState().updateElement({
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        elementId,
+                        data: {
+                            ...newElementWithCell,
+                        },
+                    });
 
                     if (elementConfig?.hasTextEditor) {
                         tiptapRefs.current?.editors[elementId]?.editor.commands.setContent(

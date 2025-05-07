@@ -161,8 +161,14 @@ const Chart: React.FC<ChartProps> = ({
     // Change chart type
     const handleChangeChartType = (type: 'bar' | 'line' | 'pie' | 'donut' | 'column') => {
         if (presentationId && slideId && layoutId) {
-            updateElement(presentationId, slideId, layoutId, element.id, {
-                elementVariant: type,
+            updateElement({
+                presentationId,
+                slideId,
+                layoutId,
+                elementId: element.id,
+                data: {
+                    elementVariant: type,
+                },
             });
         }
     };
@@ -173,20 +179,36 @@ const Chart: React.FC<ChartProps> = ({
         if (setting === 'showLabels') {
             setShowLabels(value as boolean);
             if (presentationId && slideId && layoutId) {
-                updateElement(presentationId, slideId, layoutId, element.id, { showLabels: value as boolean });
+                updateElement({
+                    presentationId,
+                    slideId,
+                    layoutId,
+                    elementId: element.id,
+                    data: { showLabels: value as boolean },
+                });
             }
         }
         if (setting === 'showValues') {
             setShowValues(value as boolean);
             if (presentationId && slideId && layoutId) {
-                updateElement(presentationId, slideId, layoutId, element.id, { showValues: value as boolean });
+                updateElement({
+                    presentationId,
+                    slideId,
+                    layoutId,
+                    elementId: element.id,
+                    data: { showValues: value as boolean },
+                });
             }
         }
         if (setting === 'legendPosition') {
             setLegendPosition(value as 'left' | 'right' | 'top' | 'bottom');
             if (presentationId && slideId && layoutId) {
-                updateElement(presentationId, slideId, layoutId, element.id, {
-                    legendPosition: value as 'left' | 'right' | 'top' | 'bottom',
+                updateElement({
+                    presentationId,
+                    slideId,
+                    layoutId,
+                    elementId: element.id,
+                    data: { legendPosition: value as 'left' | 'right' | 'top' | 'bottom' },
                 });
             }
         }
@@ -194,18 +216,15 @@ const Chart: React.FC<ChartProps> = ({
         if (setting === 'horizontalAlignment') {
             setHorizontalAlignment(value as 'left' | 'center' | 'right');
             if (presentationId && slideId && layoutId) {
-                updateElement(presentationId, slideId, layoutId, element.id, {
-                    alignment: value as 'left' | 'center' | 'right',
+                updateElement({
+                    presentationId,
+                    slideId,
+                    layoutId,
+                    elementId: element.id,
+                    data: { alignment: value as 'left' | 'center' | 'right' },
                 });
             }
         }
-
-        // In a real implementation, we would save these settings to the element:
-        // if (presentationId && slideId && layoutId) {
-        //     updateElement(presentationId, slideId, layoutId, element.id, {
-        //         // Add the setting to the element
-        //     });
-        // }
     };
 
     // Handle resize start
@@ -299,9 +318,15 @@ const Chart: React.FC<ChartProps> = ({
             const newWidth = containerRef.current.clientWidth;
             const newHeight = containerRef.current.clientHeight;
 
-            updateElement(presentationId, slideId, layoutId, element.id, {
-                width: newWidth,
-                height: newHeight,
+            updateElement({
+                presentationId,
+                slideId,
+                layoutId,
+                elementId: element.id,
+                data: {
+                    width: newWidth,
+                    height: newHeight,
+                },
             });
         }
     }, [resizing, presentationId, slideId, layoutId, updateElement, element.id]);

@@ -40,9 +40,14 @@ export default function ImageWithTextSettings({
 
     const handleAlignment = (alignment: 'left' | 'center' | 'right') => {
         useHistoryStore.getState().beginTransaction(presentationId, 'Change alignment');
-        updateElement(presentationId, slideId, layoutId, elementId, {
-            ...element,
-            align: alignment,
+        updateElement({
+            presentationId,
+            slideId,
+            layoutId,
+            elementId,
+            data: {
+                align: alignment,
+            },
         });
 
         element.items?.forEach(item => {
@@ -111,16 +116,54 @@ export default function ImageWithTextSettings({
         useMenuStore.getState().closeMenu();
     }, [presentationId, slideId, layoutId, element.cellId, elementId]);
 
+    const handleChangeElement = useCallback(
+        (key: string, value: any) => {
+            updateElement({
+                presentationId,
+                slideId,
+                layoutId,
+                elementId,
+                data: {
+                    [key]: value,
+                },
+            });
+        },
+        [updateElement, presentationId, slideId, layoutId, elementId]
+    );
+
+    const handleChangeElementVariant = useCallback(
+        (value: string) => {
+            handleChangeElement('elementVariant', value as SmartLayoutType);
+        },
+        [handleChangeElement]
+    );
+
+    const handleChangeColumnSize = useCallback(
+        (value: number) => {
+            handleChangeElement('columnSize', value);
+        },
+        [handleChangeElement]
+    );
+
+    const handleChangeImageSize = useCallback(
+        (value: number) => {
+            handleChangeElement('imageSize', value);
+        },
+        [handleChangeElement]
+    );
+
+    const handleChangeImageShape = useCallback(
+        (value: ImageShape) => {
+            handleChangeElement('imageShape', value);
+        },
+        [handleChangeElement]
+    );
+
     return (
         <>
             <SmartLayoutTemplateSelector
                 elementVariant={element.elementVariant || 'grid'}
-                setElementVariant={value => {
-                    updateElement(presentationId, slideId, layoutId, elementId, {
-                        ...element,
-                        elementVariant: value as SmartLayoutType,
-                    });
-                }}
+                setElementVariant={handleChangeElementVariant}
             />
             <SmartLayoutColumnSizeSelector
                 columnSize={element.columnSize}
@@ -128,34 +171,13 @@ export default function ImageWithTextSettings({
                 min={1}
                 max={4}
                 defaultValue={1}
-                setColumnSize={value => {
-                    console.log('setting column size', value);
-
-                    updateElement(presentationId, slideId, layoutId, elementId, {
-                        ...element,
-                        columnSize: value,
-                    });
-                }}
+                setColumnSize={handleChangeColumnSize}
             />
-            <SmartLayoutImageSizeSelector
-                imageSize={element.imageSize || 1}
-                setImageSize={value => {
-                    console.log('setting image size', value);
-                    updateElement(presentationId, slideId, layoutId, elementId, {
-                        ...element,
-                        imageSize: value,
-                    });
-                }}
-            />
+            <SmartLayoutImageSizeSelector imageSize={element.imageSize || 1} setImageSize={handleChangeImageSize} />
 
             <SmartLayoutImageShapeSelector
                 imageShape={element.imageShape || 'square'}
-                setImageShape={value => {
-                    updateElement(presentationId, slideId, layoutId, elementId, {
-                        ...element,
-                        imageShape: value as ImageShape,
-                    });
-                }}
+                setImageShape={handleChangeImageShape}
             />
 
             <AlignmentGroup element={element} handleChange={handleAlignment} />

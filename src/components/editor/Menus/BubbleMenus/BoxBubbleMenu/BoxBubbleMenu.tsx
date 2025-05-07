@@ -37,22 +37,40 @@ const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ presentationId, slideId, lay
 
     const handleIconChange = (iconType: string) => {
         if (element.customBackgroundColor) {
-            updateElement(presentationId, slideId, layoutId, elementId, {
-                iconType,
+            updateElement({
+                presentationId,
+                slideId,
+                layoutId,
+                elementId,
+                data: {
+                    iconType,
+                },
             });
         } else {
             const defaultBackgroundColor = elementConfig?.defaultProps?.backgroundColor;
 
-            updateElement(presentationId, slideId, layoutId, elementId, {
-                iconType,
-                backgroundColor: defaultBackgroundColor,
+            updateElement({
+                presentationId,
+                slideId,
+                layoutId,
+                elementId,
+                data: {
+                    iconType,
+                    backgroundColor: defaultBackgroundColor,
+                },
             });
         }
     };
 
     const handleBackgroundColorChange = (color: string) => {
-        updateElement(presentationId, slideId, layoutId, elementId, {
-            customBackgroundColor: color,
+        updateElement({
+            presentationId,
+            slideId,
+            layoutId,
+            elementId,
+            data: {
+                customBackgroundColor: color,
+            },
         });
     };
 

@@ -31,7 +31,13 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({ presentationId, slideId, la
         //         method: 'DELETE',
         //     });
         // }
-        updateElement(presentationId, slideId, layoutId, elementId, { src: '', uploaded: false });
+        updateElement({
+            presentationId,
+            slideId,
+            layoutId,
+            elementId,
+            data: { src: '', uploaded: false },
+        });
     };
 
     const onDrop = useCallback(
@@ -45,7 +51,13 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({ presentationId, slideId, la
                     body: formData,
                 }).then(response => {
                     response.json().then(data => {
-                        updateElement(presentationId, slideId, layoutId, elementId, { src: data.url, uploaded: true });
+                        updateElement({
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            elementId,
+                            data: { src: data.url, uploaded: true },
+                        });
                     });
                 });
             }
@@ -61,7 +73,13 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({ presentationId, slideId, la
     });
 
     const handleUpdateLink = (link: string) => {
-        updateElement(presentationId, slideId, layoutId, elementId, { src: link });
+        updateElement({
+            presentationId,
+            slideId,
+            layoutId,
+            elementId,
+            data: { src: link },
+        });
     };
 
     return (

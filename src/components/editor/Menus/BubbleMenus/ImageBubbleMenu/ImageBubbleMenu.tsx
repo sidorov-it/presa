@@ -28,7 +28,13 @@ const ImageBubbleMenu: React.FC<ImageBubbleMenuProps> = ({ presentationId, slide
     // const closeBubbleMenu = useMenuStore(state => state.closeBubbleMenu);
 
     const handleAlignment = (alignment: 'left' | 'center' | 'right') => {
-        updateElement(presentationId, slideId, layoutId, elementId, { alignment });
+        updateElement({
+            presentationId,
+            slideId,
+            layoutId,
+            elementId,
+            data: { alignment },
+        });
     };
 
     const handleEdit = () => {

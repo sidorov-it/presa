@@ -109,15 +109,25 @@ export interface PresentationState {
         elementId: string
     ) => BaseElement | undefined;
     addElement: (presentationId: string, slideId: string, layoutId: string, element: Omit<BaseElement, 'id'>) => string;
-    updateElement: (
-        presentationId: string,
-        slideId: string,
-        layoutId: string,
-        elementId: string,
-        data: Partial<Element>,
-        createHistoryEntry?: boolean,
-        isTextElement?: boolean
-    ) => void;
+    updateElement: ({
+        presentationId,
+        slideId,
+        layoutId,
+        elementId,
+        data,
+        createHistoryEntry,
+        isTextElement,
+        isExcludeFromHistory,
+    }: {
+        presentationId: string;
+        slideId: string;
+        layoutId: string;
+        elementId: string;
+        data: Partial<Element>;
+        createHistoryEntry?: boolean;
+        isTextElement?: boolean;
+        isExcludeFromHistory?: boolean;
+    }) => void;
     deleteElement: (presentationId: string, slideId: string, layoutId: string, elementId: string) => void;
     duplicateElement: (presentationId: string, slideId: string, elementId: string) => void;
     addColumn: (
@@ -2006,15 +2016,16 @@ export const usePresentationStore = create<PresentationState>()(
                     return updatedState;
                 });
             },
-            updateElement: (
+            updateElement: ({
                 presentationId,
                 slideId,
                 layoutId,
                 elementId,
                 data,
                 createHistoryEntry = true,
-                isTextElement = false
-            ) => {
+                isTextElement = false,
+                isExcludeFromHistory = false,
+            }) => {
                 const beforeStatePresentations = JSON.parse(JSON.stringify(get().presentations));
 
                 const currentPresentation = get().getPresentation(presentationId);
@@ -2065,7 +2076,7 @@ export const usePresentationStore = create<PresentationState>()(
                 set(newState);
 
                 // Запись действия в историю
-                if (createHistoryEntry) {
+                if (createHistoryEntry && !isExcludeFromHistory) {
                     useHistoryStore.getState().recordTransactionAction({
                         type: 'element',
                         description: 'Update element',
@@ -2077,7 +2088,7 @@ export const usePresentationStore = create<PresentationState>()(
                         before: { presentations: beforeStatePresentations },
                         after: { presentations: get().presentations },
                     });
-                } else {
+                } else if (!isExcludeFromHistory) {
                     get().recordAction({
                         type: 'element',
                         description: 'Update element',
@@ -3164,7 +3175,7 @@ export const usePresentationStore = create<PresentationState>()(
             },
 
             endResize: (presentationId: string, slideId: string, layoutId: string) => {
-                const { columnWidths, originalColumnWidths, isResizing, layoutId: currentLayoutId } = get().resizeState;
+                const { columnWidths, isResizing, layoutId: currentLayoutId } = get().resizeState;
 
                 if (isResizing && columnWidths && currentLayoutId === layoutId) {
                     const beforeState = { ...get() };

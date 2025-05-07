@@ -73,17 +73,17 @@ export default function TextBoxes({
                 item.id === itemId ? { ...item, [key]: content } : item
             );
 
-            usePresentationStore.getState().updateElement(
+            usePresentationStore.getState().updateElement({
                 presentationId,
                 slideId,
                 layoutId,
                 elementId,
-                {
+                data: {
                     items: updatedItems,
-                } as Partial<SmartLayoutElement>,
-                true,
-                true
-            );
+                },
+                createHistoryEntry: true,
+                isTextElement: true,
+            });
         },
         [elementId, presentationId, slideId, layoutId]
     );
@@ -98,9 +98,15 @@ export default function TextBoxes({
         const element = usePresentationStore
             .getState()
             .getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement;
-        usePresentationStore.getState().updateElement(presentationId, slideId, layoutId, elementId, {
-            items: [...element.items, newItem],
-        } as Partial<SmartLayoutElement>);
+        usePresentationStore.getState().updateElement({
+            presentationId,
+            slideId,
+            layoutId,
+            elementId,
+            data: {
+                items: [...element.items, newItem],
+            },
+        });
     }, [elementId, presentationId, slideId, layoutId]);
 
     // Check if dragged item is from same smartLayout
@@ -182,9 +188,15 @@ export default function TextBoxes({
             newItems.splice(insertPosition, 0, draggedItem);
 
             // Update the layout with new order
-            usePresentationStore.getState().updateElement(presentationId, slideId, layoutId, elementId, {
-                items: newItems,
-            } as Partial<SmartLayoutElement>);
+            usePresentationStore.getState().updateElement({
+                presentationId,
+                slideId,
+                layoutId,
+                elementId,
+                data: {
+                    items: newItems,
+                },
+            });
         },
         [
             dndState.source.smartLayoutItemId,

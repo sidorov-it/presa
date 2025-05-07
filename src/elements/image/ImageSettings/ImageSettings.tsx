@@ -21,15 +21,33 @@ const ImageSettings: React.FC<ImageSettingsProps> = ({ elementId, presentationId
     const updateElement = usePresentationStore(state => state.updateElement);
     const deleteElement = usePresentationStore(state => state.deleteElement);
     const handleSrcChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        updateElement(presentationId, slideId, layoutId, elementId, { src: e.target.value });
+        updateElement({
+            presentationId,
+            slideId,
+            layoutId,
+            elementId,
+            data: { src: e.target.value },
+        });
     };
 
     const handleAltChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        updateElement(presentationId, slideId, layoutId, elementId, { alt: e.target.value });
+        updateElement({
+            presentationId,
+            slideId,
+            layoutId,
+            elementId,
+            data: { alt: e.target.value },
+        });
     };
 
     const handleAlignmentChange = (alignment: 'left' | 'center' | 'right') => {
-        updateElement(presentationId, slideId, layoutId, elementId, { alignment });
+        updateElement({
+            presentationId,
+            slideId,
+            layoutId,
+            elementId,
+            data: { alignment },
+        });
     };
 
     const handleDeleteElement = () => {

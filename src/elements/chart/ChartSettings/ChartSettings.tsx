@@ -57,8 +57,14 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
 
     const handleChangeChartType = (elementVariant: 'bar' | 'line' | 'pie' | 'donut' | 'column') => {
         if (presentationId && slideId && layoutId && elementId) {
-            updateElement(presentationId, slideId, layoutId, elementId, {
-                elementVariant,
+            updateElement({
+                presentationId,
+                slideId,
+                layoutId,
+                elementId,
+                data: {
+                    elementVariant,
+                },
             });
 
             if (onUpdate) {
@@ -117,9 +123,16 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
 
     const handleApplyData = () => {
         if (presentationId && slideId && layoutId && elementId) {
-            updateElement(presentationId, slideId, layoutId, elementId, {
-                data: tableData,
-                series: series,
+            updateElement({
+                presentationId,
+                slideId,
+                layoutId,
+                elementId,
+                data: {
+                    data: tableData,
+                    series: series,
+                },
+                isExcludeFromHistory: true,
             });
 
             if (onUpdate) {

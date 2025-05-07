@@ -97,17 +97,17 @@ export default function BoxComponent({
                 layoutId={layoutId}
                 standardEnterBehavior={true}
                 onContentChange={(content: string) => {
-                    usePresentationStore.getState().updateElement(
+                    usePresentationStore.getState().updateElement({
                         presentationId,
                         slideId,
                         layoutId,
                         elementId,
-                        {
+                        data: {
                             content,
                         },
-                        true,
-                        true
-                    );
+                        createHistoryEntry: true,
+                        isTextElement: true,
+                    });
                 }}
             />
         </Box>

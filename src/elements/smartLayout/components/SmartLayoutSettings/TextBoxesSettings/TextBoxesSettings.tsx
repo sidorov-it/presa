@@ -2,7 +2,7 @@
 import SmartLayoutColumnSizeSelector from '@/components/settings/SmartLayoutColumnSizeSelector/SmartLayoutColumnSizeSelector';
 import SmartLayoutTemplateSelector from '@/components/settings/SmartLayoutTemplateSelector/SmartLayoutTemplateSelector';
 import { usePresentationStore } from '@/store/presentationStore';
-import { SmartLayoutElement, TipTapRefs } from '@/types';
+import { SmartLayoutElement, SmartLayoutType, TipTapRefs } from '@/types';
 import { MutableRefObject } from 'react';
 import { MenuItem } from '@/components/editor/SlideMenu/BaseMenu';
 import AlignmentGroup from '@/components/settings/AlignmentGroup/AlignmentGroup';
@@ -26,9 +26,14 @@ export default function TextBoxesSettings({
     const updateElement = usePresentationStore(state => state.updateElement);
 
     const handleAlignment = (alignment: 'left' | 'center' | 'right') => {
-        updateElement(presentationId, slideId, layoutId, elementId, {
-            ...element,
-            align: alignment,
+        updateElement({
+            presentationId,
+            slideId,
+            layoutId,
+            elementId,
+            data: {
+                align: alignment,
+            },
         });
 
         element.items?.forEach(item => {
@@ -50,9 +55,15 @@ export default function TextBoxesSettings({
     return (
         <>
             <SmartLayoutTemplateSelector
-                layoutType={element.layoutType || 'grid'}
-                setLayoutType={value => {
-                    updateElement(presentationId, slideId, layoutId, elementId, { ...element, layoutType: value });
+                elementVariant={element.elementVariant || 'grid'}
+                setElementVariant={value => {
+                    updateElement({
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        elementId,
+                        data: { elementVariant: value as SmartLayoutType },
+                    });
                 }}
             />
 
@@ -63,10 +74,12 @@ export default function TextBoxesSettings({
                 max={4}
                 defaultValue={1}
                 setColumnSize={value => {
-                    console.log('setting column size', value);
-                    updateElement(presentationId, slideId, layoutId, elementId, {
-                        ...element,
-                        columnSize: value,
+                    updateElement({
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        elementId,
+                        data: { columnSize: value },
                     });
                 }}
             />

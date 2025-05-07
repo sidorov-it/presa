@@ -57,7 +57,13 @@ export default function ButtonMenu({
         }
 
         // Обновляем состояние в store
-        updateElement(presentationId, slideId, layoutId, targetElementId, { [key]: value });
+        updateElement({
+            presentationId,
+            slideId,
+            layoutId,
+            elementId: targetElementId,
+            data: { [key]: value },
+        });
     };
 
     const handleDelete = () => {

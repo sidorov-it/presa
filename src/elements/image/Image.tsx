@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 'use client';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ImageElement } from '@/types';
 import { default as ImageComponent } from 'next/image';
 import { usePresentationStore } from '@/store/presentationStore';
@@ -112,41 +112,46 @@ const Image: React.FC<ImageProps> = ({
     };
 
     // Handle resize movement
-    const handleResizeMove = (e: MouseEvent) => {
-        if (!resizing || !resizeDirection || !containerRef.current) return;
-
-        const deltaX = e.clientX - startX;
-        const deltaY = e.clientY - startY;
-        let newWidth = startWidth;
-        let newHeight = startHeight;
-
-        // Определяем изменение ширины в зависимости от направления
-        if (resizeDirection.includes('right')) {
-            newWidth = startWidth + deltaX;
-        } else if (resizeDirection.includes('left')) {
-            newWidth = startWidth - deltaX;
-        } else if (resizeDirection === 'top' || resizeDirection === 'bottom') {
-            // Для верхней и нижней точек используем изменение по Y
-            // и пересчитываем ширину с учетом соотношения сторон
-            if (resizeDirection === 'top') {
-                newHeight = startHeight - deltaY;
-            } else {
-                // bottom
-                newHeight = startHeight + deltaY;
+    const handleResizeMove = useCallback(
+        (e: MouseEvent) => {
+            if (!resizing || !resizeDirection || !containerRef.current) {
+                return;
             }
-            // Пересчитываем ширину, сохраняя соотношение сторон
-            newWidth = newHeight * aspectRatio;
-        }
 
-        // Ensure minimum width (100px)
-        const width = Math.max(100, newWidth);
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+            let newWidth = startWidth;
+            let newHeight = startHeight;
 
-        // Update container max-width in the DOM
-        containerRef.current.style.maxWidth = `${width}px`;
-    };
+            // Определяем изменение ширины в зависимости от направления
+            if (resizeDirection.includes('right')) {
+                newWidth = startWidth + deltaX;
+            } else if (resizeDirection.includes('left')) {
+                newWidth = startWidth - deltaX;
+            } else if (resizeDirection === 'top' || resizeDirection === 'bottom') {
+                // Для верхней и нижней точек используем изменение по Y
+                // и пересчитываем ширину с учетом соотношения сторон
+                if (resizeDirection === 'top') {
+                    newHeight = startHeight - deltaY;
+                } else {
+                    // bottom
+                    newHeight = startHeight + deltaY;
+                }
+                // Пересчитываем ширину, сохраняя соотношение сторон
+                newWidth = newHeight * aspectRatio;
+            }
+
+            // Ensure minimum width (100px)
+            const width = Math.max(100, newWidth);
+
+            // Update container max-width in the DOM
+            containerRef.current.style.maxWidth = `${width}px`;
+        },
+        [resizing, resizeDirection, startX, startY, startWidth, startHeight, aspectRatio]
+    );
 
     // Handle resize end
-    const handleResizeEnd = () => {
+    const handleResizeEnd = useCallback(() => {
         if (!resizing) return;
 
         setResizing(false);
@@ -155,9 +160,15 @@ const Image: React.FC<ImageProps> = ({
         // Save the new width to the element data
         if (containerRef.current && presentationId && slideId && layoutId) {
             const newWidth = containerRef.current.clientWidth;
-            updateElement(presentationId, slideId, layoutId, element.id, { width: newWidth });
+            updateElement({
+                presentationId,
+                slideId,
+                layoutId,
+                elementId: element.id,
+                data: { width: newWidth },
+            });
         }
-    };
+    }, [resizing, presentationId, slideId, layoutId, updateElement, element.id]);
 
     useEffect(() => {
         if (resizing) {
@@ -295,7 +306,13 @@ const Image: React.FC<ImageProps> = ({
     };
 
     const handleUpdateLink = (link: string) => {
-        updateElement(presentationId, slideId, layoutId, elementId, { src: link });
+        updateElement({
+            presentationId,
+            slideId,
+            layoutId,
+            elementId: element.id,
+            data: { src: link },
+        });
     };
 
     return (
