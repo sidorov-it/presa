@@ -73,9 +73,11 @@ const Chart: React.FC<ChartProps> = ({
     const [isSelected, setIsSelected] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    const [showLabels, setShowLabels] = useState(true);
-    const [showValues, setShowValues] = useState(false);
-    const [legendPosition, setLegendPosition] = useState<'left' | 'right' | 'top' | 'bottom'>('right');
+    const [showLabels, setShowLabels] = useState(element.showLabels !== undefined ? element.showLabels : true);
+    const [showValues, setShowValues] = useState(element.showValues !== undefined ? element.showValues : false);
+    const [legendPosition, setLegendPosition] = useState<'left' | 'right' | 'top' | 'bottom'>(
+        element.legendPosition || 'right'
+    );
     // const [colorScheme, setColorScheme] = useState('default');
     const [horizontalAlignment, setHorizontalAlignment] = useState<'left' | 'center' | 'right'>('center');
 
@@ -87,6 +89,7 @@ const Chart: React.FC<ChartProps> = ({
     const [startY, setStartY] = useState(0);
     const [resizeDirection, setResizeDirection] = useState<ResizeDirection | null>(null);
     const [aspectRatio, setAspectRatio] = useState(1);
+    const [maintainAspectRatio, setMaintainAspectRatio] = useState(false);
 
     const containerRef = useRef<HTMLDivElement>(null);
     const settingsRef = useRef<HTMLDivElement>(null);
@@ -94,6 +97,18 @@ const Chart: React.FC<ChartProps> = ({
     const updateElement = usePresentationStore(state => state.updateElement);
 
     const data = element.data || defaultData;
+
+    // Initialize component with element data
+    useEffect(() => {
+        if (element) {
+            // Initialize state from element properties if available
+            setShowLabels(element.showLabels !== undefined ? element.showLabels : true);
+            setShowValues(element.showValues !== undefined ? element.showValues : false);
+            if (element.legendPosition) {
+                setLegendPosition(element.legendPosition);
+            }
+        }
+    }, [element]);
 
     // Handle click on chart to select it
     const handleClickChart = (e: React.MouseEvent) => {
@@ -194,22 +209,33 @@ const Chart: React.FC<ChartProps> = ({
     };
 
     // Handle resize start
-    const handleResizeStart = useCallback((e: React.MouseEvent, direction: ResizeDirection) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setResizing(true);
-        setResizeDirection(direction);
+    const handleResizeStart = useCallback(
+        (e: React.MouseEvent, direction: ResizeDirection) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setResizing(true);
+            setResizeDirection(direction);
 
-        if (containerRef.current) {
-            const rect = containerRef.current.getBoundingClientRect();
-            setStartWidth(rect.width);
-            setStartHeight(rect.height);
-            setAspectRatio(rect.width / rect.height);
-        }
+            if (containerRef.current) {
+                const rect = containerRef.current.getBoundingClientRect();
+                setStartWidth(rect.width);
+                setStartHeight(rect.height);
 
-        setStartX(e.clientX);
-        setStartY(e.clientY);
-    }, []);
+                // Calculate and store aspect ratio of the container
+                const ratio = rect.width / rect.height;
+                setAspectRatio(ratio);
+
+                // If the chart doesn't have a set height yet, we need to initialize it
+                if (!element.height && containerRef.current) {
+                    containerRef.current.style.height = `${rect.height}px`;
+                }
+            }
+
+            setStartX(e.clientX);
+            setStartY(e.clientY);
+        },
+        [element.height]
+    );
 
     // Handle resize movement
     const handleResizeMove = useCallback(
@@ -221,31 +247,38 @@ const Chart: React.FC<ChartProps> = ({
             let newWidth = startWidth;
             let newHeight = startHeight;
 
-            // Determine width change based on direction
+            // Determine new dimensions based on resize direction
             if (resizeDirection.includes('right')) {
                 newWidth = startWidth + deltaX;
             } else if (resizeDirection.includes('left')) {
                 newWidth = startWidth - deltaX;
-            } else if (resizeDirection === 'top' || resizeDirection === 'bottom') {
-                // For top and bottom points, use Y change
-                // and recalculate width based on aspect ratio
-                if (resizeDirection === 'top') {
-                    newHeight = startHeight - deltaY;
-                } else {
-                    // bottom
-                    newHeight = startHeight + deltaY;
-                }
-                // Recalculate width, preserving aspect ratio
-                newWidth = newHeight * aspectRatio;
             }
 
-            // Ensure minimum width (150px)
-            const width = Math.max(150, newWidth);
+            if (resizeDirection.includes('top')) {
+                newHeight = startHeight - deltaY;
+            } else if (resizeDirection.includes('bottom')) {
+                newHeight = startHeight + deltaY;
+            }
 
-            // Update container max-width in the DOM
+            // For corner points, handle both width and height
+            if (maintainAspectRatio) {
+                // If maintaining aspect ratio, calculate the secondary dimension
+                if (resizeDirection.includes('right') || resizeDirection.includes('left')) {
+                    newHeight = newWidth / aspectRatio;
+                } else if (resizeDirection.includes('top') || resizeDirection.includes('bottom')) {
+                    newWidth = newHeight * aspectRatio;
+                }
+            }
+
+            // Ensure minimum dimensions
+            const width = Math.max(150, newWidth);
+            const height = Math.max(150, newHeight);
+
+            // Update container dimensions in the DOM
             containerRef.current.style.maxWidth = `${width}px`;
+            containerRef.current.style.height = `${height}px`;
         },
-        [resizing, resizeDirection, startWidth, startHeight, aspectRatio, startX, startY]
+        [resizing, resizeDirection, startWidth, startHeight, startX, startY, aspectRatio, maintainAspectRatio]
     );
 
     const handleRemoveChart = useCallback(() => {
@@ -261,10 +294,15 @@ const Chart: React.FC<ChartProps> = ({
         setResizing(false);
         setResizeDirection(null);
 
-        // Save the new width to the element data
+        // Save the new dimensions to the element data
         if (containerRef.current && presentationId && slideId && layoutId) {
             const newWidth = containerRef.current.clientWidth;
-            updateElement(presentationId, slideId, layoutId, element.id, { width: newWidth });
+            const newHeight = containerRef.current.clientHeight;
+
+            updateElement(presentationId, slideId, layoutId, element.id, {
+                width: newWidth,
+                height: newHeight,
+            });
         }
     }, [resizing, presentationId, slideId, layoutId, updateElement, element.id]);
 
@@ -321,6 +359,9 @@ const Chart: React.FC<ChartProps> = ({
 
     // Render the appropriate chart based on the chart type
     const renderChart = useCallback(() => {
+        // Calculate chart height based on element height or default to 300
+        const chartHeight = element.height || 300;
+
         // Get alignment from element or state
         // Calculate legend properties based on legend position
         const getLegendProps = () => {
@@ -385,7 +426,7 @@ const Chart: React.FC<ChartProps> = ({
         switch (element.elementVariant) {
             case 'bar':
                 return (
-                    <ResponsiveContainer width="100%" height={300}>
+                    <ResponsiveContainer width="100%" height={chartHeight}>
                         <BarChart data={data}>
                             <CartesianGrid strokeDasharray="3 3" />
                             {showLabels && <XAxis dataKey="name" />}
@@ -411,7 +452,7 @@ const Chart: React.FC<ChartProps> = ({
 
             case 'column':
                 return (
-                    <ResponsiveContainer width="100%" height={300}>
+                    <ResponsiveContainer width="100%" height={chartHeight}>
                         <BarChart data={data} layout="vertical" margin={{ top: 5, right: 45, bottom: 5, left: 40 }}>
                             <CartesianGrid strokeDasharray="3 3" />
 
@@ -444,7 +485,7 @@ const Chart: React.FC<ChartProps> = ({
 
             case 'line':
                 return (
-                    <ResponsiveContainer width="100%" height={300}>
+                    <ResponsiveContainer width="100%" height={chartHeight}>
                         <LineChart data={[{ name: '' }, ...data, { name: '' }]}>
                             <CartesianGrid strokeDasharray="3 3" />
                             {showLabels && <XAxis dataKey="name" />}
@@ -481,7 +522,7 @@ const Chart: React.FC<ChartProps> = ({
                     pieData = data;
                 }
                 return (
-                    <ResponsiveContainer width="100%" height={300}>
+                    <ResponsiveContainer width="100%" height={chartHeight}>
                         <PieChart>
                             <Pie
                                 data={pieData}
@@ -521,7 +562,7 @@ const Chart: React.FC<ChartProps> = ({
                 }
 
                 return (
-                    <ResponsiveContainer width="100%" height={300}>
+                    <ResponsiveContainer width="100%" height={chartHeight}>
                         <PieChart>
                             <Pie
                                 data={donutData}
@@ -553,7 +594,7 @@ const Chart: React.FC<ChartProps> = ({
                     <div className={styles.unsupportedChartType}>Unsupported chart type: {element.elementVariant}</div>
                 );
         }
-    }, [element.elementVariant, element.series, legendPosition, showLabels, showValues, data]);
+    }, [element.height, element.elementVariant, element.series, legendPosition, showLabels, showValues, data]);
 
     // Calculate optimal position for settings popup
     const calculateSettingsPosition = () => {
@@ -644,6 +685,7 @@ const Chart: React.FC<ChartProps> = ({
                         position: 'relative',
                         cursor: 'pointer',
                         maxWidth: element.width ? `${element.width}px` : '100%',
+                        height: element.height ? `${element.height}px` : 'auto',
                     }}
                     onClick={handleClickChart}
                     data-element-id={element.id}
@@ -841,6 +883,22 @@ const Chart: React.FC<ChartProps> = ({
                                 <option value="top">Сверху</option>
                                 <option value="bottom">Снизу</option>
                             </select>
+                        </div>
+                    </div>
+
+                    {/* Maintain aspect ratio toggle */}
+                    <div className={styles.settingContainer}>
+                        <div className={styles.settingItemContainer}>
+                            <div className={styles.settingItemLabel}>
+                                <IoMdColorPalette className={styles.icon} />
+                                <span className={styles.text}>Сохранять пропорции</span>
+                            </div>
+                            <div
+                                className={`${styles.showLabelsToggle} ${maintainAspectRatio ? styles.showLabelsToggleActive : ''}`}
+                                onClick={() => setMaintainAspectRatio(!maintainAspectRatio)}
+                            >
+                                <div className={styles.settingItemToggle}></div>
+                            </div>
                         </div>
                     </div>
 

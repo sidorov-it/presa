@@ -350,6 +350,10 @@ export interface ChartElement extends BaseElement {
     }[];
     alignment?: 'left' | 'center' | 'right';
     width?: number;
+    height?: number;
+    showLabels?: boolean;
+    showValues?: boolean;
+    legendPosition?: 'left' | 'right' | 'top' | 'bottom';
 }
 
 export interface ButtonElement extends BaseElement {
