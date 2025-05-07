@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, RefObject } from 'react';
-import { useTheme } from '@/components/providers/ThemeProvider';
+import React, { useState, useRef, useEffect, useCallback, MutableRefObject } from 'react';
 import SlideTemplateSelector from '../SlideTemplateSelector/SlideTemplateSelector';
 import styles from './TemplateButton.module.css';
 import { TipTapRefs } from '@/types';
@@ -10,7 +9,7 @@ interface TemplateButtonProps {
     className?: string;
     isHovered: boolean;
     isSelected: boolean;
-    tiptapRefs: RefObject<TipTapRefs>;
+    tiptapRefs: MutableRefObject<TipTapRefs>;
 }
 
 const TemplateButton: React.FC<TemplateButtonProps> = ({
@@ -23,7 +22,6 @@ const TemplateButton: React.FC<TemplateButtonProps> = ({
 }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
-    const { isDarkMode } = useTheme();
     const popupRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLDivElement>(null);
 
@@ -61,9 +59,9 @@ const TemplateButton: React.FC<TemplateButtonProps> = ({
     }, []);
 
     const buttonStyle: React.CSSProperties = {
-        border: isDarkMode ? '1px solid white' : '1px solid #666',
-        backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.5)' : 'white',
-        color: isDarkMode ? 'white' : '#333',
+        border: '1px solid #666',
+        backgroundColor: 'white',
+        color: '#333',
         opacity: isVisible ? 1 : 0,
     };
 

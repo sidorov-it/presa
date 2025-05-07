@@ -1,101 +1,65 @@
 'use client';
 
-import type { IconButtonProps, SpanProps } from '@chakra-ui/react';
-import { ClientOnly, IconButton, Skeleton, Span } from '@chakra-ui/react';
-import { ThemeProvider, useTheme } from 'next-themes';
-import type { ThemeProviderProps } from 'next-themes';
-import * as React from 'react';
-import { LuMoon, LuSun } from 'react-icons/lu';
-
-export interface ColorModeProviderProps extends ThemeProviderProps {}
-
-export function ColorModeProvider(props: ColorModeProviderProps) {
-    return <ThemeProvider forcedTheme="light" attribute="class" disableTransitionOnChange {...props} />;
-}
+import { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 
 export type ColorMode = 'light' | 'dark';
 
-export interface UseColorModeReturn {
+interface ColorModeContextType {
     colorMode: ColorMode;
-    setColorMode: (colorMode: ColorMode) => void;
-    toggleColorMode: () => void;
+    setColorMode: (mode: ColorMode) => void;
 }
 
-export function useColorMode(): UseColorModeReturn {
-    const { setTheme } = useTheme();
-    const toggleColorMode = () => {
-        // setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
-        setTheme('light');
-    };
-    return {
-        colorMode: 'light' as ColorMode,
-        setColorMode: setTheme,
-        toggleColorMode,
-    };
+const ColorModeContext = createContext<ColorModeContextType | undefined>(undefined);
+
+export interface ColorModeProviderProps {
+    children: ReactNode;
 }
 
-export function useColorModeValue<T>(light: T, dark: T) {
-    const { colorMode } = useColorMode();
-    return colorMode === 'dark' ? dark : light;
+export function ColorModeProvider({ children }: ColorModeProviderProps) {
+    const [colorMode, setColorMode] = useState<ColorMode>('light');
+
+    // Применяем CSS-переменные Chakra при изменении темы
+    useEffect(() => {
+        const root = document.documentElement;
+        if (colorMode === 'dark') {
+            root.style.setProperty('--chakra-colors-chakra-body-bg', '#1A202C');
+            root.style.setProperty('--chakra-colors-chakra-text', '#FFFFFF');
+            root.style.setProperty('--chakra-colors-chakra-border-color', '#2D3748');
+            root.style.setProperty('--chakra-colors-gray-100', '#2D3748');
+            root.style.setProperty('--chakra-colors-gray-200', '#4A5568');
+            root.style.setProperty('--chakra-colors-gray-400', '#A0AEC0');
+            root.style.setProperty('--chakra-colors-gray-600', '#E2E8F0');
+            root.style.setProperty('--chakra-colors-gray-700', '#2D3748');
+            root.style.setProperty('--chakra-colors-blue-50', '#2C5282');
+            root.style.setProperty('--chakra-colors-blue-500', '#90CDF4');
+            root.style.setProperty('--chakra-colors-white', '#FFFFFF');
+        } else {
+            root.style.setProperty('--chakra-colors-chakra-body-bg', '#FFFFFF');
+            root.style.setProperty('--chakra-colors-chakra-text', '#1A202C');
+            root.style.setProperty('--chakra-colors-chakra-border-color', '#E2E8F0');
+            root.style.setProperty('--chakra-colors-gray-100', '#EDF2F7');
+            root.style.setProperty('--chakra-colors-gray-200', '#E2E8F0');
+            root.style.setProperty('--chakra-colors-gray-400', '#A0AEC0');
+            root.style.setProperty('--chakra-colors-gray-600', '#4A5568');
+            root.style.setProperty('--chakra-colors-gray-700', '#2D3748');
+            root.style.setProperty('--chakra-colors-blue-50', '#EBF8FF');
+            root.style.setProperty('--chakra-colors-blue-500', '#3182CE');
+            root.style.setProperty('--chakra-colors-white', '#FFFFFF');
+        }
+    }, [colorMode]);
+
+    return (
+        <ColorModeContext.Provider value={{ colorMode, setColorMode }}>
+            {children}
+        </ColorModeContext.Provider>
+    );
 }
 
-export function ColorModeIcon() {
-    const { colorMode } = useColorMode();
-    return colorMode === 'dark' ? <LuMoon /> : <LuSun />;
-}
-
-interface ColorModeButtonProps extends Omit<IconButtonProps, 'aria-label'> {}
-
-export const ColorModeButton = React.forwardRef<HTMLButtonElement, ColorModeButtonProps>(
-    function ColorModeButton(props, ref) {
-        const { toggleColorMode } = useColorMode();
-        return (
-            <ClientOnly fallback={<Skeleton boxSize="8" />}>
-                <IconButton
-                    onClick={toggleColorMode}
-                    variant="ghost"
-                    aria-label="Toggle color mode"
-                    size="sm"
-                    ref={ref}
-                    {...props}
-                    css={{
-                        _icon: {
-                            width: '5',
-                            height: '5',
-                        },
-                    }}
-                >
-                    <ColorModeIcon />
-                </IconButton>
-            </ClientOnly>
-        );
+export function useColorMode(): { colorMode: ColorMode; setColorMode: (mode: ColorMode) => void } {
+    const context = useContext(ColorModeContext);
+    if (!context) {
+        throw new Error('useColorMode must be used within a ColorModeProvider');
     }
-);
-
-export const LightMode = React.forwardRef<HTMLSpanElement, SpanProps>(function LightMode(props, ref) {
-    return (
-        <Span
-            color="fg"
-            display="contents"
-            className="chakra-theme light"
-            colorPalette="gray"
-            colorScheme="light"
-            ref={ref}
-            {...props}
-        />
-    );
-});
-
-export const DarkMode = React.forwardRef<HTMLSpanElement, SpanProps>(function DarkMode(props, ref) {
-    return (
-        <Span
-            color="fg"
-            display="contents"
-            className="chakra-theme dark"
-            colorPalette="gray"
-            colorScheme="dark"
-            ref={ref}
-            {...props}
-        />
-    );
-});
+    return context;
+}

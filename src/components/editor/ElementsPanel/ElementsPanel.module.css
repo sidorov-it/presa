@@ -17,15 +17,9 @@
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     border-radius: 0.5rem;
-    background-color: #ffffff;
+    background-color: var(--chakra-colors-chakra-body-bg);
+    color: var(--chakra-colors-chakra-text);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-:global(.dark-theme) .elementsPanelContent {
-    background-color: rgb(33, 35, 39);
-    border-color: #ffffff0a;
-    border-width: 1px;
-    border-radius: 0.375rem;
 }
 
 .popupMenu {
@@ -45,15 +39,9 @@
     width: 28rem;
     max-height: 80vh;
     overflow-y: auto;
-    background-color: #ffffff;
+    background-color: var(--chakra-colors-chakra-body-bg);
+    border: 1px solid var(--chakra-colors-chakra-border-color);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-:global(.dark-theme) .popupMenuContent {
-    background-color: #131314;
-    border-color: #ffffff0a;
-    border-radius: 0.375rem;
-    border-width: 1px;
 }
 
 .popupMenuBody {
@@ -78,8 +66,9 @@
     transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 200ms;
-    color: #4B5563;
+    color: var(--chakra-colors-gray-600);
     border-radius: 0.375rem;
+    background-color: var(--chakra-colors-gray-100);
 }
 
 .elementsPanelCategory:hover {
@@ -101,22 +90,17 @@
     margin-right: 0.5rem;
 }
 
-:global(.dark-theme) .elementsPanelIcon {
-    /* background-color: rgb(33, 35, 39); */
-    color: #fff;
-}
-
-:global(.dark-theme) .elementsPanelIcon:hover {
-    color: #3c3838;
+.elementsPanelIcon:hover {
+    background-color: var(--chakra-colors-gray-200);
 }
 
 .elementItem {
     padding: 0.75rem 0.25rem;
     border-radius: 0.5rem;
     border-width: 1px;
-    border-color: #E5E7EB;
-    background-color: #ffffff;
-    color: #000;
+    border-color: var(--chakra-colors-chakra-border-color);
+    background-color: var(--chakra-colors-chakra-body-bg);
+    color: var(--chakra-colors-chakra-text);
     cursor: grab;
     display: flex;
     flex-direction: column;
@@ -126,7 +110,7 @@
 }
 
 .elementItem:hover {
-    border-color: #3B82F6;
+    background-color: var(--chakra-colors-gray-100);
     transform: translateY(-2px);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
@@ -137,23 +121,9 @@
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
 }
 
-:global(.dark-theme) .elementItem {
-    background-color: rgb(33, 35, 39);
-    border-color: #374151;
-    color: #fff;
-}
-
-:global(.dark-theme) .elementItem:hover {
-    border-color: #60A5FA;
-}
-
-:global(.dark-theme) .elementItemIcon {
-    color: #fff;
-}
-
 .elementItemIcon {
     font-size: 1.25rem;
-    color: #4B5563;
+    color: var(--chakra-colors-gray-600);
 }
 
 .subCategoryLabel {
@@ -161,11 +131,7 @@
     font-size: 0.875rem;
     line-height: 1.25rem;
     font-weight: 600;
-    color: #111827;
-}
-
-:global(.dark-theme) .subCategoryLabel {
-    color: #E5E7EB;
+    color: var(--chakra-colors-gray-600);
 }
 
 .subCategoryElements {
@@ -178,12 +144,8 @@
     font-size: 0.75rem;
     line-height: 1rem;
     text-align: center;
-    color: #1F2937;
+    color: var(--chakra-colors-chakra-text);
     font-weight: 500;
-}
-
-:global(.dark-theme) .elementItemLabel {
-    color: #D1D5DB;
 }
 
 .popupMenuHeader {
@@ -191,48 +153,35 @@
     margin-bottom: 0.75rem;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #E5E7EB;
+    border-bottom: 1px solid var(--chakra-colors-chakra-border-color);
     padding-bottom: 0.75rem;
-}
-
-:global(.dark-theme) .popupMenuHeader {
-    border-color: #374151;
 }
 
 .popupMenuHeaderTitle {
     font-size: 1rem;
     line-height: 1.5rem;
     font-weight: 600;
-    color: #111827;
-}
-
-:global(.dark-theme) .popupMenuHeaderTitle {
-    color: #F3F4F6;
+    color: var(--chakra-colors-chakra-text);
 }
 
 .popupMenuHeaderCloseButton {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #9CA3AF;
+    color: var(--chakra-colors-gray-400);
     border-radius: 0.375rem;
     padding: 0.25rem;
     transition: all 0.2s ease;
 }
 
 .popupMenuHeaderCloseButton:hover {
-    color: #6B7280;
-    background-color: #F3F4F6;
+    color: var(--chakra-colors-gray-600);
+    background-color: var(--chakra-colors-gray-100);
 }
 
 .popupMenuHeaderCloseButton:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
-}
-
-:global(.dark-theme) .popupMenuHeaderCloseButton:hover {
-    background-color: #374151;
-    color: #E5E7EB;
 }
 
 .elementsPanelCategories {
@@ -244,10 +193,7 @@
 .elementsPanelCategory {
     position: relative;
     border-radius: 0.375rem;
-}
-
-:global(.dark-theme) .elementsPanelCategory {
-    /* background-color: rgb(33, 35, 39); */
+    background-color: var(--chakra-colors-chakra-body-bg);
 }
 
 .elementsPanelTooltipText {
@@ -259,21 +205,12 @@
     font-size: 0.75rem;
     line-height: 1rem; 
     text-align: right; 
-    color: #ffffff; 
+    color: var(--chakra-colors-white); 
     white-space: nowrap; 
-    background-color: #1F2937;
-}
-
-:global(.dark-theme) .elementsPanelTooltipText {
-    background-color: #4B5563;
+    background-color: var(--chakra-colors-gray-700);
 }
 
 .elementsPanelIconActive {
-    color: #2563EB;
-    background-color: #DBEAFE;
-}
-
-:global(.dark-theme) .elementsPanelIconActive {
-    color: #2563EB;
-    background-color: #DBEAFE;
+    color: var(--chakra-colors-blue-500);
+    background-color: var(--chakra-colors-blue-50);
 }

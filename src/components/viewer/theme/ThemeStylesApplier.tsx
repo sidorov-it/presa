@@ -19,9 +19,9 @@ import circleInvertedTopImage from '@/elements/masks/circle-inverted-top.svg';
 import { useEffect, useRef } from 'react';
 import { Theme } from '@/types/theme';
 import { resetThemeStyles } from '@/utils/themeUtils';
-import { useTheme } from '@/context/ThemeContext';
 import getContrastTextColor from '@/utils/getContrastTextColor';
 import getHoverColor from '@/utils/getHoverColor';
+import { useColorMode } from '@/components/ui/color-mode';
 
 interface ThemeStylesApplierProps {
     theme: Theme | null;
@@ -30,7 +30,7 @@ interface ThemeStylesApplierProps {
 const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
     // Use ref to avoid re-applying the same theme
     const appliedThemeRef = useRef<string | null>(null);
-    const { isDarkMode } = useTheme();
+    const { setColorMode } = useColorMode();
     // Apply theme to the DOM when the component mounts or theme changes
     useEffect(() => {
         if (!theme) {
@@ -305,17 +305,34 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
 
             document.documentElement.style.setProperty('--presentation-link-color', theme.design.buttons.linkColor);
 
-            // document.documentElement.style.setProperty(
-            //     '--font-size',
-            //     "calc(".concat(i, " * var(--card-font-scale, 1) * var(--editor-font-size, 1rem) * ").concat(r, " * var(--viewport-scale-factor, 1.125))")
-            // );
-
-            // Toggle dark-theme class on body for additional theme-specific styles
-            if (isDarkMode) {
-                document.body.classList.add('dark-theme');
-            } else {
-                document.body.classList.remove('dark-theme');
+            // Определяем isDarkMode и устанавливаем colorMode Chakra
+            let isDarkMode = false;
+            if (theme && theme.colors && theme.colors.slideBackground) {
+                isDarkMode = (function isColorDark(color) {
+                    if (color.startsWith('#')) {
+                        const hex = color.replace('#', '');
+                        const r = parseInt(hex.substring(0, 2), 16);
+                        const g = parseInt(hex.substring(2, 4), 16);
+                        const b = parseInt(hex.substring(4, 6), 16);
+                        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+                        return brightness < 128;
+                    }
+                    if (color.startsWith('rgb')) {
+                        const rgbValues = color.match(/\d+/g);
+                        if (rgbValues && rgbValues.length >= 3) {
+                            const r = parseInt(rgbValues[0]);
+                            const g = parseInt(rgbValues[1]);
+                            const b = parseInt(rgbValues[2]);
+                            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+                            return brightness < 128;
+                        }
+                    }
+                    return false;
+                })(theme.colors.slideBackground);
             }
+
+            // Устанавливаем colorMode Chakra вместо класса dark-theme
+            setColorMode(isDarkMode ? 'dark' : 'light');
 
             // Mark theme as applied
             appliedThemeRef.current = themeId;
@@ -333,7 +350,7 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
             appliedThemeRef.current = null;
             console.log('ThemeStylesApplier: Theme reset to defaults on unmount');
         };
-    }, [theme, isDarkMode]);
+    }, [theme, setColorMode]);
 
     // This component doesn't render anything
     return null;

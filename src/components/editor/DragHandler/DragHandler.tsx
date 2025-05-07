@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useCallback, useEffect, useState } from 'react';
 import styles from './DragHandler.module.css';
-import { useTheme } from '@/components/providers/ThemeProvider';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 
 export default function DragHandler({
@@ -31,7 +30,6 @@ export default function DragHandler({
     title?: string;
 }) {
     const [isVisible, setIsVisible] = useState(false);
-    const { isDarkMode } = useTheme();
 
     // When component mounts, delay setting visibility to trigger CSS animation
     useEffect(() => {
@@ -54,15 +52,6 @@ export default function DragHandler({
     let dragHandlerStyle = {
         ...style,
     };
-
-    if (isDarkMode) {
-        dragHandlerStyle = {
-            ...dragHandlerStyle,
-            borderColor: 'white',
-            color: 'white',
-            backgroundColor: '#090808',
-        };
-    }
 
     return (
         <div

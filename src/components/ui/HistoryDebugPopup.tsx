@@ -5,6 +5,7 @@ import { useHistoryStore, HistoryAction } from '@/store/historyStore';
 import { usePresentationStore } from '@/store/presentationStore';
 import deepDiff from '@/utils/deepDiff';
 import styles from './HistoryDebugPopup.module.css';
+import { FaHistory } from 'react-icons/fa';
 
 interface DiffItem {
     key: string;
@@ -272,7 +273,7 @@ const HistoryDebugPopup = () => {
                 aria-label="Toggle history debug popup"
                 tabIndex={0}
             >
-                {isOpen ? 'Hide' : 'Show'} History Debug <span className={styles.shortcutText}>[Alt+H]</span>
+                <FaHistory />
             </button>
 
             {isOpen && (

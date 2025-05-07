@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import SlideViewer from '@/components/viewer/SlideViewer';
 import { IPresentation, Slide } from '@/types';
-import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { Theme } from '@/types/theme';
 import { PdfExportDialog } from '@/components/export';
 import styles from './page.module.css';
@@ -102,26 +101,24 @@ export default function PresentationView() {
     }
 
     return (
-        <ThemeProvider initialTheme={theme}>
-            <div className={styles.container}>
-                <div className={styles.header}>
-                    <h1 className={styles.title}>{presentation.title}</h1>
+        <div className={styles.container}>
+            <div className={styles.header}>
+                <h1 className={styles.title}>{presentation.title}</h1>
 
-                    <div className={styles.actions}>
-                        <PdfExportDialog presentation={presentation} buttonText="Export to PDF" />
-                    </div>
-                </div>
-
-                <div className={styles.content}>
-                    <div className={styles.slideList}>
-                        {presentation.slides.map((slide: Slide, index: number) => (
-                            <div key={slide.id} id={`slide-${index + 1}`} className={styles.slideWrapper}>
-                                <SlideViewer slide={slide} />
-                            </div>
-                        ))}
-                    </div>
+                <div className={styles.actions}>
+                    <PdfExportDialog presentation={presentation} buttonText="Export to PDF" />
                 </div>
             </div>
-        </ThemeProvider>
+
+            <div className={styles.content}>
+                <div className={styles.slideList}>
+                    {presentation.slides.map((slide: Slide, index: number) => (
+                        <div key={slide.id} id={`slide-${index + 1}`} className={styles.slideWrapper}>
+                            <SlideViewer slide={slide} />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
     );
 }

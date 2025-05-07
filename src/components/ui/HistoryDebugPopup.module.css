@@ -6,13 +6,22 @@
 }
 
 .toggleButton {
-  background-color: #1f2937;
+  position: fixed;
+  bottom: 17px;
+  right: 100px;
+  width: 36px;
+  height: 36px;
+  background-color: rgba(0, 0, 0, 0.6);
   color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 0.25rem;
-  font-size: 0.875rem;
+  border: none;
+  border-radius: 50%;
   display: flex;
   align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 10000;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .shortcutText {

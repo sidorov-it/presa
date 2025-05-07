@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from './ThemeDebugPopup.module.css';
+import { useColorMode } from '../ui/color-mode';
 
 interface CSSVariable {
     name: string;
@@ -43,6 +44,8 @@ const appliedVars = [
 
 const ThemeDebugPopup: React.FC<ThemeDebugPopupProps> = ({ isOpen, onClose }) => {
     const [cssVariables, setCssVariables] = useState<CSSVariable[]>([]);
+
+    const { colorMode } = useColorMode();
 
     useEffect(() => {
         if (isOpen) {
@@ -92,6 +95,7 @@ const ThemeDebugPopup: React.FC<ThemeDebugPopupProps> = ({ isOpen, onClose }) =>
             </div>
             <div className={styles.content}>
                 <div className={styles.variablesList}>
+                    <div>current color mode: {colorMode}</div>
                     {cssVariables.map(variable => (
                         <div key={variable.name} className={styles.variableItem}>
                             <div className={styles.variableInfo}>

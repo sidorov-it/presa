@@ -16,7 +16,6 @@ import { Theme } from '@/types/theme';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { FaEye } from 'react-icons/fa';
-import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import BackgroundSettingsModal from '@/components/editor/BackgroundSettingsModal/BackgroundSettingsModal';
 import { HiOutlineCog6Tooth } from 'react-icons/hi2';
 import styles from './page.module.css';
@@ -157,9 +156,8 @@ export default function PresentationEditorPage() {
     if (notFound || !presentation) return notFoundUI;
 
     return (
-        <ThemeProvider initialTheme={currentTheme}>
+        <>
             <ThemeStylesApplier theme={currentTheme} />
-
             <div className={styles.container}>
                 <header className={styles.header}>
                     <div className={styles.headerContent}>
@@ -297,6 +295,6 @@ export default function PresentationEditorPage() {
                     <div className={styles.footerContent}>Presa - Create beautiful presentations with AI</div>
                 </footer>
             </div>
-        </ThemeProvider>
+        </>
     );
 }

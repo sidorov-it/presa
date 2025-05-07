@@ -7,7 +7,6 @@ import { usePresentationStore } from '@/store/presentationStore';
 // import Editor from '@/components/editor/Editor';
 import { IPresentation } from '@/types';
 import { useThemeStore } from '@/store/themeStore';
-import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import styles from './page.module.css';
 import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
 import { PresentationViewer } from '@/components/viewer';
@@ -94,10 +93,9 @@ export default function PresentationEditorPage() {
     if (notFound || !presentation) return notFoundUI;
 
     return (
-        <ThemeProvider initialTheme={currentTheme}>
+        <>
             <ThemeStylesApplier theme={currentTheme} />
-
             <PresentationViewer presentation={presentation} />
-        </ThemeProvider>
+        </>
     );
 }
