@@ -95,31 +95,23 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
             document.documentElement.style.setProperty('--presentation-text-color', theme.colors.textColor);
             document.documentElement.style.setProperty('--presentation-slide-background', theme.colors.slideBackground);
 
-            // Set page background based on type
-            if (theme.colors.pageBackground.type === 'color') {
+            if (theme.colors.pageBackground.color) {
                 document.documentElement.style.setProperty(
                     '--presentation-page-background-color',
                     theme.colors.pageBackground.color
                 );
             } else {
+                document.documentElement.style.removeProperty('--presentation-page-background-color');
+            }
+
+            if (theme.colors.pageBackground.imageUrl) {
                 document.documentElement.style.setProperty(
                     '--presentation-page-background-image',
                     `url(${theme.colors.pageBackground.imageUrl})`
-                );
-            }
-
-            if (theme.colors.pageBackground.type === 'color') {
-                document.documentElement.style.setProperty(
-                    '--presentation-page-background-color',
-                    theme.colors.pageBackground.color
                 );
             } else {
-                document.documentElement.style.setProperty(
-                    '--presentation-page-background-image',
-                    `url(${theme.colors.pageBackground.imageUrl})`
-                );
+                document.documentElement.style.removeProperty('--presentation-page-background-image');
             }
-
             // Typography
             document.documentElement.style.setProperty(
                 '--presentation-heading-font',

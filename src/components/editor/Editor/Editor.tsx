@@ -27,7 +27,7 @@ const EditorContent: React.FC<{
 }> = React.memo(({ presentationId, activeSlideId, onSlideSelect, tiptapRefs }) => {
     return (
         <div className={styles.editorContainer}>
-            <SlidesList presentationId={presentationId} activeSlideId={activeSlideId} onSlideSelect={onSlideSelect} />
+            {/* <SlidesList presentationId={presentationId} activeSlideId={activeSlideId} onSlideSelect={onSlideSelect} /> */}
 
             <div>
                 {/* Main editing area */}

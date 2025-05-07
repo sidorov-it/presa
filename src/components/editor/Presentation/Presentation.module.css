@@ -5,3 +5,14 @@
     margin-top: 1rem;
     width: 100%;
 }
+
+
+.presentation {
+    width: 100%;
+    background-color: var(--presentation-page-background-color);
+    background-image: var(--presentation-page-background-image);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}

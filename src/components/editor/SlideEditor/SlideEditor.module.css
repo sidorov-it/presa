@@ -6,12 +6,6 @@
     padding: 3rem;
     position: relative;
     font-size: calc(1 * 1 * 1rem * 0.89 * 1.125);
-    background-color: var(--presentation-page-background-color);
-    background-image: var(--presentation-page-background-image);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
 }
 
 .slideWrapper {

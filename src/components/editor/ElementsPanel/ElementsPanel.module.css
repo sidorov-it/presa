@@ -22,7 +22,10 @@
 }
 
 :global(.dark-theme) .elementsPanelContent {
-    background-color: var(--header-bg);
+    background-color: rgb(33, 35, 39);
+    border-color: #ffffff0a;
+    border-width: 1px;
+    border-radius: 0.375rem;
 }
 
 .popupMenu {
@@ -47,7 +50,10 @@
 }
 
 :global(.dark-theme) .popupMenuContent {
-    background-color: var(--header-bg) !important;
+    background-color: #131314;
+    border-color: #ffffff0a;
+    border-radius: 0.375rem;
+    border-width: 1px;
 }
 
 .popupMenuBody {
@@ -69,29 +75,20 @@
     padding: 0.5rem;
     justify-content: center;
     align-items: center;
-    border-radius: 0.375rem;
     transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 200ms;
     color: #4B5563;
+    border-radius: 0.375rem;
 }
 
-:global(.dark-theme) .elementsPanelIcon {
-    background-color: var(--header-bg) !important;
-}
-
-.elementsPanelIcon:hover {
+.elementsPanelCategory:hover {
     background-color: #F3F4F6;
 }
 
-.elementsPanelIcon:focus {
+.elementsPanelCategory:focus {
     outline: 2px solid #2563EB;
     outline-offset: 2px;
-}
-
-.elementsPanelIconActive {
-    color: #2563EB;
-    background-color: #DBEAFE;
 }
 
 .elementsPanelTooltip {
@@ -104,12 +101,22 @@
     margin-right: 0.5rem;
 }
 
+:global(.dark-theme) .elementsPanelIcon {
+    /* background-color: rgb(33, 35, 39); */
+    color: #fff;
+}
+
+:global(.dark-theme) .elementsPanelIcon:hover {
+    color: #3c3838;
+}
+
 .elementItem {
     padding: 0.75rem 0.25rem;
     border-radius: 0.5rem;
     border-width: 1px;
     border-color: #E5E7EB;
     background-color: #ffffff;
+    color: #000;
     cursor: grab;
     display: flex;
     flex-direction: column;
@@ -131,12 +138,17 @@
 }
 
 :global(.dark-theme) .elementItem {
-    background-color: var(--header-bg);
+    background-color: rgb(33, 35, 39);
     border-color: #374151;
+    color: #fff;
 }
 
 :global(.dark-theme) .elementItem:hover {
     border-color: #60A5FA;
+}
+
+:global(.dark-theme) .elementItemIcon {
+    color: #fff;
 }
 
 .elementItemIcon {
@@ -230,7 +242,12 @@
 }
 
 .elementsPanelCategory {
-    position: relative; 
+    position: relative;
+    border-radius: 0.375rem;
+}
+
+:global(.dark-theme) .elementsPanelCategory {
+    /* background-color: rgb(33, 35, 39); */
 }
 
 .elementsPanelTooltipText {
@@ -249,4 +266,14 @@
 
 :global(.dark-theme) .elementsPanelTooltipText {
     background-color: #4B5563;
+}
+
+.elementsPanelIconActive {
+    color: #2563EB;
+    background-color: #DBEAFE;
+}
+
+:global(.dark-theme) .elementsPanelIconActive {
+    color: #2563EB;
+    background-color: #DBEAFE;
 }

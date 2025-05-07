@@ -34,8 +34,6 @@ export const resetThemeStyles = (): void => {
         );
     }
 
-    document.documentElement.style.setProperty('--page-background-type', DEFAULT_THEME.colors.pageBackground.type);
-
     // Typography
     document.documentElement.style.setProperty(
         '--heading-font',

@@ -63,7 +63,7 @@ function Presentation({ presentationId, activeSlideId, onSlideSelect, tiptapRefs
     );
 
     return (
-        <div style={{ width: '100%' }}>
+        <div className={styles.presentation}>
             {slideIds.length === 0 && (
                 <div className={styles.emptyContainer}>
                     <Button onClick={() => usePresentationStore.getState().addSlide(presentationId)}>

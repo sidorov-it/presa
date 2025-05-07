@@ -15,16 +15,16 @@ import { getNewEditorElement } from '@/elements/registry';
 import { useMenuStore } from '@/store/menuStore';
 import deepEqual from 'deep-equal';
 import { useDnd } from '@/contexts/DragDropContext';
+import { TEXT_ELEMENT_TYPES } from '@/elements/menuRegistry';
 
 interface SlideEditorProps {
     slideLayoutIds: string[];
     presentationId: string;
-    handleSelectSlide: (slideId: string) => void;
     isSelected: boolean;
     tiptapRefs: RefObject<TipTapRefs>;
     slideId: string;
-    isActive?: boolean;
     slideNumber: number;
+    handleSelectSlide: (slideId: string) => void;
 }
 
 interface ColumnWidthOptions {
@@ -64,7 +64,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     presentationId,
     handleSelectSlide,
     isSelected,
-    isActive,
     slideNumber,
 }) => {
     const editorRef = useRef<HTMLDivElement>(null);
@@ -206,12 +205,10 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
             const element = lastLayout.elements[0];
 
-            const textsElementsTypes = ['text', 'heading', 'quote'];
-
             if (clickPosition > bottomBorderPosition) {
                 if (
                     lastLayout?.elements.length === 1 &&
-                    textsElementsTypes.includes(element.elementTypeId) &&
+                    TEXT_ELEMENT_TYPES.includes(element.elementTypeId) &&
                     tiptapRefs.current?.editors[lastLayout.elements[0].id]
                 ) {
                     tiptapRefs.current?.editors[lastLayout.elements[0].id]?.editor.chain().focus().run();
@@ -374,15 +371,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     return (
         <div
-            className={`${styles.slide} ${isSelected ? styles.selected : ''} ${isActive ? styles.active : ''} ${
-                isDropTarget ? 'active-slide-drop-target' : ''
-            }`}
+            className={`${styles.slide} ${isDropTarget ? 'active-slide-drop-target' : ''}`}
             onClick={handleSlideWrapperClick}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            role="button"
-            tabIndex={0}
-            aria-label={`Slide ${slideNumber}`}
+            aria-label={`Slide ${slideId}`}
             onKeyDown={e => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     handleSlideWrapperClick(e as unknown as React.MouseEvent);
