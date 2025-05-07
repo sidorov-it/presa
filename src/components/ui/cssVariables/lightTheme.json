@@ -1,0 +1,4638 @@
+[
+    {
+        "name": "--chakra-ring-inset",
+        "value": "var(--chakra-empty,/*!*/ /*!*/)"
+    },
+    {
+        "name": "--chakra-ring-offset-width",
+        "value": "0px"
+    },
+    {
+        "name": "--chakra-ring-offset-color",
+        "value": "#fff"
+    },
+    {
+        "name": "--chakra-ring-color",
+        "value": "rgba(66, 153, 225, 0.6)"
+    },
+    {
+        "name": "--chakra-ring-offset-shadow",
+        "value": "0 0 #0000"
+    },
+    {
+        "name": "--chakra-ring-shadow",
+        "value": "0 0 #0000"
+    },
+    {
+        "name": "--chakra-space-x-reverse",
+        "value": "0"
+    },
+    {
+        "name": "--chakra-space-y-reverse",
+        "value": "0"
+    },
+    {
+        "name": "--chakra-colors-transparent",
+        "value": "transparent"
+    },
+    {
+        "name": "--chakra-colors-current",
+        "value": "currentColor"
+    },
+    {
+        "name": "--chakra-colors-black",
+        "value": "#000000"
+    },
+    {
+        "name": "--chakra-colors-white",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-whiteAlpha-50",
+        "value": "rgba(255, 255, 255, 0.04)"
+    },
+    {
+        "name": "--chakra-colors-whiteAlpha-100",
+        "value": "rgba(255, 255, 255, 0.06)"
+    },
+    {
+        "name": "--chakra-colors-whiteAlpha-200",
+        "value": "rgba(255, 255, 255, 0.08)"
+    },
+    {
+        "name": "--chakra-colors-whiteAlpha-300",
+        "value": "rgba(255, 255, 255, 0.16)"
+    },
+    {
+        "name": "--chakra-colors-whiteAlpha-400",
+        "value": "rgba(255, 255, 255, 0.24)"
+    },
+    {
+        "name": "--chakra-colors-whiteAlpha-500",
+        "value": "rgba(255, 255, 255, 0.36)"
+    },
+    {
+        "name": "--chakra-colors-whiteAlpha-600",
+        "value": "rgba(255, 255, 255, 0.48)"
+    },
+    {
+        "name": "--chakra-colors-whiteAlpha-700",
+        "value": "rgba(255, 255, 255, 0.64)"
+    },
+    {
+        "name": "--chakra-colors-whiteAlpha-800",
+        "value": "rgba(255, 255, 255, 0.80)"
+    },
+    {
+        "name": "--chakra-colors-whiteAlpha-900",
+        "value": "rgba(255, 255, 255, 0.92)"
+    },
+    {
+        "name": "--chakra-colors-blackAlpha-50",
+        "value": "rgba(0, 0, 0, 0.04)"
+    },
+    {
+        "name": "--chakra-colors-blackAlpha-100",
+        "value": "rgba(0, 0, 0, 0.06)"
+    },
+    {
+        "name": "--chakra-colors-blackAlpha-200",
+        "value": "rgba(0, 0, 0, 0.08)"
+    },
+    {
+        "name": "--chakra-colors-blackAlpha-300",
+        "value": "rgba(0, 0, 0, 0.16)"
+    },
+    {
+        "name": "--chakra-colors-blackAlpha-400",
+        "value": "rgba(0, 0, 0, 0.24)"
+    },
+    {
+        "name": "--chakra-colors-blackAlpha-500",
+        "value": "rgba(0, 0, 0, 0.36)"
+    },
+    {
+        "name": "--chakra-colors-blackAlpha-600",
+        "value": "rgba(0, 0, 0, 0.48)"
+    },
+    {
+        "name": "--chakra-colors-blackAlpha-700",
+        "value": "rgba(0, 0, 0, 0.64)"
+    },
+    {
+        "name": "--chakra-colors-blackAlpha-800",
+        "value": "rgba(0, 0, 0, 0.80)"
+    },
+    {
+        "name": "--chakra-colors-blackAlpha-900",
+        "value": "rgba(0, 0, 0, 0.92)"
+    },
+    {
+        "name": "--chakra-colors-gray-50",
+        "value": "#f5f5f6"
+    },
+    {
+        "name": "--chakra-colors-gray-100",
+        "value": "#f5f5f6"
+    },
+    {
+        "name": "--chakra-colors-gray-200",
+        "value": "#e6e6e7"
+    },
+    {
+        "name": "--chakra-colors-gray-300",
+        "value": "#d0cfd2"
+    },
+    {
+        "name": "--chakra-colors-gray-400",
+        "value": "#aeaeb2"
+    },
+    {
+        "name": "--chakra-colors-gray-500",
+        "value": "#85858b"
+    },
+    {
+        "name": "--chakra-colors-gray-600",
+        "value": "#66666b"
+    },
+    {
+        "name": "--chakra-colors-gray-700",
+        "value": "#5b5b5f"
+    },
+    {
+        "name": "--chakra-colors-gray-800",
+        "value": "#4d4d51"
+    },
+    {
+        "name": "--chakra-colors-gray-900",
+        "value": "#444446"
+    },
+    {
+        "name": "--chakra-colors-gray-950",
+        "value": "#3c3c3d"
+    },
+    {
+        "name": "--chakra-colors-red-50",
+        "value": "#fef2f2"
+    },
+    {
+        "name": "--chakra-colors-red-100",
+        "value": "#fee2e2"
+    },
+    {
+        "name": "--chakra-colors-red-200",
+        "value": "#fecaca"
+    },
+    {
+        "name": "--chakra-colors-red-300",
+        "value": "#fca5a5"
+    },
+    {
+        "name": "--chakra-colors-red-400",
+        "value": "#f87171"
+    },
+    {
+        "name": "--chakra-colors-red-500",
+        "value": "#ef4444"
+    },
+    {
+        "name": "--chakra-colors-red-600",
+        "value": "#dc2626"
+    },
+    {
+        "name": "--chakra-colors-red-700",
+        "value": "#b91c1c"
+    },
+    {
+        "name": "--chakra-colors-red-800",
+        "value": "#991b1b"
+    },
+    {
+        "name": "--chakra-colors-red-900",
+        "value": "#7f1d1d"
+    },
+    {
+        "name": "--chakra-colors-red-950",
+        "value": "#450a0a"
+    },
+    {
+        "name": "--chakra-colors-orange-50",
+        "value": "#fff6ec"
+    },
+    {
+        "name": "--chakra-colors-orange-100",
+        "value": "#ffecd3"
+    },
+    {
+        "name": "--chakra-colors-orange-200",
+        "value": "#ffd4a5"
+    },
+    {
+        "name": "--chakra-colors-orange-300",
+        "value": "#ffb66d"
+    },
+    {
+        "name": "--chakra-colors-orange-400",
+        "value": "#ff8b32"
+    },
+    {
+        "name": "--chakra-colors-orange-500",
+        "value": "#ff6a0a"
+    },
+    {
+        "name": "--chakra-colors-orange-600",
+        "value": "#ff5000"
+    },
+    {
+        "name": "--chakra-colors-orange-700",
+        "value": "#cc3702"
+    },
+    {
+        "name": "--chakra-colors-orange-800",
+        "value": "#a12c0b"
+    },
+    {
+        "name": "--chakra-colors-orange-900",
+        "value": "#82270c"
+    },
+    {
+        "name": "--chakra-colors-orange-950",
+        "value": "#461004"
+    },
+    {
+        "name": "--chakra-colors-yellow-50",
+        "value": "#fffbeb"
+    },
+    {
+        "name": "--chakra-colors-yellow-100",
+        "value": "#fff3c6"
+    },
+    {
+        "name": "--chakra-colors-yellow-200",
+        "value": "#ffeba2"
+    },
+    {
+        "name": "--chakra-colors-yellow-300",
+        "value": "#ffd55e"
+    },
+    {
+        "name": "--chakra-colors-yellow-400",
+        "value": "#fec500"
+    },
+    {
+        "name": "--chakra-colors-yellow-500",
+        "value": "#f4b603"
+    },
+    {
+        "name": "--chakra-colors-yellow-600",
+        "value": "#da9c05"
+    },
+    {
+        "name": "--chakra-colors-yellow-700",
+        "value": "#b47300"
+    },
+    {
+        "name": "--chakra-colors-yellow-800",
+        "value": "#9b5500"
+    },
+    {
+        "name": "--chakra-colors-yellow-900",
+        "value": "#77390a"
+    },
+    {
+        "name": "--chakra-colors-yellow-950",
+        "value": "#441c00"
+    },
+    {
+        "name": "--chakra-colors-green-50",
+        "value": "#f2fcf1"
+    },
+    {
+        "name": "--chakra-colors-green-100",
+        "value": "#e2f7e1"
+    },
+    {
+        "name": "--chakra-colors-green-200",
+        "value": "#c4eec4"
+    },
+    {
+        "name": "--chakra-colors-green-300",
+        "value": "#96e095"
+    },
+    {
+        "name": "--chakra-colors-green-400",
+        "value": "#60c860"
+    },
+    {
+        "name": "--chakra-colors-green-500",
+        "value": "#2db92d"
+    },
+    {
+        "name": "--chakra-colors-green-600",
+        "value": "#1f9a1f"
+    },
+    {
+        "name": "--chakra-colors-green-700",
+        "value": "#1c791d"
+    },
+    {
+        "name": "--chakra-colors-green-800",
+        "value": "#1a561c"
+    },
+    {
+        "name": "--chakra-colors-green-900",
+        "value": "#1d4a1e"
+    },
+    {
+        "name": "--chakra-colors-green-950",
+        "value": "#082b09"
+    },
+    {
+        "name": "--chakra-colors-teal-50",
+        "value": "#eefffd"
+    },
+    {
+        "name": "--chakra-colors-teal-100",
+        "value": "#d2fcf6"
+    },
+    {
+        "name": "--chakra-colors-teal-200",
+        "value": "#b6fff6"
+    },
+    {
+        "name": "--chakra-colors-teal-300",
+        "value": "#87faf0"
+    },
+    {
+        "name": "--chakra-colors-teal-400",
+        "value": "#49e8e5"
+    },
+    {
+        "name": "--chakra-colors-teal-500",
+        "value": "#04c8c6"
+    },
+    {
+        "name": "--chakra-colors-teal-600",
+        "value": "#009ea4"
+    },
+    {
+        "name": "--chakra-colors-teal-700",
+        "value": "#027e83"
+    },
+    {
+        "name": "--chakra-colors-teal-800",
+        "value": "#086267"
+    },
+    {
+        "name": "--chakra-colors-teal-900",
+        "value": "#0c5155"
+    },
+    {
+        "name": "--chakra-colors-teal-950",
+        "value": "#002f34"
+    },
+    {
+        "name": "--chakra-colors-blue-50",
+        "value": "#eff7ff"
+    },
+    {
+        "name": "--chakra-colors-blue-100",
+        "value": "#dcebfd"
+    },
+    {
+        "name": "--chakra-colors-blue-200",
+        "value": "#c0defd"
+    },
+    {
+        "name": "--chakra-colors-blue-300",
+        "value": "#84c1fa"
+    },
+    {
+        "name": "--chakra-colors-blue-400",
+        "value": "#63acf7"
+    },
+    {
+        "name": "--chakra-colors-blue-500",
+        "value": "#3f8bf2"
+    },
+    {
+        "name": "--chakra-colors-blue-600",
+        "value": "#296ee7"
+    },
+    {
+        "name": "--chakra-colors-blue-700",
+        "value": "#2158d4"
+    },
+    {
+        "name": "--chakra-colors-blue-800",
+        "value": "#2148ac"
+    },
+    {
+        "name": "--chakra-colors-blue-900",
+        "value": "#204088"
+    },
+    {
+        "name": "--chakra-colors-blue-950",
+        "value": "#182953"
+    },
+    {
+        "name": "--chakra-colors-cyan-50",
+        "value": "#eff7ff"
+    },
+    {
+        "name": "--chakra-colors-cyan-100",
+        "value": "#dcebfd"
+    },
+    {
+        "name": "--chakra-colors-cyan-200",
+        "value": "#c0defd"
+    },
+    {
+        "name": "--chakra-colors-cyan-300",
+        "value": "#84c1fa"
+    },
+    {
+        "name": "--chakra-colors-cyan-400",
+        "value": "#63acf7"
+    },
+    {
+        "name": "--chakra-colors-cyan-500",
+        "value": "#3f8bf2"
+    },
+    {
+        "name": "--chakra-colors-cyan-600",
+        "value": "#296ee7"
+    },
+    {
+        "name": "--chakra-colors-cyan-700",
+        "value": "#2158d4"
+    },
+    {
+        "name": "--chakra-colors-cyan-800",
+        "value": "#2148ac"
+    },
+    {
+        "name": "--chakra-colors-cyan-900",
+        "value": "#204088"
+    },
+    {
+        "name": "--chakra-colors-cyan-950",
+        "value": "#182953"
+    },
+    {
+        "name": "--chakra-colors-purple-50",
+        "value": "#f8f6ff"
+    },
+    {
+        "name": "--chakra-colors-purple-100",
+        "value": "#f2ecff"
+    },
+    {
+        "name": "--chakra-colors-purple-200",
+        "value": "#e1d5ff"
+    },
+    {
+        "name": "--chakra-colors-purple-300",
+        "value": "#d0b9ff"
+    },
+    {
+        "name": "--chakra-colors-purple-400",
+        "value": "#bd97fd"
+    },
+    {
+        "name": "--chakra-colors-purple-500",
+        "value": "#b179fb"
+    },
+    {
+        "name": "--chakra-colors-purple-600",
+        "value": "#9044eb"
+    },
+    {
+        "name": "--chakra-colors-purple-700",
+        "value": "#8131dc"
+    },
+    {
+        "name": "--chakra-colors-purple-800",
+        "value": "#6623ad"
+    },
+    {
+        "name": "--chakra-colors-purple-900",
+        "value": "#511c87"
+    },
+    {
+        "name": "--chakra-colors-purple-950",
+        "value": "#350764"
+    },
+    {
+        "name": "--chakra-colors-pink-50",
+        "value": "#fff4fe"
+    },
+    {
+        "name": "--chakra-colors-pink-100",
+        "value": "#fee9fb"
+    },
+    {
+        "name": "--chakra-colors-pink-200",
+        "value": "#fdd1f8"
+    },
+    {
+        "name": "--chakra-colors-pink-300",
+        "value": "#faadee"
+    },
+    {
+        "name": "--chakra-colors-pink-400",
+        "value": "#f578de"
+    },
+    {
+        "name": "--chakra-colors-pink-500",
+        "value": "#ea4bcd"
+    },
+    {
+        "name": "--chakra-colors-pink-600",
+        "value": "#ce2bac"
+    },
+    {
+        "name": "--chakra-colors-pink-700",
+        "value": "#b71f97"
+    },
+    {
+        "name": "--chakra-colors-pink-800",
+        "value": "#8c1c72"
+    },
+    {
+        "name": "--chakra-colors-pink-900",
+        "value": "#721d5b"
+    },
+    {
+        "name": "--chakra-colors-pink-950",
+        "value": "#4c063a"
+    },
+    {
+        "name": "--chakra-colors-linkedin-50",
+        "value": "#E8F4F9"
+    },
+    {
+        "name": "--chakra-colors-linkedin-100",
+        "value": "#CFEDFB"
+    },
+    {
+        "name": "--chakra-colors-linkedin-200",
+        "value": "#9BDAF3"
+    },
+    {
+        "name": "--chakra-colors-linkedin-300",
+        "value": "#68C7EC"
+    },
+    {
+        "name": "--chakra-colors-linkedin-400",
+        "value": "#34B3E4"
+    },
+    {
+        "name": "--chakra-colors-linkedin-500",
+        "value": "#00A0DC"
+    },
+    {
+        "name": "--chakra-colors-linkedin-600",
+        "value": "#008CC9"
+    },
+    {
+        "name": "--chakra-colors-linkedin-700",
+        "value": "#0077B5"
+    },
+    {
+        "name": "--chakra-colors-linkedin-800",
+        "value": "#005E93"
+    },
+    {
+        "name": "--chakra-colors-linkedin-900",
+        "value": "#004471"
+    },
+    {
+        "name": "--chakra-colors-facebook-50",
+        "value": "#E8F4F9"
+    },
+    {
+        "name": "--chakra-colors-facebook-100",
+        "value": "#D9DEE9"
+    },
+    {
+        "name": "--chakra-colors-facebook-200",
+        "value": "#B7C2DA"
+    },
+    {
+        "name": "--chakra-colors-facebook-300",
+        "value": "#6482C0"
+    },
+    {
+        "name": "--chakra-colors-facebook-400",
+        "value": "#4267B2"
+    },
+    {
+        "name": "--chakra-colors-facebook-500",
+        "value": "#385898"
+    },
+    {
+        "name": "--chakra-colors-facebook-600",
+        "value": "#314E89"
+    },
+    {
+        "name": "--chakra-colors-facebook-700",
+        "value": "#29487D"
+    },
+    {
+        "name": "--chakra-colors-facebook-800",
+        "value": "#223B67"
+    },
+    {
+        "name": "--chakra-colors-facebook-900",
+        "value": "#1E355B"
+    },
+    {
+        "name": "--chakra-colors-messenger-50",
+        "value": "#D0E6FF"
+    },
+    {
+        "name": "--chakra-colors-messenger-100",
+        "value": "#B9DAFF"
+    },
+    {
+        "name": "--chakra-colors-messenger-200",
+        "value": "#A2CDFF"
+    },
+    {
+        "name": "--chakra-colors-messenger-300",
+        "value": "#7AB8FF"
+    },
+    {
+        "name": "--chakra-colors-messenger-400",
+        "value": "#2E90FF"
+    },
+    {
+        "name": "--chakra-colors-messenger-500",
+        "value": "#0078FF"
+    },
+    {
+        "name": "--chakra-colors-messenger-600",
+        "value": "#0063D1"
+    },
+    {
+        "name": "--chakra-colors-messenger-700",
+        "value": "#0052AC"
+    },
+    {
+        "name": "--chakra-colors-messenger-800",
+        "value": "#003C7E"
+    },
+    {
+        "name": "--chakra-colors-messenger-900",
+        "value": "#002C5C"
+    },
+    {
+        "name": "--chakra-colors-whatsapp-50",
+        "value": "#dffeec"
+    },
+    {
+        "name": "--chakra-colors-whatsapp-100",
+        "value": "#b9f5d0"
+    },
+    {
+        "name": "--chakra-colors-whatsapp-200",
+        "value": "#90edb3"
+    },
+    {
+        "name": "--chakra-colors-whatsapp-300",
+        "value": "#65e495"
+    },
+    {
+        "name": "--chakra-colors-whatsapp-400",
+        "value": "#3cdd78"
+    },
+    {
+        "name": "--chakra-colors-whatsapp-500",
+        "value": "#22c35e"
+    },
+    {
+        "name": "--chakra-colors-whatsapp-600",
+        "value": "#179848"
+    },
+    {
+        "name": "--chakra-colors-whatsapp-700",
+        "value": "#0c6c33"
+    },
+    {
+        "name": "--chakra-colors-whatsapp-800",
+        "value": "#01421c"
+    },
+    {
+        "name": "--chakra-colors-whatsapp-900",
+        "value": "#001803"
+    },
+    {
+        "name": "--chakra-colors-twitter-50",
+        "value": "#E5F4FD"
+    },
+    {
+        "name": "--chakra-colors-twitter-100",
+        "value": "#C8E9FB"
+    },
+    {
+        "name": "--chakra-colors-twitter-200",
+        "value": "#A8DCFA"
+    },
+    {
+        "name": "--chakra-colors-twitter-300",
+        "value": "#83CDF7"
+    },
+    {
+        "name": "--chakra-colors-twitter-400",
+        "value": "#57BBF5"
+    },
+    {
+        "name": "--chakra-colors-twitter-500",
+        "value": "#1DA1F2"
+    },
+    {
+        "name": "--chakra-colors-twitter-600",
+        "value": "#1A94DA"
+    },
+    {
+        "name": "--chakra-colors-twitter-700",
+        "value": "#1681BF"
+    },
+    {
+        "name": "--chakra-colors-twitter-800",
+        "value": "#136B9E"
+    },
+    {
+        "name": "--chakra-colors-twitter-900",
+        "value": "#0D4D71"
+    },
+    {
+        "name": "--chakra-colors-telegram-50",
+        "value": "#E3F2F9"
+    },
+    {
+        "name": "--chakra-colors-telegram-100",
+        "value": "#C5E4F3"
+    },
+    {
+        "name": "--chakra-colors-telegram-200",
+        "value": "#A2D4EC"
+    },
+    {
+        "name": "--chakra-colors-telegram-300",
+        "value": "#7AC1E4"
+    },
+    {
+        "name": "--chakra-colors-telegram-400",
+        "value": "#47A9DA"
+    },
+    {
+        "name": "--chakra-colors-telegram-500",
+        "value": "#0088CC"
+    },
+    {
+        "name": "--chakra-colors-telegram-600",
+        "value": "#007AB8"
+    },
+    {
+        "name": "--chakra-colors-telegram-700",
+        "value": "#006BA1"
+    },
+    {
+        "name": "--chakra-colors-telegram-800",
+        "value": "#005885"
+    },
+    {
+        "name": "--chakra-colors-telegram-900",
+        "value": "#003F5E"
+    },
+    {
+        "name": "--chakra-colors-gradient-light",
+        "value": "linear-gradient(180deg, #FFFFFF 0%, #FCF9F5 100%)"
+    },
+    {
+        "name": "--chakra-colors-gradient-dark",
+        "value": "linear-gradient(180deg, #3c3838 0%, #272525 100%)"
+    },
+    {
+        "name": "--chakra-colors-gradient-blue-to-purple",
+        "value": "linear-gradient(91.78deg, #3300D9 1.24%, #9D20C9 73.37%, #DF7A6C 166.1%)"
+    },
+    {
+        "name": "--chakra-colors-gradient-blue-to-orange",
+        "value": "linear-gradient(92.91deg, #3300D9 2.18%, #9D20C9 44.94%, #DF7A6C 99.91%)"
+    },
+    {
+        "name": "--chakra-colors-gradient-secondary-light",
+        "value": "linear-gradient(120deg, var(--chakra-colors-sky-100) 0%, var(--chakra-colors-deepocean-200) 100%)"
+    },
+    {
+        "name": "--chakra-colors-gradient-secondary-dark",
+        "value": "linear-gradient(180deg, var(--chakra-colors-deepocean-950) 7.49%, var(--chakra-colors-sky-800) 57.5%, var(--chakra-colors-sky-300) 100%)"
+    },
+    {
+        "name": "--chakra-colors-gradient-brand-bg",
+        "value": "linear-gradient(96deg, var(--chakra-colors-deepocean-950) 7%,  var(--chakra-colors-deepocean-900) 21%,  var(--chakra-colors-deepocean-800) 46%,  var(--chakra-colors-sky-300) 100%)"
+    },
+    {
+        "name": "--chakra-colors-gradient-brand-text",
+        "value": "linear-gradient(96deg, var(--chakra-colors-deepocean-950) 7%,  var(--chakra-colors-deepocean-900) 46%,  var(--chakra-colors-deepocean-800) 100%)"
+    },
+    {
+        "name": "--chakra-colors-gradient-sky",
+        "value": "linear-gradient(0deg, #FFFFFF 4%, #AFE7FC 48%, #A8D1FF 71%, #CDDAFA 85%, #FFFBF2 100%)"
+    },
+    {
+        "name": "--chakra-colors-linen-50",
+        "value": "#faf9f5"
+    },
+    {
+        "name": "--chakra-colors-linen-100",
+        "value": "#f1eee3"
+    },
+    {
+        "name": "--chakra-colors-linen-200",
+        "value": "#e2dcc6"
+    },
+    {
+        "name": "--chakra-colors-linen-300",
+        "value": "#cfc4a2"
+    },
+    {
+        "name": "--chakra-colors-linen-400",
+        "value": "#bba77c"
+    },
+    {
+        "name": "--chakra-colors-linen-500",
+        "value": "#ad9362"
+    },
+    {
+        "name": "--chakra-colors-linen-600",
+        "value": "#a08156"
+    },
+    {
+        "name": "--chakra-colors-linen-700",
+        "value": "#856949"
+    },
+    {
+        "name": "--chakra-colors-linen-800",
+        "value": "#6d563f"
+    },
+    {
+        "name": "--chakra-colors-linen-900",
+        "value": "#594735"
+    },
+    {
+        "name": "--chakra-colors-linen-950",
+        "value": "#2f241b"
+    },
+    {
+        "name": "--chakra-colors-champagne-50",
+        "value": "#faf9f5"
+    },
+    {
+        "name": "--chakra-colors-champagne-100",
+        "value": "#f1eee3"
+    },
+    {
+        "name": "--chakra-colors-champagne-200",
+        "value": "#e2dcc6"
+    },
+    {
+        "name": "--chakra-colors-champagne-300",
+        "value": "#cfc4a2"
+    },
+    {
+        "name": "--chakra-colors-champagne-400",
+        "value": "#bba77c"
+    },
+    {
+        "name": "--chakra-colors-champagne-500",
+        "value": "#ad9362"
+    },
+    {
+        "name": "--chakra-colors-champagne-600",
+        "value": "#a08156"
+    },
+    {
+        "name": "--chakra-colors-champagne-700",
+        "value": "#856949"
+    },
+    {
+        "name": "--chakra-colors-champagne-800",
+        "value": "#6d563f"
+    },
+    {
+        "name": "--chakra-colors-champagne-900",
+        "value": "#594735"
+    },
+    {
+        "name": "--chakra-colors-champagne-950",
+        "value": "#2f241b"
+    },
+    {
+        "name": "--chakra-colors-sunglow-50",
+        "value": "#FFFAE8"
+    },
+    {
+        "name": "--chakra-colors-sunglow-100",
+        "value": "#FFF5D1"
+    },
+    {
+        "name": "--chakra-colors-sunglow-200",
+        "value": "#FFEBA2"
+    },
+    {
+        "name": "--chakra-colors-sunglow-300",
+        "value": "#FFE074"
+    },
+    {
+        "name": "--chakra-colors-sunglow-400",
+        "value": "#FFD645"
+    },
+    {
+        "name": "--chakra-colors-sunglow-500",
+        "value": "#FFCC17"
+    },
+    {
+        "name": "--chakra-colors-sunglow-600",
+        "value": "#CCA312"
+    },
+    {
+        "name": "--chakra-colors-sunglow-700",
+        "value": "#997A0E"
+    },
+    {
+        "name": "--chakra-colors-sunglow-800",
+        "value": "#665209"
+    },
+    {
+        "name": "--chakra-colors-sunglow-900",
+        "value": "#332905"
+    },
+    {
+        "name": "--chakra-colors-sunglow-950",
+        "value": "#191402"
+    },
+    {
+        "name": "--chakra-colors-salmon-50",
+        "value": "#eef6ff"
+    },
+    {
+        "name": "--chakra-colors-salmon-100",
+        "value": "#dcedff"
+    },
+    {
+        "name": "--chakra-colors-salmon-200",
+        "value": "#b2dbff"
+    },
+    {
+        "name": "--chakra-colors-salmon-300",
+        "value": "#6dbfff"
+    },
+    {
+        "name": "--chakra-colors-salmon-400",
+        "value": "#209fff"
+    },
+    {
+        "name": "--chakra-colors-salmon-500",
+        "value": "#0082ff"
+    },
+    {
+        "name": "--chakra-colors-salmon-600",
+        "value": "#0065df"
+    },
+    {
+        "name": "--chakra-colors-salmon-700",
+        "value": "#004fb4"
+    },
+    {
+        "name": "--chakra-colors-salmon-800",
+        "value": "#004495"
+    },
+    {
+        "name": "--chakra-colors-salmon-900",
+        "value": "#00387a"
+    },
+    {
+        "name": "--chakra-colors-salmon-950",
+        "value": "#000e21"
+    },
+    {
+        "name": "--chakra-colors-shocking-50",
+        "value": "#fff4fe"
+    },
+    {
+        "name": "--chakra-colors-shocking-100",
+        "value": "#fee9fb"
+    },
+    {
+        "name": "--chakra-colors-shocking-200",
+        "value": "#fdd1f8"
+    },
+    {
+        "name": "--chakra-colors-shocking-300",
+        "value": "#faadee"
+    },
+    {
+        "name": "--chakra-colors-shocking-400",
+        "value": "#f578de"
+    },
+    {
+        "name": "--chakra-colors-shocking-500",
+        "value": "#ea4bcd"
+    },
+    {
+        "name": "--chakra-colors-shocking-600",
+        "value": "#ce2bac"
+    },
+    {
+        "name": "--chakra-colors-shocking-700",
+        "value": "#b71f97"
+    },
+    {
+        "name": "--chakra-colors-shocking-800",
+        "value": "#8c1c72"
+    },
+    {
+        "name": "--chakra-colors-shocking-900",
+        "value": "#721d5b"
+    },
+    {
+        "name": "--chakra-colors-shocking-950",
+        "value": "#4c063a"
+    },
+    {
+        "name": "--chakra-colors-orchid-50",
+        "value": "#ebf3fe"
+    },
+    {
+        "name": "--chakra-colors-orchid-100",
+        "value": "#cee2fd"
+    },
+    {
+        "name": "--chakra-colors-orchid-200",
+        "value": "#a8cffa"
+    },
+    {
+        "name": "--chakra-colors-orchid-300",
+        "value": "#70bcfb"
+    },
+    {
+        "name": "--chakra-colors-orchid-400",
+        "value": "#2a98f8"
+    },
+    {
+        "name": "--chakra-colors-orchid-500",
+        "value": "#0c72ed"
+    },
+    {
+        "name": "--chakra-colors-orchid-600",
+        "value": "#0858f7"
+    },
+    {
+        "name": "--chakra-colors-orchid-700",
+        "value": "#0740df"
+    },
+    {
+        "name": "--chakra-colors-orchid-800",
+        "value": "#0540ad"
+    },
+    {
+        "name": "--chakra-colors-orchid-900",
+        "value": "#0b2e79"
+    },
+    {
+        "name": "--chakra-colors-orchid-950",
+        "value": "#002253"
+    },
+    {
+        "name": "--chakra-colors-indigo-50",
+        "value": "#fdf2f9"
+    },
+    {
+        "name": "--chakra-colors-indigo-100",
+        "value": "#fce7f5"
+    },
+    {
+        "name": "--chakra-colors-indigo-200",
+        "value": "#fbcfec"
+    },
+    {
+        "name": "--chakra-colors-indigo-300",
+        "value": "#f9a8db"
+    },
+    {
+        "name": "--chakra-colors-indigo-400",
+        "value": "#f373c1"
+    },
+    {
+        "name": "--chakra-colors-indigo-500",
+        "value": "#eb49a7"
+    },
+    {
+        "name": "--chakra-colors-indigo-600",
+        "value": "#da2887"
+    },
+    {
+        "name": "--chakra-colors-indigo-700",
+        "value": "#bd196c"
+    },
+    {
+        "name": "--chakra-colors-indigo-800",
+        "value": "#921653"
+    },
+    {
+        "name": "--chakra-colors-indigo-900",
+        "value": "#83184d"
+    },
+    {
+        "name": "--chakra-colors-indigo-950",
+        "value": "#50072a"
+    },
+    {
+        "name": "--chakra-colors-capri-50",
+        "value": "#E6F9FF"
+    },
+    {
+        "name": "--chakra-colors-capri-100",
+        "value": "#CCF2FF"
+    },
+    {
+        "name": "--chakra-colors-capri-200",
+        "value": "#99E5FF"
+    },
+    {
+        "name": "--chakra-colors-capri-300",
+        "value": "#66D9FF"
+    },
+    {
+        "name": "--chakra-colors-capri-400",
+        "value": "#33CCFF"
+    },
+    {
+        "name": "--chakra-colors-capri-500",
+        "value": "#00BFFF"
+    },
+    {
+        "name": "--chakra-colors-capri-600",
+        "value": "#0099CC"
+    },
+    {
+        "name": "--chakra-colors-capri-700",
+        "value": "#007399"
+    },
+    {
+        "name": "--chakra-colors-capri-800",
+        "value": "#004C66"
+    },
+    {
+        "name": "--chakra-colors-capri-900",
+        "value": "#002633"
+    },
+    {
+        "name": "--chakra-colors-capri-950",
+        "value": "#001319"
+    },
+    {
+        "name": "--chakra-colors-moonbeam-50",
+        "value": "#faf9f5"
+    },
+    {
+        "name": "--chakra-colors-moonbeam-100",
+        "value": "#f1eee3"
+    },
+    {
+        "name": "--chakra-colors-moonbeam-200",
+        "value": "#e2dcc6"
+    },
+    {
+        "name": "--chakra-colors-moonbeam-300",
+        "value": "#cfc4a2"
+    },
+    {
+        "name": "--chakra-colors-moonbeam-400",
+        "value": "#bba77c"
+    },
+    {
+        "name": "--chakra-colors-moonbeam-500",
+        "value": "#ad9362"
+    },
+    {
+        "name": "--chakra-colors-moonbeam-600",
+        "value": "#a08156"
+    },
+    {
+        "name": "--chakra-colors-moonbeam-700",
+        "value": "#856949"
+    },
+    {
+        "name": "--chakra-colors-moonbeam-800",
+        "value": "#6d563f"
+    },
+    {
+        "name": "--chakra-colors-moonbeam-900",
+        "value": "#594735"
+    },
+    {
+        "name": "--chakra-colors-moonbeam-950",
+        "value": "#2f241b"
+    },
+    {
+        "name": "--chakra-colors-spacedust-50",
+        "value": "#f2f1ef"
+    },
+    {
+        "name": "--chakra-colors-spacedust-100",
+        "value": "#eceae8"
+    },
+    {
+        "name": "--chakra-colors-spacedust-200",
+        "value": "#d8d5d0"
+    },
+    {
+        "name": "--chakra-colors-spacedust-300",
+        "value": "#c0bbb1"
+    },
+    {
+        "name": "--chakra-colors-spacedust-400",
+        "value": "#a59d92"
+    },
+    {
+        "name": "--chakra-colors-spacedust-500",
+        "value": "#93887c"
+    },
+    {
+        "name": "--chakra-colors-spacedust-600",
+        "value": "#867970"
+    },
+    {
+        "name": "--chakra-colors-spacedust-700",
+        "value": "#70655e"
+    },
+    {
+        "name": "--chakra-colors-spacedust-800",
+        "value": "#5d544f"
+    },
+    {
+        "name": "--chakra-colors-spacedust-900",
+        "value": "#4c4542"
+    },
+    {
+        "name": "--chakra-colors-spacedust-950",
+        "value": "#282422"
+    },
+    {
+        "name": "--chakra-colors-spacegray-50",
+        "value": "#f7f7f7"
+    },
+    {
+        "name": "--chakra-colors-spacegray-100",
+        "value": "#ededed"
+    },
+    {
+        "name": "--chakra-colors-spacegray-200",
+        "value": "#dfdfdf"
+    },
+    {
+        "name": "--chakra-colors-spacegray-300",
+        "value": "#d1d1d1"
+    },
+    {
+        "name": "--chakra-colors-spacegray-400",
+        "value": "#adadad"
+    },
+    {
+        "name": "--chakra-colors-spacegray-500",
+        "value": "#999999"
+    },
+    {
+        "name": "--chakra-colors-spacegray-600",
+        "value": "#888888"
+    },
+    {
+        "name": "--chakra-colors-spacegray-700",
+        "value": "#7b7b7b"
+    },
+    {
+        "name": "--chakra-colors-spacegray-800",
+        "value": "#676767"
+    },
+    {
+        "name": "--chakra-colors-spacegray-900",
+        "value": "#545454"
+    },
+    {
+        "name": "--chakra-colors-spacegray-950",
+        "value": "#363636"
+    },
+    {
+        "name": "--chakra-colors-steel-50",
+        "value": "#f7f7f7"
+    },
+    {
+        "name": "--chakra-colors-steel-100",
+        "value": "#ededed"
+    },
+    {
+        "name": "--chakra-colors-steel-200",
+        "value": "#dededf"
+    },
+    {
+        "name": "--chakra-colors-steel-300",
+        "value": "#c7c7c9"
+    },
+    {
+        "name": "--chakra-colors-steel-400",
+        "value": "#acacae"
+    },
+    {
+        "name": "--chakra-colors-steel-500",
+        "value": "#9c9c9e"
+    },
+    {
+        "name": "--chakra-colors-steel-600",
+        "value": "#878789"
+    },
+    {
+        "name": "--chakra-colors-steel-700",
+        "value": "#79797c"
+    },
+    {
+        "name": "--chakra-colors-steel-800",
+        "value": "#666667"
+    },
+    {
+        "name": "--chakra-colors-steel-900",
+        "value": "#535355"
+    },
+    {
+        "name": "--chakra-colors-steel-950",
+        "value": "#353536"
+    },
+    {
+        "name": "--chakra-colors-titanium-50",
+        "value": "#f5f5f6"
+    },
+    {
+        "name": "--chakra-colors-titanium-100",
+        "value": "#e6e6e7"
+    },
+    {
+        "name": "--chakra-colors-titanium-200",
+        "value": "#d0cfd2"
+    },
+    {
+        "name": "--chakra-colors-titanium-300",
+        "value": "#aeaeb2"
+    },
+    {
+        "name": "--chakra-colors-titanium-400",
+        "value": "#85858b"
+    },
+    {
+        "name": "--chakra-colors-titanium-500",
+        "value": "#66666b"
+    },
+    {
+        "name": "--chakra-colors-titanium-600",
+        "value": "#5b5b5f"
+    },
+    {
+        "name": "--chakra-colors-titanium-700",
+        "value": "#4d4d51"
+    },
+    {
+        "name": "--chakra-colors-titanium-800",
+        "value": "#444446"
+    },
+    {
+        "name": "--chakra-colors-titanium-900",
+        "value": "#3c3c3d"
+    },
+    {
+        "name": "--chakra-colors-titanium-950",
+        "value": "#262527"
+    },
+    {
+        "name": "--chakra-colors-tungsten-50",
+        "value": "#f0f0f2"
+    },
+    {
+        "name": "--chakra-colors-tungsten-100",
+        "value": "#dadadb"
+    },
+    {
+        "name": "--chakra-colors-tungsten-200",
+        "value": "#b9b8bb"
+    },
+    {
+        "name": "--chakra-colors-tungsten-300",
+        "value": "#87878b"
+    },
+    {
+        "name": "--chakra-colors-tungsten-400",
+        "value": "#515153"
+    },
+    {
+        "name": "--chakra-colors-tungsten-500",
+        "value": "#363638"
+    },
+    {
+        "name": "--chakra-colors-tungsten-600",
+        "value": "#2e2e30"
+    },
+    {
+        "name": "--chakra-colors-tungsten-700",
+        "value": "#272729"
+    },
+    {
+        "name": "--chakra-colors-tungsten-800",
+        "value": "#222223"
+    },
+    {
+        "name": "--chakra-colors-tungsten-900",
+        "value": "#1d1d1e"
+    },
+    {
+        "name": "--chakra-colors-tungsten-950",
+        "value": "#131314"
+    },
+    {
+        "name": "--chakra-colors-snowcap-50",
+        "value": "#e8eefc"
+    },
+    {
+        "name": "--chakra-colors-snowcap-100",
+        "value": "#dbe5fe"
+    },
+    {
+        "name": "--chakra-colors-snowcap-200",
+        "value": "#bfd2fe"
+    },
+    {
+        "name": "--chakra-colors-snowcap-300",
+        "value": "#93b6fd"
+    },
+    {
+        "name": "--chakra-colors-snowcap-400",
+        "value": "#6090fa"
+    },
+    {
+        "name": "--chakra-colors-snowcap-500",
+        "value": "#3b68f6"
+    },
+    {
+        "name": "--chakra-colors-snowcap-600",
+        "value": "#2548eb"
+    },
+    {
+        "name": "--chakra-colors-snowcap-700",
+        "value": "#1d34d8"
+    },
+    {
+        "name": "--chakra-colors-snowcap-800",
+        "value": "#1e2caf"
+    },
+    {
+        "name": "--chakra-colors-snowcap-900",
+        "value": "#1e2b8a"
+    },
+    {
+        "name": "--chakra-colors-snowcap-950",
+        "value": "#171d54"
+    },
+    {
+        "name": "--chakra-colors-glacier-50",
+        "value": "#f0f4fd"
+    },
+    {
+        "name": "--chakra-colors-glacier-100",
+        "value": "#e8eefc"
+    },
+    {
+        "name": "--chakra-colors-glacier-200",
+        "value": "#cdd9f8"
+    },
+    {
+        "name": "--chakra-colors-glacier-300",
+        "value": "#afc0f2"
+    },
+    {
+        "name": "--chakra-colors-glacier-400",
+        "value": "#8f9eea"
+    },
+    {
+        "name": "--chakra-colors-glacier-500",
+        "value": "#737ee1"
+    },
+    {
+        "name": "--chakra-colors-glacier-600",
+        "value": "#585ad3"
+    },
+    {
+        "name": "--chakra-colors-glacier-700",
+        "value": "#4949b9"
+    },
+    {
+        "name": "--chakra-colors-glacier-800",
+        "value": "#3d3e96"
+    },
+    {
+        "name": "--chakra-colors-glacier-900",
+        "value": "#383b77"
+    },
+    {
+        "name": "--chakra-colors-glacier-950",
+        "value": "#212245"
+    },
+    {
+        "name": "--chakra-colors-raindrop-50",
+        "value": "#eef3ff"
+    },
+    {
+        "name": "--chakra-colors-raindrop-100",
+        "value": "#dee7ff"
+    },
+    {
+        "name": "--chakra-colors-raindrop-200",
+        "value": "#c7d5fe"
+    },
+    {
+        "name": "--chakra-colors-raindrop-300",
+        "value": "#a5b8fc"
+    },
+    {
+        "name": "--chakra-colors-raindrop-400",
+        "value": "#8192f8"
+    },
+    {
+        "name": "--chakra-colors-raindrop-500",
+        "value": "#636df1"
+    },
+    {
+        "name": "--chakra-colors-raindrop-600",
+        "value": "#4846e5"
+    },
+    {
+        "name": "--chakra-colors-raindrop-700",
+        "value": "#3c38ca"
+    },
+    {
+        "name": "--chakra-colors-raindrop-800",
+        "value": "#3230a3"
+    },
+    {
+        "name": "--chakra-colors-raindrop-900",
+        "value": "#2e2f81"
+    },
+    {
+        "name": "--chakra-colors-raindrop-950",
+        "value": "#1c1b4b"
+    },
+    {
+        "name": "--chakra-colors-periwinkle-50",
+        "value": "#eff4fe"
+    },
+    {
+        "name": "--chakra-colors-periwinkle-100",
+        "value": "#e2eafd"
+    },
+    {
+        "name": "--chakra-colors-periwinkle-200",
+        "value": "#cddafa"
+    },
+    {
+        "name": "--chakra-colors-periwinkle-300",
+        "value": "#acbef5"
+    },
+    {
+        "name": "--chakra-colors-periwinkle-400",
+        "value": "#8a9cef"
+    },
+    {
+        "name": "--chakra-colors-periwinkle-500",
+        "value": "#6e7be6"
+    },
+    {
+        "name": "--chakra-colors-periwinkle-600",
+        "value": "#5256d9"
+    },
+    {
+        "name": "--chakra-colors-periwinkle-700",
+        "value": "#4345bf"
+    },
+    {
+        "name": "--chakra-colors-periwinkle-800",
+        "value": "#393c9a"
+    },
+    {
+        "name": "--chakra-colors-periwinkle-900",
+        "value": "#34377b"
+    },
+    {
+        "name": "--chakra-colors-periwinkle-950",
+        "value": "#1f2147"
+    },
+    {
+        "name": "--chakra-colors-puddle-50",
+        "value": "#eff7ff"
+    },
+    {
+        "name": "--chakra-colors-puddle-100",
+        "value": "#daedff"
+    },
+    {
+        "name": "--chakra-colors-puddle-200",
+        "value": "#a8d5ff"
+    },
+    {
+        "name": "--chakra-colors-puddle-300",
+        "value": "#91cdff"
+    },
+    {
+        "name": "--chakra-colors-puddle-400",
+        "value": "#5eb1fc"
+    },
+    {
+        "name": "--chakra-colors-puddle-500",
+        "value": "#388ff9"
+    },
+    {
+        "name": "--chakra-colors-puddle-600",
+        "value": "#2271ee"
+    },
+    {
+        "name": "--chakra-colors-puddle-700",
+        "value": "#1a5bdb"
+    },
+    {
+        "name": "--chakra-colors-puddle-800",
+        "value": "#1c4ab1"
+    },
+    {
+        "name": "--chakra-colors-puddle-900",
+        "value": "#1c418c"
+    },
+    {
+        "name": "--chakra-colors-puddle-950",
+        "value": "#162955"
+    },
+    {
+        "name": "--chakra-colors-sky-50",
+        "value": "#eff7ff"
+    },
+    {
+        "name": "--chakra-colors-sky-100",
+        "value": "#dcebfd"
+    },
+    {
+        "name": "--chakra-colors-sky-200",
+        "value": "#c0defd"
+    },
+    {
+        "name": "--chakra-colors-sky-300",
+        "value": "#84c1fa"
+    },
+    {
+        "name": "--chakra-colors-sky-400",
+        "value": "#63acf7"
+    },
+    {
+        "name": "--chakra-colors-sky-500",
+        "value": "#3f8bf2"
+    },
+    {
+        "name": "--chakra-colors-sky-600",
+        "value": "#296ee7"
+    },
+    {
+        "name": "--chakra-colors-sky-700",
+        "value": "#2158d4"
+    },
+    {
+        "name": "--chakra-colors-sky-800",
+        "value": "#2148ac"
+    },
+    {
+        "name": "--chakra-colors-sky-900",
+        "value": "#204088"
+    },
+    {
+        "name": "--chakra-colors-sky-950",
+        "value": "#182953"
+    },
+    {
+        "name": "--chakra-colors-lake-50",
+        "value": "#f1f6fd"
+    },
+    {
+        "name": "--chakra-colors-lake-100",
+        "value": "#dfecfa"
+    },
+    {
+        "name": "--chakra-colors-lake-200",
+        "value": "#c6ddf7"
+    },
+    {
+        "name": "--chakra-colors-lake-300",
+        "value": "#9ec8f2"
+    },
+    {
+        "name": "--chakra-colors-lake-400",
+        "value": "#70aaea"
+    },
+    {
+        "name": "--chakra-colors-lake-500",
+        "value": "#4986e1"
+    },
+    {
+        "name": "--chakra-colors-lake-600",
+        "value": "#3a6ed6"
+    },
+    {
+        "name": "--chakra-colors-lake-700",
+        "value": "#315bc4"
+    },
+    {
+        "name": "--chakra-colors-lake-800",
+        "value": "#2e4a9f"
+    },
+    {
+        "name": "--chakra-colors-lake-900",
+        "value": "#2a427e"
+    },
+    {
+        "name": "--chakra-colors-lake-950",
+        "value": "#1e2a4d"
+    },
+    {
+        "name": "--chakra-colors-ultramarine-50",
+        "value": "#eff8ff"
+    },
+    {
+        "name": "--chakra-colors-ultramarine-100",
+        "value": "#daefff"
+    },
+    {
+        "name": "--chakra-colors-ultramarine-200",
+        "value": "#bee4ff"
+    },
+    {
+        "name": "--chakra-colors-ultramarine-300",
+        "value": "#91d3ff"
+    },
+    {
+        "name": "--chakra-colors-ultramarine-400",
+        "value": "#5dbafd"
+    },
+    {
+        "name": "--chakra-colors-ultramarine-500",
+        "value": "#379bfa"
+    },
+    {
+        "name": "--chakra-colors-ultramarine-600",
+        "value": "#217cef"
+    },
+    {
+        "name": "--chakra-colors-ultramarine-700",
+        "value": "#1862d4"
+    },
+    {
+        "name": "--chakra-colors-ultramarine-800",
+        "value": "#1b52b2"
+    },
+    {
+        "name": "--chakra-colors-ultramarine-900",
+        "value": "#1c488c"
+    },
+    {
+        "name": "--chakra-colors-ultramarine-950",
+        "value": "#162c55"
+    },
+    {
+        "name": "--chakra-colors-deepocean-50",
+        "value": "#ebf3fe"
+    },
+    {
+        "name": "--chakra-colors-deepocean-100",
+        "value": "#cee2fd"
+    },
+    {
+        "name": "--chakra-colors-deepocean-200",
+        "value": "#a8cffa"
+    },
+    {
+        "name": "--chakra-colors-deepocean-300",
+        "value": "#70bcfb"
+    },
+    {
+        "name": "--chakra-colors-deepocean-400",
+        "value": "#2a98f8"
+    },
+    {
+        "name": "--chakra-colors-deepocean-500",
+        "value": "#0c72ed"
+    },
+    {
+        "name": "--chakra-colors-deepocean-600",
+        "value": "#0858f7"
+    },
+    {
+        "name": "--chakra-colors-deepocean-700",
+        "value": "#0740df"
+    },
+    {
+        "name": "--chakra-colors-deepocean-800",
+        "value": "#0540ad"
+    },
+    {
+        "name": "--chakra-colors-deepocean-900",
+        "value": "#0b2e79"
+    },
+    {
+        "name": "--chakra-colors-deepocean-950",
+        "value": "#002253"
+    },
+    {
+        "name": "--chakra-colors-deepspace-50",
+        "value": "#eef6ff"
+    },
+    {
+        "name": "--chakra-colors-deepspace-100",
+        "value": "#dcedff"
+    },
+    {
+        "name": "--chakra-colors-deepspace-200",
+        "value": "#b2dbff"
+    },
+    {
+        "name": "--chakra-colors-deepspace-300",
+        "value": "#6dbfff"
+    },
+    {
+        "name": "--chakra-colors-deepspace-400",
+        "value": "#209fff"
+    },
+    {
+        "name": "--chakra-colors-deepspace-500",
+        "value": "#0082ff"
+    },
+    {
+        "name": "--chakra-colors-deepspace-600",
+        "value": "#0065df"
+    },
+    {
+        "name": "--chakra-colors-deepspace-700",
+        "value": "#004fb4"
+    },
+    {
+        "name": "--chakra-colors-deepspace-800",
+        "value": "#004495"
+    },
+    {
+        "name": "--chakra-colors-deepspace-900",
+        "value": "#00387a"
+    },
+    {
+        "name": "--chakra-colors-deepspace-950",
+        "value": "#000e21"
+    },
+    {
+        "name": "--chakra-colors-bordeaux-50",
+        "value": "#fdf2f9"
+    },
+    {
+        "name": "--chakra-colors-bordeaux-100",
+        "value": "#fce7f5"
+    },
+    {
+        "name": "--chakra-colors-bordeaux-200",
+        "value": "#fbcfec"
+    },
+    {
+        "name": "--chakra-colors-bordeaux-300",
+        "value": "#f9a8db"
+    },
+    {
+        "name": "--chakra-colors-bordeaux-400",
+        "value": "#f373c1"
+    },
+    {
+        "name": "--chakra-colors-bordeaux-500",
+        "value": "#eb49a7"
+    },
+    {
+        "name": "--chakra-colors-bordeaux-600",
+        "value": "#da2887"
+    },
+    {
+        "name": "--chakra-colors-bordeaux-700",
+        "value": "#bd196c"
+    },
+    {
+        "name": "--chakra-colors-bordeaux-800",
+        "value": "#921653"
+    },
+    {
+        "name": "--chakra-colors-bordeaux-900",
+        "value": "#83184d"
+    },
+    {
+        "name": "--chakra-colors-bordeaux-950",
+        "value": "#50072a"
+    },
+    {
+        "name": "--chakra-colors-flamingo-50",
+        "value": "#fff4fe"
+    },
+    {
+        "name": "--chakra-colors-flamingo-100",
+        "value": "#fee9fb"
+    },
+    {
+        "name": "--chakra-colors-flamingo-200",
+        "value": "#fdd1f8"
+    },
+    {
+        "name": "--chakra-colors-flamingo-300",
+        "value": "#faadee"
+    },
+    {
+        "name": "--chakra-colors-flamingo-400",
+        "value": "#f578de"
+    },
+    {
+        "name": "--chakra-colors-flamingo-500",
+        "value": "#ea4bcd"
+    },
+    {
+        "name": "--chakra-colors-flamingo-600",
+        "value": "#ce2bac"
+    },
+    {
+        "name": "--chakra-colors-flamingo-700",
+        "value": "#b71f97"
+    },
+    {
+        "name": "--chakra-colors-flamingo-800",
+        "value": "#8c1c72"
+    },
+    {
+        "name": "--chakra-colors-flamingo-900",
+        "value": "#721d5b"
+    },
+    {
+        "name": "--chakra-colors-flamingo-950",
+        "value": "#4c063a"
+    },
+    {
+        "name": "--chakra-colors-bonan-50",
+        "value": "#fffbeb"
+    },
+    {
+        "name": "--chakra-colors-bonan-100",
+        "value": "#fff3c6"
+    },
+    {
+        "name": "--chakra-colors-bonan-200",
+        "value": "#ffeba2"
+    },
+    {
+        "name": "--chakra-colors-bonan-300",
+        "value": "#ffd55e"
+    },
+    {
+        "name": "--chakra-colors-bonan-400",
+        "value": "#fec500"
+    },
+    {
+        "name": "--chakra-colors-bonan-500",
+        "value": "#f4b603"
+    },
+    {
+        "name": "--chakra-colors-bonan-600",
+        "value": "#da9c05"
+    },
+    {
+        "name": "--chakra-colors-bonan-700",
+        "value": "#b47300"
+    },
+    {
+        "name": "--chakra-colors-bonan-800",
+        "value": "#9b5500"
+    },
+    {
+        "name": "--chakra-colors-bonan-900",
+        "value": "#77390a"
+    },
+    {
+        "name": "--chakra-colors-bonan-950",
+        "value": "#441c00"
+    },
+    {
+        "name": "--chakra-colors-aurora-50",
+        "value": "#f8f6ff"
+    },
+    {
+        "name": "--chakra-colors-aurora-100",
+        "value": "#f2ecff"
+    },
+    {
+        "name": "--chakra-colors-aurora-200",
+        "value": "#e1d5ff"
+    },
+    {
+        "name": "--chakra-colors-aurora-300",
+        "value": "#d0b9ff"
+    },
+    {
+        "name": "--chakra-colors-aurora-400",
+        "value": "#bd97fd"
+    },
+    {
+        "name": "--chakra-colors-aurora-500",
+        "value": "#b179fb"
+    },
+    {
+        "name": "--chakra-colors-aurora-600",
+        "value": "#9044eb"
+    },
+    {
+        "name": "--chakra-colors-aurora-700",
+        "value": "#8131dc"
+    },
+    {
+        "name": "--chakra-colors-aurora-800",
+        "value": "#6623ad"
+    },
+    {
+        "name": "--chakra-colors-aurora-900",
+        "value": "#511c87"
+    },
+    {
+        "name": "--chakra-colors-aurora-950",
+        "value": "#350764"
+    },
+    {
+        "name": "--chakra-colors-seafoam-50",
+        "value": "#eefffd"
+    },
+    {
+        "name": "--chakra-colors-seafoam-100",
+        "value": "#d2fcf6"
+    },
+    {
+        "name": "--chakra-colors-seafoam-200",
+        "value": "#b6fff6"
+    },
+    {
+        "name": "--chakra-colors-seafoam-300",
+        "value": "#87faf0"
+    },
+    {
+        "name": "--chakra-colors-seafoam-400",
+        "value": "#49e8e5"
+    },
+    {
+        "name": "--chakra-colors-seafoam-500",
+        "value": "#04c8c6"
+    },
+    {
+        "name": "--chakra-colors-seafoam-600",
+        "value": "#009ea4"
+    },
+    {
+        "name": "--chakra-colors-seafoam-700",
+        "value": "#027e83"
+    },
+    {
+        "name": "--chakra-colors-seafoam-800",
+        "value": "#086267"
+    },
+    {
+        "name": "--chakra-colors-seafoam-900",
+        "value": "#0c5155"
+    },
+    {
+        "name": "--chakra-colors-seafoam-950",
+        "value": "#002f34"
+    },
+    {
+        "name": "--chakra-colors-evergreen-50",
+        "value": "#f2fcf1"
+    },
+    {
+        "name": "--chakra-colors-evergreen-100",
+        "value": "#e2f7e1"
+    },
+    {
+        "name": "--chakra-colors-evergreen-200",
+        "value": "#c4eec4"
+    },
+    {
+        "name": "--chakra-colors-evergreen-300",
+        "value": "#96e095"
+    },
+    {
+        "name": "--chakra-colors-evergreen-400",
+        "value": "#60c860"
+    },
+    {
+        "name": "--chakra-colors-evergreen-500",
+        "value": "#2db92d"
+    },
+    {
+        "name": "--chakra-colors-evergreen-600",
+        "value": "#1f9a1f"
+    },
+    {
+        "name": "--chakra-colors-evergreen-700",
+        "value": "#1c791d"
+    },
+    {
+        "name": "--chakra-colors-evergreen-800",
+        "value": "#1a561c"
+    },
+    {
+        "name": "--chakra-colors-evergreen-900",
+        "value": "#1d4a1e"
+    },
+    {
+        "name": "--chakra-colors-evergreen-950",
+        "value": "#082b09"
+    },
+    {
+        "name": "--chakra-colors-rocketfire-50",
+        "value": "#fff6ec"
+    },
+    {
+        "name": "--chakra-colors-rocketfire-100",
+        "value": "#ffecd3"
+    },
+    {
+        "name": "--chakra-colors-rocketfire-200",
+        "value": "#ffd4a5"
+    },
+    {
+        "name": "--chakra-colors-rocketfire-300",
+        "value": "#ffb66d"
+    },
+    {
+        "name": "--chakra-colors-rocketfire-400",
+        "value": "#ff8b32"
+    },
+    {
+        "name": "--chakra-colors-rocketfire-500",
+        "value": "#ff6a0a"
+    },
+    {
+        "name": "--chakra-colors-rocketfire-600",
+        "value": "#ff5000"
+    },
+    {
+        "name": "--chakra-colors-rocketfire-700",
+        "value": "#cc3702"
+    },
+    {
+        "name": "--chakra-colors-rocketfire-800",
+        "value": "#a12c0b"
+    },
+    {
+        "name": "--chakra-colors-rocketfire-900",
+        "value": "#82270c"
+    },
+    {
+        "name": "--chakra-colors-rocketfire-950",
+        "value": "#461004"
+    },
+    {
+        "name": "--chakra-colors-calamity-50",
+        "value": "#fef2f2"
+    },
+    {
+        "name": "--chakra-colors-calamity-100",
+        "value": "#fee2e2"
+    },
+    {
+        "name": "--chakra-colors-calamity-200",
+        "value": "#fecaca"
+    },
+    {
+        "name": "--chakra-colors-calamity-300",
+        "value": "#fca5a5"
+    },
+    {
+        "name": "--chakra-colors-calamity-400",
+        "value": "#f87171"
+    },
+    {
+        "name": "--chakra-colors-calamity-500",
+        "value": "#ef4444"
+    },
+    {
+        "name": "--chakra-colors-calamity-600",
+        "value": "#dc2626"
+    },
+    {
+        "name": "--chakra-colors-calamity-700",
+        "value": "#b91c1c"
+    },
+    {
+        "name": "--chakra-colors-calamity-800",
+        "value": "#991b1b"
+    },
+    {
+        "name": "--chakra-colors-calamity-900",
+        "value": "#7f1d1d"
+    },
+    {
+        "name": "--chakra-colors-calamity-950",
+        "value": "#450a0a"
+    },
+    {
+        "name": "--chakra-colors-primary-50",
+        "value": "#ebf3fe"
+    },
+    {
+        "name": "--chakra-colors-primary-100",
+        "value": "#cee2fd"
+    },
+    {
+        "name": "--chakra-colors-primary-200",
+        "value": "#a8cffa"
+    },
+    {
+        "name": "--chakra-colors-primary-300",
+        "value": "#70bcfb"
+    },
+    {
+        "name": "--chakra-colors-primary-400",
+        "value": "#2a98f8"
+    },
+    {
+        "name": "--chakra-colors-primary-500",
+        "value": "#0c72ed"
+    },
+    {
+        "name": "--chakra-colors-primary-600",
+        "value": "#0858f7"
+    },
+    {
+        "name": "--chakra-colors-primary-700",
+        "value": "#0740df"
+    },
+    {
+        "name": "--chakra-colors-primary-800",
+        "value": "#0540ad"
+    },
+    {
+        "name": "--chakra-colors-primary-900",
+        "value": "#0b2e79"
+    },
+    {
+        "name": "--chakra-colors-primary-950",
+        "value": "#002253"
+    },
+    {
+        "name": "--chakra-colors-secondary-50",
+        "value": "#eff7ff"
+    },
+    {
+        "name": "--chakra-colors-secondary-100",
+        "value": "#dcebfd"
+    },
+    {
+        "name": "--chakra-colors-secondary-200",
+        "value": "#c0defd"
+    },
+    {
+        "name": "--chakra-colors-secondary-300",
+        "value": "#84c1fa"
+    },
+    {
+        "name": "--chakra-colors-secondary-400",
+        "value": "#63acf7"
+    },
+    {
+        "name": "--chakra-colors-secondary-500",
+        "value": "#3f8bf2"
+    },
+    {
+        "name": "--chakra-colors-secondary-600",
+        "value": "#296ee7"
+    },
+    {
+        "name": "--chakra-colors-secondary-700",
+        "value": "#2158d4"
+    },
+    {
+        "name": "--chakra-colors-secondary-800",
+        "value": "#2148ac"
+    },
+    {
+        "name": "--chakra-colors-secondary-900",
+        "value": "#204088"
+    },
+    {
+        "name": "--chakra-colors-secondary-950",
+        "value": "#182953"
+    },
+    {
+        "name": "--chakra-colors-info-50",
+        "value": "#ebf3fe"
+    },
+    {
+        "name": "--chakra-colors-info-100",
+        "value": "#cee2fd"
+    },
+    {
+        "name": "--chakra-colors-info-200",
+        "value": "#a8cffa"
+    },
+    {
+        "name": "--chakra-colors-info-300",
+        "value": "#70bcfb"
+    },
+    {
+        "name": "--chakra-colors-info-400",
+        "value": "#2a98f8"
+    },
+    {
+        "name": "--chakra-colors-info-500",
+        "value": "#0c72ed"
+    },
+    {
+        "name": "--chakra-colors-info-600",
+        "value": "#0858f7"
+    },
+    {
+        "name": "--chakra-colors-info-700",
+        "value": "#0740df"
+    },
+    {
+        "name": "--chakra-colors-info-800",
+        "value": "#0540ad"
+    },
+    {
+        "name": "--chakra-colors-info-900",
+        "value": "#0b2e79"
+    },
+    {
+        "name": "--chakra-colors-info-950",
+        "value": "#002253"
+    },
+    {
+        "name": "--chakra-colors-link-50",
+        "value": "#ebf3fe"
+    },
+    {
+        "name": "--chakra-colors-link-100",
+        "value": "#cee2fd"
+    },
+    {
+        "name": "--chakra-colors-link-200",
+        "value": "#a8cffa"
+    },
+    {
+        "name": "--chakra-colors-link-300",
+        "value": "#70bcfb"
+    },
+    {
+        "name": "--chakra-colors-link-400",
+        "value": "#2a98f8"
+    },
+    {
+        "name": "--chakra-colors-link-500",
+        "value": "#0c72ed"
+    },
+    {
+        "name": "--chakra-colors-link-600",
+        "value": "#0858f7"
+    },
+    {
+        "name": "--chakra-colors-link-700",
+        "value": "#0740df"
+    },
+    {
+        "name": "--chakra-colors-link-800",
+        "value": "#0540ad"
+    },
+    {
+        "name": "--chakra-colors-link-900",
+        "value": "#0b2e79"
+    },
+    {
+        "name": "--chakra-colors-link-950",
+        "value": "#002253"
+    },
+    {
+        "name": "--chakra-colors-success-50",
+        "value": "#f2fcf1"
+    },
+    {
+        "name": "--chakra-colors-success-100",
+        "value": "#e2f7e1"
+    },
+    {
+        "name": "--chakra-colors-success-200",
+        "value": "#c4eec4"
+    },
+    {
+        "name": "--chakra-colors-success-300",
+        "value": "#96e095"
+    },
+    {
+        "name": "--chakra-colors-success-400",
+        "value": "#60c860"
+    },
+    {
+        "name": "--chakra-colors-success-500",
+        "value": "#2db92d"
+    },
+    {
+        "name": "--chakra-colors-success-600",
+        "value": "#1f9a1f"
+    },
+    {
+        "name": "--chakra-colors-success-700",
+        "value": "#1c791d"
+    },
+    {
+        "name": "--chakra-colors-success-800",
+        "value": "#1a561c"
+    },
+    {
+        "name": "--chakra-colors-success-900",
+        "value": "#1d4a1e"
+    },
+    {
+        "name": "--chakra-colors-success-950",
+        "value": "#082b09"
+    },
+    {
+        "name": "--chakra-colors-warning-50",
+        "value": "#fff6ec"
+    },
+    {
+        "name": "--chakra-colors-warning-100",
+        "value": "#ffecd3"
+    },
+    {
+        "name": "--chakra-colors-warning-200",
+        "value": "#ffd4a5"
+    },
+    {
+        "name": "--chakra-colors-warning-300",
+        "value": "#ffb66d"
+    },
+    {
+        "name": "--chakra-colors-warning-400",
+        "value": "#ff8b32"
+    },
+    {
+        "name": "--chakra-colors-warning-500",
+        "value": "#ff6a0a"
+    },
+    {
+        "name": "--chakra-colors-warning-600",
+        "value": "#ff5000"
+    },
+    {
+        "name": "--chakra-colors-warning-700",
+        "value": "#cc3702"
+    },
+    {
+        "name": "--chakra-colors-warning-800",
+        "value": "#a12c0b"
+    },
+    {
+        "name": "--chakra-colors-warning-900",
+        "value": "#82270c"
+    },
+    {
+        "name": "--chakra-colors-warning-950",
+        "value": "#461004"
+    },
+    {
+        "name": "--chakra-colors-error-50",
+        "value": "#fef2f2"
+    },
+    {
+        "name": "--chakra-colors-error-100",
+        "value": "#fee2e2"
+    },
+    {
+        "name": "--chakra-colors-error-200",
+        "value": "#fecaca"
+    },
+    {
+        "name": "--chakra-colors-error-300",
+        "value": "#fca5a5"
+    },
+    {
+        "name": "--chakra-colors-error-400",
+        "value": "#f87171"
+    },
+    {
+        "name": "--chakra-colors-error-500",
+        "value": "#ef4444"
+    },
+    {
+        "name": "--chakra-colors-error-600",
+        "value": "#dc2626"
+    },
+    {
+        "name": "--chakra-colors-error-700",
+        "value": "#b91c1c"
+    },
+    {
+        "name": "--chakra-colors-error-800",
+        "value": "#991b1b"
+    },
+    {
+        "name": "--chakra-colors-error-900",
+        "value": "#7f1d1d"
+    },
+    {
+        "name": "--chakra-colors-error-950",
+        "value": "#450a0a"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-50",
+        "value": "#fdf2f9"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-100",
+        "value": "#fce7f5"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-200",
+        "value": "#fbcfec"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-300",
+        "value": "#f9a8db"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-400",
+        "value": "#f373c1"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-500",
+        "value": "#eb49a7"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-600",
+        "value": "#da2887"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-700",
+        "value": "#bd196c"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-800",
+        "value": "#921653"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-900",
+        "value": "#83184d"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-950",
+        "value": "#50072a"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-50",
+        "value": "#fff4fe"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-100",
+        "value": "#fee9fb"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-200",
+        "value": "#fdd1f8"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-300",
+        "value": "#faadee"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-400",
+        "value": "#f578de"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-500",
+        "value": "#ea4bcd"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-600",
+        "value": "#ce2bac"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-700",
+        "value": "#b71f97"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-800",
+        "value": "#8c1c72"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-900",
+        "value": "#721d5b"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-950",
+        "value": "#4c063a"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-50",
+        "value": "#fffbeb"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-100",
+        "value": "#fff3c6"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-200",
+        "value": "#ffeba2"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-300",
+        "value": "#ffd55e"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-400",
+        "value": "#fec500"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-500",
+        "value": "#f4b603"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-600",
+        "value": "#da9c05"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-700",
+        "value": "#b47300"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-800",
+        "value": "#9b5500"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-900",
+        "value": "#77390a"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-950",
+        "value": "#441c00"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-50",
+        "value": "#eefffd"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-100",
+        "value": "#d2fcf6"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-200",
+        "value": "#b6fff6"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-300",
+        "value": "#87faf0"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-400",
+        "value": "#49e8e5"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-500",
+        "value": "#04c8c6"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-600",
+        "value": "#009ea4"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-700",
+        "value": "#027e83"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-800",
+        "value": "#086267"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-900",
+        "value": "#0c5155"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-950",
+        "value": "#002f34"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-50",
+        "value": "#f8f6ff"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-100",
+        "value": "#f2ecff"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-200",
+        "value": "#e1d5ff"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-300",
+        "value": "#d0b9ff"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-400",
+        "value": "#bd97fd"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-500",
+        "value": "#b179fb"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-600",
+        "value": "#9044eb"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-700",
+        "value": "#8131dc"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-800",
+        "value": "#6623ad"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-900",
+        "value": "#511c87"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-950",
+        "value": "#350764"
+    },
+    {
+        "name": "--chakra-colors-lightAlpha-50",
+        "value": "rgb(26, 27, 29)"
+    },
+    {
+        "name": "--chakra-colors-lightAlpha-100",
+        "value": "rgb(29, 31, 34)"
+    },
+    {
+        "name": "--chakra-colors-lightAlpha-200",
+        "value": "rgb(33, 35, 39)"
+    },
+    {
+        "name": "--chakra-colors-lightAlpha-300",
+        "value": "rgb(47, 51, 57)"
+    },
+    {
+        "name": "--chakra-colors-lightAlpha-400",
+        "value": "rgb(61, 68, 76)"
+    },
+    {
+        "name": "--chakra-colors-lightAlpha-500",
+        "value": "rgb(81, 92, 104)"
+    },
+    {
+        "name": "--chakra-colors-lightAlpha-600",
+        "value": "rgb(102, 116, 132)"
+    },
+    {
+        "name": "--chakra-colors-lightAlpha-700",
+        "value": "rgb(130, 149, 169)"
+    },
+    {
+        "name": "--chakra-colors-lightAlpha-800",
+        "value": "rgb(157, 181, 206)"
+    },
+    {
+        "name": "--chakra-colors-lightAlpha-900",
+        "value": "rgb(178, 206, 234)"
+    },
+    {
+        "name": "--chakra-colors-lightAlpha-950",
+        "value": "rgb(192, 222, 253)"
+    },
+    {
+        "name": "--chakra-colors-trueblue-50",
+        "value": "#ebf3fe"
+    },
+    {
+        "name": "--chakra-colors-trueblue-100",
+        "value": "#cee2fd"
+    },
+    {
+        "name": "--chakra-colors-trueblue-200",
+        "value": "#a8cffa"
+    },
+    {
+        "name": "--chakra-colors-trueblue-300",
+        "value": "#70bcfb"
+    },
+    {
+        "name": "--chakra-colors-trueblue-400",
+        "value": "#2a98f8"
+    },
+    {
+        "name": "--chakra-colors-trueblue-500",
+        "value": "#0c72ed"
+    },
+    {
+        "name": "--chakra-colors-trueblue-600",
+        "value": "#0858f7"
+    },
+    {
+        "name": "--chakra-colors-trueblue-700",
+        "value": "#0740df"
+    },
+    {
+        "name": "--chakra-colors-trueblue-800",
+        "value": "#0540ad"
+    },
+    {
+        "name": "--chakra-colors-trueblue-900",
+        "value": "#0b2e79"
+    },
+    {
+        "name": "--chakra-colors-trueblue-950",
+        "value": "#002253"
+    },
+    {
+        "name": "--chakra-borders-none",
+        "value": "0"
+    },
+    {
+        "name": "--chakra-borders-1px",
+        "value": "1px solid"
+    },
+    {
+        "name": "--chakra-borders-2px",
+        "value": "2px solid"
+    },
+    {
+        "name": "--chakra-borders-4px",
+        "value": "4px solid"
+    },
+    {
+        "name": "--chakra-borders-8px",
+        "value": "8px solid"
+    },
+    {
+        "name": "--chakra-fonts-heading",
+        "value": "'ESBuild',sans-serif"
+    },
+    {
+        "name": "--chakra-fonts-body",
+        "value": "'PPMori',sans-serif"
+    },
+    {
+        "name": "--chakra-fonts-mono",
+        "value": "SFMono-Regular,Menlo,Monaco,Consolas,\"Liberation Mono\",\"Courier New\",monospace"
+    },
+    {
+        "name": "--chakra-fontSizes-3xs",
+        "value": "0.45rem"
+    },
+    {
+        "name": "--chakra-fontSizes-2xs",
+        "value": "0.625rem"
+    },
+    {
+        "name": "--chakra-fontSizes-xs",
+        "value": "0.75rem"
+    },
+    {
+        "name": "--chakra-fontSizes-sm",
+        "value": "0.875rem"
+    },
+    {
+        "name": "--chakra-fontSizes-md",
+        "value": "1rem"
+    },
+    {
+        "name": "--chakra-fontSizes-lg",
+        "value": "1.125rem"
+    },
+    {
+        "name": "--chakra-fontSizes-xl",
+        "value": "1.25rem"
+    },
+    {
+        "name": "--chakra-fontSizes-2xl",
+        "value": "1.5rem"
+    },
+    {
+        "name": "--chakra-fontSizes-3xl",
+        "value": "1.875rem"
+    },
+    {
+        "name": "--chakra-fontSizes-4xl",
+        "value": "2.25rem"
+    },
+    {
+        "name": "--chakra-fontSizes-5xl",
+        "value": "3rem"
+    },
+    {
+        "name": "--chakra-fontSizes-6xl",
+        "value": "3.75rem"
+    },
+    {
+        "name": "--chakra-fontSizes-7xl",
+        "value": "4.5rem"
+    },
+    {
+        "name": "--chakra-fontSizes-8xl",
+        "value": "6rem"
+    },
+    {
+        "name": "--chakra-fontSizes-9xl",
+        "value": "8rem"
+    },
+    {
+        "name": "--chakra-fontSizes-xxs",
+        "value": "11px"
+    },
+    {
+        "name": "--chakra-fontWeights-hairline",
+        "value": "100"
+    },
+    {
+        "name": "--chakra-fontWeights-thin",
+        "value": "200"
+    },
+    {
+        "name": "--chakra-fontWeights-light",
+        "value": "300"
+    },
+    {
+        "name": "--chakra-fontWeights-normal",
+        "value": "400"
+    },
+    {
+        "name": "--chakra-fontWeights-medium",
+        "value": "500"
+    },
+    {
+        "name": "--chakra-fontWeights-semibold",
+        "value": "600"
+    },
+    {
+        "name": "--chakra-fontWeights-bold",
+        "value": "700"
+    },
+    {
+        "name": "--chakra-fontWeights-extrabold",
+        "value": "800"
+    },
+    {
+        "name": "--chakra-fontWeights-black",
+        "value": "900"
+    },
+    {
+        "name": "--chakra-letterSpacings-tighter",
+        "value": "-0.05em"
+    },
+    {
+        "name": "--chakra-letterSpacings-tight",
+        "value": "-0.025em"
+    },
+    {
+        "name": "--chakra-letterSpacings-normal",
+        "value": "0"
+    },
+    {
+        "name": "--chakra-letterSpacings-wide",
+        "value": "0.025em"
+    },
+    {
+        "name": "--chakra-letterSpacings-wider",
+        "value": "0.05em"
+    },
+    {
+        "name": "--chakra-letterSpacings-widest",
+        "value": "0.1em"
+    },
+    {
+        "name": "--chakra-lineHeights-3",
+        "value": ".75rem"
+    },
+    {
+        "name": "--chakra-lineHeights-4",
+        "value": "1rem"
+    },
+    {
+        "name": "--chakra-lineHeights-5",
+        "value": "1.25rem"
+    },
+    {
+        "name": "--chakra-lineHeights-6",
+        "value": "1.5rem"
+    },
+    {
+        "name": "--chakra-lineHeights-7",
+        "value": "1.75rem"
+    },
+    {
+        "name": "--chakra-lineHeights-8",
+        "value": "2rem"
+    },
+    {
+        "name": "--chakra-lineHeights-9",
+        "value": "2.25rem"
+    },
+    {
+        "name": "--chakra-lineHeights-10",
+        "value": "2.5rem"
+    },
+    {
+        "name": "--chakra-lineHeights-normal",
+        "value": "normal"
+    },
+    {
+        "name": "--chakra-lineHeights-none",
+        "value": "1"
+    },
+    {
+        "name": "--chakra-lineHeights-shorter",
+        "value": "1.25"
+    },
+    {
+        "name": "--chakra-lineHeights-short",
+        "value": "1.375"
+    },
+    {
+        "name": "--chakra-lineHeights-base",
+        "value": "1.5"
+    },
+    {
+        "name": "--chakra-lineHeights-tall",
+        "value": "1.625"
+    },
+    {
+        "name": "--chakra-lineHeights-taller",
+        "value": "2"
+    },
+    {
+        "name": "--chakra-radii-none",
+        "value": "0"
+    },
+    {
+        "name": "--chakra-radii-sm",
+        "value": "0.125rem"
+    },
+    {
+        "name": "--chakra-radii-base",
+        "value": "0.25rem"
+    },
+    {
+        "name": "--chakra-radii-md",
+        "value": "0.375rem"
+    },
+    {
+        "name": "--chakra-radii-lg",
+        "value": "0.5rem"
+    },
+    {
+        "name": "--chakra-radii-xl",
+        "value": "0.75rem"
+    },
+    {
+        "name": "--chakra-radii-2xl",
+        "value": "1rem"
+    },
+    {
+        "name": "--chakra-radii-3xl",
+        "value": "1.5rem"
+    },
+    {
+        "name": "--chakra-radii-full",
+        "value": "9999px"
+    },
+    {
+        "name": "--chakra-space-1",
+        "value": "0.25rem"
+    },
+    {
+        "name": "--chakra-space-2",
+        "value": "0.5rem"
+    },
+    {
+        "name": "--chakra-space-3",
+        "value": "0.75rem"
+    },
+    {
+        "name": "--chakra-space-4",
+        "value": "1rem"
+    },
+    {
+        "name": "--chakra-space-5",
+        "value": "1.25rem"
+    },
+    {
+        "name": "--chakra-space-6",
+        "value": "1.5rem"
+    },
+    {
+        "name": "--chakra-space-7",
+        "value": "1.75rem"
+    },
+    {
+        "name": "--chakra-space-8",
+        "value": "2rem"
+    },
+    {
+        "name": "--chakra-space-9",
+        "value": "2.25rem"
+    },
+    {
+        "name": "--chakra-space-10",
+        "value": "2.5rem"
+    },
+    {
+        "name": "--chakra-space-12",
+        "value": "3rem"
+    },
+    {
+        "name": "--chakra-space-14",
+        "value": "3.5rem"
+    },
+    {
+        "name": "--chakra-space-16",
+        "value": "4rem"
+    },
+    {
+        "name": "--chakra-space-20",
+        "value": "5rem"
+    },
+    {
+        "name": "--chakra-space-24",
+        "value": "6rem"
+    },
+    {
+        "name": "--chakra-space-28",
+        "value": "7rem"
+    },
+    {
+        "name": "--chakra-space-32",
+        "value": "8rem"
+    },
+    {
+        "name": "--chakra-space-36",
+        "value": "9rem"
+    },
+    {
+        "name": "--chakra-space-40",
+        "value": "10rem"
+    },
+    {
+        "name": "--chakra-space-44",
+        "value": "11rem"
+    },
+    {
+        "name": "--chakra-space-48",
+        "value": "12rem"
+    },
+    {
+        "name": "--chakra-space-52",
+        "value": "13rem"
+    },
+    {
+        "name": "--chakra-space-56",
+        "value": "14rem"
+    },
+    {
+        "name": "--chakra-space-60",
+        "value": "15rem"
+    },
+    {
+        "name": "--chakra-space-64",
+        "value": "16rem"
+    },
+    {
+        "name": "--chakra-space-72",
+        "value": "18rem"
+    },
+    {
+        "name": "--chakra-space-80",
+        "value": "20rem"
+    },
+    {
+        "name": "--chakra-space-96",
+        "value": "24rem"
+    },
+    {
+        "name": "--chakra-space-px",
+        "value": "1px"
+    },
+    {
+        "name": "--chakra-space-0-5",
+        "value": "0.125rem"
+    },
+    {
+        "name": "--chakra-space-1-5",
+        "value": "0.375rem"
+    },
+    {
+        "name": "--chakra-space-2-5",
+        "value": "0.625rem"
+    },
+    {
+        "name": "--chakra-space-3-5",
+        "value": "0.875rem"
+    },
+    {
+        "name": "--chakra-shadows-xs",
+        "value": "0 0 0 1px rgba(0, 0, 0, 0.05)"
+    },
+    {
+        "name": "--chakra-shadows-sm",
+        "value": "0 1px 2px 0 rgba(0, 0, 0, 0.05)"
+    },
+    {
+        "name": "--chakra-shadows-base",
+        "value": "0 1px 3px 0 rgba(0, 0, 0, 0.1),0 1px 2px 0 rgba(0, 0, 0, 0.06)"
+    },
+    {
+        "name": "--chakra-shadows-md",
+        "value": "0 4px 6px -1px rgba(0, 0, 0, 0.1),0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+    },
+    {
+        "name": "--chakra-shadows-lg",
+        "value": "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)"
+    },
+    {
+        "name": "--chakra-shadows-xl",
+        "value": "0 20px 25px -5px rgba(0, 0, 0, 0.1),0 10px 10px -5px rgba(0, 0, 0, 0.04)"
+    },
+    {
+        "name": "--chakra-shadows-2xl",
+        "value": "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
+    },
+    {
+        "name": "--chakra-shadows-outline",
+        "value": "0 0 0 3px rgba(66, 153, 225, 0.6)"
+    },
+    {
+        "name": "--chakra-shadows-inner",
+        "value": "inset 0 2px 4px 0 rgba(0,0,0,0.06)"
+    },
+    {
+        "name": "--chakra-shadows-none",
+        "value": "none"
+    },
+    {
+        "name": "--chakra-shadows-dark-lg",
+        "value": "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px,rgba(0, 0, 0, 0.2) 0px 5px 10px,rgba(0, 0, 0, 0.4) 0px 15px 40px"
+    },
+    {
+        "name": "--chakra-sizes-1",
+        "value": "0.25rem"
+    },
+    {
+        "name": "--chakra-sizes-2",
+        "value": "0.5rem"
+    },
+    {
+        "name": "--chakra-sizes-3",
+        "value": "0.75rem"
+    },
+    {
+        "name": "--chakra-sizes-4",
+        "value": "1rem"
+    },
+    {
+        "name": "--chakra-sizes-5",
+        "value": "1.25rem"
+    },
+    {
+        "name": "--chakra-sizes-6",
+        "value": "1.5rem"
+    },
+    {
+        "name": "--chakra-sizes-7",
+        "value": "1.75rem"
+    },
+    {
+        "name": "--chakra-sizes-8",
+        "value": "2rem"
+    },
+    {
+        "name": "--chakra-sizes-9",
+        "value": "2.25rem"
+    },
+    {
+        "name": "--chakra-sizes-10",
+        "value": "2.5rem"
+    },
+    {
+        "name": "--chakra-sizes-12",
+        "value": "3rem"
+    },
+    {
+        "name": "--chakra-sizes-14",
+        "value": "3.5rem"
+    },
+    {
+        "name": "--chakra-sizes-16",
+        "value": "4rem"
+    },
+    {
+        "name": "--chakra-sizes-20",
+        "value": "5rem"
+    },
+    {
+        "name": "--chakra-sizes-24",
+        "value": "6rem"
+    },
+    {
+        "name": "--chakra-sizes-28",
+        "value": "7rem"
+    },
+    {
+        "name": "--chakra-sizes-32",
+        "value": "8rem"
+    },
+    {
+        "name": "--chakra-sizes-36",
+        "value": "9rem"
+    },
+    {
+        "name": "--chakra-sizes-40",
+        "value": "10rem"
+    },
+    {
+        "name": "--chakra-sizes-44",
+        "value": "11rem"
+    },
+    {
+        "name": "--chakra-sizes-48",
+        "value": "12rem"
+    },
+    {
+        "name": "--chakra-sizes-52",
+        "value": "13rem"
+    },
+    {
+        "name": "--chakra-sizes-56",
+        "value": "14rem"
+    },
+    {
+        "name": "--chakra-sizes-60",
+        "value": "15rem"
+    },
+    {
+        "name": "--chakra-sizes-64",
+        "value": "16rem"
+    },
+    {
+        "name": "--chakra-sizes-72",
+        "value": "18rem"
+    },
+    {
+        "name": "--chakra-sizes-80",
+        "value": "20rem"
+    },
+    {
+        "name": "--chakra-sizes-96",
+        "value": "24rem"
+    },
+    {
+        "name": "--chakra-sizes-px",
+        "value": "1px"
+    },
+    {
+        "name": "--chakra-sizes-0-5",
+        "value": "0.125rem"
+    },
+    {
+        "name": "--chakra-sizes-1-5",
+        "value": "0.375rem"
+    },
+    {
+        "name": "--chakra-sizes-2-5",
+        "value": "0.625rem"
+    },
+    {
+        "name": "--chakra-sizes-3-5",
+        "value": "0.875rem"
+    },
+    {
+        "name": "--chakra-sizes-max",
+        "value": "max-content"
+    },
+    {
+        "name": "--chakra-sizes-min",
+        "value": "min-content"
+    },
+    {
+        "name": "--chakra-sizes-full",
+        "value": "100%"
+    },
+    {
+        "name": "--chakra-sizes-3xs",
+        "value": "14rem"
+    },
+    {
+        "name": "--chakra-sizes-2xs",
+        "value": "16rem"
+    },
+    {
+        "name": "--chakra-sizes-xs",
+        "value": "20rem"
+    },
+    {
+        "name": "--chakra-sizes-sm",
+        "value": "24rem"
+    },
+    {
+        "name": "--chakra-sizes-md",
+        "value": "28rem"
+    },
+    {
+        "name": "--chakra-sizes-lg",
+        "value": "32rem"
+    },
+    {
+        "name": "--chakra-sizes-xl",
+        "value": "36rem"
+    },
+    {
+        "name": "--chakra-sizes-2xl",
+        "value": "42rem"
+    },
+    {
+        "name": "--chakra-sizes-3xl",
+        "value": "48rem"
+    },
+    {
+        "name": "--chakra-sizes-4xl",
+        "value": "56rem"
+    },
+    {
+        "name": "--chakra-sizes-5xl",
+        "value": "64rem"
+    },
+    {
+        "name": "--chakra-sizes-6xl",
+        "value": "72rem"
+    },
+    {
+        "name": "--chakra-sizes-7xl",
+        "value": "80rem"
+    },
+    {
+        "name": "--chakra-sizes-8xl",
+        "value": "90rem"
+    },
+    {
+        "name": "--chakra-sizes-prose",
+        "value": "60ch"
+    },
+    {
+        "name": "--chakra-sizes-container-sm",
+        "value": "640px"
+    },
+    {
+        "name": "--chakra-sizes-container-md",
+        "value": "768px"
+    },
+    {
+        "name": "--chakra-sizes-container-lg",
+        "value": "1024px"
+    },
+    {
+        "name": "--chakra-sizes-container-xl",
+        "value": "1280px"
+    },
+    {
+        "name": "--chakra-zIndices-hide",
+        "value": "-1"
+    },
+    {
+        "name": "--chakra-zIndices-auto",
+        "value": "auto"
+    },
+    {
+        "name": "--chakra-zIndices-base",
+        "value": "0"
+    },
+    {
+        "name": "--chakra-zIndices-docked",
+        "value": "10"
+    },
+    {
+        "name": "--chakra-zIndices-dropdown",
+        "value": "1600"
+    },
+    {
+        "name": "--chakra-zIndices-sticky",
+        "value": "1100"
+    },
+    {
+        "name": "--chakra-zIndices-banner",
+        "value": "1200"
+    },
+    {
+        "name": "--chakra-zIndices-overlay",
+        "value": "1300"
+    },
+    {
+        "name": "--chakra-zIndices-modal",
+        "value": "1800"
+    },
+    {
+        "name": "--chakra-zIndices-popover",
+        "value": "1500"
+    },
+    {
+        "name": "--chakra-zIndices-skipLink",
+        "value": "1600"
+    },
+    {
+        "name": "--chakra-zIndices-toast",
+        "value": "1700"
+    },
+    {
+        "name": "--chakra-zIndices-tooltip",
+        "value": "5600"
+    },
+    {
+        "name": "--chakra-zIndices-modalPopover",
+        "value": "1900"
+    },
+    {
+        "name": "--chakra-transition-property-common",
+        "value": "background-color,border-color,color,fill,stroke,opacity,box-shadow,transform"
+    },
+    {
+        "name": "--chakra-transition-property-colors",
+        "value": "background-color,border-color,color,fill,stroke"
+    },
+    {
+        "name": "--chakra-transition-property-dimensions",
+        "value": "width,height"
+    },
+    {
+        "name": "--chakra-transition-property-position",
+        "value": "left,right,top,bottom"
+    },
+    {
+        "name": "--chakra-transition-property-background",
+        "value": "background-color,background-image,background-position"
+    },
+    {
+        "name": "--chakra-transition-easing-ease-in",
+        "value": "cubic-bezier(0.4, 0, 1, 1)"
+    },
+    {
+        "name": "--chakra-transition-easing-ease-out",
+        "value": "cubic-bezier(0, 0, 0.2, 1)"
+    },
+    {
+        "name": "--chakra-transition-easing-ease-in-out",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)"
+    },
+    {
+        "name": "--chakra-transition-duration-ultra-fast",
+        "value": "50ms"
+    },
+    {
+        "name": "--chakra-transition-duration-faster",
+        "value": "100ms"
+    },
+    {
+        "name": "--chakra-transition-duration-fast",
+        "value": "150ms"
+    },
+    {
+        "name": "--chakra-transition-duration-normal",
+        "value": "200ms"
+    },
+    {
+        "name": "--chakra-transition-duration-slow",
+        "value": "300ms"
+    },
+    {
+        "name": "--chakra-transition-duration-slower",
+        "value": "400ms"
+    },
+    {
+        "name": "--chakra-transition-duration-ultra-slow",
+        "value": "500ms"
+    },
+    {
+        "name": "--chakra-blur-none",
+        "value": "0"
+    },
+    {
+        "name": "--chakra-blur-sm",
+        "value": "4px"
+    },
+    {
+        "name": "--chakra-blur-base",
+        "value": "8px"
+    },
+    {
+        "name": "--chakra-blur-md",
+        "value": "12px"
+    },
+    {
+        "name": "--chakra-blur-lg",
+        "value": "16px"
+    },
+    {
+        "name": "--chakra-blur-xl",
+        "value": "24px"
+    },
+    {
+        "name": "--chakra-blur-2xl",
+        "value": "40px"
+    },
+    {
+        "name": "--chakra-blur-3xl",
+        "value": "64px"
+    },
+    {
+        "name": "--chakra-breakpoints-base",
+        "value": "0em"
+    },
+    {
+        "name": "--chakra-breakpoints-sm",
+        "value": "30em"
+    },
+    {
+        "name": "--chakra-breakpoints-md",
+        "value": "46em"
+    },
+    {
+        "name": "--chakra-breakpoints-lg",
+        "value": "62em"
+    },
+    {
+        "name": "--chakra-breakpoints-xl",
+        "value": "78em"
+    },
+    {
+        "name": "--chakra-breakpoints-2xl",
+        "value": "96em"
+    },
+    {
+        "name": "--chakra-breakpoints-3xl",
+        "value": "112em"
+    },
+    {
+        "name": "--chakra-breakpoints-4xl",
+        "value": "128em"
+    },
+    {
+        "name": "--chakra-colors-primary-subtle-background",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-primary-subtle-background-hover",
+        "value": "#ebf3fe"
+    },
+    {
+        "name": "--chakra-colors-primary-subtle-background-active",
+        "value": "#cee2fd"
+    },
+    {
+        "name": "--chakra-colors-primary-subtle-background-disabled",
+        "value": "#f5f5f6"
+    },
+    {
+        "name": "--chakra-colors-primary-subtle-text",
+        "value": "#002253"
+    },
+    {
+        "name": "--chakra-colors-primary-subtle-text-disabled",
+        "value": "#aeaeb2"
+    },
+    {
+        "name": "--chakra-colors-primary-subtle-border",
+        "value": "#0858f7"
+    },
+    {
+        "name": "--chakra-colors-primary-subtle-border-disabled",
+        "value": "#d0cfd2"
+    },
+    {
+        "name": "--chakra-colors-primary-bold-background",
+        "value": "#0540ad"
+    },
+    {
+        "name": "--chakra-colors-primary-bold-background-hover",
+        "value": "#0b2e79"
+    },
+    {
+        "name": "--chakra-colors-primary-bold-background-active",
+        "value": "#002253"
+    },
+    {
+        "name": "--chakra-colors-primary-bold-background-disabled",
+        "value": "#a8cffa"
+    },
+    {
+        "name": "--chakra-colors-primary-bold-text",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-primary-bold-text-disabled",
+        "value": "#ebf3fe"
+    },
+    {
+        "name": "--chakra-colors-primary-bold-border",
+        "value": "#0540ad"
+    },
+    {
+        "name": "--chakra-colors-secondary-subtle-background",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-secondary-subtle-background-hover",
+        "value": "#dcebfd"
+    },
+    {
+        "name": "--chakra-colors-secondary-subtle-background-active",
+        "value": "#c0defd"
+    },
+    {
+        "name": "--chakra-colors-secondary-subtle-background-disabled",
+        "value": "#eff7ff"
+    },
+    {
+        "name": "--chakra-colors-secondary-subtle-text",
+        "value": "#002253"
+    },
+    {
+        "name": "--chakra-colors-secondary-subtle-text-hover",
+        "value": "#0b2e79"
+    },
+    {
+        "name": "--chakra-colors-secondary-subtle-text-disabled",
+        "value": "#84c1fa"
+    },
+    {
+        "name": "--chakra-colors-secondary-subtle-border",
+        "value": "#296ee7"
+    },
+    {
+        "name": "--chakra-colors-secondary-bold-background",
+        "value": "#84c1fa"
+    },
+    {
+        "name": "--chakra-colors-secondary-bold-background-hover",
+        "value": "#63acf7"
+    },
+    {
+        "name": "--chakra-colors-secondary-bold-background-active",
+        "value": "#3f8bf2"
+    },
+    {
+        "name": "--chakra-colors-secondary-bold-background-disabled",
+        "value": "#dcebfd"
+    },
+    {
+        "name": "--chakra-colors-secondary-bold-text",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-secondary-bold-text-disabled",
+        "value": "#63acf7"
+    },
+    {
+        "name": "--chakra-colors-secondary-bold-border",
+        "value": "#2148ac"
+    },
+    {
+        "name": "--chakra-colors-info-subtle-background",
+        "value": "#cee2fd"
+    },
+    {
+        "name": "--chakra-colors-info-subtle-background-hover",
+        "value": "#a8cffa"
+    },
+    {
+        "name": "--chakra-colors-info-subtle-background-active",
+        "value": "#70bcfb"
+    },
+    {
+        "name": "--chakra-colors-info-subtle-background-disabled",
+        "value": "#ebf3fe"
+    },
+    {
+        "name": "--chakra-colors-info-subtle-text",
+        "value": "#002253"
+    },
+    {
+        "name": "--chakra-colors-info-subtle-text-disabled",
+        "value": "#70bcfb"
+    },
+    {
+        "name": "--chakra-colors-info-subtle-border",
+        "value": "#cee2fd"
+    },
+    {
+        "name": "--chakra-colors-info-subtle-icon",
+        "value": "#0540ad"
+    },
+    {
+        "name": "--chakra-colors-info-bold-background",
+        "value": "#0740df"
+    },
+    {
+        "name": "--chakra-colors-info-bold-background-hover",
+        "value": "#0740df"
+    },
+    {
+        "name": "--chakra-colors-info-bold-background-active",
+        "value": "#0540ad"
+    },
+    {
+        "name": "--chakra-colors-info-bold-background-disabled",
+        "value": "#cee2fd"
+    },
+    {
+        "name": "--chakra-colors-info-bold-text",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-info-bold-text-disabled",
+        "value": "#2a98f8"
+    },
+    {
+        "name": "--chakra-colors-info-bold-border",
+        "value": "#0740df"
+    },
+    {
+        "name": "--chakra-colors-info-bold-icon",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-success-subtle-background",
+        "value": "#e2f7e1"
+    },
+    {
+        "name": "--chakra-colors-success-subtle-background-hover",
+        "value": "#c4eec4"
+    },
+    {
+        "name": "--chakra-colors-success-subtle-background-active",
+        "value": "#96e095"
+    },
+    {
+        "name": "--chakra-colors-success-subtle-background-disabled",
+        "value": "#e2f7e1"
+    },
+    {
+        "name": "--chakra-colors-success-subtle-text",
+        "value": "#1a561c"
+    },
+    {
+        "name": "--chakra-colors-success-subtle-text-disabled",
+        "value": "#96e095"
+    },
+    {
+        "name": "--chakra-colors-success-subtle-border",
+        "value": "#1c791d"
+    },
+    {
+        "name": "--chakra-colors-success-subtle-icon",
+        "value": "#1c791d"
+    },
+    {
+        "name": "--chakra-colors-success-bold-background",
+        "value": "#1f9a1f"
+    },
+    {
+        "name": "--chakra-colors-success-bold-background-hover",
+        "value": "#1c791d"
+    },
+    {
+        "name": "--chakra-colors-success-bold-background-active",
+        "value": "#1a561c"
+    },
+    {
+        "name": "--chakra-colors-success-bold-background-disabled",
+        "value": "#e2f7e1"
+    },
+    {
+        "name": "--chakra-colors-success-bold-text",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-success-bold-text-disabled",
+        "value": "#96e095"
+    },
+    {
+        "name": "--chakra-colors-success-bold-border",
+        "value": "#1f9a1f"
+    },
+    {
+        "name": "--chakra-colors-success-bold-icon",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-warning-subtle-background",
+        "value": "#ffecd3"
+    },
+    {
+        "name": "--chakra-colors-warning-subtle-background-hover",
+        "value": "#ffd4a5"
+    },
+    {
+        "name": "--chakra-colors-warning-subtle-background-active",
+        "value": "#ffb66d"
+    },
+    {
+        "name": "--chakra-colors-warning-subtle-background-disabled",
+        "value": "#ffecd3"
+    },
+    {
+        "name": "--chakra-colors-warning-subtle-text",
+        "value": "#cc3702"
+    },
+    {
+        "name": "--chakra-colors-warning-subtle-text-disabled",
+        "value": "#ffb66d"
+    },
+    {
+        "name": "--chakra-colors-warning-subtle-border",
+        "value": "#cc3702"
+    },
+    {
+        "name": "--chakra-colors-warning-subtle-icon",
+        "value": "#cc3702"
+    },
+    {
+        "name": "--chakra-colors-warning-bold-background",
+        "value": "#ff5000"
+    },
+    {
+        "name": "--chakra-colors-warning-bold-background-hover",
+        "value": "#cc3702"
+    },
+    {
+        "name": "--chakra-colors-warning-bold-background-active",
+        "value": "#a12c0b"
+    },
+    {
+        "name": "--chakra-colors-warning-bold-background-disabled",
+        "value": "#ffecd3"
+    },
+    {
+        "name": "--chakra-colors-warning-bold-text",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-warning-bold-text-disabled",
+        "value": "#ffb66d"
+    },
+    {
+        "name": "--chakra-colors-warning-bold-border",
+        "value": "#ff5000"
+    },
+    {
+        "name": "--chakra-colors-warning-bold-icon",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-error-subtle-background",
+        "value": "#fee2e2"
+    },
+    {
+        "name": "--chakra-colors-error-subtle-background-hover",
+        "value": "#fef2f2"
+    },
+    {
+        "name": "--chakra-colors-error-subtle-background-active",
+        "value": "#fee2e2"
+    },
+    {
+        "name": "--chakra-colors-error-subtle-background-disabled",
+        "value": "#fef2f2"
+    },
+    {
+        "name": "--chakra-colors-error-subtle-text",
+        "value": "#b91c1c"
+    },
+    {
+        "name": "--chakra-colors-error-subtle-text-disabled",
+        "value": "#fca5a5"
+    },
+    {
+        "name": "--chakra-colors-error-subtle-border",
+        "value": "#b91c1c"
+    },
+    {
+        "name": "--chakra-colors-error-subtle-icon",
+        "value": "#dc2626"
+    },
+    {
+        "name": "--chakra-colors-error-bold-background",
+        "value": "#dc2626"
+    },
+    {
+        "name": "--chakra-colors-error-bold-background-hover",
+        "value": "#b91c1c"
+    },
+    {
+        "name": "--chakra-colors-error-bold-background-active",
+        "value": "#991b1b"
+    },
+    {
+        "name": "--chakra-colors-error-bold-background-disabled",
+        "value": "#fca5a5"
+    },
+    {
+        "name": "--chakra-colors-error-bold-text",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-error-bold-text-disabled",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-error-bold-border",
+        "value": "#dc2626"
+    },
+    {
+        "name": "--chakra-colors-error-bold-icon",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-subtle-background",
+        "value": "#fce7f5"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-subtle-background-hover",
+        "value": "#fbcfec"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-subtle-background-active",
+        "value": "#f9a8db"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-subtle-background-disabled",
+        "value": "#fdf2f9"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-subtle-text",
+        "value": "#bd196c"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-subtle-text-disabled",
+        "value": "#f9a8db"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-subtle-border",
+        "value": "#bd196c"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-subtle-icon",
+        "value": "#bd196c"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-bold-background",
+        "value": "#921653"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-bold-background-hover",
+        "value": "#83184d"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-bold-background-active",
+        "value": "#50072a"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-bold-background-disabled",
+        "value": "#fce7f5"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-bold-text",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-bold-text-disabled",
+        "value": "#f9a8db"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-bold-border",
+        "value": "#921653"
+    },
+    {
+        "name": "--chakra-colors-highlight-bordeaux-bold-icon",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-subtle-background",
+        "value": "#fee9fb"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-subtle-background-hover",
+        "value": "#fdd1f8"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-subtle-background-active",
+        "value": "#faadee"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-subtle-background-disabled",
+        "value": "#fff4fe"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-subtle-text",
+        "value": "#b71f97"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-subtle-text-disabled",
+        "value": "#faadee"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-subtle-border",
+        "value": "#b71f97"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-subtle-icon",
+        "value": "#b71f97"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-bold-background",
+        "value": "#ea4bcd"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-bold-background-hover",
+        "value": "#ce2bac"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-bold-background-active",
+        "value": "#b71f97"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-bold-background-disabled",
+        "value": "#fee9fb"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-bold-text",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-bold-text-disabled",
+        "value": "#faadee"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-bold-border",
+        "value": "#b71f97"
+    },
+    {
+        "name": "--chakra-colors-highlight-flamingo-bold-icon",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-subtle-background",
+        "value": "#fff3c6"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-subtle-background-hover",
+        "value": "#ffeba2"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-subtle-background-active",
+        "value": "#ffd55e"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-subtle-background-disabled",
+        "value": "#fffbeb"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-subtle-text",
+        "value": "#9b5500"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-bold-background",
+        "value": "#fec500"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-bold-background-hover",
+        "value": "#da9c05"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-bold-background-active",
+        "value": "#b47300"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-bold-background-disabled",
+        "value": "#fff3c6"
+    },
+    {
+        "name": "--chakra-colors-highlight-bonan-bold-text",
+        "value": "#441c00"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-subtle-background",
+        "value": "#d2fcf6"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-subtle-background-hover",
+        "value": "#b6fff6"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-subtle-background-active",
+        "value": "#87faf0"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-subtle-background-disabled",
+        "value": "#eefffd"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-subtle-text",
+        "value": "#027e83"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-bold-background",
+        "value": "#49e8e5"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-bold-background-hover",
+        "value": "#009ea4"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-bold-background-active",
+        "value": "#027e83"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-bold-background-disabled",
+        "value": "#d2fcf6"
+    },
+    {
+        "name": "--chakra-colors-highlight-seafoam-bold-text",
+        "value": "#002f34"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-subtle-background",
+        "value": "#f2ecff"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-subtle-background-hover",
+        "value": "#e1d5ff"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-subtle-background-active",
+        "value": "#d0b9ff"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-subtle-background-disabled",
+        "value": "#f8f6ff"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-subtle-text",
+        "value": "#8131dc"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-bold-background",
+        "value": "#9044eb"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-bold-background-hover",
+        "value": "#9044eb"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-bold-background-active",
+        "value": "#8131dc"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-bold-background-disabled",
+        "value": "#f2ecff"
+    },
+    {
+        "name": "--chakra-colors-highlight-aurora-bold-text",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-heading-default",
+        "value": "#002253"
+    },
+    {
+        "name": "--chakra-colors-heading-secondary",
+        "value": "#0b2e79"
+    },
+    {
+        "name": "--chakra-colors-text-default",
+        "value": "#262527"
+    },
+    {
+        "name": "--chakra-colors-text-secondary",
+        "value": "#5b5b5f"
+    },
+    {
+        "name": "--chakra-colors-text-placeholder",
+        "value": "#aeaeb2"
+    },
+    {
+        "name": "--chakra-colors-text-disabled",
+        "value": "#aeaeb2"
+    },
+    {
+        "name": "--chakra-colors-text-link",
+        "value": "#0858f7"
+    },
+    {
+        "name": "--chakra-colors-text-link-hover",
+        "value": "#0740df"
+    },
+    {
+        "name": "--chakra-colors-text-link-active",
+        "value": "#0540ad"
+    },
+    {
+        "name": "--chakra-colors-text-error",
+        "value": "#dc2626"
+    },
+    {
+        "name": "--chakra-colors-text-error-hover",
+        "value": "#b91c1c"
+    },
+    {
+        "name": "--chakra-colors-text-error-active",
+        "value": "#991b1b"
+    },
+    {
+        "name": "--chakra-colors-text-success",
+        "value": "#1a561c"
+    },
+    {
+        "name": "--chakra-colors-text-warning",
+        "value": "#cc3702"
+    },
+    {
+        "name": "--chakra-colors-text-white",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-text-dark",
+        "value": "#002253"
+    },
+    {
+        "name": "--chakra-colors-neutral-subtle-background",
+        "value": "#f5f5f6"
+    },
+    {
+        "name": "--chakra-colors-neutral-subtle-background-hover",
+        "value": "#e6e6e7"
+    },
+    {
+        "name": "--chakra-colors-neutral-subtle-background-active",
+        "value": "#d0cfd2"
+    },
+    {
+        "name": "--chakra-colors-neutral-subtle-background-disabled",
+        "value": "#e6e6e7"
+    },
+    {
+        "name": "--chakra-colors-neutral-subtle-text",
+        "value": "#66666b"
+    },
+    {
+        "name": "--chakra-colors-neutral-subtle-text-disabled",
+        "value": "#85858b"
+    },
+    {
+        "name": "--chakra-colors-neutral-subtle-border",
+        "value": "#5b5b5f"
+    },
+    {
+        "name": "--chakra-colors-neutral-bold-background",
+        "value": "#5b5b5f"
+    },
+    {
+        "name": "--chakra-colors-neutral-bold-background-hover",
+        "value": "#4d4d51"
+    },
+    {
+        "name": "--chakra-colors-neutral-bold-background-active",
+        "value": "#444446"
+    },
+    {
+        "name": "--chakra-colors-neutral-bold-background-disabled",
+        "value": "#d0cfd2"
+    },
+    {
+        "name": "--chakra-colors-neutral-bold-text",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-neutral-bold-text-disabled",
+        "value": "#d0cfd2"
+    },
+    {
+        "name": "--chakra-colors-neutral-bold-border",
+        "value": "#5b5b5f"
+    },
+    {
+        "name": "--chakra-colors-neutral-menu-background",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-neutral-menu-background-hover",
+        "value": "#f5f5f6"
+    },
+    {
+        "name": "--chakra-colors-neutral-menu-background-active",
+        "value": "#e6e6e7"
+    },
+    {
+        "name": "--chakra-colors-neutral-menu-background-disabled",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-neutral-menu-text",
+        "value": "#4d4d51"
+    },
+    {
+        "name": "--chakra-colors-neutral-background-default",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-neutral-background-white",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-neutral-background-moonbeam",
+        "value": "#faf9f5"
+    },
+    {
+        "name": "--chakra-colors-neutral-background-spacedust",
+        "value": "#f2f1ef"
+    },
+    {
+        "name": "--chakra-colors-neutral-background-titanium",
+        "value": "#f5f5f6"
+    },
+    {
+        "name": "--chakra-colors-neutral-divider",
+        "value": "#e6e6e7"
+    },
+    {
+        "name": "--chakra-colors-neutral-toolbar-background",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-neutral-toolbar-border",
+        "value": "#e6e6e7"
+    },
+    {
+        "name": "--chakra-colors-neutral-toolbar-text",
+        "value": "#262527"
+    },
+    {
+        "name": "--chakra-colors-neutral-toolbar-icon",
+        "value": "#0858f7"
+    },
+    {
+        "name": "--chakra-colors-neutral-modal-background",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-neutral-modal-text",
+        "value": "var(--chakra-colors-text-default)"
+    },
+    {
+        "name": "--chakra-colors-input-background",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-input-background-filled",
+        "value": "#f5f5f6"
+    },
+    {
+        "name": "--chakra-colors-input-background-hover",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-input-background-active",
+        "value": "#e6e6e7"
+    },
+    {
+        "name": "--chakra-colors-input-background-focused",
+        "value": "#ffffff"
+    },
+    {
+        "name": "--chakra-colors-input-background-disabled",
+        "value": "#f5f5f6"
+    },
+    {
+        "name": "--chakra-colors-input-text",
+        "value": "#262527"
+    },
+    {
+        "name": "--chakra-colors-input-text-disabled",
+        "value": "#aeaeb2"
+    },
+    {
+        "name": "--chakra-colors-input-text-placeholder",
+        "value": "#85858b"
+    },
+    {
+        "name": "--chakra-colors-input-border",
+        "value": "#d0cfd2"
+    },
+    {
+        "name": "--chakra-colors-input-border-active",
+        "value": "#0858f7"
+    },
+    {
+        "name": "--chakra-colors-input-border-hover",
+        "value": "#aeaeb2"
+    },
+    {
+        "name": "--chakra-colors-input-border-focused",
+        "value": "#0858f7"
+    },
+    {
+        "name": "--chakra-colors-input-border-disabled",
+        "value": "#e6e6e7"
+    },
+    {
+        "name": "--chakra-colors-brand-moonbeam",
+        "value": "#faf9f5"
+    },
+    {
+        "name": "--chakra-colors-brand-spacedust",
+        "value": "#f2f1ef"
+    },
+    {
+        "name": "--chakra-colors-brand-sky",
+        "value": "#84c1fa"
+    },
+    {
+        "name": "--chakra-colors-brand-deepocean",
+        "value": "#002253"
+    },
+    {
+        "name": "--chakra-colors-brand-bordeaux",
+        "value": "#921653"
+    },
+    {
+        "name": "--chakra-colors-brand-flamingo",
+        "value": "#f578de"
+    },
+    {
+        "name": "--chakra-colors-brand-evergreen",
+        "value": "#1a561c"
+    },
+    {
+        "name": "--chakra-colors-brand-rocketfire",
+        "value": "#ff5000"
+    },
+    {
+        "name": "--chakra-colors-chakra-body-text",
+        "value": "var(--chakra-colors-gray-800)"
+    },
+    {
+        "name": "--chakra-colors-chakra-body-bg",
+        "value": "var(--chakra-colors-white)"
+    },
+    {
+        "name": "--chakra-colors-chakra-border-color",
+        "value": "var(--chakra-colors-gray-200)"
+    },
+    {
+        "name": "--chakra-colors-chakra-inverse-text",
+        "value": "var(--chakra-colors-white)"
+    },
+    {
+        "name": "--chakra-colors-chakra-subtle-bg",
+        "value": "var(--chakra-colors-gray-100)"
+    },
+    {
+        "name": "--chakra-colors-chakra-subtle-text",
+        "value": "var(--chakra-colors-gray-600)"
+    },
+    {
+        "name": "--chakra-colors-chakra-placeholder-color",
+        "value": "var(--chakra-colors-gray-500)"
+    },
+    {
+        "name": "--chakra-vh",
+        "value": "100vh"
+    },
+    {
+        "name": "--chakra-line-clamp",
+        "value": "1"
+    },
+    {
+        "name": "--chakra-divide-x-reverse",
+        "value": "1"
+    }
+]

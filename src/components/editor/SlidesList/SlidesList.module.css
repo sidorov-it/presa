@@ -7,17 +7,12 @@
     flex-direction: column;
     width: 16rem;
     height: 100%;
-    background-color: #ffffff;
+    background-color: var(--chakra-colors-chakra-body-bg);
     transition-property: all;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 300ms;
-    transition-duration: 300ms;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-:global(.dark-theme) .leftPanel {
-    background-color: var(--header-bg);
+    border-right: 1px solid var(--chakra-colors-chakra-border-color);
 }
 
 .slide {
@@ -25,11 +20,9 @@
     padding: 0.625rem;
     justify-content: space-between;
     align-items: center;
-}
-
-:global(.dark-theme) .slide {
-    background-color: var(--panel-bg);
-    border-color: var(--panel-border);
+    background-color: var(--chakra-colors-chakra-body-bg);
+    border: 1px solid var(--chakra-colors-chakra-border-color);
+    color: var(--chakra-colors-chakra-text);
 }
 
 .container {

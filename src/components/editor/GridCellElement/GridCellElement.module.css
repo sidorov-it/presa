@@ -88,29 +88,30 @@
 
 /* Resizable border styles */
 .resizableBorder {
-  position: absolute;
-  top: 0;
-  right: -3px;
-  width: 4px;
-  height: 100%;
-  cursor: col-resize;
-  z-index: 30;
-  background-color: var(--control-background, transparent);
+    position: absolute;
+    top: 0;
+    right: -3px;
+    width: 4px;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 30;
+    background-color: transparent;
+    /* border: 1px solid var(--chakra-colors-chakra-border-color); */
 }
 
 .resizableBorderDragged, .resizableBorder:hover {
-  background-color: var(--control-stroke, #806cff);
+    background-color: var(--chakra-colors-blue-500);
+    border-color: var(--chakra-colors-blue-500);
 }
 
-
 /* Resizable border dark mode */
-:global(.dark-theme) .resizableBorder {
+/* :global(.dark-theme) .resizableBorder {
     background-color: transparent !important;
 }
   
 :global(.dark-theme) .resizableBorder:hover {
     background-color: white !important;
-}
+} */
 
 .addColumnIcon {
     position: absolute;

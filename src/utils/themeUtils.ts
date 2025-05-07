@@ -75,7 +75,4 @@ export const resetThemeStyles = (): void => {
     document.documentElement.style.setProperty('--control-stroke', 'rgba(0, 0, 0, 0.2)');
     document.documentElement.style.setProperty('--control-icon', 'rgba(0, 0, 0, 0.6)');
     document.documentElement.style.setProperty('--control-background', 'transparent');
-
-    // Remove the dark-theme class from body
-    document.body.classList.remove('dark-theme');
 };

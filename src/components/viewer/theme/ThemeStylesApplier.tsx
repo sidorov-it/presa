@@ -331,7 +331,6 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
                 })(theme.colors.slideBackground);
             }
 
-            // Устанавливаем colorMode Chakra вместо класса dark-theme
             setColorMode(isDarkMode ? 'dark' : 'light');
 
             // Mark theme as applied
