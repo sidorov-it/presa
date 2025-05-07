@@ -84,14 +84,29 @@
     z-index: 4;
     color: var(--body-color);
     margin-inline-start: 0.25rem;
-    transition-property: transform;
-    transition-duration: 200ms;
+    /* transition-property: transform; */
+    /* transition-duration: 200ms; */
     border: 0.0625em solid rgba(0, 0, 0, 0.08);
     /* border-radius: 0.35em; */
-    background-color: #f2f2f299;
+    background-color: rgba(242, 242, 242, 0.6);
     box-shadow: 0 0.25em 0.375em -0.0625em rgba(0, 0, 0, 0.1), 0 0.125em 0.25em -0.0625em rgba(0, 0, 0, 0.06);
-    backdrop-filter: blur(20px) saturate(170%);
+    /* backdrop-filter: blur(20px) saturate(170%); */
     font-size: calc(1 * 1 * 1rem * 1 * 1.125);
+    /* transform: translateZ(0);  Force GPU acceleration */
+    /* will-change: transform;    Optimize for animations */
+    -webkit-font-smoothing: antialiased;
+}
+
+.tableButton::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* backdrop-filter: blur(20px) saturate(170%); */
+    z-index: -1;
+    border-radius: inherit;
 }
 
 .addRowButton {

@@ -2,15 +2,7 @@ import Tiptap from '@/components/tiptap/Tiptap';
 import styles from './ElementContent.module.css';
 import DragHandler from '../DragHandler';
 import { memo, RefObject, useCallback, useMemo, useState } from 'react';
-import {
-    Element,
-    GridStructure,
-    getPredefinedGridStructures,
-    Layout,
-    TipTapRefs,
-    EditorElement,
-    ElementConfig,
-} from '@/types';
+import { GridStructure, getPredefinedGridStructures, Layout, TipTapRefs, EditorElement, ElementConfig } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import { generateId } from '@/utils/id';
 import { useEditorStore } from '@/store/editorStore';
@@ -282,12 +274,11 @@ export const ElementContent = ({
 
             const elementsInCell = layout.elements.filter(e => e.cellId === cellId);
 
-            const slideIndex = presentation.slides.findIndex(s => s.id === slideId);
             const layoutIndex = slide.layouts.findIndex(l => l.id === layoutId);
 
             const isMultiCellRow = layout.gridStructure.rows[0].cells.length > 1;
 
-            if (layoutIndex === 0 && slideIndex === 0 && !isMultiCellRow) {
+            if (layoutIndex === 0 && !isMultiCellRow) {
                 // backspace в первой строке первого слайда -> ничего не делаем
                 return;
             }
