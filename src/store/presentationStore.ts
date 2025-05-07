@@ -23,6 +23,7 @@ import debounce from 'lodash/debounce';
 import { generateId } from '@/utils/id';
 import deepDiff from '@/utils/deepDiff';
 import { MutableRefObject } from 'react';
+import getNewLayoutWithTextEditor from '@/utils/getNewLayoutWithTextEditor';
 
 export interface PresentationState {
     presentations: IPresentation[];
@@ -1274,6 +1275,12 @@ export const usePresentationStore = create<PresentationState>()(
                 if (!currentLayout) return;
 
                 set(state => {
+                    let updatedLayouts = currentSlide.layouts.filter(layout => layout.id !== layoutId);
+
+                    if (updatedLayouts.length === 0) {
+                        updatedLayouts = [getNewLayoutWithTextEditor()];
+                    }
+
                     const updatedState = {
                         presentations: state.presentations.map(presentation => {
                             if (presentation.id === presentationId) {
@@ -1283,7 +1290,7 @@ export const usePresentationStore = create<PresentationState>()(
                                         if (slide.id === slideId) {
                                             return {
                                                 ...slide,
-                                                layouts: slide.layouts.filter(layout => layout.id !== layoutId),
+                                                layouts: updatedLayouts,
                                             };
                                         }
                                         return slide;
@@ -2102,8 +2109,6 @@ export const usePresentationStore = create<PresentationState>()(
                     });
                 }
                 get().saveChanges(presentationId);
-
-                // Автосохранение после обновления элемента
             },
 
             deleteElement: (presentationId, slideId, layoutId, elementId) => {
@@ -2122,6 +2127,28 @@ export const usePresentationStore = create<PresentationState>()(
                 if (!currentElement) return;
 
                 set(state => {
+                    const presentation = state.presentations.find(p => p.id === presentationId);
+                    const slide = presentation!.slides.find(s => s.id === slideId);
+
+                    const filteredElements = currentLayout.elements.filter(element => element.id !== elementId);
+                    let updatedLayouts;
+
+                    if (filteredElements.length === 0) {
+                        updatedLayouts = slide!.layouts.filter(layout => layout.id !== layoutId);
+                        if (updatedLayouts.length === 0) {
+                            updatedLayouts = [getNewLayoutWithTextEditor()];
+                        }
+                    } else {
+                        updatedLayouts = slide!.layouts.map(layout => {
+                            if (layout.id === layoutId) {
+                                return { ...layout, elements: filteredElements };
+                            }
+                            return layout;
+                        });
+                    }
+
+                    // const filteredLayouts = slide.layouts.filter(layout => layout.id !== layoutId);
+
                     const updatedState = {
                         presentations: state.presentations.map(presentation => {
                             if (presentation.id === presentationId) {
@@ -2131,17 +2158,7 @@ export const usePresentationStore = create<PresentationState>()(
                                         if (slide.id === slideId) {
                                             return {
                                                 ...slide,
-                                                layouts: slide.layouts.map(layout => {
-                                                    if (layout.id === layoutId) {
-                                                        return {
-                                                            ...layout,
-                                                            elements: layout.elements.filter(
-                                                                element => element.id !== elementId
-                                                            ),
-                                                        };
-                                                    }
-                                                    return layout;
-                                                }),
+                                                layouts: updatedLayouts,
                                             };
                                         }
                                         return slide;

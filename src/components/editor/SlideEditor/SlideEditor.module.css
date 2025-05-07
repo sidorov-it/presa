@@ -129,9 +129,9 @@
     font-size: 0.875rem;
     padding-inline-start: 0.75rem;
     padding-inline-end: 0.75rem;
-    color: var(--chakra-colors-chakra-text);
-    background-color: var(--chakra-colors-chakra-body-bg);
-    border: 1px solid var(--chakra-colors-chakra-border-color);
+    color: var(--chakra-colors-primary-subtle-text);
+    background-color: var(--chakra-colors-primary-subtle-background);
+    border: 1px solid var(--chakra-colors-primary-subtle-border);
     border-radius: 0.375rem;
     box-shadow: none;
     min-width: 3rem;

@@ -9,30 +9,30 @@ import { PdfExportDialog } from '@/components/export';
 import styles from './page.module.css';
 
 // Define metadata for the page
-export const generateMetadata = async (props: { params: Promise<{ id: string }> }) => {
-    const params = await props.params;
-    try {
-        const presentation = await fetch(`/api/presentations/${params.id}`);
-        if (!presentation.ok) {
-            throw new Error('Failed to load presentation');
-        }
+// export const generateMetadata = async (props: { params: Promise<{ id: string }> }) => {
+//     const params = await props.params;
+//     try {
+//         const presentation = await fetch(`/api/presentations/${params.id}`);
+//         if (!presentation.ok) {
+//             throw new Error('Failed to load presentation');
+//         }
 
-        const data = await presentation.json();
-        const title = data.presentation?.title || 'Presentation Viewer';
-        const description = 'View the presentation in read-only mode';
+//         const data = await presentation.json();
+//         const title = data.presentation?.title || 'Presentation Viewer';
+//         const description = 'View the presentation in read-only mode';
 
-        return {
-            title,
-            description,
-        };
-    } catch (error: any) {
-        console.error('Failed to load presentation:', error);
-        return {
-            title: 'Presentation Viewer',
-            description: 'View presentation content',
-        };
-    }
-};
+//         return {
+//             title,
+//             description,
+//         };
+//     } catch (error: any) {
+//         console.error('Failed to load presentation:', error);
+//         return {
+//             title: 'Presentation Viewer',
+//             description: 'View presentation content',
+//         };
+//     }
+// };
 
 export default function PresentationView() {
     const params = useParams();
