@@ -10,9 +10,12 @@ import {
     type ComponentStructureType,
     type SmartLayoutElement,
     type SmartLayoutItem,
+    type Slide,
+    type LayoutType,
+    type SlideTemplateConfig,
 } from '@/types';
 import { elementTypes } from './elementTypes';
-import { MenuItem } from './menuRegistry';
+import { MenuItem, SlideTemplates } from './menuRegistry';
 import getColumnWidths from '@/utils/getColumnWidths';
 
 // export const getNewTableLayout = (menuItem: MenuItem): Layout | null => {
@@ -131,6 +134,83 @@ export const getNewElement = (menuItem: MenuItem): Omit<BaseElement, 'cellId'> |
 
         return element as Omit<BaseElement, 'cellId'>;
     }
+};
+
+/**
+ * Creates a new slide from a template configuration
+ * @param presentationId - The ID of the presentation
+ * @param slideIndex - Where to insert the new slide (optional, adds to the end if not specified)
+ * @param templateConfig - The template configuration from menuRegistry
+ * @returns The ID of the newly created slide
+ */
+export const createSlideFromTemplate = (templateConfig: SlideTemplateConfig): Slide => {
+    // Create a new slide
+    const newSlideId = generateId();
+
+    const newSlide: Slide = {
+        id: newSlideId,
+        layouts: [],
+    };
+
+    // Process each layout in the template
+    templateConfig.layouts.forEach(layoutConfig => {
+        // Create a new layout
+        const newLayout: Layout = {
+            id: generateId(),
+            type: layoutConfig.layout as LayoutType,
+            elements: [],
+            style: {},
+            gridStructure: {
+                rows: [
+                    {
+                        id: generateId(),
+                        cells: [],
+                    },
+                ],
+                columns: 0,
+                columnWidths: [],
+            },
+        };
+
+        // Create cells based on the number of elements
+        const elementCount = layoutConfig.elements.length;
+        newLayout.gridStructure.columns = elementCount;
+        newLayout.gridStructure.columnWidths = getColumnWidths(elementCount);
+
+        // Create cells for the layout
+        for (let i = 0; i < elementCount; i++) {
+            const cell: GridCell = {
+                id: generateId(),
+                row: 0,
+                column: i,
+            };
+
+            newLayout.gridStructure.rows[0].cells.push(cell);
+
+            // Create element for this cell
+            const elementConfig = layoutConfig.elements[i];
+            const newElement = getNewElement({
+                elementTypeId: elementConfig.elementTypeId,
+                defaultProps: elementConfig.defaultProps,
+                elementVariant: elementConfig.elementVariant,
+                label: ''
+            });
+
+            if (newElement) {
+                // Add cell ID to the element
+                newLayout.elements.push({
+                    ...newElement,
+                    cellId: cell.id,
+                } as BaseElement);
+            }
+        }
+
+        newSlide.layouts.push(newLayout);
+        // Add the layout to the slide
+        // usePresentationStore.getState().addLayout(presentationId, newSlideId, newLayout);
+    });
+
+    return newSlide;
 };
 
 // Helper to get appropriate menu based on element and context

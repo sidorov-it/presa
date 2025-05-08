@@ -70,7 +70,7 @@ function Presentation({ presentationId, activeSlideId, onSlideSelect, tiptapRefs
         <div className={styles.presentation}>
             {!isReadOnly && slideIds.length === 0 && (
                 <div className={styles.emptyContainer}>
-                    <Button onClick={() => usePresentationStore.getState().addSlide(presentationId)}>
+                    <Button onClick={() => usePresentationStore.getState().addEmptySlide(presentationId)}>
                         + Добавить слайд
                     </Button>
                 </div>

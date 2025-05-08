@@ -1,4 +1,5 @@
 import { EditorWithMethods } from '@/components/tiptap/extensions/ArrowNavigationExtension';
+import { MenuItem } from '@/elements/menuRegistry';
 import { generateId } from '@/utils/id';
 import { IconType } from 'react-icons/lib';
 
@@ -402,13 +403,13 @@ export interface Layout {
 
 export interface Slide {
     id: string;
-    title: string;
+    title?: string;
     layouts: Layout[];
     background?: {
         type: 'color' | 'image';
         value: string;
     };
-    style: Style;
+    style?: Style;
     templateType?: (typeof SLIDE_TEMPLATES)[number]['value'];
     imageUrl?: string;
     imageSize?: {
@@ -513,3 +514,10 @@ export type DragElementType =
     | 'table'
     | 'smart-layout-item'
     | 'slide';
+
+export interface SlideTemplateConfig {
+    layouts: Array<{
+        layout: LayoutType;
+        elements: Array<Pick<MenuItem, 'elementTypeId' | 'defaultProps' | 'elementVariant'>>;
+    }>;
+}

@@ -51,7 +51,8 @@ export interface PresentationState {
     setTheme: (presentationId: string, themeId: string | null) => void;
 
     // Работа со слайдами
-    addSlide: (presentationId: string, index?: number) => string;
+    addSlide: (presentationId: string, slide: Slide, index?: number) => void;
+    addEmptySlide: (presentationId: string, index?: number) => string;
     updateSlide: (
         presentationId: string,
         slideId: string,
@@ -487,7 +488,44 @@ export const usePresentationStore = create<PresentationState>()(
                 return get().presentations.find(presentation => presentation.id === id);
             },
 
-            addSlide: (presentationId, index = 0) => {
+            addSlide: (presentationId, slide, index = 0) => {
+                const beforeState = { ...get() };
+
+                set(state => {
+                    const updatedState = {
+                        presentations: state.presentations.map(presentation => {
+                            if (presentation.id === presentationId) {
+                                const newSlides = [...presentation.slides];
+
+                                newSlides.splice(index, 0, slide);
+
+                                return {
+                                    ...presentation,
+                                    slides: newSlides,
+                                    updatedAt: Date.now(),
+                                };
+                            }
+                            return presentation;
+                        }),
+                    };
+
+                    get().recordAction({
+                        type: 'slide',
+                        description: 'Add new slide',
+                        presentationId,
+                        slideId: slide.id,
+                        before: { presentations: beforeState.presentations },
+                        after: updatedState,
+                    });
+
+                    return updatedState;
+                });
+
+                // Add auto-save after completing the operation
+                get().saveChanges(presentationId);
+            },
+
+            addEmptySlide: (presentationId, index = 0) => {
                 const beforeState = { ...get() };
 
                 const slideId = generateId();

@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { BaseElement, DragElementType, GridCell, GridRow, GridStructure, Layout, Slide } from '@/types';
 import { DndState, Position } from '@/types/DragDropTypes';
-import { getNewEditorElement, getNewElement } from '@/elements/registry';
+import { createSlideFromTemplate, getNewEditorElement, getNewElement } from '@/elements/registry';
 import { usePresentationStore } from './presentationStore';
 import { MenuItem, menuRegistry } from '@/elements/menuRegistry';
 import { DragDropTransactionHelper } from '@/contexts/DragDropTransactionHelper';
@@ -56,6 +56,7 @@ const initialState: DndState = {
         elementTypeId: null,
         elementVariant: null,
     },
+    newSlide: null,
     isReadyToDrop: false,
     lastMousePosition: null,
 };
@@ -212,7 +213,7 @@ export const useDndStore = create<{
         slideId?: string,
         dragElementType?: DragElementType
     ) => void;
-    startNewElementDrag: (element: MenuItem) => void;
+    startNewElementDrag: (element: MenuItem & { isSlideTemplate?: boolean }) => void;
     completeDrop: () => void;
     cancelDrag: () => void;
     setReadyToDrop: (isReady: boolean) => void;
@@ -434,34 +435,60 @@ export const useDndStore = create<{
     },
 
     startNewElementDrag: (element: MenuItem) => {
-        const newElement = getNewElement(element) as {
-            id: string | null;
-            elementTypeId: string | null;
-            elementVariant: string | null;
-            defaultProps: any;
-        };
+        if (element.isSlideTemplate && element.templateConfig) {
+            const newSlide = createSlideFromTemplate(element.templateConfig);
+            if (!newSlide) {
+                console.error(`Slide template with type ${element.elementTypeId} not found in registry`);
+                return;
+            }
 
-        if (!newElement) {
-            console.error(`Element with type ${element.elementTypeId} not found in registry`);
-            return;
-        }
+            set(state => {
+                const newState = {
+                    ...state,
+                    state: {
+                        ...state.state,
+                        dragState: 'dragging' as const,
+                        target: cloneDeep(initialState.target),
+                        indicators: cloneDeep(initialState.indicators),
+                        dragElementType: 'slide',
+                        newSlide,
+                    },
+                };
 
-        set(state => {
-            const newState = {
-                ...state,
-                state: {
-                    ...state.state,
-                    dragState: 'dragging' as const,
-                    target: cloneDeep(initialState.target),
-                    indicators: cloneDeep(initialState.indicators),
-                    dragElementType: 'element',
-                    newElement,
-                },
+                prevState = newState.state;
+                return newState;
+            });
+            console.log('newSlide', newSlide);
+        } else {
+            const newElement = getNewElement(element) as {
+                id: string | null;
+                elementTypeId: string | null;
+                elementVariant: string | null;
+                defaultProps: any;
             };
 
-            prevState = newState.state;
-            return newState;
-        });
+            if (!newElement) {
+                console.error(`Element with type ${element.elementTypeId} not found in registry`);
+                return;
+            }
+
+            set(state => {
+                const newState = {
+                    ...state,
+                    state: {
+                        ...state.state,
+                        dragState: 'dragging' as const,
+                        target: cloneDeep(initialState.target),
+                        indicators: cloneDeep(initialState.indicators),
+                        dragElementType: 'element',
+                        newElement,
+                    },
+                };
+
+                prevState = newState.state;
+                return newState;
+            });
+        }
     },
 
     completeDrop: () => {
@@ -1670,52 +1697,77 @@ export const useDndStore = create<{
         const presentationId = get().presentationId;
         if (!presentationId) return;
 
-        if (!prevState.source.slideId || !prevState.indicators.slideIndicator) {
+        if ((!prevState.source.slideId && !prevState.newSlide) || !prevState.indicators.slideIndicator) {
             return;
         }
 
-        const sourceSlideId = prevState.source.slideId;
-        const targetSlideId = prevState.indicators.slideIndicator;
-        const position = prevState.indicators.slidePosition;
+        if (prevState.newSlide) {
+            const targetSlideId = prevState.indicators.slideIndicator;
+            const position = prevState.indicators.slidePosition;
 
-        // Don't do anything if source and target are the same
-        if (sourceSlideId === targetSlideId) {
-            return;
+            const presentation = usePresentationStore.getState().getPresentation(presentationId);
+
+            if (!presentation) {
+                console.warn('Presentation not found');
+                return;
+            }
+
+            // Find the indices of source and target slides
+            const targetIndex = presentation.slides.findIndex(slide => slide.id === targetSlideId);
+
+            if (targetIndex === -1) {
+                console.warn('Source or target slide not found');
+                return;
+            }
+
+            // Calculate the insertion index based on the position
+            const insertIndex = position === 'top' ? targetIndex : targetIndex + 1;
+
+            usePresentationStore.getState().addSlide(presentationId, prevState.newSlide as Slide, insertIndex);
+        } else {
+            const sourceSlideId = prevState.source.slideId;
+            const targetSlideId = prevState.indicators.slideIndicator;
+            const position = prevState.indicators.slidePosition;
+
+            // Don't do anything if source and target are the same
+            if (sourceSlideId === targetSlideId) {
+                return;
+            }
+
+            const presentation = usePresentationStore.getState().getPresentation(presentationId);
+
+            if (!presentation) {
+                console.warn('Presentation not found');
+                return;
+            }
+
+            // Find the indices of source and target slides
+            const sourceIndex = presentation.slides.findIndex(slide => slide.id === sourceSlideId);
+            const targetIndex = presentation.slides.findIndex(slide => slide.id === targetSlideId);
+
+            if (sourceIndex === -1 || targetIndex === -1) {
+                console.warn('Source or target slide not found');
+                return;
+            }
+
+            // Calculate the insertion index based on the position
+            const insertIndex = position === 'top' ? targetIndex : targetIndex + 1;
+
+            // Clone and reorder the slides
+            const updatedSlides = [...presentation.slides];
+            const [movedSlide] = updatedSlides.splice(sourceIndex, 1);
+
+            // If moving from before to after, adjust index for the removed item
+            let adjustedInsertIndex = insertIndex;
+            if (sourceIndex < targetIndex) {
+                adjustedInsertIndex -= 1;
+            }
+
+            updatedSlides.splice(adjustedInsertIndex, 0, movedSlide);
+
+            // Update the presentation with the new slide order
+            usePresentationStore.getState().reorderSlides(presentationId, sourceIndex, adjustedInsertIndex);
         }
-
-        const presentation = usePresentationStore.getState().getPresentation(presentationId);
-
-        if (!presentation) {
-            console.warn('Presentation not found');
-            return;
-        }
-
-        // Find the indices of source and target slides
-        const sourceIndex = presentation.slides.findIndex(slide => slide.id === sourceSlideId);
-        const targetIndex = presentation.slides.findIndex(slide => slide.id === targetSlideId);
-
-        if (sourceIndex === -1 || targetIndex === -1) {
-            console.warn('Source or target slide not found');
-            return;
-        }
-
-        // Calculate the insertion index based on the position
-        const insertIndex = position === 'top' ? targetIndex : targetIndex + 1;
-
-        // Clone and reorder the slides
-        const updatedSlides = [...presentation.slides];
-        const [movedSlide] = updatedSlides.splice(sourceIndex, 1);
-
-        // If moving from before to after, adjust index for the removed item
-        let adjustedInsertIndex = insertIndex;
-        if (sourceIndex < targetIndex) {
-            adjustedInsertIndex -= 1;
-        }
-
-        updatedSlides.splice(adjustedInsertIndex, 0, movedSlide);
-
-        // Update the presentation with the new slide order
-        usePresentationStore.getState().reorderSlides(presentationId, sourceIndex, adjustedInsertIndex);
     },
 
     processAddElementToSiblingCell: ({
@@ -2665,8 +2717,12 @@ export const useDndStore = create<{
         const layoutId = layoutNode?.getAttribute('data-layout-id');
 
         // Handle slide dragging
-        if (state.source.slideId && slideNode) {
-            if (state.source.slideId === slideNode.getAttribute('data-slide-id')) {
+        if ((state.source.slideId || state.newSlide) && slideNode) {
+            if (
+                state.source.slideId &&
+                slideNode &&
+                state.source.slideId === slideNode?.getAttribute('data-slide-id')
+            ) {
                 console.log('return slidenode');
                 return;
             }

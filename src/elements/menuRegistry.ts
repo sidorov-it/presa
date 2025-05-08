@@ -11,14 +11,17 @@ import {
     FaChartPie,
     FaBox,
 } from 'react-icons/fa';
-import { FaRegChartBar } from 'react-icons/fa6';
+import { FaRegChartBar, FaListCheck } from 'react-icons/fa6';
 
 import editorsDefaultContent from './textEditor/defaultContent';
 import { PiTextColumns } from 'react-icons/pi';
 import { LuHeading1, LuHeading2, LuHeading3, LuHeading4 } from 'react-icons/lu';
-import { FaListCheck } from 'react-icons/fa6';
+import { MdViewColumn } from 'react-icons/md';
+import { GrTemplate } from 'react-icons/gr';
 import { BoxIconOptions } from '@/components/editor/Menus/BubbleMenus/BoxBubbleMenu/BoxIconOptions';
 import { TbChartDonutFilled } from 'react-icons/tb';
+import { SlideTemplateConfig } from '@/types';
+
 export interface MenuCategory {
     id: string;
     label: string;
@@ -26,6 +29,7 @@ export interface MenuCategory {
     subCategories?: MenuSubCategory[];
     elements?: MenuItem[];
     excludeFromTable?: boolean;
+    isSlideTemplate?: boolean;
 }
 
 export interface MenuSubCategory {
@@ -41,6 +45,8 @@ export interface MenuItem {
     Icon?: React.ComponentType;
     defaultProps?: Record<string, any>;
     elementVariant?: string;
+    isSlideTemplate?: boolean;
+    templateConfig?: SlideTemplateConfig;
 }
 
 export const BoxCategories = {
@@ -123,7 +129,195 @@ export const BoxCategories = {
     ],
 };
 
+export const SlideTemplates: MenuCategory = {
+    id: 'slide-templates',
+    label: 'Шаблоны слайдов',
+    Icon: GrTemplate,
+    isSlideTemplate: true,
+    subCategories: [
+        {
+            id: 'image-text-templates',
+            label: 'Изображения и текст',
+            elements: [
+                {
+                    elementTypeId: 'slide-template',
+                    label: 'Изображение + текст',
+                    Icon: FaImage,
+                    elementVariant: 'image-text',
+                    templateConfig: {
+                        layouts: [
+                            {
+                                layout: 'image-text',
+                                elements: [
+                                    {
+                                        elementTypeId: 'image',
+                                        defaultProps: {
+                                            src: '',
+                                            alt: 'Image',
+                                            alignment: 'center',
+                                            width: undefined,
+                                        },
+                                    },
+                                    {
+                                        elementTypeId: 'text',
+                                        defaultProps: {
+                                            textType: 'text',
+                                            content: '<p>Текст слайда</p>',
+                                        },
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                },
+                {
+                    elementTypeId: 'slide-template',
+                    label: 'Текст + изображение',
+                    Icon: FaRegAddressCard,
+                    elementVariant: 'text-image',
+                    templateConfig: {
+                        layouts: [
+                            {
+                                layout: 'text-image',
+                                elements: [
+                                    {
+                                        elementTypeId: 'text',
+                                        defaultProps: {
+                                            textType: 'text',
+                                            content: '<p>Текст слайда</p>',
+                                        },
+                                    },
+                                    {
+                                        elementTypeId: 'image',
+                                        defaultProps: {
+                                            src: '',
+                                            alt: 'Image',
+                                            alignment: 'center',
+                                            width: undefined,
+                                        },
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                },
+            ],
+        },
+        {
+            id: 'column-templates',
+            label: 'Колонки',
+            elements: [
+                {
+                    elementTypeId: 'slide-template',
+                    label: '2 колонки',
+                    Icon: MdViewColumn,
+                    elementVariant: '2-columns',
+                    templateConfig: {
+                        layouts: [
+                            {
+                                layout: 'two-columns-equal',
+                                elements: [
+                                    {
+                                        elementTypeId: 'text',
+                                        defaultProps: {
+                                            textType: 'text',
+                                            content: '<p>Колонка 1</p>',
+                                        },
+                                    },
+                                    {
+                                        elementTypeId: 'text',
+                                        defaultProps: {
+                                            textType: 'text',
+                                            content: '<p>Колонка 2</p>',
+                                        },
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                },
+                {
+                    elementTypeId: 'slide-template',
+                    label: '3 колонки',
+                    Icon: MdViewColumn,
+                    elementVariant: '3-columns',
+                    templateConfig: {
+                        layouts: [
+                            {
+                                layout: 'three-columns',
+                                elements: [
+                                    {
+                                        elementTypeId: 'text',
+                                        defaultProps: {
+                                            textType: 'text',
+                                            content: '<p>Колонка 1</p>',
+                                        },
+                                    },
+                                    {
+                                        elementTypeId: 'text',
+                                        defaultProps: {
+                                            textType: 'text',
+                                            content: '<p>Колонка 2</p>',
+                                        },
+                                    },
+                                    {
+                                        elementTypeId: 'text',
+                                        defaultProps: {
+                                            textType: 'text',
+                                            content: '<p>Колонка 3</p>',
+                                        },
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                },
+                // {
+                //     elementTypeId: 'slide-template',
+                //     label: '4 колонки',
+                //     Icon: MdViewColumn,
+                //     elementVariant: '4-columns',
+                //     defaultProps: {
+                //         layout: '4-columns',
+                //         elements: [
+                //             {
+                //                 type: 'text',
+                //                 props: {
+                //                     textType: 'text',
+                //                     content: '<p>Колонка 1</p>',
+                //                 },
+                //             },
+                //             {
+                //                 type: 'text',
+                //                 props: {
+                //                     textType: 'text',
+                //                     content: '<p>Колонка 2</p>',
+                //                 },
+                //             },
+                //             {
+                //                 type: 'text',
+                //                 props: {
+                //                     textType: 'text',
+                //                     content: '<p>Колонка 3</p>',
+                //                 },
+                //             },
+                //             {
+                //                 type: 'text',
+                //                 props: {
+                //                     textType: 'text',
+                //                     content: '<p>Колонка 4</p>',
+                //                 },
+                //             },
+                //         ],
+                //     },
+                // },
+            ],
+        },
+    ],
+};
+
 export const menuRegistry: MenuCategory[] = [
+    SlideTemplates,
     {
         id: 'smart-layouts',
         label: 'Структурные блоки',
@@ -449,3 +643,5 @@ export const menuRegistry: MenuCategory[] = [
 ];
 
 export const TEXT_ELEMENT_TYPES = ['text', 'heading', 'quote', 'bullet-list', 'numbered-list', 'todo-list'];
+
+export const SLIDE_TEMPLATE_TYPES = ['slide-template'];

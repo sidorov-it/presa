@@ -1,4 +1,4 @@
-import { DragElementType } from '.';
+import { DragElementType, Slide } from '.';
 
 // Define DnD export types
 export type DragSource = {
@@ -61,6 +61,7 @@ export type DndState = {
         elementVariant: string | null;
         defaultProps: any;
     };
+    newSlide: Partial<Slide> | null;
     lastMousePosition?: MousePosition | null; // Добавляем lastMousePosition
 };
 
@@ -107,7 +108,13 @@ export type DndAction =
     | { type: 'SET_READY_TO_DROP'; payload: boolean }
     | {
           type: 'START_DRAG_MENU_ITEM';
-          payload: { id: string; defaultProps: any; elementTypeId: string; elementVariant: string };
+          payload: {
+              id: string;
+              defaultProps: any;
+              elementTypeId: string;
+              elementVariant: string;
+              isSlideTemplate?: boolean;
+          };
       }
     | { type: 'SET_MOUSE_POSITION'; payload: MousePosition }
     | { type: 'SET_INDICATORS'; payload: Partial<DndState['indicators']> };

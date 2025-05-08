@@ -216,6 +216,7 @@
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 300ms; 
     cursor: pointer; 
+    position: relative;
 }
 
 .activeSlide {
@@ -228,4 +229,27 @@
 
 .lastSlide {
     border-bottom-width: 0px; 
+}
+
+/* Slide template drop indicator styles */
+.topIndicator::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: #2563EB;
+    z-index: 10;
+}
+
+.bottomIndicator::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: #2563EB;
+    z-index: 10;
 }

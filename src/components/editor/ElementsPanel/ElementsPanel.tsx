@@ -6,7 +6,7 @@ import { getNewElement } from '@/elements/registry';
 import styles from './ElementsPanel.module.css';
 import { usePresentationStore } from '@/store/presentationStore';
 import { BaseElement } from '@/types';
-import { menuRegistry, MenuItem } from '@/elements/menuRegistry';
+import { menuRegistry, MenuItem, SLIDE_TEMPLATE_TYPES } from '@/elements/menuRegistry';
 import { useDndStore } from '@/store/dndStore';
 
 interface ElementsPanelProps {
@@ -14,7 +14,7 @@ interface ElementsPanelProps {
     slideId: string;
 }
 
-type CategoryType = 'basic' | 'media' | 'charts' | 'smart-layouts';
+type CategoryType = 'basic' | 'media' | 'charts' | 'smart-layouts' | 'slide-templates';
 
 interface PopupMenuProps {
     isOpen: boolean;
@@ -27,15 +27,60 @@ interface PopupMenuProps {
 const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideId, presentationId }) => {
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>, element: MenuItem) => {
         e.stopPropagation();
-        useDndStore.getState().startNewElementDrag(element);
+
+        // Check if this is a slide template
+        const categoryData = menuRegistry.find(cat => cat.id === category);
+        const isSlideTemplate = categoryData?.isSlideTemplate ||
+            SLIDE_TEMPLATE_TYPES.includes(element.elementTypeId);
+
+        if (isSlideTemplate) {
+            // Start drag with special handling for slide templates
+            useDndStore.getState().startNewElementDrag({
+                ...element,
+                isSlideTemplate: true
+            });
+        } else {
+            // Normal element drag
+            useDndStore.getState().startNewElementDrag(element);
+        }
     };
 
     // Функция для добавления элемента при клике
     const handleElementClick = (element: MenuItem) => {
-        const newElement = getNewElement(element);
-        usePresentationStore
-            .getState()
-            .addLayoutWithElement(presentationId, slideId, newElement as unknown as BaseElement);
+        // Check if this is a slide template
+        const categoryData = menuRegistry.find(cat => cat.id === category);
+        const isSlideTemplate = categoryData?.isSlideTemplate ||
+            SLIDE_TEMPLATE_TYPES.includes(element.elementTypeId);
+
+        if (isSlideTemplate) {
+            // Handle slide template click
+            const currentSlideIndex = usePresentationStore.getState().getSlideIndex(presentationId, slideId);
+            // Add template slide after current slide
+            const newSlideId = usePresentationStore.getState().addEmptySlide(presentationId, currentSlideIndex + 1);
+
+            // Apply template to the new slide
+            if (element.defaultProps?.elements && Array.isArray(element.defaultProps.elements)) {
+                element.defaultProps.elements.forEach(templateElement => {
+                    const newElement = getNewElement({
+                        elementTypeId: templateElement.type,
+                        defaultProps: templateElement.props,
+                        elementVariant: templateElement.variant
+                    });
+
+                    usePresentationStore.getState().addLayoutWithElement(
+                        presentationId,
+                        newSlideId,
+                        newElement as unknown as BaseElement
+                    );
+                });
+            }
+        } else {
+            // Normal element click
+            const newElement = getNewElement(element);
+            usePresentationStore
+                .getState()
+                .addLayoutWithElement(presentationId, slideId, newElement as unknown as BaseElement);
+        }
     };
 
     // Функция для получения содержимого на основе категории
