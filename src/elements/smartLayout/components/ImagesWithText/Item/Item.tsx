@@ -8,6 +8,7 @@ import ItemWrapper from '../../ItemWrapper/ItemWrapper';
 import styles from './Item.module.css';
 import { HiPlus } from 'react-icons/hi2';
 import { usePresentationStore } from '@/store/presentationStore';
+import Image from '@/components/ui/Image/Image';
 
 type ItemProps = {
     itemId: string;
@@ -63,24 +64,18 @@ export default function Item({
             layoutId={layoutId}
             elementId={elementId}
         >
-            <div
-                ref={imageRef}
+            <Image
+                imageUrl={item.imageUrl || ''}
+                onClearImage={() => handleImageChange(item.id, '', false)}
+                onUpdateLink={(link, uploaded) => handleImageChange(item.id, link, uploaded)}
+                isWidthRightMenu={true}
                 className={`${styles.image} ${imageShape ? styles[imageShape] : ''}`}
                 style={{
                     backgroundImage: item.imageUrl ? `url(${item.imageUrl})` : undefined,
-                    // height: imageHeight ? `${imageHeight}px` : undefined,
                     width: imageWidth ? `calc(${imageWidth}% - 1em)` : undefined,
                 }}
-            >
-                {!item.imageUrl && (
-                    <ImagePlaceholder
-                        imageUrl={item.imageUrl || ''}
-                        onClearImage={() => handleImageChange(item.id, '', false)}
-                        onUpdateLink={(link: string, uploaded: boolean) => handleImageChange(item.id, link, uploaded)}
-                        isWidthRightMenu={true}
-                    />
-                )}
-            </div>
+                ref={imageRef}
+            />
             <div className={styles.content}>
                 <div className={styles.text}>
                     <Tiptap
