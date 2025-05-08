@@ -119,6 +119,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         const handleDocumentDragOver = (e: React.DragEvent) => {
             e.preventDefault();
 
+            // console.log('handleDocumentDragOver');
             const state = useDndStore.getState().state;
 
             // Only process if we're dragging

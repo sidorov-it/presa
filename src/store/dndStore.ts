@@ -2527,6 +2527,8 @@ export const useDndStore = create<{
         const state = get().state;
 
         const layoutId = layoutNode?.getAttribute('data-layout-id');
+
+        console.log('handleDragTarget', { slideNode, layoutNode, cellNode, elementNode, layoutId });
         // Handle slide dragging
         if (state.source.slideId && slideNode) {
             if (state.source.slideId === slideNode.getAttribute('data-slide-id')) {
@@ -2569,6 +2571,140 @@ export const useDndStore = create<{
             // Возможно мы только начали наводить на слайд, поищем элементы внутри него
             const layoutsInSlide = slideNode.querySelectorAll('[data-layout-id]');
             if (layoutsInSlide.length > 0) {
+                const handleFindedLayout = (layout: Element, foundLayoutId: string) => {
+                    const foundLayoutNode = layout as HTMLElement;
+
+                    // Получаем информацию о макете и продолжаем с новыми переменными
+                    const targetLayout = foundLayoutId ? get().getLayout(foundLayoutId) : undefined;
+                    if (!targetLayout) {
+                        // console.log('[DragDropContext] dragover – no targetLayout found for id', foundLayoutId);
+                        return;
+                    }
+
+                    // Determine context of the drag for special handling
+                    const isSingleCellSingleElement = targetLayout.elements.length === 1;
+                    const isMultiCellRow = targetLayout?.gridStructure.rows[0].cells.length > 1;
+                    const isTable = !!targetLayout?.isTable;
+
+                    // Special case handling for table
+                    if (isTable) {
+                        get().processTableTarget(e, foundLayoutId, cellNode as HTMLElement);
+                        return;
+                    }
+
+                    // Use the helper function to calculate drop position with our new node
+                    const dropPosition = calculateDropPosition(
+                        e,
+                        { elementNode, cellNode, layoutNode: foundLayoutNode, slideNode },
+                        { isSingleCellSingleElement, isMultiCellRow },
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-expect-error
+                        cellNode ? findClosestElementsInCellLocal : undefined
+                    );
+
+                    // Apply the calculated position by updating appropriate indicators using the new values
+                    // ... обработка dropPosition аналогично уже существующему коду
+                    if (dropPosition.targetType === 'element' && dropPosition.targetId) {
+                        // Set element indicator and clear others
+                        const updatedIndicators = getUpdatedIndicators({
+                            elementIndicator: dropPosition.targetId,
+                            elementPosition: dropPosition.position,
+                        });
+
+                        const updatedDropTarget = {
+                            elementId: dropPosition.targetId,
+                            layoutId: foundLayoutId,
+                            cellId: elementNode?.closest('[data-cell-id]')?.getAttribute('data-cell-id') || null,
+                            position: dropPosition.position,
+                        };
+
+                        set(state => ({
+                            ...state,
+                            state: {
+                                ...state.state,
+                                indicators: updatedIndicators,
+                                target: updatedDropTarget,
+                            },
+                        }));
+                    } else if (dropPosition.targetType === 'cell' && dropPosition.targetId) {
+                        // Set cell indicator and clear others
+                        const updatedIndicators = getUpdatedIndicators({
+                            cellIndicator: dropPosition.targetId,
+                            cellPosition: dropPosition.position,
+                        });
+
+                        const updatedDropTarget = {
+                            elementId: null,
+                            layoutId: foundLayoutId,
+                            cellId: dropPosition.targetId,
+                            position: dropPosition.position,
+                        };
+
+                        set(state => ({
+                            ...state,
+                            state: {
+                                ...state.state,
+                                indicators: updatedIndicators,
+                                target: updatedDropTarget,
+                            },
+                        }));
+                    } else if (dropPosition.targetType === 'layout' && dropPosition.targetId) {
+                        const updatedIndicators = getUpdatedIndicators({
+                            layoutIndicator: dropPosition.targetId,
+                            layoutPosition: dropPosition.position,
+                        });
+
+                        const updatedDropTarget = {
+                            elementId: null,
+                            layoutId: dropPosition.targetId,
+                            cellId: null,
+                            position: dropPosition.position,
+                        };
+
+                        // Update drop target state
+                        set(state => ({
+                            ...state,
+                            state: {
+                                ...state.state,
+                                indicators: updatedIndicators,
+                                target: updatedDropTarget,
+                            },
+                        }));
+                    } else if (dropPosition.targetType === 'slide' && dropPosition.targetId) {
+                        // Set slide indicator and clear others
+                        const updatedIndicators = getUpdatedIndicators({
+                            slideIndicator: dropPosition.targetId,
+                            slidePosition: dropPosition.position,
+                        });
+
+                        const updatedDropTarget = {
+                            elementId: null,
+                            layoutId: null,
+                            cellId: null,
+                            slideId: dropPosition.targetId,
+                            position: dropPosition.position,
+                        };
+
+                        set(state => ({
+                            ...state,
+                            state: {
+                                ...state.state,
+                                indicators: updatedIndicators,
+                                target: updatedDropTarget,
+                            },
+                        }));
+                    } else {
+                        // Not over a valid target or in empty space
+                        // console.log('[DragDropContext] dragover – no valid target');
+                        get().resetAllIndicators();
+                    }
+
+                    get().updatePrevStateRef();
+                    return; // После обработки выходим из функции
+                };
+
+                let isFound = false;
+
                 // Проверим каждый макет, может быть мы находимся над ним
                 for (const layout of Array.from(layoutsInSlide)) {
                     const layoutRect = layout.getBoundingClientRect();
@@ -2582,136 +2718,37 @@ export const useDndStore = create<{
                         // Используем этот макет, но не изменяем константы
                         const foundLayoutId = layout.getAttribute('data-layout-id');
                         if (foundLayoutId) {
+                            handleFindedLayout(layout, foundLayoutId);
                             // Используем узлы с новыми именами
-                            const foundLayoutNode = layout as HTMLElement;
-                            // Получаем информацию о макете и продолжаем с новыми переменными
-                            const targetLayout = foundLayoutId ? get().getLayout(foundLayoutId) : undefined;
-                            if (!targetLayout) {
-                                // console.log('[DragDropContext] dragover – no targetLayout found for id', foundLayoutId);
-                                return;
-                            }
+                            isFound = true;
+                        }
+                    }
 
-                            // Determine context of the drag for special handling
-                            const isSingleCellSingleElement = targetLayout.elements.length === 1;
-                            const isMultiCellRow = targetLayout?.gridStructure.rows[0].cells.length > 1;
-                            const isTable = !!targetLayout?.isTable;
+                    if (!isFound) {
+                        // Find the closest layout to mouse position
+                        let closestLayout: Element | null = null;
+                        let minDistance = Infinity;
 
-                            // Special case handling for table
-                            if (isTable) {
-                                get().processTableTarget(e, foundLayoutId, cellNode as HTMLElement);
-                                return;
-                            }
+                        for (const layout of Array.from(layoutsInSlide)) {
+                            const layoutRect = layout.getBoundingClientRect();
+                            const layoutCenter = {
+                                x: layoutRect.left + layoutRect.width / 2,
+                                y: layoutRect.top + layoutRect.height / 2,
+                            };
 
-                            // Use the helper function to calculate drop position with our new node
-                            const dropPosition = calculateDropPosition(
-                                e,
-                                { elementNode, cellNode, layoutNode: foundLayoutNode, slideNode },
-                                { isSingleCellSingleElement, isMultiCellRow },
-                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                // @ts-expect-error
-                                cellNode ? findClosestElementsInCellLocal : undefined
+                            // Calculate Euclidean distance from mouse to layout center
+                            const distance = Math.sqrt(
+                                Math.pow(e.clientX - layoutCenter.x, 2) + Math.pow(e.clientY - layoutCenter.y, 2)
                             );
 
-                            // Apply the calculated position by updating appropriate indicators using the new values
-                            // ... обработка dropPosition аналогично уже существующему коду
-                            if (dropPosition.targetType === 'element' && dropPosition.targetId) {
-                                // Set element indicator and clear others
-                                const updatedIndicators = getUpdatedIndicators({
-                                    elementIndicator: dropPosition.targetId,
-                                    elementPosition: dropPosition.position,
-                                });
-
-                                const updatedDropTarget = {
-                                    elementId: dropPosition.targetId,
-                                    layoutId: foundLayoutId,
-                                    cellId:
-                                        elementNode?.closest('[data-cell-id]')?.getAttribute('data-cell-id') || null,
-                                    position: dropPosition.position,
-                                };
-
-                                set(state => ({
-                                    ...state,
-                                    state: {
-                                        ...state.state,
-                                        indicators: updatedIndicators,
-                                        target: updatedDropTarget,
-                                    },
-                                }));
-                            } else if (dropPosition.targetType === 'cell' && dropPosition.targetId) {
-                                // Set cell indicator and clear others
-                                const updatedIndicators = getUpdatedIndicators({
-                                    cellIndicator: dropPosition.targetId,
-                                    cellPosition: dropPosition.position,
-                                });
-
-                                const updatedDropTarget = {
-                                    elementId: null,
-                                    layoutId: foundLayoutId,
-                                    cellId: dropPosition.targetId,
-                                    position: dropPosition.position,
-                                };
-
-                                set(state => ({
-                                    ...state,
-                                    state: {
-                                        ...state.state,
-                                        indicators: updatedIndicators,
-                                        target: updatedDropTarget,
-                                    },
-                                }));
-                            } else if (dropPosition.targetType === 'layout' && dropPosition.targetId) {
-                                const updatedIndicators = getUpdatedIndicators({
-                                    layoutIndicator: dropPosition.targetId,
-                                    layoutPosition: dropPosition.position,
-                                });
-
-                                const updatedDropTarget = {
-                                    elementId: null,
-                                    layoutId: dropPosition.targetId,
-                                    cellId: null,
-                                    position: dropPosition.position,
-                                };
-
-                                // Update drop target state
-                                set(state => ({
-                                    ...state,
-                                    state: {
-                                        ...state.state,
-                                        indicators: updatedIndicators,
-                                        target: updatedDropTarget,
-                                    },
-                                }));
-                            } else if (dropPosition.targetType === 'slide' && dropPosition.targetId) {
-                                // Set slide indicator and clear others
-                                const updatedIndicators = getUpdatedIndicators({
-                                    slideIndicator: dropPosition.targetId,
-                                    slidePosition: dropPosition.position,
-                                });
-
-                                const updatedDropTarget = {
-                                    elementId: null,
-                                    layoutId: null,
-                                    cellId: null,
-                                    slideId: dropPosition.targetId,
-                                    position: dropPosition.position,
-                                };
-
-                                set(state => ({
-                                    ...state,
-                                    state: {
-                                        ...state.state,
-                                        indicators: updatedIndicators,
-                                        target: updatedDropTarget,
-                                    },
-                                }));
-                            } else {
-                                // Not over a valid target or in empty space
-                                // console.log('[DragDropContext] dragover – no valid target');
-                                get().resetAllIndicators();
+                            if (distance < minDistance) {
+                                minDistance = distance;
+                                closestLayout = layout;
                             }
+                        }
 
-                            get().updatePrevStateRef();
-                            return; // После обработки выходим из функции
+                        if (closestLayout) {
+                            handleFindedLayout(closestLayout, closestLayout.getAttribute('data-layout-id') as string);
                         }
                     }
                 }

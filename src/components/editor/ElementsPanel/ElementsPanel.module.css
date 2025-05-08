@@ -5,7 +5,7 @@
     top: 0;
     bottom: 0;
     justify-content: center;
-    color: #3c3838;
+    color: var(--chakra-colors-chakra-text);
     right: 1rem;
     z-index: 40;
     pointer-events: auto;
@@ -113,6 +113,10 @@
     background-color: var(--chakra-colors-gray-100);
     /* transform: translateY(-2px); */
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+:global(.dark) .elementItem:hover {
+    background-color: var(--chakra-colors-gray-600);
 }
 
 .elementItem:focus {

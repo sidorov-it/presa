@@ -3130,13 +3130,13 @@ export const usePresentationStore = create<PresentationState>()(
                         ),
                     };
 
-                    get().recordAction({
-                        type: 'presentation',
-                        description: 'Update presentation theme',
-                        presentationId,
-                        before: { presentations: beforeState.presentations },
-                        after: updatedState,
-                    });
+                    // get().recordAction({
+                    //     type: 'presentation',
+                    //     description: 'Update presentation theme',
+                    //     presentationId,
+                    //     before: { presentations: beforeState.presentations },
+                    //     after: updatedState,
+                    // });
 
                     return updatedState;
                 });

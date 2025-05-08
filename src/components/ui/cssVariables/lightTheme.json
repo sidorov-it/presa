@@ -4508,6 +4508,10 @@
         "value": "var(--chakra-colors-text-default)"
     },
     {
+        "name": "--chakra-colors-chakra-text",
+        "value": "var(--chakra-colors-text-default)"
+    },
+    {
         "name": "--chakra-colors-input-background",
         "value": "#ffffff"
     },

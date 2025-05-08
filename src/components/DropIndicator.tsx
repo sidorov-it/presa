@@ -363,10 +363,11 @@ const DropIndicator = () => {
         if (!indicatorInfo) return {};
         const { targetRect, position, type, previousElementRect, nextElementRect } = indicatorInfo;
 
+        console.log('[DropIndicator] indicatorInfo3', indicatorInfo);
         // For between-element indicators (enhanced spacing)
         if (type === 'element' && (position === 'top' || position === 'bottom')) {
             // Create a thicker indicator between elements
-            const thickness = 6; // Increased thickness
+            const thickness = 7; // Increased thickness
 
             let styles: React.CSSProperties = {
                 position: 'fixed',
@@ -435,7 +436,7 @@ const DropIndicator = () => {
                     styles = {
                         ...styles,
                         left: targetRect.left,
-                        top: targetRect.bottom + (nextElementRect.top - targetRect.bottom) / 2,
+                        top: targetRect.bottom + (nextElementRect.top - targetRect.bottom) / 2 - thickness / 2,
                         width: targetRect.width,
                         height: thickness,
                     };
@@ -454,7 +455,6 @@ const DropIndicator = () => {
             thickness = 5; // Increased from 4
         }
 
-        const offset = 0;
         let styles: React.CSSProperties = {
             position: 'fixed',
             zIndex: 9999,
@@ -477,18 +477,32 @@ const DropIndicator = () => {
         const color = colors[type];
 
         if (position === 'left') {
+            let left;
+            if (type === 'cell') {
+                left = targetRect.left - thickness / 2;
+            } else {
+                left = targetRect.left - 22;
+            }
+
             styles = {
                 ...styles,
-                left: targetRect.left + offset,
+                left,
                 top: targetRect.top,
                 width: thickness,
                 height: targetRect.height,
                 backgroundColor: color,
             };
         } else if (position === 'right') {
+            let left;
+            if (type === 'cell') {
+                left = targetRect.right - thickness / 2;
+            } else {
+                left = targetRect.right + 10;
+            }
+
             styles = {
                 ...styles,
-                left: targetRect.right - offset - thickness,
+                left,
                 top: targetRect.top,
                 width: thickness,
                 height: targetRect.height,
@@ -499,7 +513,7 @@ const DropIndicator = () => {
                 styles = {
                     ...styles,
                     left: targetRect.left,
-                    top: targetRect.top,
+                    top: targetRect.top - thickness,
                     width: targetRect.width,
                     height: thickness,
                     backgroundColor: color,
@@ -508,7 +522,7 @@ const DropIndicator = () => {
                 styles = {
                     ...styles,
                     left: targetRect.left,
-                    top: targetRect.top - (targetRect.top - previousElementRect.bottom) / 2,
+                    top: targetRect.top - (targetRect.top - previousElementRect.bottom) / 2 - thickness / 2,
                     width: targetRect.width,
                     height: thickness,
                     backgroundColor: color,
@@ -519,7 +533,7 @@ const DropIndicator = () => {
                 styles = {
                     ...styles,
                     left: targetRect.left,
-                    top: targetRect.bottom - thickness,
+                    top: targetRect.bottom + thickness,
                     width: targetRect.width,
                     height: thickness,
                     backgroundColor: color,
@@ -528,7 +542,7 @@ const DropIndicator = () => {
                 styles = {
                     ...styles,
                     left: targetRect.left,
-                    top: targetRect.bottom + (nextElementRect.top - targetRect.bottom) / 2,
+                    top: targetRect.bottom + (nextElementRect.top - targetRect.bottom) / 2 - thickness / 2,
                     width: targetRect.width,
                     height: thickness,
                     backgroundColor: color,

@@ -21,6 +21,7 @@ import { HiOutlineCog6Tooth } from 'react-icons/hi2';
 import styles from './page.module.css';
 import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
 import ThemeDebugButton from '@/components/debug/ThemeDebugButton';
+import { useColorMode } from '@/components/ui/color-mode';
 // import { PdfExportDialog } from '@/components/export';
 
 export default function PresentationEditorPage() {
@@ -39,6 +40,7 @@ export default function PresentationEditorPage() {
     const currentTheme = useThemeStore(state => state.currentTheme);
     const setCurrentTheme = useThemeStore(state => state.setCurrentTheme);
     const getDefaultTheme = useThemeStore(state => state.getDefaultTheme);
+    const { colorMode } = useColorMode();
 
     const tiptapRefs = useRef<TipTapRefs>({
         editors: {},
@@ -158,7 +160,7 @@ export default function PresentationEditorPage() {
     return (
         <>
             <ThemeStylesApplier theme={currentTheme} />
-            <div className={styles.container}>
+            <div className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`}>
                 <header className={styles.header}>
                     <div className={styles.headerContent}>
                         <div className={styles.headerLeft}>
