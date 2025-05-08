@@ -16,6 +16,7 @@ import { useMenuStore } from '@/store/menuStore';
 import deepEqual from 'deep-equal';
 import { useDnd } from '@/contexts/DragDropContext';
 import { TEXT_ELEMENT_TYPES } from '@/elements/menuRegistry';
+import { useDndStore } from '@/store/dndStore';
 
 interface SlideEditorProps {
     slideLayoutIds: string[];
@@ -23,7 +24,6 @@ interface SlideEditorProps {
     isSelected: boolean;
     tiptapRefs: RefObject<TipTapRefs>;
     slideId: string;
-    slideNumber: number;
     handleSelectSlide: (slideId: string) => void;
 }
 
@@ -64,7 +64,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     presentationId,
     handleSelectSlide,
     isSelected,
-    slideNumber,
 }) => {
     const editorRef = useRef<HTMLDivElement>(null);
     const [isHovered, setIsHovered] = useState(false);
@@ -364,10 +363,12 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     }, [slide]);
 
     // Add useDnd hook
-    const { state, handleDragStart } = useDnd();
+    const { handleDragStart } = useDnd();
 
+    const isDropTarget = useDndStore(({ state }) => state.indicators.slideIndicator === slideId);
+    const isDragging = useDndStore(({ state }) => state.dragState === 'dragging' && state.source.slideId === slideId);
     // Добавляем проверку на активный индикатор для слайда
-    const isDropTarget = state.indicators.slideIndicator === slideId;
+    // const isDropTarget = state.indicators.slideIndicator === slideId;
 
     return (
         <div
@@ -381,9 +382,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     handleSlideWrapperClick(e as unknown as React.MouseEvent);
                 }
             }}
-            data-slide-dragging={
-                state?.dragState === 'dragging' && state.source.slideId === slideId ? 'true' : undefined
-            }
+            data-slide-dragging={isDragging ? 'true' : undefined}
         >
             <div className={`${getSlideClassName()}`} style={getSlideStyle()}>
                 <div className={`${styles.slideBorder} ${isSelected || isHovered ? styles.slideBorderMenuOpen : ''}`} />

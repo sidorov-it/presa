@@ -4,13 +4,13 @@ import { RefObject, useCallback, useState } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { SmartLayoutElement, SmartLayoutItem, TipTapRefs } from '@/types';
 import { useShallow } from 'zustand/react/shallow';
-import { useDnd } from '@/contexts/DragDropContext';
 import { generateId } from '@/utils/id';
 import { HiPlus } from 'react-icons/hi2';
 import Tiptap from '@/components/tiptap/Tiptap';
 import ItemWrapper from '../ItemWrapper/ItemWrapper';
 
 import styles from './TextBoxes.module.css';
+import { useDndStore } from '@/store/dndStore';
 
 export default function TextBoxes({
     elementId,
@@ -27,7 +27,25 @@ export default function TextBoxes({
     layoutId: string;
     isFocused: boolean;
 }) {
-    const { state: dndState } = useDnd();
+    const smartLayoutItemId = useDndStore(state => state.state.source.smartLayoutItemId);
+    // const source = useDndStore(state => state.state.source);
+    const isDraggingFromSameLayout = useDndStore(
+        state =>
+            state.state.dragState &&
+            state.state.source.elementId === elementId &&
+            state.state.source.layoutId === layoutId &&
+            !!state.state.source.smartLayoutItemId
+    );
+
+    // const isDraggingFromSameLayout = useCallback(() => {
+    //     return (
+    //         dragState === 'dragging' &&
+    //         source.elementId === elementId &&
+    //         source.layoutId === layoutId &&
+    //         !!source.smartLayoutItemId
+    //     );
+    // }, [dragState, source, elementId, layoutId]);
+
     const [dropIndicator, setDropIndicator] = useState<{ itemId: string; position: 'left' | 'right' } | null>(null);
 
     const columnSize = usePresentationStore(
@@ -110,20 +128,19 @@ export default function TextBoxes({
     }, [elementId, presentationId, slideId, layoutId]);
 
     // Check if dragged item is from same smartLayout
-    const isDraggingFromSameLayout = useCallback(() => {
-        const { source } = dndState;
-        return (
-            dndState.dragState === 'dragging' &&
-            source.elementId === elementId &&
-            source.layoutId === layoutId &&
-            !!source.smartLayoutItemId
-        );
-    }, [dndState, elementId, layoutId]);
+    // const isDraggingFromSameLayout = useCallback(() => {
+    //     return (
+    //         dragState === 'dragging' &&
+    //         source.elementId === elementId &&
+    //         source.layoutId === layoutId &&
+    //         !!source.smartLayoutItemId
+    //     );
+    // }, [dragState, source, elementId, layoutId]);
 
     const handleDragOver = useCallback(
         (e: React.DragEvent<HTMLDivElement>, targetItemId: string) => {
             // Only allow if dragged from same smartLayout
-            if (!isDraggingFromSameLayout()) return;
+            if (!isDraggingFromSameLayout) return;
 
             e.preventDefault();
 
@@ -148,12 +165,12 @@ export default function TextBoxes({
 
     const handleDrop = useCallback(
         (e: React.DragEvent<HTMLDivElement>, targetItemId: string) => {
-            if (!isDraggingFromSameLayout() || !dropIndicator) return;
+            if (!isDraggingFromSameLayout || !dropIndicator) return;
 
             e.preventDefault();
             setDropIndicator(null);
 
-            const draggedItemId = dndState.source.smartLayoutItemId;
+            const draggedItemId = smartLayoutItemId;
             if (!draggedItemId || draggedItemId === targetItemId) return;
 
             // Get current element with items
@@ -198,15 +215,7 @@ export default function TextBoxes({
                 },
             });
         },
-        [
-            dndState.source.smartLayoutItemId,
-            dropIndicator,
-            elementId,
-            layoutId,
-            presentationId,
-            slideId,
-            isDraggingFromSameLayout,
-        ]
+        [isDraggingFromSameLayout, dropIndicator, smartLayoutItemId, presentationId, slideId, layoutId, elementId]
     );
 
     let elementWidth: string;

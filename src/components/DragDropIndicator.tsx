@@ -1,11 +1,11 @@
-import { useDnd } from '@/contexts/DragDropContext';
 import Portal from './Portal';
 import DropIndicator from './DropIndicator';
+import { useDndStore } from '@/store/dndStore';
 
 const DragDropIndicator = () => {
-    const { isDragging } = useDnd();
+    const isDragging = useDndStore(state => state.state.dragState === 'dragging');
 
-    if (!isDragging()) return null;
+    if (!isDragging) return null;
 
     return (
         <Portal>

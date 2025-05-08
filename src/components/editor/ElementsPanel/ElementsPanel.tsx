@@ -4,10 +4,10 @@
 import React, { useCallback, useState } from 'react';
 import { getNewElement } from '@/elements/registry';
 import styles from './ElementsPanel.module.css';
-import { useDnd } from '@/contexts/DragDropContext';
 import { usePresentationStore } from '@/store/presentationStore';
 import { BaseElement } from '@/types';
 import { menuRegistry, MenuItem } from '@/elements/menuRegistry';
+import { useDndStore } from '@/store/dndStore';
 
 interface ElementsPanelProps {
     presentationId: string;
@@ -25,11 +25,9 @@ interface PopupMenuProps {
 }
 
 const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideId, presentationId }) => {
-    // Обработчики для drag-n-drop
-    const { handleNewElementDragStart } = useDnd();
-
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>, element: MenuItem) => {
-        handleNewElementDragStart(e, element);
+        e.stopPropagation();
+        useDndStore.getState().startNewElementDrag(element);
     };
 
     // Функция для добавления элемента при клике

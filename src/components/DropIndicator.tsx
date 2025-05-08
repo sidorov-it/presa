@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useDnd } from '@/contexts/DragDropContext';
 import { usePresentationStore } from '@/store/presentationStore';
+import { useDndStore } from '@/store/dndStore';
 
 type IndicatorInfo = {
     targetRect: {
@@ -21,8 +21,8 @@ type IndicatorInfo = {
 type IndicatorType = 'element' | 'layout' | 'slide' | 'cell' | 'column' | 'row';
 
 const DropIndicator = () => {
-    const { state } = useDnd();
-    const { indicators, dragState } = state;
+    const indicators = useDndStore(state => state.state.indicators);
+    const dragState = useDndStore(state => state.state.dragState);
     const [visible, setVisible] = useState(false);
 
     const { findLayoutByElementId } = usePresentationStore();

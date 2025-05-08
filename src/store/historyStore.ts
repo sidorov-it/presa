@@ -85,7 +85,6 @@ interface HistoryState {
 
     // Get presentation history
     getHistory: (presentationId: string) => HistoryAction[];
-    getHistoryDiff: (presentationId: string, future?: boolean) => void;
 
     // Check if there's an active transaction
     hasActiveTransaction: (presentationId: string) => boolean;
@@ -248,8 +247,6 @@ export const useHistoryStore = create<HistoryState>()(
                 // Generate diffs using deep-diff library
                 const changes = deepDiff.diff(firstAction.before, lastAction.after) || [];
 
-                console.log('deep-diff changes', changes);
-
                 const combinedAction: HistoryAction = {
                     type: firstAction.type,
                     description: activeTransaction.description,
@@ -302,7 +299,7 @@ export const useHistoryStore = create<HistoryState>()(
             },
 
             recordAction: action => {
-                console.log('Recording Action:', {
+                console.debug('Recording Action:', {
                     type: action.type,
                     description: action.description,
                     presentationId: action.presentationId,
@@ -316,7 +313,7 @@ export const useHistoryStore = create<HistoryState>()(
 
                 // If there's an active transaction, add to it
                 if (get().activeTransactions[presentationId]) {
-                    console.log('Action is part of an active transaction');
+                    console.debug('Action is part of an active transaction');
                     get().recordTransactionAction(action);
                     return;
                 }
@@ -328,8 +325,6 @@ export const useHistoryStore = create<HistoryState>()(
 
                 // Generate changes using deep-diff library
                 const changes = deepDiff.diff(action.before, action.after) || [];
-
-                console.log('deep-diff changes', changes);
 
                 set(state => {
                     // When a new action is recorded, future is cleared
@@ -362,7 +357,7 @@ export const useHistoryStore = create<HistoryState>()(
             undo: (presentationId: string, tiptapRefs: MutableRefObject<TipTapRefs>) => {
                 // If there's an active transaction, cancel it
                 if (get().activeTransactions[presentationId]) {
-                    console.log('Cancelling active transaction before undo');
+                    console.debug('Cancelling active transaction before undo');
                     get().cancelTransaction(presentationId);
                 }
 
@@ -372,13 +367,13 @@ export const useHistoryStore = create<HistoryState>()(
                     const presentationHistory = state.history[presentationId];
 
                     if (!presentationHistory || presentationHistory.past.length === 0) {
-                        console.log('Nothing to undo for presentation:', presentationId);
+                        console.debug('Nothing to undo for presentation:', presentationId);
                         return state; // Nothing to undo
                     }
 
                     // Get the last action from past
                     const lastAction = presentationHistory.past[presentationHistory.past.length - 1];
-                    console.log('Undoing Action:', {
+                    console.debug('Undoing Action:', {
                         type: lastAction.type,
                         description: lastAction.description,
                         presentationId: lastAction.presentationId,
@@ -591,16 +586,6 @@ export const useHistoryStore = create<HistoryState>()(
                     return [];
                 }
                 return presentationHistory.past;
-            },
-
-            getHistoryDiff: (presentationId, future = false) => {
-                const presentationHistory = get().history[presentationId];
-
-                const key = future ? 'future' : 'past';
-                presentationHistory[key].forEach(action => {
-                    console.log('Action:', action.description);
-                    console.log('Changes:', action.changes);
-                });
             },
 
             hasActiveTransaction: (presentationId: string) => {

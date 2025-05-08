@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useDnd } from '@/contexts/DragDropContext';
-
+import { useDndStore } from '@/store/dndStore';
 const DragDropDebugInfo: React.FC = () => {
-    const { state } = useDnd();
+    const source = useDndStore(state => state.state.source);
+    const target = useDndStore(state => state.state.target);
+    const indicators = useDndStore(state => state.state.indicators);
+    const isReadyToDrop = useDndStore(state => state.state.isReadyToDrop);
+    const dragState = useDndStore(state => state.state.dragState);
+
     const [isVisible, setIsVisible] = useState(false);
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+    // const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const [targetElement, setTargetElement] = useState<string | null>(null);
-    const [elementsDimensions, setElementsDimensions] = useState<any[]>([]);
+    // const [elementsDimensions, setElementsDimensions] = useState<any[]>([]);
 
     // Load visibility preference from localStorage on mount
     useEffect(() => {
@@ -19,7 +23,7 @@ const DragDropDebugInfo: React.FC = () => {
     // Track mouse position during dragging
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
-            setMousePosition({ x: e.clientX, y: e.clientY });
+            // setMousePosition({ x: e.clientX, y: e.clientY });
 
             // Get element under cursor for additional debugging
             const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
@@ -47,7 +51,7 @@ const DragDropDebugInfo: React.FC = () => {
                 setTargetElement(targetInfo || null);
 
                 // Get nearby elements for debugging
-                if (slideNode && (state.dragState === 'dragging' || isVisible)) {
+                if (slideNode && (dragState === 'dragging' || isVisible)) {
                     const allElements = Array.from(slideNode.querySelectorAll('[data-element-id]'));
                     const elementsInfo = allElements.map(el => {
                         const rect = el.getBoundingClientRect();
@@ -67,21 +71,21 @@ const DragDropDebugInfo: React.FC = () => {
                     elementsInfo.sort((a, b) => a.distanceY - b.distanceY);
 
                     // Keep only the 3 closest elements
-                    setElementsDimensions(elementsInfo.slice(0, 3));
+                    // setElementsDimensions(elementsInfo.slice(0, 3));
                 }
             } else {
                 setTargetElement(null);
             }
         };
 
-        if (state.dragState === 'dragging' || isVisible) {
+        if (dragState === 'dragging' || isVisible) {
             window.addEventListener('mousemove', handleMouseMove);
         }
 
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
         };
-    }, [state.dragState, isVisible]);
+    }, [dragState, isVisible]);
 
     // Save visibility preference to localStorage
     const toggleVisibility = () => {
@@ -121,7 +125,7 @@ const DragDropDebugInfo: React.FC = () => {
     }
 
     // If debug is enabled but not dragging, show a minimized panel
-    if (isVisible && state.dragState === 'idle') {
+    if (isVisible && dragState === 'idle') {
         return (
             <div
                 style={{
@@ -155,7 +159,7 @@ const DragDropDebugInfo: React.FC = () => {
                     </button>
                 </div>
                 <div style={{ marginTop: '8px' }}>
-                    <strong>Mouse:</strong> x={mousePosition.x}, y={mousePosition.y}
+                    {/* <strong>Mouse:</strong> x={mousePosition.x}, y={mousePosition.y} */}
                 </div>
                 {targetElement && (
                     <div style={{ marginTop: '4px', fontSize: '10px', opacity: 0.8, wordBreak: 'break-word' }}>
@@ -163,7 +167,7 @@ const DragDropDebugInfo: React.FC = () => {
                     </div>
                 )}
 
-                {elementsDimensions.length > 0 && (
+                {/* {elementsDimensions.length > 0 && (
                     <div style={{ marginTop: '8px', fontSize: '10px' }}>
                         <strong>Nearest elements:</strong>
                         {elementsDimensions.map((el, i) => (
@@ -174,7 +178,7 @@ const DragDropDebugInfo: React.FC = () => {
                             </div>
                         ))}
                     </div>
-                )}
+                )} */}
             </div>
         );
     }
@@ -220,11 +224,11 @@ const DragDropDebugInfo: React.FC = () => {
             </div>
 
             <div style={{ marginBottom: '8px' }}>
-                <strong>Drag State:</strong> {state.dragState}
+                <strong>Drag State:</strong> {dragState}
             </div>
 
             <div style={{ marginBottom: '8px' }}>
-                <strong>Mouse:</strong> x={mousePosition.x}, y={mousePosition.y}
+                {/* <strong>Mouse:</strong> x={mousePosition.x}, y={mousePosition.y} */}
             </div>
 
             {targetElement && (
@@ -233,7 +237,7 @@ const DragDropDebugInfo: React.FC = () => {
                 </div>
             )}
 
-            {elementsDimensions.length > 0 && (
+            {/* {elementsDimensions.length > 0 && (
                 <div style={{ marginBottom: '8px', fontSize: '11px' }}>
                     <strong>Nearest elements:</strong>
                     <div style={{ marginTop: '4px', fontSize: '10px' }}>
@@ -260,21 +264,21 @@ const DragDropDebugInfo: React.FC = () => {
                         ))}
                     </div>
                 </div>
-            )}
+            )} */}
 
             <div style={{ marginBottom: '8px' }}>
                 <strong>Source:</strong>
                 <pre style={{ margin: '4px 0', maxWidth: '100%', overflowX: 'auto' }}>
                     {JSON.stringify(
                         {
-                            elementId: state.source.elementId,
-                            layoutId: state.source.layoutId,
-                            cellId: state.source.cellId,
-                            tableId: state.source.tableId,
-                            rowIndex: state.source.rowIndex,
-                            columnIndex: state.source.columnIndex,
-                            smartLayoutItemId: state.source.smartLayoutItemId,
-                            slideId: state.source.slideId,
+                            elementId: source.elementId,
+                            layoutId: source.layoutId,
+                            cellId: source.cellId,
+                            tableId: source.tableId,
+                            rowIndex: source.rowIndex,
+                            columnIndex: source.columnIndex,
+                            smartLayoutItemId: source.smartLayoutItemId,
+                            slideId: source.slideId,
                         },
                         null,
                         2
@@ -287,10 +291,10 @@ const DragDropDebugInfo: React.FC = () => {
                 <pre style={{ margin: '4px 0', maxWidth: '100%', overflowX: 'auto' }}>
                     {JSON.stringify(
                         {
-                            elementId: state.target.elementId,
-                            layoutId: state.target.layoutId,
-                            cellId: state.target.cellId,
-                            position: state.target.position,
+                            elementId: target.elementId,
+                            layoutId: target.layoutId,
+                            cellId: target.cellId,
+                            position: target.position,
                         },
                         null,
                         2
@@ -303,16 +307,16 @@ const DragDropDebugInfo: React.FC = () => {
                 <pre style={{ margin: '4px 0', maxWidth: '100%', overflowX: 'auto' }}>
                     {JSON.stringify(
                         {
-                            elementIndicator: state.indicators.elementIndicator,
-                            elementPosition: state.indicators.elementPosition,
-                            layoutIndicator: state.indicators.layoutIndicator,
-                            layoutPosition: state.indicators.layoutPosition,
-                            cellIndicator: state.indicators.cellIndicator,
-                            cellPosition: state.indicators.cellPosition,
-                            tableColumnIndicator: state.indicators.tableColumnIndicator,
-                            tableColumnPosition: state.indicators.tableColumnPosition,
-                            tableRowIndicator: state.indicators.tableRowIndicator,
-                            tableRowPosition: state.indicators.tableRowPosition,
+                            elementIndicator: indicators.elementIndicator,
+                            elementPosition: indicators.elementPosition,
+                            layoutIndicator: indicators.layoutIndicator,
+                            layoutPosition: indicators.layoutPosition,
+                            cellIndicator: indicators.cellIndicator,
+                            cellPosition: indicators.cellPosition,
+                            tableColumnIndicator: indicators.tableColumnIndicator,
+                            tableColumnPosition: indicators.tableColumnPosition,
+                            tableRowIndicator: indicators.tableRowIndicator,
+                            tableRowPosition: indicators.tableRowPosition,
                         },
                         null,
                         2
@@ -321,7 +325,7 @@ const DragDropDebugInfo: React.FC = () => {
             </div>
 
             <div>
-                <strong>Ready to Drop:</strong> {state.isReadyToDrop ? 'Yes' : 'No'}
+                <strong>Ready to Drop:</strong> {isReadyToDrop ? 'Yes' : 'No'}
             </div>
         </div>
     );

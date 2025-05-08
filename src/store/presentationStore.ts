@@ -3113,17 +3113,6 @@ export const usePresentationStore = create<PresentationState>()(
                 });
             },
             setFullState: (state: { presentations: IPresentation[] }) => {
-                // Direct setter for presentations array used by undo/redo operations
-
-                console.log('presentationStore: setFullState');
-                console.log('state', state);
-
-                const diff1 = deepDiff(get().presentations, state.presentations);
-                console.log('diff1', diff1);
-
-                const diff2 = deepDiff(state.presentations, get().presentations);
-                console.log('diff2', diff2);
-
                 if (state && Array.isArray(state.presentations)) {
                     set({ presentations: JSON.parse(JSON.stringify(state.presentations)) });
                 }
