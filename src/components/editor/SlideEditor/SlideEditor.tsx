@@ -68,14 +68,14 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const editorRef = useRef<HTMLDivElement>(null);
     const [isHovered, setIsHovered] = useState(false);
     const openMenu = useMenuStore.getState().openMenu;
-    const checkSlideMenuIsOpen = useMenuStore.getState().checkSlideMenuIsOpen;
 
-    // Get slide data to access template properties
-    const slide = usePresentationStore(
-        useCallback(state => state.getSlide(presentationId, slideId), [presentationId, slideId])
-    );
+    const backgroundType = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background.type);
+    const backgroundValue = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background.value);
+    const contentAlignment = usePresentationStore(state => state.getSlide(presentationId, slideId)?.contentAlignment);
+    const imageSize = usePresentationStore(state => state.getSlide(presentationId, slideId)?.imageSize);
+    const templateType = usePresentationStore(state => state.getSlide(presentationId, slideId)?.templateType);
+    const imageUrl = usePresentationStore(state => state.getSlide(presentationId, slideId)?.imageUrl);
 
-    // Use selector that only gets the specific needed function using a factory
     const addSlideSelector = useCallback((state: PresentationState) => state.addSlide, []);
     const addSlide = usePresentationStore(addSlideSelector);
 
@@ -117,21 +117,21 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     );
 
     const getSlideStyle = useCallback(() => {
-        if (slide?.templateType === 'imageBackground') {
+        if (templateType === 'imageBackground') {
             return {
-                ...(slide?.imageUrl ? { backgroundImage: `url(${slide.imageUrl})` } : {}),
+                ...(imageUrl ? { backgroundImage: `url(${imageUrl})` } : {}),
             };
         }
 
         // Use background color from slide data
-        if (slide?.background?.type === 'color') {
+        if (backgroundType === 'color') {
             return {
-                backgroundColor: slide.background.value,
+                backgroundColor: backgroundValue,
             };
         }
 
         return {};
-    }, [slide?.imageUrl, slide?.templateType, slide?.background]);
+    }, [imageUrl, templateType, backgroundType, backgroundValue]);
 
     const getSlideClassName = useCallback(() => {
         let className = styles.slideWrapper;
@@ -141,7 +141,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         return className;
     }, [isSelected]);
 
-    const slideMenuOpen = checkSlideMenuIsOpen(slideId);
+    const slideMenuOpen = useMenuStore(state => state.checkSlideMenuIsOpen(slideId));
 
     const handleSlideWrapperClick = useCallback(
         (e: React.MouseEvent) => {
@@ -222,20 +222,20 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     // Image rendering based on template type
     const imageStyle: React.CSSProperties = useMemo(() => {
-        if (!slide?.templateType) return {};
+        if (!templateType) return {};
 
         const baseStyle: React.CSSProperties = {
-            // backgroundImage: `url(${slide.imageUrl})`,
+            // backgroundImage: `url(${imageUrl})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
         };
 
-        if (slide.imageUrl) {
-            baseStyle.backgroundImage = `url(${slide.imageUrl})`;
+        if (imageUrl) {
+            baseStyle.backgroundImage = `url(${imageUrl})`;
         }
 
-        switch (slide.templateType) {
+        switch (templateType) {
             case 'imageTop':
                 return {
                     ...baseStyle,
@@ -286,12 +286,10 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             default:
                 return {};
         }
-    }, [slide?.templateType, slide?.imageUrl]);
+    }, [templateType, imageUrl]);
 
     // Calculate content style for layouts based on template
     const contentStyle: React.CSSProperties = useMemo(() => {
-        if (!slide) return {};
-
         // Base styles
         const baseStyle: React.CSSProperties = {
             position: 'relative',
@@ -300,10 +298,10 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         };
 
         // Apply content alignment
-        if (slide.contentAlignment) {
+        if (contentAlignment) {
             baseStyle.display = 'flex';
             baseStyle.flexDirection = 'column';
-            switch (slide.contentAlignment) {
+            switch (contentAlignment) {
                 case 'top':
                     baseStyle.justifyContent = 'flex-start';
                     break;
@@ -319,14 +317,14 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         }
 
         // Additional styles for image templates
-        if (slide.templateType) {
+        if (templateType) {
             // Get stored image size or use default values
-            const imageWidth = slide.imageSize?.width || 'min(33%, 200px)';
-            const imageHeight = slide.imageSize?.height || 'min(33%, 200px)';
+            const imageWidth = imageSize?.width || 'min(33%, 200px)';
+            const imageHeight = imageSize?.height || 'min(33%, 200px)';
             const remainingWidth = `${100 - parseFloat(imageWidth)}%`;
             const remainingHeight = `${100 - parseFloat(imageHeight)}%`;
 
-            switch (slide.templateType) {
+            switch (templateType) {
                 case 'imageTop':
                     return {
                         ...baseStyle,
@@ -364,7 +362,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         }
 
         return baseStyle;
-    }, [slide]);
+    }, [templateType, imageSize, contentAlignment]);
 
     // Add useDnd hook
     const { handleDragStart } = useDnd();
@@ -423,15 +421,13 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     )}
 
                     {/* Template image if needed */}
-                    {imageStyle && slide?.templateType && (
+                    {imageStyle && templateType && (
                         <ResizableTemplateImage
                             presentationId={presentationId}
                             slideId={slideId}
-                            templateType={slide.templateType}
-                            imageUrl={slide.imageUrl}
+                            templateType={templateType}
+                            imageUrl={imageUrl}
                             initialImageStyle={imageStyle}
-                            // layoutId={slideLayoutIds[0]}
-                            // elementId={slideLayoutIds[0]}
                         />
                     )}
 
