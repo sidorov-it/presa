@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, MutableRefObject } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
-import SlidesList from '@/components/editor/SlidesList';
 import ElementsPanel from '@/components/editor/ElementsPanel/ElementsPanel';
 import { DndProvider } from '@/contexts/DragDropContext';
 import Presentation from '../Presentation';

@@ -1,44 +1,25 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { FiUpload } from 'react-icons/fi';
-import { usePresentationStore } from '@/store/presentationStore';
-import { ImageElement } from '@/types';
 
 import styles from './ImageEditBox.module.css';
 import { Button } from '@/components/ui/Button';
 import { useMenuStore } from '@/store/menuStore';
 
 interface ImageEditBoxProps {
-    presentationId: string;
-    slideId: string;
-    layoutId: string;
-    elementId: string;
+    imageUrl: string;
+    onClearImage: () => void;
+    onUpdateLink: (link: string, uploaded: boolean) => void;
+    // presentationId: string;
+    // slideId: string;
+    // layoutId: string;
+    // elementId: string;
 }
 
-const ImageEditBox: React.FC<ImageEditBoxProps> = ({ presentationId, slideId, layoutId, elementId }) => {
-    const element = usePresentationStore(state =>
-        state.getElement(presentationId, slideId, layoutId, elementId)
-    ) as ImageElement;
-
-    const updateElement = usePresentationStore(state => state.updateElement);
-
-    const handleReplaceImage = () => {
-        // if (element.uploaded) {
-        //     // запрос на удаление изображения
-        //     fetch(`/api/assets/delete/${element.src}`, {
-        //         method: 'DELETE',
-        //     });
-        // }
-        updateElement({
-            presentationId,
-            slideId,
-            layoutId,
-            elementId,
-            data: { src: '', uploaded: false },
-        });
-    };
+const ImageEditBox: React.FC<ImageEditBoxProps> = ({ imageUrl, onClearImage, onUpdateLink }) => {
+    const [imageUrlLocal, setImageUrlLocal] = useState(imageUrl);
 
     const onDrop = useCallback(
         (acceptedFiles: File[]) => {
@@ -51,18 +32,20 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({ presentationId, slideId, la
                     body: formData,
                 }).then(response => {
                     response.json().then(data => {
-                        updateElement({
-                            presentationId,
-                            slideId,
-                            layoutId,
-                            elementId,
-                            data: { src: data.url, uploaded: true },
-                        });
+                        onUpdateLink(data.url, true);
+                        setImageUrlLocal(data.url);
+                        // updateElement({
+                        //     presentationId,
+                        //     slideId,
+                        //     layoutId,
+                        //     elementId,
+                        //     data: { src: data.url, uploaded: true },
+                        // });
                     });
                 });
             }
         },
-        [presentationId, slideId, layoutId, elementId, updateElement]
+        [onUpdateLink]
     );
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -73,14 +56,21 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({ presentationId, slideId, la
     });
 
     const handleUpdateLink = (link: string) => {
-        updateElement({
-            presentationId,
-            slideId,
-            layoutId,
-            elementId,
-            data: { src: link },
-        });
+        onUpdateLink(link, false);
+        setImageUrlLocal(link);
+        // updateElement({
+        //     presentationId,
+        //     slideId,
+        //     layoutId,
+        //     elementId,
+        //     data: { src: link },
+        // });
     };
+
+    const handleReplaceImageClick = useCallback(() => {
+        onClearImage();
+        setImageUrlLocal('');
+    }, [onClearImage]);
 
     return (
         <div className={styles.container}>
@@ -90,7 +80,6 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({ presentationId, slideId, la
                     X
                 </Button>
             </div>
-            {/* {!element.src && <ImagePlaceholder onUpdateLink={handleUpdateLink} />} */}
 
             <div className={styles.inputGroup}>
                 <label htmlFor="imageUrl" className={styles.label}>
@@ -100,19 +89,19 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({ presentationId, slideId, la
                     id="imageUrl"
                     type="url"
                     className={styles.input}
-                    value={element.src || ''}
+                    value={imageUrlLocal || ''}
                     onChange={e => handleUpdateLink(e.target.value)}
                     placeholder="https://example.com/image.jpg"
                 />
             </div>
 
-            {element.src && (
+            {imageUrlLocal && (
                 <div {...getRootProps()} className={styles.dropzone}>
-                    <img src={element.src} alt="Изображение" />
+                    <img src={imageUrlLocal} alt="Изображение" />
                 </div>
             )}
 
-            {!element.src && (
+            {!imageUrlLocal && (
                 <div {...getRootProps()} className={styles.dropzone}>
                     <input {...getInputProps()} />
                     <FiUpload className={styles.uploadIcon} />
@@ -122,7 +111,7 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({ presentationId, slideId, la
                 </div>
             )}
             <div className={styles.replaceImageButton}>
-                <Button variant="outline" size="sm" onClick={() => handleReplaceImage()}>
+                <Button variant="outline" size="sm" onClick={handleReplaceImageClick}>
                     Заменить изображение
                 </Button>
             </div>

@@ -305,13 +305,13 @@ const Image: React.FC<ImageProps> = ({
         }
     };
 
-    const handleUpdateLink = (link: string) => {
+    const handleUpdateLink = (link: string, uploaded: boolean) => {
         updateElement({
             presentationId,
             slideId,
             layoutId,
             elementId: element.id,
-            data: { src: link },
+            data: { src: link, uploaded },
         });
     };
 
@@ -328,7 +328,21 @@ const Image: React.FC<ImageProps> = ({
             >
                 {error && <div className={styles.error}>{error}</div>}
 
-                {(!element.src || !isValidUrl(element.src)) && <ImagePlaceholder onUpdateLink={handleUpdateLink} />}
+                {(!element.src || !isValidUrl(element.src)) && (
+                    <ImagePlaceholder
+                        imageUrl={element.src || ''}
+                        onClearImage={() => {
+                            updateElement({
+                                presentationId,
+                                slideId,
+                                layoutId,
+                                elementId: element.id,
+                                data: { src: '' },
+                            });
+                        }}
+                        onUpdateLink={(link: string, uploaded: boolean) => handleUpdateLink(link, uploaded)}
+                    />
+                )}
 
                 {element.src && isValidUrl(element.src) && !error && (
                     <div className={`${styles.imageWrapper}`}>

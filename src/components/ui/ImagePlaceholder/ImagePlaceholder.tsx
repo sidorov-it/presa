@@ -6,10 +6,14 @@ import React, { ChangeEvent, useRef, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 export type ImagePlaceholderProps = {
-    onUpdateLink: (link: string) => void;
+    imageUrl: string;
+    isWidthRightMenu?: boolean;
+    onClearImage: () => void;
+    onUpdateLink: (link: string, uploaded: boolean) => void;
 };
 
 import styles from './ImagePlaceholder.module.css';
+import { useMenuStore } from '@/store/menuStore';
 
 const LinkPopup = ({
     onClose,
@@ -132,9 +136,46 @@ const LinkPopup = ({
     );
 };
 
-export const ImagePlaceholder = ({ onUpdateLink }: ImagePlaceholderProps) => {
+export const ImagePlaceholder = ({
+    onUpdateLink,
+    imageUrl,
+    onClearImage,
+    isWidthRightMenu = false,
+}: ImagePlaceholderProps) => {
     const [showLinkPopup, setShowLinkPopup] = useState(false);
     const linkBtnRef = useRef<HTMLButtonElement>(null);
+    const elementRef = useRef<HTMLDivElement>(null);
+    const [isSmallImage, setIsSmallImage] = useState(false);
+
+    const [isOpenImageEditBox, setIsOpenImageEditBox] = useState(false);
+
+    useEffect(() => {
+        if (isSmallImage && isOpenImageEditBox) {
+            useMenuStore.getState().openSideMenu('image-edit', {
+                imageUrl,
+                onClearImage,
+                onUpdateLink,
+                onCloseMenu: () => setIsOpenImageEditBox(false),
+            });
+        }
+    }, [isSmallImage, isOpenImageEditBox, imageUrl, onClearImage, onUpdateLink]);
+
+    useEffect(() => {
+        if (!elementRef.current) return;
+
+        const resizeObserver = new ResizeObserver(entries => {
+            for (const entry of entries) {
+                const { width } = entry.contentRect;
+                setIsSmallImage(width < 180);
+            }
+        });
+
+        resizeObserver.observe(elementRef.current);
+
+        return () => {
+            resizeObserver.disconnect();
+        };
+    }, []);
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
@@ -165,62 +206,102 @@ export const ImagePlaceholder = ({ onUpdateLink }: ImagePlaceholderProps) => {
             }
         };
 
+    const handleImageClick = () => {
+        if (isWidthRightMenu && isSmallImage) {
+            setIsOpenImageEditBox(true);
+        }
+    };
+
     return (
-        <div className={styles.container}>
-            <FaRegImage className={styles.imagePlaceholderIcon} aria-label="Пустое изображение" />
-            <div className={styles.imagePlaceholderButtons}>
-                {/* Загрузить */}
-                <label
-                    tabIndex={0}
-                    aria-label="Загрузить изображение"
-                    className={styles.imagePlaceholderUploadButton}
-                    onKeyDown={handleKeyDown(() => document.getElementById('image-upload-input')?.click())}
-                >
-                    <FiUpload style={{ fontSize: '1.25rem', lineHeight: '1.75rem', color: '#6B7280' }} />
-                    <input
-                        id="image-upload-input"
-                        type="file"
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        onChange={handleFileChange}
-                        tabIndex={-1}
-                    />
-                </label>
-                {/* Вставить ссылку */}
-                <button
-                    type="button"
-                    tabIndex={0}
-                    aria-label="Вставить ссылку на изображение"
-                    className={styles.imagePlaceholderLinkButton}
-                    onClick={() => setShowLinkPopup(true)}
-                    onKeyDown={handleKeyDown(() => setShowLinkPopup(true))}
-                    ref={linkBtnRef}
-                >
-                    <FiLink2 className={styles.linkIcon} />
-                </button>
-                {/* Сгенерировать */}
-                <button
-                    type="button"
-                    tabIndex={0}
-                    aria-label="Сгенерировать изображение"
-                    className={styles.imagePlaceholderGenerateButton}
-                    onClick={onGenerate}
-                    onKeyDown={handleKeyDown(onGenerate)}
-                >
-                    <FiZap className={styles.generateIcon} />
-                </button>
-                {/* Портал для попапа */}
-                {showLinkPopup && (
-                    <LinkPopup
-                        onClose={() => setShowLinkPopup(false)}
-                        onSubmit={url => {
-                            onUpdateLink(url);
-                            setShowLinkPopup(false);
-                        }}
-                        buttonRef={linkBtnRef}
-                    />
+        <>
+            <div
+                ref={elementRef}
+                className={`${styles.container} ${isSmallImage ? styles.smallImage : ''}`}
+                onClick={handleImageClick}
+                onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleImageClick();
+                    }
+                }}
+                tabIndex={0}
+                role="button"
+                aria-label="Открыть настройки изображения"
+            >
+                <FaRegImage className={styles.imagePlaceholderIcon} aria-label="Пустое изображение" />
+                {!isSmallImage && (
+                    <div className={styles.imagePlaceholderButtons}>
+                        {/* Загрузить */}
+                        <label
+                            tabIndex={0}
+                            aria-label="Загрузить изображение"
+                            className={styles.imagePlaceholderUploadButton}
+                            onKeyDown={handleKeyDown(() => document.getElementById('image-upload-input')?.click())}
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <FiUpload style={{ fontSize: '1.25rem', lineHeight: '1.75rem', color: '#6B7280' }} />
+                            <input
+                                id="image-upload-input"
+                                type="file"
+                                accept="image/*"
+                                style={{ display: 'none' }}
+                                onChange={handleFileChange}
+                                tabIndex={-1}
+                            />
+                        </label>
+                        {/* Вставить ссылку */}
+                        <button
+                            type="button"
+                            tabIndex={0}
+                            aria-label="Вставить ссылку на изображение"
+                            className={styles.imagePlaceholderLinkButton}
+                            onClick={e => {
+                                e.stopPropagation();
+                                setShowLinkPopup(true);
+                            }}
+                            onKeyDown={handleKeyDown(() => setShowLinkPopup(true))}
+                            ref={linkBtnRef}
+                        >
+                            <FiLink2 className={styles.linkIcon} />
+                        </button>
+                        {/* Сгенерировать */}
+                        <button
+                            type="button"
+                            tabIndex={0}
+                            aria-label="Сгенерировать изображение"
+                            className={styles.imagePlaceholderGenerateButton}
+                            onClick={e => {
+                                e.stopPropagation();
+                                onGenerate();
+                            }}
+                            onKeyDown={handleKeyDown(onGenerate)}
+                        >
+                            <FiZap className={styles.generateIcon} />
+                        </button>
+                        {/* Портал для попапа */}
+                        {showLinkPopup && (
+                            <LinkPopup
+                                onClose={() => setShowLinkPopup(false)}
+                                onSubmit={url => {
+                                    onUpdateLink(url, false);
+                                    setShowLinkPopup(false);
+                                }}
+                                buttonRef={linkBtnRef}
+                            />
+                        )}
+                    </div>
                 )}
             </div>
-        </div>
+
+            {/* {isOpenImageEditBox &&
+                createPortal(
+                    <ImageEditBox
+                        imageUrl={imageUrl}
+                        onClearImage={onClearImage}
+                        onUpdateLink={(link: string, uploaded: boolean) => onUpdateLink(link, uploaded)}
+                    />,
+                    document.body
+                )} */}
+        </>
     );
 };

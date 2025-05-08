@@ -8,19 +8,15 @@ import styles from './SideMenuRenderer.module.css';
 
 const SideMenuRenderer: React.FC = () => {
     const { sideMenuState } = useMenuStore();
+
     const menuRef = useRef<HTMLDivElement>(null);
-    useEffect(() => {
-        if (sideMenuState.isOpen) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'auto';
-        }
-    }, [sideMenuState.isOpen]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
                 useMenuStore.getState().closeSideMenu();
+
+                sideMenuState.sideMenuData.onCloseMenu?.();
             }
         };
 
@@ -28,14 +24,23 @@ const SideMenuRenderer: React.FC = () => {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, []);
+    }, [sideMenuState.sideMenuData]);
 
     if (!sideMenuState.isOpen) return null;
 
     const SideMenuComponent = SideMenus[sideMenuState.sideMenuId as keyof typeof SideMenus];
 
     return (
-        <div className={styles.sideMenuContainer}>
+        // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+        <div
+            className={styles.sideMenuContainer}
+            onClick={e => {
+                if ((e.target as HTMLElement).classList.contains(styles.sideMenuContainer)) {
+                    e.stopPropagation();
+                    useMenuStore.getState().closeSideMenu();
+                }
+            }}
+        >
             {/* Render side panel */}
             {SideMenuComponent && (
                 <div ref={menuRef} className={styles.sideMenu}>

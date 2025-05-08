@@ -403,6 +403,12 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                         }}
                     >
                         <ImagePlaceholder
+                            imageUrl={imageUrl || ''}
+                            onClearImage={() => {
+                                updateSlide(presentationId, slideId, {
+                                    imageUrl: '',
+                                });
+                            }}
                             onUpdateLink={(link: string) => {
                                 updateSlide(presentationId, slideId, {
                                     imageUrl: link,

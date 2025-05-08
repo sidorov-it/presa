@@ -77,7 +77,7 @@ export default function ImagesWithText({
     );
 
     const handleImageChange = useCallback(
-        (itemId: string, imageUrl: string) => {
+        (itemId: string, imageUrl: string, uploaded: boolean) => {
             const currentElement = usePresentationStore
                 .getState()
                 .getElement(presentationId, slideId, layoutId, elementId);
@@ -85,7 +85,7 @@ export default function ImagesWithText({
             if (!currentElement) return;
 
             const updatedItems = (currentElement as SmartLayoutElement).items?.map(item =>
-                item.id === itemId ? { ...item, imageUrl } : item
+                item.id === itemId ? { ...item, imageUrl, uploaded } : item
             );
             usePresentationStore.getState().updateElement({
                 presentationId,

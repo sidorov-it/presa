@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 'use client';
 
-import React, { useState, useRef, RefObject, useCallback, memo, useMemo } from 'react';
+import React, { useState, useRef, useCallback, memo, useMemo, MutableRefObject } from 'react';
 import { getPredefinedGridStructures, Layout, TipTapRefs } from '@/types';
 import { PresentationState, usePresentationStore } from '@/store/presentationStore';
 import styles from './SlideEditor.module.css';
@@ -22,7 +22,7 @@ interface SlideEditorProps {
     slideLayoutIds: string[];
     presentationId: string;
     isSelected: boolean;
-    tiptapRefs: RefObject<TipTapRefs>;
+    tiptapRefs: MutableRefObject<TipTapRefs>;
     slideId: string;
     handleSelectSlide: (slideId: string) => void;
 }
@@ -244,6 +244,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     left: 0,
                     right: 0,
                     height: '33%',
+                    maxHeight: '200px',
                     zIndex: 1,
                 };
             case 'imageBottom':
@@ -254,6 +255,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     left: 0,
                     right: 0,
                     height: '33%',
+                    maxHeight: '200px',
                     zIndex: 1,
                 };
             case 'imageLeft':
@@ -265,6 +267,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     bottom: 0,
                     width: '33%',
                     zIndex: 1,
+                    maxWidth: '200px',
                 };
             case 'imageRight':
                 return {
@@ -275,6 +278,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     bottom: 0,
                     width: '33%',
                     zIndex: 1,
+                    maxWidth: '200px',
                 };
             case 'imageBackground':
                 // This is handled by slide background
@@ -317,8 +321,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         // Additional styles for image templates
         if (slide.templateType) {
             // Get stored image size or use default values
-            const imageWidth = slide.imageSize?.width || '33%';
-            const imageHeight = slide.imageSize?.height || '33%';
+            const imageWidth = slide.imageSize?.width || 'min(33%, 200px)';
+            const imageHeight = slide.imageSize?.height || 'min(33%, 200px)';
             const remainingWidth = `${100 - parseFloat(imageWidth)}%`;
             const remainingHeight = `${100 - parseFloat(imageHeight)}%`;
 
@@ -426,6 +430,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                             templateType={slide.templateType}
                             imageUrl={slide.imageUrl}
                             initialImageStyle={imageStyle}
+                            // layoutId={slideLayoutIds[0]}
+                            // elementId={slideLayoutIds[0]}
                         />
                     )}
 

@@ -20,7 +20,7 @@ type ItemProps = {
     align?: 'left' | 'center' | 'right';
     imageShape?: ImageShape;
     imageSize?: number;
-    handleImageChange: (itemId: string, imageUrl: string) => void;
+    handleImageChange: (itemId: string, imageUrl: string, uploaded: boolean) => void;
     handleTitleChange: (content: string) => void;
     handleTextChange: (content: string) => void;
     addItem: () => void;
@@ -73,7 +73,12 @@ export default function Item({
                 }}
             >
                 {!item.imageUrl && (
-                    <ImagePlaceholder onUpdateLink={(link: string) => handleImageChange(item.id, link)} />
+                    <ImagePlaceholder
+                        imageUrl={item.imageUrl || ''}
+                        onClearImage={() => handleImageChange(item.id, '', false)}
+                        onUpdateLink={(link: string, uploaded: boolean) => handleImageChange(item.id, link, uploaded)}
+                        isWidthRightMenu={true}
+                    />
                 )}
             </div>
             <div className={styles.content}>

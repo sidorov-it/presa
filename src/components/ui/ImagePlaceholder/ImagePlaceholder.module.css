@@ -15,6 +15,10 @@
     background-color: #F9FAFB;
 }
 
+.smallImage {
+    cursor: pointer;
+}
+
 .imagePlaceholderIcon {
     margin-bottom: 1.5rem;
     font-size: 3.75rem;
