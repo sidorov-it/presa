@@ -1,4 +1,4 @@
-import { ChartElement } from '@/types';
+import { ChartElement, SmartLayoutElement, SmartLayoutItem } from '@/types';
 import { ViewerElement } from '@/types/elements';
 import {
     BarChart,
@@ -17,9 +17,6 @@ import {
 } from 'recharts';
 
 import styles from './ElementViewer.module.css';
-
-// Default colors for charts
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
 interface ElementViewerProps {
     element: ChartElement & ViewerElement;
@@ -41,12 +38,23 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
             baseStyles.opacity = element.opacity;
         }
 
+        // Apply background color if defined
+        if (element.backgroundColor) {
+            baseStyles.backgroundColor = element.backgroundColor;
+        }
+
+        // Apply border radius if defined
+        if (element.borderRadius) {
+            baseStyles.borderRadius = element.borderRadius;
+        }
+
         return baseStyles;
     };
 
     // Get text-specific theme styles
     const getTextStyles = () => {
         const isHeading = element.elementTypeId === 'heading';
+        const isQuote = element.elementTypeId === 'quote';
 
         const textStyles: React.CSSProperties = {
             // Apply text styling from theme variables
@@ -62,7 +70,50 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                 : ('var(--presentation-body-capitalization)' as any),
         };
 
+        // Additional styles for quotes
+        if (isQuote) {
+            textStyles.fontStyle = 'italic';
+            textStyles.borderLeft = '4px solid var(--presentation-primary-accent)';
+            textStyles.paddingLeft = '1rem';
+        }
+
         return textStyles;
+    };
+
+    // Get button-specific styles
+    const getButtonStyles = () => {
+        const buttonStyles: React.CSSProperties = {
+            backgroundColor: 'var(--presentation-primary-accent)',
+            color: '#fff',
+            padding: '0.5rem 1rem',
+            borderRadius: '0.25rem',
+            fontWeight: 'bold',
+            display: 'inline-block',
+            cursor: 'pointer',
+            textAlign: 'center',
+        };
+
+        return buttonStyles;
+    };
+
+    // Get shape-specific styles
+    const getShapeStyles = () => {
+        const shapeStyles: React.CSSProperties = {
+            backgroundColor: element.backgroundColor || 'var(--presentation-shapes-color)',
+            width: '100%',
+            height: '100%',
+            minHeight: '50px',
+        };
+
+        if (element.shapeType === 'circle') {
+            shapeStyles.borderRadius = '50%';
+        } else if (element.shapeType === 'triangle') {
+            // Triangle shape is handled with a pseudo-element in CSS
+            shapeStyles.position = 'relative';
+            shapeStyles.backgroundColor = 'transparent';
+        }
+
+        return shapeStyles;
     };
 
     // Render element based on its type
@@ -72,6 +123,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
             case 'heading':
             case 'paragraph':
             case 'editor':
+            case 'quote':
                 // For text elements, render HTML content from 'content' property with theme styles
                 return (
                     <div
@@ -86,12 +138,121 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                 return (
                     <div className={styles.container}>
                         <img
-                            src={element.src || ''}
+                            src={(element as any).src || element.url || ''}
                             alt={element.alt || 'Presentation image'}
                             style={{ objectFit: 'contain', width: '100%', height: '100%' }}
                         />
                     </div>
                 );
+
+            case 'video':
+                // For video elements, render the video player
+                return (
+                    <div className={styles.container}>
+                        <video 
+                            controls
+                            style={{ width: '100%', height: '100%' }}
+                            src={(element as any).src || element.url || ''}
+                        >
+                            <track kind="captions" src="" label="English" />
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                );
+
+            case 'button':
+                // For button elements, render a styled button
+                return (
+                    <div
+                        className={styles.button}
+                        style={getButtonStyles()}
+                        dangerouslySetInnerHTML={{ __html: element.content || 'Button' }}
+                    />
+                );
+
+            case 'toggle':
+                // For toggle elements, render a toggle switch with label
+                return (
+                    <div className={styles.toggle}>
+                        <div className={styles.toggleSwitch}>
+                            <div className={styles.toggleIndicator} />
+                        </div>
+                        <div
+                            className={styles.toggleLabel}
+                            dangerouslySetInnerHTML={{ __html: element.content || 'Toggle' }}
+                        />
+                    </div>
+                );
+
+            case 'shape':
+                // For shape elements, render the appropriate shape
+                return (
+                    <div
+                        className={`${styles.shape} ${element.shapeType ? styles[element.shapeType] : ''}`}
+                        style={getShapeStyles()}
+                    />
+                );
+
+            case 'bullet-list':
+            case 'numbered-list':
+            case 'todo-list':
+                // For list elements, render HTML content with appropriate list styling
+                return (
+                    <div
+                        className={`tiptap viewer-tiptap ${styles.list} ${styles[element.elementTypeId]}`}
+                        style={getTextStyles()}
+                        dangerouslySetInnerHTML={{ __html: element.content || '' }}
+                    />
+                );
+
+            case 'table':
+                // For table elements, render HTML content with table styling
+                return (
+                    <div
+                        className={`tiptap viewer-tiptap ${styles.table}`}
+                        dangerouslySetInnerHTML={{ __html: element.content || '' }}
+                    />
+                );
+
+            case 'box':
+                // For box elements, render a styled container with content
+                return (
+                    <div
+                        className={styles.box}
+                        style={{
+                            ...getElementStyles(),
+                            padding: '1rem',
+                            backgroundColor: element.backgroundColor || 'var(--presentation-accent-blocks-color)',
+                            color: '#fff',
+                        }}
+                    >
+                        <div dangerouslySetInnerHTML={{ __html: element.content || '' }} />
+                    </div>
+                );
+
+            case 'smart-layout': {
+                // For smart layout elements, render the layout with its items
+                const smartLayout = element as unknown as SmartLayoutElement;
+                return (
+                    <div className={styles.smartLayout}>
+                        {smartLayout.items?.map((item: SmartLayoutItem) => (
+                            <div key={item.id} className={styles.smartLayoutItem}>
+                                {item.imageUrl && (
+                                    <img
+                                        src={item.imageUrl}
+                                        alt={item.title || 'Item image'}
+                                        className={styles.smartLayoutItemImage}
+                                    />
+                                )}
+                                {item.title && <h3 className={styles.smartLayoutItemTitle}>{item.title}</h3>}
+                                {item.description && (
+                                    <p className={styles.smartLayoutItemDescription}>{item.description}</p>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                );
+            }
 
             case 'column-chart':
             case 'bar-chart':
@@ -210,7 +371,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
             }
             default:
                 // For unsupported element types, render a placeholder
-                return <div className={styles.container}>Unsupported element type</div>;
+                return <div className={styles.container}>Unsupported element type: {element.elementTypeId}</div>;
         }
     };
 
@@ -219,7 +380,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
             style={{
                 ...getElementStyles(),
                 zIndex: 0,
-                transform: 'none',
+                transform: element.transform || 'none',
             }}
             className="element-viewer"
         >

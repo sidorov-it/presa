@@ -8,3 +8,4 @@ export { default as ThemedPresentationViewer } from './ThemedPresentationViewer'
 export { default as ThemedFullscreenViewer } from './ThemedFullscreenViewer';
 export { default as ThemeStylesApplier } from './theme/ThemeStylesApplier';
 export { default as ViewerProvider } from './ViewerProvider';
+export { default as PresentationPreview } from './PresentationPreview';

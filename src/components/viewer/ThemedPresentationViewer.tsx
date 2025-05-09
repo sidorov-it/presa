@@ -1,14 +1,15 @@
 import React from 'react';
-import { Presentation } from '@/types';
+import { IPresentation } from '@/types';
 import { Theme } from '@/types/theme';
 import PresentationViewer from './PresentationViewer';
 import ThemeStylesApplier from './theme/ThemeStylesApplier';
 
 interface ThemedPresentationViewerProps {
-    presentation: Presentation;
+    presentation: IPresentation;
     theme: Theme;
     initialSlideIndex?: number;
     className?: string;
+    showThumbnails?: boolean;
 }
 
 const ThemedPresentationViewer: React.FC<ThemedPresentationViewerProps> = ({
@@ -16,14 +17,17 @@ const ThemedPresentationViewer: React.FC<ThemedPresentationViewerProps> = ({
     theme,
     initialSlideIndex = 0,
     className = '',
+    showThumbnails = true,
 }) => {
     return (
         <div className={`themed-presentation-viewer ${className}`}>
-            {/* Apply theme styles */}
             <ThemeStylesApplier theme={theme} />
 
-            {/* Render presentation with theme */}
-            <PresentationViewer presentation={presentation} initialSlideIndex={initialSlideIndex} />
+            <PresentationViewer
+                presentation={presentation}
+                initialSlideIndex={initialSlideIndex}
+                showThumbnails={showThumbnails}
+            />
         </div>
     );
 };

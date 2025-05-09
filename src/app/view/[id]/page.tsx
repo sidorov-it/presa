@@ -2,37 +2,74 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import SlideViewer from '@/components/viewer/SlideViewer';
-import { IPresentation, Slide } from '@/types';
+import { PresentationViewer } from '@/components/viewer';
+import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
+import { IPresentation } from '@/types';
 import { Theme } from '@/types/theme';
 import { PdfExportDialog } from '@/components/export';
 import styles from './page.module.css';
 
-// Define metadata for the page
-// export const generateMetadata = async (props: { params: Promise<{ id: string }> }) => {
-//     const params = await props.params;
-//     try {
-//         const presentation = await fetch(`/api/presentations/${params.id}`);
-//         if (!presentation.ok) {
-//             throw new Error('Failed to load presentation');
-//         }
-
-//         const data = await presentation.json();
-//         const title = data.presentation?.title || 'Presentation Viewer';
-//         const description = 'View the presentation in read-only mode';
-
-//         return {
-//             title,
-//             description,
-//         };
-//     } catch (error: any) {
-//         console.error('Failed to load presentation:', error);
-//         return {
-//             title: 'Presentation Viewer',
-//             description: 'View presentation content',
-//         };
-//     }
-// };
+// Дефолтная тема, которая гарантированно будет работать
+const DEFAULT_THEME: Theme = {
+    id: 'default',
+    name: 'Default Theme',
+    description: 'Default theme for presentations',
+    colors: {
+        primaryAccent: '#3b82f6',
+        additionalColors: ['#10b981', '#f59e0b', '#ef4444'],
+        secondaryAccents: ['#10b981', '#f59e0b', '#ef4444'],
+        shapesColor: '#3b82f6',
+        headingColor: '#111827',
+        textColor: '#374151',
+        slideBackground: '#ffffff',
+        pageBackground: {
+            type: 'color',
+            color: '#f9fafb',
+            imageUrl: '',
+        },
+        accentBlocksColor: '#3b82f6',
+        secondaryButtonColor: '#6b7280',
+    },
+    typography: {
+        headingFont: 'Inter',
+        headingWeight: 600,
+        headingColor: '#111827',
+        headingLineHeight: 1.2,
+        headingLetterSpacing: 0,
+        headingCapitalization: 'none',
+        bodyFont: 'Inter',
+        bodyWeight: 400,
+        bodyColor: '#374151',
+        bodyLineHeight: 1.5,
+        bodyLetterSpacing: 0,
+        bodyCapitalization: 'none',
+    },
+    design: {
+        slide: {
+            borderRadius: '0.5rem',
+            shadow: 'sm',
+            borderWidth: 'none',
+            borderColor: '#e5e7eb',
+            opacity: 1,
+            imageShape: 'default',
+        },
+        blocks: {
+            backgroundColor: '#3b82f6',
+            backgroundFillType: 'fill',
+            borderWidth: 'none',
+            blockFillColorsType: 'primary',
+            blockBackgroundCustomColors: ['#3b82f6', '#10b981', '#f59e0b'],
+            shadow: 'none',
+        },
+        buttons: {
+            buttonColor: '#3b82f6',
+            buttonShape: 'rounded',
+            linkColor: '#3b82f6',
+        },
+    },
+    createdAt: new Date(),
+    updatedAt: new Date(),
+};
 
 export default function PresentationView() {
     const params = useParams();
@@ -52,20 +89,71 @@ export default function PresentationView() {
                     throw new Error('Failed to load presentation');
                 }
 
-                const data = await response.json();
-                setPresentation(data.presentation);
+                const fetchedPresentation = await response.json();
+                setPresentation(fetchedPresentation);
 
                 // Fetch theme if available
-                if (data.presentation.themeId) {
+                if (fetchedPresentation.themeId) {
                     try {
-                        const themeResponse = await fetch(`/api/themes/${data.presentation.themeId}`);
+                        const themeResponse = await fetch(`/api/themes/${fetchedPresentation.themeId}`);
                         if (themeResponse.ok) {
                             const themeData = await themeResponse.json();
-                            setTheme(themeData.theme);
+                            console.log('Fetched theme data structure:', themeData);
+
+                            // Check the structure of the theme data
+                            let actualTheme = null;
+
+                            if (themeData && themeData.theme && themeData.theme.id) {
+                                // API returns { theme: Theme }
+                                actualTheme = themeData.theme;
+                                console.log('Using theme from themeData.theme structure');
+                            } else if (themeData && themeData.id) {
+                                // API returns Theme directly
+                                actualTheme = themeData;
+                                console.log('Using theme from direct structure');
+                            } else {
+                                console.warn('Invalid theme data structure, using default theme');
+                                actualTheme = DEFAULT_THEME;
+                            }
+
+                            // Validate the theme has all required sections
+                            if (!actualTheme.colors || !actualTheme.typography || !actualTheme.design) {
+                                console.warn('Theme missing required sections, using default theme');
+                                actualTheme = DEFAULT_THEME;
+                            }
+
+                            // Check for background image and log it
+                            if (
+                                actualTheme.colors &&
+                                actualTheme.colors.pageBackground &&
+                                actualTheme.colors.pageBackground.imageUrl
+                            ) {
+                                console.log(
+                                    'Theme has background image URL:',
+                                    actualTheme.colors.pageBackground.imageUrl
+                                );
+
+                                // Force apply the background to body
+                                document.body.style.backgroundImage = `url(${actualTheme.colors.pageBackground.imageUrl})`;
+                                document.body.style.backgroundSize = 'cover';
+                                document.body.style.backgroundPosition = 'center';
+                                document.body.style.backgroundRepeat = 'no-repeat';
+                                document.body.style.backgroundAttachment = 'fixed';
+                            } else {
+                                console.log('Theme has no background image URL');
+                            }
+
+                            setTheme(actualTheme);
+                        } else {
+                            console.warn('Failed to fetch theme, using default theme');
+                            setTheme(DEFAULT_THEME);
                         }
                     } catch (themeError) {
                         console.error('Error fetching theme:', themeError);
+                        setTheme(DEFAULT_THEME);
                     }
+                } else {
+                    setTheme(DEFAULT_THEME);
                 }
 
                 setIsLoading(false);
@@ -80,6 +168,30 @@ export default function PresentationView() {
             fetchPresentation();
         }
     }, [id]);
+
+    // Get background style from theme
+    const getBackgroundStyle = () => {
+        if (!theme || !theme.colors || !theme.colors.pageBackground) {
+            return {
+                backgroundColor: '#f9fafb',
+                backgroundImage: 'none',
+            };
+        }
+
+        const bgStyle: React.CSSProperties = {
+            backgroundColor: theme.colors.pageBackground.color || '#f9fafb',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundAttachment: 'fixed',
+        };
+
+        if (theme.colors.pageBackground.imageUrl) {
+            bgStyle.backgroundImage = `url(${theme.colors.pageBackground.imageUrl})`;
+        }
+
+        return bgStyle;
+    };
 
     if (isLoading) {
         return (
@@ -101,9 +213,21 @@ export default function PresentationView() {
     }
 
     return (
-        <div className={styles.container}>
+        <div className={styles.container} style={getBackgroundStyle()}>
+            {/* Apply theme first, before any content rendering */}
+            {theme && <ThemeStylesApplier theme={theme} />}
+
             <div className={styles.header}>
-                <h1 className={styles.title}>{presentation.title}</h1>
+                <div className={styles.titleSection}>
+                    <h1 className={styles.title}>{presentation.title}</h1>
+                    {presentation.description && (
+                        <p className={styles.description}>
+                            {presentation.description.startsWith('Generated from prompt:')
+                                ? presentation.description.replace('Generated from prompt:', 'Topic:').trim()
+                                : presentation.description}
+                        </p>
+                    )}
+                </div>
 
                 <div className={styles.actions}>
                     <PdfExportDialog presentation={presentation} buttonText="Export to PDF" />
@@ -111,13 +235,8 @@ export default function PresentationView() {
             </div>
 
             <div className={styles.content}>
-                <div className={styles.slideList}>
-                    {presentation.slides.map((slide: Slide, index: number) => (
-                        <div key={slide.id} id={`slide-${index + 1}`} className={styles.slideWrapper}>
-                            <SlideViewer slide={slide} />
-                        </div>
-                    ))}
-                </div>
+                {/* Используем PresentationViewer напрямую */}
+                <PresentationViewer presentation={presentation} />
             </div>
         </div>
     );

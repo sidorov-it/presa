@@ -76,40 +76,91 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
             document.documentElement.style.setProperty('--presentation-primary-accent', theme.colors.primaryAccent);
 
             // Set secondary accent colors (limit to first 3)
-            theme.colors.secondaryAccents.slice(0, 3).forEach((color, index) => {
-                document.documentElement.style.setProperty(`--presentation-secondary-accent-${index + 1}`, color);
-            });
+            if (theme.colors.secondaryAccents && Array.isArray(theme.colors.secondaryAccents)) {
+                theme.colors.secondaryAccents.slice(0, 3).forEach((color, index) => {
+                    document.documentElement.style.setProperty(`--presentation-secondary-accent-${index + 1}`, color);
+                });
+            }
 
-            document.documentElement.style.setProperty('--presentation-shapes-color', theme.colors.shapesColor);
+            document.documentElement.style.setProperty('--presentation-shapes-color', theme.colors.shapesColor || theme.colors.primaryAccent);
             document.documentElement.style.setProperty(
                 '--presentation-accent-blocks-color',
-                theme.colors.primaryAccent
-                // theme.colors.accentBlocksColor
+                theme.colors.accentBlocksColor || theme.colors.primaryAccent
             );
             document.documentElement.style.setProperty(
                 '--presentation-secondary-button-color',
-                theme.colors.secondaryButtonColor
+                theme.colors.secondaryButtonColor || '#6b7280'
             );
 
             document.documentElement.style.setProperty('--presentation-heading-color', theme.colors.headingColor);
             document.documentElement.style.setProperty('--presentation-text-color', theme.colors.textColor);
             document.documentElement.style.setProperty('--presentation-slide-background', theme.colors.slideBackground);
 
-            if (theme.colors.pageBackground.color) {
-                document.documentElement.style.setProperty(
-                    '--presentation-page-background-color',
-                    theme.colors.pageBackground.color
-                );
-            } else {
-                document.documentElement.style.removeProperty('--presentation-page-background-color');
-            }
+            // Handle page background
+            if (theme.colors.pageBackground) {
+                if (theme.colors.pageBackground.color) {
+                    document.documentElement.style.setProperty(
+                        '--presentation-page-background-color',
+                        theme.colors.pageBackground.color
+                    );
+                } else {
+                    document.documentElement.style.setProperty(
+                        '--presentation-page-background-color', 
+                        '#f9fafb'
+                    );
+                }
 
-            if (theme.colors.pageBackground.imageUrl) {
-                document.documentElement.style.setProperty(
-                    '--presentation-page-background-image',
-                    `url(${theme.colors.pageBackground.imageUrl})`
-                );
+                if (theme.colors.pageBackground.imageUrl) {
+                    console.log('Applying background image URL:', theme.colors.pageBackground.imageUrl);
+                    
+                    // Check if URL is valid
+                    const imageUrl = theme.colors.pageBackground.imageUrl.trim();
+                    if (imageUrl) {
+                        document.documentElement.style.setProperty(
+                            '--presentation-page-background-image',
+                            `url(${imageUrl})`
+                        );
+                        
+                        // Force apply background to body element as well
+                        document.body.style.backgroundImage = `url(${imageUrl})`;
+                        document.body.style.backgroundSize = 'cover';
+                        document.body.style.backgroundPosition = 'center';
+                        document.body.style.backgroundRepeat = 'no-repeat';
+                        document.body.style.backgroundAttachment = 'fixed';
+                        
+                        // Ensure image is properly styled
+                        document.documentElement.style.setProperty(
+                            '--presentation-page-background-size',
+                            'cover'
+                        );
+                        document.documentElement.style.setProperty(
+                            '--presentation-page-background-position',
+                            'center'
+                        );
+                        document.documentElement.style.setProperty(
+                            '--presentation-page-background-repeat',
+                            'no-repeat'
+                        );
+                        document.documentElement.style.setProperty(
+                            '--presentation-page-background-attachment',
+                            'fixed'
+                        );
+                    } else {
+                        console.warn('Background image URL is empty or invalid');
+                        document.documentElement.style.removeProperty('--presentation-page-background-image');
+                        document.body.style.backgroundImage = 'none';
+                    }
+                } else {
+                    console.log('No background image URL provided');
+                    document.documentElement.style.removeProperty('--presentation-page-background-image');
+                    document.body.style.backgroundImage = 'none';
+                }
             } else {
+                // Default background if none defined
+                document.documentElement.style.setProperty(
+                    '--presentation-page-background-color', 
+                    '#f9fafb'
+                );
                 document.documentElement.style.removeProperty('--presentation-page-background-image');
             }
             // Typography
