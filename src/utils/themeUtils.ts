@@ -75,4 +75,11 @@ export const resetThemeStyles = (): void => {
     document.documentElement.style.setProperty('--control-stroke', 'rgba(0, 0, 0, 0.2)');
     document.documentElement.style.setProperty('--control-icon', 'rgba(0, 0, 0, 0.6)');
     document.documentElement.style.setProperty('--control-background', 'transparent');
+
+    document.body.style.backgroundImage = ``;
+    document.body.style.backgroundSize = '';
+    document.body.style.backgroundPosition = '';
+    document.body.style.backgroundRepeat = '';
+    document.body.style.backgroundAttachment = '';
+
 };

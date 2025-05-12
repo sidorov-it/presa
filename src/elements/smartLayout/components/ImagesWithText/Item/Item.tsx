@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/img-redundant-alt */
 import Tiptap from '@/components/tiptap/Tiptap';
-import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlaceholder';
 import { ImageShape, SmartLayoutElement, SmartLayoutItem, TipTapRefs } from '@/types';
 import { RefObject, useRef } from 'react';
 import ItemWrapper from '../../ItemWrapper/ItemWrapper';
@@ -9,6 +8,7 @@ import styles from './Item.module.css';
 import { HiPlus } from 'react-icons/hi2';
 import { usePresentationStore } from '@/store/presentationStore';
 import Image from '@/components/ui/Image/Image';
+import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 type ItemProps = {
     itemId: string;
@@ -45,6 +45,8 @@ export default function Item({
     addItem,
     isLastItem,
 }: ItemProps) {
+    const isReadOnly = useReadOnly();
+
     const item = usePresentationStore(state => {
         const element = state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement;
         return element.items.find(item => item.id === itemId);
@@ -80,6 +82,7 @@ export default function Item({
                 <div className={styles.text}>
                     <Tiptap
                         // key={element.id}
+                        isReadOnly={isReadOnly}
                         elementId={elementId}
                         tiptapRefs={tiptapRefs}
                         id={elementId}
@@ -94,6 +97,7 @@ export default function Item({
                 <div className={styles.text}>
                     <Tiptap
                         // key={element.id}
+                        isReadOnly={isReadOnly}
                         elementId={elementId}
                         tiptapRefs={tiptapRefs}
                         id={elementId}
@@ -110,7 +114,7 @@ export default function Item({
                 </div>
             </div>
 
-            {isLastItem && (
+            {!isReadOnly && isLastItem && (
                 <div className={styles.addIcon} onClick={addItem}>
                     <HiPlus style={{ width: '1rem', height: '1rem' }} />
                 </div>

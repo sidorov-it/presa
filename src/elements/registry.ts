@@ -13,7 +13,7 @@ import {
 } from '@/types';
 import { elementTypes } from './elementTypes';
 import { MenuItem } from './menuRegistry';
-import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
+import getColumnWidths from '@/utils/getColumnWidths';
 
 // export const getNewTableLayout = (menuItem: MenuItem): Layout | null => {
 //     const tableLayout: Layout = {

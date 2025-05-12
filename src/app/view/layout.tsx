@@ -1,6 +1,9 @@
 import { Inter } from 'next/font/google';
-// import '@/styles/globals.css';
+import '../../app/globals.css';
+import '../../styles/theme.css';
 import type { Metadata } from 'next';
+import { NextAuthProvider } from '@/components/providers/NextAuthProvider';
+import { Provider } from '@/components/ui/provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -15,8 +18,18 @@ export default function ViewerLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
-            <body className={inter.className}>{children}</body>
+        <html lang="ru" suppressHydrationWarning>
+            <body
+                className={`${inter.className}`}
+                style={{
+                    minHeight: '100vh',
+                    color: '#111827',
+                }}
+            >
+                <NextAuthProvider>
+                    <Provider>{children}</Provider>
+                </NextAuthProvider>
+            </body>
         </html>
     );
 }

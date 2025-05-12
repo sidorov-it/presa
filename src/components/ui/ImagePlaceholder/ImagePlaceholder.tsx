@@ -1,8 +1,8 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex */
 import { FaRegImage } from 'react-icons/fa6';
-import { FiUpload, FiLink2, FiZap, FiX, FiCheck } from 'react-icons/fi';
-import React, { ChangeEvent, useRef, useState, useEffect } from 'react';
+import { FiUpload, FiLink2, FiZap, FiX, FiCheck, FiLoader } from 'react-icons/fi';
+import React, { ChangeEvent, useRef, useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 
 export type ImagePlaceholderProps = {
@@ -26,6 +26,9 @@ const LinkPopup = ({
 }) => {
     const [linkValue, setLinkValue] = useState('');
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [popupStyle, setPopupStyle] = useState({});
+
     const inputRef = useRef<HTMLInputElement>(null);
     const popupRef = useRef<HTMLDivElement>(null);
 
@@ -56,7 +59,7 @@ const LinkPopup = ({
         return () => document.removeEventListener('keydown', handleEsc);
     }, [onClose]);
 
-    const handleInsertLink = () => {
+    const handleInsertLink = async () => {
         if (!linkValue.trim()) {
             setError('Введите ссылку');
             return;
@@ -65,7 +68,42 @@ const LinkPopup = ({
             setError('Ссылка должна начинаться с http:// или https://');
             return;
         }
-        onSubmit(linkValue.trim());
+
+        try {
+            // Check if URL is from external domain
+            const url = new URL(linkValue.trim());
+            const isExternalUrl = !url.hostname.includes(window.location.hostname);
+
+            if (isExternalUrl) {
+                setIsLoading(true);
+                setError('');
+
+                const response = await fetch('/api/assets/upload-external', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ imageUrl: linkValue.trim() }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Не удалось загрузить изображение');
+                }
+
+                const data = await response.json();
+                onSubmit(data.url);
+                onClose();
+            } else {
+                // Local URL, use as is
+                onSubmit(linkValue.trim());
+                onClose();
+            }
+        } catch (error) {
+            setError(error instanceof Error ? error.message : 'Не удалось загрузить изображение');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -77,19 +115,31 @@ const LinkPopup = ({
         }
     };
 
-    // Calculate position relative to the button
-    const buttonRect = buttonRef.current?.getBoundingClientRect();
+    const updatePopupPosition = useCallback(() => {
+        const buttonRect = buttonRef.current?.getBoundingClientRect();
+        if (buttonRect) {
+            setPopupStyle({
+                position: 'fixed' as const,
+                top: `${buttonRect.bottom + 8}px`,
+                left: `${buttonRect.left - 120 + buttonRect.width / 2}px`,
+                minWidth: '240px',
+                zIndex: 1000,
+            });
+        }
+    }, []);
 
-    let popupStyle = {};
-    if (buttonRect) {
-        popupStyle = {
-            position: 'fixed' as const,
-            top: `${buttonRect.bottom + 8}px`,
-            left: `${buttonRect.left - 120 + buttonRect.width / 2}px`,
-            minWidth: '240px',
-            zIndex: 1000,
+    useEffect(() => {
+        const handleScroll = () => {
+            updatePopupPosition();
         };
-    }
+
+        window.addEventListener('scroll', handleScroll);
+        updatePopupPosition(); // Initial position update
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [updatePopupPosition]);
 
     return createPortal(
         <div
@@ -120,16 +170,21 @@ const LinkPopup = ({
                 }}
                 onKeyDown={handleInputKeyDown}
                 aria-label="Ссылка на изображение"
+                disabled={isLoading}
             />
             {error && <div className={styles.imagePlaceholderLinkPopupError}>{error}</div>}
             <button
                 type="button"
                 className={styles.imagePlaceholderLinkPopupButton}
                 onClick={handleInsertLink}
-                disabled={!linkValue.trim()}
+                disabled={!linkValue.trim() || isLoading}
             >
-                <FiCheck className={styles.imagePlaceholderLinkPopupButtonIcon} />
-                Вставить
+                {isLoading ? (
+                    <FiLoader className={`${styles.imagePlaceholderLinkPopupButtonIcon} ${styles.spin}`} />
+                ) : (
+                    <FiCheck className={styles.imagePlaceholderLinkPopupButtonIcon} />
+                )}
+                {isLoading ? 'Загрузка...' : 'Вставить'}
             </button>
         </div>,
         document.body
@@ -187,7 +242,7 @@ export const ImagePlaceholder = ({
                 body: formData,
             }).then(response => {
                 response.json().then(data => {
-                    onUpdateLink(data.url);
+                    onUpdateLink(data.url, true);
                 });
             });
             // onUpload(event.target.files[0]);

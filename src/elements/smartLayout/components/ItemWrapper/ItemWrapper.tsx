@@ -6,6 +6,7 @@ import { useMenuStore } from '@/store/menuStore';
 import styles from './ItemWrapper.module.css';
 import ImageWithTextItemMenu from '../ImagesWithText/ImageWithTextItemMenu/ImageWithTextItemMenu';
 import { useDnd } from '@/contexts/DragDropContext';
+import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 export default function ItemWrapper({
     children,
@@ -24,6 +25,8 @@ export default function ItemWrapper({
     layoutId: string;
     elementId: string;
 }) {
+    const isReadOnly = useReadOnly();
+
     const [hovered, setHovered] = useState(false);
     const isSelected = useMenuStore(state => state.smartLayoutItemId === itemId);
     const isMenuOpen = useMenuStore(state => state.isOpen && state.smartLayoutItemId === itemId);
@@ -75,11 +78,13 @@ export default function ItemWrapper({
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             onClick={() => {
-                useMenuStore.getState().setSelectedSmartLayoutItemId(layoutId, elementId, itemId);
+                if (!isReadOnly) {
+                    useMenuStore.getState().setSelectedSmartLayoutItemId(layoutId, elementId, itemId);
+                }
             }}
             data-smart-layout-item-id={itemId}
         >
-            {(hovered || isSelected) && (
+            {!isReadOnly && (hovered || isSelected) && (
                 <DragHandler
                     className={styles.dragHandler}
                     horizontal={true}
@@ -96,7 +101,7 @@ export default function ItemWrapper({
                 />
             )}
 
-            {isMenuOpen && menuPosition && (
+            {!isReadOnly && isMenuOpen && menuPosition && (
                 <ImageWithTextItemMenu
                     presentationId={presentationId}
                     position={menuPosition}

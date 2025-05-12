@@ -57,10 +57,6 @@ const HistoryDebugPopup = () => {
         }
     };
 
-    const handlePresentationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setActivePresentation(e.target.value);
-    };
-
     const toggleDiff = (id: string) => {
         setExpandedDiffs(prev => ({
             ...prev,
@@ -279,26 +275,6 @@ const HistoryDebugPopup = () => {
             {isOpen && (
                 <div className={styles.popupContainer}>
                     <h3 className={styles.popupTitle}>History Debug</h3>
-
-                    {presentations.length > 1 && (
-                        <div className={styles.presentationSelector}>
-                            <label htmlFor="presentation-select" className={styles.selectorLabel}>
-                                Presentation:
-                            </label>
-                            <select
-                                id="presentation-select"
-                                className={styles.selectDropdown}
-                                value={activePresentation}
-                                onChange={handlePresentationChange}
-                            >
-                                {presentations.map(p => (
-                                    <option key={p.id} value={p.id}>
-                                        {p.title || `Presentation ${p.id.substring(0, 6)}`}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    )}
 
                     <div className={styles.statusContainer}>
                         <div

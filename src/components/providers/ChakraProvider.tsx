@@ -12,7 +12,7 @@ export function ChakraProvider({ children }: ChakraProviderProps) {
     return (
         <ChakraUIProvider value={system}>
             {children}
-            <Toaster />
+            <Toaster position="bottom-right" richColors />
         </ChakraUIProvider>
     );
 }

@@ -1,6 +1,9 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import { ImagePlaceholder } from '../ImagePlaceholder/ImagePlaceholder';
 import React, { useState } from 'react';
 import { useMenuStore } from '@/store/menuStore';
+import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 export type ImageProps = {
     imageUrl: string;
@@ -35,6 +38,12 @@ export const Image: React.FC<ImageProps> = ({
             });
         }
     };
+
+    const isReadOnly = useReadOnly();
+
+    if (isReadOnly && !imageUrl) {
+        return null;
+    }
 
     return (
         <div className={className} style={style} {...rest}>

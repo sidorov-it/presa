@@ -90,7 +90,6 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
                                 onDragStart={e => handleDragStart(e, element)}
                                 onClick={() => handleElementClick(element)}
                                 aria-label={element.label}
-                                tabIndex={0}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter' || e.key === ' ') {
                                         e.preventDefault();
@@ -98,7 +97,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
                                     }
                                 }}
                             >
-                                {element.Icon && <element.Icon className={styles.elementItemIcon} />}
+                                {element.Icon && <element.Icon />}
                                 <div className={styles.elementItemLabel}>{element.label}</div>
                             </div>
                         ))}

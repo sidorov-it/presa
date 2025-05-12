@@ -250,7 +250,7 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
                     <BiCode size={16} />
                 </button> */}
 
-                <LinkEditor editor={editor} className={styles.button} />
+                {/* <LinkEditor editor={editor} className={styles.button} /> */}
 
                 <button
                     onClick={() => editor.chain().focus().toggleOrderedList().run()}

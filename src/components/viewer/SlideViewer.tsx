@@ -7,9 +7,16 @@ import ViewerTemplateImage from './ViewerTemplateImage';
 interface SlideViewerProps {
     slide: Slide;
     themeClassName?: string;
+    presentationId?: string;
+    isPdfExport?: boolean;
 }
 
-const SlideViewer: React.FC<SlideViewerProps> = ({ slide, themeClassName = '' }) => {
+const SlideViewer: React.FC<SlideViewerProps> = ({ 
+    slide, 
+    themeClassName = '',
+    presentationId: _presentationId,
+    isPdfExport = false 
+}) => {
     // Get slide background styling
     const getSlideStyle = () => {
         // Base style with CSS variables
@@ -201,7 +208,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({ slide, themeClassName = '' })
     }, [slide]);
 
     // Slide wrapper style including theme CSS variables
-    const slideWrapperStyle = {
+    const slideWrapperStyle: React.CSSProperties = {
         ...getSlideStyle(),
         // Apply border styles from CSS variables
         borderRadius: 'var(--presentation-slide-border-radius)',
@@ -211,16 +218,29 @@ const SlideViewer: React.FC<SlideViewerProps> = ({ slide, themeClassName = '' })
         // Apply background if not overridden by slide-specific background
         backgroundColor: 'var(--presentation-slide-background)',
         boxShadow: 'var(--presentation-slide-shadow)',
+        minHeight: isPdfExport ? 'auto' : undefined,
+        height: isPdfExport ? 'auto' : undefined,
+        // Дополнительные стили для PDF экспорта
+        ...(isPdfExport && {
+            overflow: 'visible',
+            padding: '20px',
+        }),
     };
 
     // Slide content style
     const slideContentStyle: React.CSSProperties = {
         backgroundColor: 'var(--presentation-slide-background)',
         borderRadius: 'var(--presentation-slide-border-radius)',
+        minHeight: isPdfExport ? 'auto' : undefined,
+        height: isPdfExport ? 'auto' : undefined,
+        overflow: isPdfExport ? 'visible' : undefined,
     };
 
+    // Адаптируем класс слайда при экспорте в PDF
+    const slideClassName = `${styles.slide} ${themeClassName} ${isPdfExport ? styles.pdfExport : ''}`;
+
     return (
-        <div className={`${styles.slide} ${themeClassName}`}>
+        <div className={slideClassName}>
             <div className={styles.slideWrapper} style={slideWrapperStyle}>
                 <div className={styles.slideContent} style={slideContentStyle}>
                     {/* Template image if needed */}

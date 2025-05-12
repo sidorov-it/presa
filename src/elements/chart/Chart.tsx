@@ -34,6 +34,7 @@ import { OpenCustomMenuEvent } from '@/customEvents/OpenCustomMenuEvent';
 
 import styles from './Chart.module.css';
 import { LayoutType } from 'recharts/types/util/types';
+import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 interface ChartProps {
     elementId: string;
@@ -67,6 +68,8 @@ const Chart: React.FC<ChartProps> = ({
     layoutId,
     inSettings = false,
 }) => {
+    const isReadOnly = useReadOnly();
+
     const element = usePresentationStore(state =>
         state.getElement(presentationId, slideId, layoutId, elementId)
     ) as ChartElement;
@@ -113,6 +116,10 @@ const Chart: React.FC<ChartProps> = ({
     // Handle click on chart to select it
     const handleClickChart = (e: React.MouseEvent) => {
         e.stopPropagation();
+        if (isReadOnly) {
+            return;
+        }
+
         if (presentationId && slideId && layoutId) {
             setIsSelected(true);
             setIsSettingsOpen(true);
@@ -121,6 +128,10 @@ const Chart: React.FC<ChartProps> = ({
 
     // Handle click outside to deselect chart
     useEffect(() => {
+        if (isReadOnly) {
+            return;
+        }
+
         const handleClickOutside = (event: MouseEvent) => {
             if (
                 containerRef.current &&
@@ -137,7 +148,7 @@ const Chart: React.FC<ChartProps> = ({
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, []);
+    }, [isReadOnly]);
 
     useEffect(() => {
         OpenCustomMenuEvent.addEventListener(e => {
@@ -145,7 +156,7 @@ const Chart: React.FC<ChartProps> = ({
                 setIsSettingsOpen(true);
             }
         });
-    }, []);
+    }, [element.id]);
 
     // Open data edit modal
     const handleOpenDataModal = (e: React.MouseEvent) => {
@@ -619,7 +630,16 @@ const Chart: React.FC<ChartProps> = ({
                     <div className={styles.unsupportedChartType}>Unsupported chart type: {element.elementVariant}</div>
                 );
         }
-    }, [element.height, element.elementVariant, element.series, legendPosition, showLabels, showValues, data]);
+    }, [
+        element.height,
+        element.elementVariant,
+        element.series,
+        legendPosition,
+        showLabels,
+        showValues,
+        data,
+        isReadOnly,
+    ]);
 
     // Calculate optimal position for settings popup
     const calculateSettingsPosition = () => {
@@ -715,11 +735,11 @@ const Chart: React.FC<ChartProps> = ({
                     onClick={handleClickChart}
                     data-element-id={element.id}
                 >
-                    {isSelected && <div className={styles.selectedBorder}></div>}
+                    {!isReadOnly && isSelected && <div className={styles.selectedBorder}></div>}
 
                     {renderChart()}
 
-                    {isSelected && (
+                    {!isReadOnly && isSelected && (
                         <>
                             {/* Top side */}
                             <div
@@ -782,7 +802,7 @@ const Chart: React.FC<ChartProps> = ({
             </div>
 
             {/* Chart settings popup */}
-            {isSettingsOpen && (
+            {!isReadOnly && isSettingsOpen && (
                 <div
                     ref={settingsRef}
                     className={styles.chartSettingsPopup}
@@ -942,7 +962,7 @@ const Chart: React.FC<ChartProps> = ({
             )}
 
             {/* Full data edit modal */}
-            {isModalOpen && presentationId && slideId && layoutId && (
+            {!isReadOnly && isModalOpen && presentationId && slideId && layoutId && (
                 <ChartModal
                     isOpen={isModalOpen}
                     onClose={handleCloseModal}

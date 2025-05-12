@@ -524,8 +524,6 @@ em {
 
     padding: 1rem;
 
-    @apply prose prose-sm sm:prose lg:prose-lg xl:prose-xl;
-
     line-height: inherit;
     font-size: 1em;
 

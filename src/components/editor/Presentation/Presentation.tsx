@@ -5,6 +5,7 @@ import { PresentationState, usePresentationStore } from '@/store/presentationSto
 import { useShallow } from 'zustand/react/shallow';
 import { Button } from '@/components/ui/Button';
 import styles from './Presentation.module.css';
+import { useReadOnly } from '@/contexts/ReadOnlyContext';
 interface PresentationProps {
     presentationId: string;
     activeSlideId: string | null;
@@ -27,6 +28,7 @@ const SlideEditorWrapper = memo(
         onSlideSelect: (slideId: string) => void;
         tiptapRefs: MutableRefObject<TipTapRefs>;
     }) => {
+        const isReadOnly = useReadOnly();
         const slideLayoutIds = usePresentationStore(
             useShallow((state: PresentationState) => {
                 const presentation = state.presentations.find((p: IPresentation) => p.id === presentationId);
@@ -46,7 +48,7 @@ const SlideEditorWrapper = memo(
                 presentationId={presentationId}
                 slideId={slideId}
                 handleSelectSlide={onSlideSelect}
-                isSelected={isSelected}
+                isSelected={isSelected && !isReadOnly}
             />
         );
     }
@@ -55,6 +57,8 @@ const SlideEditorWrapper = memo(
 SlideEditorWrapper.displayName = 'SlideEditorWrapper';
 
 function Presentation({ presentationId, activeSlideId, onSlideSelect, tiptapRefs }: PresentationProps) {
+    const isReadOnly = useReadOnly();
+
     const slideIds = usePresentationStore(
         useShallow((state: PresentationState) => {
             const presentation = state.presentations.find(p => p.id === presentationId);
@@ -64,7 +68,7 @@ function Presentation({ presentationId, activeSlideId, onSlideSelect, tiptapRefs
 
     return (
         <div className={styles.presentation}>
-            {slideIds.length === 0 && (
+            {!isReadOnly && slideIds.length === 0 && (
                 <div className={styles.emptyContainer}>
                     <Button onClick={() => usePresentationStore.getState().addSlide(presentationId)}>
                         + Добавить слайд

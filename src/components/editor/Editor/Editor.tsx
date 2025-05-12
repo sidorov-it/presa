@@ -11,6 +11,7 @@ import { TipTapRefs } from '@/types';
 import { useShallow } from 'zustand/react/shallow';
 
 import styles from './Editor.module.css';
+import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 interface EditorProps {
     presentationId: string;
@@ -24,6 +25,8 @@ const EditorContent: React.FC<{
     onSlideSelect: (slideId: string, scroll?: boolean) => void;
     tiptapRefs: MutableRefObject<TipTapRefs>;
 }> = React.memo(({ presentationId, activeSlideId, onSlideSelect, tiptapRefs }) => {
+    const isReadOnly = useReadOnly();
+
     return (
         <div className={styles.editorContainer}>
             {/* <SlidesList presentationId={presentationId} activeSlideId={activeSlideId} onSlideSelect={onSlideSelect} /> */}
@@ -38,19 +41,21 @@ const EditorContent: React.FC<{
                 />
 
                 {/* Tools panel */}
-                {activeSlideId && <ElementsPanel presentationId={presentationId} slideId={activeSlideId} />}
+                {!isReadOnly && activeSlideId && (
+                    <ElementsPanel presentationId={presentationId} slideId={activeSlideId} />
+                )}
             </div>
-            <SlideMenu tiptapRefs={tiptapRefs} />
-            {/* Global drag-drop indicator */}
-            <DragDropIndicator />
-            {/* Debug information panel */}
-            <DragDropDebugInfo />
+            {!isReadOnly && <SlideMenu tiptapRefs={tiptapRefs} />}
+            {!isReadOnly && <DragDropIndicator />}
+            {!isReadOnly && <DragDropDebugInfo />}
         </div>
     );
 });
 
 const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
     const [activeSlideId, setActiveSlideId] = useState<string | null>(null);
+    const isReadOnly = useReadOnly();
+
     // const [isBgModalOpen, setIsBgModalOpen] = useState(false);
     const backgroundSettings = usePresentationStore(useShallow(state => state.getBackgroundSettings(presentationId)));
 
@@ -78,16 +83,23 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
     );
 
     // Handle slide selection with useCallback
-    const handleSlideSelect = useCallback((slideId: string, scroll: boolean = false) => {
-        setActiveSlideId(slideId);
+    const handleSlideSelect = useCallback(
+        (slideId: string, scroll: boolean = false) => {
+            if (isReadOnly) {
+                return;
+            }
 
-        if (scroll) {
-            document.querySelector(`[data-slide-id="${slideId}"]`)?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center',
-            });
-        }
-    }, []);
+            setActiveSlideId(slideId);
+
+            if (scroll) {
+                document.querySelector(`[data-slide-id="${slideId}"]`)?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                });
+            }
+        },
+        [isReadOnly]
+    );
 
     useEffect(() => {
         // Set the first slide as active by default if there are slides

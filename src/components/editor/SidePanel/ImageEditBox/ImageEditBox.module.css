@@ -70,6 +70,22 @@
     color: #9ca3af;
 }
 
+.input.inputError {
+    border-color: #EF4444;
+}
+
+.input.inputError:focus {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 1px #EF4444;
+}
+
+.error {
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: #EF4444;
+}
+
 .replaceImageButton {
     margin-top: 1rem;
 }
@@ -78,4 +94,36 @@
     position: absolute;
     top: 1rem;
     right: 1rem;
+}
+
+.dropzone.loading {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.loadingOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.loadingIcon {
+    font-size: 1.5rem;
+    color: #3B82F6;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }

@@ -11,6 +11,7 @@ import styles from './Box.module.css';
 import { getBlockColors } from '@/utils/colors';
 import { useThemeStore } from '@/store/themeStore';
 import { BoxIconOptions } from '@/components/editor/Menus/BubbleMenus/BoxBubbleMenu/BoxIconOptions';
+import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 export default function BoxComponent({
     elementId,
@@ -27,6 +28,8 @@ export default function BoxComponent({
     tiptapRefs: RefObject<TipTapRefs>;
     dragHandleRef?: RefObject<HTMLDivElement>;
 }) {
+    const isReadOnly = useReadOnly();
+
     const element = usePresentationStore(
         useShallow(state => state.getElement(presentationId, slideId, layoutId, elementId) as BoxElement)
     );
@@ -35,25 +38,16 @@ export default function BoxComponent({
 
     const [fontSize, setFontSize] = useState<string | null>(null);
 
-    // const { elementTypeId, iconType, customBackgroundColor } = usePresentationStore(
-    //     useShallow(state => {
-    //         const element = state.getElement(presentationId, slideId, layoutId, elementId) as BoxElement;
-    //         return {
-    //             elementTypeId: element?.elementTypeId,
-    //             iconType: element?.iconType,
-    //             customBackgroundColor: element?.customBackgroundColor,
-    //         };
-    //     })
-    // );
-
     useEffect(() => {
         const newFontSize = tiptapRefs.current!.editors[element.id]?.editor.getAttributes('textStyle').fontSize;
         if (typeof newFontSize === 'string') {
             setFontSize(newFontSize);
-        } else {
+        } else if (newFontSize) {
             setFontSize(newFontSize?.fontSize);
+        } else {
+            setFontSize('1.125em');
         }
-    }, [element.content, tiptapRefs]);
+    }, [element.content, element.id, tiptapRefs]);
 
     const currentTheme = useThemeStore(state => state.currentTheme);
 
@@ -96,6 +90,7 @@ export default function BoxComponent({
                 slideId={slideId}
                 layoutId={layoutId}
                 standardEnterBehavior={true}
+                isReadOnly={isReadOnly}
                 onContentChange={(content: string) => {
                     usePresentationStore.getState().updateElement({
                         presentationId,

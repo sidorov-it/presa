@@ -22,7 +22,7 @@ import styles from './page.module.css';
 import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
 import ThemeDebugButton from '@/components/debug/ThemeDebugButton';
 import { useColorMode } from '@/components/ui/color-mode';
-// import { PdfExportDialog } from '@/components/export';
+import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -158,7 +158,7 @@ export default function PresentationEditorPage() {
     if (notFound || !presentation) return notFoundUI;
 
     return (
-        <>
+        <ReadOnlyProvider isReadOnly={false}>
             <ThemeStylesApplier theme={currentTheme} />
             <div className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`}>
                 <header className={styles.header}>
@@ -253,16 +253,6 @@ export default function PresentationEditorPage() {
                                 <span className={styles.viewButtonText}>Просмотр</span>
                             </button>
 
-                            {/* PDF Export Button */}
-                            {/* {presentation && (
-                                <div className={styles.exportButtonWrapper}>
-                                    <PdfExportDialog
-                                        presentation={presentation}
-                                        buttonText="Экспорт PDF"
-                                    />
-                                </div>
-                            )} */}
-
                             <button
                                 type="button"
                                 className={styles.settingsButton}
@@ -297,6 +287,6 @@ export default function PresentationEditorPage() {
                     <div className={styles.footerContent}>Presa - Create beautiful presentations with AI</div>
                 </footer>
             </div>
-        </>
+        </ReadOnlyProvider>
     );
 }

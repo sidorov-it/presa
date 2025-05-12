@@ -82,7 +82,10 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
                 });
             }
 
-            document.documentElement.style.setProperty('--presentation-shapes-color', theme.colors.shapesColor || theme.colors.primaryAccent);
+            document.documentElement.style.setProperty(
+                '--presentation-shapes-color',
+                theme.colors.shapesColor || theme.colors.primaryAccent
+            );
             document.documentElement.style.setProperty(
                 '--presentation-accent-blocks-color',
                 theme.colors.accentBlocksColor || theme.colors.primaryAccent
@@ -104,15 +107,12 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
                         theme.colors.pageBackground.color
                     );
                 } else {
-                    document.documentElement.style.setProperty(
-                        '--presentation-page-background-color', 
-                        '#f9fafb'
-                    );
+                    document.documentElement.style.setProperty('--presentation-page-background-color', '#f9fafb');
                 }
 
                 if (theme.colors.pageBackground.imageUrl) {
                     console.log('Applying background image URL:', theme.colors.pageBackground.imageUrl);
-                    
+
                     // Check if URL is valid
                     const imageUrl = theme.colors.pageBackground.imageUrl.trim();
                     if (imageUrl) {
@@ -120,23 +120,17 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
                             '--presentation-page-background-image',
                             `url(${imageUrl})`
                         );
-                        
+
                         // Force apply background to body element as well
                         document.body.style.backgroundImage = `url(${imageUrl})`;
                         document.body.style.backgroundSize = 'cover';
                         document.body.style.backgroundPosition = 'center';
                         document.body.style.backgroundRepeat = 'no-repeat';
                         document.body.style.backgroundAttachment = 'fixed';
-                        
+
                         // Ensure image is properly styled
-                        document.documentElement.style.setProperty(
-                            '--presentation-page-background-size',
-                            'cover'
-                        );
-                        document.documentElement.style.setProperty(
-                            '--presentation-page-background-position',
-                            'center'
-                        );
+                        document.documentElement.style.setProperty('--presentation-page-background-size', 'cover');
+                        document.documentElement.style.setProperty('--presentation-page-background-position', 'center');
                         document.documentElement.style.setProperty(
                             '--presentation-page-background-repeat',
                             'no-repeat'
@@ -157,10 +151,7 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
                 }
             } else {
                 // Default background if none defined
-                document.documentElement.style.setProperty(
-                    '--presentation-page-background-color', 
-                    '#f9fafb'
-                );
+                document.documentElement.style.setProperty('--presentation-page-background-color', '#f9fafb');
                 document.documentElement.style.removeProperty('--presentation-page-background-image');
             }
             // Typography

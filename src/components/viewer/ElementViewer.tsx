@@ -127,8 +127,8 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                 // For text elements, render HTML content from 'content' property with theme styles
                 return (
                     <div
-                        className="tiptap viewer-tiptap"
-                        style={getTextStyles()}
+                        className={`tiptap ProseMirror not-prose ${styles.viewerTiptap}`}
+                        // style={getTextStyles()}
                         dangerouslySetInnerHTML={{ __html: element.content || '' }}
                     />
                 );
@@ -199,7 +199,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                 // For list elements, render HTML content with appropriate list styling
                 return (
                     <div
-                        className={`tiptap viewer-tiptap ${styles.list} ${styles[element.elementTypeId]}`}
+                        className={`tiptap ProseMirror viewer-tiptap ${styles.list} ${styles[element.elementTypeId]}`}
                         style={getTextStyles()}
                         dangerouslySetInnerHTML={{ __html: element.content || '' }}
                     />
@@ -209,7 +209,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                 // For table elements, render HTML content with table styling
                 return (
                     <div
-                        className={`tiptap viewer-tiptap ${styles.table}`}
+                        className={`tiptap ProseMirror viewer-tiptap ${styles.table}`}
                         dangerouslySetInnerHTML={{ __html: element.content || '' }}
                     />
                 );

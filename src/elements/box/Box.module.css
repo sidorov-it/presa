@@ -9,9 +9,10 @@
 }
 
 .icon {
-    line-height: var(--presentation-body-line-height) !important;
-    width: 1.25em;
-    height: 1.25em;
+    /* line-height: var(--presentation-body-line-height) !important; */
+    /* width: 1.25em;
+    height: 1.25em; */
     display: inline-flex;
     align-items: baseline;
+    line-height: 1.25em;
 }

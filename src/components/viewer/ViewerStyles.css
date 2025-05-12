@@ -69,6 +69,7 @@
 .viewer-tiptap a {
     color: var(--presentation-link-color);
     text-decoration: underline;
+    pointer-events: all;
 }
 
 /* Style buttons in viewer */
@@ -86,7 +87,7 @@
 }
 
 /* Style blocks/callouts in viewer */
-.viewer-tiptap blockquote,
+/* .viewer-tiptap blockquote,
 .viewer-tiptap .callout {
     background-color: var(--presentation-block-background);
     border-width: var(--presentation-block-border-width);
@@ -95,7 +96,7 @@
     padding: 1rem;
     margin: 1rem 0;
     border-radius: 0.25rem;
-}
+} */
 
 /* Apply proper image masks */
 .element-viewer img {

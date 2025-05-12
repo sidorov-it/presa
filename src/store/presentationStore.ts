@@ -17,7 +17,7 @@ import {
     SmartLayoutType,
     SmartLayoutElement,
 } from '@/types';
-import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
+import getColumnWidths from '@/utils/getColumnWidths';
 import { getNewEditorElement } from '@/elements/registry';
 import debounce from 'lodash/debounce';
 import { generateId } from '@/utils/id';
@@ -507,11 +507,8 @@ export const usePresentationStore = create<PresentationState>()(
                     id: slideId,
                     title: `Слайд ${index + 1}`,
                     layouts: [layout],
-                    background: {
-                        type: 'color',
-                        value: '#ffffff',
-                    },
                     style: {},
+                    contentAlignment: 'center',
                     templateType: 'standard', // Default template type
                 };
 

@@ -1,4 +1,4 @@
-import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
+import getColumnWidths from '@/utils/getColumnWidths';
 import { Layout } from '@/types';
 import { generateId } from './id';
 import { getNewEditorElement } from '@/elements/registry';

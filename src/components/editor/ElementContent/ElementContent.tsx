@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import Tiptap from '@/components/tiptap/Tiptap';
 import styles from './ElementContent.module.css';
 import DragHandler from '../DragHandler';
@@ -8,7 +9,6 @@ import { generateId } from '@/utils/id';
 import { useEditorStore } from '@/store/editorStore';
 import { useHistoryStore } from '@/store/historyStore';
 import { getElementConfig, getNewEditorElement, getNewElement } from '@/elements/registry';
-import { getColumnWidths } from '../SlideEditor/SlideEditor';
 import { Image } from '@/elements/image';
 import { useMenuStore } from '@/store/menuStore';
 import { useShallow } from 'zustand/react/shallow';
@@ -16,6 +16,8 @@ import Chart from '@/elements/chart/Chart';
 import SmartLayout from '@/elements/smartLayout/SmartLayout';
 import Box from '@/elements/box/Box';
 import { MenuItem } from '@/elements/menuRegistry';
+import getColumnWidths from '@/utils/getColumnWidths';
+import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 export const ElementContent = ({
     elementId,
@@ -49,7 +51,7 @@ export const ElementContent = ({
     isInTable: boolean;
     hasMultipleCells: boolean;
 }) => {
-    // const element = usePresentationStore(state => state.getElement(presentationId, slideId, layoutId, elementId)!);
+    const isReadOnly = useReadOnly();
 
     const elementTypeId = usePresentationStore(
         state => state.getElement(presentationId, slideId, layoutId, elementId)!.elementTypeId
@@ -66,20 +68,7 @@ export const ElementContent = ({
         )
     );
 
-    // const isSmartLayoutItemHovered = useMenuStore(useShallow(state => state.selectedSmartLayoutItemId === elementId));
-
     const [elementIsHovered, setElementIsHovered] = useState(false);
-
-    // const elementToFocus = useEditorStore(state => state.elementToFocus);
-    // const clearElementToFocus = useEditorStore.getState().clearElementToFocus;
-
-    // const isElementToFocus = useMemo(() => elementToFocus?.elementId === elementId, [elementToFocus, elementId]);
-
-    // useEffect(() => {
-    //     if (isElementToFocus) {
-    //         useEditorStore.getState().clearElementToFocus();
-    //     }
-    // }, [isElementToFocus]);
 
     const handleEnterPressed = useCallback(
         (contentBeforeCursor?: string, contentAfterCursor?: string) => {
@@ -469,8 +458,6 @@ export const ElementContent = ({
                         elementId={elementId}
                         tiptapRefs={tiptapRefs}
                         id={elementId}
-                        // autoFocus={isElementToFocus}
-                        // initialContent={getEditorContent(element)}
                         onEnterPressed={handleEnterPressed}
                         onBackspacePressed={handleBackspacePressed}
                         onContentChange={handleEditorContentChange}
@@ -480,6 +467,7 @@ export const ElementContent = ({
                         presentationId={presentationId}
                         slideId={slideId}
                         layoutId={layoutId}
+                        isReadOnly={isReadOnly}
                     />
                 );
             } else if (elementTypeId === 'image') {
@@ -541,6 +529,7 @@ export const ElementContent = ({
             slideId,
             layoutId,
             hasMultipleCells,
+            isReadOnly,
         ]
     );
 
@@ -553,31 +542,33 @@ export const ElementContent = ({
             className={`${styles.elementContent}`}
             data-element-id={elementId}
             onMouseEnter={() => {
-                if (!elementIsHovered) {
+                if (!elementIsHovered && !isReadOnly) {
                     setElementIsHovered(true);
                 }
             }}
             onMouseLeave={() => {
-                if (elementIsHovered) {
+                if (elementIsHovered && !isReadOnly) {
                     setElementIsHovered(false);
                 }
             }}
         >
             <div className={`${styles.elementWrapper}`}>
-                {!isInTable && (isMenuOpenOnCurrentElement || isCurrentEditorActive || elementIsHovered) && (
-                    <DragHandler
-                        className={`${styles.elementDragHandle} ${hasMultipleCells ? styles.elementDragHandleMultipleCells : ''}`}
-                        slideId={slideId}
-                        isActive={isMenuOpenOnCurrentElement}
-                        dataAttributes={{
-                            'data-element-drag-handle': elementId,
-                        }}
-                        ariaLabel="Drag this element"
-                        handleClick={handleClickElementDragHandle(elementId, elementConfig)}
-                        handleKeyDown={handleKeyDownElementDragHandle(elementId, elementConfig)}
-                        handleDragStart={handleDragStartElementDragHandle(elementId)}
-                    />
-                )}
+                {!isReadOnly &&
+                    !isInTable &&
+                    (isMenuOpenOnCurrentElement || isCurrentEditorActive || elementIsHovered) && (
+                        <DragHandler
+                            className={`${styles.elementDragHandle} ${hasMultipleCells ? styles.elementDragHandleMultipleCells : ''}`}
+                            slideId={slideId}
+                            isActive={isMenuOpenOnCurrentElement}
+                            dataAttributes={{
+                                'data-element-drag-handle': elementId,
+                            }}
+                            ariaLabel="Drag this element"
+                            handleClick={handleClickElementDragHandle(elementId, elementConfig)}
+                            handleKeyDown={handleKeyDownElementDragHandle(elementId, elementConfig)}
+                            handleDragStart={handleDragStartElementDragHandle(elementId)}
+                        />
+                    )}
 
                 {renderElementContent(
                     elementId,

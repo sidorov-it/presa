@@ -70,6 +70,7 @@ interface TiptapProps {
     elementConfig?: ElementConfig;
     customRefKey?: string;
     standardEnterBehavior?: boolean;
+    isReadOnly?: boolean;
 }
 
 // Define the ref type
@@ -324,6 +325,7 @@ const Tiptap = ({
     elementConfig,
     customRefKey,
     standardEnterBehavior = false,
+    isReadOnly = false,
 }: TiptapProps) => {
     const element = usePresentationStore.getState().getElement(presentationId, slideId, layoutId, elementId);
 
@@ -356,6 +358,7 @@ const Tiptap = ({
                 class: `${styles.editor} custom-tiptap-editor no-dropcursor not-prose`,
             },
         },
+        editable: !isReadOnly,
         immediatelyRender: true,
         onContentError: error => {
             console.log('contentError', error);

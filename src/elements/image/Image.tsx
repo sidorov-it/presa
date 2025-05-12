@@ -9,6 +9,7 @@ import { useMenuStore } from '@/store/menuStore';
 import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlaceholder';
 
 import styles from './Image.module.css';
+import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 interface ImageProps {
     elementId: string;
@@ -30,6 +31,8 @@ const Image: React.FC<ImageProps> = ({
     layoutId,
     hasMultipleCells,
 }) => {
+    const isReadOnly = useReadOnly();
+
     const element = usePresentationStore(state =>
         state.getElement(presentationId, slideId, layoutId, elementId)
     ) as ImageElement;
@@ -69,6 +72,10 @@ const Image: React.FC<ImageProps> = ({
     }, [element.src]);
 
     const handleClickImage = (e: React.MouseEvent) => {
+        if (isReadOnly) {
+            return;
+        }
+
         e.stopPropagation();
         setIsSelected(true);
 
@@ -81,6 +88,10 @@ const Image: React.FC<ImageProps> = ({
     };
 
     useEffect(() => {
+        if (isReadOnly) {
+            return;
+        }
+
         const handleClickOutside = (event: MouseEvent) => {
             if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
                 setIsSelected(false);
@@ -91,7 +102,7 @@ const Image: React.FC<ImageProps> = ({
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, []);
+    }, [isReadOnly]);
 
     // Handle resize start
     const handleResizeStart = (e: React.MouseEvent, direction: ResizeDirection) => {
@@ -276,6 +287,10 @@ const Image: React.FC<ImageProps> = ({
     }
 
     const handleAddText = () => {
+        if (isReadOnly) {
+            return;
+        }
+
         if (presentationId && slideId && layoutId) {
             const imageWidthPercent = parseFloat(
                 ((imageRef.current!.clientWidth / containerRef.current!.parentElement!.clientWidth) * 100).toFixed(2)
@@ -326,9 +341,9 @@ const Image: React.FC<ImageProps> = ({
                 }}
                 onClick={handleClickImage}
             >
-                {error && <div className={styles.error}>{error}</div>}
+                {!isReadOnly && error && <div className={styles.error}>{error}</div>}
 
-                {(!element.src || !isValidUrl(element.src)) && (
+                {!isReadOnly && (!element.src || !isValidUrl(element.src)) && (
                     <ImagePlaceholder
                         imageUrl={element.src || ''}
                         onClearImage={() => {
@@ -354,7 +369,7 @@ const Image: React.FC<ImageProps> = ({
                                 }}
                                 onClick={handleAddText}
                             >
-                                Кликните для добавления текста
+                                {isReadOnly ? '' : 'Кликните для добавления текста'}
                             </div>
                         )}
 
@@ -442,7 +457,7 @@ const Image: React.FC<ImageProps> = ({
                                 }}
                                 onClick={handleAddText}
                             >
-                                Кликните для добавления текста
+                                {isReadOnly ? '' : 'Кликните для добавления текста'}
                             </div>
                         )}
                     </div>

@@ -11,6 +11,7 @@ import Item from './Item/Item';
 import { useShallow } from 'zustand/react/shallow';
 import { generateId } from '@/utils/id';
 import { useDndStore } from '@/store/dndStore';
+import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 export default function ImagesWithText({
     elementId,
@@ -27,6 +28,8 @@ export default function ImagesWithText({
     layoutId: string;
     isFocused: boolean;
 }) {
+    const isReadOnly = useReadOnly();
+
     // const source = useDndStore(({ state }) => state.source);
     const smartLayoutItemId = useDndStore(state => state.state.source.smartLayoutItemId);
     // const source = useDndStore(state => state.state.source);
@@ -236,7 +239,7 @@ export default function ImagesWithText({
                     onDragLeave={handleDragLeave}
                     onDrop={e => handleDrop(e, itemId)}
                 >
-                    {dropIndicator && dropIndicator.itemId === itemId && (
+                    {!isReadOnly && dropIndicator && dropIndicator.itemId === itemId && (
                         <div
                             className={`${styles.dropIndicator} ${
                                 dropIndicator.position === 'left' ? styles.left : styles.right

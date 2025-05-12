@@ -157,3 +157,67 @@
     min-height: calc(min(calc(64.5em / 1), 100vw) / 1.7777777777777777);
     border-style: solid;
 }
+
+/* PDF Export Styles */
+.pdfExport .slideWrapper {
+  min-height: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  box-shadow: none !important;
+}
+
+.pdfExport .slideContent {
+  min-height: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.pdfExport .slideContainer {
+  min-height: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  padding: 20px !important;
+  display: block !important;
+}
+
+/* Ensure text elements expand properly in PDF */
+.pdfExport p, 
+.pdfExport h1, 
+.pdfExport h2, 
+.pdfExport h3, 
+.pdfExport h4, 
+.pdfExport h5, 
+.pdfExport h6,
+.pdfExport ul,
+.pdfExport ol,
+.pdfExport div {
+  overflow-wrap: break-word !important;
+  word-wrap: break-word !important;
+  overflow: visible !important;
+  page-break-inside: avoid !important;
+}
+
+/* Fix layout positioning in PDF */
+.pdfExport [data-layout],
+.pdfExport [data-element] {
+  position: relative !important;
+  overflow: visible !important;
+  page-break-inside: avoid !important;
+}
+
+/* Fix image rendering in PDFs */
+.pdfExport img {
+  max-width: 100% !important;
+  height: auto !important;
+  object-fit: contain !important;
+}
+
+/* Ensure columns and grids render properly */
+.pdfExport [data-columns="2"],
+.pdfExport [data-columns="3"],
+.pdfExport [data-grid] {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  gap: 20px !important;
+}

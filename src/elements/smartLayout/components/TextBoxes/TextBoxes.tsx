@@ -11,6 +11,7 @@ import ItemWrapper from '../ItemWrapper/ItemWrapper';
 
 import styles from './TextBoxes.module.css';
 import { useDndStore } from '@/store/dndStore';
+import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 export default function TextBoxes({
     elementId,
@@ -27,6 +28,7 @@ export default function TextBoxes({
     layoutId: string;
     isFocused: boolean;
 }) {
+    const isReadOnly = useReadOnly();
     const smartLayoutItemId = useDndStore(state => state.state.source.smartLayoutItemId);
     // const source = useDndStore(state => state.state.source);
     const isDraggingFromSameLayout = useDndStore(
@@ -261,6 +263,7 @@ export default function TextBoxes({
                         <div className={`${styles.textBox} ${align ? styles[align] : ''}`}>
                             <div className={styles.title}>
                                 <Tiptap
+                                    isReadOnly={isReadOnly}
                                     elementId={elementId}
                                     tiptapRefs={tiptapRefs}
                                     id={elementId}
@@ -274,6 +277,7 @@ export default function TextBoxes({
                             </div>
                             <div className={styles.content}>
                                 <Tiptap
+                                    isReadOnly={isReadOnly}
                                     elementId={elementId}
                                     tiptapRefs={tiptapRefs}
                                     id={elementId}
@@ -289,7 +293,7 @@ export default function TextBoxes({
                                 />
                             </div>
                         </div>
-                        {index === itemsIds.length - 1 && (
+                        {!isReadOnly && index === itemsIds.length - 1 && (
                             <div className={styles.addButton} onClick={addItem}>
                                 <HiPlus style={{ width: '1rem', height: '1rem' }} />
                             </div>

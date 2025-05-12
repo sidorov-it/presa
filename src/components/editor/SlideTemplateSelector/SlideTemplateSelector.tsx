@@ -5,6 +5,7 @@ import styles from './SlideTemplateSelector.module.css';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
 import { MdOutlineVerticalAlignTop, MdOutlineVerticalAlignCenter, MdOutlineVerticalAlignBottom } from 'react-icons/md';
 import { useHistoryStore } from '@/store/historyStore';
+import { FiLoader } from 'react-icons/fi';
 
 type SlideTemplateType = (typeof SLIDE_TEMPLATES)[number]['value'];
 type ContentAlignment = 'top' | 'center' | 'bottom';
@@ -34,6 +35,9 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
         .getState()
         .getCommonSlideTextColor(tiptapRefs, presentationId, slideId);
     const [textColor, setTextColor] = useState(commonSlideTextColor || DEFAULT_TEXT_COLOR);
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
 
     const handleTemplateChange = (value: SlideTemplateType) => {
         // Set default image size based on template type
@@ -95,18 +99,106 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
         [tiptapRefs, presentationId, slideId]
     );
 
-    const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUrlChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const url = e.target.value;
-        updateSlide(presentationId, slideId, { imageUrl: url });
 
-        // Update background immediately if template is imageBackground
-        if (templateType === 'imageBackground' && url) {
-            updateSlide(presentationId, slideId, {
-                background: {
-                    type: 'image',
-                    value: url,
-                },
-            });
+        if (!url) {
+            updateSlide(presentationId, slideId, { imageUrl: '' });
+            return;
+        }
+
+        try {
+            // Check if URL is from external domain
+            const urlObj = new URL(url);
+            const isExternalUrl = !urlObj.hostname.includes(window.location.hostname);
+
+            if (isExternalUrl) {
+                setIsLoading(true);
+                setError('');
+
+                const response = await fetch('/api/assets/upload-external', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ imageUrl: url }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Не удалось загрузить изображение');
+                }
+
+                const data = await response.json();
+                updateSlide(presentationId, slideId, { imageUrl: data.url });
+
+                // Update background if template is imageBackground
+                if (templateType === 'imageBackground') {
+                    updateSlide(presentationId, slideId, {
+                        background: {
+                            type: 'image',
+                            value: data.url,
+                        },
+                    });
+                }
+                setError('');
+            } else {
+                // Local URL, use as is
+                updateSlide(presentationId, slideId, { imageUrl: url });
+
+                // Update background if template is imageBackground
+                if (templateType === 'imageBackground' && url) {
+                    updateSlide(presentationId, slideId, {
+                        background: {
+                            type: 'image',
+                            value: url,
+                        },
+                    });
+                }
+            }
+        } catch (error) {
+            setError(error instanceof Error ? error.message : 'Не удалось загрузить изображение');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setIsLoading(true);
+            setError('');
+
+            const formData = new FormData();
+            formData.append('file', e.target.files[0]);
+
+            fetch('/api/assets/upload', {
+                method: 'POST',
+                body: formData,
+            })
+                .then(async response => {
+                    if (!response.ok) {
+                        throw new Error('Не удалось загрузить изображение');
+                    }
+                    const data = await response.json();
+                    updateSlide(presentationId, slideId, { imageUrl: data.url });
+
+                    // Update background if template is imageBackground
+                    if (templateType === 'imageBackground') {
+                        updateSlide(presentationId, slideId, {
+                            background: {
+                                type: 'image',
+                                value: data.url,
+                            },
+                        });
+                    }
+                    setError('');
+                })
+                .catch(err => {
+                    setError(err instanceof Error ? err.message : 'Не удалось загрузить изображение');
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
         }
     };
 
@@ -150,19 +242,33 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
             </div>
 
             {needsImage && (
-                <div className={styles.templateSelectorImage}>
-                    <label htmlFor="slide-image-url" className={styles.templateSelectorImageLabel}>
-                        URL изображения
+                <div className={styles.imageUploadSection}>
+                    <label className={styles.label}>
+                        Изображение
+                        {isLoading && <FiLoader className={`${styles.loadingIcon} ${styles.spin}`} />}
                     </label>
                     <input
-                        id="slide-image-url"
-                        type="text"
-                        className={styles.templateSelectorImageInput}
+                        type="url"
                         value={imageUrl}
+                        className={`${styles.input} ${error ? styles.inputError : ''}`}
+                        placeholder="https://example.com/image.jpg"
                         onChange={handleImageUrlChange}
-                        placeholder="https://..."
-                        aria-label="URL изображения"
+                        disabled={isLoading}
                     />
+                    {error && <div className={styles.error}>{error}</div>}
+                    <div className={styles.uploadButton}>
+                        или{' '}
+                        <label className={styles.fileInputLabel}>
+                            Загрузить изображение
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className={styles.fileInput}
+                                onChange={handleFileUpload}
+                                disabled={isLoading}
+                            />
+                        </label>
+                    </div>
                 </div>
             )}
 

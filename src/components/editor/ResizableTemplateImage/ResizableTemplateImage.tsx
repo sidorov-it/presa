@@ -49,11 +49,14 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
         };
     }, [clickOutside]);
 
-    const storedSize =
-        slide?.imageSize ||
-        (slide?.templateType === 'imageTop' || slide?.templateType === 'imageBottom'
-            ? { height: `${DEFAULT_HEIGHT_PX}px` }
-            : { width: '33%' });
+    const storedSize = useMemo(() => {
+        return (
+            slide?.imageSize ||
+            (slide?.templateType === 'imageTop' || slide?.templateType === 'imageBottom'
+                ? { height: `${DEFAULT_HEIGHT_PX}px` }
+                : { width: '33%' })
+        );
+    }, [slide?.imageSize, slide?.templateType]);
 
     // State for tracking resize operation
     const [isResizing, setIsResizing] = useState(false);
@@ -358,7 +361,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     // Get resize handles based on template type
     const resizeHandles = getResizeHandles();
 
-    if (templateType === 'standard') {
+    if (templateType === 'standard' || (templateType === 'imageBackground' && !imageUrl)) {
         return null;
     }
     // Render template image with resize handles

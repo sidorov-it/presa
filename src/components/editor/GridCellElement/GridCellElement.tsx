@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { RefObject, useCallback, useRef, useState, memo, useEffect } from 'react';
@@ -15,6 +16,7 @@ import { useShallow } from 'zustand/react/shallow';
 import adjustWidths from '@/utils/adjustWidths';
 import { OpenCustomMenuEvent } from '@/customEvents/OpenCustomMenuEvent';
 import { HiPlus } from 'react-icons/hi2';
+import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 export const useIsSelectedRow = (tableId: string, rowIndex: number) =>
     useMenuStore(state => state.tableRowIndex === rowIndex && state.tableId === tableId);
@@ -63,6 +65,8 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     rowIndex,
     columnIndex,
 }) => {
+    const isReadOnly = useReadOnly();
+
     const isSelectedColumn = useIsSelectedColumn(layoutId, columnIndex);
     const isHoveredColumn = useIsHoveredColumn(layoutId, rowIndex, columnIndex);
     const isMenuCurrentColumn = useMenuStore(state => {
@@ -338,16 +342,25 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const handleClickElement = useCallback(
         (elementId: string) => (ev: React.MouseEvent<HTMLDivElement>) => {
             ev.stopPropagation();
+
+            if (isReadOnly) {
+                return;
+            }
+
             const target = ev.target as HTMLElement;
             if (tiptapRefs.current?.editors[elementId]?.editor && !target.closest('[data-type="link-editor"]')) {
                 tiptapRefs.current?.editors[elementId]?.editor.chain().focus().run();
             }
         },
-        [tiptapRefs]
+        [tiptapRefs, isReadOnly]
     );
 
     // Listen for layout hover events from parent
     useEffect(() => {
+        if (isReadOnly) {
+            return;
+        }
+
         const handleLayoutHover = (e: CustomEvent<{ layoutId: string; isHovered: boolean }>) => {
             if (e.detail.layoutId === layoutId) {
                 setLayoutIsHovered(e.detail.isHovered);
@@ -358,7 +371,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         return () => {
             document.removeEventListener('layoutHover', handleLayoutHover as EventListener);
         };
-    }, [layoutId]);
+    }, [layoutId, isReadOnly]);
 
     let alignmentClassName = '';
     if (cell.alignment === 'top') {
@@ -450,6 +463,10 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         (ev: React.MouseEvent<HTMLDivElement>) => {
             ev.stopPropagation();
 
+            if (isReadOnly) {
+                return;
+            }
+
             if (elementsIds.length === 1) {
                 const editor = tiptapRefs.current?.editors[elementsIds[0]]?.editor;
                 if (editor) {
@@ -509,30 +526,43 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             data-is-multi-cell={hasMultipleCells ? 'true' : 'false'}
             data-is-table={isTable ? 'true' : 'false'}
             onMouseEnter={() => {
+                if (isReadOnly) {
+                    return;
+                }
+
                 if (isTable) {
                     useMenuStore.getState().hoverTableCell(layoutId, rowIndex, columnIndex);
                 }
                 setCellIsHovered(true);
             }}
-            onMouseLeave={() => setCellIsHovered(false)}
+            onMouseLeave={() => {
+                if (isReadOnly) {
+                    return;
+                }
+
+                setCellIsHovered(false);
+            }}
             onClick={handleClickGridCell}
             ref={editorRef}
         >
-            {!isTable && hasMultipleCells && (isMenuCurrentColumn || cellIsHovered || menuCellId === cell.id) && (
-                <DragHandler
-                    slideId={slideId}
-                    isActive={menuCellId === cell.id}
-                    ariaLabel="Drag this cell"
-                    className={styles.cellDragHandle}
-                    dataAttributes={{
-                        'data-cell-drag-handle': cell.id,
-                    }}
-                    handleClick={handleClickCellDragHandle}
-                    handleKeyDown={handleKeyDownCellDragHandle}
-                    handleDragStart={handleDragStartCellDragHandle}
-                    horizontal={true}
-                />
-            )}
+            {!isReadOnly &&
+                !isTable &&
+                hasMultipleCells &&
+                (isMenuCurrentColumn || cellIsHovered || menuCellId === cell.id) && (
+                    <DragHandler
+                        slideId={slideId}
+                        isActive={menuCellId === cell.id}
+                        ariaLabel="Drag this cell"
+                        className={styles.cellDragHandle}
+                        dataAttributes={{
+                            'data-cell-drag-handle': cell.id,
+                        }}
+                        handleClick={handleClickCellDragHandle}
+                        handleKeyDown={handleKeyDownCellDragHandle}
+                        handleDragStart={handleDragStartCellDragHandle}
+                        horizontal={true}
+                    />
+                )}
 
             <div className={`${styles.gridCell} ${alignmentClassName}`}>
                 <div className={`${styles.elementsContainer}`} data-is-multi-cell={hasMultipleCells ? 'true' : 'false'}>
@@ -562,7 +592,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     ))}
                 </div>
             </div>
-            {hasMultipleCells && !isTable && !isLastCell && (
+            {!isReadOnly && hasMultipleCells && !isTable && !isLastCell && (
                 <div
                     ref={resizeBorderRef}
                     className={`${styles.resizableBorder} ${isResizing ? styles.resizableBorderDragged : ''}`}
@@ -570,13 +600,13 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 />
             )}
 
-            {hasMultipleCells && !isTable && isLastCell && (layoutIsFocused || layoutIsHovered) && (
+            {!isReadOnly && hasMultipleCells && !isTable && isLastCell && (layoutIsFocused || layoutIsHovered) && (
                 <button className={styles.addColumnIcon} onClick={handleAddColumn} title="Add column">
                     <HiPlus style={{ width: '1rem', height: '1rem' }} />
                 </button>
             )}
 
-            {isShowRowDragHandler && (
+            {!isReadOnly && isShowRowDragHandler && (
                 <DragHandler
                     className={styles.tableRowDragHandle}
                     slideId={slideId}
@@ -594,7 +624,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     }
                 />
             )}
-            {isShowColumnDragHandler && (
+            {!isReadOnly && isShowColumnDragHandler && (
                 <DragHandler
                     className={styles.columnDragHandle}
                     slideId={slideId}

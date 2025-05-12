@@ -17,6 +17,7 @@ import deepEqual from 'deep-equal';
 import { useDnd } from '@/contexts/DragDropContext';
 import { TEXT_ELEMENT_TYPES } from '@/elements/menuRegistry';
 import { useDndStore } from '@/store/dndStore';
+import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 interface SlideEditorProps {
     slideLayoutIds: string[];
@@ -26,36 +27,6 @@ interface SlideEditorProps {
     slideId: string;
     handleSelectSlide: (slideId: string) => void;
 }
-
-interface ColumnWidthOptions {
-    columnIndex: number;
-    width: number;
-}
-
-export const getColumnWidths = (columnsCount: number, options?: ColumnWidthOptions): string[] => {
-    if (columnsCount === 0) {
-        return [];
-    }
-
-    if (options) {
-        const { columnIndex, width } = options;
-        if (columnIndex >= columnsCount) {
-            throw new Error('Column index is out of bounds');
-        }
-
-        const remainingColumns = columnsCount - 1;
-        const remainingWidth = 100 - width;
-        const equalWidth = `${remainingWidth / remainingColumns}%`;
-
-        return Array.from({ length: columnsCount }, (_, index) => (index === columnIndex ? `${width}%` : equalWidth));
-    }
-
-    if (columnsCount === 3) {
-        return ['33%', '34%', '33%'];
-    }
-
-    return new Array(columnsCount).fill(`${100 / columnsCount}%`);
-};
 
 const SlideEditor: React.FC<SlideEditorProps> = ({
     slideLayoutIds,
@@ -69,8 +40,10 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const [isHovered, setIsHovered] = useState(false);
     const openMenu = useMenuStore.getState().openMenu;
 
-    const backgroundType = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background.type);
-    const backgroundValue = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background.value);
+    const isReadOnly = useReadOnly();
+
+    const backgroundType = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background?.type);
+    const backgroundValue = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background?.value);
     const contentAlignment = usePresentationStore(state => state.getSlide(presentationId, slideId)?.contentAlignment);
     const imageSize = usePresentationStore(state => state.getSlide(presentationId, slideId)?.imageSize);
     const templateType = usePresentationStore(state => state.getSlide(presentationId, slideId)?.templateType);
@@ -135,11 +108,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     const getSlideClassName = useCallback(() => {
         let className = styles.slideWrapper;
-        if (isSelected) {
+        if (isSelected && !isReadOnly) {
             className += ` ${styles.slideSelected}`;
         }
         return className;
-    }, [isSelected]);
+    }, [isSelected, isReadOnly]);
 
     const slideMenuOpen = useMenuStore(state => state.checkSlideMenuIsOpen(slideId));
 
@@ -194,6 +167,10 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     const handleSlideClick = useCallback(
         (e: React.MouseEvent) => {
+            if (isReadOnly) {
+                return;
+            }
+
             const slide = usePresentationStore.getState().getSlide(presentationId, slideId)!;
 
             const lastLayout = slide?.layouts[slide?.layouts.length - 1];
@@ -356,6 +333,16 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                         zIndex: 2,
                         width: remainingWidth,
                     };
+                case 'imageBackground':
+                    return {
+                        ...baseStyle,
+                        position: 'relative',
+                        zIndex: 2,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundImage: `url(${imageUrl})`,
+                    };
                 default:
                     return baseStyle;
             }
@@ -376,20 +363,25 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         <div
             className={`${styles.slide} ${isDropTarget ? 'active-slide-drop-target' : ''}`}
             onClick={handleSlideWrapperClick}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            onMouseEnter={() => !isReadOnly && setIsHovered(true)}
+            onMouseLeave={() => !isReadOnly && setIsHovered(false)}
             aria-label={`Slide ${slideId}`}
             onKeyDown={e => {
-                if (e.key === 'Enter' || e.key === ' ') {
+                if (!isReadOnly && (e.key === 'Enter' || e.key === ' ')) {
                     handleSlideWrapperClick(e as unknown as React.MouseEvent);
                 }
             }}
             data-slide-dragging={isDragging ? 'true' : undefined}
         >
-            <div className={`${getSlideClassName()}`} style={getSlideStyle()}>
+            <div className={`${getSlideClassName()}`} style={getSlideStyle()} data-slide="true">
                 <div className={`${styles.slideBorder} ${isSelected || isHovered ? styles.slideBorderMenuOpen : ''}`} />
-                <div ref={editorRef} className={`${styles.slideContent}`} style={{}}>
-                    {(isSelected || slideMenuOpen || isHovered) && (
+                <div
+                    ref={editorRef}
+                    className={`${styles.slideContent}`}
+                    data-slide-content="true"
+                    style={getSlideStyle()}
+                >
+                    {(isSelected || slideMenuOpen || isHovered) && !isReadOnly && (
                         <>
                             <DragHandler
                                 className={styles.slideDragHandle}
@@ -434,6 +426,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     <div
                         className={styles.slideContainer}
                         data-slide-id={slideId}
+                        data-slide-container="true"
                         onClick={handleSlideClick}
                         style={contentStyle}
                     >
@@ -450,17 +443,21 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     </div>
                 </div>
 
-                <div className={`${styles.slideDivider} ${isSelected || isHovered ? styles.slideDividerHovered : ''}`}>
-                    <div className={styles.buttons}>
-                        <button
-                            className={styles.slideDividerButton}
-                            onClick={handleAddSlideAfter}
-                            aria-label="Добавить слайд"
-                        >
-                            +
-                        </button>
+                {!isReadOnly && (
+                    <div
+                        className={`${styles.slideDivider} ${isSelected || isHovered ? styles.slideDividerHovered : ''}`}
+                    >
+                        <div className={styles.buttons}>
+                            <button
+                                className={styles.slideDividerButton}
+                                onClick={handleAddSlideAfter}
+                                aria-label="Добавить слайд"
+                            >
+                                +
+                            </button>
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
         </div>
     );

@@ -227,8 +227,6 @@ export default function DashboardPage() {
         setAiPrompt(example);
     };
 
-    console.log('activeMenu', activeMenu);
-    console.log('showDeleteModal', showDeleteModal);
     return (
         <div className={styles.container}>
             <div className={styles.header}>

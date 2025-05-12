@@ -1,9 +1,7 @@
 'use client';
-
-import { ChakraProvider } from '@chakra-ui/react';
 import { ColorModeProvider } from './color-mode';
-import { system } from '@/styles/theme';
 import type { ReactNode } from 'react';
+import { ChakraProvider } from '../providers/ChakraProvider';
 
 interface ProviderProps {
     children: ReactNode;
@@ -11,10 +9,8 @@ interface ProviderProps {
 
 export function Provider({ children }: ProviderProps) {
     return (
-        <ChakraProvider value={system}>
-            <ColorModeProvider>
-                {children}
-            </ColorModeProvider>
+        <ChakraProvider>
+            <ColorModeProvider>{children}</ColorModeProvider>
         </ChakraProvider>
     );
 }

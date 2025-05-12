@@ -8,7 +8,7 @@ import { MenuItem, menuRegistry } from '@/elements/menuRegistry';
 import { DragDropTransactionHelper } from '@/contexts/DragDropTransactionHelper';
 import { calculateDropPosition } from '@/utils/dragDropCalculations';
 import { generateId } from '@/utils/id';
-import { getColumnWidths } from '@/components/editor/SlideEditor/SlideEditor';
+import getColumnWidths from '@/utils/getColumnWidths';
 
 const cloneDeep = (obj: any) => JSON.parse(JSON.stringify(obj));
 

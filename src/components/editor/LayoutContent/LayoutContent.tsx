@@ -11,6 +11,7 @@ import adjustWidths from '@/utils/adjustWidths';
 import { LayoutHoverEvent } from '@/customEvents/LayoutHoverEvent';
 import generateGridTemplateAreas from '@/utils/generateGridTemplateAreas';
 import generateGridTemplateColumns from '@/utils/generateGridTemplateColumns';
+import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 interface LayoutContentProps {
     layoutId: string;
@@ -44,6 +45,8 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
 
     const openMenu = useMenuStore.getState().openMenu;
 
+    const isReadOnly = useReadOnly();
+
     const menuLayoutId = useMenuSelectedLayout();
     const menuElementId = useMenuSelectedElement();
     const menuCellId = useMenuSelectedCell();
@@ -53,7 +56,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     );
 
     const handleMouseEnter = useCallback(() => {
-        if (!isLayoutHovered) {
+        if (!isLayoutHovered && !isReadOnly) {
             setIsLayoutHovered(true);
             // Dispatch custom event to notify cells
             document.dispatchEvent(
@@ -63,10 +66,10 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 })
             );
         }
-    }, [isLayoutHovered, layout.id]);
+    }, [isLayoutHovered, layout.id, isReadOnly]);
 
     const handleMouseLeave = useCallback(() => {
-        if (isLayoutHovered) {
+        if (isLayoutHovered && !isReadOnly) {
             setIsLayoutHovered(false);
             // Dispatch custom event to notify cells
             document.dispatchEvent(
@@ -76,7 +79,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 })
             );
         }
-    }, [isLayoutHovered, layout.id]);
+    }, [isLayoutHovered, layout.id, isReadOnly]);
 
     // Memoize grid properties to prevent recalculations
     const gridTemplateAreas = useMemo(() => generateGridTemplateAreas(layout.gridStructure), [layout.gridStructure]);
@@ -303,13 +306,17 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     // const isHovered = isLayoutHovered || isSelected;
 
     const handleLayoutClick = useCallback(() => {
+        if (isReadOnly) {
+            return;
+        }
+
         useMenuStore.getState().setFocusedLayoutId(layout.id);
         document.addEventListener('click', e => {
             if (e.target instanceof HTMLElement && !e.target.closest('[data-layout-id]')) {
                 useMenuStore.getState().resetFocusedLayoutId();
             }
         });
-    }, [layout.id]);
+    }, [layout.id, isReadOnly]);
 
     return (
         <>
@@ -326,7 +333,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
             >
                 {isSelected && <div className={styles.layoutSelected} />}
 
-                {layout.elements.length > 1 && (isLayoutHovered || isSelected) && (
+                {!isReadOnly && layout.elements.length > 1 && (isLayoutHovered || isSelected) && (
                     <DragHandler
                         className={styles.layoutDragHandle}
                         slideId={slideId}
@@ -385,7 +392,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                     );
                 })}
 
-                {layout.isTable && (
+                {!isReadOnly && layout.isTable && (
                     <>
                         <button className={`${styles.addColumnButton} ${styles.tableButton}`} onClick={handleAddColumn}>
                             +
@@ -396,7 +403,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                     </>
                 )}
 
-                {layout.isTable && (
+                {!isReadOnly && layout.isTable && (
                     <>
                         {Array.from({ length: layout.gridStructure.columns }).map((_, index) => {
                             if (index === layout.gridStructure.columns - 1) {

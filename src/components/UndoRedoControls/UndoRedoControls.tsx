@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, MutableRefObject, useState } from 'react';
+import React, { useCallback, useEffect, MutableRefObject } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { TipTapRefs } from '@/types';
 import styles from './UndoRedoControls.module.css';
@@ -11,21 +11,10 @@ interface UndoRedoControlsProps {
 }
 
 const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, className = '', tiptapRefs }) => {
-    const [activePresentation, setActivePresentation] = useState<string | null>(null);
-
     const historyStore = useHistoryStore();
-    const presentationStore = usePresentationStore();
-    const presentations = presentationStore.presentations;
 
-    useEffect(() => {
-        if (presentations.length > 0 && !activePresentation) {
-            // Use the first presentation in the list as active
-            setActivePresentation(presentations[0]?.id || null);
-        }
-    }, [presentations, activePresentation]);
-
-    const hasUndo = historyStore.canUndo(activePresentation);
-    const hasRedo = historyStore.canRedo(activePresentation);
+    const hasUndo = historyStore.canUndo(presentationId);
+    const hasRedo = historyStore.canRedo(presentationId);
 
     const handleUndo = useCallback(() => {
         if (hasUndo) {

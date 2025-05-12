@@ -403,7 +403,7 @@ export interface Slide {
     id: string;
     title: string;
     layouts: Layout[];
-    background: {
+    background?: {
         type: 'color' | 'image';
         value: string;
     };
