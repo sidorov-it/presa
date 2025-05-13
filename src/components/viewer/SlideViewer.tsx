@@ -201,6 +201,11 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         boxShadow: 'var(--presentation-slide-shadow)',
         minHeight: isPdfExport ? 'auto' : undefined,
         height: isPdfExport ? 'auto' : undefined,
+        // Apply slide-specific text color if available
+        ...(slide?.textColor && {
+            '--presentation-text-color': slide.textColor,
+            '--presentation-heading-color': slide.textColor,
+        }),
         // Дополнительные стили для PDF экспорта
         ...(isPdfExport && {
             overflow: 'visible',

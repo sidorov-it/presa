@@ -79,6 +79,11 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
             const elements = usePresentationStore.getState().getSlideElements(presentationId, slideId);
 
             useHistoryStore.getState().beginTransaction(presentationId, 'change text color');
+
+            // Update slide text color in state
+            updateSlide(presentationId, slideId, { textColor: color });
+
+            // Update existing elements
             elements.forEach(element => {
                 if (tiptapRefs.current?.editors[element.id]) {
                     tiptapRefs.current.editors[element.id]?.editor
@@ -96,7 +101,7 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
 
             setTextColor(color);
         },
-        [tiptapRefs, presentationId, slideId]
+        [tiptapRefs, presentationId, slideId, updateSlide]
     );
 
     const handleImageUrlChange = async (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -414,6 +414,7 @@ export interface Slide {
         height?: string;
     };
     contentAlignment?: 'top' | 'center' | 'bottom';
+    textColor?: string; // Store slide-specific text color
 }
 
 export interface BackgroundSettings {

@@ -44,6 +44,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     const backgroundType = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background?.type);
     const backgroundValue = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background?.value);
+    const textColor = usePresentationStore(state => state.getSlide(presentationId, slideId)?.textColor);
+
     const contentAlignment = usePresentationStore(state => state.getSlide(presentationId, slideId)?.contentAlignment);
     const imageSize = usePresentationStore(state => state.getSlide(presentationId, slideId)?.imageSize);
     const templateType = usePresentationStore(state => state.getSlide(presentationId, slideId)?.templateType);
@@ -90,21 +92,24 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     );
 
     const getSlideStyle = useCallback(() => {
-        if (templateType === 'imageBackground') {
-            return {
-                ...(imageUrl ? { backgroundImage: `url(${imageUrl})` } : {}),
-            };
+        const style: React.CSSProperties & Record<string, string> = {};
+
+        if (templateType === 'imageBackground' && imageUrl) {
+            style.backgroundImage = `url(${imageUrl})`;
         }
 
         // Use background color from slide data
         if (backgroundType === 'color') {
-            return {
-                backgroundColor: backgroundValue,
-            };
+            style.backgroundColor = backgroundValue;
         }
 
-        return {};
-    }, [imageUrl, templateType, backgroundType, backgroundValue]);
+        if (textColor) {
+            style['--presentation-text-color'] = textColor;
+            style['--presentation-heading-color'] = textColor;
+        }
+
+        return style;
+    }, [imageUrl, templateType, backgroundType, backgroundValue, textColor]);
 
     const getSlideClassName = useCallback(() => {
         let className = styles.slideWrapper;

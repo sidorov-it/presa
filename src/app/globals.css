@@ -1363,13 +1363,13 @@ none
     margin-bottom: 0.375em !important;
     font-weight: var(--presentation-heading-weight) !important;
     text-transform: var(--presentation-heading-capitalization) !important;
-    color: var(--presentation-heading-color) !important;
+    color: var(--presentation-heading-color);
     font-family: var(--presentation-heading-font) !important;
     letter-spacing: var(--presentation-heading-letter-spacing) !important;
 }
 
 a {
-    text-decoration-color: var(--presentation-link-color) !important;
+    text-decoration-color: var(--presentation-link-color);
 }
 
 a>.heading-text,
@@ -1387,7 +1387,7 @@ button {
     line-height: var(--presentation-heading-line-height) !important;
     font-weight: var(--presentation-heading-weight) !important;
     text-transform: var(--presentation-heading-capitalization) !important;
-    color: var(--presentation-heading-color) !important;
+    color: var(--presentation-heading-color);
     font-family: var(--presentation-heading-font) !important;
     letter-spacing: var(--presentation-heading-letter-spacing) !important;
 }
@@ -1482,5 +1482,5 @@ button {
 }
 
 .tiptap :where(a:not(:has(span))) {
-    color: var(--presentation-link-color) !important;
+    color: var(--presentation-link-color);
 }

@@ -21,7 +21,6 @@ import getColumnWidths from '@/utils/getColumnWidths';
 import { getNewEditorElement } from '@/elements/registry';
 import debounce from 'lodash/debounce';
 import { generateId } from '@/utils/id';
-import deepDiff from '@/utils/deepDiff';
 import { MutableRefObject } from 'react';
 import getNewLayoutWithTextEditor from '@/utils/getNewLayoutWithTextEditor';
 
@@ -2200,7 +2199,7 @@ export const usePresentationStore = create<PresentationState>()(
                 if (options?.direction === 'left' || options?.direction === 'right') {
                     const newColumnId = generateId();
 
-                    const newColumnIndex = options?.direction === 'left' ? 0 : 1;
+                    const newColumnIndex = options?.direction === 'left' ? 1 : 2;
                     const columnIndex = options?.direction === 'left' ? 1 : 0;
 
                     const newColumn: GridCell = {
@@ -2290,12 +2289,12 @@ export const usePresentationStore = create<PresentationState>()(
                     const newLeftCell: GridCell = {
                         id: newLeftCellId,
                         row: 0,
-                        column: 0,
+                        column: 1,
                     };
                     const newRightCell: GridCell = {
                         id: newRightCellId,
                         row: 0,
-                        column: 2,
+                        column: 3,
                     };
                     const newLeftElement = getNewEditorElement(newLeftCellId);
                     const newRightElement = getNewEditorElement(newRightCellId);
@@ -2310,7 +2309,12 @@ export const usePresentationStore = create<PresentationState>()(
                         columns: currentLayout.gridStructure.columns + 2,
                         columnWidths,
                         rows: currentLayout.gridStructure.rows.map((row: { id: string; cells: GridCell[] }) => {
-                            const updatedCells = [...row.cells];
+                            const updatedCells = [
+                                {
+                                    ...row.cells[0],
+                                    column: 2,
+                                },
+                            ];
                             updatedCells.splice(0, 0, newLeftCell);
                             updatedCells.splice(2, 0, newRightCell);
                             return {

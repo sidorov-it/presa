@@ -95,6 +95,7 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
                 theme.colors.secondaryButtonColor || '#6b7280'
             );
 
+            // Set default theme text colors (these can be overridden by slide-specific colors)
             document.documentElement.style.setProperty('--presentation-heading-color', theme.colors.headingColor);
             document.documentElement.style.setProperty('--presentation-text-color', theme.colors.textColor);
             document.documentElement.style.setProperty('--presentation-slide-background', theme.colors.slideBackground);
