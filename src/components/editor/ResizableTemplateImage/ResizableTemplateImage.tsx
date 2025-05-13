@@ -407,6 +407,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                     >
                         <ImagePlaceholder
                             imageUrl={imageUrl || ''}
+                            isWidthRightMenu={true}
                             onClearImage={() => {
                                 updateSlide(presentationId, slideId, {
                                     imageUrl: '',

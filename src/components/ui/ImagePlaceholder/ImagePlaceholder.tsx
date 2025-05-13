@@ -221,7 +221,7 @@ export const ImagePlaceholder = ({
         const resizeObserver = new ResizeObserver(entries => {
             for (const entry of entries) {
                 const { width } = entry.contentRect;
-                setIsSmallImage(width < 180);
+                setIsSmallImage(width < 160);
             }
         });
 
