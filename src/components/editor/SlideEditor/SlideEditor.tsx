@@ -224,17 +224,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     maxHeight: '200px',
                     zIndex: 1,
                 };
-            case 'imageBottom':
-                return {
-                    ...baseStyle,
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: '33%',
-                    maxHeight: '200px',
-                    zIndex: 1,
-                };
             case 'imageLeft':
                 return {
                     ...baseStyle,
@@ -242,9 +231,9 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     top: 0,
                     left: 0,
                     bottom: 0,
-                    width: '33%',
+                    width: '20%',
                     zIndex: 1,
-                    maxWidth: '200px',
+                    maxWidth: '50%',
                 };
             case 'imageRight':
                 return {
@@ -253,9 +242,9 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     top: 0,
                     right: 0,
                     bottom: 0,
-                    width: '33%',
+                    width: '20%',
                     zIndex: 1,
-                    maxWidth: '200px',
+                    maxWidth: '50%',
                 };
             case 'imageBackground':
                 // This is handled by slide background
@@ -296,8 +285,12 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         // Additional styles for image templates
         if (templateType) {
             // Get stored image size or use default values
-            const imageWidth = imageSize?.width || 'min(33%, 200px)';
-            const imageHeight = imageSize?.height || 'min(33%, 200px)';
+            let imageWidth = imageSize?.width || 'min(50%, 300px)';
+            if (parseInt(imageWidth, 10) > 50) {
+                imageWidth = '50%';
+            }
+
+            const imageHeight = imageSize?.height || 'min(50%, 300px)';
             const remainingWidth = `${100 - parseFloat(imageWidth)}%`;
             const remainingHeight = `${100 - parseFloat(imageHeight)}%`;
 
@@ -308,14 +301,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                         position: 'relative',
                         zIndex: 2,
                         paddingTop: imageHeight,
-                        height: remainingHeight,
-                    };
-                case 'imageBottom':
-                    return {
-                        ...baseStyle,
-                        position: 'relative',
-                        zIndex: 2,
-                        paddingBottom: imageHeight,
                         height: remainingHeight,
                     };
                 case 'imageLeft':
@@ -349,7 +334,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         }
 
         return baseStyle;
-    }, [templateType, imageSize, contentAlignment]);
+    }, [contentAlignment, templateType, imageSize?.width, imageSize?.height, imageUrl]);
 
     // Add useDnd hook
     const { handleDragStart } = useDnd();

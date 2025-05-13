@@ -42,7 +42,7 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
     const handleTemplateChange = (value: SlideTemplateType) => {
         // Set default image size based on template type
         let imageSize;
-        if (value === 'imageTop' || value === 'imageBottom') {
+        if (value === 'imageTop') {
             imageSize = { height: `${DEFAULT_HEIGHT_PX}px` };
         } else if (value === 'imageLeft' || value === 'imageRight') {
             imageSize = { width: '33%' };
@@ -220,7 +220,7 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
         });
     };
 
-    const needsImage = ['imageTop', 'imageBottom', 'imageLeft', 'imageRight', 'imageBackground'].includes(templateType);
+    const needsImage = ['imageTop', 'imageLeft', 'imageRight', 'imageBackground'].includes(templateType);
     const showBackgroundColor = templateType !== 'imageBackground';
 
     return (

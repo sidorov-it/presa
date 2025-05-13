@@ -56,7 +56,6 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                 case 'imageRight':
                     return 'var(--presentation-slide-image-mask-image-right, none)';
                 case 'imageTop':
-                case 'imageBottom':
                     return 'var(--presentation-slide-image-mask-image-top, none)';
                 default:
                     return 'none';
@@ -80,16 +79,6 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                     ...baseStyle,
                     position: 'absolute',
                     top: 0,
-                    left: 0,
-                    right: 0,
-                    height: '33%',
-                    zIndex: 1,
-                };
-            case 'imageBottom':
-                return {
-                    ...baseStyle,
-                    position: 'absolute',
-                    bottom: 0,
                     left: 0,
                     right: 0,
                     height: '33%',
@@ -174,14 +163,6 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                         position: 'relative',
                         zIndex: 2,
                         paddingTop: imageHeight,
-                        height: remainingHeight,
-                    };
-                case 'imageBottom':
-                    return {
-                        ...baseStyle,
-                        position: 'relative',
-                        zIndex: 2,
-                        paddingBottom: imageHeight,
                         height: remainingHeight,
                     };
                 case 'imageLeft':

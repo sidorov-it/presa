@@ -5,7 +5,6 @@ import { IconType } from 'react-icons/lib';
 export const SLIDE_TEMPLATES = [
     { value: 'standard', label: 'Standard (No Image)' },
     { value: 'imageTop', label: 'Image Top' },
-    { value: 'imageBottom', label: 'Image Bottom' },
     { value: 'imageLeft', label: 'Image Left' },
     { value: 'imageRight', label: 'Image Right' },
     { value: 'imageBackground', label: 'Image Background' },
