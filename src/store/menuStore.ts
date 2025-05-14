@@ -32,6 +32,7 @@ export interface MenuState {
     columnId: string | null;
     cellId: string | null;
     isTextEditor: boolean;
+    isInTable: boolean;
     componentStructure: ComponentStructureType | null;
     tableRowIndex: number | null;
     tableColumnIndex: number | null;
@@ -61,6 +62,7 @@ export interface MenuState {
         columnId?: string | null;
         cellId?: string | null;
         isTextEditor?: boolean;
+        isInTable?: boolean;
         componentStructure?: ComponentStructureType | null;
         tableRowIndex?: number | null;
         tableColumnIndex?: number | null;
@@ -196,6 +198,14 @@ export const useMenuStore = create<MenuState>()(
 
             // Menu control actions
             openMenu: menuData => {
+                const presentationState = usePresentationStore.getState();
+
+                const presentationId = get().presentationId;
+
+                const layout = presentationState.getLayout(presentationId!, menuData.slideId!, menuData.layoutId!);
+
+                const isInTable = layout?.isTable;
+
                 console.log('openMenu', {
                     isOpen: true,
                     slideId: menuData.slideId ?? null,
@@ -210,7 +220,9 @@ export const useMenuStore = create<MenuState>()(
                     tableColumnIndex: menuData.tableColumnIndex ?? null,
                     tableId: menuData.tableId ?? null,
                     smartLayoutItemId: menuData.smartLayoutItemId ?? null,
+                    isInTable: isInTable ?? false,
                 });
+
                 set({
                     isOpen: true,
                     slideId: menuData.slideId ?? null,
@@ -225,6 +237,7 @@ export const useMenuStore = create<MenuState>()(
                     tableColumnIndex: menuData.tableColumnIndex ?? null,
                     tableId: menuData.tableId ?? null,
                     smartLayoutItemId: menuData.smartLayoutItemId ?? null,
+                    isInTable,
                 });
             },
 

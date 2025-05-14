@@ -2129,7 +2129,25 @@ export const usePresentationStore = create<PresentationState>()(
                     const filteredElements = currentLayout.elements.filter(element => element.id !== elementId);
                     let updatedLayouts;
 
-                    if (filteredElements.length === 0) {
+                    if (currentLayout.isTable) {
+                        const cellId = currentElement.cellId;
+
+                        const isEmptyCell = !filteredElements.some(element => element.cellId === cellId);
+
+                        if (isEmptyCell) {
+                            updatedLayouts = slide!.layouts.filter(layout => layout.id !== layoutId);
+                            const newElement = getNewEditorElement(cellId);
+
+                            filteredElements.push(newElement);
+
+                            updatedLayouts = slide!.layouts.map(layout => {
+                                if (layout.id === layoutId) {
+                                    return { ...layout, elements: filteredElements };
+                                }
+                                return layout;
+                            });
+                        }
+                    } else if (filteredElements.length === 0) {
                         updatedLayouts = slide!.layouts.filter(layout => layout.id !== layoutId);
                         if (updatedLayouts.length === 0) {
                             updatedLayouts = [getNewLayoutWithTextEditor()];

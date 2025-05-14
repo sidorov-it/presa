@@ -64,6 +64,8 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
     const isOpen = useMenuIsOpen();
 
     const isTextEditor = useMenuStore(state => state.isTextEditor);
+    const isInTable = useMenuStore(state => state.isInTable);
+
     const tableRowIndex = useMenuStore(state => state.tableRowIndex);
     const tableColumnIndex = useMenuStore(state => state.tableColumnIndex);
 
@@ -115,7 +117,19 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
             } else if (elementType === 'column') {
                 dragElement = slide.querySelector(`[data-column-drag-handle="${layoutId}-${tableColumnIndex}"]`);
             } else if (elementType === 'element' && elementId) {
-                dragElement = slide.querySelector(`[data-element-drag-handle="${elementId}"]`);
+                if (isInTable) {
+                    const element = slide.querySelector(`[data-element-id="${elementId}"]`);
+                    if (element) {
+                        setPosition({
+                            x: element.getBoundingClientRect().left,
+                            y: element.getBoundingClientRect().top + window.scrollY,
+                            rect: element.getBoundingClientRect(),
+                        });
+                        return;
+                    }
+                } else {
+                    dragElement = slide.querySelector(`[data-element-drag-handle="${elementId}"]`);
+                }
             } else if (elementType === 'cell') {
                 dragElement = slide.querySelector(`[data-cell-drag-handle="${cell?.id}"]`);
             } else if (elementType === 'layout' && layoutId) {

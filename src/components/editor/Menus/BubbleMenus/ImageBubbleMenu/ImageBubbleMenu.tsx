@@ -68,7 +68,7 @@ const ImageBubbleMenu: React.FC<ImageBubbleMenuProps> = ({ presentationId, slide
     };
 
     return (
-        <BaseMenu>
+        <>
             <div className={styles.alignmentGroup}>
                 <button
                     onClick={() => handleAlignment('left')}
@@ -100,7 +100,7 @@ const ImageBubbleMenu: React.FC<ImageBubbleMenuProps> = ({ presentationId, slide
             <button onClick={handleDelete} className={styles.deleteButton} aria-label="Удалить изображение">
                 <DeleteIcon />
             </button>
-        </BaseMenu>
+        </>
     );
 };
 

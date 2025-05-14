@@ -84,6 +84,8 @@ const Image: React.FC<ImageProps> = ({
             elementId: elementId,
             layoutId: layoutId,
             elementType: 'element',
+            isTextEditor: false,
+            componentStructure: undefined,
         });
     };
 

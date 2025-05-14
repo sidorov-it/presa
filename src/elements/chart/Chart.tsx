@@ -313,9 +313,9 @@ const Chart: React.FC<ChartProps> = ({
 
     const handleRemoveChart = useCallback(() => {
         if (presentationId && slideId && layoutId) {
-            usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+            usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, elementId);
         }
-    }, [presentationId, slideId, layoutId]);
+    }, [presentationId, slideId, layoutId, elementId]);
 
     // Handle resize end
     const handleResizeEnd = useCallback(() => {

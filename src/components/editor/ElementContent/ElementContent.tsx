@@ -263,6 +263,11 @@ export const ElementContent = ({
 
             const elementsInCell = layout.elements.filter(e => e.cellId === cellId);
 
+            // Early return if this is the only element in a table cell
+            if (isInTable && elementsInCell.length === 1) {
+                return;
+            }
+
             const layoutIndex = slide.layouts.findIndex(l => l.id === layoutId);
 
             const isMultiCellRow = layout.gridStructure.rows[0].cells.length > 1;
