@@ -3,8 +3,8 @@ import { Layout } from '@/types';
 import { generateId } from './id';
 import { getNewEditorElement } from '@/elements/registry';
 
-export default function getNewLayoutWithTextEditor(): Layout {
-    const newTextEditorElement = getNewEditorElement(generateId(), '');
+export default function getNewLayoutWithTextEditor({ tempEditor }: { tempEditor?: boolean }): Layout {
+    const newTextEditorElement = getNewEditorElement(generateId(), '', tempEditor);
 
     const cellId = generateId();
 

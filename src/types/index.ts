@@ -322,6 +322,7 @@ export interface SmartLayoutElement extends BaseElement {
 export interface EditorElement extends BaseElement {
     content: string;
     placeholder?: string;
+    tempEditor?: boolean;
 }
 
 // Элемент изображения
@@ -449,6 +450,8 @@ export interface ElementConfig {
     hasTextEditor?: boolean;
     hasLimitedTextFormatting?: boolean;
     customMenu?: boolean;
+    customMenuType?: MenuElementType;
+    tempEditor?: boolean; // Флаг для временных редакторов, созданных кликом между элементами
 }
 
 export interface SubCategory {

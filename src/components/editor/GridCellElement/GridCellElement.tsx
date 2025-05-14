@@ -17,6 +17,7 @@ import adjustWidths from '@/utils/adjustWidths';
 import { OpenCustomMenuEvent } from '@/customEvents/OpenCustomMenuEvent';
 import { HiPlus } from 'react-icons/hi2';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
+import { getNewEditorElement } from '@/elements/registry';
 
 export const useIsSelectedRow = (tableId: string, rowIndex: number) =>
     useMenuStore(state => state.tableRowIndex === rowIndex && state.tableId === tableId);
@@ -474,32 +475,9 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 if (editor) {
                     editor.chain().focus().run();
                 }
-            } else if (ev.target instanceof HTMLElement && ev.target.classList.contains(styles.gridCellElement)) {
-                const rect = ev.target?.getBoundingClientRect();
-
-                if (rect) {
-                    const positionY = ev.clientY - (rect.top ?? 0);
-                    const slideHeight = rect.height ?? 0;
-                    const isClickBottom = slideHeight - positionY < 30;
-                    const isClickTop = positionY < 30;
-
-                    if (isClickBottom) {
-                        const lastElementId = elementsIds[elementsIds.length - 1];
-                        const editor = tiptapRefs.current?.editors[lastElementId]?.editor;
-                        if (editor) {
-                            editor.chain().focus().run();
-                        }
-                    } else if (isClickTop) {
-                        const firstElementId = elementsIds[0];
-                        const editor = tiptapRefs.current?.editors[firstElementId]?.editor;
-                        if (editor) {
-                            editor.chain().focus().run();
-                        }
-                    }
-                }
             }
         },
-        [elementsIds, tiptapRefs]
+        [elementsIds, isReadOnly, tiptapRefs]
     );
 
     const deferredIsHoveredRow = isHoveredRow;

@@ -18,6 +18,7 @@ import { useDnd } from '@/contexts/DragDropContext';
 import { TEXT_ELEMENT_TYPES } from '@/elements/menuRegistry';
 import { useDndStore } from '@/store/dndStore';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
+import getNewLayoutWithTextEditor from '@/utils/getNewLayoutWithTextEditor';
 
 interface SlideEditorProps {
     slideLayoutIds: string[];
@@ -177,29 +178,114 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             }
 
             const slide = usePresentationStore.getState().getSlide(presentationId, slideId)!;
+            if (!slide?.layouts.length) return;
 
-            const lastLayout = slide?.layouts[slide?.layouts.length - 1];
+            // Get all layout elements and their positions
+            const layoutElements = slide.layouts
+                .map(layout => {
+                    const element = document.querySelector(`[data-layout-id="${layout.id}"]`);
+                    return {
+                        layout,
+                        rect: element?.getBoundingClientRect(),
+                    };
+                })
+                .filter(item => item.rect);
 
-            const lastLayoutDomElement = document.querySelector(`[data-layout-id="${lastLayout.id}"]`);
-            const bottomBorderPosition = lastLayoutDomElement!.getBoundingClientRect().bottom;
-            const clickPosition = e.clientY;
+            // Check if click was between layouts
+            for (let i = 0; i < layoutElements.length - 1; i++) {
+                const currentLayout = layoutElements[i];
+                const nextLayout = layoutElements[i + 1];
 
-            const element = lastLayout.elements[0];
+                const gapTop = currentLayout.rect!.bottom;
+                const gapBottom = nextLayout.rect!.top;
 
-            if (clickPosition > bottomBorderPosition) {
+                if (e.clientY > gapTop && e.clientY < gapBottom) {
+                    // Проверяем ближайший layout сверху
+                    const currentLayoutHasSingleTextEditor =
+                        currentLayout.layout.elements.length === 1 &&
+                        TEXT_ELEMENT_TYPES.includes(currentLayout.layout.elements[0].elementTypeId);
+
+                    if (currentLayoutHasSingleTextEditor) {
+                        const editor = tiptapRefs.current?.editors[currentLayout.layout.elements[0].id]?.editor;
+                        if (editor) {
+                            editor.chain().focus().run();
+                            return;
+                        }
+                    }
+
+                    // Проверяем ближайший layout снизу
+                    const nextLayoutHasSingleTextEditor =
+                        nextLayout.layout.elements.length === 1 &&
+                        TEXT_ELEMENT_TYPES.includes(nextLayout.layout.elements[0].elementTypeId);
+                    if (nextLayoutHasSingleTextEditor) {
+                        const editor = tiptapRefs.current?.editors[nextLayout.layout.elements[0].id]?.editor;
+                        if (editor) {
+                            editor.chain().focus().run();
+                            return;
+                        }
+                    }
+
+                    // Если не смогли поставить фокус ни на один из редакторов, создаем новый layout
+                    const newLayout = getNewLayoutWithTextEditor({
+                        tempEditor: true,
+                    });
+
+                    const editorId = newLayout.elements[0].id;
+                    setTimeout(() => {
+                        tiptapRefs.current?.editors[editorId]?.editor.chain().focus().run();
+                    }, 40);
+                    usePresentationStore.getState().addLayout(presentationId, slideId, newLayout, i + 1);
+                    return;
+                }
+            }
+
+            // Check if click was below last layout
+            const lastLayout = layoutElements[layoutElements.length - 1];
+            if (e.clientY > lastLayout.rect!.bottom) {
                 if (
-                    lastLayout?.elements.length === 1 &&
-                    TEXT_ELEMENT_TYPES.includes(element.elementTypeId) &&
-                    tiptapRefs.current?.editors[lastLayout.elements[0].id]
+                    lastLayout.layout.elements.length === 1 &&
+                    TEXT_ELEMENT_TYPES.includes(lastLayout.layout.elements[0].elementTypeId) &&
+                    tiptapRefs.current?.editors[lastLayout.layout.elements[0].id]
                 ) {
-                    tiptapRefs.current?.editors[lastLayout.elements[0].id]?.editor.chain().focus().run();
+                    tiptapRefs.current?.editors[lastLayout.layout.elements[0].id]?.editor.chain().focus().run();
                     return;
                 }
 
-                createDefaultLayout();
+                const newLayout = getNewLayoutWithTextEditor({
+                    tempEditor: true,
+                });
+
+                const editorId = newLayout.elements[0].id;
+                setTimeout(() => {
+                    tiptapRefs.current?.editors[editorId]?.editor.chain().focus().run();
+                }, 40);
+
+                usePresentationStore.getState().addLayout(presentationId, slideId, newLayout, layoutElements.length);
+            }
+
+            const firstLayout = layoutElements[0];
+            if (e.clientY < firstLayout.rect!.top) {
+                if (
+                    firstLayout.layout.elements.length === 1 &&
+                    TEXT_ELEMENT_TYPES.includes(firstLayout.layout.elements[0].elementTypeId) &&
+                    tiptapRefs.current?.editors[firstLayout.layout.elements[0].id]
+                ) {
+                    tiptapRefs.current?.editors[firstLayout.layout.elements[0].id]?.editor.chain().focus().run();
+                    return;
+                }
+
+                const newLayout = getNewLayoutWithTextEditor({
+                    tempEditor: true,
+                });
+
+                const editorId = newLayout.elements[0].id;
+                setTimeout(() => {
+                    tiptapRefs.current?.editors[editorId]?.editor.chain().focus().run();
+                }, 40);
+                usePresentationStore.getState().addLayout(presentationId, slideId, newLayout, 0);
             }
         },
-        [tiptapRefs, createDefaultLayout, presentationId, slideId]
+        [tiptapRefs, createDefaultLayout, presentationId, slideId, isReadOnly]
     );
 
     // Image rendering based on template type

@@ -3,7 +3,7 @@
 
 import { EditorContent } from '@tiptap/react';
 import { useEditor } from '@tiptap/react';
-import { useCallback, useEffect, RefObject } from 'react';
+import { useCallback, useEffect, RefObject, useState } from 'react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import TaskList from '@tiptap/extension-task-list';
@@ -313,7 +313,7 @@ const Tiptap = ({
     onEnterPressed = () => {},
     onBackspacePressed = () => {},
     onContentChange = () => {},
-    onBlur = () => { },
+    onBlur = () => {},
     isInTable = false,
     id = '',
     autoFocus = false,
@@ -329,11 +329,13 @@ const Tiptap = ({
     standardEnterBehavior = false,
     isReadOnly = false,
 }: TiptapProps) => {
+    const [hasInteraction, setHasInteraction] = useState(false);
     const element = usePresentationStore.getState().getElement(presentationId, slideId, layoutId, elementId);
+    const isTempEditor = (element as EditorElement)?.tempEditor;
 
     let initialContent;
     if (customRefKey) {
-        const [key, elementId, itemId] = customRefKey.split('-');
+        const [key, itemId] = customRefKey.split('-');
         const item = (element as SmartLayoutElement)?.items.find(item => item.id === itemId) as SmartLayoutItem;
         initialContent = item?.[key as keyof SmartLayoutItem] || '';
     } else {
@@ -341,7 +343,6 @@ const Tiptap = ({
     }
 
     const editor = useEditor({
-        // autoFocus: !!autoFocus,
         extensions: getExtensions(
             onEnterPressed,
             onBackspacePressed,
@@ -377,7 +378,12 @@ const Tiptap = ({
             const html = editor.getHTML();
             const isEnterPress = transaction.getMeta('handleEnter');
             const isTransaction = transaction.getMeta('transaction');
-            console.log('onUpdate', html);
+
+            // Consider it an interaction only if content actually changed
+            if (html !== initialContent) {
+                setHasInteraction(true);
+            }
+
             onContentChange(html, isEnterPress, isTransaction);
         },
     });
@@ -479,6 +485,23 @@ const Tiptap = ({
         }
     }, [editor]);
 
+    const handleBlur = useCallback(() => {
+        if (editor) {
+            const content = editor.getHTML();
+            const isEmpty = content === '<p></p>' || content === '';
+
+            // Remove editor only if:
+            // 1. It's a temporary editor (added by clicking between elements)
+            // 2. It's empty
+            // 3. No content changes were made
+            if (isEmpty && isTempEditor && !hasInteraction) {
+                usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+            }
+
+            onBlur?.();
+        }
+    }, [editor, hasInteraction, isTempEditor, layoutId, onBlur, presentationId, slideId]);
+
     return (
         <div className="not-prose" style={{ position: 'relative', width: '100%' }} data-editor-id={id}>
             {!elementConfig?.customMenu && <CommonBubbleMenu editor={editor} data-element-id={elementId} />}
@@ -486,10 +509,10 @@ const Tiptap = ({
                 {editor && (
                     <EditorContent
                         editor={editor}
-                        // eslint-disable-next-line jsx-a11y/no-autofocus
                         autoFocus={autoFocus}
                         className={`cursor-text ${styles.editor}`}
                         style={{ width: '100%' }}
+                        onBlur={handleBlur}
                     />
                 )}
             </div>

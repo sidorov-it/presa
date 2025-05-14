@@ -288,6 +288,14 @@ export interface PresentationState {
     updateTempColumnWidths: (columnWidths: string[]) => void;
     endResize: (presentationId: string, slideId: string, layoutId: string) => void;
     cancelResize: () => void;
+
+    addTextEditorElement: (
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        cellId: string,
+        insertAtStart: boolean
+    ) => string;
 }
 
 // Create the store with properly configured middleware
@@ -3277,6 +3285,57 @@ export const usePresentationStore = create<PresentationState>()(
                         originalColumnWidths: null,
                     },
                 });
+            },
+
+            addTextEditorElement: (
+                presentationId: string,
+                slideId: string,
+                layoutId: string,
+                cellId: string,
+                insertAtStart: boolean = false
+            ) => {
+                const layout = get().getLayout(presentationId, slideId, layoutId);
+                if (!layout) return '';
+
+                const newElement = getNewEditorElement(cellId);
+                const elementsInCell = layout.elements.filter(e => e.cellId === cellId);
+                const insertIndex = insertAtStart ? 0 : elementsInCell.length;
+
+                const updatedElements = [...layout.elements];
+                updatedElements.splice(insertIndex, 0, newElement);
+
+                // Update without adding to history
+                set(state => ({
+                    presentations: state.presentations.map(presentation => {
+                        if (presentation.id === presentationId) {
+                            return {
+                                ...presentation,
+                                slides: presentation.slides.map(slide => {
+                                    if (slide.id === slideId) {
+                                        return {
+                                            ...slide,
+                                            layouts: slide.layouts.map(layout => {
+                                                if (layout.id === layoutId) {
+                                                    return {
+                                                        ...layout,
+                                                        elements: updatedElements,
+                                                    };
+                                                }
+                                                return layout;
+                                            }),
+                                        };
+                                    }
+                                    return slide;
+                                }),
+                                updatedAt: Date.now(),
+                            };
+                        }
+                        return presentation;
+                    }),
+                }));
+
+                // Return the new element ID so it can be focused
+                return newElement.id;
             },
         }),
         {
