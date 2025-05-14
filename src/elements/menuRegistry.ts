@@ -46,6 +46,7 @@ export interface MenuItem {
 export const BoxCategories = {
     id: 'boxes',
     label: 'Блоки',
+    excludeFromTable: true,
     elements: [
         {
             elementTypeId: 'box',
