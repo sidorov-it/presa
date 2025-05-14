@@ -18,6 +18,7 @@ import { OpenCustomMenuEvent } from '@/customEvents/OpenCustomMenuEvent';
 import { HiPlus } from 'react-icons/hi2';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
 import { getNewEditorElement } from '@/elements/registry';
+import { elementTypes } from '@/elements/elementTypes';
 
 export const useIsSelectedRow = (tableId: string, rowIndex: number) =>
     useMenuStore(state => state.tableRowIndex === rowIndex && state.tableId === tableId);
@@ -470,14 +471,125 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 return;
             }
 
+            // If there's only one element and it's a text editor, focus it
             if (elementsIds.length === 1) {
-                const editor = tiptapRefs.current?.editors[elementsIds[0]]?.editor;
-                if (editor) {
-                    editor.chain().focus().run();
+                const element = usePresentationStore
+                    .getState()
+                    .getElement(presentationId, slideId, layoutId, elementsIds[0].id);
+
+                if (element?.elementTypeId === elementTypes['text'].elementTypeId) {
+                    const editor = tiptapRefs.current?.editors[elementsIds[0]]?.editor;
+                    if (editor) {
+                        editor.chain().focus().run();
+                        return;
+                    }
                 }
             }
+
+            // Get click position relative to the cell
+            const cellElement = ev.currentTarget;
+            const cellRect = cellElement.getBoundingClientRect();
+            const clickY = ev.clientY - cellRect.top;
+
+            const elementNodes = elementsIds
+                .map(id => cellElement.querySelector(`[data-element-id="${id}"]`))
+                .filter(el => !!el);
+
+            const elementPositions = elementNodes.map((node, index) => {
+                const rect = node.getBoundingClientRect();
+                return {
+                    index,
+                    id: elementsIds[index],
+                    top: rect.top - cellRect.top,
+                    bottom: rect.bottom - cellRect.top,
+                    element: usePresentationStore
+                        .getState()
+                        .getElement(presentationId, slideId, layoutId, elementsIds[index]),
+                };
+            });
+
+            // Find the closest elements to the click position
+            let prevElement = null;
+            let nextElement = null;
+
+            for (let i = 0; i < elementPositions.length; i++) {
+                const pos = elementPositions[i];
+                if (pos.bottom > clickY) {
+                    console.log('set nextElement', pos);
+                    nextElement = pos;
+                    prevElement = elementPositions[i - 1] || null;
+                    break;
+                }
+                if (i === elementPositions.length - 1) {
+                    prevElement = pos;
+                }
+            }
+
+            console.log('prevElement', prevElement);
+            console.log('nextElement', nextElement);
+            // Check if either of the adjacent elements is a text editor
+            const prevIsEditor = prevElement?.element?.elementTypeId === elementTypes['text'].elementTypeId;
+            const nextIsEditor = nextElement?.element?.elementTypeId === elementTypes['text'].elementTypeId;
+
+            if (prevIsEditor && prevElement) {
+                const element = usePresentationStore
+                    .getState()
+                    .getElement(presentationId, slideId, layoutId, prevElement.id);
+
+                if (element?.elementTypeId === elementTypes['text'].elementTypeId) {
+                    const editor = tiptapRefs.current?.editors[prevElement.id]?.editor;
+                    if (editor) {
+                        editor.chain().focus('end').run();
+                    }
+                    return;
+                }
+            }
+
+            if (nextIsEditor && nextElement) {
+                const element = usePresentationStore
+                    .getState()
+                    .getElement(presentationId, slideId, layoutId, nextElement.id);
+
+                if (element?.elementTypeId === elementTypes['text'].elementTypeId) {
+                    const editor = tiptapRefs.current?.editors[nextElement.id]?.editor;
+                    if (editor) {
+                        editor.chain().focus('end').run();
+                    }
+                    return;
+                }
+            }
+            const newElement = getNewEditorElement(cell.id, '', { tempEditor: true });
+
+            // If no text editor found, create a temporary one
+            const layout = usePresentationStore.getState().getLayout(presentationId, slideId, layoutId);
+
+            if (layout) {
+                let insertIndex;
+
+                if (nextElement) {
+                    insertIndex = layout.elements.findIndex(el => el.id === nextElement.id);
+                } else if (prevElement) {
+                    insertIndex = layout.elements.findIndex(el => el.id === prevElement.id) + 1;
+                } else {
+                    insertIndex = elementPositions.length;
+                }
+
+                const updatedElements = [...layout.elements];
+                updatedElements.splice(insertIndex, 0, newElement);
+                usePresentationStore
+                    .getState()
+                    .updateLayout(presentationId, slideId, layoutId, { elements: updatedElements });
+
+                // Focus the new editor after it's created
+                setTimeout(() => {
+                    const editor = tiptapRefs.current?.editors[newElement.id]?.editor;
+                    if (editor) {
+                        editor.chain().focus().run();
+                    }
+                }, 0);
+            }
         },
-        [elementsIds, isReadOnly, tiptapRefs]
+        [isReadOnly, elementsIds, cell.id, presentationId, slideId, layoutId, tiptapRefs]
     );
 
     const deferredIsHoveredRow = isHoveredRow;

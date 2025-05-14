@@ -3,10 +3,12 @@ import { Layout } from '@/types';
 import { generateId } from './id';
 import { getNewEditorElement } from '@/elements/registry';
 
-export default function getNewLayoutWithTextEditor({ tempEditor }: { tempEditor?: boolean }): Layout {
-    const newTextEditorElement = getNewEditorElement(generateId(), '', tempEditor);
-
+export default function getNewLayoutWithTextEditor(
+    options: { tempEditor?: boolean; tempLayout?: boolean } = {}
+): Layout {
     const cellId = generateId();
+
+    const newTextEditorElement = getNewEditorElement(cellId, '', options);
 
     const newLayout: Layout = {
         id: generateId(),

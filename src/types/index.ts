@@ -323,6 +323,7 @@ export interface EditorElement extends BaseElement {
     content: string;
     placeholder?: string;
     tempEditor?: boolean;
+    tempLayout?: boolean;
 }
 
 // Элемент изображения

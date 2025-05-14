@@ -153,13 +153,17 @@ export const getElementMenuComponent = (elementId: string) => {
 
 const emptyTextElement = elementTypes['text'];
 
-export const getNewEditorElement = (cellId: string, content?: string, tempEditor?: boolean): EditorElement => {
+export const getNewEditorElement = (
+    cellId: string,
+    content?: string,
+    options: { tempEditor?: boolean; tempLayout?: boolean } = {}
+): EditorElement => {
     const newEditor: EditorElement = {
         id: generateId(),
         content: content || '',
         cellId,
         elementTypeId: emptyTextElement.elementTypeId,
-        tempEditor,
+        ...options,
     };
 
     return newEditor;

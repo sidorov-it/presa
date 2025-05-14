@@ -2154,6 +2154,13 @@ export const usePresentationStore = create<PresentationState>()(
                                 }
                                 return layout;
                             });
+                        } else {
+                            updatedLayouts = slide!.layouts.map(layout => {
+                                if (layout.id === layoutId) {
+                                    return { ...layout, elements: filteredElements };
+                                }
+                                return layout;
+                            });
                         }
                     } else if (filteredElements.length === 0) {
                         updatedLayouts = slide!.layouts.filter(layout => layout.id !== layoutId);

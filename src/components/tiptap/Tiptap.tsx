@@ -332,7 +332,7 @@ const Tiptap = ({
     const [hasInteraction, setHasInteraction] = useState(false);
     const element = usePresentationStore.getState().getElement(presentationId, slideId, layoutId, elementId);
     const isTempEditor = (element as EditorElement)?.tempEditor;
-
+    const isTempLayout = (element as EditorElement)?.tempLayout;
     let initialContent;
     if (customRefKey) {
         const [key, itemId] = customRefKey.split('-');
@@ -494,13 +494,17 @@ const Tiptap = ({
             // 1. It's a temporary editor (added by clicking between elements)
             // 2. It's empty
             // 3. No content changes were made
-            if (isEmpty && isTempEditor && !hasInteraction) {
-                usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+            if (isEmpty && !hasInteraction) {
+                if (isTempEditor) {
+                    usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, elementId);
+                } else if (isTempLayout) {
+                    usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+                }
             }
 
             onBlur?.();
         }
-    }, [editor, hasInteraction, isTempEditor, layoutId, onBlur, presentationId, slideId]);
+    }, [editor, elementId, hasInteraction, isTempEditor, isTempLayout, layoutId, onBlur, presentationId, slideId]);
 
     return (
         <div className="not-prose" style={{ position: 'relative', width: '100%' }} data-editor-id={id}>

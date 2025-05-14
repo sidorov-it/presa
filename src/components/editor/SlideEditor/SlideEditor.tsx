@@ -227,7 +227,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
                     // Если не смогли поставить фокус ни на один из редакторов, создаем новый layout
                     const newLayout = getNewLayoutWithTextEditor({
-                        tempEditor: true,
+                        tempLayout: true,
                     });
 
                     const editorId = newLayout.elements[0].id;
@@ -252,7 +252,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 }
 
                 const newLayout = getNewLayoutWithTextEditor({
-                    tempEditor: true,
+                    tempLayout: true,
                 });
 
                 const editorId = newLayout.elements[0].id;
@@ -275,7 +275,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 }
 
                 const newLayout = getNewLayoutWithTextEditor({
-                    tempEditor: true,
+                    tempLayout: true,
                 });
 
                 const editorId = newLayout.elements[0].id;
