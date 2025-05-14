@@ -50,6 +50,7 @@ export default function ItemWrapper({
             elementId,
             layoutId,
             smartLayoutItemId: itemId,
+            dragElementType: 'smart-layout-item',
         });
 
         // Set drag image for smoother UX (optional enhancement)

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Extension } from '@tiptap/core';
 import Suggestion, { SuggestionProps } from '@tiptap/suggestion';
 import tippy, { Instance as TippyInstance } from 'tippy.js';
@@ -70,13 +71,26 @@ class CommandsList {
     }
 
     init() {
-        // Get all elements from registry
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        const isInTable = this.props.editor.options.editorProps.attributes['data-is-in-table'] === 'true';
+
         this.items = menuRegistry
-            .flatMap(category =>
-                category.subCategories
-                    ? category.subCategories.flatMap(sub => sub.elements || [])
-                    : category.elements || []
-            )
+            .flatMap(category => {
+                if (isInTable && category.excludeFromTable) {
+                    return [];
+                }
+
+                return category.subCategories
+                    ? category.subCategories.flatMap(sub => {
+                        if (isInTable && sub.excludeFromTable) {
+                            return [];
+                        }
+
+                        return sub.elements || [];
+                    })
+                    : category.elements || [];
+            })
             .filter(element => element !== undefined);
         // .map(element => ({
         //     id: element.elementTypeId,

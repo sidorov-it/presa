@@ -333,6 +333,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 elementId,
                 layoutId,
                 cellId: cell.id,
+                dragElementType: 'element',
             });
         },
         [handleDragStart, layoutId, cell.id]
@@ -413,6 +414,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 elementId: '',
                 layoutId,
                 cellId: cell.id,
+                dragElementType: 'cell',
             });
         },
         [handleDragStart, layoutId, cell.id]
@@ -620,6 +622,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                             elementId: '',
                             rowIndex: rowIndex,
                             tableId: layoutId,
+                            dragElementType: 'table-row',
                         })
                     }
                 />
@@ -638,6 +641,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                             elementId: '',
                             columnIndex: columnIndex,
                             tableId: layoutId,
+                            dragElementType: 'table-column',
                         })
                     }
                     title="Drag to reorder column (columns can only be moved within the same table)"

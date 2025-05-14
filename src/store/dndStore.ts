@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 import { create } from 'zustand';
-import { BaseElement, GridCell, GridRow, GridStructure, Layout, Slide } from '@/types';
+import { BaseElement, DragElementType, GridCell, GridRow, GridStructure, Layout, Slide } from '@/types';
 import { DndState, DropTarget, Position } from '@/types/DragDropTypes';
 import { getNewEditorElement, getNewElement } from '@/elements/registry';
 import { usePresentationStore } from './presentationStore';
@@ -209,7 +209,8 @@ export const useDndStore = create<{
         rowIndex?: number,
         columnIndex?: number,
         smartLayoutItemId?: string,
-        slideId?: string
+        slideId?: string,
+        dragElementType?: DragElementType
     ) => void;
     startNewElementDrag: (element: MenuItem) => void;
     setDropTarget: (target: DropTarget) => void;
@@ -403,7 +404,8 @@ export const useDndStore = create<{
         rowIndex?: number,
         columnIndex?: number,
         smartLayoutItemId?: string,
-        slideId?: string
+        slideId?: string,
+        dragElementType?: DragElementType
     ) => {
         set(state => {
             const newState = {
@@ -420,6 +422,7 @@ export const useDndStore = create<{
                         columnIndex,
                         smartLayoutItemId,
                         slideId,
+                        dragElementType,
                     },
                     target: cloneDeep(initialState.target),
                     indicators: cloneDeep(initialState.indicators),
@@ -433,7 +436,13 @@ export const useDndStore = create<{
     },
 
     startNewElementDrag: (element: MenuItem) => {
-        const newElement = getNewElement(element);
+        const newElement = getNewElement(element) as {
+            id: string | null;
+            elementTypeId: string | null;
+            elementVariant: string | null;
+            defaultProps: any;
+        };
+
         if (!newElement) {
             console.error(`Element with type ${element.elementTypeId} not found in registry`);
             return;
@@ -447,6 +456,7 @@ export const useDndStore = create<{
                     dragState: 'dragging' as const,
                     target: cloneDeep(initialState.target),
                     indicators: cloneDeep(initialState.indicators),
+                    dragElementType: 'element',
                     newElement,
                 },
             };
@@ -597,7 +607,7 @@ export const useDndStore = create<{
             return null;
         }
 
-        return getNewElement(menuItem);
+        return getNewElement(menuItem) as BaseElement;
     },
 
     getCell: (cellId: string, layoutId: string): GridCell | undefined => {
@@ -663,8 +673,10 @@ export const useDndStore = create<{
 
         const cellId = cellNode.getAttribute('data-cell-id');
 
+        const source = get().state.source;
+
         // Handle row drag
-        if (prevState.source.rowIndex !== undefined) {
+        if (source.dragElementType === 'table-row') {
             const targetRowIndex = layout.gridStructure.rows.findIndex(row =>
                 row.cells.some(cell => cell.id === cellId)
             );
@@ -716,71 +728,204 @@ export const useDndStore = create<{
                 indicators: updatedIndicators,
             };
             return;
-        }
+        } else if (source.dragElementType === 'table-column') {
+            // Handle column drag (existing code)
+            const targetColumnIndex: number =
+                layout.gridStructure.rows.flatMap(row => row.cells).find(cell => cell.id === cellId)?.column || 0;
 
-        // Handle column drag (existing code)
-        const targetColumnIndex: number =
-            layout.gridStructure.rows.flatMap(row => row.cells).find(cell => cell.id === cellId)?.column || 0;
+            const firstCellInColumn = layout.gridStructure.rows[0].cells[targetColumnIndex];
 
-        const firstCellInColumn = layout.gridStructure.rows[0].cells[targetColumnIndex];
+            if (!firstCellInColumn) {
+                return;
+            }
 
-        if (!firstCellInColumn) {
-            return;
-        }
+            const firstNodeInColumn = document.querySelector(`[data-cell-id="${firstCellInColumn.id}"]`);
+            if (!firstNodeInColumn) {
+                return;
+            }
 
-        const firstNodeInColumn = document.querySelector(`[data-cell-id="${firstCellInColumn.id}"]`);
-        if (!firstNodeInColumn) {
-            return;
-        }
+            const rectCell = firstNodeInColumn.getBoundingClientRect();
+            const distanceFromCellLeft = e.clientX - rectCell.left;
+            const distanceFromCellRight = rectCell.right - e.clientX;
 
-        const rectCell = firstNodeInColumn.getBoundingClientRect();
-        const distanceFromCellLeft = e.clientX - rectCell.left;
-        const distanceFromCellRight = rectCell.right - e.clientX;
+            const minDistance = Math.min(distanceFromCellLeft, distanceFromCellRight);
 
-        const minDistance = Math.min(distanceFromCellLeft, distanceFromCellRight);
+            let position: Position | null = null;
+            if (minDistance === distanceFromCellLeft) {
+                position = 'left';
+            } else if (minDistance === distanceFromCellRight) {
+                position = 'right';
+            }
 
-        let position: Position | null = null;
-        if (minDistance === distanceFromCellLeft) {
-            position = 'left';
-        } else if (minDistance === distanceFromCellRight) {
-            position = 'right';
-        }
+            // setElementIndicator(null, null);
+            // setCellIndicator(null, null);
+            // setLayoutIndicator(null, null);
+            // setSlideIndicator(null, null);
+            // setTableRowIndicator(null, null, null, null);
 
-        // setElementIndicator(null, null);
-        // setCellIndicator(null, null);
-        // setLayoutIndicator(null, null);
-        // setSlideIndicator(null, null);
-        // setTableRowIndicator(null, null, null, null);
+            // setTableColumnIndicator(firstCellInColumn.id, firstCellInColumn.column, position, tableId);
 
-        // setTableColumnIndicator(firstCellInColumn.id, firstCellInColumn.column, position, tableId);
+            const updatedIndicators = getUpdatedIndicators({
+                cellId: firstCellInColumn.id,
+                tableColumnIndicator: firstCellInColumn.column,
+                tableColumnPosition: position,
+                tableId: tableId,
+            });
 
-        const updatedIndicators = getUpdatedIndicators({
-            cellId: firstCellInColumn.id,
-            tableColumnIndicator: firstCellInColumn.column,
-            tableColumnPosition: position,
-            tableId: tableId,
-        });
+            const updatedTarget = {
+                elementId: null,
+                tableId,
+                columnIndex: targetColumnIndex,
+                position,
+            };
 
-        const updatedTarget = {
-            elementId: null,
-            tableId,
-            columnIndex: targetColumnIndex,
-            position,
-        };
+            set(state => ({
+                state: {
+                    ...state.state,
+                    indicators: updatedIndicators,
+                    target: updatedTarget,
+                },
+            }));
 
-        set(state => ({
-            state: {
-                ...state.state,
-                indicators: updatedIndicators,
+            prevState = {
+                ...prevState,
                 target: updatedTarget,
-            },
-        }));
+                indicators: updatedIndicators,
+            };
+        } else {
+            // TODO: определяем ячейку таблицы под курсором
+            // смотрим, какие есть элементы в этой ячейке и определяем над или под каким элементов нужно отрисовать DropIndicator
+            const cellElements = Array.from(cellNode.querySelectorAll('[data-element-id]'))
+                .map(el => ({
+                    node: el as HTMLElement,
+                    rect: el.getBoundingClientRect(),
+                    id: el.getAttribute('data-element-id'),
+                }))
+                .filter(el => el.id !== get().state.source.elementId); // Exclude source element
 
-        prevState = {
-            ...prevState,
-            target: updatedTarget,
-            indicators: updatedIndicators,
-        };
+            if (cellElements.length === 0) {
+                // If cell is empty, just show indicator in the middle of the cell
+                // const cellRect = cellNode.getBoundingClientRect();
+                const updatedIndicators = getUpdatedIndicators({
+                    elementIndicator: null,
+                    elementPosition: null,
+                    cellIndicator: cellNode.getAttribute('data-cell-id'),
+                    cellPosition: 'top',
+                    tableId: tableId,
+                });
+
+                const updatedTarget = {
+                    elementId: null,
+                    layoutId: tableId,
+                    cellId: cellNode.getAttribute('data-cell-id'),
+                    position: 'top' as Position,
+                };
+
+                set(state => ({
+                    state: {
+                        ...state.state,
+                        indicators: updatedIndicators,
+                        target: updatedTarget,
+                    },
+                }));
+
+                prevState = {
+                    ...prevState,
+                    target: updatedTarget,
+                    indicators: updatedIndicators,
+                };
+                return;
+            }
+
+            // Sort elements by vertical position
+            cellElements.sort((a, b) => a.rect.top - b.rect.top);
+
+            // Find elements above and below mouse position
+            const elementsAbove = cellElements.filter(el => el.rect.bottom < e.clientY);
+            const elementsBelow = cellElements.filter(el => el.rect.top > e.clientY);
+
+            const closestAbove = elementsAbove.length > 0 ? elementsAbove[elementsAbove.length - 1] : null;
+            const closestBelow = elementsBelow.length > 0 ? elementsBelow[0] : null;
+
+            // Calculate gaps
+            const gapAbove = closestAbove ? e.clientY - closestAbove.rect.bottom : null;
+            const gapBelow = closestBelow ? closestBelow.rect.top - e.clientY : null;
+
+            let targetElement;
+            let position: Position;
+
+            // Determine best position based on gaps
+            if (gapAbove !== null && gapBelow !== null) {
+                // Mouse is between two elements
+                if (gapAbove < gapBelow) {
+                    targetElement = closestAbove;
+                    position = 'bottom';
+                } else {
+                    targetElement = closestBelow;
+                    position = 'top';
+                }
+            } else if (gapAbove !== null) {
+                // Mouse is below all elements
+                targetElement = closestAbove;
+                position = 'bottom';
+            } else if (gapBelow !== null) {
+                // Mouse is above all elements
+                targetElement = closestBelow;
+                position = 'top';
+            } else {
+                // Fallback to closest element by euclidean distance
+                let minDistance = Number.MAX_VALUE;
+                let closestElement = null;
+                let closestPosition: Position | null = null;
+
+                cellElements.forEach(el => {
+                    // Calculate distance to each edge
+                    const distToTop = Math.abs(e.clientY - el.rect.top);
+                    const distToBottom = Math.abs(e.clientY - el.rect.bottom);
+
+                    // Find minimum distance
+                    const minEdgeDist = Math.min(distToTop, distToBottom);
+
+                    if (minEdgeDist < minDistance) {
+                        minDistance = minEdgeDist;
+                        closestElement = el;
+                        closestPosition = minEdgeDist === distToTop ? 'top' : 'bottom';
+                    }
+                });
+
+                targetElement = closestElement;
+                position = closestPosition!;
+            }
+
+            if (targetElement && position) {
+                const updatedIndicators = getUpdatedIndicators({
+                    elementIndicator: targetElement.id,
+                    elementPosition: position,
+                    tableId: tableId,
+                });
+
+                const updatedTarget = {
+                    elementId: targetElement.id,
+                    layoutId: tableId,
+                    cellId: cellNode.getAttribute('data-cell-id'),
+                    position: position,
+                };
+
+                set(state => ({
+                    state: {
+                        ...state.state,
+                        indicators: updatedIndicators,
+                        target: updatedTarget,
+                    },
+                }));
+
+                prevState = {
+                    ...prevState,
+                    target: updatedTarget,
+                    indicators: updatedIndicators,
+                };
+            }
+        }
     },
 
     processMoveElementToElementHorizontal: ({
@@ -2528,7 +2673,6 @@ export const useDndStore = create<{
 
         const layoutId = layoutNode?.getAttribute('data-layout-id');
 
-        console.log('handleDragTarget', { slideNode, layoutNode, cellNode, elementNode, layoutId });
         // Handle slide dragging
         if (state.source.slideId && slideNode) {
             if (state.source.slideId === slideNode.getAttribute('data-slide-id')) {
@@ -2584,12 +2728,30 @@ export const useDndStore = create<{
                     // Determine context of the drag for special handling
                     const isSingleCellSingleElement = targetLayout.elements.length === 1;
                     const isMultiCellRow = targetLayout?.gridStructure.rows[0].cells.length > 1;
-                    const isTable = !!targetLayout?.isTable;
+                    const isTargetTable = !!targetLayout?.isTable;
+
+                    if (
+                        (state.source.dragElementType === 'table-row' ||
+                            state.source.dragElementType === 'table-column') &&
+                        !isTargetTable
+                    ) {
+                        console.log('return');
+                        return;
+                    }
 
                     // Special case handling for table
-                    if (isTable) {
+                    if (isTargetTable) {
+                        console.log('isTable', state.source.dragElementType);
+                        // const isDragSingleElement =
+                        //     state.source.layoutId && state.source.cellId && state.source.elementId;
+
+                        // if (isDragSingleElement) {
+                        //     //
+                        // } else {
+                        //     get().processTableTarget(e, foundLayoutId, cellNode as HTMLElement);
+                        // }
+                        // return;
                         get().processTableTarget(e, foundLayoutId, cellNode as HTMLElement);
-                        return;
                     }
 
                     // Use the helper function to calculate drop position with our new node
@@ -2765,11 +2927,59 @@ export const useDndStore = create<{
         // Determine context of the drag for special handling
         const isSingleCellSingleElement = targetLayout.elements.length === 1;
         const isMultiCellRow = targetLayout?.gridStructure.rows[0].cells.length > 1;
-        const isTable = !!targetLayout?.isTable;
+        const isTargetTable = !!targetLayout?.isTable;
+        const isSourceTable = state.source.dragElementType === 'table';
+
+        if (
+            (state.source.dragElementType === 'table-row' || state.source.dragElementType === 'table-column') &&
+            !isTargetTable
+        ) {
+            console.log('return');
+            return;
+        }
 
         // Special case handling for table
-        if (isTable) {
+        if (isTargetTable && !isSourceTable) {
             get().processTableTarget(e, layoutId!, cellNode as HTMLElement);
+            return;
+        }
+
+        // Special handling for table dragging
+        if (isSourceTable) {
+            // When dragging a table, we only want to show layout-level indicators
+            const layoutRect = layoutNode?.getBoundingClientRect();
+            if (!layoutRect) return;
+
+            // Calculate position relative to layout center
+            const position = e.clientY < layoutRect.top + layoutRect.height / 2 ? 'top' : 'bottom';
+
+            const updatedIndicators = getUpdatedIndicators({
+                layoutIndicator: layoutId,
+                layoutPosition: position,
+                // Clear all other indicators
+                elementIndicator: null,
+                elementPosition: null,
+                cellIndicator: null,
+                cellPosition: null,
+            });
+
+            const updatedDropTarget = {
+                elementId: null,
+                layoutId,
+                cellId: null,
+                position: position as Position,
+            };
+
+            set(state => ({
+                ...state,
+                state: {
+                    ...state.state,
+                    indicators: updatedIndicators,
+                    target: updatedDropTarget,
+                },
+            }));
+
+            get().updatePrevStateRef();
             return;
         }
 
@@ -2785,6 +2995,10 @@ export const useDndStore = create<{
             // @ts-expect-error
             cellNode ? findClosestElementsInCellLocal : undefined
         );
+
+        if (isSourceTable) {
+            // todo: таблицу можно перетаскивать только под/над другими layout
+        }
 
         // Apply the calculated position by updating appropriate indicators
         if (dropPosition.targetType === 'element' && dropPosition.targetId) {

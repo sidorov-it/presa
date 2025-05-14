@@ -25,12 +25,14 @@ export interface MenuCategory {
     Icon?: React.ComponentType;
     subCategories?: MenuSubCategory[];
     elements?: MenuItem[];
+    excludeFromTable?: boolean;
 }
 
 export interface MenuSubCategory {
     id: string;
     label: string;
     elements: MenuItem[];
+    excludeFromTable?: boolean;
 }
 
 export interface MenuItem {
@@ -124,6 +126,7 @@ export const menuRegistry: MenuCategory[] = [
     {
         id: 'smart-layouts',
         label: 'Структурные блоки',
+        excludeFromTable: true,
         Icon: FaBox,
         elements: [
             {
@@ -255,6 +258,7 @@ export const menuRegistry: MenuCategory[] = [
             {
                 id: 'tables',
                 label: 'Таблицы',
+                excludeFromTable: true,
                 elements: [
                     {
                         elementTypeId: 'table',

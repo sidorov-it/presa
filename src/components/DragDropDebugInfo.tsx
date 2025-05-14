@@ -279,6 +279,7 @@ const DragDropDebugInfo: React.FC = () => {
                             columnIndex: source.columnIndex,
                             smartLayoutItemId: source.smartLayoutItemId,
                             slideId: source.slideId,
+                            dragElementType: source.dragElementType,
                         },
                         null,
                         2

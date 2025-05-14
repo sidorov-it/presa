@@ -454,6 +454,7 @@ export const ElementContent = ({
                 return (
                     <Tiptap
                         key={elementId}
+                        isInTable={isInTable}
                         elementConfig={elementConfig}
                         elementId={elementId}
                         tiptapRefs={tiptapRefs}

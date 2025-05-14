@@ -1,3 +1,5 @@
+import { DragElementType } from ".";
+
 // Define DnD export types
 export type DragSource = {
     elementId: string | null;
@@ -8,6 +10,7 @@ export type DragSource = {
     columnIndex?: number | null;
     smartLayoutItemId?: string | null;
     slideId?: string | null;
+    dragElementType?: DragElementType;
 };
 
 export type Position = 'top' | 'bottom' | 'left' | 'right';

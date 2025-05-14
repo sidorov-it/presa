@@ -71,6 +71,7 @@ interface TiptapProps {
     customRefKey?: string;
     standardEnterBehavior?: boolean;
     isReadOnly?: boolean;
+    isInTable?: boolean;
 }
 
 // Define the ref type
@@ -312,7 +313,8 @@ const Tiptap = ({
     onEnterPressed = () => {},
     onBackspacePressed = () => {},
     onContentChange = () => {},
-    onBlur = () => {},
+    onBlur = () => { },
+    isInTable = false,
     id = '',
     autoFocus = false,
     customBubbleMenuTrigger,
@@ -356,6 +358,7 @@ const Tiptap = ({
         editorProps: {
             attributes: {
                 class: `${styles.editor} custom-tiptap-editor no-dropcursor not-prose`,
+                'data-is-in-table': String(isInTable),
             },
         },
         editable: !isReadOnly,

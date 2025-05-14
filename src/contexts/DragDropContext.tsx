@@ -1,5 +1,6 @@
 import React, { createContext, useContext, ReactNode, useEffect } from 'react';
 import { useDndStore } from '@/store/dndStore';
+import { DragElementType } from '@/types';
 
 // Create a minimal context for essential functions
 type DndContextType = {
@@ -14,6 +15,7 @@ type DndContextType = {
             columnIndex?: number;
             smartLayoutItemId?: string;
             slideId?: string;
+            dragElementType?: DragElementType;
         }
     ) => void;
 };
@@ -61,6 +63,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             columnIndex,
             smartLayoutItemId,
             slideId,
+            dragElementType,
         }: {
             elementId: string | null;
             layoutId?: string;
@@ -70,18 +73,31 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             columnIndex?: number;
             smartLayoutItemId?: string;
             slideId?: string;
+            dragElementType?: DragElementType;
         }
     ) => {
         e.stopPropagation();
 
         if (slideId) {
             // If slideId is provided, we're dragging a slide
-            useDndStore.getState().startDrag(null, '', undefined, undefined, undefined, undefined, undefined, slideId);
+            useDndStore
+                .getState()
+                .startDrag(null, '', undefined, undefined, undefined, undefined, undefined, slideId, dragElementType);
         } else {
             // Otherwise handle normal element/layout/cell dragging
             useDndStore
                 .getState()
-                .startDrag(elementId, layoutId || '', cellId, tableId, rowIndex, columnIndex, smartLayoutItemId);
+                .startDrag(
+                    elementId,
+                    layoutId || '',
+                    cellId,
+                    tableId,
+                    rowIndex,
+                    columnIndex,
+                    smartLayoutItemId,
+                    undefined,
+                    dragElementType
+                );
         }
 
         e.dataTransfer.effectAllowed = 'move';
@@ -96,6 +112,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
                 columnIndex,
                 smartLayoutItemId,
                 slideId,
+                dragElementType,
             })
         );
     };
@@ -143,6 +160,7 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             const layoutNode = elemBelow.closest('[data-layout-id]') as HTMLElement;
             const slideNode = elemBelow.closest('[data-slide-id]') as HTMLElement;
 
+            console.log('handleDocumentDragOver', elementNode, cellNode, layoutNode, slideNode);
             useDndStore.getState().handleDragTarget(e, { elementNode, cellNode, layoutNode, slideNode });
         };
 

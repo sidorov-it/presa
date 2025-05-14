@@ -114,6 +114,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
             handleDragStart(e, {
                 elementId: '',
                 layoutId: layout.id,
+                dragElementType: layout.isTable ? 'table' : 'layout',
             });
 
             e.dataTransfer.setData(
@@ -302,6 +303,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     );
 
     const isSelected = menuLayoutId === layout.id && menuElementId === null && menuCellId === null;
+    const isFocused = useMenuStore(state => state.focusedLayoutId === layout.id);
 
     // const isHovered = isLayoutHovered || isSelected;
 
@@ -392,7 +394,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                     );
                 })}
 
-                {!isReadOnly && layout.isTable && (
+                {!isReadOnly && layout.isTable && isFocused && (
                     <>
                         <button className={`${styles.addColumnButton} ${styles.tableButton}`} onClick={handleAddColumn}>
                             +

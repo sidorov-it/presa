@@ -389,7 +389,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                                 }}
                                 handleDragStart={e => {
                                     // Start slide drag instead of preventing default
-                                    handleDragStart(e, { elementId: null, slideId });
+                                    handleDragStart(e, { elementId: null, slideId, dragElementType: 'slide' });
                                 }}
                             />
                             <TemplateButton
