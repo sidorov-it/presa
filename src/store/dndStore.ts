@@ -1096,10 +1096,19 @@ export const useDndStore = create<{
     // Complex processing functions that handle actual drop logic
     // These would be moved from the original context
     processElementDrop: () => {
-        // This function would contain the logic from the original processElementDrop
-        // For brevity, I'm not copying all the implementation here
-        // We would move all the logic from the original function
-        // The implementation would access the store state via get()
+        // Early return if trying to drop a smartLayout item outside its parent
+        if (prevState.source.dragElementType === 'smart-layout-item') {
+            const sourceElementId = prevState.source.elementId;
+            const sourceLayoutId = prevState.source.layoutId;
+            const targetElementId = prevState.target.elementId;
+            const targetLayoutId = prevState.target.layoutId;
+
+            // Only allow drops within the same smartLayout
+            if (sourceElementId !== targetElementId || sourceLayoutId !== targetLayoutId) {
+                return;
+            }
+        }
+
         const isSourceElementInSlide =
             prevState.source.layoutId && (prevState.source.elementId || prevState.source.cellId);
         const isNewElement = !!prevState.newElement.id;
@@ -2633,6 +2642,25 @@ export const useDndStore = create<{
     ) => {
         const { slideNode, layoutNode, cellNode, elementNode } = nodes;
         const state = get().state;
+
+        // Early return if we're dragging a smartLayout item and target is not in the same smartLayout
+        if (state.source.dragElementType === 'smart-layout-item') {
+            const targetSmartLayoutElement = elementNode?.closest('[data-smart-layout-item-id]');
+            if (!targetSmartLayoutElement) {
+                // Not over a smartLayout item, clear indicators
+                get().resetAllIndicators();
+                return;
+            }
+
+            const targetElementId = layoutNode?.getAttribute('data-element-id');
+            const targetLayoutId = layoutNode?.getAttribute('data-layout-id');
+
+            // Only allow drops within the same smartLayout
+            if (targetElementId !== state.source.elementId || targetLayoutId !== state.source.layoutId) {
+                get().resetAllIndicators();
+                return;
+            }
+        }
 
         const layoutId = layoutNode?.getAttribute('data-layout-id');
 
