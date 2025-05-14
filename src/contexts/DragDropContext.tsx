@@ -27,26 +27,6 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
     children,
     presentationId,
 }) => {
-    // Get functions from the store
-    // const {
-    //     setPresentationId,
-    //     startDrag,
-    //     startNewElementDrag,
-    //     setDropTarget,
-    //     setIndicators,
-    //     completeDrop,
-    //     cancelDrag,
-    //     setMousePosition,
-    //     // state,
-    //     processElementDrop,
-    //     processLayoutDrop,
-    //     processSlideDrop,
-    //     processCellDrop,
-    //     processTableColumnDrop,
-    //     processTableRowDrop,
-    // } = useDndStore();
-
-    // Initialize the store with the presentation ID
     useEffect(() => {
         useDndStore.getState().setPresentationId(presentationId);
     }, [presentationId]);
@@ -136,7 +116,6 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
         const handleDocumentDragOver = (e: React.DragEvent) => {
             e.preventDefault();
 
-            // console.log('handleDocumentDragOver');
             const state = useDndStore.getState().state;
 
             // Only process if we're dragging
@@ -160,7 +139,6 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             const layoutNode = elemBelow.closest('[data-layout-id]') as HTMLElement;
             const slideNode = elemBelow.closest('[data-slide-id]') as HTMLElement;
 
-            console.log('handleDocumentDragOver', elementNode, cellNode, layoutNode, slideNode);
             useDndStore.getState().handleDragTarget(e, { elementNode, cellNode, layoutNode, slideNode });
         };
 

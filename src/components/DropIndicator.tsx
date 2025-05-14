@@ -363,7 +363,6 @@ const DropIndicator = () => {
         if (!indicatorInfo) return {};
         const { targetRect, position, type, previousElementRect, nextElementRect } = indicatorInfo;
 
-        console.log('[DropIndicator] indicatorInfo3', indicatorInfo);
         // For between-element indicators (enhanced spacing)
         if (type === 'element' && (position === 'top' || position === 'bottom')) {
             // Create a thicker indicator between elements

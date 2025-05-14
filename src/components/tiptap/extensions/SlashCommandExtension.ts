@@ -92,11 +92,6 @@ class CommandsList {
                     : category.elements || [];
             })
             .filter(element => element !== undefined);
-        // .map(element => ({
-        //     id: element.elementTypeId,
-        //     label: element.label,
-        //     icon: element.Icon ? element.Icon.name : undefined,
-        // }));
 
         // Filter based on the query
         this.filterItems();

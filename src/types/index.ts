@@ -499,3 +499,13 @@ export type SmartLayoutType =
     | 'stats-grid'
     | 'comparison'
     | 'process-flow';
+
+export type DragElementType =
+    | 'element'
+    | 'layout'
+    | 'cell'
+    | 'table-row'
+    | 'table-column'
+    | 'table'
+    | 'smart-layout-item'
+    | 'slide';

@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 import { create } from 'zustand';
 import { BaseElement, DragElementType, GridCell, GridRow, GridStructure, Layout, Slide } from '@/types';
-import { DndState, DropTarget, Position } from '@/types/DragDropTypes';
+import { DndState, Position } from '@/types/DragDropTypes';
 import { getNewEditorElement, getNewElement } from '@/elements/registry';
 import { usePresentationStore } from './presentationStore';
 import { MenuItem, menuRegistry } from '@/elements/menuRegistry';
@@ -213,8 +213,6 @@ export const useDndStore = create<{
         dragElementType?: DragElementType
     ) => void;
     startNewElementDrag: (element: MenuItem) => void;
-    setDropTarget: (target: DropTarget) => void;
-    setIndicators: (indicators: Partial<DndState['indicators']>) => void;
     completeDrop: () => void;
     cancelDrag: () => void;
     setReadyToDrop: (isReady: boolean) => void;
@@ -458,41 +456,6 @@ export const useDndStore = create<{
                     indicators: cloneDeep(initialState.indicators),
                     dragElementType: 'element',
                     newElement,
-                },
-            };
-
-            prevState = newState.state;
-            return newState;
-        });
-    },
-
-    // ?????
-    setDropTarget: (target: DropTarget) => {
-        set(state => {
-            const newState = {
-                ...state,
-                state: {
-                    ...state.state,
-                    target,
-                },
-            };
-
-            prevState = newState.state;
-            return newState;
-        });
-    },
-
-    // ?????
-    setIndicators: (indicators: Partial<DndState['indicators']>) => {
-        set(state => {
-            const newState = {
-                ...state,
-                state: {
-                    ...state.state,
-                    indicators: {
-                        ...state.state.indicators,
-                        ...indicators,
-                    },
                 },
             };
 
@@ -2740,19 +2703,51 @@ export const useDndStore = create<{
                     }
 
                     // Special case handling for table
-                    if (isTargetTable) {
-                        console.log('isTable', state.source.dragElementType);
-                        // const isDragSingleElement =
-                        //     state.source.layoutId && state.source.cellId && state.source.elementId;
-
-                        // if (isDragSingleElement) {
-                        //     //
-                        // } else {
-                        //     get().processTableTarget(e, foundLayoutId, cellNode as HTMLElement);
-                        // }
-                        // return;
-                        get().processTableTarget(e, foundLayoutId, cellNode as HTMLElement);
+                            if (isTargetTable) {
+            // Only check for table exclusion if we're trying to drop inside a cell
+            if (cellNode) {
+                let isExcluded = false;
+                
+                if (state.newElement.id && state.newElement.elementTypeId) {
+                    // Check for new elements being dragged from menu
+                    isExcluded = isElementExcludedFromTable(
+                        state.newElement.elementTypeId,
+                        state.newElement.elementVariant
+                    );
+                } else if (state.source.layoutId && state.source.elementId) {
+                    // Check for existing elements being dragged from elsewhere
+                    const sourceLayout = get().getLayout(state.source.layoutId);
+                    const sourceElement = sourceLayout?.elements.find(e => e.id === state.source.elementId);
+                    if (sourceElement?.elementTypeId) {
+                        isExcluded = isElementExcludedFromTable(
+                            sourceElement.elementTypeId,
+                            sourceElement.elementVariant
+                        );
                     }
+                }
+                
+                if (isExcluded) {
+                    // Reset only element and cell indicators, allowing layout-level drops
+                    const updatedIndicators = getUpdatedIndicators({
+                        elementIndicator: null,
+                        elementPosition: null,
+                        cellIndicator: null,
+                        cellPosition: null,
+                    });
+                    
+                    set(state => ({
+                        ...state,
+                        state: {
+                            ...state.state,
+                            indicators: updatedIndicators,
+                        },
+                    }));
+                    return;
+                }
+            }
+            
+            get().processTableTarget(e, foundLayoutId, cellNode as HTMLElement);
+        }
 
                     // Use the helper function to calculate drop position with our new node
                     const dropPosition = calculateDropPosition(
@@ -2917,14 +2912,11 @@ export const useDndStore = create<{
             }
         }
 
-        // Get layout information to determine the appropriate target
         const targetLayout = layoutId ? get().getLayout(layoutId) : undefined;
         if (!targetLayout) {
-            // console.log('[DragDropContext] dragover – no targetLayout found for id', layoutId);
             return;
         }
 
-        // Determine context of the drag for special handling
         const isSingleCellSingleElement = targetLayout.elements.length === 1;
         const isMultiCellRow = targetLayout?.gridStructure.rows[0].cells.length > 1;
         const isTargetTable = !!targetLayout?.isTable;
@@ -2938,13 +2930,53 @@ export const useDndStore = create<{
             return;
         }
 
-        // Special case handling for table
-        if (isTargetTable && !isSourceTable) {
+                if (isTargetTable && !isSourceTable) {
+            // Only check for table exclusion if we're trying to drop inside a cell
+            if (cellNode) {
+                let isExcluded = false;
+                
+                if (state.newElement.id && state.newElement.elementTypeId) {
+                    // Check for new elements being dragged from menu
+                    isExcluded = isElementExcludedFromTable(
+                        state.newElement.elementTypeId,
+                        state.newElement.elementVariant
+                    );
+                } else if (state.source.layoutId && state.source.elementId) {
+                    // Check for existing elements being dragged from elsewhere
+                    const sourceLayout = get().getLayout(state.source.layoutId);
+                    const sourceElement = sourceLayout?.elements.find(e => e.id === state.source.elementId);
+                    if (sourceElement?.elementTypeId) {
+                        isExcluded = isElementExcludedFromTable(
+                            sourceElement.elementTypeId,
+                            sourceElement.elementVariant
+                        );
+                    }
+                }
+                
+                if (isExcluded) {
+                    // Reset only element and cell indicators, allowing layout-level drops
+                    const updatedIndicators = getUpdatedIndicators({
+                        elementIndicator: null,
+                        elementPosition: null,
+                        cellIndicator: null,
+                        cellPosition: null,
+                    });
+                    
+                    set(state => ({
+                        ...state,
+                        state: {
+                            ...state.state,
+                            indicators: updatedIndicators,
+                        },
+                    }));
+                    return;
+                }
+            }
+            
             get().processTableTarget(e, layoutId!, cellNode as HTMLElement);
             return;
         }
 
-        // Special handling for table dragging
         if (isSourceTable) {
             // When dragging a table, we only want to show layout-level indicators
             const layoutRect = layoutNode?.getBoundingClientRect();
@@ -2996,10 +3028,7 @@ export const useDndStore = create<{
             cellNode ? findClosestElementsInCellLocal : undefined
         );
 
-        if (isSourceTable) {
-            // todo: таблицу можно перетаскивать только под/над другими layout
-        }
-
+        // TODO: если перетаскивается новый элемент, и isTargetTable === true, то нужно учитывать ограничение на добавление в таблицу из menuRegistry (excludeFromTable)
         // Apply the calculated position by updating appropriate indicators
         if (dropPosition.targetType === 'element' && dropPosition.targetId) {
             // Set element indicator and clear others
@@ -3129,3 +3158,35 @@ export const useDndStore = create<{
 }));
 
 // Helper functions that could be moved here from the original context
+
+const isElementExcludedFromTable = (elementTypeId: string, elementVariant?: string | null): boolean => {
+    // Find the menu item in the registry
+    const findMenuItem = (items: MenuItem[]): MenuItem | undefined => {
+        return items.find(
+            item => item.elementTypeId === elementTypeId && (!elementVariant || item.elementVariant === elementVariant)
+        );
+    };
+
+    // Search through all categories and subcategories
+    for (const category of menuRegistry) {
+        // Check if category is excluded
+        if (category.excludeFromTable) {
+            if (category.elements) {
+                const found = findMenuItem(category.elements);
+                if (found) return true;
+            }
+        }
+
+        // Check subcategories
+        if (category.subCategories) {
+            for (const subCategory of category.subCategories) {
+                if (subCategory.excludeFromTable) {
+                    const found = findMenuItem(subCategory.elements);
+                    if (found) return true;
+                }
+            }
+        }
+    }
+
+    return false;
+};

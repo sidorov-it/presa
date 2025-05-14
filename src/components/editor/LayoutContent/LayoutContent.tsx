@@ -126,7 +126,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 })
             );
         },
-        [handleDragStart, layout.id, slideId]
+        [handleDragStart, layout.id, layout.isTable, slideId]
     );
 
     const handleOpenMenu = useCallback(
