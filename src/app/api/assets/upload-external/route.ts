@@ -17,7 +17,7 @@ export const POST = async (req: NextRequest) => {
 
         // Download the image
         const response = await fetch(imageUrl);
-        
+
         if (!response.ok) {
             return NextResponse.json({ error: 'Failed to download image' }, { status: 400 });
         }
@@ -47,9 +47,6 @@ export const POST = async (req: NextRequest) => {
         return NextResponse.json({ url: fileUrl, name: filename });
     } catch (error) {
         console.error('Error uploading external image:', error);
-        return NextResponse.json(
-            { error: 'Failed to process image' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Failed to process image' }, { status: 500 });
     }
-}; 
+};

@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 'use client';
 
@@ -10,6 +12,7 @@ import { FaPlus, FaMagic, FaEllipsisV, FaPencilAlt, FaCopy, FaTrash, FaEye } fro
 import { IPresentation } from '@/types';
 import { pluralize } from '@/utils/helpers';
 import styles from './page.module.css';
+import { Button } from '@/components/ui/Button';
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -66,7 +69,7 @@ export default function DashboardPage() {
 
     // Handle opening the AI modal
     const handleCreateWithAI = () => {
-        setShowAIModal(true);
+        router.push('/dashboard/ai');
     };
 
     // Handle opening a presentation
@@ -232,14 +235,14 @@ export default function DashboardPage() {
             <div className={styles.header}>
                 <h1 className={styles.title}>Мои презентации</h1>
                 <div className={styles.buttonGroup}>
-                    <button onClick={handleCreateWithAI} className={styles.buttonPrimary}>
+                    <Button onClick={handleCreateWithAI}>
                         <FaMagic className={styles.buttonIcon} />
                         Создать с ИИ
-                    </button>
-                    <button onClick={handleCreateEmptyPresentation} className={styles.buttonSecondary}>
+                    </Button>
+                    <Button onClick={handleCreateEmptyPresentation}>
                         <FaPlus className={styles.buttonIcon} />
                         Создать пустую
-                    </button>
+                    </Button>
                 </div>
             </div>
 
@@ -258,14 +261,14 @@ export default function DashboardPage() {
                         Создайте свою первую презентацию, используя шаблон или начните с нуля
                     </p>
                     <div className={styles.emptyStateButtons}>
-                        <button onClick={handleCreateWithAI} className={styles.buttonPrimary}>
+                        <Button onClick={handleCreateWithAI}>
                             <FaMagic className={styles.buttonIcon} />
                             Создать с ИИ
-                        </button>
-                        <button onClick={handleCreateEmptyPresentation} className={styles.buttonSecondary}>
+                        </Button>
+                        <Button onClick={handleCreateEmptyPresentation}>
                             <FaPlus className={styles.buttonIcon} />
                             Создать пустую
-                        </button>
+                        </Button>
                     </div>
                 </div>
             ) : (

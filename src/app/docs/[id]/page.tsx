@@ -121,7 +121,7 @@ export default function PresentationEditorPage() {
         if (presentation) {
             window.open(`/view/${presentation.id}`, '_blank');
         }
-    }, [presentation?.id]);
+    }, [presentation]);
 
     const handleOpenBgModal = () => setIsBgModalOpen(true);
     const handleCloseBgModal = () => setIsBgModalOpen(false);

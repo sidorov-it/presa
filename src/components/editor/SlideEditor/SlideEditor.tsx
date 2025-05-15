@@ -145,32 +145,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         [slideId, handleSelectSlide]
     );
 
-    const createDefaultLayout = useCallback(() => {
-        const gridStructure = getPredefinedGridStructures('single-column');
-        const cellId = gridStructure.rows[0].cells[0].id;
-
-        const editorElement = getNewEditorElement(cellId);
-
-        const newLayout: Omit<Layout, 'id'> = {
-            type: 'single-column',
-            elements: [editorElement],
-            style: {},
-            gridStructure,
-        };
-
-        DragDropTransactionHelper.addLayout(presentationId, slideId, newLayout, slideLayoutIds.length);
-
-        setTimeout(() => {
-            document.dispatchEvent(
-                new CustomEvent('focus_editor', {
-                    bubbles: true,
-                    cancelable: true,
-                    detail: { editorId: editorElement.id },
-                })
-            );
-        }, 100);
-    }, [presentationId, slideId, slideLayoutIds]);
-
     const handleSlideClick = useCallback(
         (e: React.MouseEvent) => {
             if (isReadOnly) {
@@ -285,7 +259,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 usePresentationStore.getState().addLayout(presentationId, slideId, newLayout, 0);
             }
         },
-        [tiptapRefs, createDefaultLayout, presentationId, slideId, isReadOnly]
+        [tiptapRefs, presentationId, slideId, isReadOnly]
     );
 
     // Image rendering based on template type

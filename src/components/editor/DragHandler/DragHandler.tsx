@@ -49,7 +49,7 @@ export default function DragHandler({
         [handleClickProp]
     );
 
-    let dragHandlerStyle = {
+    const dragHandlerStyle = {
         ...style,
     };
 

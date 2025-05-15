@@ -2731,51 +2731,51 @@ export const useDndStore = create<{
                     }
 
                     // Special case handling for table
-                            if (isTargetTable) {
-            // Only check for table exclusion if we're trying to drop inside a cell
-            if (cellNode) {
-                let isExcluded = false;
-                
-                if (state.newElement.id && state.newElement.elementTypeId) {
-                    // Check for new elements being dragged from menu
-                    isExcluded = isElementExcludedFromTable(
-                        state.newElement.elementTypeId,
-                        state.newElement.elementVariant
-                    );
-                } else if (state.source.layoutId && state.source.elementId) {
-                    // Check for existing elements being dragged from elsewhere
-                    const sourceLayout = get().getLayout(state.source.layoutId);
-                    const sourceElement = sourceLayout?.elements.find(e => e.id === state.source.elementId);
-                    if (sourceElement?.elementTypeId) {
-                        isExcluded = isElementExcludedFromTable(
-                            sourceElement.elementTypeId,
-                            sourceElement.elementVariant
-                        );
+                    if (isTargetTable) {
+                        // Only check for table exclusion if we're trying to drop inside a cell
+                        if (cellNode) {
+                            let isExcluded = false;
+
+                            if (state.newElement.id && state.newElement.elementTypeId) {
+                                // Check for new elements being dragged from menu
+                                isExcluded = isElementExcludedFromTable(
+                                    state.newElement.elementTypeId,
+                                    state.newElement.elementVariant
+                                );
+                            } else if (state.source.layoutId && state.source.elementId) {
+                                // Check for existing elements being dragged from elsewhere
+                                const sourceLayout = get().getLayout(state.source.layoutId);
+                                const sourceElement = sourceLayout?.elements.find(e => e.id === state.source.elementId);
+                                if (sourceElement?.elementTypeId) {
+                                    isExcluded = isElementExcludedFromTable(
+                                        sourceElement.elementTypeId,
+                                        sourceElement.elementVariant
+                                    );
+                                }
+                            }
+
+                            if (isExcluded) {
+                                // Reset only element and cell indicators, allowing layout-level drops
+                                const updatedIndicators = getUpdatedIndicators({
+                                    elementIndicator: null,
+                                    elementPosition: null,
+                                    cellIndicator: null,
+                                    cellPosition: null,
+                                });
+
+                                set(state => ({
+                                    ...state,
+                                    state: {
+                                        ...state.state,
+                                        indicators: updatedIndicators,
+                                    },
+                                }));
+                                return;
+                            }
+                        }
+
+                        get().processTableTarget(e, foundLayoutId, cellNode as HTMLElement);
                     }
-                }
-                
-                if (isExcluded) {
-                    // Reset only element and cell indicators, allowing layout-level drops
-                    const updatedIndicators = getUpdatedIndicators({
-                        elementIndicator: null,
-                        elementPosition: null,
-                        cellIndicator: null,
-                        cellPosition: null,
-                    });
-                    
-                    set(state => ({
-                        ...state,
-                        state: {
-                            ...state.state,
-                            indicators: updatedIndicators,
-                        },
-                    }));
-                    return;
-                }
-            }
-            
-            get().processTableTarget(e, foundLayoutId, cellNode as HTMLElement);
-        }
 
                     // Use the helper function to calculate drop position with our new node
                     const dropPosition = calculateDropPosition(
@@ -2958,11 +2958,11 @@ export const useDndStore = create<{
             return;
         }
 
-                if (isTargetTable && !isSourceTable) {
+        if (isTargetTable && !isSourceTable) {
             // Only check for table exclusion if we're trying to drop inside a cell
             if (cellNode) {
                 let isExcluded = false;
-                
+
                 if (state.newElement.id && state.newElement.elementTypeId) {
                     // Check for new elements being dragged from menu
                     isExcluded = isElementExcludedFromTable(
@@ -2980,7 +2980,7 @@ export const useDndStore = create<{
                         );
                     }
                 }
-                
+
                 if (isExcluded) {
                     // Reset only element and cell indicators, allowing layout-level drops
                     const updatedIndicators = getUpdatedIndicators({
@@ -2989,7 +2989,7 @@ export const useDndStore = create<{
                         cellIndicator: null,
                         cellPosition: null,
                     });
-                    
+
                     set(state => ({
                         ...state,
                         state: {
@@ -3000,7 +3000,7 @@ export const useDndStore = create<{
                     return;
                 }
             }
-            
+
             get().processTableTarget(e, layoutId!, cellNode as HTMLElement);
             return;
         }

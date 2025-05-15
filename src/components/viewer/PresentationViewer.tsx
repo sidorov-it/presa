@@ -7,9 +7,7 @@ interface PresentationViewerProps {
     presentation: IPresentation;
 }
 
-const PresentationViewer: React.FC<PresentationViewerProps> = ({
-    presentation,
-}) => {
+const PresentationViewer: React.FC<PresentationViewerProps> = ({ presentation }) => {
     if (!presentation.slides || presentation.slides.length === 0) {
         return <div>No slides to display</div>;
     }

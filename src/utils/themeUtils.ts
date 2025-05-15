@@ -81,5 +81,4 @@ export const resetThemeStyles = (): void => {
     document.body.style.backgroundPosition = '';
     document.body.style.backgroundRepeat = '';
     document.body.style.backgroundAttachment = '';
-
 };

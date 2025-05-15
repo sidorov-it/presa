@@ -151,7 +151,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                 // zIndex: 10,
             };
         }
-    }, [currentSize, initialImageStyle, templateType]);
+    }, [currentSize, templateType]);
 
     // Handle resize movement
     const handleResizeMove = useCallback((e: MouseEvent) => {

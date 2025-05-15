@@ -168,7 +168,9 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({ imageUrl, onClearImage, onU
                         <>
                             <FiUpload className={styles.uploadIcon} />
                             <p className={styles.dropzoneText}>
-                                {isDragActive ? 'Перетащите файл сюда' : 'Перетащите изображение или кликните для выбора'}
+                                {isDragActive
+                                    ? 'Перетащите файл сюда'
+                                    : 'Перетащите изображение или кликните для выбора'}
                             </p>
                         </>
                     )}

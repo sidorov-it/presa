@@ -1,7 +1,9 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/img-redundant-alt */
 import Tiptap from '@/components/tiptap/Tiptap';
 import { ImageShape, SmartLayoutElement, SmartLayoutItem, TipTapRefs } from '@/types';
-import { RefObject, useRef } from 'react';
+import { RefObject } from 'react';
 import ItemWrapper from '../../ItemWrapper/ItemWrapper';
 
 import styles from './Item.module.css';
@@ -52,8 +54,6 @@ export default function Item({
         return element.items.find(item => item.id === itemId);
     }) as SmartLayoutItem;
 
-    const imageRef = useRef<HTMLDivElement>(null);
-
     const imageWidthCoof = 14;
     const imageWidth = 30 + imageWidthCoof * (imageSize - 1);
 
@@ -76,7 +76,6 @@ export default function Item({
                     backgroundImage: item.imageUrl ? `url(${item.imageUrl})` : undefined,
                     width: imageWidth ? `calc(${imageWidth}% - 1em)` : undefined,
                 }}
-                ref={imageRef}
             />
             <div className={styles.content}>
                 <div className={styles.text}>

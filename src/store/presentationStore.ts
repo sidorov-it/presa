@@ -3153,8 +3153,6 @@ export const usePresentationStore = create<PresentationState>()(
             },
 
             setTheme: (presentationId, themeId) => {
-                const beforeState = { ...get() };
-
                 set(state => {
                     const updatedState = {
                         presentations: state.presentations.map(presentation =>
@@ -3163,14 +3161,6 @@ export const usePresentationStore = create<PresentationState>()(
                                 : presentation
                         ),
                     };
-
-                    // get().recordAction({
-                    //     type: 'presentation',
-                    //     description: 'Update presentation theme',
-                    //     presentationId,
-                    //     before: { presentations: beforeState.presentations },
-                    //     after: updatedState,
-                    // });
 
                     return updatedState;
                 });

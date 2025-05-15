@@ -108,8 +108,7 @@ export const Code = Mark.create<CodeOptions>({
                     },
             toggleCode:
                 () =>
-                    ({ commands, editor, state }) => {
-                        const { from, to } = state.selection;
+                    ({ commands, editor }) => {
                         const isActive = editor.isActive('code');
 
                         if (isActive) {
@@ -120,6 +119,7 @@ export const Code = Mark.create<CodeOptions>({
                         const marks = editor.getAttributes('textStyle');
                         let sizeClasses;
 
+                        // eslint-disable-next-line no-prototype-builtins
                         if (marks.fontSize?.hasOwnProperty('classList')) {
                             sizeClasses = marks.fontSize.classList.value.split(' ');
                         } else {

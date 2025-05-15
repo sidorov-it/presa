@@ -151,7 +151,7 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
         return () => {
             setPosition(null);
         };
-    }, [isOpen, slideId, elementId, elementType, layoutId, columnId, tableRowIndex, tableColumnIndex, cell]);
+    }, [isOpen, slideId, elementId, elementType, layoutId, columnId, tableRowIndex, tableColumnIndex, cell, isInTable]);
 
     const handleAddColumnLeft = useCallback(() => {
         if (Number.isInteger(tableColumnIndex)) {

@@ -347,7 +347,7 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
                         },
                     };
                 },
-                command: ({ editor, range, props }) => {
+                command: () => {
                     return false;
                 },
             }),

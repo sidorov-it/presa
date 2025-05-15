@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+import React, { useCallback, useEffect, useState } from 'react';
 import { IPresentation } from '@/types';
 import SlideViewer from './SlideViewer';
 
@@ -15,7 +16,7 @@ const FullscreenViewer: React.FC<FullscreenViewerProps> = ({ presentation, initi
     const [mouseMoveTimeout, setMouseMoveTimeout] = useState<NodeJS.Timeout | null>(null);
 
     // Handle entering and exiting fullscreen
-    const toggleFullscreen = () => {
+    const toggleFullscreen = useCallback(() => {
         if (!isFullscreen) {
             const docElm = document.documentElement;
             if (docElm.requestFullscreen) {
@@ -26,7 +27,7 @@ const FullscreenViewer: React.FC<FullscreenViewerProps> = ({ presentation, initi
                 document.exitFullscreen();
             }
         }
-    };
+    }, [isFullscreen]);
 
     // Watch for fullscreen changes
     useEffect(() => {
@@ -67,35 +68,38 @@ const FullscreenViewer: React.FC<FullscreenViewerProps> = ({ presentation, initi
     }, [mouseMoveTimeout]);
 
     // Handle navigation between slides
-    const handleNextSlide = () => {
+    const handleNextSlide = useCallback(() => {
         if (currentSlideIndex < presentation.slides.length - 1) {
             setCurrentSlideIndex(currentSlideIndex + 1);
         }
-    };
+    }, [currentSlideIndex, presentation.slides.length]);
 
-    const handlePreviousSlide = () => {
+    const handlePreviousSlide = useCallback(() => {
         if (currentSlideIndex > 0) {
             setCurrentSlideIndex(currentSlideIndex - 1);
         }
-    };
+    }, [currentSlideIndex]);
 
     // Handle keyboard navigation
-    const handleKeyDown = (e: React.KeyboardEvent | KeyboardEvent) => {
-        if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
-            handleNextSlide();
-        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-            handlePreviousSlide();
-        } else if (e.key === 'Escape') {
-            if (isFullscreen) {
-                document.exitFullscreen();
+    const handleKeyDown = useCallback(
+        (e: React.KeyboardEvent | KeyboardEvent) => {
+            if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+                handleNextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                handlePreviousSlide();
+            } else if (e.key === 'Escape') {
+                if (isFullscreen) {
+                    document.exitFullscreen();
+                }
+                if (onClose) {
+                    onClose();
+                }
+            } else if (e.key === 'F' || e.key === 'f') {
+                toggleFullscreen();
             }
-            if (onClose) {
-                onClose();
-            }
-        } else if (e.key === 'F' || e.key === 'f') {
-            toggleFullscreen();
-        }
-    };
+        },
+        [handleNextSlide, handlePreviousSlide, isFullscreen, onClose, toggleFullscreen]
+    );
 
     // Add global keyboard listener
     useEffect(() => {
@@ -103,7 +107,7 @@ const FullscreenViewer: React.FC<FullscreenViewerProps> = ({ presentation, initi
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [currentSlideIndex, presentation.slides.length, isFullscreen]);
+    }, [currentSlideIndex, presentation.slides.length, isFullscreen, handleKeyDown]);
 
     // Current slide
     const currentSlide = presentation.slides[currentSlideIndex];
@@ -115,7 +119,6 @@ const FullscreenViewer: React.FC<FullscreenViewerProps> = ({ presentation, initi
     return (
         <div
             className="fullscreen-viewer"
-            tabIndex={0}
             onKeyDown={handleKeyDown}
             style={{
                 width: '100%',

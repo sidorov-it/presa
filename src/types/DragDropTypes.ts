@@ -1,4 +1,4 @@
-import { DragElementType } from ".";
+import { DragElementType } from '.';
 
 // Define DnD export types
 export type DragSource = {

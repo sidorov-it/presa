@@ -445,7 +445,7 @@ export const ElementContent = ({
                 }
             }
         },
-        [presentationId, slideId, layoutId, cellId, elementId, tiptapRefs]
+        [presentationId, slideId, layoutId, cellId, elementId, tiptapRefs, isInTable]
     );
 
     const handleBlur = useCallback(() => {
@@ -524,6 +524,7 @@ export const ElementContent = ({
         [
             elementConfig,
             elementTypeId,
+            isInTable,
             tiptapRefs,
             handleEnterPressed,
             handleBackspacePressed,
@@ -534,8 +535,8 @@ export const ElementContent = ({
             presentationId,
             slideId,
             layoutId,
-            hasMultipleCells,
             isReadOnly,
+            hasMultipleCells,
         ]
     );
 

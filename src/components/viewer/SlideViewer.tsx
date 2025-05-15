@@ -11,11 +11,11 @@ interface SlideViewerProps {
     isPdfExport?: boolean;
 }
 
-const SlideViewer: React.FC<SlideViewerProps> = ({ 
-    slide, 
+const SlideViewer: React.FC<SlideViewerProps> = ({
+    slide,
     themeClassName = '',
     presentationId: _presentationId,
-    isPdfExport = false 
+    isPdfExport = false,
 }) => {
     // Get slide background styling
     const getSlideStyle = () => {
@@ -110,7 +110,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
             default:
                 return {};
         }
-    }, [slide?.templateType, slide?.imageUrl]);
+    }, [slide?.templateType, slide?.imageUrl, slide?.imageSize]);
 
     // Calculate content style for layouts based on template
     const contentStyle: React.CSSProperties = useMemo(() => {

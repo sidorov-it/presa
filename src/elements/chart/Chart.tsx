@@ -630,16 +630,7 @@ const Chart: React.FC<ChartProps> = ({
                     <div className={styles.unsupportedChartType}>Unsupported chart type: {element.elementVariant}</div>
                 );
         }
-    }, [
-        element.height,
-        element.elementVariant,
-        element.series,
-        legendPosition,
-        showLabels,
-        showValues,
-        data,
-        isReadOnly,
-    ]);
+    }, [element.height, element.elementVariant, element.series, legendPosition, showLabels, showValues, data]);
 
     // Calculate optimal position for settings popup
     const calculateSettingsPosition = () => {

@@ -4,7 +4,6 @@ import React from 'react';
 import { BiAlignLeft, BiAlignMiddle, BiAlignRight, BiEdit } from 'react-icons/bi';
 import { usePresentationStore } from '@/store/presentationStore';
 import { useMenuStore } from '@/store/menuStore';
-import { BaseMenu } from '../../../SlideMenu/BaseMenu';
 import { ImageElement } from '@/types';
 
 import styles from './ImageBubbleMenu.module.css';

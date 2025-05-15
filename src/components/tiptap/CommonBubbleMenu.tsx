@@ -1,6 +1,5 @@
 import { BubbleMenu, Editor } from '@tiptap/react';
 import { ColorPicker } from './ColorPicker';
-import { LinkEditor } from './LinkEditor';
 import styles from './BubbleMenu.module.css';
 import {
     BiBold,

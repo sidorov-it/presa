@@ -48,7 +48,7 @@ export default function PresentationEditorPage() {
         };
 
         load();
-    }, [id, loadPresentation, status]);
+    }, [id, loadPresentation]);
 
     // Apply theme when presentation is loaded or themes change
     useEffect(() => {

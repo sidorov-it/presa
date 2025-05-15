@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { ImagePlaceholder } from '../ImagePlaceholder/ImagePlaceholder';
-import React, { useState } from 'react';
+import React from 'react';
 import { useMenuStore } from '@/store/menuStore';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
@@ -25,16 +25,15 @@ export const Image: React.FC<ImageProps> = ({
     style = {},
     ...rest
 }) => {
-    const [isOpenImageEditBox, setIsOpenImageEditBox] = useState(false);
-
+    // const [isOpenImageEditBox, setIsOpenImageEditBox] = useState(false);
     const handleImageClick = () => {
         if (isWidthRightMenu) {
-            setIsOpenImageEditBox(true);
+            // setIsOpenImageEditBox(true);
             useMenuStore.getState().openSideMenu('image-edit', {
                 imageUrl,
                 onClearImage,
                 onUpdateLink,
-                onCloseMenu: () => setIsOpenImageEditBox(false),
+                // onCloseMenu: () => setIsOpenImageEditBox(false),
             });
         }
     };

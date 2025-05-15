@@ -3,7 +3,6 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { SmartLayoutElement, TipTapRefs } from '@/types';
 import ImagesWithText from '@/elements/smartLayout/components/ImagesWithText/ImagesWithText';
 import TextBoxes from '@/elements/smartLayout/components/TextBoxes/TextBoxes';
-import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 interface SmartLayoutProps {
     elementId: string;

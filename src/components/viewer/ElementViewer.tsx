@@ -149,7 +149,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                 // For video elements, render the video player
                 return (
                     <div className={styles.container}>
-                        <video 
+                        <video
                             controls
                             style={{ width: '100%', height: '100%' }}
                             src={(element as any).src || element.url || ''}

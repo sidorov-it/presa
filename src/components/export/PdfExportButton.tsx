@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Icon } from '@chakra-ui/react';
 import { FaFilePdf } from 'react-icons/fa';
-import { Toaster, toast } from 'sonner';
+import { toast } from 'sonner';
 import { IPresentation } from '@/types';
 import { exportPresentationToPdf } from '@/utils/pdfExport';
 
