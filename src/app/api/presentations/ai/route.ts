@@ -5,6 +5,7 @@ import { authOptions } from '../../auth/[...nextauth]/route';
 import { generateId } from '@/utils/id';
 import { stringifyJsonField } from '@/utils/json';
 import { createPresentationWithoutTransaction } from '@/utils/mongodb-helpers';
+import { SlideContentGenerator } from '@/services/llm/slideGenerator';
 
 export async function POST(request: NextRequest) {
     try {
@@ -23,35 +24,90 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ message: 'Prompt is required' }, { status: 400 });
         }
 
-        // Create example slides based on the prompt
-        const slidesData = [
-            {
-                id: `slide-${generateId()}`,
-                layout: 'standard',
-                elements: [
-                    {
-                        id: `element-${generateId()}`,
-                        type: 'text',
-                        content: title || 'AI Generated Presentation',
-                        position: { x: 100, y: 100 },
-                        size: { width: 600, height: 100 },
-                    },
-                ],
+        console.log('[AI Presentation Debug] Starting generation process', { userId, prompt, title });
+
+        // Define a mock LLM service for simulation
+        const mockLLMService = {
+            generate: async (promptText: string) => {
+                console.log('[AI Presentation Debug] Sending mock LLM request with prompt:', promptText);
+                // Simulate a response based on the prompt content
+                return {
+                    elements: [
+                        {
+                            type: 'text',
+                            content: `Generated content based on: ${promptText.slice(0, 50)}...`,
+                            metadata: {},
+                        },
+                        {
+                            type: 'image',
+                            content: 'Generated image alt text',
+                            metadata: {},
+                        },
+                    ],
+                };
             },
-            {
-                id: `slide-${generateId()}`,
-                layout: 'standard',
-                elements: [
-                    {
-                        id: `element-${generateId()}`,
-                        type: 'text',
-                        content: prompt,
-                        position: { x: 100, y: 100 },
-                        size: { width: 600, height: 300 },
-                    },
-                ],
-            },
-        ];
+        };
+
+        // Use SlideContentGenerator with the mock LLM service
+        const generator = new SlideContentGenerator(mockLLMService);
+
+        // Define slide templates to use for generation
+        const slideTemplateIds = ['image-text', 'text-image', 'two-columns'];
+        const totalSlides = slideTemplateIds.length;
+        const slidesData = [];
+
+        // Generate content for each slide individually
+        for (let i = 0; i < totalSlides; i++) {
+            const templateId = slideTemplateIds[i];
+            console.log(`[AI Presentation Debug] Generating slide ${i + 1} with template ${templateId}`);
+
+            const context = {
+                topic: prompt,
+                audience: 'General',
+                style: 'Professional',
+                slideIndex: i + 1,
+                totalSlides,
+                previousContent: i > 0 ? slidesData[i - 1] : undefined,
+            };
+
+            try {
+                const slideContent = await generator.generateContent(templateId, context);
+                console.log(`[AI Presentation Debug] Received content for slide ${i + 1}`, slideContent);
+
+                const slideId = `slide-${generateId()}`;
+                const elements = slideContent.elements.map((elem: any, index: number) => ({
+                    id: `element-${generateId()}`,
+                    type: elem.type,
+                    content: elem.props.content || '',
+                    position: { x: 100, y: 100 + index * 100 },
+                    size: { width: 600, height: 100 },
+                }));
+
+                slidesData.push({
+                    id: slideId,
+                    layout: templateId,
+                    elements,
+                });
+            } catch (error) {
+                console.error(`[AI Presentation Debug] Error generating slide ${i + 1}:`, error);
+                // Fallback to a default slide if generation fails
+                slidesData.push({
+                    id: `slide-${generateId()}`,
+                    layout: 'standard',
+                    elements: [
+                        {
+                            id: `element-${generateId()}`,
+                            type: 'text',
+                            content: `Fallback content for slide ${i + 1}`,
+                            position: { x: 100, y: 100 },
+                            size: { width: 600, height: 100 },
+                        },
+                    ],
+                });
+            }
+        }
+
+        console.log('[AI Presentation Debug] All slides generated', slidesData);
 
         // Try to create the presentation using the helper function that avoids transactions
         try {

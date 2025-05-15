@@ -52,8 +52,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const templateType = usePresentationStore(state => state.getSlide(presentationId, slideId)?.templateType);
     const imageUrl = usePresentationStore(state => state.getSlide(presentationId, slideId)?.imageUrl);
 
-    const addSlideSelector = useCallback((state: PresentationState) => state.addSlide, []);
-    const addSlide = usePresentationStore(addSlideSelector);
+    const addEmptySlideSelector = useCallback((state: PresentationState) => state.addEmptySlide, []);
+    const addEmptySlide = usePresentationStore(addEmptySlideSelector);
 
     const handleDeleteElement = useCallback(
         (layoutId: string, elementId: string) => {
@@ -73,10 +73,10 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
             if (slideIndex !== -1) {
                 const newSlideIndex = slideIndex + 1;
-                addSlide(presentationId, newSlideIndex);
+                addEmptySlide(presentationId, newSlideIndex);
             }
         },
-        [presentationId, slideId, addSlide]
+        [presentationId, slideId, addEmptySlide]
     );
 
     const handleOpenSlideMenu = useCallback(

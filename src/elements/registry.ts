@@ -12,59 +12,10 @@ import {
     type SmartLayoutItem,
     type Slide,
     type LayoutType,
-    type SlideTemplateConfig,
 } from '@/types';
 import { elementTypes } from './elementTypes';
-import { MenuItem, SlideTemplates } from './menuRegistry';
+import { MenuItem } from '@/types/templates';
 import getColumnWidths from '@/utils/getColumnWidths';
-
-// export const getNewTableLayout = (menuItem: MenuItem): Layout | null => {
-//     const tableLayout: Layout = {
-//         id: generateId(),
-//         elements: [],
-//         gridStructure: {
-//             rows: menuItem.defaultProps?.rows || 2,
-//             columns: menuItem.defaultProps?.columns || 2,
-//             columnWidths: getColumnWidths(menuItem.defaultProps?.columns || 2),
-//         },
-//         type: 'table',
-//         style: {},
-//         isTable: true,
-//     };
-
-//     const rows: GridRow[] = [];
-//     const elements: BaseElement[] = [];
-
-//     for (let rowIndex = 0; rowIndex < menuItem.defaultProps?.rows; rowIndex++) {
-//         const cells: GridCell[] = [];
-
-//         const row: GridRow = {
-//             id: generateId(),
-//             cells: [],
-//         };
-
-//         for (let columnIndex = 0; columnIndex < menuItem.defaultProps?.columns; columnIndex++) {
-//             const cellId = generateId();
-
-//             const cell: GridCell = {
-//                 id: cellId,
-//                 row: rowIndex,
-//                 column: columnIndex,
-//             };
-//             cells.push(cell);
-
-//             const cellElement = getNewEditorElement(cellId);
-//             elements.push(cellElement);
-//         }
-
-//         row.cells = cells;
-//         rows.push(row);
-//     }
-//     tableLayout.gridStructure.rows = rows;
-//     tableLayout.elements = elements as Element[];
-
-//     return tableLayout;
-// };
 
 export const getNewElement = (menuItem: MenuItem): Omit<BaseElement, 'cellId'> | Layout | null => {
     const { elementTypeId, elementVariant, defaultProps } = menuItem;
@@ -193,7 +144,7 @@ export const createSlideFromTemplate = (templateConfig: SlideTemplateConfig): Sl
                 elementTypeId: elementConfig.elementTypeId,
                 defaultProps: elementConfig.defaultProps,
                 elementVariant: elementConfig.elementVariant,
-                label: ''
+                label: '',
             });
 
             if (newElement) {
@@ -206,8 +157,6 @@ export const createSlideFromTemplate = (templateConfig: SlideTemplateConfig): Sl
         }
 
         newSlide.layouts.push(newLayout);
-        // Add the layout to the slide
-        // usePresentationStore.getState().addLayout(presentationId, newSlideId, newLayout);
     });
 
     return newSlide;

@@ -515,7 +515,7 @@ export type DragElementType =
     | 'smart-layout-item'
     | 'slide';
 
-export interface SlideTemplateConfig {
+export interface SlideTemplateConfig extends Pick<Slide, 'contentAlignment'> {
     layouts: Array<{
         layout: LayoutType;
         elements: Array<Pick<MenuItem, 'elementTypeId' | 'defaultProps' | 'elementVariant'>>;
