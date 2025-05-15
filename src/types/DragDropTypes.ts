@@ -59,7 +59,7 @@ export type DndState = {
         id: string | null;
         elementTypeId: string | null;
         elementVariant: string | null;
-        defaultProps: any;
+        props: any;
     };
     newSlide: Partial<Slide> | null;
     lastMousePosition?: MousePosition | null; // Добавляем lastMousePosition
@@ -110,7 +110,7 @@ export type DndAction =
           type: 'START_DRAG_MENU_ITEM';
           payload: {
               id: string;
-              defaultProps: any;
+              props: any;
               elementTypeId: string;
               elementVariant: string;
               isSlideTemplate?: boolean;

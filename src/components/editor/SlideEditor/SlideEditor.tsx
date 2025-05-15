@@ -3,15 +3,14 @@
 'use client';
 
 import React, { useState, useRef, useCallback, memo, useMemo, MutableRefObject } from 'react';
-import { getPredefinedGridStructures, Layout, TipTapRefs } from '@/types';
+import { TipTapRefs } from '@/types';
 import { PresentationState, usePresentationStore } from '@/store/presentationStore';
 import styles from './SlideEditor.module.css';
 import LayoutContent from '../LayoutContent/LayoutContent';
-import { DragDropTransactionHelper } from '@/contexts/DragDropTransactionHelper';
 import DragHandler from '../DragHandler';
 import TemplateButton from '../TemplateButton/TemplateButton';
+import AIEditButton from '../AIEditButton/AIEditButton';
 import ResizableTemplateImage from '../ResizableTemplateImage';
-import { getNewEditorElement } from '@/elements/registry';
 import { useMenuStore } from '@/store/menuStore';
 import deepEqual from 'deep-equal';
 import { useDnd } from '@/contexts/DragDropContext';
@@ -19,6 +18,8 @@ import { TEXT_ELEMENT_TYPES } from '@/elements/menuRegistry';
 import { useDndStore } from '@/store/dndStore';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
 import getNewLayoutWithTextEditor from '@/utils/getNewLayoutWithTextEditor';
+import AISlideGenerator from '../AISlideGenerator/AISlideGenerator';
+import { BsMagic } from 'react-icons/bs';
 
 interface SlideEditorProps {
     slideLayoutIds: string[];
@@ -409,6 +410,13 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     // Добавляем проверку на активный индикатор для слайда
     // const isDropTarget = state.indicators.slideIndicator === slideId;
 
+    const [showAIGenerator, setShowAIGenerator] = useState(false);
+
+    const handleAddSlideWithAI = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        setShowAIGenerator(true);
+    };
+
     return (
         <div
             className={`${styles.slide} ${isDropTarget ? 'active-slide-drop-target' : ''}`}
@@ -453,6 +461,13 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                                 }}
                             />
                             <TemplateButton
+                                presentationId={presentationId}
+                                slideId={slideId}
+                                isHovered={isHovered}
+                                isSelected={isSelected}
+                                tiptapRefs={tiptapRefs}
+                            />
+                            <AIEditButton
                                 presentationId={presentationId}
                                 slideId={slideId}
                                 isHovered={isHovered}
@@ -505,6 +520,25 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                             >
                                 +
                             </button>
+                            <button
+                                className={`${styles.slideDividerButton} ${styles.aiButton}`}
+                                onClick={handleAddSlideWithAI}
+                                aria-label="Создать слайд с помощью ИИ"
+                            >
+                                <BsMagic />
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {showAIGenerator && (
+                    <div className={styles.aiGeneratorOverlay} onClick={() => setShowAIGenerator(false)}>
+                        <div onClick={e => e.stopPropagation()}>
+                            <AISlideGenerator
+                                presentationId={presentationId}
+                                slideId={slideId}
+                                onClose={() => setShowAIGenerator(false)}
+                            />
                         </div>
                     </div>
                 )}

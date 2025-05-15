@@ -1,7 +1,7 @@
 import getColumnWidths from '@/utils/getColumnWidths';
 import { Layout } from '@/types';
 import { generateId } from './id';
-import { getNewEditorElement } from '@/elements/registry';
+import { getNewEditorElement } from '@/utils/getNewEditorElement';
 
 export default function getNewLayoutWithTextEditor(
     options: { tempEditor?: boolean; tempLayout?: boolean } = {}
@@ -28,7 +28,7 @@ export default function getNewLayoutWithTextEditor(
                 },
             ],
         },
-        type: 'single-column',
+        type: 'blank',
         elements: [
             {
                 ...newTextEditorElement,

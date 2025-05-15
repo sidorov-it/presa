@@ -2,12 +2,13 @@
 import { Extension } from '@tiptap/core';
 import Suggestion, { SuggestionProps } from '@tiptap/suggestion';
 import tippy, { Instance as TippyInstance } from 'tippy.js';
-import { MenuItem, menuRegistry } from '@/elements/menuRegistry';
+import { menuRegistry } from '@/elements/menuRegistry';
 import { PluginKey } from '@tiptap/pm/state';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/themes/light-border.css';
 import 'tippy.js/themes/light.css';
 import 'tippy.js/animations/shift-away.css';
+import { MenuItem } from '@/types/templates';
 
 // Icon mappings - we need these to render SVG icons directly in HTML
 // since we can't use React components in this context
@@ -77,13 +78,13 @@ class CommandsList {
 
         this.items = menuRegistry
             .flatMap(category => {
-                if (isInTable && category.excludeFromTable) {
+                if (isInTable && category.excludeFromTable || category.id === 'slide-templates') {
                     return [];
                 }
 
                 return category.subCategories
                     ? category.subCategories.flatMap(sub => {
-                        if (isInTable && sub.excludeFromTable) {
+                        if ((isInTable && sub.excludeFromTable)) {
                             return [];
                         }
 

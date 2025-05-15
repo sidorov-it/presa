@@ -1,0 +1,153 @@
+.container {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    width: 100%;
+    max-width: 800px;
+    padding: 24px;
+    position: relative;
+    min-width: min(50vw, 800px);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.inputGroup {
+    position: relative;
+    width: 100%;
+}
+
+.input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #f8fafc;
+    transition: all 0.2s;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background-color: white;
+}
+
+.input:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.credits {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    font-size: 14px;
+}
+
+.templateSection {
+    margin-top: 8px;
+}
+
+.templateTitle {
+    font-size: 14px;
+    color: #4a5568;
+    margin-bottom: 12px;
+}
+
+.templateGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+}
+
+.templateButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.templateButton:hover:not(:disabled) {
+    border-color: #3b82f6;
+    background-color: #f0f9ff;
+}
+
+.templateButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.selectedTemplate {
+    border-color: #3b82f6;
+    background-color: #f0f9ff;
+}
+
+.templateIcon {
+    font-size: 24px;
+    margin-bottom: 8px;
+    color: #4a5568;
+}
+
+.templateLabel {
+    font-size: 12px;
+    color: #4a5568;
+    text-align: center;
+}
+
+.generateButton {
+    background-color: #3b82f6;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.generateButton:hover:not(:disabled) {
+    background-color: #2563eb;
+}
+
+.generateButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background-color: #93c5fd;
+} 

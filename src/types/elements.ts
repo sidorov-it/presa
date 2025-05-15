@@ -5,29 +5,13 @@
  */
 export enum ElementType {
     TEXT = 'text',
-    HEADING = 'heading',
-    PARAGRAPH = 'paragraph',
-    LIST = 'list',
+    QUOTE = 'quote',
     IMAGE = 'image',
-    DIVIDER = 'divider',
-    ICON = 'icon',
-    VIDEO = 'video',
     CHART = 'chart',
-    BUTTON = 'button',
-    EDITOR = 'editor',
-    SHAPE = 'shape',
     SMART_LAYOUT = 'smart-layout',
-}
 
-/**
- * Interface for shape elements
- */
-export interface ShapeElement {
-    shapeType: 'rectangle' | 'circle' | 'triangle' | string;
-    backgroundColor?: string;
-    borderRadius?: string;
-    opacity?: number;
-    transform?: string;
+    TABLE = 'table',
+    BOX = 'box',
 }
 
 /**

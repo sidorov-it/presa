@@ -18,7 +18,7 @@ const testPresentation = {
             layouts: [
                 {
                     id: 'layout-1',
-                    type: 'single-column',
+                    type: 'blank',
                     elements: [
                         {
                             id: 'element-1',

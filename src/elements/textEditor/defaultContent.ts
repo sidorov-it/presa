@@ -4,6 +4,8 @@
 // case FONT_SIZE_BIG_TEXT:
 //     className = 'body-text big-text';
 
+import { TextType } from '@/types';
+
 // case FONT_SIZE_BIG_HEADING:
 //     className = 'heading-text big-heading';
 //     break;
@@ -13,6 +15,53 @@
 // default:
 //     className = 'body-text normal-text';
 //     break;
+
+export const getTextContent = (textType: TextType, text: string | string[]) => {
+    switch (textType) {
+        case TextType.TITLE:
+            return `<span class="heading-text title-text">${text}</span>`;
+        case TextType.HEADING1:
+            return `<span class="heading-text heading-1">${text}</span>`;
+        case TextType.HEADING2:
+            return `<span class="heading-text heading-2">${text}</span>`;
+        case TextType.HEADING3:
+            return `<span class="heading-text heading-3">${text}</span>`;
+        case TextType.HEADING4:
+            return `<span class="heading-text heading-4">${text}</span>`;
+        case TextType.QUOTE:
+            return `<blockquote>${text}</blockquote>`;
+        case TextType.BULLET_LIST:
+            if (Array.isArray(text)) {
+                return `<ul>
+    ${text.map(item => `<li>${item}</li>`).join('')}
+</ul>`;
+            }
+            return `<ul>
+    <li>${text}</li>
+</ul>`;
+        case TextType.NUMERED_LIST:
+            if (Array.isArray(text)) {
+                return `<ol>
+    ${text.map(item => `<li>${item}</li>`).join('')}
+</ol>`;
+            }
+            return `<ol>
+    <li>${text}</li>
+</ol>`;
+        case TextType.TODO_LIST:
+            if (Array.isArray(text)) {
+                return `<ul data-type="taskList">
+    ${text.map(item => `<li data-type="taskItem" data-checked="false">${item}</li>`).join('')}
+</ul>`;
+            }
+            return `<ul data-type="taskList">
+    <li data-type="taskItem" data-checked="false">${text}</li>
+</ul>`;
+
+        default:
+            return `<p>${text}</p>`;
+    }
+};
 
 const editorsDefaultContent = {
     title: '<span class="heading-text title-text">Заголовок</span>',

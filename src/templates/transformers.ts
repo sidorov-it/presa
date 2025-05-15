@@ -1,6 +1,6 @@
 import { MenuItem } from '@/types/templates';
 import { SlideTemplateCore } from '@/types/templates';
-import { SlideTemplatesRegistry } from './slideTemplates';
+import { SlideTemplatesRegistry } from './SlideTemplatesRegistry';
 import { GrTemplate } from 'react-icons/gr';
 
 // Трансформеры для разных представлений
@@ -14,15 +14,17 @@ export class TemplateTransformers {
             elementVariant: template.id,
             templateConfig: {
                 contentAlignment: 'center',
-                layouts: [
-                    {
-                        layout: template.layout,
-                        elements: template.elements.map(elem => ({
-                            elementTypeId: elem.type,
-                            defaultProps: elem.props,
-                        })),
-                    },
-                ],
+                layouts: template.layouts.map(layout => ({
+                    layout: layout.layout,
+                    columnsCount: layout.columnsCount,
+                    rowsCount: layout.rowsCount,
+                    elements: layout.elements.map(elem => ({
+                        elementTypeId: elem.elementTypeId,
+                        props: elem.props,
+                        row: elem.row,
+                        column: elem.column,
+                    })),
+                })),
             },
         };
     }
@@ -33,12 +35,12 @@ export class TemplateTransformers {
             id: template.id,
             name: template.name,
             description: template.llm.description,
-            layout: template.layout,
-            slots: template.elements.map(elem => ({
-                type: elem.type,
-                position: elem.position,
-                constraints: elem.constraints,
-                hints: elem.llmHints,
+            layouts: template.layouts.map(layout => ({
+                layout: layout.layout,
+                slots: layout.elements.map(elem => ({
+                    type: elem.elementTypeId,
+                    hints: elem.llmHints,
+                })),
             })),
             purpose: template.llm.purpose,
             useCases: template.llm.useCases,

@@ -1,7 +1,6 @@
 import { usePresentationStore } from '@/store/presentationStore';
 import { BoxElement, TipTapRefs } from '@/types';
 import { Box } from '@chakra-ui/react';
-import { getElementConfig } from '../registry';
 import Tiptap from '@/components/tiptap/Tiptap';
 import { RefObject, useMemo, useState, useEffect } from 'react';
 
@@ -12,6 +11,7 @@ import { getBlockColors } from '@/utils/colors';
 import { useThemeStore } from '@/store/themeStore';
 import { BoxIconOptions } from '@/components/editor/Menus/BubbleMenus/BoxBubbleMenu/BoxIconOptions';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
+import { getElementConfig } from '@/utils/getElementConfig';
 
 export default function BoxComponent({
     elementId,

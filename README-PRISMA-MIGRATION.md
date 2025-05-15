@@ -304,6 +304,6 @@ The following helper functions are available:
 These functions are used in:
 - `src/app/api/presentations/route.ts` (POST)
 - `src/app/api/presentations/[id]/route.ts` (PUT)
-- `src/app/api/presentations/ai/route.ts` (POST)
+- `src/app/api/ai/route.ts` (POST)
 
 While this approach works for development, we still recommend using a MongoDB replica set for production environments to ensure data consistency and to leverage Prisma's full capabilities. 

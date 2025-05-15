@@ -90,6 +90,7 @@ model User {
   createdAt            DateTime          @default(now())
   updatedAt            DateTime          @updatedAt
   presentations        Presentation[]
+  llmRequests          LLMRequestHistory[]
 }
 
 model Presentation {
@@ -105,6 +106,7 @@ model Presentation {
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
   backgroundSettings BackgroundSettings?
+  llmRequests        LLMRequestHistory[]
 }
 
 type ThemeColors {
@@ -190,4 +192,38 @@ model Theme {
   design      ThemeDesign
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
+}
+
+model LLMRequestHistory {
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String?       @db.ObjectId
+  user            User?          @relation(fields: [userId], references: [id])
+  presentationId  String?       @db.ObjectId
+  presentation    Presentation? @relation(fields: [presentationId], references: [id])
+  
+  // Request details
+  requestType     String        // e.g. 'generate_slides', 'generate_image'
+  prompt          String        // Original prompt
+  timestamp       DateTime      @default(now())
+  
+  // Response metrics
+  inputTokens     Int          // Number of tokens in the prompt
+  outputTokens    Int          // Number of tokens in the response
+  totalTokens     Int          // Total tokens used
+  duration        Int          // Request duration in ms
+  cached          Boolean      @default(false)
+  
+  // Cost tracking
+  cost            Float        // Cost in USD
+  
+  // Status
+  success         Boolean      @default(true)
+  errorMessage    String?      // Error message if failed
+  
+  // Additional data
+  metadata        Json?        // Any additional request/response data
+
+  functionCall      String?
+  functionArguments String?
+  responseContent   String?
 }

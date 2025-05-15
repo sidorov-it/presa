@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect } from 'react';
 import { useMenuStore } from '@/store/menuStore';
-import { SideMenus } from '../menuRegistry';
+import { SideMenus } from '../menusComponents';
 
 import styles from './SideMenuRenderer.module.css';
 

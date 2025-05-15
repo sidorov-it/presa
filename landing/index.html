@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Slydle — AI-презентации за минуты</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="favicon.ico" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <h1>Презентация за пару минут — ИИ сделает черновик, вы лишь поправите детали</h1>
+        <p class="subtitle">Slydle генерирует структуру, тексты и оформление слайдов. Делайте питчи и коммерческие предложения в 10 × быстрее.</p>
+        <div style="text-align: center;">
+          <a href="#early-access" class="cta">Получить ранний доступ</a>
+          <p class="micro-note">Бесплатно для первых 200 пользователей · Бета-версия</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+      <div class="container">
+        <h2 class="section-title">Как сейчас / Как с Slydle</h2>
+        <div class="features-grid">
+          <div class="feature-card pain">
+            <h3>Как сейчас</h3>
+            <ul class="feature-list">
+              <li>❌ Часами подбираете структуру и дизайн</li>
+              <li>❌ Перекликаете текст и слайды вручную</li>
+              <li>❌ Теряете клиентов, пока собираете «красивый» файл</li>
+            </ul>
+          </div>
+          <div class="feature-card solution">
+            <h3>Как с Slydle</h3>
+            <ul class="feature-list">
+              <li>✅ Опишите задачу → ИИ создаст готовый черновик</li>
+              <li>✅ Редактируйте блоки drag-and-drop, как в конструкторе</li>
+              <li>✅ Сразу делитесь ссылкой или сохраняйте в PDF (экспорт в одну кнопку)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works section-card">
+      <div class="container">
+        <h2 class="section-title">Как это работает</h2>
+        <div class="steps-grid">
+          <div class="step">
+            <div class="step-number">1</div>
+            <h3>Введите тему</h3>
+            <p>Например: «Продаём CRM для малого бизнеса»</p>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <h3>AI-генерация</h3>
+            <p>Искусственный интеллект за 30 сек. создаёт 7–10 слайдов (заголовки, тезисы, картинки-заглушки)</p>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <h3>Правьте и скачивайте</h3>
+            <p>Вы правите текст, меняете порядок блоков и скачиваете готовый PDF (или делитесь веб-ссылкой)</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Use Cases -->
+    <section class="use-cases">
+      <div class="container">
+        <h2 class="section-title">Почему быстрее PowerPoint и Canva</h2>
+        <div class="use-cases-grid">
+          <div class="use-case-card">
+            <h3>AI-черновик</h3>
+            <p>Начинайте с готового черновика вместо белого листа</p>
+          </div>
+          <div class="use-case-card">
+            <h3>Блоки-шаблоны</h3>
+            <p>Текст + картинка, двойная колонка, шаги и другие готовые блоки</p>
+          </div>
+          <div class="use-case-card">
+            <h3>Веб-ссылка</h3>
+            <p>Делитесь презентацией по ссылке — не нужно «скидывать файл»</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Early Access Form -->
+    <section id="early-access" class="early-access section-card">
+      <div class="container">
+        <h2 class="section-title">Хотите попробовать первыми?</h2>
+        <p class="section-subtitle">Заполните форму — мы пришлём приглашение и попросим короткий фидбек.</p>
+        <form class="early-access-form" name="early-access" method="POST">
+          <div class="form-group">
+            <label for="name">Имя</label>
+            <input type="text" id="name" name="name" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label for="company">Компания / агентство</label>
+            <input type="text" id="company" name="company">
+          </div>
+          <div class="form-group">
+            <label for="role">Должность</label>
+            <select id="role" name="role" required>
+              <option value="">Выберите...</option>
+              <option value="marketer">Маркетолог</option>
+              <option value="pm">Менеджер проектов</option>
+              <option value="founder">Фаундер</option>
+              <option value="other">Другое</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="count">Сколько презентаций в месяц?</label>
+            <input type="number" id="count" name="count" min="1" max="50">
+          </div>
+          <div class="form-group checkbox">
+            <input type="checkbox" id="call" name="call">
+            <label for="call">Готов дать отзыв в звонке (15 мин)</label>
+          </div>
+          <button type="submit" class="cta">Получить доступ</button>
+          <p class="micro-note">Данные нужны только, чтобы пригласить вас и улучшить сервис. Спамить не будем.</p>
+        </form>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq">
+      <div class="container">
+        <h2 class="section-title">FAQ</h2>
+        <div class="faq-list">
+          <details>
+            <summary>Сколько это будет стоить?</summary>
+            <div>
+              Бета — бесплатно. После релиза останется бесплатный тариф с лимитом генераций.
+            </div>
+          </details>
+          <details>
+            <summary>Можно ли экспортировать в PPTX?</summary>
+            <div>
+              Пока только PDF и веб-ссылка. PPTX — в планах, следите за обновлениями.
+            </div>
+          </details>
+          <details>
+            <summary>Нужен ли дизайн-скилл?</summary>
+            <div>
+              Нет. Слайды собираются из готовых блоков и шаблонов. Вы правите тексты и порядок.
+            </div>
+          </details>
+          <details>
+            <summary>Что с приватностью данных?</summary>
+            <div>
+              Презентации видите только вы и те, кому даёте ссылку. Контент хранится на EU-серверах.
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <p>© 2025 Slydle · <a href="https://t.me/SlydleApp" target="_blank" rel="noopener">Telegram @SlydleApp</a> · <a href="#">Политика конфиденциальности</a></p>
+      </div>
+    </footer>
+
+    <script>
+      // Intersection Observer для анимации секций при скролле
+      const sections = document.querySelectorAll('section');
+      
+      const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.15
+      };
+
+      const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            sectionObserver.unobserve(entry.target); // Отключаем наблюдение после первого появления
+          }
+        });
+      }, observerOptions);
+
+      sections.forEach(section => {
+        sectionObserver.observe(section);
+      });
+
+      // Обработка отправки формы
+      const form = document.querySelector('form[name="early-access"]');
+      
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const submitButton = form.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        
+        // Состояние загрузки
+        submitButton.disabled = true;
+        submitButton.textContent = 'Отправляем...';
+        
+        try {
+          // Здесь будет реальный запрос к API
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          // Успешная отправка
+          submitButton.textContent = 'Готово! ✨';
+          form.reset();
+          
+          setTimeout(() => {
+            submitButton.textContent = originalText;
+            submitButton.disabled = false;
+          }, 2000);
+          
+        } catch (error) {
+          // Обработка ошибки
+          submitButton.textContent = 'Ошибка! Попробуйте еще раз';
+          
+          setTimeout(() => {
+            submitButton.textContent = originalText;
+            submitButton.disabled = false;
+          }, 2000);
+        }
+      });
+    </script>
+  </body>
+</html>

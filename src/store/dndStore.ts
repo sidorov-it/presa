@@ -2,13 +2,16 @@
 import { create } from 'zustand';
 import { BaseElement, DragElementType, GridCell, GridRow, GridStructure, Layout, Slide } from '@/types';
 import { DndState, Position } from '@/types/DragDropTypes';
-import { createSlideFromTemplate, getNewEditorElement, getNewElement } from '@/elements/registry';
 import { usePresentationStore } from './presentationStore';
-import { MenuItem, menuRegistry } from '@/elements/menuRegistry';
+import { menuRegistry } from '@/elements/menuRegistry';
 import { DragDropTransactionHelper } from '@/contexts/DragDropTransactionHelper';
 import { calculateDropPosition } from '@/utils/dragDropCalculations';
 import { generateId } from '@/utils/id';
 import getColumnWidths from '@/utils/getColumnWidths';
+import { MenuItem } from '@/types/templates';
+import { getNewElement } from '@/utils/getNewElement';
+import { getNewEditorElement } from '@/utils/getNewEditorElement';
+import { createSlideFromTemplate } from '@/utils/createSlideFromTemplate';
 
 const cloneDeep = (obj: any) => JSON.parse(JSON.stringify(obj));
 
@@ -52,7 +55,7 @@ const initialState: DndState = {
     },
     newElement: {
         id: null,
-        defaultProps: null,
+        props: null,
         elementTypeId: null,
         elementVariant: null,
     },
@@ -107,7 +110,7 @@ const getUpdatedIndicators = (indicators: Partial<DndState['indicators']>) => {
 const getEmptyLayout = () => {
     const layout: Layout = {
         id: generateId(),
-        type: 'single-column',
+        type: 'blank',
         elements: [],
         style: {},
         gridStructure: {
@@ -434,11 +437,13 @@ export const useDndStore = create<{
         });
     },
 
-    startNewElementDrag: (element: MenuItem) => {
-        if (element.isSlideTemplate && element.templateConfig) {
-            const newSlide = createSlideFromTemplate(element.templateConfig);
+    startNewElementDrag: (menuItem: MenuItem) => {
+        const isTable = menuItem.elementTypeId.startsWith('table');
+
+        if (menuItem.isSlideTemplate && menuItem.templateConfig) {
+            const newSlide = createSlideFromTemplate(menuItem.templateConfig);
             if (!newSlide) {
-                console.error(`Slide template with type ${element.elementTypeId} not found in registry`);
+                console.error(`Slide template with type ${menuItem.elementTypeId} not found in registry`);
                 return;
             }
 
@@ -459,16 +464,18 @@ export const useDndStore = create<{
                 return newState;
             });
             console.log('newSlide', newSlide);
+        } else if (isTable) {
+            // TODO: Implement table drag
         } else {
-            const newElement = getNewElement(element) as {
+            const newElement = getNewElement(menuItem) as {
                 id: string | null;
                 elementTypeId: string | null;
                 elementVariant: string | null;
-                defaultProps: any;
+                props: any;
             };
 
             if (!newElement) {
-                console.error(`Element with type ${element.elementTypeId} not found in registry`);
+                console.error(`Element with type ${menuItem.elementTypeId} not found in registry`);
                 return;
             }
 
@@ -1554,7 +1561,7 @@ export const useDndStore = create<{
                                         cellId: newCellId,
                                     },
                                 ],
-                                type: 'single-column',
+                                type: 'blank',
                                 style: {},
                             };
 
@@ -1603,7 +1610,7 @@ export const useDndStore = create<{
                                         cellId: newCellId,
                                     },
                                 ],
-                                type: 'single-column',
+                                type: 'blank',
                                 style: {},
                             };
 
@@ -1660,7 +1667,7 @@ export const useDndStore = create<{
                                 cellId: newCellId,
                             },
                         ],
-                        type: 'single-column',
+                        type: 'blank',
                         style: {},
                     } as Layout;
                 });

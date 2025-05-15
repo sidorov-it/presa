@@ -3,23 +3,16 @@ import SmartLayoutImageShapeSelector from '@/components/settings/SmartLayoutImag
 import SmartLayoutImageSizeSelector from '@/components/settings/SmartLayoutImageSizeSelector/SmartLayoutImageSizeSelector';
 import SmartLayoutTemplateSelector from '@/components/settings/SmartLayoutTemplateSelector/SmartLayoutTemplateSelector';
 import { usePresentationStore } from '@/store/presentationStore';
-import {
-    getPredefinedGridStructures,
-    GridStructure,
-    ImageShape,
-    Layout,
-    SmartLayoutElement,
-    SmartLayoutType,
-    TipTapRefs,
-} from '@/types';
+import { GridStructure, ImageShape, Layout, LayoutType, SmartLayoutElement, SmartLayoutType, TipTapRefs } from '@/types';
 import { MutableRefObject, useCallback } from 'react';
 import { MenuItem } from '@/components/editor/SlideMenu/BaseMenu';
 import AlignmentGroup from '@/components/settings/AlignmentGroup/AlignmentGroup';
 import { DeleteIcon } from '@/components/icons';
 import { generateId } from '@/utils/id';
-import { getNewEditorElement } from '@/elements/registry';
 import { useMenuStore } from '@/store/menuStore';
 import { useHistoryStore } from '@/store/historyStore';
+import { getPredefinedGridStructures } from '@/utils/getPredefinedGridStructures';
+import { getNewEditorElement } from '@/utils/getNewEditorElement';
 
 export default function ImageWithTextSettings({
     element,
@@ -82,7 +75,7 @@ export default function ImageWithTextSettings({
             //создаем новый лайаут с редактором и удаляем старый
             const newLayoutId = generateId(8);
 
-            const defaultGridType = 'single-column';
+            const defaultGridType = 'blank' as LayoutType;
 
             const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures(defaultGridType);
 

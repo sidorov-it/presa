@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback, MutableRefObject } from 'react';
 import { useEditorStore } from '@/store/editorStore';
-import { getElementMenuComponent } from '@/elements/registry';
 import LayoutMenu from './LayoutMenu';
 import {
     DuplicateIcon,
@@ -28,6 +27,7 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { TipTapRefs } from '@/types';
 import TableMenu from './TableMenu/TableMenu';
 import { BaseMenu, MenuItem } from './BaseMenu';
+import { getElementMenuComponent } from '@/utils/getElementMenuComponent';
 
 const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tiptapRefs }) => {
     const {

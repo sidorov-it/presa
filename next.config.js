@@ -51,6 +51,8 @@ const nextConfig = {
                 level: 'warn',
             };
 
+            config.resolve.fallback = { fs: false };
+
             config.optimization = {
                 ...config.optimization,
                 moduleIds: 'deterministic',

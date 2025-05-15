@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
 import { generateId } from '@/utils/id';
-import { getNewEditorElement } from '@/elements/registry';
+import { getNewEditorElement } from '@/utils/getNewEditorElement';
 import { parsePresentation, stringifyJsonField } from '@/utils/json';
 
 // Get a specific presentation
@@ -163,7 +163,7 @@ export async function POST(req: NextRequest) {
             message: 'Presentation created successfully',
             presentation: {
                 ...presentation,
-                slides: JSON.parse(presentation.slides as string),
+                slides: presentation.slides,
             },
         });
     } catch (error) {

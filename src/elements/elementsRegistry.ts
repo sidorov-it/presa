@@ -6,12 +6,10 @@ import ListBubbleMenu from '@/components/editor/Menus/BubbleMenus/ListBubbleMenu
 import ButtonMenu from '@/components/editor/Menus/ButtonMenu';
 import ChartSettings from './chart/ChartSettings/ChartSettings';
 import SmartLayoutSettings from './smartLayout/components/SmartLayoutSettings/SmartLayoutSettings';
-import { ComponentStructureType } from '@/types';
 import ImageBubbleMenu from '@/components/editor/Menus/BubbleMenus/ImageBubbleMenu/ImageBubbleMenu';
 
 export interface ElementTypeConfig {
     elementTypeId: string;
-    componentStructure: ComponentStructureType;
     hasTextEditor?: boolean;
     MenuComponent?: React.ComponentType<any>;
     customMenu?: boolean;
@@ -23,19 +21,16 @@ export const elementTypes: Record<string, ElementTypeConfig> = {
     // Text elements
     text: {
         elementTypeId: 'text',
-        componentStructure: ComponentStructureType.TEXT_EDITOR,
         hasTextEditor: true,
         MenuComponent: HeadingBubbleMenu,
     },
     heading: {
         elementTypeId: 'heading',
-        componentStructure: ComponentStructureType.TEXT_EDITOR,
         hasTextEditor: true,
         MenuComponent: HeadingBubbleMenu,
     },
     quote: {
         elementTypeId: 'quote',
-        componentStructure: ComponentStructureType.TEXT_EDITOR,
         hasTextEditor: true,
         MenuComponent: QuoteBubbleMenu,
     },
@@ -43,7 +38,6 @@ export const elementTypes: Record<string, ElementTypeConfig> = {
     // Tables
     table: {
         elementTypeId: 'table',
-        componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
         hasTextEditor: false,
         MenuComponent: TableBubbleMenu,
     },
@@ -51,19 +45,16 @@ export const elementTypes: Record<string, ElementTypeConfig> = {
     // Lists
     'bullet-list': {
         elementTypeId: 'bullet-list',
-        componentStructure: ComponentStructureType.TEXT_EDITOR,
         hasTextEditor: true,
         MenuComponent: ListBubbleMenu,
     },
     'numbered-list': {
         elementTypeId: 'numbered-list',
-        componentStructure: ComponentStructureType.TEXT_EDITOR,
         hasTextEditor: true,
         MenuComponent: ListBubbleMenu,
     },
     'todo-list': {
         elementTypeId: 'todo-list',
-        componentStructure: ComponentStructureType.TEXT_EDITOR,
         hasTextEditor: true,
         MenuComponent: ListBubbleMenu,
     },
@@ -71,14 +62,12 @@ export const elementTypes: Record<string, ElementTypeConfig> = {
     // Boxes
     box: {
         elementTypeId: 'box',
-        componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
         MenuComponent: BoxBubbleMenu,
     },
 
     // Interactive elements
     button: {
         elementTypeId: 'button',
-        componentStructure: ComponentStructureType.TEXT_EDITOR,
         hasTextEditor: true,
         customMenu: true,
         MenuComponent: ButtonMenu,
@@ -86,27 +75,23 @@ export const elementTypes: Record<string, ElementTypeConfig> = {
     },
     toggle: {
         elementTypeId: 'toggle',
-        componentStructure: ComponentStructureType.WRAPPED_TEXT_EDITOR,
         hasTextEditor: true,
     },
 
     // Media elements
     image: {
         elementTypeId: 'image',
-        componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
         hasTextEditor: false,
         MenuComponent: ImageBubbleMenu,
     },
     video: {
         elementTypeId: 'video',
-        componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
         hasTextEditor: false,
     },
 
     // Charts
     chart: {
         elementTypeId: 'chart',
-        componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
         hasTextEditor: false,
         MenuComponent: ChartSettings,
         customMenuType: 'chart',
@@ -115,7 +100,6 @@ export const elementTypes: Record<string, ElementTypeConfig> = {
     // Smart Layout
     'smart-layout': {
         elementTypeId: 'smart-layout',
-        componentStructure: ComponentStructureType.CUSTOM_COMPONENT,
         hasTextEditor: false,
         MenuComponent: SmartLayoutSettings,
     },

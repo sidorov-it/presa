@@ -5,7 +5,7 @@ import deepDiff from 'deep-diff';
 import { BaseElement, EditorElement, TipTapRefs } from '@/types';
 import { usePresentationStore } from './presentationStore';
 import getValueByPath from '@/utils/getValueByPath';
-import { getElementConfig } from '@/elements/registry';
+import { getElementConfig } from '@/utils/getElementConfig';
 import { TEXT_ELEMENT_TYPES } from '@/elements/menuRegistry';
 
 // Define history action types
@@ -448,34 +448,6 @@ export const useHistoryStore = create<HistoryState>()(
                     const textElements = findTextElements(nextAction.after);
 
                     const contentMap = new Map(textElements.map(el => [el.id, el.content]));
-
-                    // First collect all text editor elements and their paths that need updates
-                    // const textEditorUpdates: {
-                    //     elementId: string;
-                    //     content: any;
-                    //     pathToElement: string[];
-                    // }[] = [];
-
-                    // nextAction.changes.forEach(change => {
-                    //     if (change.kind === 'E') {
-                    //         const lastKey = change.path?.[change.path.length - 1];
-
-                    //         if (lastKey === 'content') {
-                    //             const pathToElement = change.path!.slice(0, -1);
-                    //             const changedObject = getValueByPath(currentState, pathToElement) as BaseElement;
-
-                    //             const elementConfig = getElementConfig(changedObject.elementTypeId);
-
-                    //             if (elementConfig?.hasTextEditor) {
-                    //                 textEditorUpdates.push({
-                    //                     elementId: changedObject.id,
-                    //                     content: change.rhs,
-                    //                     pathToElement,
-                    //                 });
-                    //             }
-                    //         }
-                    //     }
-                    // });
 
                     // Then update the state
                     if (nextAction.changes && nextAction.changes.length > 0) {

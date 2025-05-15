@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/route';
 import { generateId } from '@/utils/id';
-import { getNewEditorElement } from '@/elements/registry';
+import { getNewEditorElement } from '@/utils/getNewEditorElement';
 import { parsePresentations, stringifyJsonField } from '@/utils/json';
 
 // Get list of presentations for a user (lightweight version for dashboard)

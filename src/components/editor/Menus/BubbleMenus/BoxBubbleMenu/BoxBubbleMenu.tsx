@@ -6,14 +6,17 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { BoxElement } from '@/types';
 import SettingsSelector from '@/components/ui/SettingsSelector/SettingsSelector';
 
-import styles from './BoxBubbleMenu.module.css';
-
-import { BaseMenu } from '../../../SlideMenu/BaseMenu';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
 import { useMenuStore } from '@/store/menuStore';
-import { BoxCategories } from '@/elements/menuRegistry';
+// import { BoxCategories } from '@/elements/menuRegistry';
 import DeleteIcon from '@/components/icons/DeleteIcon';
+
+import { BaseMenu } from '../../../SlideMenu/BaseMenu';
 import { BoxIconOptions } from './BoxIconOptions';
+
+import styles from './BoxBubbleMenu.module.css';
+import { ElementRegistry } from '@/elements/commonRegisrty';
+
 interface BubbleMenuProps {
     editor: Editor;
     presentationId: string;
@@ -28,7 +31,7 @@ const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ presentationId, slideId, lay
     ) as BoxElement;
 
     const elementConfig = useMemo(
-        () => BoxCategories.elements.find(el => element.iconType === el.defaultProps.iconType),
+        () => Object.values(ElementRegistry).find(el => element.iconType === el.props.iconType),
         [element.iconType]
     );
 
@@ -47,7 +50,7 @@ const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ presentationId, slideId, lay
                 },
             });
         } else {
-            const defaultBackgroundColor = elementConfig?.defaultProps?.backgroundColor;
+            const defaultBackgroundColor = elementConfig?.props?.backgroundColor;
 
             updateElement({
                 presentationId,

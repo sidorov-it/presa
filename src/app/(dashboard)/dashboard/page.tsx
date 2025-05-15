@@ -196,7 +196,7 @@ export default function DashboardPage() {
             setIsGenerating(true);
             setAiError('');
 
-            const response = await fetch('/api/presentations/ai', {
+            const response = await fetch('/api/ai', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

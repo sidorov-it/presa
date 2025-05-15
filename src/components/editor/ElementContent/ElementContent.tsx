@@ -3,21 +3,27 @@ import Tiptap from '@/components/tiptap/Tiptap';
 import styles from './ElementContent.module.css';
 import DragHandler from '../DragHandler';
 import { memo, RefObject, useCallback, useMemo, useState } from 'react';
-import { GridStructure, getPredefinedGridStructures, Layout, TipTapRefs, EditorElement, ElementConfig } from '@/types';
+import { GridStructure, Layout, TipTapRefs, EditorElement, ElementConfig } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import { generateId } from '@/utils/id';
 import { useEditorStore } from '@/store/editorStore';
 import { useHistoryStore } from '@/store/historyStore';
-import { getElementConfig, getNewEditorElement, getNewElement } from '@/elements/registry';
+
 import { Image } from '@/elements/image';
 import { useMenuStore } from '@/store/menuStore';
 import { useShallow } from 'zustand/react/shallow';
 import Chart from '@/elements/chart/Chart';
 import SmartLayout from '@/elements/smartLayout/SmartLayout';
 import Box from '@/elements/box/Box';
-import { MenuItem } from '@/elements/menuRegistry';
 import getColumnWidths from '@/utils/getColumnWidths';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
+import { MenuItem } from '@/types/templates';
+import { getPredefinedGridStructures } from '@/utils/getPredefinedGridStructures';
+import { getElementConfig } from '@/utils/getElementConfig';
+import { getNewEditorElement } from '@/utils/getNewEditorElement';
+import { getNewTableElement } from '@/utils/getNewTableElement';
+import { getNewElement } from '@/utils/getNewElement';
+import { ElementType } from '@/types/elements';
 
 export const ElementContent = ({
     elementId,
@@ -91,9 +97,9 @@ export const ElementContent = ({
                 // Create a new layout with a grid that has 1 row and the same number of columns as the current layout
                 const newLayoutId = generateId(8);
 
-                const defaultGridType = 'single-column';
+                const defaultGridType = 'blank';
 
-                const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures('single-column');
+                const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures(defaultGridType);
 
                 const newElement = getNewEditorElement(
                     defaultLayoutGridStructure.rows[0].cells[0].id,
@@ -215,7 +221,7 @@ export const ElementContent = ({
     const handleAddElement = useCallback(
         (elementId: string) => (menuItem: MenuItem) => {
             if (menuItem.elementTypeId.startsWith('table')) {
-                const tableLayout = getNewElement(menuItem);
+                const tableLayout = getNewTableElement(menuItem);
                 if (tableLayout) {
                     usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, tableLayout);
                 }
@@ -358,9 +364,9 @@ export const ElementContent = ({
                     layout.elements.forEach((el, index) => {
                         const newLayoutId = generateId(8);
 
-                        const defaultGridType = 'single-column';
+                        const defaultGridType = 'blank';
 
-                        const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures('single-column');
+                        const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures(defaultGridType);
 
                         const cellId = defaultLayoutGridStructure.rows[0].cells[0].id;
 
@@ -508,7 +514,7 @@ export const ElementContent = ({
                         isFocused={isFocused}
                     />
                 );
-            } else if (elementTypeId === 'box' || elementTypeId.endsWith('-box')) {
+            } else if (elementTypeId === ElementType.BOX) {
                 return (
                     <Box
                         elementId={elementId}

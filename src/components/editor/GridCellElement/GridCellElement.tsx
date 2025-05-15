@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { RefObject, useCallback, useRef, useState, memo, useEffect } from 'react';
-import { GridCell, TipTapRefs, ElementConfig, ComponentStructureType } from '@/types';
+import { GridCell, TipTapRefs, ElementConfig } from '@/types';
 import { useHandleDragStart } from '@/contexts/DragDropContext';
 import styles from './GridCellElement.module.css';
 import { usePresentationStore } from '@/store/presentationStore';
@@ -17,8 +17,8 @@ import adjustWidths from '@/utils/adjustWidths';
 import { OpenCustomMenuEvent } from '@/customEvents/OpenCustomMenuEvent';
 import { HiPlus } from 'react-icons/hi2';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
-import { getNewEditorElement } from '@/elements/registry';
-import { elementTypes } from '@/elements/elementTypes';
+import { getNewEditorElement } from '@/utils/getNewEditorElement';
+import { ElementType } from '@/types/elements';
 
 export const useIsSelectedRow = (tableId: string, rowIndex: number) =>
     useMenuStore(state => state.tableRowIndex === rowIndex && state.tableId === tableId);
@@ -134,12 +134,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const animationFrameIdRef = useRef<number | null>(null);
 
     const handleMenuClick = useCallback(
-        (menuData: {
-            elementId: string;
-            elementType: MenuElementType;
-            componentStructure?: ComponentStructureType;
-            activeEditor?: Editor;
-        }) => {
+        (menuData: { elementId: string; elementType: MenuElementType; activeEditor?: Editor }) => {
             useEditorStore.getState().setActiveEditor(menuData.activeEditor ?? null);
             useMenuStore.getState().openMenu({
                 slideId,
@@ -147,7 +142,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 elementType: menuData.elementType,
                 layoutId,
                 isTextEditor: !!menuData.activeEditor,
-                componentStructure: menuData.componentStructure,
             });
         },
         [slideId, layoutId]
@@ -290,11 +284,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                         elementType: elementConfig.customMenuType as MenuElementType,
                     })
                 );
-            } else if (
-                elementConfig.hasTextEditor &&
-                editor &&
-                elementConfig.componentStructure === ComponentStructureType.TEXT_EDITOR
-            ) {
+            } else if (elementConfig.hasTextEditor && editor) {
                 if (elementConfig.customMenu) {
                     editor.chain().focus().run();
                 } else if (editor.getText().length > 0) {
@@ -312,7 +302,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 handleMenuClick({
                     elementId,
                     elementType: 'element',
-                    componentStructure: elementConfig.componentStructure,
                 });
             }
         },
@@ -477,7 +466,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     .getState()
                     .getElement(presentationId, slideId, layoutId, elementsIds[0].id);
 
-                if (element?.elementTypeId === elementTypes['text'].elementTypeId) {
+                if (element?.elementTypeId === ElementType.TEXT) {
                     const editor = tiptapRefs.current?.editors[elementsIds[0]]?.editor;
                     if (editor) {
                         editor.chain().focus().run();
@@ -528,15 +517,15 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             console.log('prevElement', prevElement);
             console.log('nextElement', nextElement);
             // Check if either of the adjacent elements is a text editor
-            const prevIsEditor = prevElement?.element?.elementTypeId === elementTypes['text'].elementTypeId;
-            const nextIsEditor = nextElement?.element?.elementTypeId === elementTypes['text'].elementTypeId;
+            const prevIsEditor = prevElement?.element?.elementTypeId === ElementType.TEXT;
+            const nextIsEditor = nextElement?.element?.elementTypeId === ElementType.TEXT;
 
             if (prevIsEditor && prevElement) {
                 const element = usePresentationStore
                     .getState()
                     .getElement(presentationId, slideId, layoutId, prevElement.id);
 
-                if (element?.elementTypeId === elementTypes['text'].elementTypeId) {
+                if (element?.elementTypeId === ElementType.TEXT) {
                     const editor = tiptapRefs.current?.editors[prevElement.id]?.editor;
                     if (editor) {
                         editor.chain().focus('end').run();
@@ -550,7 +539,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     .getState()
                     .getElement(presentationId, slideId, layoutId, nextElement.id);
 
-                if (element?.elementTypeId === elementTypes['text'].elementTypeId) {
+                if (element?.elementTypeId === ElementType.TEXT) {
                     const editor = tiptapRefs.current?.editors[nextElement.id]?.editor;
                     if (editor) {
                         editor.chain().focus('end').run();

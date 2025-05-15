@@ -17,6 +17,8 @@ import {
 import { Portal } from '@chakra-ui/react';
 import { FaPlus, FaTrash } from 'react-icons/fa';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import { generateId } from '@/utils/id';
 
 interface SlideTopic {
     id: string;
@@ -31,27 +33,28 @@ const EXAMPLES = [
 ];
 
 const TONE_OPTIONS = [
-    { value: 'neutral', label: 'Нейтральный' },
-    { value: 'friendly', label: 'Дружелюбный' },
-    { value: 'formal', label: 'Официальный' },
+    { value: 'professional', label: 'Профессиональный' },
+    { value: 'casual', label: 'Повседневный' },
+    { value: 'academic', label: 'Академический' },
     { value: 'creative', label: 'Креативный' },
 ];
 
-const SLIDES_OPTIONS = [3, 5, 7, 10, 15];
-
-const generateId = () => Math.random().toString(36).substring(2, 10);
+const SLIDES_OPTIONS = [3, 4, 5, 6, 7, 8, 9, 10];
 
 const AiPresentationPage = () => {
-    // Step 1: Form state
-    const [description, setDescription] = useState('');
-    const [numSlides, setNumSlides] = useState(5);
-    const [tone, setTone] = useState('neutral');
+    const router = useRouter();
+    const [step, setStep] = useState<'form' | 'topics'>('form');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [generationProgress, setGenerationProgress] = useState(0);
 
-    // Step 2: Topics state
-    const [step, setStep] = useState<'form' | 'topics'>('form');
-    const [presentationTitle, setPresentationTitle] = useState('Новая презентация');
+    // Form state
+    const [description, setDescription] = useState('');
+    const [numSlides, setNumSlides] = useState(5);
+    const [tone, setTone] = useState('professional');
+
+    // Topics state
+    const [presentationTitle, setPresentationTitle] = useState('');
     const [presentationDescription, setPresentationDescription] = useState('');
     const [topics, setTopics] = useState<SlideTopic[]>([]);
 
@@ -66,7 +69,7 @@ const AiPresentationPage = () => {
         setError('');
         setIsLoading(true);
         try {
-            const res = await fetch('/api/presentations/ai/topics', {
+            const res = await fetch('/api/ai/topics', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ description, numSlides, tone }),
@@ -110,10 +113,57 @@ const AiPresentationPage = () => {
         items: SLIDES_OPTIONS.map(num => ({ value: String(num), label: String(num) })),
     });
 
-    console.log(slideOptions);
     const toneOptions = createListCollection({
         items: TONE_OPTIONS.map(opt => ({ value: opt.value, label: opt.label })),
     });
+
+    const handleGeneratePresentation = async () => {
+        if (!presentationTitle.trim()) {
+            toast.error('Пожалуйста, введите название презентации');
+            return;
+        }
+
+        if (topics.length === 0) {
+            toast.error('Добавьте хотя бы один слайд');
+            return;
+        }
+
+        setIsLoading(true);
+        setGenerationProgress(0);
+        try {
+            // Generate the entire presentation in one request
+            const response = await fetch('/api/ai/presentation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title: presentationTitle,
+                    prompt: presentationDescription,
+                    topics: topics.map(topic => ({
+                        title: topic.title,
+                        instructions: topic.instructions,
+                    })),
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to create presentation');
+            }
+
+            const data = await response.json();
+
+            // Navigate to the editor
+            router.push(`/docs/${data.presentation.id}`);
+            toast.success('Презентация успешно создана!');
+        } catch (error) {
+            console.error('Error creating presentation:', error);
+            toast.error('Ошибка при создании презентации. Попробуйте еще раз.');
+        } finally {
+            setIsLoading(false);
+            setGenerationProgress(0);
+        }
+    };
 
     return (
         <Box
@@ -176,7 +226,7 @@ const AiPresentationPage = () => {
                                 <Select.Root
                                     collection={slideOptions}
                                     value={[String(numSlides)]}
-                                    onValueChange={val => setNumSlides(Number(val[0]))}
+                                    onValueChange={value => setNumSlides(Number(value.value))}
                                     size="sm"
                                     width="100%"
                                 >
@@ -208,7 +258,7 @@ const AiPresentationPage = () => {
                                 <Select.Root
                                     collection={toneOptions}
                                     value={[tone]}
-                                    onValueChange={val => setTone(val[0])}
+                                    onValueChange={value => setTone(value.value[0])}
                                     size="sm"
                                     width="100%"
                                 >
@@ -327,14 +377,23 @@ const AiPresentationPage = () => {
                             Добавить слайд
                         </Button>
                     </Stack>
+                    {isLoading && (
+                        <Box marginY="16px">
+                            <Text marginBottom="8px">Генерация слайдов: {Math.round(generationProgress)}%</Text>
+                            {/* <Progress value={generationProgress} /> */}
+                        </Box>
+                    )}
                     <Flex justifyContent="flex-end" marginTop="24px">
                         <Button
                             colorScheme="blue"
-                            onClick={() => toast('Сохранение реализуем позже')}
-                            aria-label="Сохранить презентацию"
+                            onClick={handleGeneratePresentation}
+                            disabled={isLoading}
+                            aria-label="Создать презентацию"
                             tabIndex={0}
                         >
-                            Сохранить презентацию
+                            {isLoading
+                                ? `Создание презентации (${Math.round(generationProgress)}%)`
+                                : 'Создать презентацию'}
                         </Button>
                     </Flex>
                 </Box>

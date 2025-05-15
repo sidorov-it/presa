@@ -2,19 +2,21 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useCallback, useState } from 'react';
-import { getNewElement } from '@/elements/registry';
 import styles from './ElementsPanel.module.css';
 import { usePresentationStore } from '@/store/presentationStore';
 import { BaseElement } from '@/types';
-import { menuRegistry, MenuItem, SLIDE_TEMPLATE_TYPES } from '@/elements/menuRegistry';
+import { menuRegistry, SLIDE_TEMPLATE_TYPES } from '@/elements/menuRegistry';
 import { useDndStore } from '@/store/dndStore';
+import { MenuItem } from '@/types/templates';
+import { getNewTableElement } from '@/utils/getNewTableElement';
+import { getNewElement } from '@/utils/getNewElement';
 
 interface ElementsPanelProps {
     presentationId: string;
     slideId: string;
 }
 
-type CategoryType = 'basic' | 'media' | 'charts' | 'smart-layouts' | 'slide-templates';
+type CategoryType = 'basic' | 'media' | 'charts' | 'smart-layouts';
 
 interface PopupMenuProps {
     isOpen: boolean;
@@ -52,28 +54,35 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
         const isSlideTemplate = categoryData?.isSlideTemplate ||
             SLIDE_TEMPLATE_TYPES.includes(element.elementTypeId);
 
+        const isTable = element.elementTypeId.startsWith('table');
+
         if (isSlideTemplate) {
+            // TODO: Implement slide template click
             // Handle slide template click
-            const currentSlideIndex = usePresentationStore.getState().getSlideIndex(presentationId, slideId);
+            // const currentSlideIndex = usePresentationStore.getState().getSlideIndex(presentationId, slideId);
             // Add template slide after current slide
-            const newSlideId = usePresentationStore.getState().addEmptySlide(presentationId, currentSlideIndex + 1);
+            // const newSlideId = usePresentationStore.getState().addEmptySlide(presentationId, currentSlideIndex + 1);
 
             // Apply template to the new slide
-            if (element.defaultProps?.elements && Array.isArray(element.defaultProps.elements)) {
-                element.defaultProps.elements.forEach(templateElement => {
-                    const newElement = getNewElement({
-                        elementTypeId: templateElement.type,
-                        defaultProps: templateElement.props,
-                        elementVariant: templateElement.variant
-                    });
+            // if (element.defaultProps?.elements && Array.isArray(element.defaultProps.elements)) {
+            //     element.defaultProps.elements.forEach(templateElement => {
+            //         const newElement = getNewElement({
+            //             elementTypeId: templateElement.type,
+            //             defaultProps: templateElement.props,
+            //             elementVariant: templateElement.variant
+            //         });
 
-                    usePresentationStore.getState().addLayoutWithElement(
-                        presentationId,
-                        newSlideId,
-                        newElement as unknown as BaseElement
-                    );
-                });
-            }
+            //         usePresentationStore.getState().addLayoutWithElement(
+            //             presentationId,
+            //             newSlideId,
+            //             newElement as unknown as BaseElement
+            //         );
+            //     });
+            // }
+        } else if (isTable) {
+            // TODO: Implement table click
+            const tableLayout = getNewTableElement(element);
+            usePresentationStore.getState().addTableLayout(presentationId, slideId, tableLayout);
         } else {
             // Normal element click
             const newElement = getNewElement(element);

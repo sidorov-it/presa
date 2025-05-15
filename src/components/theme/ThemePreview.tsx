@@ -1,10 +1,10 @@
 import React from 'react';
 import PresentationThemeWrapper from '@/components/viewer/theme/PresentationThemeWrapper';
 import PresentationViewer from '@/components/viewer/PresentationViewer';
-import { IPresentation } from '@/types';
-import { getPredefinedGridStructures } from '@/types';
+import { IPresentation, LayoutType } from '@/types';
 import { generateId } from '@/utils/id';
 import { Theme } from '@/types/theme';
+import { getPredefinedGridStructures } from '@/utils/getPredefinedGridStructures';
 
 interface ThemePreviewProps {
     theme: Theme;
@@ -12,7 +12,9 @@ interface ThemePreviewProps {
 
 export const ThemePreview = ({ theme }: ThemePreviewProps) => {
     // Define a sample presentation for preview
-    const gridStructure = getPredefinedGridStructures('single-column');
+    const defaultGridType = 'blank' as LayoutType;
+
+    const gridStructure = getPredefinedGridStructures(defaultGridType);
     const samplePresentation: IPresentation = {
         id: generateId(),
         title: 'Theme Preview',
@@ -25,7 +27,7 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
                 layouts: [
                     {
                         id: generateId(),
-                        type: 'single-column',
+                        type: defaultGridType,
                         gridStructure,
                         style: {},
                         elements: [

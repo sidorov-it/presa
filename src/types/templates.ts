@@ -1,9 +1,9 @@
 import { IconType } from 'react-icons';
-import { SlideTemplateConfig } from '.';
+import { LayoutType, SlideTemplateConfig, TextType } from '.';
+import { ElementType } from './elements';
 
-// Базовые типы
-export type ElementType = 'image' | 'text' | 'heading' | 'list';
-export type LayoutType = 'image-text' | 'text-image' | 'two-columns-equal' | 'three-columns';
+// export type LayoutType = string;
+// export type LayoutType = 'image-text' | 'text-image' | 'two-columns-equal' | 'three-columns';
 export type Position = 'left' | 'right' | 'center';
 
 // Интерфейсы для ограничений
@@ -19,26 +19,37 @@ export interface ImageConstraints extends BaseConstraints {
     maxSize?: number;
 }
 
-export interface TextConstraints extends BaseConstraints {
-    allowHtml?: boolean;
-    allowedTags?: string[];
-}
-
 // Описание элемента шаблона
 export interface TemplateElement {
-    type: ElementType;
-    position: Position;
+    elementTypeId: ElementType;
+    elementVariant?: string;
+    slot: string;
+    row: number;
+    column: number;
     props: {
         width?: string | number;
         height?: string | number;
         alignment?: 'left' | 'right' | 'center';
+        items?: Record<string, string>[];
+        itemsSchema?: Array<{
+            key: string;
+            type: ElementType;
+            variant?: TextType;
+            linkedContentFields?: Array<string>;
+        }>;
         [key: string]: any;
     };
-    constraints?: BaseConstraints | ImageConstraints | TextConstraints;
     llmHints?: {
         purpose: string;
         contextRules?: string[];
         examples?: string[];
+        items?: Record<
+            string,
+            {
+                type: 'string';
+                description: string;
+            }
+        >;
     };
 }
 
@@ -46,8 +57,12 @@ export interface TemplateElement {
 export interface SlideTemplateCore {
     id: string;
     name: string;
-    layout: LayoutType;
-    elements: TemplateElement[];
+    layouts: Array<{
+        layout: LayoutType;
+        columnsCount: number;
+        rowsCount: number;
+        elements: TemplateElement[];
+    }>;
 
     // UI метаданные
     ui: {
@@ -87,7 +102,7 @@ export interface MenuItem {
     elementTypeId: string;
     label: string;
     Icon?: IconType;
-    defaultProps?: Record<string, any>;
+    props?: Record<string, any>;
     elementVariant?: string;
     isSlideTemplate?: boolean;
     templateConfig?: SlideTemplateConfig;

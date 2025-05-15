@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { usePresentationStore } from './presentationStore';
-import { BaseElement, ComponentStructureType, GridCell, IPresentation, Layout, LayoutType, Slide } from '@/types';
+import { BaseElement, GridCell, IPresentation, Layout, LayoutType, Slide } from '@/types';
 import { MutableRefObject } from 'react';
 import { TipTapRefs } from '@/types';
 
@@ -33,7 +33,6 @@ export interface MenuState {
     cellId: string | null;
     isTextEditor: boolean;
     isInTable: boolean;
-    componentStructure: ComponentStructureType | null;
     tableRowIndex: number | null;
     tableColumnIndex: number | null;
     tableId: string | null;
@@ -63,7 +62,6 @@ export interface MenuState {
         cellId?: string | null;
         isTextEditor?: boolean;
         isInTable?: boolean;
-        componentStructure?: ComponentStructureType | null;
         tableRowIndex?: number | null;
         tableColumnIndex?: number | null;
         tableId?: string | null;
@@ -159,7 +157,6 @@ export const useMenuStore = create<MenuState>()(
             layoutId: null,
             columnId: null,
             isTextEditor: false,
-            componentStructure: null,
             tableRowIndex: null,
             tableColumnIndex: null,
             tableId: null,
@@ -215,7 +212,6 @@ export const useMenuStore = create<MenuState>()(
                     columnId: menuData.columnId ?? null,
                     cellId: menuData.cellId ?? null,
                     isTextEditor: menuData.isTextEditor ?? false,
-                    componentStructure: menuData.componentStructure ?? null,
                     tableRowIndex: menuData.tableRowIndex ?? null,
                     tableColumnIndex: menuData.tableColumnIndex ?? null,
                     tableId: menuData.tableId ?? null,
@@ -232,7 +228,6 @@ export const useMenuStore = create<MenuState>()(
                     columnId: menuData.columnId ?? null,
                     cellId: menuData.cellId ?? null,
                     isTextEditor: menuData.isTextEditor ?? false,
-                    componentStructure: menuData.componentStructure ?? null,
                     tableRowIndex: menuData.tableRowIndex ?? null,
                     tableColumnIndex: menuData.tableColumnIndex ?? null,
                     tableId: menuData.tableId ?? null,
@@ -275,7 +270,6 @@ export const useMenuStore = create<MenuState>()(
                     layoutId: null,
                     columnId: null,
                     isTextEditor: false,
-                    componentStructure: null,
                     tableRowIndex: null,
                     tableColumnIndex: null,
                     tableId: null,
