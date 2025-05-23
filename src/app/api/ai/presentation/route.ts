@@ -8,6 +8,8 @@ import { generateSlidesTemplates } from '@/services/llm/gigaChat';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../auth/[...nextauth]/route';
 import generateSlide from '@/services/llm/gigaChat/generateSlide';
+import { hasEnoughTokens, deductTokens } from '@/utils/tokens';
+import { getTokenCostForOperation } from '@/utils/getTokenCostForOperation';
 
 export async function POST(request: NextRequest) {
     try {
@@ -23,6 +25,20 @@ export async function POST(request: NextRequest) {
 
         if (!prompt || !topics || !Array.isArray(topics)) {
             return NextResponse.json({ message: 'Invalid request data' }, { status: 400 });
+        }
+
+        // Calculate required tokens (per slide)
+        const requiredTokens = topics.length * getTokenCostForOperation('GENERATE_SLIDE');
+
+        // Check if user has enough tokens
+        const hasTokens = await hasEnoughTokens(userId, requiredTokens);
+        if (!hasTokens) {
+            return NextResponse.json({
+                error: 'Insufficient tokens',
+                message: `You need ${requiredTokens} tokens to generate ${topics.length} slides. Please purchase more tokens to continue.`,
+                requiredTokens,
+                operation: 'GENERATE_SLIDE',
+            }, { status: 402 });
         }
 
         try {
@@ -65,11 +81,29 @@ export async function POST(request: NextRequest) {
                     },
                 });
 
+                // Deduct tokens after successful generation
+                try {
+                    await deductTokens({
+                        userId,
+                        amount: requiredTokens,
+                        description: `Generated ${topics.length} slides for presentation "${title}"`,
+                        metadata: {
+                            presentationId: presentation.id,
+                            slidesCount: topics.length,
+                            prompt: prompt.substring(0, 100), // First 100 chars of prompt
+                        },
+                    });
+                } catch (tokenError) {
+                    console.error('Error deducting tokens:', tokenError);
+                    // Note: We don't fail the request here as the presentation was already created
+                }
+
                 return NextResponse.json({
                     presentation: {
                         ...presentation,
                         slides: slides,
                     },
+                    tokensUsed: requiredTokens,
                 });
             } catch (err) {
                 console.error('Error with direct MongoDB method, falling back to Prisma:', err);
@@ -83,11 +117,28 @@ export async function POST(request: NextRequest) {
                     },
                 });
 
+                // Deduct tokens after successful generation (fallback case)
+                try {
+                    await deductTokens({
+                        userId,
+                        amount: requiredTokens,
+                        description: `Generated ${topics.length} slides for presentation "${title || 'AI Generated Presentation'}"`,
+                        metadata: {
+                            presentationId: presentation.id,
+                            slidesCount: topics.length,
+                            prompt: prompt.substring(0, 100), // First 100 chars of prompt
+                        },
+                    });
+                } catch (tokenError) {
+                    console.error('Error deducting tokens:', tokenError);
+                }
+
                 return NextResponse.json({
                     presentation: {
                         ...presentation,
                         slides: slides,
                     },
+                    tokensUsed: requiredTokens,
                 });
             }
         } catch (error) {
@@ -139,11 +190,29 @@ export async function POST(request: NextRequest) {
                 },
             });
 
+            // Deduct tokens even for fallback case (basic slides still use AI for template selection)
+            try {
+                await deductTokens({
+                    userId,
+                    amount: requiredTokens,
+                    description: `Generated ${topics.length} basic slides for presentation "${title || 'AI Generated Presentation'}"`,
+                    metadata: {
+                        presentationId: presentation.id,
+                        slidesCount: topics.length,
+                        prompt: prompt.substring(0, 100),
+                        fallback: true,
+                    },
+                });
+            } catch (tokenError) {
+                console.error('Error deducting tokens:', tokenError);
+            }
+
             return NextResponse.json({
                 presentation: {
                     ...presentation,
                     slides: slidesData,
                 },
+                tokensUsed: requiredTokens,
             });
         }
     } catch (error) {

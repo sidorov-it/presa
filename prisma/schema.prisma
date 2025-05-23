@@ -304,7 +304,7 @@ model TokenTransaction {
   description     String          // Description of the transaction
   
   // References
-  purchaseId      String?         @db.ObjectId // Reference to purchase if applicable
+  purchaseId      String?         // Reference to purchase if applicable
   llmRequestId    String?         @db.ObjectId // Reference to LLM request if applicable
   
   // Balance tracking

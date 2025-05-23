@@ -16,9 +16,11 @@ export default function TokensPage() {
         setPurchaseLoading(packageId);
         try {
             await purchaseTokens(packageId);
+            // Показываем уведомление об успешной покупке
+            alert('Покупка успешно завершена! Токены добавлены на ваш баланс.');
         } catch (error) {
             console.error('Purchase failed:', error);
-            alert('Purchase failed. Please try again.');
+            alert('Ошибка при покупке. Попробуйте еще раз.');
         } finally {
             setPurchaseLoading(null);
         }
@@ -104,7 +106,7 @@ interface TokenPackageCardProps {
 }
 
 const TokenPackageCard = ({ package: pkg, onPurchase, isLoading }: TokenPackageCardProps) => {
-    const tokensPerDollar = pkg.tokens / pkg.price;
+    // const tokensPerDollar = pkg.tokens / pkg.price;
 
     return (
         <div className={`${styles.packageCard} ${pkg.isPopular ? styles.packageCardPopular : ''}`}>
@@ -119,7 +121,7 @@ const TokenPackageCard = ({ package: pkg, onPurchase, isLoading }: TokenPackageC
                         <FaCoins className={styles.packageTokensIcon} />
                         <span className={styles.packageTokensNumber}>{formatTokenAmount(pkg.tokens)}</span>
                     </div>
-                    {/* <p className={styles.packageValue}>{tokensPerDollar.toFixed(0)} токенов за 1₽</p> */}
+                    {/* <p className={styles.packageValue}>{tokensPerDollar} токенов за 1₽</p> */}
                 </div>
 
                 <div className={styles.packagePrice}>{pkg.price}₽</div>

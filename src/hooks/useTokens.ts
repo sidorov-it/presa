@@ -68,17 +68,25 @@ export const useTokens = (): UseTokensReturn => {
             if (!session?.user?.id) throw new Error('User not authenticated');
 
             try {
-                // Here we would integrate with Stripe or another payment processor
-                // For now, we'll just show an alert
-                alert(`Initiating purchase for package ${packageId}. Payment integration coming soon!`);
+                const response = await fetch('/api/tokens/purchase', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ packageId }),
+                });
 
-                // After successful payment, refresh balance
-                await refreshBalance();
+                if (!response.ok) {
+                    throw new Error('Purchase failed');
+                }
+
+                // После успешной покупки обновляем данные
+                await Promise.all([refreshBalance(), refreshTransactions()]);
             } catch (err) {
                 throw new Error(err instanceof Error ? err.message : 'Purchase failed');
             }
         },
-        [session?.user?.id, refreshBalance]
+        [session?.user?.id, refreshBalance, refreshTransactions]
     );
 
     // Load initial data
