@@ -196,7 +196,7 @@ const nextConfig = {
             '@radix-ui/react-tabs',
             '@radix-ui/react-toast',
             '@radix-ui/react-tooltip',
-            'react-icons',
+            // 'react-icons',
             'lucide-react',
             '@tiptap/react',
             '@tiptap/starter-kit',

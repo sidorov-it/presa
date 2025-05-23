@@ -5,7 +5,7 @@ import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
 // import Editor from '@/components/editor/Editor';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import Editor from '@/components/editor/Editor/Editor';
 import { IPresentation, TipTapRefs } from '@/types';
 import UndoRedoControls from '@/components/UndoRedoControls/UndoRedoControls';
@@ -15,7 +15,8 @@ import { useThemeStore } from '@/store/themeStore';
 import { Theme } from '@/types/theme';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { FaEye } from 'react-icons/fa';
+import { FaEye, FaUser, FaSignOutAlt, FaCog } from 'react-icons/fa';
+import { HiOutlineCreditCard } from 'react-icons/hi2';
 import BackgroundSettingsModal from '@/components/editor/BackgroundSettingsModal/BackgroundSettingsModal';
 import { HiOutlineCog6Tooth } from 'react-icons/hi2';
 import styles from './page.module.css';
@@ -50,6 +51,7 @@ export default function PresentationEditorPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
     const [isThemePopoverOpen, setIsThemePopoverOpen] = useState(false);
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const [presentation, setPresentation] = useState<IPresentation | null>(null);
 
     // Load presentation data only once when component mounts or ID changes
@@ -131,6 +133,15 @@ export default function PresentationEditorPage() {
             setIsBgModalOpen(true);
         }
     };
+
+    const handleSignOut = useCallback(() => {
+        signOut({ callbackUrl: '/' });
+    }, []);
+
+    const handleSettingsClick = useCallback(() => {
+        // TODO: Implement navigation to settings page
+        console.log('Navigate to settings');
+    }, []);
 
     // Memoize the loading and not found UI to prevent re-renders
     const loadingUI = useMemo(
@@ -265,9 +276,56 @@ export default function PresentationEditorPage() {
                             </button>
                             <UndoRedoControls presentationId={presentation.id} tiptapRefs={tiptapRefs} />
 
-                            <div className={styles.userInfo}>
-                                {session?.user?.name && <div className={styles.userName}>{session.user.name}</div>}
-                            </div>
+                            <Popover
+                                isOpen={isUserMenuOpen}
+                                onOpen={() => setIsUserMenuOpen(true)}
+                                onClose={() => setIsUserMenuOpen(false)}
+                                trigger={
+                                    <div
+                                        className={styles.userInfo}
+                                        role="button"
+                                        aria-label="Open user menu"
+                                        onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                                        onKeyDown={e => e.key === 'Enter' && setIsUserMenuOpen(!isUserMenuOpen)}
+                                    >
+                                        <FaUser className={styles.userIcon} />
+                                        {session?.user?.name && (
+                                            <span className={styles.userName}>{session.user.name}</span>
+                                        )}
+                                    </div>
+                                }
+                                content={
+                                    <div className={styles.userMenu}>
+                                        <div className={styles.userMenuHeader}>
+                                            <div className={styles.userMenuEmail}>
+                                                {session?.user?.email || 'user@example.com'}
+                                            </div>
+                                            <div className={styles.userMenuCredits}>
+                                                <HiOutlineCreditCard className={styles.creditsIcon} />
+                                                <span>391 credits</span>
+                                            </div>
+                                        </div>
+
+                                        {/* <div className={styles.userMenuDivider} /> */}
+
+                                        <div className={styles.userMenuActions}>
+                                            <Link href="/settings" className={styles.userMenuAction}>
+                                                <FaCog className={styles.actionIcon} />
+                                                <span>Настройки</span>
+                                            </Link>
+
+                                            <button
+                                                onClick={handleSignOut}
+                                                className={styles.userMenuSignOut}
+                                                aria-label="Выйти"
+                                            >
+                                                <FaSignOutAlt className={styles.signOutIcon} />
+                                                <span>Выйти</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            />
                         </div>
                     </div>
                 </header>

@@ -20,7 +20,7 @@ export const Popover = ({ trigger, content, isOpen, onOpen, onClose, className }
                     <ChakraPopover.Content
                         className={cn('z-50 w-64 rounded-md border bg-white shadow-md outline-none', className)}
                     >
-                        <ChakraPopover.Arrow />
+                        {/* <ChakraPopover.Arrow /> */}
                         <PopoverBody>{content}</PopoverBody>
                     </ChakraPopover.Content>
                 </ChakraPopover.Positioner>
