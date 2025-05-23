@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { prisma } from '@/lib/prisma';
 
 export interface LLMRequestData {
@@ -66,8 +67,8 @@ export class LLMHistoryService {
                 ...(options?.startDate && options?.endDate
                     ? {
                           timestamp: {
-                            gte: options.startDate,
-                            lte: options.endDate,
+                              gte: options.startDate,
+                              lte: options.endDate,
                           },
                       }
                     : {}),
@@ -87,9 +88,9 @@ export class LLMHistoryService {
             ...(startDate && endDate
                 ? {
                       timestamp: {
-                        gte: startDate,
+                          gte: startDate,
                           lte: endDate,
-                    },
+                      },
                   }
                 : {}),
         };

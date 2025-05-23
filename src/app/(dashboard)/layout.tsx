@@ -71,7 +71,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         },
         {
             label: 'Оплата',
-            path: '/payment',
+            path: '/tokens',
             icon: <FaCreditCard size={20} />,
         },
     ];

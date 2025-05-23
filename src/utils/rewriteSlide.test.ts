@@ -1,5 +1,4 @@
 import { Slide } from '@/types';
-import createRewriteSlideMapping from './createRewriteSlideMapping';
 import rewriteSlideContent from '@/services/llm/gigaChat/rewriteSlideContent';
 
 describe('Rewrite slide', () => {

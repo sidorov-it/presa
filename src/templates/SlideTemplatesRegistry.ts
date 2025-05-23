@@ -1757,7 +1757,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                                     key: 'text',
                                     type: ElementType.TEXT,
                                     variant: TextType.DEFAULT,
-                                }
+                                },
                             ],
                         },
 

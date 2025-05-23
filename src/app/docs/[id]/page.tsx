@@ -24,12 +24,17 @@ import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
 import ThemeDebugButton from '@/components/debug/ThemeDebugButton';
 import { useColorMode } from '@/components/ui/color-mode';
 import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
+import { useTokens } from '@/hooks/useTokens';
+import { formatTokenAmount } from '@/utils/formatTokenAmount';
 
 export default function PresentationEditorPage() {
     const params = useParams();
     const { id } = params;
     const { data: session, status } = useSession();
     const [isBgModalOpen, setIsBgModalOpen] = useState(false);
+
+    // Token management
+    const { balance: tokenBalance, loading: tokensLoading } = useTokens();
 
     // Access store values individually to prevent unnecessary re-renders
     const loadPresentation = usePresentationStore(state => state.loadPresentation);
@@ -136,11 +141,6 @@ export default function PresentationEditorPage() {
 
     const handleSignOut = useCallback(() => {
         signOut({ callbackUrl: '/' });
-    }, []);
-
-    const handleSettingsClick = useCallback(() => {
-        // TODO: Implement navigation to settings page
-        console.log('Navigate to settings');
     }, []);
 
     // Memoize the loading and not found UI to prevent re-renders
@@ -300,10 +300,12 @@ export default function PresentationEditorPage() {
                                             <div className={styles.userMenuEmail}>
                                                 {session?.user?.email || 'user@example.com'}
                                             </div>
-                                            <div className={styles.userMenuCredits}>
+                                            <Link href="/tokens" className={styles.userMenuCredits}>
                                                 <HiOutlineCreditCard className={styles.creditsIcon} />
-                                                <span>391 credits</span>
-                                            </div>
+                                                <span>
+                                                    {tokensLoading ? '...' : formatTokenAmount(tokenBalance)} токенов
+                                                </span>
+                                            </Link>
                                         </div>
 
                                         {/* <div className={styles.userMenuDivider} /> */}

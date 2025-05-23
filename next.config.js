@@ -20,86 +20,19 @@ const nextConfig = {
             },
         ],
     },
-    // Оптимизации для dev сервера
-    swcMinify: true, // Используем SWC для минификации
     compiler: {
         // Удаляем console.log в production
         // eslint-disable-next-line no-undef
         removeConsole: process.env.NODE_ENV === 'production',
     },
-    webpack(config, { dev }) {
-        // Агрессивное кеширование для dev режима
-        if (dev) {
-            config.cache = {
-                type: 'filesystem',
-                allowCollectingMemory: true,
-                memoryCacheUnaffected: true,
-                store: 'pack',
-                buildDependencies: {
-                    // eslint-disable-next-line no-undef
-                    config: [__filename],
-                },
-                version: '2.0.0', // Увеличена версия кеша
-                maxAge: 1000 * 60 * 60 * 24 * 7, // Кеш на неделю
-                compression: 'gzip', // Сжатие кеша
-            };
-
-            // Оптимизация снепшотов для быстрой пересборки
-            config.snapshot = {
-                ...config.snapshot,
-                managedPaths: [/^(.+?[\\/]node_modules[\\/])/],
-                immutablePaths: [/^(.+?[\\/]node_modules[\\/])/],
-                buildDependencies: {
-                    hash: true,
-                    timestamp: false, // Отключаем timestamp для стабильности
-                },
-                module: {
-                    timestamp: false,
-                    hash: true,
-                },
-                resolve: {
-                    timestamp: false,
-                    hash: true,
-                },
-            };
-
-            // Минимизируем логирование
-            config.infrastructureLogging = {
-                level: 'error',
-            };
-
-            // Оптимизация resolve
-            config.resolve = {
-                ...config.resolve,
-                fallback: {
-                    fs: false,
-                    path: false,
-                    crypto: false,
-                },
-                // Ускоряем поиск модулей
-                modules: ['node_modules'],
-                symlinks: false, // Отключаем символические ссылки
-                cache: true,
-            };
-
-            // Агрессивная оптимизация split chunks для dev
+    webpack(config, { dev, isServer }) {
+        // Базовые оптимизации только для production
+        if (!dev) {
+            // Агрессивная оптимизация split chunks только для production
             config.optimization = {
                 ...config.optimization,
-                moduleIds: 'deterministic',
-                chunkIds: 'deterministic',
-                realContentHash: false, // Отключаем для dev
-                removeAvailableModules: false,
-                removeEmptyChunks: false,
-                runtimeChunk: {
-                    name: 'runtime',
-                },
                 splitChunks: {
                     chunks: 'all',
-                    minSize: 10000, // Уменьшаем минимальный размер
-                    maxSize: 200000, // Увеличиваем максимальный размер
-                    minChunks: 1,
-                    maxAsyncRequests: 30,
-                    maxInitialRequests: 30,
                     cacheGroups: {
                         // Отдельный chunk для React
                         react: {
@@ -151,21 +84,35 @@ const nextConfig = {
                     },
                 },
             };
-
-            // Ускоряем обработку модулей
-            config.module.rules.push({
-                test: /\.(js|mjs|jsx|ts|tsx)$/,
-                include: /node_modules/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: [],
-                        cacheDirectory: true,
-                        cacheCompression: false,
-                    },
-                },
-            });
         }
+
+        // Базовые настройки resolve для всех режимов
+        config.resolve = {
+            ...config.resolve,
+            fallback: {
+                ...config.resolve.fallback,
+                fs: false,
+                path: false,
+                crypto: false,
+            },
+        };
+
+        // Fix for "self is not defined" error
+        // if (!isServer) {
+        //     config.resolve.fallback = {
+        //         ...config.resolve.fallback,
+        //         self: false,
+        //     };
+        // } else {
+        //     // Add polyfill for server environment
+        //     const webpack = require('webpack');
+        //     config.plugins = config.plugins || [];
+        //     config.plugins.push(
+        //         new webpack.DefinePlugin({
+        //             self: 'undefined',
+        //         })
+        //     );
+        // }
 
         return config;
     },
@@ -196,18 +143,13 @@ const nextConfig = {
             '@radix-ui/react-tabs',
             '@radix-ui/react-toast',
             '@radix-ui/react-tooltip',
-            // 'react-icons',
             'lucide-react',
             '@tiptap/react',
             '@tiptap/starter-kit',
             'framer-motion',
         ],
-        // // Включаем turbo mode для ускорения
-        // turbo: {
-        //     loaders: {
-        //         '.svg': ['@svgr/webpack'],
-        //     },
-        // },
+        // Отключаем turbo для стабильности
+        // turbo: false,
     },
 };
 

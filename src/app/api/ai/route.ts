@@ -10,6 +10,8 @@ import { authOptions } from '../auth/[...nextauth]/route';
 import { generateSlidesTemplates } from '@/services/llm/gigaChat';
 import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
 import { createSlideFromTemplate } from '@/utils/createSlideFromTemplate';
+import { hasEnoughTokens, deductTokens } from '@/utils/tokens';
+import { getTokenCostForOperation } from '@/utils/getTokenCostForOperation';
 
 if (!process.env.GIGACHAT_API_KEY || !process.env.GIGACHAT_AUTH_KEY || !process.env.GIGACHAT_SCOPE) {
     throw new Error('GIGACHAT_API_KEY, GIGACHAT_AUTH_KEY, and GIGACHAT_SCOPE environment variables are not set');
@@ -28,6 +30,20 @@ export async function POST(request: NextRequest) {
 
         if (!prompt || !topics || !Array.isArray(topics)) {
             return NextResponse.json({ message: 'Invalid request data' }, { status: 400 });
+        }
+
+        // Calculate required tokens (50 tokens per slide)
+        const requiredTokens = topics.length * getTokenCostForOperation('GENERATE_SLIDE');
+
+        // Check if user has enough tokens
+        const hasTokens = await hasEnoughTokens(userId, requiredTokens);
+        if (!hasTokens) {
+            return NextResponse.json({
+                error: 'Insufficient tokens',
+                message: `You need ${requiredTokens} tokens to generate ${topics.length} slides. Please purchase more tokens to continue.`,
+                requiredTokens,
+                operation: 'GENERATE_SLIDE',
+            }, { status: 402 });
         }
 
         try {
@@ -91,24 +107,18 @@ export async function POST(request: NextRequest) {
             });
 
             // Create presentation with the slides
+            let presentation;
             try {
-                const presentation = await createPresentationWithoutTransaction({
+                presentation = await createPresentationWithoutTransaction({
                     title: title || 'AI Generated Presentation',
                     description: prompt,
                     slides: slidesData,
                     userId,
                 });
-
-                return NextResponse.json({
-                    presentation: {
-                        ...presentation,
-                        slides: slidesData,
-                    },
-                });
             } catch (err) {
                 console.error('Error with direct MongoDB method, falling back to Prisma:', err);
 
-                const presentation = await prisma.presentation.create({
+                presentation = await prisma.presentation.create({
                     data: {
                         title: title || 'AI Generated Presentation',
                         description: prompt,
@@ -116,14 +126,33 @@ export async function POST(request: NextRequest) {
                         slides: stringifyJsonField(slidesData),
                     },
                 });
+            }
 
-                return NextResponse.json({
-                    presentation: {
-                        ...presentation,
-                        slides: slidesData,
+            // Deduct tokens after successful generation
+            try {
+                await deductTokens({
+                    userId,
+                    amount: requiredTokens,
+                    description: `Generated ${topics.length} slides for presentation "${title || 'AI Generated Presentation'}"`,
+                    metadata: {
+                        presentationId: presentation.id,
+                        slidesCount: topics.length,
+                        prompt: prompt.substring(0, 100), // First 100 chars of prompt
                     },
                 });
+            } catch (tokenError) {
+                console.error('Error deducting tokens:', tokenError);
+                // Note: We don't fail the request here as the presentation was already created
+                // In a production system, you might want to implement a compensation mechanism
             }
+
+            return NextResponse.json({
+                presentation: {
+                    ...presentation,
+                    slides: slidesData,
+                },
+                tokensUsed: requiredTokens,
+            });
         } catch (error) {
             console.error('Error selecting templates:', error);
             // Fallback to basic slides if template selection fails
@@ -173,11 +202,29 @@ export async function POST(request: NextRequest) {
                 },
             });
 
+            // Deduct tokens even for fallback slides
+            try {
+                await deductTokens({
+                    userId,
+                    amount: requiredTokens,
+                    description: `Generated ${topics.length} basic slides for presentation "${title || 'AI Generated Presentation'}"`,
+                    metadata: {
+                        presentationId: presentation.id,
+                        slidesCount: topics.length,
+                        prompt: prompt.substring(0, 100),
+                        fallback: true,
+                    },
+                });
+            } catch (tokenError) {
+                console.error('Error deducting tokens:', tokenError);
+            }
+
             return NextResponse.json({
                 presentation: {
                     ...presentation,
                     slides: slidesData,
                 },
+                tokensUsed: requiredTokens,
             });
         }
     } catch (error) {

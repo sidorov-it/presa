@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "NODE_OPTIONS='--max-old-space-size=8192' next dev --turbo",
     "dev:fast": "NODE_OPTIONS='--max-old-space-size=8192' ANALYZE=false NEXT_TELEMETRY_DISABLED=1 next dev --turbo",
+    "dev:stable": "NODE_OPTIONS='--max-old-space-size=8192' next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

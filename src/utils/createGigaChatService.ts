@@ -33,4 +33,4 @@ export function createGigaChatServiceWithUserId(userId: string) {
         scope: process.env.GIGACHAT_SCOPE,
         userId,
     });
-} 
+}
