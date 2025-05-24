@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { TokenPackage, TokenTransaction } from '@/types/tokens';
+import { useYooKassaPayment } from './useYooKassaPayment';
 
 interface UseTokensReturn {
     balance: number;
@@ -11,11 +12,12 @@ interface UseTokensReturn {
     refreshBalance: () => Promise<void>;
     refreshPackages: () => Promise<void>;
     refreshTransactions: () => Promise<void>;
-    purchaseTokens: (packageId: string) => Promise<void>;
+    purchaseTokens: (packageId: string) => Promise<{ confirmationUrl: string; purchaseId: string }>;
 }
 
 export const useTokens = (): UseTokensReturn => {
     const { data: session } = useSession();
+    const { createPayment } = useYooKassaPayment();
     const [balance, setBalance] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -64,29 +66,25 @@ export const useTokens = (): UseTokensReturn => {
     }, [session?.user?.id]);
 
     const purchaseTokens = useCallback(
-        async (packageId: string) => {
+        async (packageId: string): Promise<{ confirmationUrl: string; purchaseId: string }> => {
             if (!session?.user?.id) throw new Error('User not authenticated');
 
             try {
-                const response = await fetch('/api/tokens/purchase', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ packageId }),
+                // Создаем платеж через YooKassa
+                const paymentResponse = await createPayment({
+                    packageId,
+                    returnUrl: `${window.location.origin}/tokens`,
                 });
 
-                if (!response.ok) {
-                    throw new Error('Purchase failed');
-                }
-
-                // После успешной покупки обновляем данные
-                await Promise.all([refreshBalance(), refreshTransactions()]);
+                return {
+                    confirmationUrl: paymentResponse.confirmationUrl,
+                    purchaseId: paymentResponse.purchaseId,
+                };
             } catch (err) {
                 throw new Error(err instanceof Error ? err.message : 'Purchase failed');
             }
         },
-        [session?.user?.id, refreshBalance, refreshTransactions]
+        [session?.user?.id, createPayment]
     );
 
     // Load initial data

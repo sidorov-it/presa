@@ -359,4 +359,79 @@
     border-top: 2px solid var(--chakra-colors-blue-500);
     border-radius: 50%;
     animation: spin 1s linear infinite;
+}
+
+/* Notifications */
+.notification {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: var(--chakra-radii-lg);
+    margin-bottom: 1.5rem;
+    position: relative;
+    border: 1px solid;
+    animation: slideIn 0.3s ease-out;
+}
+
+.notification.success {
+    background-color: var(--chakra-colors-green-50);
+    border-color: var(--chakra-colors-green-200);
+    color: var(--chakra-colors-green-800);
+}
+
+.notification.error {
+    background-color: var(--chakra-colors-red-50);
+    border-color: var(--chakra-colors-red-200);
+    color: var(--chakra-colors-red-800);
+}
+
+.notificationIcon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.notificationClose {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.7;
+    transition: opacity 150ms ease;
+}
+
+.notificationClose:hover {
+    opacity: 1;
+}
+
+/* Payment Status */
+.paymentStatusCard {
+    background-color: var(--chakra-colors-white);
+    border-radius: var(--chakra-radii-lg);
+    box-shadow: var(--chakra-shadows-sm);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 2px solid var(--chakra-colors-blue-200);
+}
+
+/* Payment Info */
+.paymentInfo {
+    margin-top: 0.75rem;
+    text-align: center;
+    color: var(--chakra-colors-gray-500);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 } 

@@ -1,29 +1,83 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
 import { TokenPackage } from '@/types/tokens';
-import { FaCreditCard, FaHistory, FaCoins } from 'react-icons/fa';
+import { FaCreditCard, FaHistory, FaCoins, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import { HiOutlineCreditCard } from 'react-icons/hi2';
+import { PaymentStatus } from '@/components/tokens/PaymentStatus';
 import styles from './page.module.css';
 
 export default function TokensPage() {
-    const { balance, loading, packages, transactions, purchaseTokens } = useTokens();
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const { balance, loading, packages, transactions, refreshBalance, refreshTransactions, purchaseTokens } =
+        useTokens();
     const [purchaseLoading, setPurchaseLoading] = useState<string | null>(null);
+    const [activePurchaseId, setActivePurchaseId] = useState<string | null>(null);
+    const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+    // Проверяем, есть ли purchaseId в URL для отслеживания статуса
+    useEffect(() => {
+        const purchaseId = searchParams.get('purchase');
+        if (purchaseId) {
+            setActivePurchaseId(purchaseId);
+        }
+    }, [searchParams]);
 
     const handlePurchase = async (packageId: string) => {
         setPurchaseLoading(packageId);
         try {
-            await purchaseTokens(packageId);
-            // Показываем уведомление об успешной покупке
-            alert('Покупка успешно завершена! Токены добавлены на ваш баланс.');
+            const paymentData = await purchaseTokens(packageId);
+
+            // Сохраняем ID покупки для отслеживания
+            setActivePurchaseId(paymentData.purchaseId);
+
+            // Перенаправляем пользователя на страницу оплаты YooKassa
+            window.location.href = paymentData.confirmationUrl;
         } catch (error) {
             console.error('Purchase failed:', error);
-            alert('Ошибка при покупке. Попробуйте еще раз.');
+            setNotification({
+                type: 'error',
+                message: error instanceof Error ? error.message : 'Ошибка при создании платежа',
+            });
         } finally {
             setPurchaseLoading(null);
         }
+    };
+
+    const handlePaymentSuccess = () => {
+        setActivePurchaseId(null);
+        setNotification({
+            type: 'success',
+            message: 'Оплата прошла успешно! Токены добавлены на ваш баланс.',
+        });
+
+        // Обновляем данные
+        refreshBalance();
+        refreshTransactions();
+
+        // Убираем purchaseId из URL
+        router.replace('/tokens');
+
+        // Убираем уведомление через 5 секунд
+        setTimeout(() => setNotification(null), 5000);
+    };
+
+    const handlePaymentError = (error: string) => {
+        setActivePurchaseId(null);
+        setNotification({
+            type: 'error',
+            message: error,
+        });
+
+        // Убираем purchaseId из URL
+        router.replace('/tokens');
+
+        // Убираем уведомление через 5 секунд
+        setTimeout(() => setNotification(null), 5000);
     };
 
     if (loading) {
@@ -42,6 +96,31 @@ export default function TokensPage() {
                     <h1 className={styles.title}>Токены</h1>
                     <p className={styles.subtitle}>Управляйте своими токенами для использования AI-функций</p>
                 </div>
+
+                {/* Notifications */}
+                {notification && (
+                    <div className={`${styles.notification} ${styles[notification.type]}`}>
+                        <div className={styles.notificationIcon}>
+                            {notification.type === 'success' ? <FaCheckCircle /> : <FaTimesCircle />}
+                        </div>
+                        <span>{notification.message}</span>
+                        <button onClick={() => setNotification(null)} className={styles.notificationClose}>
+                            ×
+                        </button>
+                    </div>
+                )}
+
+                {/* Payment Status */}
+                {activePurchaseId && (
+                    <div className={styles.paymentStatusCard}>
+                        <h2 className={styles.sectionTitle}>Статус платежа</h2>
+                        <PaymentStatus
+                            purchaseId={activePurchaseId}
+                            onSuccess={handlePaymentSuccess}
+                            onError={handlePaymentError}
+                        />
+                    </div>
+                )}
 
                 {/* Current Balance */}
                 <div className={styles.balanceCard}>
@@ -106,8 +185,6 @@ interface TokenPackageCardProps {
 }
 
 const TokenPackageCard = ({ package: pkg, onPurchase, isLoading }: TokenPackageCardProps) => {
-    // const tokensPerDollar = pkg.tokens / pkg.price;
-
     return (
         <div className={`${styles.packageCard} ${pkg.isPopular ? styles.packageCardPopular : ''}`}>
             {pkg.isPopular && <div className={styles.popularBadge}>Популярный</div>}
@@ -121,7 +198,6 @@ const TokenPackageCard = ({ package: pkg, onPurchase, isLoading }: TokenPackageC
                         <FaCoins className={styles.packageTokensIcon} />
                         <span className={styles.packageTokensNumber}>{formatTokenAmount(pkg.tokens)}</span>
                     </div>
-                    {/* <p className={styles.packageValue}>{tokensPerDollar} токенов за 1₽</p> */}
                 </div>
 
                 <div className={styles.packagePrice}>{pkg.price}₽</div>
@@ -132,10 +208,14 @@ const TokenPackageCard = ({ package: pkg, onPurchase, isLoading }: TokenPackageC
                     ) : (
                         <>
                             <FaCreditCard />
-                            Купить
+                            Оплатить через YooKassa
                         </>
                     )}
                 </button>
+
+                <div className={styles.paymentInfo}>
+                    <small>Безопасная оплата картой</small>
+                </div>
             </div>
         </div>
     );

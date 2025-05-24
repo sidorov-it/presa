@@ -41,7 +41,7 @@ export async function deductTokens(data: TokenUsageData): Promise<boolean> {
     const { userId, amount, description, llmRequestId, metadata } = data;
 
     // Start transaction
-    return await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx: any) => {
         // Get current balance
         const userTokens = await tx.userTokens.findUnique({
             where: { userId },
@@ -92,7 +92,7 @@ export async function addTokens(
     purchaseId?: string,
     metadata?: any
 ): Promise<void> {
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: any) => {
         // Ensure user tokens record exists
         let userTokens = await tx.userTokens.findUnique({
             where: { userId },
