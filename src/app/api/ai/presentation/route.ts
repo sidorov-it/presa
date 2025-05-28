@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
                         instructions: topics[i].instructions,
                         options: {
                             userId,
-                            presentationId: '1',
+                            // presentationId: '1',
                         },
                     }
                 );

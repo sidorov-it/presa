@@ -12,6 +12,8 @@ const nextConfig = {
         // !! WARN !!
         ignoreBuildErrors: true,
     },
+    // Включаем source maps для дебага
+    productionBrowserSourceMaps: true,
     images: {
         remotePatterns: [
             {
@@ -23,9 +25,14 @@ const nextConfig = {
     compiler: {
         // Удаляем console.log в production
         // eslint-disable-next-line no-undef
-        removeConsole: process.env.NODE_ENV === 'production',
+        // removeConsole: process.env.NODE_ENV === 'production',
     },
-    webpack(config, { dev, isServer }) {
+    webpack(config, { dev, _isServer }) {
+        // Включаем source maps для дебага в development
+        if (dev) {
+            config.devtool = 'eval-source-map';
+        }
+
         // Базовые оптимизации только для production
         if (!dev) {
             // Агрессивная оптимизация split chunks только для production

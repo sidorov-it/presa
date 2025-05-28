@@ -1,16 +1,18 @@
 'use client';
 
 import { Button } from '@/components/ui/Button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card/Card';
 import { useThemeStore } from '@/store/themeStore';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 import styles from './page.module.css';
+import ThemePreviewBlock from './components/ThemePreviewBlock';
+import { useRouter } from 'next/navigation';
 
 export default function ThemesPage() {
-    const { themes, loadThemes, deleteTheme } = useThemeStore();
+    const { themes, loadThemes, addTheme, deleteTheme } = useThemeStore();
+    const router = useRouter();
 
     useEffect(() => {
         loadThemes().catch(error => {
@@ -18,6 +20,14 @@ export default function ThemesPage() {
             toast.error('Failed to load themes');
         });
     }, [loadThemes]);
+
+    const handleDuplicate = async (themeId: string) => {
+        const theme = themes.find(theme => theme.id === themeId);
+        if (theme) {
+            const result = await addTheme(theme);
+            router.push(`/themes/${result.id}`);
+        }
+    };
 
     const handleDelete = async (themeId: string) => {
         if (window.confirm('Are you sure you want to delete this theme?')) {
@@ -45,22 +55,29 @@ export default function ThemesPage() {
 
             <div className={styles.themesGrid}>
                 {themes.map(theme => (
-                    <Card key={theme.id}>
-                        <CardHeader>
-                            <CardTitle>{theme.name}</CardTitle>
-                            {theme.description && <CardDescription>{theme.description}</CardDescription>}
-                        </CardHeader>
-                        <CardContent>
-                            <div className={styles.cardActions}>
-                                <Link href={`/themes/${theme.id}`}>
-                                    <Button variant="outline">Редактировать</Button>
-                                </Link>
-                                <Button variant="destructive" size="icon" onClick={() => handleDelete(theme.id)}>
-                                    <Trash2 className={styles.deleteIcon} />
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <ThemePreviewBlock
+                        key={theme.id}
+                        theme={theme}
+                        onClickEdit={() => router.push(`/themes/${theme.id}`)}
+                        onClickDuplicate={() => handleDuplicate(theme.id)}
+                        onClickDelete={() => handleDelete(theme.id)}
+                    />
+                    // <Card key={theme.id}>
+                    //     <CardHeader>
+                    //         <CardTitle>{theme.name}</CardTitle>
+                    //         {theme.description && <CardDescription>{theme.description}</CardDescription>}
+                    //     </CardHeader>
+                    //     <CardContent>
+                    //         <div className={styles.cardActions}>
+                    //             <Link href={`/themes/${theme.id}`}>
+                    //                 <Button variant="outline">Редактировать</Button>
+                    //             </Link>
+                    //             <Button variant="destructive" size="icon" onClick={() => handleDelete(theme.id)}>
+                    //                 <Trash2 className={styles.deleteIcon} />
+                    //             </Button>
+                    //         </div>
+                    //     </CardContent>
+                    // </Card>
                 ))}
             </div>
         </div>
