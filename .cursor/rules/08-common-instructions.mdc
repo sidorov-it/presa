@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: |
+  При выполнении инструкций, не нужно запускать сборщик или сервер в проекте.
+alwaysApply: true
+---

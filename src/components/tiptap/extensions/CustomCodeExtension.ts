@@ -15,9 +15,9 @@ function getSizeClasses(fontSize: string) {
             return ['heading-text', 'heading-2'];
         case '2.5em': // Heading 1
             return ['heading-text', 'heading-1'];
-        case '3.45em': // Title
-            return ['heading-text', 'title-text'];
         case '5em': // Big heading
+            return ['heading-text', 'title-text'];
+        case '3.45em': // Title
             return ['heading-text', 'big-heading'];
         case '7.5em': // Very big heading
             return ['heading-text', 'very-big-heading'];

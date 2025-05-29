@@ -35,7 +35,9 @@ export default function BlockDesign({
     return (
         <div
             style={{
-                marginTop: '1rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px',
             }}
         >
             <div>
@@ -74,7 +76,7 @@ export default function BlockDesign({
 
                     {theme.design.blocks.blockFillColorsType === 'custom' && (
                         <div className={styles.customColorContainer}>
-                            <Span>Совет: вы можете добавить несколько цветов для создания эффекта чередования.</Span>
+                            {/* <Span>Совет: вы можете добавить несколько цветов для создания эффекта чередования.</Span> */}
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                                 {(theme.design.blocks.blockBackgroundCustomColors || ['#000000']).map(
@@ -156,7 +158,7 @@ export default function BlockDesign({
                                         handleDesignChange({
                                             blocks: {
                                                 ...theme.design.blocks,
-                                                backgroundFillType: option.value as 'fill' | 'semi' | 'none',
+                                                backgroundBlockFillType: option.value as 'fill' | 'semi' | 'none',
                                             },
                                         })
                                     }

@@ -51,7 +51,7 @@ enum ImageShape {
   wiggle
 }
 
-enum BackgroundFillType {
+enum BackgroundBlockFillType {
   fill
   semi
   none
@@ -163,7 +163,7 @@ type ThemeSlide {
 
 type ThemeBlocks {
   backgroundColor             String
-  backgroundFillType          BackgroundFillType
+  backgroundBlockFillType     BackgroundBlockFillType
   borderWidth                 BorderWidth
   blockFillColorsType         BlockFillColorsType
   blockBackgroundCustomColors String[]

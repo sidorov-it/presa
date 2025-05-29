@@ -62,7 +62,6 @@
     background-color: var(--presentation-block-background, #ffffff);
 }
 
-
 /* Для 1 цвета */
 [style*="--presentation-block-background-custom-count: 1"] .itemContainer {
     background: var(--presentation-block-background-custom-1, var(--presentation-block-background));

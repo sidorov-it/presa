@@ -1,4 +1,4 @@
-import { ChartElement, SmartLayoutElement, SmartLayoutItem } from '@/types';
+import { ChartElement, SmartLayoutElement, SmartLayoutItem, Element } from '@/types';
 import { ViewerElement } from '@/types/elements';
 import {
     BarChart,
@@ -17,9 +17,10 @@ import {
 } from 'recharts';
 
 import styles from './ElementViewer.module.css';
+import { ElementType } from '@/types/elements';
 
 interface ElementViewerProps {
-    element: ChartElement & ViewerElement;
+    element: Element & ViewerElement;
     slideId: string;
     layoutId: string;
 }
@@ -53,8 +54,8 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
 
     // Get text-specific theme styles
     const getTextStyles = () => {
-        const isHeading = element.elementTypeId === 'heading';
-        const isQuote = element.elementTypeId === 'quote';
+        const isHeading = element.elementTypeId === ElementType.TEXT;
+        const isQuote = element.elementTypeId === ElementType.QUOTE;
 
         const textStyles: React.CSSProperties = {
             // Apply text styling from theme variables
@@ -80,50 +81,11 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
         return textStyles;
     };
 
-    // Get button-specific styles
-    const getButtonStyles = () => {
-        const buttonStyles: React.CSSProperties = {
-            backgroundColor: 'var(--presentation-primary-accent)',
-            color: '#fff',
-            padding: '0.5rem 1rem',
-            borderRadius: '0.25rem',
-            fontWeight: 'bold',
-            display: 'inline-block',
-            cursor: 'pointer',
-            textAlign: 'center',
-        };
-
-        return buttonStyles;
-    };
-
-    // Get shape-specific styles
-    const getShapeStyles = () => {
-        const shapeStyles: React.CSSProperties = {
-            backgroundColor: element.backgroundColor || 'var(--presentation-shapes-color)',
-            width: '100%',
-            height: '100%',
-            minHeight: '50px',
-        };
-
-        if (element.shapeType === 'circle') {
-            shapeStyles.borderRadius = '50%';
-        } else if (element.shapeType === 'triangle') {
-            // Triangle shape is handled with a pseudo-element in CSS
-            shapeStyles.position = 'relative';
-            shapeStyles.backgroundColor = 'transparent';
-        }
-
-        return shapeStyles;
-    };
-
     // Render element based on its type
     const renderElementContent = () => {
         switch (element.elementTypeId) {
-            case 'text':
-            case 'heading':
-            case 'paragraph':
-            case 'editor':
-            case 'quote':
+            case ElementType.TEXT:
+            case ElementType.QUOTE:
                 // For text elements, render HTML content from 'content' property with theme styles
                 return (
                     <div
@@ -133,7 +95,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                     />
                 );
 
-            case 'image':
+            case ElementType.IMAGE:
                 // For image elements, render the image
                 return (
                     <div className={styles.container}>
@@ -145,120 +107,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                     </div>
                 );
 
-            case 'video':
-                // For video elements, render the video player
-                return (
-                    <div className={styles.container}>
-                        <video
-                            controls
-                            style={{ width: '100%', height: '100%' }}
-                            src={(element as any).src || element.url || ''}
-                        >
-                            <track kind="captions" src="" label="English" />
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-                );
-
-            case 'button':
-                // For button elements, render a styled button
-                return (
-                    <div
-                        className={styles.button}
-                        style={getButtonStyles()}
-                        dangerouslySetInnerHTML={{ __html: element.content || 'Button' }}
-                    />
-                );
-
-            case 'toggle':
-                // For toggle elements, render a toggle switch with label
-                return (
-                    <div className={styles.toggle}>
-                        <div className={styles.toggleSwitch}>
-                            <div className={styles.toggleIndicator} />
-                        </div>
-                        <div
-                            className={styles.toggleLabel}
-                            dangerouslySetInnerHTML={{ __html: element.content || 'Toggle' }}
-                        />
-                    </div>
-                );
-
-            case 'shape':
-                // For shape elements, render the appropriate shape
-                return (
-                    <div
-                        className={`${styles.shape} ${element.shapeType ? styles[element.shapeType] : ''}`}
-                        style={getShapeStyles()}
-                    />
-                );
-
-            case 'bullet-list':
-            case 'numbered-list':
-            case 'todo-list':
-                // For list elements, render HTML content with appropriate list styling
-                return (
-                    <div
-                        className={`tiptap ProseMirror viewer-tiptap ${styles.list} ${styles[element.elementTypeId]}`}
-                        style={getTextStyles()}
-                        dangerouslySetInnerHTML={{ __html: element.content || '' }}
-                    />
-                );
-
-            case 'table':
-                // For table elements, render HTML content with table styling
-                return (
-                    <div
-                        className={`tiptap ProseMirror viewer-tiptap ${styles.table}`}
-                        dangerouslySetInnerHTML={{ __html: element.content || '' }}
-                    />
-                );
-
-            case 'box':
-                // For box elements, render a styled container with content
-                return (
-                    <div
-                        className={styles.box}
-                        style={{
-                            ...getElementStyles(),
-                            padding: '1rem',
-                            backgroundColor: element.backgroundColor || 'var(--presentation-accent-blocks-color)',
-                            color: '#fff',
-                        }}
-                    >
-                        <div dangerouslySetInnerHTML={{ __html: element.content || '' }} />
-                    </div>
-                );
-
-            case 'smart-layout': {
-                // For smart layout elements, render the layout with its items
-                const smartLayout = element as unknown as SmartLayoutElement;
-                return (
-                    <div className={styles.smartLayout}>
-                        {smartLayout.items?.map((item: SmartLayoutItem) => (
-                            <div key={item.id} className={styles.smartLayoutItem}>
-                                {item.imageUrl && (
-                                    <img
-                                        src={item.imageUrl}
-                                        alt={item.title || 'Item image'}
-                                        className={styles.smartLayoutItemImage}
-                                    />
-                                )}
-                                {item.title && <h3 className={styles.smartLayoutItemTitle}>{item.title}</h3>}
-                                {item.description && (
-                                    <p className={styles.smartLayoutItemDescription}>{item.description}</p>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                );
-            }
-
-            case 'column-chart':
-            case 'bar-chart':
-            case 'line-chart':
-            case 'pie-chart':
-            case 'donut-chart': {
+            case ElementType.CHART:
                 // For chart elements, render the appropriate chart
                 const chartElement = element as unknown as ChartElement;
                 const data = chartElement.data || [];
@@ -368,7 +217,64 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                     default:
                         return <div className={styles.container}>Unsupported chart type</div>;
                 }
+
+            case ElementType.SMART_LAYOUT: {
+                // For smart layout elements, render the layout with its items
+                const smartLayout = element as unknown as SmartLayoutElement;
+                return (
+                    <div className={styles.smartLayout} data-test="smart-layout">
+                        {smartLayout.items?.map((item: SmartLayoutItem) => (
+                            <div key={item.id} className={styles.smartLayoutItem}>
+                                {item.imageUrl && (
+                                    <img
+                                        src={item.imageUrl}
+                                        alt={item.title || 'Item image'}
+                                        className={styles.smartLayoutItemImage}
+                                    />
+                                )}
+                                {item.title && (
+                                    <span
+                                        dangerouslySetInnerHTML={{ __html: item.title }}
+                                        className={styles.smartLayoutItemTitle}
+                                    />
+                                )}
+                                {item.text && (
+                                    <span
+                                        dangerouslySetInnerHTML={{ __html: item.text }}
+                                        className={styles.smartLayoutItemDescription}
+                                    />
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                );
             }
+
+            case ElementType.TABLE:
+                // For table elements, render HTML content with table styling
+                return (
+                    <div
+                        className={`tiptap ProseMirror viewer-tiptap ${styles.table}`}
+                        dangerouslySetInnerHTML={{ __html: element.content || '' }}
+                    />
+                );
+
+            case ElementType.BOX:
+                // For box elements, render a styled container with content
+                return (
+                    <div
+                        className={styles.box}
+                        style={{
+                            ...getElementStyles(),
+                            padding: '1rem',
+                            backgroundColor: element.backgroundColor || 'var(--presentation-accent-blocks-color)',
+                            color: '#fff',
+                        }}
+                    >
+                        <div dangerouslySetInnerHTML={{ __html: element.content || '' }} />
+                    </div>
+                );
+
             default:
                 // For unsupported element types, render a placeholder
                 return <div className={styles.container}>Unsupported element type: {element.elementTypeId}</div>;

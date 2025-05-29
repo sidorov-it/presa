@@ -4,7 +4,7 @@ import { Label } from '../../ui/Label';
 import { Select } from '../../ui/Select';
 import { Input } from '../../ui/Input/Input';
 
-import { Theme } from '@/types/theme';
+import { Theme, ThemeDesign } from '@/types/theme';
 import { ThemeColors } from '@/types/theme';
 import { Button } from '../../ui/Button';
 import styles from '../ThemeEditor.module.css';
@@ -12,25 +12,23 @@ import styles from '../ThemeEditor.module.css';
 export default function Colors({
     theme,
     handleColorsChange,
+    handleDesignChange,
 }: {
     theme: Theme;
     handleColorsChange: (colors: Partial<ThemeColors>) => void;
+    handleDesignChange: (design: Partial<ThemeDesign>) => void;
 }) {
     return (
-        <div style={{ marginTop: '16px', width: '100%' }}>
+        <div style={{ width: '100%' }}>
             <div>
-                <h3 className={styles.sectionTitle}>Цвета</h3>
+                <h3 className={styles.sectionTitle}>Colors</h3>
                 <h4 className={styles.sectionSubtitle}>
                     Палитра
                     <InfoIcon tooltip="Эти цвета появляются в палитре цветов при использовании этой темы. Основной акцентный цвет используется по умолчанию для ссылок, кнопок и других элементов." />
                 </h4>
 
-                <div
-                    style={{
-                        marginTop: '1rem',
-                    }}
-                >
-                    <div>
+                <div style={{ marginBottom: '20px' }}>
+                    <div style={{ marginBottom: '16px' }}>
                         <Label>Основной акцентный цвет</Label>
                         <ColorPicker
                             value={theme.colors?.primaryAccent}
@@ -39,7 +37,7 @@ export default function Colors({
                     </div>
                     <div>
                         <Label>Дополнительные цвета (необязательно)</Label>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
                             {theme.colors.secondaryAccents.map((color, index) => (
                                 <ColorPicker
                                     key={index}
@@ -63,12 +61,19 @@ export default function Colors({
                             ))}
 
                             <Button
-                                variant="solid"
+                                variant="outline"
+                                size="sm"
                                 onClick={() =>
                                     handleColorsChange({
                                         secondaryAccents: [...(theme.colors.secondaryAccents || []), '#000000'],
                                     })
                                 }
+                                style={{
+                                    marginTop: '8px',
+                                    alignSelf: 'flex-start',
+                                    fontSize: '14px',
+                                    padding: '8px 16px',
+                                }}
                             >
                                 Добавить цвет
                             </Button>
@@ -77,17 +82,9 @@ export default function Colors({
                 </div>
             </div>
 
-            <div
-                style={{
-                    marginTop: '1rem',
-                }}
-            >
-                <h3 style={{ fontSize: '1.125rem', lineHeight: '1.75rem', fontWeight: 600 }}>Текст</h3>
-                <div
-                    style={{
-                        marginTop: '1rem',
-                    }}
-                >
+            <div>
+                <h4 className={styles.sectionSubtitle}>Текст</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div>
                         <Label>Цвет заголовков</Label>
                         <ColorPicker
@@ -105,19 +102,11 @@ export default function Colors({
                 </div>
             </div>
 
-            <div
-                style={{
-                    marginTop: '1rem',
-                }}
-            >
-                <h3 style={{ fontSize: '1.125rem', lineHeight: '1.75rem', fontWeight: 600 }}>Фон</h3>
-                <div
-                    style={{
-                        marginTop: '1rem',
-                    }}
-                >
+            <div>
+                <h4 className={styles.sectionSubtitle}>Фон</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div>
-                        <Label>Цвет фона карточки</Label>
+                        <Label>Цвет слайда</Label>
                         <ColorPicker
                             value={theme.colors.slideBackground}
                             onChange={color => handleColorsChange({ slideBackground: color })}
@@ -125,11 +114,11 @@ export default function Colors({
                     </div>
                     <div>
                         <Label>Цвет фона страницы</Label>
-                        <div style={{ display: 'flex', marginTop: '0.5rem', flexDirection: 'column', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', marginTop: '8px', flexDirection: 'column', gap: '8px' }}>
                             <Select
                                 options={[
-                                    { value: 'color', label: 'Сплошной цвет' },
-                                    { value: 'image', label: 'Изображение' },
+                                    { value: 'color', label: 'Solid color' },
+                                    { value: 'image', label: 'Image' },
                                 ]}
                                 value={[theme.colors.pageBackground.type]}
                                 onValueChange={({ value }: { value: string[] }) =>

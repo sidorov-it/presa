@@ -284,7 +284,7 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
             // Block design
             document.documentElement.style.setProperty(
                 '--presentation-block-fill-type',
-                theme.design.blocks.backgroundFillType
+                theme.design.blocks.backgroundBlockFillType
             );
 
             let blockBorderWidth = '0px';
@@ -346,7 +346,10 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
                 document.documentElement.style.setProperty('--presentation-button-radius', '8px');
             }
 
-            document.documentElement.style.setProperty('--presentation-link-color', theme.design.buttons.linkColor);
+            document.documentElement.style.setProperty(
+                '--presentation-link-color',
+                theme.design.buttons.linkColor || theme.colors.primaryAccent
+            );
 
             // Определяем isDarkMode и устанавливаем colorMode Chakra
             let isDarkMode = false;

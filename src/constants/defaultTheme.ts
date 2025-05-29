@@ -44,7 +44,7 @@ export const DEFAULT_THEME: Omit<Theme, 'id' | 'createdAt' | 'updatedAt'> = {
         },
         blocks: {
             backgroundColor: '#ffffff', // White
-            backgroundFillType: 'fill',
+            backgroundBlockFillType: 'fill',
             borderWidth: 'thin',
             shadow: 'sm',
             blockFillColorsType: 'subtle',

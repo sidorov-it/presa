@@ -5,7 +5,7 @@ import ColorPicker from '@/components/ui/ColorPicker';
 
 import styles from './ButtonsDesign.module.css';
 
-export default function BlockDesign({
+export default function ButtonsDesign({
     theme,
     handleDesignChange,
 }: {
@@ -18,7 +18,7 @@ export default function BlockDesign({
                 marginTop: '1rem',
             }}
         >
-            <div>
+            {/* <div>
                 <Label>Цвет кнопки</Label>
                 <ColorPicker
                     value={theme.design.buttons.buttonColor}
@@ -32,7 +32,7 @@ export default function BlockDesign({
                         });
                     }}
                 />
-            </div>
+            </div> */}
             <div>
                 <Label>Форма кнопки</Label>
 

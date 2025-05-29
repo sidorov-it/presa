@@ -65,16 +65,16 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
             },
             blocks: {
                 backgroundColor: '#ffffff',
-                backgroundFillType: 'fill',
+                backgroundBlockFillType: 'fill',
                 blockFillColorsType: 'subtle',
                 blockBackgroundCustomColors: [],
                 borderWidth: 'thin',
                 shadow: 'sm',
             },
             buttons: {
-                buttonColor: '#3b82f6',
-                buttonShape: 'rounded',
-                linkColor: '#2563eb',
+                // buttonColor: '#3b82f6',
+                // buttonShape: 'rounded',
+                // linkColor: '#2563eb',
             },
         },
     });
@@ -112,27 +112,27 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
                 <div className={styles.leftSectionContent}>
                     <div>
                         <Label htmlFor="theme-name" className={styles.label}>
-                            Название темы
+                            Theme name
                         </Label>
                         <Input
                             id="theme-name"
                             value={theme.name}
                             onChange={e => setTheme({ ...theme, name: e.target.value })}
-                            placeholder="Введите название темы"
+                            placeholder="Enter theme name"
                             className={styles.input}
                         />
                     </div>
 
                     <ThemeEditor theme={theme} onThemeChange={setTheme} />
+                </div>
 
-                    <div className={styles.bottomSection}>
-                        <Button variant="outline" onClick={() => router.push('/themes')}>
-                            Отменить
-                        </Button>
-                        <Button variant="solid" colorScheme="blue" onClick={handleSave}>
-                            Сохранить
-                        </Button>
-                    </div>
+                <div className={styles.bottomSection}>
+                    <Button variant="outline" onClick={() => router.push('/themes')}>
+                        Cancel
+                    </Button>
+                    <Button variant="solid" colorScheme="blue" onClick={handleSave}>
+                        Save theme
+                    </Button>
                 </div>
             </div>
 

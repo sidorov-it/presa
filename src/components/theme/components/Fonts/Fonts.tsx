@@ -20,16 +20,12 @@ export default function Fonts({
     handleTypographyChange: (typography: Partial<ThemeTypography>) => void;
 }) {
     return (
-        <div style={{ marginTop: '16px' }}>
+        <div style={{ width: '100%' }}>
             <div>
                 <h3 className={styles.sectionTitle}>Шрифты</h3>
 
-                <h4 className={styles.sectionSubtitle}>Шрифт заголовков</h4>
-                <div
-                    style={{
-                        marginTop: '1rem',
-                    }}
-                >
+                <h4 className={styles.sectionSubtitle}>Заголовок</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div>
                         <Label>Шрифт</Label>
                         <Select
@@ -45,7 +41,7 @@ export default function Fonts({
                         />
                     </div>
                     <div>
-                        <Label>Толщина шрифта</Label>
+                        <Label>Толщина</Label>
                         <Select
                             options={FONT_WEIGHTS.map(weight => ({
                                 value: String(weight.value),
@@ -68,7 +64,7 @@ export default function Fonts({
                             </Accordion.ItemTrigger>
                             <Accordion.ItemContent>
                                 <Accordion.ItemBody>
-                                    <div style={{ display: 'flex', flexDirection: 'row', gap: '1rem' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'row', gap: '16px' }}>
                                         <div style={{ flex: '1' }}>
                                             <Label>Высота строки</Label>
                                             <Input
@@ -86,8 +82,8 @@ export default function Fonts({
                                                 }
                                             />
                                         </div>
-                                        <div style={{ flex: '1 1 0%' }}>
-                                            <Label>Расстояние между буквами</Label>
+                                        <div style={{ flex: '1' }}>
+                                            <Label>Интервал между буквами</Label>
                                             <Input
                                                 type="number"
                                                 variant="filled"
@@ -112,17 +108,9 @@ export default function Fonts({
                 </div>
             </div>
 
-            <div
-                style={{
-                    marginTop: '1rem',
-                }}
-            >
-                <h4 className={styles.sectionSubtitle}>Шрифт текста</h4>
-                <div
-                    style={{
-                        marginTop: '1rem',
-                    }}
-                >
+            <div>
+                <h4 className={styles.sectionSubtitle}>Основной текст</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div>
                         <Label>Шрифт</Label>
                         <Select
@@ -138,7 +126,7 @@ export default function Fonts({
                         />
                     </div>
                     <div>
-                        <Label>Толщина шрифта</Label>
+                        <Label>Толщина</Label>
                         <Select
                             options={FONT_WEIGHTS.map(weight => ({
                                 value: String(weight.value),
@@ -160,8 +148,8 @@ export default function Fonts({
                             </Accordion.ItemTrigger>
                             <Accordion.ItemContent>
                                 <Accordion.ItemBody>
-                                    <div style={{ display: 'flex', flexDirection: 'row', gap: '1rem' }}>
-                                        <div style={{ flex: '1 1 0%' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'row', gap: '16px' }}>
+                                        <div style={{ flex: '1' }}>
                                             <Label>Высота строки</Label>
                                             <Input
                                                 type="number"
@@ -178,8 +166,8 @@ export default function Fonts({
                                                 }
                                             />
                                         </div>
-                                        <div style={{ flex: '1 1 0%' }}>
-                                            <Label>Расстояние между буквами</Label>
+                                        <div style={{ flex: '1' }}>
+                                            <Label>Интервал между буквами</Label>
                                             <Input
                                                 type="number"
                                                 variant="filled"
