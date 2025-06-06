@@ -1,38 +1,70 @@
 @layer base {
     :root {
-        --background: 0 0% 100%;
-        --foreground: 222.2 84% 4.9%;
+        --background: 0 0% 4%; /* Jet Black */
+        --foreground: 0 0% 96%; /* Cool White */
 
-        --card: 0 0% 100%;
-        --card-foreground: 222.2 84% 4.9%;
+        --card: 0 0% 12%; /* Charcoal Gray */
+        --card-foreground: 0 0% 96%; /* Cool White */
 
-        --popover: 0 0% 100%;
-        --popover-foreground: 222.2 84% 4.9%;
+        --popover: 0 0% 12%; /* Charcoal Gray */
+        --popover-foreground: 0 0% 96%; /* Cool White */
 
-        --primary: 221.2 83.2% 53.3%;
-        --primary-foreground: 210 40% 98%;
+        --primary: 215 100% 50%; /* Electric Blue */
+        --primary-foreground: 0 0% 96%; /* Cool White */
 
-        --secondary: 210 40% 96.1%;
-        --secondary-foreground: 222.2 47.4% 11.2%;
+        --secondary: 244 83% 69%; /* Indigo Purple */
+        --secondary-foreground: 0 0% 96%; /* Cool White */
 
-        --muted: 210 40% 96.1%;
-        --muted-foreground: 215.4 16.3% 46.9%;
+        --muted: 210 19% 24%; /* Slate Gray */
+        --muted-foreground: 0 0% 63%; /* Steel Gray */
 
-        --accent: 210 40% 96.1%;
-        --accent-foreground: 222.2 47.4% 11.2%;
+        --accent: 180 100% 50%; /* Neon Cyan */
+        --accent-foreground: 0 0% 4%; /* Jet Black */
 
         --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 210 40% 98%;
+        --destructive-foreground: 0 0% 96%; /* Cool White */
 
-        --border: 214.3 31.8% 91.4%;
-        --input: 214.3 31.8% 91.4%;
-        --ring: 221.2 83.2% 53.3%;
+        --border: 210 19% 24%; /* Slate Gray */
+        --input: 210 19% 24%; /* Slate Gray */
+        --ring: 215 100% 50%; /* Electric Blue */
 
         --radius: 0.5rem;
 
+        /* Custom color variables for components */
+        --color-primary: #007BFF; /* Electric Blue */
+        --color-primary-dark: #0066CC;
+        --color-secondary: #6C63FF; /* Indigo Purple */
+        --color-accent: #00FFFF; /* Neon Cyan */
+        --color-text: #1A202C; /* Dark Gray for light theme */
+        --color-text-light: #718096; /* Gray for light theme */
+        --color-border: #E2E8F0; /* Light border for light theme */
+        --color-error: #FF4444;
+        --color-success: #00FF88;
+        --color-warning: #FFB800;
+        --color-background: #FFFFFF; /* White */
+        --color-surface: #F7FAFC; /* Light surface for light theme */
+        
+        /* Text sizes */
+        --text-xs: 0.75rem;
+        --text-sm: 0.875rem;
+        --text-base: 1rem;
+        --text-lg: 1.125rem;
+        --text-xl: 1.25rem;
+        
+        /* Radius sizes */
+        --radius-sm: 0.25rem;
+        --radius-md: 0.375rem;
+        --radius-lg: 0.5rem;
+        --radius-xl: 0.75rem;
+        
+        /* Shadow sizes */
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
         --block-margin: 1.125em;
         --grid-padding: 1.22em;
-        --grid-outline-solid: #5b5b5f;
+        --grid-outline-solid: #3A3F4B; /* Slate Gray */
 
         --card-font-scale: 1;
 
@@ -500,6 +532,13 @@
         --border: 217.2 32.6% 17.5%;
         --input: 217.2 32.6% 17.5%;
         --ring: 224.3 76.3% 48%;
+
+        /* Dark theme custom colors */
+        --color-background: #0B0B0B; /* Jet Black for dark theme */
+        --color-surface: #1E1E1E; /* Charcoal Gray */
+        --color-text: #F5F5F5; /* Cool White */
+        --color-text-light: #A0A0A0; /* Steel Gray */
+        --color-border: #3A3F4B; /* Slate Gray */
     }
 }
 
@@ -507,6 +546,8 @@
 
     body {
         font-feature-settings: "rlig" 1, "calt" 1;
+        /* background-color: var(--color-background); */
+        /* color: var(--color-text); */
     }
 }
 
@@ -553,22 +594,22 @@ em {
     td {
         padding: 0.5rem;
         border-width: 1px;
-        border-color: #D1D5DB;
+        border-color: var(--color-border);
         min-width: 100px;
     }
 
     tr {
         border-bottom-width: 1px;
-        border-bottom-color: #D1D5DB;
+        border-bottom-color: var(--color-border);
     }
 
     /* Опционально: стили для наведения и выделения */
     td:hover {
-        background-color: #F3F4F6;
+        background-color: var(--color-surface);
     }
 
     td.selected {
-        background-color: #EBF3FE;
+        background-color: rgba(0, 123, 255, 0.2); /* Electric Blue with opacity */
     }
 
     /* Общие стили для всех списков */
@@ -628,13 +669,13 @@ em {
             /* Чекбокс */
             input[type="checkbox"] {
                 border-radius: 0.25rem;
-                border-color: #D1D5DB;
+                border-color: var(--color-border);
                 width: 1rem;
                 height: 1rem;
-                color: #2563EB;
+                color: var(--color-primary);
 
                 &:focus {
-                    --ring-color: #3B82F6;
+                    --ring-color: #007BFF; /* Electric Blue */
                 }
             }
         }
@@ -714,8 +755,8 @@ em {
         padding-left: 1rem;
         padding-right: 1rem;
         border-radius: 0.375rem;
-        color: #ffffff;
-        background-color: #3B82F6;
+        color: #F5F5F5; /* Cool White */
+        background-color: #007BFF; /* Electric Blue */
         transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         transition-duration: 300ms;
@@ -725,13 +766,13 @@ em {
         &:focus {
             outline-style: none;
             box-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
-            --ring-color: #3B82F6;
+            --ring-color: #007BFF; /* Electric Blue */
             --ring-offset-width: 2px;
             box-shadow: 0 0 0 var(--ring-offset-width) var(--ring-offset-color), var(--ring-shadow);
         }
 
         &:hover {
-            background-color: #2563EB;
+            background-color: #00FFFF; /* Neon Cyan on hover */
         }
 
     }
@@ -796,7 +837,7 @@ em {
 
             input:checked+.toggle-label {
                 &:before {
-                    background-color: #3B82F6;
+                    background-color: #007BFF; /* Electric Blue */
                 }
 
                 &:after {
@@ -807,7 +848,7 @@ em {
             input:focus+.toggle-label {
                 &:before {
                     box-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
-                    --ring-color: #3B82F6;
+                    --ring-color: #007BFF; /* Electric Blue */
                     --ring-offset-width: 2px;
                     box-shadow: 0 0 0 var(--ring-offset-width) var(--ring-offset-color), var(--ring-shadow);
                 }
@@ -1074,7 +1115,7 @@ button[data-type="button"]:hover {
     }
 
     .toggle-header:hover {
-        background-color: #F9FAFB;
+        background-color: #1E1E1E; /* Charcoal Gray */
     }
 
     .toggle-content {
@@ -1097,10 +1138,10 @@ button[data-type="button"]:hover {
 
     /* Темная тема */
     .dark & {
-        border-color: #374151;
+        border-color: #3A3F4B; /* Slate Gray */
 
         .toggle-header:hover {
-            background-color: #1F2937;
+            background-color: #1E1E1E; /* Charcoal Gray */
         }
     }
 }
@@ -1116,15 +1157,15 @@ button[data-type="button"]:hover {
     background-color: #ffffff;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     max-height: 300px;
-    border: 1px solid #3b82f6;
+    border: 1px solid #007BFF; /* Electric Blue */
     /* Blue outline */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 123, 255, 0.3);
     min-width: 200px;
 }
 
 /* Element focus styles for keyboard navigation */
 .element-focus {
-    outline: 3px solid #3b82f6 !important;
+    outline: 3px solid #007BFF !important; /* Electric Blue */
     /* Blue outline */
     border-radius: 4px;
     position: relative;
@@ -1134,15 +1175,15 @@ button[data-type="button"]:hover {
 
 @keyframes pulse-focus {
     0% {
-        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.4); /* Electric Blue */
     }
 
     70% {
-        box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+        box-shadow: 0 0 0 8px rgba(0, 123, 255, 0); /* Electric Blue */
     }
 
     100% {
-        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); /* Electric Blue */
     }
 }
 
@@ -1167,15 +1208,15 @@ button[data-type="button"]:hover {
 }
 
 .slash-menu-item.selected {
-    color: #2563EB;
-    background-color: #EFF6FF;
+    color: #007BFF; /* Electric Blue */
+    background-color: #1E1E1E; /* Charcoal Gray */
 }
 
 .slash-menu-item-icon {
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #3B82F6;
+    color: #007BFF; /* Electric Blue */
     width: 20px;
     height: 20px;
 }
@@ -1195,9 +1236,9 @@ button[data-type="button"]:hover {
 
 /* Dark mode support */
 .dark .slash-menu {
-    border-color: #3B82F6;
-    background-color: #1F2937;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(59, 130, 246, 0.4);
+    border-color: #007BFF; /* Electric Blue */
+    background-color: #1E1E1E; /* Charcoal Gray */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 123, 255, 0.4);
 }
 
 .dark .slash-menu-item {
@@ -1205,18 +1246,18 @@ button[data-type="button"]:hover {
 }
 
 .dark .slash-menu-item:hover {
-    background-color: #1E3A8A;
-    --bg-opacity: 0.3;
+    background-color: #00FFFF; /* Neon Cyan */
+    --bg-opacity: 0.1;
 }
 
 .dark .slash-menu-item.selected {
-    color: #60A5FA;
-    background-color: #1E3A8A;
-    --bg-opacity: 0.3;
+    color: #00FFFF; /* Neon Cyan */
+    background-color: #007BFF; /* Electric Blue */
+    --bg-opacity: 0.2;
 }
 
 .dark .slash-menu-item-icon {
-    color: #60A5FA;
+    color: #00FFFF; /* Neon Cyan */
 }
 
 .dark .slash-menu-no-results {
@@ -1236,7 +1277,7 @@ button[data-type="button"]:hover {
     border-radius: 0.375rem;
     background-color: #ffffff;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    border: 1px solid #3b82f6;
+    border: 1px solid #007BFF; /* Electric Blue */
     box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.1);
 }
 
@@ -1246,12 +1287,12 @@ button[data-type="button"]:hover {
 }
 
 .dark .tippy-box[data-theme~='light'] {
-    background-color: #1F2937;
-    border: 1px solid #3b82f6;
+    background-color: #1E1E1E; /* Charcoal Gray */
+    border: 1px solid #007BFF; /* Electric Blue */
 }
 
 .slash-menu-item.selected {
-    background-color: #EFF6FF;
+    background-color: #1E1E1E; /* Charcoal Gray */
 }
 
 .svg-inline--fa {

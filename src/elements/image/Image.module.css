@@ -6,11 +6,11 @@
 .dot {
     position: absolute; 
     z-index: 20; 
-    border: 2px solid #3b82f6; /* Синяя рамка */
+    border: 2px solid var(--color-primary);
     border-radius: 2px;
     width: 8px; 
     height: 8px; 
-    background-color: white; 
+    background-color: var(--color-surface); 
 }
 
 .dotTopLeft {
@@ -71,13 +71,13 @@
     cursor: pointer;
     transition-property: background-color,border-color,color,fill,stroke,opacity,box-shadow,transform;
     transition-duration: 200ms;
-    color: #726e6e;
+    color: var(--color-text-light);
     padding: 0.5rem;
 }
 
 .addTextPlaceholder:hover {
     opacity: 1;
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 123, 255, 0.1);
 }
 
 .leftTextPlaceholder {
@@ -94,9 +94,10 @@
     padding: 1rem; 
     border-radius: 0.25rem; 
     border-width: 1px; 
-    border-color: #FECACA; 
+    border-color: var(--color-error); 
+    background-color: rgba(255, 68, 68, 0.1);
     text-align: center; 
-    color: #EF4444; 
+    color: var(--color-error); 
 }
 
 .selectedBorder {
@@ -108,7 +109,7 @@
     z-index: 10; 
     border-radius: var(--presentation-slide-border-radius); 
     border-width: 2px; 
-    border-color: #3B82F6; 
+    border-color: var(--color-primary); 
     pointer-events: none; 
 }
 
@@ -137,5 +138,5 @@
     transition-property: opacity;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 300ms; 
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); 
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1); 
 }

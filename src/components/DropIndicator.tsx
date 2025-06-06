@@ -372,7 +372,7 @@ const DropIndicator = () => {
                 position: 'fixed',
                 zIndex: 9999,
                 pointerEvents: 'none',
-                backgroundColor: '#3b82f6', // Blue color
+                backgroundColor: '#007BFF', // Electric Blue
                 transition: 'all 150ms ease-in-out',
                 boxShadow: '0 0 6px rgba(59, 130, 246, 0.6)', // Enhanced glow
                 borderRadius: '3px',
@@ -465,10 +465,10 @@ const DropIndicator = () => {
         };
 
         const colors: Record<IndicatorType, string> = {
-            element: '#3b82f6', // blue
-            cell: '#3b82f6', // red
-            layout: '#3b82f6', // green
-            slide: '#3b82f6', // purple
+                element: '#007BFF', // Electric Blue
+    cell: '#007BFF', // Electric Blue
+    layout: '#00FFFF', // Neon Cyan
+    slide: '#6C63FF', // Indigo Purple
             column: '#4f46e5', // indigo - different color for column indicator
             row: '#4f46e5', // indigo - same color as column for consistency
         };

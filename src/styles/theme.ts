@@ -23,24 +23,57 @@ const config = defineConfig({
         tokens: {
             colors: {
                 background: {
-                    DEFAULT: { value: '#F7F9FC' },
-                    dark: { value: '#1A202C' },
+                    DEFAULT: { value: '#0B0B0B' }, /* Jet Black */
+                    dark: { value: '#0B0B0B' }, /* Jet Black */
                 },
                 text: {
-                    DEFAULT: { value: '#2D3748' },
-                    dark: { value: '#F7FAFC' },
+                    DEFAULT: { value: '#F5F5F5' }, /* Cool White */
+                    dark: { value: '#F5F5F5' }, /* Cool White */
                 },
                 primary: {
-                    50: { value: '#E3F2FD' },
-                    100: { value: '#BBDEFB' },
-                    200: { value: '#90CAF9' },
-                    300: { value: '#64B5F6' },
-                    400: { value: '#42A5F5' },
-                    500: { value: '#2196F3' },
-                    600: { value: '#1E88E5' },
-                    700: { value: '#1976D2' },
-                    800: { value: '#1565C0' },
-                    900: { value: '#0D47A1' },
+                    50: { value: '#E3F2FF' },
+                    100: { value: '#CCE6FF' },
+                    200: { value: '#99CCFF' },
+                    300: { value: '#66B3FF' },
+                    400: { value: '#3399FF' },
+                    500: { value: '#007BFF' }, /* Electric Blue */
+                    600: { value: '#0066CC' },
+                    700: { value: '#004C99' },
+                    800: { value: '#003366' },
+                    900: { value: '#001A33' },
+                },
+                secondary: {
+                    50: { value: '#F0F0FF' },
+                    100: { value: '#E1E1FF' },
+                    200: { value: '#C3C3FF' },
+                    300: { value: '#A5A5FF' },
+                    400: { value: '#8787FF' },
+                    500: { value: '#6C63FF' }, /* Indigo Purple */
+                    600: { value: '#5B52E6' },
+                    700: { value: '#4A41CC' },
+                    800: { value: '#3A30B3' },
+                    900: { value: '#291F99' },
+                },
+                accent: {
+                    50: { value: '#E6FFFF' },
+                    100: { value: '#CCFFFF' },
+                    200: { value: '#99FFFF' },
+                    300: { value: '#66FFFF' },
+                    400: { value: '#33FFFF' },
+                    500: { value: '#00FFFF' }, /* Neon Cyan */
+                    600: { value: '#00CCCC' },
+                    700: { value: '#009999' },
+                    800: { value: '#006666' },
+                    900: { value: '#003333' },
+                },
+                surface: {
+                    DEFAULT: { value: '#1E1E1E' }, /* Charcoal Gray */
+                },
+                border: {
+                    DEFAULT: { value: '#3A3F4B' }, /* Slate Gray */
+                },
+                muted: {
+                    DEFAULT: { value: '#A0A0A0' }, /* Steel Gray */
                 },
             },
             spacing: {
@@ -48,20 +81,15 @@ const config = defineConfig({
                 '4': { value: '1rem' },
                 '8': { value: '2rem' },
             },
-            // borderColor: {
-            //     DEFAULT: { value: '#E2E8F0' },
-            // },
-            // boxShadow: {
-            //     outline: { value: '0 0 0 3px rgba(66, 153, 225, 0.6)' },
-            // },
         },
 
         // Semantic tokens (references to base tokens)
         semanticTokens: {
             colors: {
-                brand: { value: '{colors.primary.500}' },
-                accent: { value: '{colors.primary.700}' },
-                buttonPrimary: { value: '{colors.primary.500}' },
+                brand: { value: '{colors.primary.500}' }, /* Electric Blue */
+                accent: { value: '{colors.accent.500}' }, /* Neon Cyan */
+                buttonPrimary: { value: '{colors.primary.500}' }, /* Electric Blue */
+                buttonSecondary: { value: '{colors.secondary.500}' }, /* Indigo Purple */
             },
         },
 

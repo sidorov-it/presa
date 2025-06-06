@@ -9,15 +9,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #f9fafb;
+    background-color: var(--color-background);
 }
 
 .spinner {
     height: 3rem;
     width: 3rem;
     border-radius: 9999px;
-    border-top: 2px solid #3b82f6;
-    border-bottom: 2px solid #3b82f6;
+    border-top: 2px solid var(--color-primary);
+    border-bottom: 2px solid var(--color-primary);
     animation: spin 1s linear infinite;
 }
 
@@ -33,29 +33,29 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #f9fafb;
+    background-color: var(--color-background);
 }
 
 .notFoundTitle {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #1f2937;
+    color: var(--color-text);
     margin-bottom: 1rem;
 }
 
 .notFoundText {
-    /* color: #4b5563; */
+    color: var(--color-text-light);
 }
 
 .header {
-    background-color: var(--chakra-colors-neutral-background-default);
-    border-bottom: 1px solid #e5e7eb;
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
     padding: 1rem;
     position: sticky;
     top: 0;
     z-index: 100;
-    color: var(--chakra-colors-gray-400);
-
+    color: var(--color-text);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .headerContent {
@@ -75,7 +75,7 @@
 .logo {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--primary);
+    color: var(--color-primary);
 }
 
 .headerRight {
@@ -96,14 +96,15 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.375rem 0.75rem;
-    background-color: #dbeafe;
-    color: #1d4ed8;
+    background-color: var(--color-primary);
+    color: var(--color-text);
     border-radius: var(--radius-md);
-    transition: background-color 150ms;
+    transition: all 150ms ease;
 }
 
 .viewButton:hover {
-    background-color: #bfdbfe;
+    background-color: var(--color-accent);
+    color: var(--color-background);
 }
 
 .viewButtonText {
@@ -115,22 +116,23 @@
     margin-left: 0.5rem;
     padding: 0.5rem;
     border-radius: 9999px;
+    transition: all 150ms ease;
 }
 
 .settingsButton:hover {
-    background-color: #f3f4f6;
+    background-color: var(--color-background);
 }
 
 .settingsButton:focus {
     outline: none;
     ring: 2px;
-    ring-color: #3b82f6;
+    ring-color: var(--color-primary);
 }
 
 .settingsIcon {
     width: 1.5rem;
     height: 1.5rem;
-    /* color: #4b5563; */
+    color: var(--color-text-light);
 }
 
 .userInfo {
@@ -140,11 +142,11 @@
     cursor: pointer;
     padding: 0.375rem 0.75rem;
     border-radius: var(--radius-md);
-    transition: background-color 150ms;
+    transition: all 150ms ease;
 }
 
 .userInfo:hover {
-    background-color: var(--chakra-colors-neutral-surface-subtle);
+    background-color: var(--color-background);
 }
 
 .userIcon {
@@ -163,10 +165,10 @@
 }
 
 .footer {
-    background-color: var(--chakra-colors-neutral-background-default);
-    border-top: 1px solid #e5e7eb;
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
     padding: 0.5rem 1rem;
-    color: var(--chakra-colors-gray-400);
+    color: var(--color-text-light);
 }
 
 .footerContent {
@@ -174,7 +176,7 @@
     margin: 0 auto;
     text-align: center;
     font-size: 0.875rem;
-    /* color: #4b5563; */
+    color: var(--color-text-light);
 }
 
 .popoverContent {
@@ -357,4 +359,40 @@
 .signOutIcon {
     width: 1rem;
     height: 1rem;
+}
+
+/* Dark theme support */
+:global(.dark) .header {
+    background-color: var(--color-surface);
+    border-bottom-color: var(--color-border);
+}
+
+:global(.dark) .footer {
+    background-color: var(--color-surface);
+    border-top-color: var(--color-border);
+}
+
+:global(.dark) .viewButton {
+    background-color: var(--color-primary);
+    color: var(--color-background);
+}
+
+:global(.dark) .viewButton:hover {
+    background-color: var(--color-accent);
+}
+
+:global(.dark) .settingsButton:hover {
+    background-color: var(--color-background);
+}
+
+:global(.dark) .userInfo:hover {
+    background-color: var(--color-background);
+}
+
+:global(.dark) .userMenuAction:hover {
+    background-color: var(--color-background);
+}
+
+:global(.dark) .userMenuSignOut:hover {
+    background-color: var(--color-background);
 } 

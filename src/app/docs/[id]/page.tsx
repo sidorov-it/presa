@@ -26,6 +26,7 @@ import { useColorMode } from '@/components/ui/color-mode';
 import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -263,6 +264,8 @@ export default function PresentationEditorPage() {
                                 <FaEye size={16} />
                                 <span className={styles.viewButtonText}>Просмотр</span>
                             </button>
+
+                            <ThemeToggle />
 
                             <button
                                 type="button"
