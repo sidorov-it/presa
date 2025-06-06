@@ -57,7 +57,7 @@
 
 .logo {
     display: flex;
-    margin-top: 2rem;
+    margin-top: 20px;
     justify-content: center;
     align-items: center;
 }
