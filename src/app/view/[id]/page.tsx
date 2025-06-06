@@ -14,6 +14,7 @@ import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 import { useThemeStore } from '@/store/themeStore';
 import { usePresentationStore } from '@/store/presentationStore';
 import { PdfExportButton } from '@/components/export';
+import Logo from '@/components/icons/Logo/Logo';
 
 export default function PresentationView() {
     const params = useParams();
@@ -214,7 +215,7 @@ export default function PresentationView() {
                     <div className={styles.headerContent}>
                         <div className={styles.headerLeft}>
                             <Link href="/dashboard" className={styles.logo}>
-                                Presa
+                                <Logo size="md" />
                             </Link>
                         </div>
                         <div className={styles.headerRight}>

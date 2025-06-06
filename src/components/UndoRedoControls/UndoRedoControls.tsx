@@ -54,7 +54,7 @@ const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, cla
     }, [hasUndo, hasRedo, presentationId, handleUndo, handleRedo]);
 
     return (
-        <div className={`flex items-center gap-2 ${className}`}>
+        <div className={`${styles.undoRedoControls} ${className}`}>
             <button
                 className={styles.undoButton}
                 onClick={handleUndo}
@@ -63,8 +63,8 @@ const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, cla
                 title="Undo (Ctrl+Z)"
                 tabIndex={0}
             >
-                undo
-                {/* <svg className={styles.icon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* undo */}
+                <svg className={styles.icon} viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                         d="M7 12H17C19.2091 12 21 13.7909 21 16V16C21 18.2091 19.2091 20 17 20H12"
                         stroke="currentColor"
@@ -86,7 +86,7 @@ const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, cla
                         strokeLinecap="round"
                         strokeLinejoin="round"
                     />
-                </svg> */}
+                </svg>
             </button>
             <button
                 className={styles.redoButton}
@@ -96,8 +96,8 @@ const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, cla
                 title="Redo (Ctrl+Y)"
                 tabIndex={0}
             >
-                redo
-                {/* <svg className={styles.icon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* redo */}
+                <svg className={styles.icon} viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                         d="M17 12H7C4.79086 12 3 13.7909 3 16V16C3 18.2091 4.79086 20 7 20H12"
                         stroke="currentColor"
@@ -119,7 +119,7 @@ const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, cla
                         strokeLinecap="round"
                         strokeLinejoin="round"
                     />
-                </svg> */}
+                </svg>
             </button>
         </div>
     );

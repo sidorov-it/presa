@@ -27,6 +27,7 @@ import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
 import ThemeToggle from '@/components/ui/ThemeToggle';
+import Logo from '@/components/icons/Logo/Logo';
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -177,7 +178,7 @@ export default function PresentationEditorPage() {
                     <div className={styles.headerContent}>
                         <div className={styles.headerLeft}>
                             <Link href="/dashboard" className={styles.logo}>
-                                Presa
+                                <Logo size="md" />
                             </Link>
                         </div>
 

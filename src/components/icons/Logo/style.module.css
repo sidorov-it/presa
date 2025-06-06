@@ -4,3 +4,13 @@
     background: url('./logo.webp') no-repeat center center;
     background-size: contain;
 }
+
+.md {
+    width: 200px;
+    height: 40px;
+}
+
+.lg {
+    width: 300px;
+    height: 60px;
+}
