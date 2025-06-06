@@ -22,7 +22,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 style={{
                     minHeight: '100vh',
                     color: 'var(--color-text)',
-                    backgroundColor: 'var(--color-background)',
                 }}
             >
                 <NextAuthProvider>

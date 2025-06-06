@@ -48,14 +48,13 @@
 }
 
 .header {
-    background-color: var(--chakra-colors-neutral-background-default);
+    background-color: var(--color-background);
     border-bottom: 1px solid var(--color-border);
     padding: 1rem;
     position: sticky;
     top: 0;
     z-index: 100;
-    color: var(--chakra-colors-gray-400);
-
+    color: var(--color-text-light);
 }
 
 .headerContent {
@@ -118,7 +117,7 @@
 }
 
 .settingsButton:hover {
-    background-color: #f3f4f6;
+    background-color: var(--color-surface);
 }
 
 .settingsButton:focus {
@@ -144,7 +143,7 @@
 }
 
 .userInfo:hover {
-    background-color: var(--chakra-colors-neutral-surface-subtle);
+    background-color: var(--color-surface);
 }
 
 .userIcon {
@@ -163,10 +162,10 @@
 }
 
 .footer {
-    background-color: var(--chakra-colors-neutral-background-default);
+    background-color: var(--color-background);
     border-top: 1px solid var(--color-border);
     padding: 0.5rem 1rem;
-    color: var(--chakra-colors-gray-400);
+    color: var(--color-text-light);
 }
 
 .footerContent {
@@ -202,11 +201,11 @@
 }
 
 .themeOption:hover {
-    background-color: #f3f4f6;
+    background-color: var(--color-surface);
 }
 
 .themeOptionSelected {
-    background-color: #eff6ff;
+    background-color: var(--color-surface);
     ring: 1px;
     ring-color: var(--color-surface);
 }
@@ -232,11 +231,11 @@
 
 .themeManageLinkText {
     font-size: 0.875rem;
-    color: var(--primary);
+    color: var(--color-primary);
 }
 
 .themeManageLinkText:hover {
-    color: var(--primary-dark);
+    color: var(--color-primary-dark);
 }
 
 .noThemesText {
@@ -254,21 +253,21 @@
 /* .userMenu {
     width: 15rem;
     padding: 0.5rem;
-    background-color: var(--chakra-colors-neutral-background-default);
-    border: 1px solid var(--chakra-colors-neutral-border-subtle);
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 } */
 
 .userMenuHeader {
     padding: 0.75rem 0;
-    border-bottom: 1px solid var(--chakra-colors-neutral-border-subtle);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .userMenuEmail {
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--chakra-colors-neutral-text-default);
+    color: var(--color-text);
     margin-bottom: 0.5rem;
 }
 
@@ -277,7 +276,7 @@
     align-items: center;
     gap: 0.375rem;
     font-size: 0.75rem;
-    color: var(--chakra-colors-neutral-text-subtle);
+    color: var(--color-text-light);
     text-decoration: none;
     padding: 0.25rem 0.5rem;
     border-radius: var(--radius-sm);
@@ -285,8 +284,8 @@
 }
 
 .userMenuCredits:hover {
-    background-color: var(--chakra-colors-neutral-surface-subtle);
-    color: var(--chakra-colors-neutral-text-default);
+    background-color: var(--color-surface);
+    color: var(--color-text);
 }
 
 .creditsIcon {
@@ -296,7 +295,7 @@
 
 .userMenuDivider {
     height: 1px;
-    background-color: var(--chakra-colors-neutral-border-subtle);
+    background-color: var(--color-border);
     margin: 0.5rem 0;
 }
 
@@ -312,7 +311,7 @@
     padding: 0.5rem 0;
     border-radius: var(--radius-sm);
     font-size: 0.875rem;
-    color: var(--chakra-colors-neutral-text-default);
+    color: var(--color-text);
     transition: background-color 150ms;
     cursor: pointer;
     border: none;
@@ -320,7 +319,7 @@
 }
 
 .userMenuAction:hover {
-    background-color: var(--chakra-colors-neutral-surface-subtle);
+    background-color: var(--color-surface);
 }
 
 .actionIcon {
@@ -351,7 +350,7 @@
 }
 
 .userMenuSignOut:hover {
-    background-color: #fef2f2;
+    background-color: var(--color-surface);
 }
 
 .signOutIcon {

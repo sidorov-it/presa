@@ -9,14 +9,14 @@
     border-left-width: 1px;
     height: 100vh;
     position: relative;
-    background: var(--chakra-colors-gray-50);
+    background: var(--color-surface);
 }
 
 .leftSection {
     width: 50%;
     height: 100vh;
-    background: white;
-    color: var(--chakra-colors-gray-900);
+    background: var(--color-background);
+    color: var(--color-text);
     display: flex;
     flex-direction: column;
 }
@@ -33,7 +33,7 @@
     margin-bottom: 8px;
     font-size: 14px;
     font-weight: 500;
-    color: #374151;
+    color: var(--color-text);
 }
 
 .input {
@@ -46,8 +46,8 @@
     bottom: 0;
     left: 0;
     width: 50%;
-    background: white;
-    border-top: 1px solid #e5e7eb;
+    background: var(--color-background);
+    border-top: 1px solid var(--color-border);
     padding: 16px 24px;
     display: flex;
     justify-content: flex-end;

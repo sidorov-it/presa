@@ -34,10 +34,10 @@
         --color-secondary: #6C63FF;
         --color-accent: #00FFFF;
         --color-border: #3A3F4B;
-        --color-text: #F5F5F5;
+        --color-text: #111827;
         --color-text-light: #A0A0A0;
-        --color-background: #0B0B0B;
-        --color-surface: #1E1E1E;
+        --color-background: #FFFFFF;
+        --color-surface: #F3F4F6;
 
         --radius: 0.5rem;
 

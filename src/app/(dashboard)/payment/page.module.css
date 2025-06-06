@@ -2,6 +2,7 @@
     flex: 1;
     padding: 1rem;
     padding-top: 1.5rem;
+    background-color: var(--color-background);
 }
 
 @media (min-width: 768px) {
@@ -39,7 +40,7 @@
 }
 
 .planPricePeriod {
-    color: var(--muted-foreground);
+    color: var(--color-text-light);
 }
 
 .featuresList {
@@ -60,7 +61,7 @@
 
 .popularPlan {
     border-width: 2px;
-    border-color: var(--primary);
+    border-color: var(--color-primary);
 }
 
 .fullWidthButton {

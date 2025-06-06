@@ -29,10 +29,12 @@ export function ColorModeProvider({ children }: ColorModeProviderProps) {
             darkThemeVars.forEach(({ name, value }) => {
                 root.style.setProperty(name, value);
             });
+            root.classList.add('dark');
         } else {
             lightThemeVars.forEach(({ name, value }) => {
                 root.style.setProperty(name, value);
             });
+            root.classList.remove('dark');
         }
     }, [colorMode]);
 
