@@ -85,19 +85,22 @@
     margin-left: 1rem;
     align-items: center;
     border-radius: 0.5rem;
+    gap: .5rem;
     background-color: var(--color-background);
     border: 1px solid var(--color-border);
 }
 
 .userAvatar {
     width: 2.5rem;
+    min-width: 2.5rem;
     height: 2.5rem;
+    flex: 1;
     border-radius: 9999px;
     background-color: var(--color-primary);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-text);
+    color: #fff;
     font-weight: 600;
 }
 
@@ -123,13 +126,13 @@
 }
 
 .menuItem:hover {
-    background-color: var(--color-background);
-    color: var(--color-accent);
+    background-color: rgba(37, 99, 235, 0.1);
+    color: var(--color-text);
 }
 
 .menuItemActive {
     background-color: var(--color-primary);
-    color: var(--color-text);
+    color: white;
 }
 
 .menuIcon {
@@ -147,8 +150,8 @@
 }
 
 .signOutButton:hover {
-    background-color: var(--color-background);
-    color: var(--color-accent);
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #DC2626;
 }
 
 .mainContent {
@@ -163,4 +166,14 @@
     flex: 1;
     overflow-x: hidden;
     overflow-y: auto;
+}
+
+/* Dark theme support */
+:global(.dark) .menuItem:hover {
+    background-color: rgba(59, 130, 246, 0.2);
+}
+
+:global(.dark) .signOutButton:hover {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #F87171;
 }

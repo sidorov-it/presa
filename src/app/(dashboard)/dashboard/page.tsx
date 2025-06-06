@@ -3,7 +3,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
 import { useThemeStore } from '@/store/themeStore';
@@ -84,11 +84,25 @@ export default function DashboardPage() {
         router.push(`/view/${presentationId}`);
     };
 
+    const handleDocumentClick = useCallback((e: MouseEvent) => {
+        if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+            setActiveMenu(null);
+            document.removeEventListener('click', handleDocumentClick);
+        }
+    }, []);
+
     // Toggle menu visibility
-    const toggleMenu = (id: string, e: React.MouseEvent) => {
-        e.stopPropagation();
-        setActiveMenu(activeMenu === id ? null : id);
-    };
+    const toggleMenu = useCallback(
+        (id: string, e: React.MouseEvent) => {
+            e.stopPropagation();
+            const isOpen = activeMenu !== id;
+            setActiveMenu(isOpen ? id : null);
+            if (isOpen) {
+                document.addEventListener('click', handleDocumentClick);
+            }
+        },
+        [activeMenu, handleDocumentClick]
+    );
 
     // Handle duplicating a presentation
     const handleDuplicate = async (id: string, e: React.MouseEvent) => {
@@ -235,11 +249,11 @@ export default function DashboardPage() {
             <div className={styles.header}>
                 <h1 className={styles.title}>Мои презентации</h1>
                 <div className={styles.buttonGroup}>
-                    <Button onClick={handleCreateWithAI}>
+                    <Button variant="premium" onClick={handleCreateWithAI}>
                         <FaMagic className={styles.buttonIcon} />
                         Создать с ИИ
                     </Button>
-                    <Button onClick={handleCreateEmptyPresentation}>
+                    <Button variant="solid" onClick={handleCreateEmptyPresentation}>
                         <FaPlus className={styles.buttonIcon} />
                         Создать пустую
                     </Button>
@@ -261,11 +275,11 @@ export default function DashboardPage() {
                         Создайте свою первую презентацию, используя шаблон или начните с нуля
                     </p>
                     <div className={styles.emptyStateButtons}>
-                        <Button onClick={handleCreateWithAI}>
+                        <Button variant="premium" onClick={handleCreateWithAI}>
                             <FaMagic className={styles.buttonIcon} />
                             Создать с ИИ
                         </Button>
-                        <Button onClick={handleCreateEmptyPresentation}>
+                        <Button variant="solid" onClick={handleCreateEmptyPresentation}>
                             <FaPlus className={styles.buttonIcon} />
                             Создать пустую
                         </Button>

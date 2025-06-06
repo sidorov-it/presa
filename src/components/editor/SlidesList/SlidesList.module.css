@@ -190,7 +190,7 @@
 
     &:hover {
         background-color: var(--color-background); 
-        color: var(--color-accent);
+        color: var(--color-primary);
     }
 }
 

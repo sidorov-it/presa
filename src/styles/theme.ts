@@ -60,7 +60,7 @@ const config = defineConfig({
                     200: { value: '#99FFFF' },
                     300: { value: '#66FFFF' },
                     400: { value: '#33FFFF' },
-                    500: { value: '#00FFFF' }, /* Neon Cyan */
+                    500: { value: '#2563EB' }, /* Blue 600 */
                     600: { value: '#00CCCC' },
                     700: { value: '#009999' },
                     800: { value: '#006666' },

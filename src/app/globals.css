@@ -18,7 +18,7 @@
         --muted: 210 19% 24%; /* Slate Gray */
         --muted-foreground: 0 0% 63%; /* Steel Gray */
 
-        --accent: 180 100% 50%; /* Neon Cyan */
+        --accent: 217 91% 60%; /* Blue for better readability */
         --accent-foreground: 0 0% 4%; /* Jet Black */
 
         --destructive: 0 84.2% 60.2%;
@@ -34,7 +34,7 @@
         --color-primary: #007BFF; /* Electric Blue */
         --color-primary-dark: #0066CC;
         --color-secondary: #6C63FF; /* Indigo Purple */
-        --color-accent: #00FFFF; /* Neon Cyan */
+        --color-accent: #2563EB; /* Blue 600 - better for readability */
         --color-text: #1A202C; /* Dark Gray for light theme */
         --color-text-light: #718096; /* Gray for light theme */
         --color-border: #E2E8F0; /* Light border for light theme */
@@ -772,7 +772,7 @@ em {
         }
 
         &:hover {
-            background-color: #00FFFF; /* Neon Cyan on hover */
+            background-color: #2563EB; /* Blue on hover */
         }
 
     }
@@ -1246,18 +1246,18 @@ button[data-type="button"]:hover {
 }
 
 .dark .slash-menu-item:hover {
-    background-color: #00FFFF; /* Neon Cyan */
+    background-color: #2563EB; /* Blue */
     --bg-opacity: 0.1;
 }
 
 .dark .slash-menu-item.selected {
-    color: #00FFFF; /* Neon Cyan */
+    color: #60A5FA; /* Blue 400 */
     background-color: #007BFF; /* Electric Blue */
     --bg-opacity: 0.2;
 }
 
 .dark .slash-menu-item-icon {
-    color: #00FFFF; /* Neon Cyan */
+    color: #60A5FA; /* Blue 400 */
 }
 
 .dark .slash-menu-no-results {

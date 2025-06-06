@@ -7,7 +7,7 @@ export const DEFAULT_THEME: Omit<Theme, 'id' | 'createdAt' | 'updatedAt'> = {
         additionalColors: [],
         primaryAccent: '#007BFF', // Electric Blue
         shapesColor: '#007BFF', // Electric Blue
-        secondaryAccents: ['#6C63FF', '#00FFFF', '#A0A0A0'], // Indigo Purple, Neon Cyan, Steel Gray
+        secondaryAccents: ['#6C63FF', '#2563EB', '#A0A0A0'], // Indigo Purple, Blue, Steel Gray
         headingColor: '#F5F5F5', // Cool White
         textColor: '#A0A0A0', // Steel Gray
         slideBackground: '#1E1E1E', // Charcoal Gray

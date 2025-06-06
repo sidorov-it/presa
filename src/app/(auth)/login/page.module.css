@@ -47,7 +47,7 @@
     color: #007BFF; /* Electric Blue */
 
     &:hover {
-        color: #00FFFF; /* Neon Cyan */
+        color: #2563EB; /* Blue */
     }
 }
 
@@ -144,8 +144,8 @@
     background-color: #007BFF; /* Electric Blue */
 
     &:hover {
-        background-color: #00FFFF; /* Neon Cyan */
-        color: #0B0B0B; /* Jet Black text on cyan */
+        background-color: #2563EB; /* Blue */
+        color: white; /* White text on blue */
     }
 
     &:focus {

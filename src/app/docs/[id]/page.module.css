@@ -103,8 +103,8 @@
 }
 
 .viewButton:hover {
-    background-color: var(--color-accent);
-    color: var(--color-background);
+    background-color: var(--color-primary-dark);
+    color: white;
 }
 
 .viewButtonText {
@@ -378,7 +378,7 @@
 }
 
 :global(.dark) .viewButton:hover {
-    background-color: var(--color-accent);
+    background-color: var(--color-primary-dark);
 }
 
 :global(.dark) .settingsButton:hover {

@@ -232,7 +232,7 @@
     transition: all 0.2s ease;
 
     &:hover {
-        background-color: var(--color-accent);
-        color: var(--color-background);
+        background-color: var(--color-primary-dark);
+        color: white;
     }
 }
