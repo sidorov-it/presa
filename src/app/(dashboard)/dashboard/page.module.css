@@ -54,14 +54,14 @@
     display: flex;
     align-items: center;
     padding: 0.5rem 1rem;
-    background-color: #1f2937;
+    background-color: var(--color-surface);
     color: white;
     border-radius: var(--radius-md);
     transition: background-color 0.2s;
 }
 
 .buttonSecondary:hover {
-    background-color: #111827;
+    background-color: var(--color-background);
 }
 
 .buttonIcon {
@@ -101,12 +101,12 @@
 .emptyStateTitle {
     font-size: 1.25rem;
     font-weight: 600;
-    color: #374151;
+    color: var(--color-text);
     margin-bottom: 1rem;
 }
 
 .emptyStateText {
-    color: #6b7280;
+    color: var(--color-text-light);
     margin-bottom: 1.5rem;
 }
 
@@ -156,7 +156,7 @@
 
 .previewArea {
     height: 10rem;
-    background-color: #e5e7eb;
+    background-color: var(--color-border);
     position: relative;
 }
 
@@ -166,7 +166,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #6b7280;
+    color: var(--color-text-light);
     font-weight: 500;
 }
 
@@ -175,12 +175,12 @@
     top: 0.5rem;
     right: 0.5rem;
     padding: 0.5rem;
-    color: #4b5563;
+    color: var(--color-text);
     border-radius: 9999px;
 }
 
 .menuButton:hover {
-    background-color: #d1d5db;
+    background-color: var(--color-border);
 }
 
 .menuDropdown {
@@ -199,11 +199,11 @@
     width: 100%;
     padding: 0.5rem 1rem;
     font-size: var(--text-sm);
-    color: #374151;
+    color: var(--color-text);
 }
 
 .menuItem:hover {
-    background-color: #f3f4f6;
+    background-color: var(--color-surface);
 }
 
 .menuItemDanger {
@@ -220,7 +220,7 @@
 
 .cardTitle {
     font-weight: 500;
-    color: #1f2937;
+    color: var(--color-surface);
     margin-bottom: 0.25rem;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -230,7 +230,7 @@
 .cardSubtitle {
     font-size: 0.875rem;
     line-height: 1.25rem;
-    color: #6b7280;
+    color: var(--color-text-light);
 }
 
 .modal {
@@ -259,7 +259,7 @@
 .modalTitle {
     font-size: 1.25rem;
     font-weight: 700;
-    color: #1f2937;
+    color: var(--color-surface);
     margin-bottom: 1rem;
 }
 
@@ -269,7 +269,7 @@
 
 .label {
     display: block;
-    color: #374151;
+    color: var(--color-text);
     font-size: var(--text-sm);
     font-weight: 700;
     margin-bottom: 0.5rem;
@@ -278,7 +278,7 @@
 .input {
     width: 100%;
     padding: 0.5rem 0.75rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
 }
 
@@ -291,7 +291,7 @@
 .select {
     width: 100%;
     padding: 0.5rem 0.75rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
 }
 
@@ -309,13 +309,13 @@
 
 .exampleTag {
     font-size: 0.75rem;
-    background-color: #f3f4f6;
+    background-color: var(--color-surface);
     padding: 0.25rem 0.75rem;
     border-radius: 9999px;
 }
 
 .exampleTag:hover {
-    background-color: #e5e7eb;
+    background-color: var(--color-border);
 }
 
 .error {
@@ -334,12 +334,12 @@
 
 .buttonCancel {
     padding: 0.5rem 1rem;
-    color: #374151;
+    color: var(--color-text);
     border-radius: var(--radius-md);
 }
 
 .buttonCancel:hover {
-    background-color: #f3f4f6;
+    background-color: var(--color-surface);
 }
 
 .buttonDelete {

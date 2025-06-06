@@ -21,7 +21,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 className={`${inter.className}`}
                 style={{
                     minHeight: '100vh',
-                    color: '#111827',
+                    color: 'var(--color-text)',
+                    backgroundColor: 'var(--color-background)',
                 }}
             >
                 <NextAuthProvider>
