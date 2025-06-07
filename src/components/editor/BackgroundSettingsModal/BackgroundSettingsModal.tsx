@@ -18,8 +18,8 @@ interface BackgroundSettingsModalProps {
 const BackgroundSettingsModal: React.FC<BackgroundSettingsModalProps> = ({ isOpen, onClose, presentationId }) => {
     const initialSettings = usePresentationStore(useShallow(state => state.getBackgroundSettings(presentationId)));
 
-    const [backgroundColor, setBackgroundColor] = useState<string>(initialSettings.backgroundColor || '#ffffff00');
-    const [backgroundImage, setBackgroundImage] = useState<string>(initialSettings.backgroundImage || '');
+    const [backgroundColor, setBackgroundColor] = useState<string>(initialSettings?.backgroundColor || '#ffffff00');
+    const [backgroundImage, setBackgroundImage] = useState<string>(initialSettings?.backgroundImage || '');
 
     // Фокус-ловушка
     const modalRef = useRef<HTMLDivElement>(null);
@@ -33,8 +33,8 @@ const BackgroundSettingsModal: React.FC<BackgroundSettingsModalProps> = ({ isOpe
 
     useEffect(() => {
         if (isOpen) {
-            setBackgroundColor(initialSettings.backgroundColor || '#ffffff00');
-            setBackgroundImage(initialSettings.backgroundImage || '');
+            setBackgroundColor(initialSettings?.backgroundColor || '#ffffff00');
+            setBackgroundImage(initialSettings?.backgroundImage || '');
         }
     }, [isOpen, initialSettings]);
 
@@ -51,7 +51,7 @@ const BackgroundSettingsModal: React.FC<BackgroundSettingsModalProps> = ({ isOpe
         setBackgroundImage('');
         usePresentationStore.getState().setBackgroundSettings(presentationId, {
             backgroundColor: undefined,
-            backgroundImage: undefined,
+            backgroundImage: 'none',
         });
         onClose();
     };
@@ -66,7 +66,7 @@ const BackgroundSettingsModal: React.FC<BackgroundSettingsModalProps> = ({ isOpe
 
     return (
         <div
-            className={styles.backgroundSettingsModalBackdrop}
+            className={styles.backgroundSettingsModal}
             tabIndex={-1}
             aria-modal="true"
             role="dialog"
@@ -106,7 +106,7 @@ const BackgroundSettingsModal: React.FC<BackgroundSettingsModalProps> = ({ isOpe
                         id="bg-image-url"
                         type="url"
                         className={styles.backgroundSettingsModalContentColorPickerInput}
-                        value={backgroundImage}
+                        value={backgroundImage && backgroundImage !== 'none' ? backgroundImage : ''}
                         onChange={e => setBackgroundImage(e.target.value)}
                         placeholder="https://example.com/image.png"
                         aria-label="Ссылка на изображение для фона"

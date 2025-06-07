@@ -132,8 +132,15 @@ export default function PresentationEditorPage() {
         }
     }, [presentation]);
 
-    const handleOpenBgModal = () => setIsBgModalOpen(true);
-    const handleCloseBgModal = () => setIsBgModalOpen(false);
+    const handleOpenBgModal = () => {
+        setIsBgModalOpen(true);
+        document.body.style.overflow = 'hidden';
+    };
+    const handleCloseBgModal = () => {
+        setIsBgModalOpen(false);
+        document.body.style.overflow = 'auto';
+    };
+
     const handleKeyDownCog = (e: React.KeyboardEvent<HTMLButtonElement>) => {
         if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
@@ -172,7 +179,7 @@ export default function PresentationEditorPage() {
 
     return (
         <ReadOnlyProvider isReadOnly={false}>
-            <ThemeStylesApplier theme={currentTheme} />
+            <ThemeStylesApplier theme={currentTheme} backgroundSettings={presentation.backgroundSettings} />
             <div className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`}>
                 <header className={styles.header}>
                     <div className={styles.headerContent}>

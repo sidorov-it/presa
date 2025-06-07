@@ -209,7 +209,7 @@ export default function PresentationView() {
 
     return (
         <ReadOnlyProvider isReadOnly={true}>
-            <ThemeStylesApplier theme={currentTheme} />
+            <ThemeStylesApplier theme={currentTheme} backgroundSettings={presentation.backgroundSettings} />
             <div className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`}>
                 <header className={styles.header}>
                     <div className={styles.headerContent}>

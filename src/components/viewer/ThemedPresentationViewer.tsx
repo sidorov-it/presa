@@ -21,7 +21,7 @@ const ThemedPresentationViewer: React.FC<ThemedPresentationViewerProps> = ({
 }) => {
     return (
         <div className={`themed-presentation-viewer ${className}`}>
-            <ThemeStylesApplier theme={theme} />
+            <ThemeStylesApplier theme={theme} backgroundSettings={presentation.backgroundSettings} />
 
             <PresentationViewer
                 presentation={presentation}
