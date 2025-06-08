@@ -6,6 +6,19 @@ import { CiLineHeight } from 'react-icons/ci';
 import { CgSpaceBetween } from 'react-icons/cg';
 import { FONT_WEIGHTS } from '@/consts';
 
+const FONT_OPTIONS = [
+    { value: 'inter', label: 'Inter' },
+    { value: 'roboto', label: 'Roboto' },
+    { value: 'open sans', label: 'Open Sans' },
+    { value: 'raleway', label: 'Raleway' },
+    { value: 'poppins', label: 'Poppins' },
+    { value: 'montserrat', label: 'Montserrat' },
+    { value: 'pt sans', label: 'PT Sans' },
+    { value: 'lato', label: 'Lato' },
+    { value: 'source sans pro', label: 'Source Sans Pro' },
+    { value: 'nunito', label: 'Nunito' },
+];
+
 import { Label } from '../../../ui/Label';
 import { Select } from '../../../ui/Select';
 import { Input } from '@/components/ui/Input/Input';
@@ -29,11 +42,7 @@ export default function Fonts({
                     <div>
                         <Label>Шрифт</Label>
                         <Select
-                            options={[
-                                { value: 'inter', label: 'Inter' },
-                                { value: 'roboto', label: 'Roboto' },
-                                { value: 'poppins', label: 'Poppins' },
-                            ]}
+                            options={FONT_OPTIONS}
                             value={[theme.typography.headingFont]}
                             onValueChange={({ value }: { value: string[] }) =>
                                 handleTypographyChange({ headingFont: value[0] })
@@ -114,11 +123,7 @@ export default function Fonts({
                     <div>
                         <Label>Шрифт</Label>
                         <Select
-                            options={[
-                                { value: 'inter', label: 'Inter' },
-                                { value: 'roboto', label: 'Roboto' },
-                                { value: 'poppins', label: 'Poppins' },
-                            ]}
+                            options={FONT_OPTIONS}
                             value={[theme.typography.bodyFont]}
                             onValueChange={({ value }: { value: string[] }) =>
                                 handleTypographyChange({ bodyFont: value[0] })
