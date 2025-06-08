@@ -7,7 +7,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
 import { useThemeStore } from '@/store/themeStore';
-import PresentationPreview from './components/PresentationPreview';
+import SlidePreview from './components/SlidePreview';
 import { resetThemeStyles } from '@/utils/themeUtils';
 import { FaPlus, FaMagic, FaEllipsisV, FaPencilAlt, FaCopy, FaTrash, FaEye } from 'react-icons/fa';
 import { IPresentation } from '@/types';
@@ -306,7 +306,7 @@ export default function DashboardPage() {
                                 className={styles.presentationCard}
                             >
                                 <div className={styles.previewArea}>
-                                    <PresentationPreview presentation={presentation} theme={theme} />
+                                    <SlidePreview presentation={presentation} theme={theme} />
 
                                 <button onClick={e => toggleMenu(presentation.id, e)} className={styles.menuButton}>
                                     <FaEllipsisV />
