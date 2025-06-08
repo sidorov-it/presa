@@ -93,10 +93,10 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
         try {
             if (params.action === 'new') {
                 await addTheme(theme);
-                toast.success('Theme created successfully');
+                toast.success('Тема создана успешно');
             } else {
                 await updateTheme(theme);
-                toast.success('Theme updated successfully');
+                toast.success('Тема обновлена успешно');
             }
             router.push('/themes');
         } catch (error) {
@@ -112,13 +112,13 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
                 <div className={styles.leftSectionContent}>
                     <div>
                         <Label htmlFor="theme-name" className={styles.label}>
-                            Theme name
+                            Название темы
                         </Label>
                         <Input
                             id="theme-name"
                             value={theme.name}
                             onChange={e => setTheme({ ...theme, name: e.target.value })}
-                            placeholder="Enter theme name"
+                            placeholder="Название темы"
                             className={styles.input}
                         />
                     </div>
@@ -128,10 +128,10 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
 
                 <div className={styles.bottomSection}>
                     <Button variant="outline" onClick={() => router.push('/themes')}>
-                        Cancel
+                        Отмена
                     </Button>
                     <Button variant="solid" colorScheme="blue" onClick={handleSave}>
-                        Save theme
+                        Сохранить
                     </Button>
                 </div>
             </div>
