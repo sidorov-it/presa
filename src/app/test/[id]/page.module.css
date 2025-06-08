@@ -118,8 +118,6 @@
 
 .settingsButton:focus {
     outline: none;
-    ring: 2px;
-    ring-color: #3b82f6;
 }
 
 .settingsIcon {
@@ -188,8 +186,6 @@
 
 .themeOptionSelected {
     background-color: #eff6ff;
-    ring: 1px;
-    ring-color: #bfdbfe;
 }
 
 .themeColorPreview {

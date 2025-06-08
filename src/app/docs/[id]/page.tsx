@@ -5,17 +5,18 @@ import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
 // import Editor from '@/components/editor/Editor';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import Editor from '@/components/editor/Editor/Editor';
-import { IPresentation, TipTapRefs } from '@/types';
+import { TipTapRefs } from '@/types';
 import UndoRedoControls from '@/components/UndoRedoControls/UndoRedoControls';
 import { ThemeIcon } from '@/components/icons';
-import { Popover } from '@/components/ui/Popover';
+import { Popover } from '@/components/ui/Popover/Popover';
 import { useThemeStore } from '@/store/themeStore';
 import { Theme } from '@/types/theme';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { FaEye } from 'react-icons/fa';
+import { FaEye, FaUser, FaSignOutAlt, FaCog } from 'react-icons/fa';
+import { HiOutlineCreditCard } from 'react-icons/hi2';
 import BackgroundSettingsModal from '@/components/editor/BackgroundSettingsModal/BackgroundSettingsModal';
 import { HiOutlineCog6Tooth } from 'react-icons/hi2';
 import styles from './page.module.css';
@@ -23,6 +24,10 @@ import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
 import ThemeDebugButton from '@/components/debug/ThemeDebugButton';
 import { useColorMode } from '@/components/ui/color-mode';
 import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
+import { useTokens } from '@/hooks/useTokens';
+import { formatTokenAmount } from '@/utils/formatTokenAmount';
+import ThemeToggle from '@/components/ui/ThemeToggle';
+import Logo from '@/components/icons/Logo/Logo';
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -30,10 +35,16 @@ export default function PresentationEditorPage() {
     const { data: session, status } = useSession();
     const [isBgModalOpen, setIsBgModalOpen] = useState(false);
 
+    // Token management
+    const { balance: tokenBalance, loading: tokensLoading } = useTokens();
+
     // Access store values individually to prevent unnecessary re-renders
     const loadPresentation = usePresentationStore(state => state.loadPresentation);
+    const checkPresentationExists = usePresentationStore(state => state.checkPresentationExists);
     const setTheme = usePresentationStore(state => state.setTheme);
-    // const savingStatus = usePresentationStore(state => state.savingStatus);
+
+    // Get presentation from store instead of local state
+    const presentation = usePresentationStore(state => state.getPresentation(id as string));
 
     const themes = useThemeStore(state => state.themes);
     const loadThemes = useThemeStore(state => state.loadThemes);
@@ -50,7 +61,8 @@ export default function PresentationEditorPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
     const [isThemePopoverOpen, setIsThemePopoverOpen] = useState(false);
-    const [presentation, setPresentation] = useState<IPresentation | null>(null);
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     // Load presentation data only once when component mounts or ID changes
     useEffect(() => {
@@ -58,11 +70,16 @@ export default function PresentationEditorPage() {
 
         const load = async () => {
             try {
+                // Check if presentation already exists in store
+                if (checkPresentationExists(id as string)) {
+                    setIsLoading(false);
+                    return;
+                }
+
+                // If not in store, load it
                 const loadedPresentation = await loadPresentation(id as string);
                 if (!loadedPresentation) {
                     setNotFound(true);
-                } else {
-                    setPresentation(loadedPresentation);
                 }
             } catch (error) {
                 console.error('Failed to load presentation:', error);
@@ -73,7 +90,7 @@ export default function PresentationEditorPage() {
         };
 
         load();
-    }, [id, loadPresentation, status]);
+    }, [id, loadPresentation, checkPresentationExists, status]);
 
     // Apply theme when presentation is loaded or themes change
     useEffect(() => {
@@ -123,14 +140,25 @@ export default function PresentationEditorPage() {
         }
     }, [presentation]);
 
-    const handleOpenBgModal = () => setIsBgModalOpen(true);
-    const handleCloseBgModal = () => setIsBgModalOpen(false);
+    const handleOpenBgModal = () => {
+        setIsBgModalOpen(true);
+        document.body.style.overflow = 'hidden';
+    };
+    const handleCloseBgModal = () => {
+        setIsBgModalOpen(false);
+        document.body.style.overflow = 'auto';
+    };
+
     const handleKeyDownCog = (e: React.KeyboardEvent<HTMLButtonElement>) => {
         if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
             setIsBgModalOpen(true);
         }
     };
+
+    const handleSignOut = useCallback(() => {
+        signOut({ callbackUrl: '/' });
+    }, []);
 
     // Memoize the loading and not found UI to prevent re-renders
     const loadingUI = useMemo(
@@ -159,13 +187,13 @@ export default function PresentationEditorPage() {
 
     return (
         <ReadOnlyProvider isReadOnly={false}>
-            <ThemeStylesApplier theme={currentTheme} />
-            <div className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`}>
+            <ThemeStylesApplier theme={currentTheme} backgroundSettings={presentation.backgroundSettings} />
+            <div ref={containerRef} className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`}>
                 <header className={styles.header}>
                     <div className={styles.headerContent}>
                         <div className={styles.headerLeft}>
                             <Link href="/dashboard" className={styles.logo}>
-                                Presa
+                                <Logo size="md" />
                             </Link>
                         </div>
 
@@ -174,6 +202,7 @@ export default function PresentationEditorPage() {
                                 isOpen={isThemePopoverOpen}
                                 onOpen={() => setIsThemePopoverOpen(true)}
                                 onClose={() => setIsThemePopoverOpen(false)}
+                                portalContainer={containerRef.current}
                                 trigger={
                                     <div
                                         className={styles.themeButton}
@@ -187,7 +216,7 @@ export default function PresentationEditorPage() {
                                     </div>
                                 }
                                 content={
-                                    <div>
+                                    <div className={styles.themePopover}>
                                         <h3 className={styles.popoverTitle}>Выберите тему</h3>
                                         <div className={styles.themeGrid}>
                                             <div
@@ -246,12 +275,14 @@ export default function PresentationEditorPage() {
 
                             <button
                                 onClick={handleViewPresentation}
-                                className={styles.viewButton}
+                                className={styles.themeButton}
                                 aria-label="View presentation"
                             >
                                 <FaEye size={16} />
                                 <span className={styles.viewButtonText}>Просмотр</span>
                             </button>
+
+                            <ThemeToggle />
 
                             <button
                                 type="button"
@@ -265,9 +296,59 @@ export default function PresentationEditorPage() {
                             </button>
                             <UndoRedoControls presentationId={presentation.id} tiptapRefs={tiptapRefs} />
 
-                            <div className={styles.userInfo}>
-                                {session?.user?.name && <div className={styles.userName}>{session.user.name}</div>}
-                            </div>
+                            <Popover
+                                isOpen={isUserMenuOpen}
+                                onOpen={() => setIsUserMenuOpen(true)}
+                                onClose={() => setIsUserMenuOpen(false)}
+                                portalContainer={containerRef.current}
+                                trigger={
+                                    <div
+                                        className={styles.userInfo}
+                                        role="button"
+                                        aria-label="Open user menu"
+                                        onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                                        onKeyDown={e => e.key === 'Enter' && setIsUserMenuOpen(!isUserMenuOpen)}
+                                    >
+                                        <FaUser className={styles.userIcon} />
+                                        {session?.user?.name && (
+                                            <span className={styles.userName}>{session.user.name}</span>
+                                        )}
+                                    </div>
+                                }
+                                content={
+                                    <div className={styles.userMenu}>
+                                        <div className={styles.userMenuHeader}>
+                                            <div className={styles.userMenuEmail}>
+                                                {session?.user?.email || 'user@example.com'}
+                                            </div>
+                                            <Link href="/tokens" className={styles.userMenuCredits}>
+                                                <HiOutlineCreditCard className={styles.creditsIcon} />
+                                                <span>
+                                                    {tokensLoading ? '...' : formatTokenAmount(tokenBalance)} токенов
+                                                </span>
+                                            </Link>
+                                        </div>
+
+                                        {/* <div className={styles.userMenuDivider} /> */}
+
+                                        <div className={styles.userMenuActions}>
+                                            <Link href="/settings" className={styles.userMenuAction}>
+                                                <FaCog className={styles.actionIcon} />
+                                                <span>Настройки</span>
+                                            </Link>
+
+                                            <button
+                                                onClick={handleSignOut}
+                                                className={styles.userMenuSignOut}
+                                                aria-label="Выйти"
+                                            >
+                                                <FaSignOutAlt className={styles.signOutIcon} />
+                                                <span>Выйти</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            />
                         </div>
                     </div>
                 </header>

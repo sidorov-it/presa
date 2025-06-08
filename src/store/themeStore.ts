@@ -41,7 +41,7 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
             }
 
             const savedTheme = await response.json();
-            const themes = [...get().themes, savedTheme];
+            const themes = [savedTheme, ...get().themes];
             set({ themes });
             return savedTheme;
         } catch (error) {

@@ -18,6 +18,7 @@ import {
     FaTimes,
 } from 'react-icons/fa';
 import { clsx } from 'clsx';
+import Logo from '@/components/icons/Logo/Logo';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
@@ -71,7 +72,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         },
         {
             label: 'Оплата',
-            path: '/payment',
+            path: '/tokens',
             icon: <FaCreditCard size={20} />,
         },
     ];
@@ -97,7 +98,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className={clsx(styles.sidebar, sidebarOpen && styles.sidebarOpen)}>
                 <div className={styles.logo}>
                     <div className={styles.logoText}>
-                        <span>Presa</span>
+                        <Logo />
                     </div>
                 </div>
 

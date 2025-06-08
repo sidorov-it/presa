@@ -1,33 +1,41 @@
+.sectionTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 4px 0;
+}
 
 .tab {
-    padding: 10px;
-    border-radius: 10px;
-    /* border: 1px solid #60a5fa; */
+    padding: 8px 16px;
+    border-radius: 6px;
     cursor: pointer;
-    /* color: #60a5fa; */
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    transition: all 0.2s ease;
+    margin-right: 8px;
+    margin-bottom: 4px;
+}
+
+.tab:hover {
+    background-color: #f3f4f6;
+    color: #374151;
 }
 
 .selectedTab {
-    /* background-color: #60a5fa; */
-    /* border-color: #bfdbfe; */
-    /* color: #3b82f6; */
-    background-color: #bfdbfe;
+    background-color: #dbeafe;
+    color: #1d4ed8;
 }
 
 .tabs {
-    /* margin-top: 16px; */
-    /* padding-right: 16px; */
-    /* height: 100%; */
-    /* width: 240px; */
-    height: 100%;
-    /* gap: 16px; */
-    /* border-right: 1px solid #e2e8f0; */
+    display: flex;
+    flex-wrap: wrap;
+    /* margin-bottom: 16px; */
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 8px;
 }
 
 .tabContent {
-    /* margin-top: 16px; */
-    padding-left: 16px;
-    height: 100%;
+    padding-top: 16px;
     width: 100%;
-    /* border-left: 1px solid #e2e8f0; */
 }

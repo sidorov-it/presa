@@ -3,7 +3,15 @@ import SmartLayoutImageShapeSelector from '@/components/settings/SmartLayoutImag
 import SmartLayoutImageSizeSelector from '@/components/settings/SmartLayoutImageSizeSelector/SmartLayoutImageSizeSelector';
 import SmartLayoutTemplateSelector from '@/components/settings/SmartLayoutTemplateSelector/SmartLayoutTemplateSelector';
 import { usePresentationStore } from '@/store/presentationStore';
-import { GridStructure, ImageShape, Layout, LayoutType, SmartLayoutElement, SmartLayoutType, TipTapRefs } from '@/types';
+import {
+    GridStructure,
+    ImageShape,
+    Layout,
+    LayoutType,
+    SmartLayoutElement,
+    SmartLayoutType,
+    TipTapRefs,
+} from '@/types';
 import { MutableRefObject, useCallback } from 'react';
 import { MenuItem } from '@/components/editor/SlideMenu/BaseMenu';
 import AlignmentGroup from '@/components/settings/AlignmentGroup/AlignmentGroup';

@@ -51,7 +51,7 @@ enum ImageShape {
   wiggle
 }
 
-enum BackgroundFillType {
+enum BackgroundBlockFillType {
   fill
   semi
   none
@@ -89,8 +89,13 @@ model User {
   emailPreferences     EmailPreferences?
   createdAt            DateTime          @default(now())
   updatedAt            DateTime          @updatedAt
+  
+  // Relationships
   presentations        Presentation[]
   llmRequests          LLMRequestHistory[]
+  tokens               UserTokens?
+  tokenPurchases       TokenPurchase[]
+  tokenTransactions    TokenTransaction[]
 }
 
 model Presentation {
@@ -158,7 +163,7 @@ type ThemeSlide {
 
 type ThemeBlocks {
   backgroundColor             String
-  backgroundFillType          BackgroundFillType
+  backgroundBlockFillType     BackgroundBlockFillType
   borderWidth                 BorderWidth
   blockFillColorsType         BlockFillColorsType
   blockBackgroundCustomColors String[]
@@ -215,6 +220,7 @@ model LLMRequestHistory {
   
   // Cost tracking
   cost            Float        // Cost in USD
+  tokensUsed      Int          @default(0) // Tokens deducted from user balance
   
   // Status
   success         Boolean      @default(true)
@@ -226,4 +232,94 @@ model LLMRequestHistory {
   functionCall      String?
   functionArguments String?
   responseContent   String?
+}
+
+// Token system models
+model UserTokens {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @unique @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  balance   Int      @default(0) // Current token balance
+  totalUsed Int      @default(0) // Total tokens used historically
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TokenPackage {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   // e.g. "Starter Pack", "Professional Pack"
+  description String?
+  tokens      Int      // Number of tokens in the package
+  price       Float    // Price in USD
+  currency    String   @default("USD")
+  isActive    Boolean  @default(true)
+  isPopular   Boolean  @default(false) // For highlighting popular packages
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  purchases   TokenPurchase[]
+}
+
+enum PurchaseStatus {
+  pending
+  completed
+  failed
+  refunded
+  canceled
+}
+
+model TokenPurchase {
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String        @db.ObjectId
+  user            User          @relation(fields: [userId], references: [id])
+  packageId       String        @db.ObjectId
+  package         TokenPackage  @relation(fields: [packageId], references: [id])
+  
+  // Purchase details
+  tokensAmount    Int           // Number of tokens purchased
+  price           Float         // Amount paid
+  currency        String        @default("USD")
+  status          PurchaseStatus @default(pending)
+  
+  // Payment details
+  paymentProvider String?       // e.g. "stripe", "paypal"
+  paymentId       String?       // External payment ID
+  sessionId       String?       // Payment session ID
+  
+  // Timestamps
+  purchasedAt     DateTime      @default(now())
+  completedAt     DateTime?     // When the purchase was completed
+  
+  // Metadata
+  metadata        Json?         // Additional payment data
+}
+
+model TokenTransaction {
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String          @db.ObjectId
+  user            User            @relation(fields: [userId], references: [id])
+  
+  // Transaction details
+  amount          Int             // Number of tokens (positive for credit, negative for debit)
+  type            TransactionType
+  description     String          // Description of the transaction
+  
+  // References
+  purchaseId      String?         // Reference to purchase if applicable
+  llmRequestId    String?         @db.ObjectId // Reference to LLM request if applicable
+  
+  // Balance tracking
+  balanceBefore   Int             // Token balance before transaction
+  balanceAfter    Int             // Token balance after transaction
+  
+  createdAt       DateTime        @default(now())
+  metadata        Json?           // Additional transaction data
+}
+
+enum TransactionType {
+  purchase        // Tokens added via purchase
+  usage           // Tokens used for LLM requests
+  bonus           // Free tokens given
+  refund          // Tokens refunded
+  admin_adjustment // Manual adjustment by admin
 }

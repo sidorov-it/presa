@@ -22,7 +22,7 @@ const ThemedFullscreenViewer: React.FC<ThemedFullscreenViewerProps> = ({
     return (
         <div className={`themed-fullscreen-viewer ${className}`}>
             {/* Apply theme styles */}
-            <ThemeStylesApplier theme={theme} />
+            <ThemeStylesApplier theme={theme} backgroundSettings={presentation.backgroundSettings} />
 
             {/* Render fullscreen viewer with theme */}
             <FullscreenViewer presentation={presentation} initialSlideIndex={initialSlideIndex} onClose={onClose} />

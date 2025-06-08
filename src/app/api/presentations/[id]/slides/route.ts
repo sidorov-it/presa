@@ -57,4 +57,4 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         console.error('Error updating slides:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
-} 
+}

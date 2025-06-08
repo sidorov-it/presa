@@ -155,7 +155,9 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
         {
             label: 'Цвета',
             icon: <BiSolidColorFill />,
-            content: <Colors theme={theme} handleColorsChange={handleColorsChange} />,
+            content: (
+                <Colors theme={theme} handleColorsChange={handleColorsChange} handleDesignChange={handleDesignChange} />
+            ),
         },
         {
             label: 'Шрифты',
@@ -172,41 +174,38 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
     const [selectedTab, setSelectedTab] = useState(items[0].label);
 
     return (
-        <div
-            style={{
-                width: '100%',
-            }}
-        >
+        <div style={{ width: '100%' }}>
             <ChakraTabs.Root
                 variant={'plain'}
                 size={'md'}
                 colorScheme={'blue'}
                 orientation="vertical"
-                // defaultIndex={0}
-                // index={index}
                 value={selectedTab}
                 onValueChange={e => setSelectedTab(e.value)}
-                // {...props}
             >
-                <ChakraTabs.List className={styles.tabs}>
-                    {items.map(
-                        (item: { label: string; content: React.ReactNode; icon: React.ReactNode }, idx: number) => (
-                            <ChakraTabs.Trigger
-                                key={idx}
-                                value={item.label}
-                                className={`${styles.tab} ${selectedTab === item.label ? styles.selectedTab : ''}`}
-                            >
-                                {item.icon}
-                                {item.label}
-                            </ChakraTabs.Trigger>
-                        )
-                    )}
-                </ChakraTabs.List>
-                {items.map((item: { label: string; content: React.ReactNode }, idx: number) => (
-                    <ChakraTabs.Content value={item.label} key={idx} className={styles.tabContent}>
-                        <div>{item.content}</div>
-                    </ChakraTabs.Content>
-                ))}
+                <div style={{ display: 'flex', height: '100%', width: '100%' }}>
+                    <ChakraTabs.List className={styles.tabs}>
+                        {items.map(
+                            (item: { label: string; content: React.ReactNode; icon: React.ReactNode }, idx: number) => (
+                                <ChakraTabs.Trigger
+                                    key={idx}
+                                    value={item.label}
+                                    className={`${styles.tab} ${selectedTab === item.label ? styles.selectedTab : ''}`}
+                                >
+                                    {item.icon}
+                                    {item.label}
+                                </ChakraTabs.Trigger>
+                            )
+                        )}
+                    </ChakraTabs.List>
+                    <div className={styles.tabContent}>
+                        {items.map((item: { label: string; content: React.ReactNode }, idx: number) => (
+                            <ChakraTabs.Content value={item.label} key={idx} style={{ height: '100%' }}>
+                                {item.content}
+                            </ChakraTabs.Content>
+                        ))}
+                    </div>
+                </div>
             </ChakraTabs.Root>
         </div>
     );

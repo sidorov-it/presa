@@ -1,4 +1,8 @@
 {
     "WillLuke.nextjs.addTypesOnSave": true,
-    "WillLuke.nextjs.hasPrompted": true
+    "WillLuke.nextjs.hasPrompted": true,
+    "debug.javascript.usePreview": true,
+    "debug.javascript.autoAttachFilter": "smart",
+    "debug.node.autoAttach": "on",
+    "typescript.preferences.includePackageJsonAutoImports": "auto"
 }

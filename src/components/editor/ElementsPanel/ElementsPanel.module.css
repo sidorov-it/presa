@@ -7,7 +7,7 @@
     justify-content: center;
     color: var(--chakra-colors-chakra-text);
     right: 1rem;
-    z-index: 40;
+    z-index: 110;
     pointer-events: auto;
 }
 
@@ -72,11 +72,11 @@
 }
 
 .elementsPanelCategory:hover {
-    background-color: #F3F4F6;
+    background-color: var(--color-background);
 }
 
 .elementsPanelCategory:focus {
-    outline: 2px solid #2563EB;
+    outline: 2px solid var(--color-primary);
     outline-offset: 2px;
 }
 
@@ -121,8 +121,8 @@
 
 .elementItem:focus {
     outline: none;
-    border-color: #2563EB;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
 }
 
 .elementItemIcon {
@@ -222,4 +222,28 @@
 .elementsPanelIconActive {
     color: var(--chakra-colors-blue-500);
     background-color: var(--chakra-colors-blue-50);
+}
+
+/* Dark theme support for ElementsPanel */
+:global(.dark) .elementsPanelIcon {
+    color: var(--chakra-colors-gray-100);
+    background-color: var(--chakra-colors-gray-700);
+}
+
+:global(.dark) .elementsPanelIcon:hover {
+    background-color: var(--chakra-colors-gray-600);
+}
+
+:global(.dark) .elementsPanelIconActive {
+    color: var(--chakra-colors-blue-300);
+    background-color: var(--chakra-colors-blue-900);
+}
+
+:global(.dark) .popupMenuHeaderCloseButton:hover {
+    color: var(--chakra-colors-gray-100);
+    background-color: var(--chakra-colors-gray-700);
+}
+
+:global(.dark) .elementItemIcon {
+    color: var(--chakra-colors-gray-100);
 }

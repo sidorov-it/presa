@@ -38,6 +38,8 @@ const LayoutViewer = ({ layout, slideId }: LayoutViewerProps) => {
                     gap: '1rem',
                     // width: '100%',
                     // height: '100%',
+                    marginTop: '1.125em',
+                    marginBottom: '1.125em',
                     gridTemplateColumns: getGridTemplateColumns(),
                     gridTemplateAreas: gridTemplateAreas,
                 }}

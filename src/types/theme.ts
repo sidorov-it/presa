@@ -45,7 +45,7 @@ export type ThemeTypography = {
 export type ThemeDesignShadow = 'none' | 'sm' | 'md';
 export type ThemeDesignBorderWidth = 'none' | 'thin' | 'medium' | 'thick';
 export type ThemeDesignButtonShape = 'square' | 'capsule' | 'default' | 'rounded';
-export type ThemeDesignBackgroundFillType = 'fill' | 'semi' | 'none';
+export type ThemeDesignBackgroundBlockFillType = 'fill' | 'semi' | 'none';
 export type ThemeDesignBlockFillColorsType = 'subtle' | 'primary' | 'custom';
 export type ThemeDesignImageShape = 'default' | 'fade' | 'diagonal' | 'round' | 'round-inverse' | 'wiggle';
 
@@ -63,7 +63,7 @@ export type ThemeDesign = {
     // Blocks and Content
     blocks: {
         backgroundColor: string;
-        backgroundFillType: ThemeDesignBackgroundFillType;
+        backgroundBlockFillType: ThemeDesignBackgroundBlockFillType;
         borderWidth: ThemeDesignBorderWidth;
         blockFillColorsType: ThemeDesignBlockFillColorsType;
         blockBackgroundCustomColors: string[];

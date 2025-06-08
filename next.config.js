@@ -12,6 +12,8 @@ const nextConfig = {
         // !! WARN !!
         ignoreBuildErrors: true,
     },
+    // Включаем source maps для дебага
+    productionBrowserSourceMaps: true,
     images: {
         remotePatterns: [
             {
@@ -20,58 +22,66 @@ const nextConfig = {
             },
         ],
     },
-    webpack(config, { dev, isServer }) {
-        // Optimize webpack configuration
-        config.cache = {
-            type: 'filesystem',
-            allowCollectingMemory: true,
-            memoryCacheUnaffected: true,
-            store: 'pack',
-            buildDependencies: {
-                // eslint-disable-next-line no-undef
-                config: [__filename],
-            },
-            version: '1.0.0',
-        };
+    compiler: {
+        // Удаляем console.log в production
+        // eslint-disable-next-line no-undef
+        // removeConsole: process.env.NODE_ENV === 'production',
+    },
+    webpack(config, { dev, _isServer }) {
+        // Включаем source maps для дебага в development
+        if (dev) {
+            config.devtool = 'eval-source-map';
+        }
 
-        // Optimize module serialization
-        config.snapshot = {
-            ...config.snapshot,
-            managedPaths: [/^(.+?[\\/]node_modules[\\/])/],
-            immutablePaths: [],
-            buildDependencies: {
-                hash: true,
-                timestamp: true,
-            },
-        };
-
-        // Optimize string serialization
-        if (!isServer && dev) {
-            config.infrastructureLogging = {
-                level: 'warn',
-            };
-
-            config.resolve.fallback = { fs: false };
-
+        // Базовые оптимизации только для production
+        if (!dev) {
+            // Агрессивная оптимизация split chunks только для production
             config.optimization = {
                 ...config.optimization,
-                moduleIds: 'deterministic',
-                chunkIds: 'deterministic',
-                realContentHash: true,
-                runtimeChunk: {
-                    name: 'runtime',
-                },
                 splitChunks: {
                     chunks: 'all',
-                    minSize: 20000,
-                    maxSize: 100000,
                     cacheGroups: {
-                        react_icons: {
-                            test: /[\\/]node_modules[\\/]react-icons[\\/]/,
-                            name: 'react-icons',
+                        // Отдельный chunk для React
+                        react: {
+                            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+                            name: 'react',
+                            chunks: 'all',
+                            priority: 40,
+                            enforce: true,
+                        },
+                        // Отдельный chunk для Chakra UI
+                        chakra: {
+                            test: /[\\/]node_modules[\\/]@chakra-ui[\\/]/,
+                            name: 'chakra-ui',
+                            chunks: 'all',
+                            priority: 35,
+                            enforce: true,
+                        },
+                        // Отдельный chunk для Radix UI
+                        radix: {
+                            test: /[\\/]node_modules[\\/]@radix-ui[\\/]/,
+                            name: 'radix-ui',
+                            chunks: 'all',
+                            priority: 30,
+                            enforce: true,
+                        },
+                        // Отдельный chunk для TipTap
+                        tiptap: {
+                            test: /[\\/]node_modules[\\/]@tiptap[\\/]/,
+                            name: 'tiptap',
+                            chunks: 'all',
+                            priority: 25,
+                            enforce: true,
+                        },
+                        // Отдельный chunk для иконок
+                        icons: {
+                            test: /[\\/]node_modules[\\/](react-icons|lucide-react)[\\/]/,
+                            name: 'icons',
                             chunks: 'all',
                             priority: 20,
+                            enforce: true,
                         },
+                        // Остальные vendor библиотеки
                         vendors: {
                             test: /[\\/]node_modules[\\/]/,
                             name: 'vendors',
@@ -83,11 +93,70 @@ const nextConfig = {
             };
         }
 
+        // Базовые настройки resolve для всех режимов
+        config.resolve = {
+            ...config.resolve,
+            fallback: {
+                ...config.resolve.fallback,
+                fs: false,
+                path: false,
+                crypto: false,
+            },
+        };
+
+        // Fix for "self is not defined" error
+        // if (!isServer) {
+        //     config.resolve.fallback = {
+        //         ...config.resolve.fallback,
+        //         self: false,
+        //     };
+        // } else {
+        //     // Add polyfill for server environment
+        //     const webpack = require('webpack');
+        //     config.plugins = config.plugins || [];
+        //     config.plugins.push(
+        //         new webpack.DefinePlugin({
+        //             self: 'undefined',
+        //         })
+        //     );
+        // }
+
         return config;
     },
     reactStrictMode: true,
     experimental: {
-        optimizePackageImports: ['@chakra-ui/react', 'react-icons'],
+        // Оптимизируем импорты больших библиотек
+        optimizePackageImports: [
+            '@chakra-ui/react',
+            '@radix-ui/react-accordion',
+            '@radix-ui/react-alert-dialog',
+            '@radix-ui/react-aspect-ratio',
+            '@radix-ui/react-avatar',
+            '@radix-ui/react-checkbox',
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-hover-card',
+            '@radix-ui/react-label',
+            '@radix-ui/react-menubar',
+            '@radix-ui/react-navigation-menu',
+            '@radix-ui/react-progress',
+            '@radix-ui/react-radio-group',
+            '@radix-ui/react-scroll-area',
+            '@radix-ui/react-select',
+            '@radix-ui/react-separator',
+            '@radix-ui/react-slider',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-switch',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-toast',
+            '@radix-ui/react-tooltip',
+            'lucide-react',
+            '@tiptap/react',
+            '@tiptap/starter-kit',
+            'framer-motion',
+        ],
+        // Отключаем turbo для стабильности
+        // turbo: false,
     },
 };
 

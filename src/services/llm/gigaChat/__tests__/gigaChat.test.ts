@@ -9,26 +9,21 @@ describe('GigaChatService', () => {
         try {
             await fs.unlink(recordingsPath);
         } catch (error) {
+            console.error(error);
             // Ignore if file doesn't exist
         }
     });
 
     it('should record and replay LLM responses', async () => {
         // First, create a service with recording enabled
-        const recordingService = new GigaChatService(
-            { authKey: 'test-key' },
-            { enabled: true, storageKey: 'test' }
-        );
+        const recordingService = new GigaChatService({ authKey: 'test-key' }, { enabled: true, storageKey: 'test' });
 
         // Make a call that will be recorded
         const prompt = 'Create a presentation about cats';
         const response = await recordingService.generate(prompt);
 
         // Now create a service in replay mode without fallback
-        const replayService = new GigaChatService(
-            { authKey: 'test-key' },
-            { replayMode: true, storageKey: 'test' }
-        );
+        const replayService = new GigaChatService({ authKey: 'test-key' }, { replayMode: true, storageKey: 'test' });
 
         // The replay service should return the same response without making an API call
         const replayResponse = await replayService.generate(prompt);
@@ -42,20 +37,14 @@ describe('GigaChatService', () => {
 
     it('should fallback to real API call when recording not found', async () => {
         // Create a service with recording enabled
-        const recordingService = new GigaChatService(
-            { authKey: 'test-key' },
-            { enabled: true, storageKey: 'test' }
-        );
+        const recordingService = new GigaChatService({ authKey: 'test-key' }, { enabled: true, storageKey: 'test' });
 
         // Make a call that will be recorded
         const prompt = 'Create a presentation about cats';
         const response = await recordingService.generate(prompt);
 
         // Create a service in replay mode with fallback enabled
-        const replayService = new GigaChatService(
-            { authKey: 'test-key' },
-            { replayMode: true, storageKey: 'test' }
-        );
+        const replayService = new GigaChatService({ authKey: 'test-key' }, { replayMode: true, storageKey: 'test' });
 
         // Should return recorded response for known prompt
         const replayResponse = await replayService.generate(prompt);
@@ -73,10 +62,7 @@ describe('GigaChatService', () => {
 
     it('should record and replay image generation with fallback', async () => {
         // Create a service with recording enabled
-        const recordingService = new GigaChatService(
-            { authKey: 'test-key' },
-            { enabled: true, storageKey: 'test' }
-        );
+        const recordingService = new GigaChatService({ authKey: 'test-key' }, { enabled: true, storageKey: 'test' });
 
         // Generate an image that will be recorded
         const prompt = 'A cute cat';
@@ -98,4 +84,4 @@ describe('GigaChatService', () => {
         expect(newResponse).toBeDefined();
         expect(newResponse.imageId).toBeDefined();
     });
-}); 
+});

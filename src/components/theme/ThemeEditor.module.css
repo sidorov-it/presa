@@ -1,56 +1,86 @@
 .tabItem {
-    font-size: 0.875rem;
+    font-size: 14px;
 }
 
 .sectionTitle {
-    font-size: 24px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 4px 0;
 }
 
 .sectionSubtitle {
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 600;
+    color: #111827;
+    margin: 24px 0 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .tab {
-    padding: 10px;
-    border-radius: 10px;
-    /* border: 1px solid #60a5fa; */
+    padding: 12px 16px;
+    border-radius: 8px;
     cursor: pointer;
-    /* color: #60a5fa; */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    transition: all 0.2s ease;
+    margin-bottom: 4px;
+}
+
+.tab:hover {
+    background-color: #f3f4f6;
+    color: #374151;
 }
 
 .selectedTab {
-    /* background-color: #60a5fa; */
-    /* border-color: #bfdbfe; */
-    /* color: #3b82f6; */
-    background-color: #bfdbfe;
+    background-color: #dbeafe;
+    color: #1d4ed8;
 }
 
 .tabs {
-    margin-top: 16px;
-    padding-right: 16px;
-    height: 100%;
-    width: 240px;
-    height: 100%;
-    /* gap: 16px; */
-    /* border-right: 1px solid #e2e8f0; */
+    padding: 0 16px 0 0;
+    width: 200px;
+    flex-shrink: 0;
 }
 
 .tabContent {
-    /* margin-top: 16px; */
-    padding-left: 16px;
-    height: 100%;
-    width: 100%;
-    border-left: 1px solid #e2e8f0;
+    padding-left: 24px;
+    flex: 1;
+    border-left: 1px solid #e5e7eb;
 }
 
 .accordion {
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 10px;
-    margin-top: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    background-color: #f9fafb;
+}
+
+/* Label styles for better consistency */
+.fieldLabel {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+}
+
+/* Color picker container */
+.colorPickerContainer {
     margin-bottom: 16px;
-    /* margin-left: 16px;
-    margin-right: 16px; */
-    background-color: #f8fafc;
+}
+
+/* Button styles for add color button */
+.addColorButton {
+    margin-top: 8px;
+    align-self: flex-start;
+    font-size: 14px;
+    padding: 8px 16px;
 }

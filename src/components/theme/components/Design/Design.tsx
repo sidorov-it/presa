@@ -7,7 +7,7 @@ import CardsDesign from '../CardsDesign/CardsDesign';
 import BlockDesign from '../BlockDesign/BlockDesign';
 
 import styles from './Design.module.css';
-import ButtonsDesign from '../ButtonsDesign/ButtonsDesign';
+// import ButtonsDesign from '../ButtonsDesign/ButtonsDesign';
 
 export default function Design({
     theme,
@@ -16,7 +16,7 @@ export default function Design({
     theme: Theme;
     handleDesignChange: (design: Partial<ThemeDesign>) => void;
 }) {
-    const [selectedTab, setSelectedTab] = useState('Слайды');
+    const [selectedTab, setSelectedTab] = useState('Slides');
 
     const items = [
         {
@@ -24,32 +24,29 @@ export default function Design({
             content: <CardsDesign theme={theme} handleDesignChange={handleDesignChange} />,
         },
         {
-            label: 'Блоки и контент',
+            label: 'Блоки',
             content: <BlockDesign theme={theme} handleDesignChange={handleDesignChange} />,
         },
-        {
-            label: 'Кнопки и ссылки',
-            content: <ButtonsDesign theme={theme} handleDesignChange={handleDesignChange} />,
-        },
+        // {
+        //     label: 'Links',
+        //     content: <ButtonsDesign theme={theme} handleDesignChange={handleDesignChange} />,
+        // },
     ];
 
     return (
-        <div style={{ marginTop: '16px' }}>
+        <div style={{ width: '100%' }}>
             <div>
-                <h3 className={styles.sectionTitle}>Дизайн слайда</h3>
-                <div style={{ fontSize: '0.875rem', lineHeight: '1.25rem', color: '#6B7280' }}>
-                    Более точное управление конкретными элементами в вашей теме.
+                <h3 className={styles.sectionTitle}>Дизайн</h3>
+                <div style={{ fontSize: '14px', lineHeight: '1.4', color: '#6B7280', marginBottom: '20px' }}>
+                    Настройте конкретные элементы в вашей теме.
                 </div>
 
                 <ChakraTabs.Root
                     variant={'plain'}
                     size={'md'}
                     colorScheme={'blue'}
-                    // defaultIndex={0}
-                    // index={index}
                     value={selectedTab}
                     onValueChange={e => setSelectedTab(e.value)}
-                    // {...props}
                 >
                     <ChakraTabs.List className={styles.tabs}>
                         {items.map((item: { label: string; content: React.ReactNode }, idx: number) => (

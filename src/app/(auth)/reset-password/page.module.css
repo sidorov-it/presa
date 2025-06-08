@@ -83,7 +83,6 @@
 
 .input:focus {
     outline: none;
-    ring: 2px solid var(--color-primary);
     border-color: var(--color-primary);
     z-index: 10;
 }
@@ -124,9 +123,6 @@
 
 .submitButton:focus {
     outline: none;
-    ring: 2px;
-    ring-offset: 2px;
-    ring-color: var(--color-primary);
 }
 
 .submitButton:disabled {

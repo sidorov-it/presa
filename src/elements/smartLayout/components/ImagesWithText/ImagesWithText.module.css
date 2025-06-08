@@ -4,7 +4,7 @@
 }
 
 .focused {
-    outline: 2px solid #999;
+    outline: 2px solid var(--color-primary);
     outline-offset: 0.25em;
     border-radius: var(--presentation-slide-border-radius);
 }
@@ -16,7 +16,7 @@
 
 .dropIndicator {
     position: absolute;
-    background-color: #806cff;
+    background-color: var(--color-primary);
     z-index: 10;
     pointer-events: none;
     transition: opacity 0.2s ease;

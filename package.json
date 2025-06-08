@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "NODE_ENV=development NODE_OPTIONS='--max-old-space-size=8192' next dev",
+    "dev:debug": "NODE_ENV=development NODE_OPTIONS='--max-old-space-size=8192 --inspect' next dev",
+    "dev:fast": "NODE_OPTIONS='--max-old-space-size=8192' ANALYZE=false NEXT_TELEMETRY_DISABLED=1 next dev --turbo",
+    "dev:stable": "NODE_OPTIONS='--max-old-space-size=8192' next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -11,7 +14,8 @@
     "lint:strict": "eslint --max-warnings=0 .",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "db:seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@chakra-ui/next-js": "^2.4.2",
@@ -133,6 +137,7 @@
     "prettier": "^3.5.3",
     "prisma": "^6.8.2",
     "ts-jest": "^29.1.2",
+    "tsx": "^4.26.0",
     "typescript": "^5"
   }
 }

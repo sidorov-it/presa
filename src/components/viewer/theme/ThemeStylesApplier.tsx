@@ -22,12 +22,14 @@ import { resetThemeStyles } from '@/utils/themeUtils';
 import getContrastTextColor from '@/utils/getContrastTextColor';
 import getHoverColor from '@/utils/getHoverColor';
 import { useColorMode } from '@/components/ui/color-mode';
+import { BackgroundSettings } from '@/types';
 
 interface ThemeStylesApplierProps {
     theme: Theme | null;
+    backgroundSettings?: BackgroundSettings;
 }
 
-const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
+const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme, backgroundSettings }) => {
     // Use ref to avoid re-applying the same theme
     const appliedThemeRef = useRef<string | null>(null);
     const { setColorMode } = useColorMode();
@@ -101,8 +103,13 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
             document.documentElement.style.setProperty('--presentation-slide-background', theme.colors.slideBackground);
 
             // Handle page background
-            if (theme.colors.pageBackground) {
-                if (theme.colors.pageBackground.color) {
+            if (theme.colors.pageBackground || backgroundSettings?.backgroundColor) {
+                if (backgroundSettings?.backgroundColor) {
+                    document.documentElement.style.setProperty(
+                        '--presentation-page-background-color',
+                        backgroundSettings.backgroundColor
+                    );
+                } else if (theme.colors.pageBackground.color) {
                     document.documentElement.style.setProperty(
                         '--presentation-page-background-color',
                         theme.colors.pageBackground.color
@@ -111,11 +118,20 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
                     document.documentElement.style.setProperty('--presentation-page-background-color', '#f9fafb');
                 }
 
-                if (theme.colors.pageBackground.imageUrl) {
+                if (theme.colors.pageBackground.imageUrl || backgroundSettings?.backgroundImage) {
                     console.log('Applying background image URL:', theme.colors.pageBackground.imageUrl);
 
                     // Check if URL is valid
-                    const imageUrl = theme.colors.pageBackground.imageUrl.trim();
+                    let imageUrl;
+
+                    if (backgroundSettings?.backgroundImage) {
+                        if (backgroundSettings?.backgroundImage !== 'none') {
+                            imageUrl = backgroundSettings.backgroundImage;
+                        }
+                    } else {
+                        imageUrl = theme.colors.pageBackground.imageUrl.trim();
+                    }
+                    // const imageUrl = backgroundSettings?.backgroundImage || theme.colors.pageBackground.imageUrl.trim();
                     if (imageUrl) {
                         document.documentElement.style.setProperty(
                             '--presentation-page-background-image',
@@ -284,7 +300,7 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
             // Block design
             document.documentElement.style.setProperty(
                 '--presentation-block-fill-type',
-                theme.design.blocks.backgroundFillType
+                theme.design.blocks.backgroundBlockFillType
             );
 
             let blockBorderWidth = '0px';
@@ -346,7 +362,10 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
                 document.documentElement.style.setProperty('--presentation-button-radius', '8px');
             }
 
-            document.documentElement.style.setProperty('--presentation-link-color', theme.design.buttons.linkColor);
+            document.documentElement.style.setProperty(
+                '--presentation-link-color',
+                theme.design.buttons.linkColor || theme.colors.primaryAccent
+            );
 
             // Определяем isDarkMode и устанавливаем colorMode Chakra
             let isDarkMode = false;
@@ -392,7 +411,7 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme }) => {
             appliedThemeRef.current = null;
             console.log('ThemeStylesApplier: Theme reset to defaults on unmount');
         };
-    }, [theme, setColorMode]);
+    }, [theme, setColorMode, backgroundSettings]);
 
     // This component doesn't render anything
     return null;

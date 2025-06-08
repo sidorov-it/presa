@@ -18,7 +18,10 @@ export default function CardsDesign({
     return (
         <div
             style={{
-                marginTop: '1rem',
+                // marginTop: '1rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px',
             }}
         >
             {/* Roundness */}
@@ -165,7 +168,7 @@ export default function CardsDesign({
             {/* Image Shape */}
             <div>
                 <Label>Форма изображения</Label>
-                <div style={{ display: 'flex', marginTop: '0.5rem', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', marginTop: '0.5rem', gap: '0.5rem', flexWrap: 'wrap' }}>
                     {['default', 'fade', 'diagonal', 'round', 'round-inverse', 'wiggle'].map(option => (
                         <button
                             key={option}

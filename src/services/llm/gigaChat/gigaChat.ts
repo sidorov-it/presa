@@ -1,13 +1,13 @@
 /* eslint-disable prettier/prettier */
-import { GigaChatConfig, LLMResponse, LLMService } from '@/types/llm';
-import { RecordingOptions } from '@/types/llm/recordings';
-import { RecordingService } from '../recordings/recordingService';
-import GigaChat, { detectImage } from 'gigachat';
 import { Agent } from 'https';
 import path from 'path';
 import fs from 'fs/promises';
-import { LLMHistoryService, LLMRequestData } from '../history/llmHistoryService';
+import GigaChat, { detectImage } from 'gigachat';
 import { performance } from 'perf_hooks';
+import { GigaChatConfig, LLMResponse, LLMService } from '@/types/llm';
+import { RecordingOptions } from '@/types/llm/recordings';
+import { RecordingService } from '../recordings/recordingService';
+import { LLMHistoryService, LLMRequestData } from '../history/llmHistoryService';
 
 import { replyConfig } from './replyConfig';
 import { LLMRequestContext } from '@/types/gigachat';

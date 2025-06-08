@@ -45,7 +45,7 @@ export default function Home() {
                 justifyContent: 'center',
                 alignItems: 'center',
                 minHeight: '100vh',
-                backgroundColor: '#F9FAFB',
+                backgroundColor: 'var(--color-background)',
             }}
         >
             <div
@@ -53,7 +53,7 @@ export default function Home() {
                     borderRadius: '9999px',
                     borderTopWidth: '2px',
                     borderBottomWidth: '2px',
-                    borderColor: '#3B82F6',
+                    borderColor: 'var(--color-primary)',
                     width: '3rem',
                     height: '3rem',
                     animation: 'spin 1s linear infinite',

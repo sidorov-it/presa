@@ -5,7 +5,7 @@
 }
 
 .selected {
-    outline: 2px solid #806cff;
+    outline: 2px solid var(--color-primary);
 }
 
 .container {
@@ -16,8 +16,8 @@
 
 .dragImage {
     opacity: 0.5;
-    background-color: #f0f0f0;
-    border: 1px dashed #806cff;
+    background-color: var(--color-background);
+    border: 1px dashed var(--color-primary);
     position: absolute;
     top: -1000px;
     left: -1000px;
@@ -27,5 +27,5 @@
     align-items: center;
     justify-content: center;
     font-size: 14px;
-    color: #333;
+    color: var(--color-text);
 }

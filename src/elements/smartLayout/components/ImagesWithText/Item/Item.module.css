@@ -56,7 +56,7 @@
 }
 
 .hovered {
-    outline: 2px solid #999;
+    outline: 2px solid var(--color-primary);
     outline-offset: 0.25em;
     border-radius: var(--presentation-slide-border-radius);
 }
@@ -85,18 +85,19 @@
     font-size: .75rem;
     padding-inline-start: 0.5rem;
     padding-inline-end: 0.5rem;
-    color: #3c3838;
+    color: var(--color-text);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    background: linear-gradient(180deg, #FFFFFF 0%, #FCF9F5 100%);
+    background: var(--color-surface);
     border-width: 1px;
     border-style: solid;
-    border-color: #e5e0df;
+    border-color: var(--color-border);
     padding: 0px;
     border-radius: 9999px;
 }
 
 .addIcon:hover {
-    color: #806cff;
+    color: var(--color-primary);
+    background: var(--color-background);
 }
 
 .hovered > .addIcon {

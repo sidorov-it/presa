@@ -7,6 +7,8 @@ import { IPresentation } from '@/types';
 import generateSlide from '@/services/llm/gigaChat/generateSlide';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../auth/[...nextauth]/route';
+import { hasEnoughTokens, deductTokens } from '@/utils/tokens';
+import { getTokenCostForOperation } from '@/utils/getTokenCostForOperation';
 
 interface RequestBody {
     presentationId: string;
@@ -29,6 +31,20 @@ export async function POST(request: NextRequest) {
 
         const body: RequestBody = await request.json();
         const { prompt, templateId, slideIndex, presentationId } = body;
+
+        // Calculate required tokens
+        const requiredTokens = getTokenCostForOperation('GENERATE_SLIDE');
+
+        // Check if user has enough tokens
+        const hasTokens = await hasEnoughTokens(session.user.id, requiredTokens);
+        if (!hasTokens) {
+            return NextResponse.json({
+                error: 'Insufficient tokens',
+                message: `You need ${requiredTokens} tokens to generate a slide. Please purchase more tokens to continue.`,
+                requiredTokens,
+                operation: 'GENERATE_SLIDE',
+            }, { status: 402 });
+        }
 
         const presentation = await prisma.presentation.findUnique({
             where: { id: presentationId },
@@ -94,7 +110,28 @@ ${surroundingSlides[1]?.text ? `Текст следующего слайда: ${
             },
         });
 
-        return new Response(JSON.stringify({ slide }), {
+        // Deduct tokens after successful generation
+        try {
+            await deductTokens({
+                userId: session.user.id,
+                amount: requiredTokens,
+                description: `Generated slide ${slideIndex + 1} for presentation`,
+                metadata: {
+                    presentationId,
+                    slideIndex,
+                    templateId: finalTemplateId,
+                    prompt: prompt.substring(0, 100), // First 100 chars of prompt
+                },
+            });
+        } catch (tokenError) {
+            console.error('Error deducting tokens:', tokenError);
+            // Note: We don't fail the request here as the slide was already generated
+        }
+
+        return new Response(JSON.stringify({ 
+            slide,
+            tokensUsed: requiredTokens,
+        }), {
             status: 200,
             headers: { 'Content-Type': 'application/json' },
         });

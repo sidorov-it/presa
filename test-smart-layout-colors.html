@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Layout Colors Test</title>
+    <style>
+        /* Базовые стили для smart layout */
+        .smartLayout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            width: 100%;
+            padding: 2rem;
+        }
+
+        .smartLayoutItem {
+            display: flex;
+            flex-direction: column;
+            border-radius: 0.375rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            padding: 1rem;
+            min-height: 150px;
+        }
+
+        /* Применение кастомных цветов фонов для smart-layout элементов */
+        [style*="--presentation-block-background-custom-type: primary"] .smartLayoutItem {
+            background-color: var(--presentation-block-background, #ffffff);
+        }
+
+        /* Для 1 цвета */
+        [style*="--presentation-block-background-custom-count: 1"] .smartLayoutItem {
+            background: var(--presentation-block-background-custom-1, var(--presentation-block-background));
+        }
+
+        /* Для 2 цветов */
+        [style*="--presentation-block-background-custom-count: 2"] .smartLayoutItem:nth-child(2n+1) {
+            background: var(--presentation-block-background-custom-1, var(--presentation-block-background));
+        }
+        [style*="--presentation-block-background-custom-count: 2"] .smartLayoutItem:nth-child(2n) {
+            background: var(--presentation-block-background-custom-2, var(--presentation-block-background));
+        }
+
+        /* Для 3 цветов */
+        [style*="--presentation-block-background-custom-count: 3"] .smartLayoutItem:nth-child(3n+1) {
+            background: var(--presentation-block-background-custom-1, var(--presentation-block-background));
+        }
+        [style*="--presentation-block-background-custom-count: 3"] .smartLayoutItem:nth-child(3n+2) {
+            background: var(--presentation-block-background-custom-2, var(--presentation-block-background));
+        }
+        [style*="--presentation-block-background-custom-count: 3"] .smartLayoutItem:nth-child(3n) {
+            background: var(--presentation-block-background-custom-3, var(--presentation-block-background));
+        }
+
+        .smartLayoutItemTitle {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .smartLayoutItemDescription {
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .test-section {
+            margin-bottom: 3rem;
+        }
+
+        .test-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-section">
+        <h2 class="test-title">Тест 1: Один кастомный цвет</h2>
+        <div style="--presentation-block-background-custom-count: 1; --presentation-block-background-custom-1: #e3f2fd;">
+            <div class="smartLayout">
+                <div class="smartLayoutItem">
+                    <div class="smartLayoutItemTitle">Элемент 1</div>
+                    <div class="smartLayoutItemDescription">Описание первого элемента</div>
+                </div>
+                <div class="smartLayoutItem">
+                    <div class="smartLayoutItemTitle">Элемент 2</div>
+                    <div class="smartLayoutItemDescription">Описание второго элемента</div>
+                </div>
+                <div class="smartLayoutItem">
+                    <div class="smartLayoutItemTitle">Элемент 3</div>
+                    <div class="smartLayoutItemDescription">Описание третьего элемента</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2 class="test-title">Тест 2: Два кастомных цвета</h2>
+        <div style="--presentation-block-background-custom-count: 2; --presentation-block-background-custom-1: #e8f5e8; --presentation-block-background-custom-2: #fff3e0;">
+            <div class="smartLayout">
+                <div class="smartLayoutItem">
+                    <div class="smartLayoutItemTitle">Элемент 1</div>
+                    <div class="smartLayoutItemDescription">Зеленый фон</div>
+                </div>
+                <div class="smartLayoutItem">
+                    <div class="smartLayoutItemTitle">Элемент 2</div>
+                    <div class="smartLayoutItemDescription">Оранжевый фон</div>
+                </div>
+                <div class="smartLayoutItem">
+                    <div class="smartLayoutItemTitle">Элемент 3</div>
+                    <div class="smartLayoutItemDescription">Снова зеленый фон</div>
+                </div>
+                <div class="smartLayoutItem">
+                    <div class="smartLayoutItemTitle">Элемент 4</div>
+                    <div class="smartLayoutItemDescription">Снова оранжевый фон</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2 class="test-title">Тест 3: Три кастомных цвета</h2>
+        <div style="--presentation-block-background-custom-count: 3; --presentation-block-background-custom-1: #fce4ec; --presentation-block-background-custom-2: #e1f5fe; --presentation-block-background-custom-3: #f3e5f5;">
+            <div class="smartLayout">
+                <div class="smartLayoutItem">
+                    <div class="smartLayoutItemTitle">Элемент 1</div>
+                    <div class="smartLayoutItemDescription">Розовый фон</div>
+                </div>
+                <div class="smartLayoutItem">
+                    <div class="smartLayoutItemTitle">Элемент 2</div>
+                    <div class="smartLayoutItemDescription">Голубой фон</div>
+                </div>
+                <div class="smartLayoutItem">
+                    <div class="smartLayoutItemTitle">Элемент 3</div>
+                    <div class="smartLayoutItemDescription">Фиолетовый фон</div>
+                </div>
+                <div class="smartLayoutItem">
+                    <div class="smartLayoutItemTitle">Элемент 4</div>
+                    <div class="smartLayoutItemDescription">Снова розовый фон</div>
+                </div>
+                <div class="smartLayoutItem">
+                    <div class="smartLayoutItemTitle">Элемент 5</div>
+                    <div class="smartLayoutItemDescription">Снова голубой фон</div>
+                </div>
+                <div class="smartLayoutItem">
+                    <div class="smartLayoutItemTitle">Элемент 6</div>
+                    <div class="smartLayoutItemDescription">Снова фиолетовый фон</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import path from 'path';
 import fs from 'fs/promises';
 
@@ -37,7 +37,7 @@ export const POST = async (req: NextRequest) => {
 
         // Generate unique filename
         const ext = contentType.split('/')[1];
-        const filename = `${uuidv4()}.${ext}`;
+        const filename = `${randomUUID()}.${ext}`;
         const filePath = path.join(UPLOAD_DIR, filename);
 
         // Save file
