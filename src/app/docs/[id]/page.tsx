@@ -28,6 +28,7 @@ import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import Logo from '@/components/icons/Logo/Logo';
+import PageHead from '@/components/PageHead';
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -186,188 +187,190 @@ export default function PresentationEditorPage() {
     if (notFound || !presentation) return notFoundUI;
 
     return (
-        <ReadOnlyProvider isReadOnly={false}>
-            <ThemeStylesApplier theme={currentTheme} backgroundSettings={presentation.backgroundSettings} />
-            <div ref={containerRef} className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`}>
-                <header className={styles.header}>
-                    <div className={styles.headerContent}>
-                        <div className={styles.headerLeft}>
-                            <Link href="/dashboard" className={styles.logo}>
-                                <Logo size="md" />
-                            </Link>
-                        </div>
+        <>
+            <ReadOnlyProvider isReadOnly={false}>
+                <ThemeStylesApplier theme={currentTheme} backgroundSettings={presentation.backgroundSettings} />
+                <div ref={containerRef} className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`}>
+                    <header className={styles.header}>
+                        <div className={styles.headerContent}>
+                            <div className={styles.headerLeft}>
+                                <Link href="/dashboard" className={styles.logo}>
+                                    <Logo size="md" />
+                                </Link>
+                            </div>
 
-                        <div className={styles.headerRight}>
-                            <Popover
-                                isOpen={isThemePopoverOpen}
-                                onOpen={() => setIsThemePopoverOpen(true)}
-                                onClose={() => setIsThemePopoverOpen(false)}
-                                portalContainer={containerRef.current}
-                                trigger={
-                                    <div
-                                        className={styles.themeButton}
-                                        role="button"
-                                        aria-label="Open theme selector"
-                                        onClick={() => setIsThemePopoverOpen(!isThemePopoverOpen)}
-                                        onKeyDown={e => e.key === 'Enter' && setIsThemePopoverOpen(!isThemePopoverOpen)}
-                                    >
-                                        <ThemeIcon />
-                                        <span>Тема</span>
-                                    </div>
-                                }
-                                content={
-                                    <div className={styles.themePopover}>
-                                        <h3 className={styles.popoverTitle}>Выберите тему</h3>
-                                        <div className={styles.themeGrid}>
-                                            <div
-                                                className={cn(
-                                                    styles.defaultThemeOption,
-                                                    (!currentTheme || currentTheme.name === 'Default Theme') &&
-                                                        styles.themeOptionSelected
-                                                )}
-                                                onClick={handleSetDefaultTheme}
-                                                role="button"
-                                                aria-label="Set default theme"
-                                                onKeyDown={e => e.key === 'Enter' && handleSetDefaultTheme()}
-                                            >
+                            <div className={styles.headerRight}>
+                                <Popover
+                                    isOpen={isThemePopoverOpen}
+                                    onOpen={() => setIsThemePopoverOpen(true)}
+                                    onClose={() => setIsThemePopoverOpen(false)}
+                                    portalContainer={containerRef.current}
+                                    trigger={
+                                        <div
+                                            className={styles.themeButton}
+                                            role="button"
+                                            aria-label="Open theme selector"
+                                            onClick={() => setIsThemePopoverOpen(!isThemePopoverOpen)}
+                                            onKeyDown={e => e.key === 'Enter' && setIsThemePopoverOpen(!isThemePopoverOpen)}
+                                        >
+                                            <ThemeIcon />
+                                            <span>Тема</span>
+                                        </div>
+                                    }
+                                    content={
+                                        <div className={styles.themePopover}>
+                                            <h3 className={styles.popoverTitle}>Выберите тему</h3>
+                                            <div className={styles.themeGrid}>
                                                 <div
-                                                    className={styles.themeColorPreview}
-                                                    style={{ backgroundColor: '#3b82f6' }}
-                                                />
-                                                <span>Стандартная тема</span>
-                                                <span className={styles.defaultLabel}>По умолчанию</span>
-                                            </div>
-
-                                            {themes.length > 0 ? (
-                                                themes.map(theme => (
+                                                    className={cn(
+                                                        styles.defaultThemeOption,
+                                                        (!currentTheme || currentTheme.name === 'Default Theme') &&
+                                                        styles.themeOptionSelected
+                                                    )}
+                                                    onClick={handleSetDefaultTheme}
+                                                    role="button"
+                                                    aria-label="Set default theme"
+                                                    onKeyDown={e => e.key === 'Enter' && handleSetDefaultTheme()}
+                                                >
                                                     <div
-                                                        key={theme.id}
-                                                        className={cn(
-                                                            styles.themeOption,
-                                                            currentTheme?.id === theme.id && styles.themeOptionSelected
-                                                        )}
-                                                        onClick={() => handleThemeChange(theme)}
-                                                        role="button"
-                                                        aria-label={`Select theme ${theme.name}`}
-                                                        onKeyDown={e => e.key === 'Enter' && handleThemeChange(theme)}
-                                                    >
-                                                        <div
-                                                            className={styles.themeColorPreview}
-                                                            style={{ backgroundColor: theme.colors.primaryAccent }}
-                                                        />
-                                                        <span>{theme.name}</span>
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <div className={styles.noThemesText}>
-                                                    Нет доступных пользовательских тем
+                                                        className={styles.themeColorPreview}
+                                                        style={{ backgroundColor: '#3b82f6' }}
+                                                    />
+                                                    <span>Стандартная тема</span>
+                                                    <span className={styles.defaultLabel}>По умолчанию</span>
                                                 </div>
-                                            )}
-                                            <div className={styles.themeManageLink}>
-                                                <Link href="/themes" className={styles.themeManageLinkText}>
+
+                                                {themes.length > 0 ? (
+                                                    themes.map(theme => (
+                                                        <div
+                                                            key={theme.id}
+                                                            className={cn(
+                                                                styles.themeOption,
+                                                                currentTheme?.id === theme.id && styles.themeOptionSelected
+                                                            )}
+                                                            onClick={() => handleThemeChange(theme)}
+                                                            role="button"
+                                                            aria-label={`Select theme ${theme.name}`}
+                                                            onKeyDown={e => e.key === 'Enter' && handleThemeChange(theme)}
+                                                        >
+                                                            <div
+                                                                className={styles.themeColorPreview}
+                                                                style={{ backgroundColor: theme.colors.primaryAccent }}
+                                                            />
+                                                            <span>{theme.name}</span>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className={styles.noThemesText}>
+                                                    Нет доступных пользовательских тем
+                                                    </div>
+                                                )}
+                                                <div className={styles.themeManageLink}>
+                                                    <Link href="/themes" className={styles.themeManageLinkText}>
                                                     Управление темами
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                />
+
+                                <button
+                                    onClick={handleViewPresentation}
+                                    className={styles.themeButton}
+                                    aria-label="View presentation"
+                                >
+                                    <FaEye size={16} />
+                                    <span className={styles.viewButtonText}>Просмотр</span>
+                                </button>
+
+                                <ThemeToggle />
+
+                                <button
+                                    type="button"
+                                    className={styles.settingsButton}
+                                    aria-label="Настроить фон презентации"
+                                    tabIndex={0}
+                                    onClick={handleOpenBgModal}
+                                    onKeyDown={handleKeyDownCog}
+                                >
+                                    <HiOutlineCog6Tooth className={styles.settingsIcon} aria-hidden="true" />
+                                </button>
+                                <UndoRedoControls presentationId={presentation.id} tiptapRefs={tiptapRefs} />
+
+                                <Popover
+                                    isOpen={isUserMenuOpen}
+                                    onOpen={() => setIsUserMenuOpen(true)}
+                                    onClose={() => setIsUserMenuOpen(false)}
+                                    portalContainer={containerRef.current}
+                                    trigger={
+                                        <div
+                                            className={styles.userInfo}
+                                            role="button"
+                                            aria-label="Open user menu"
+                                            onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                                            onKeyDown={e => e.key === 'Enter' && setIsUserMenuOpen(!isUserMenuOpen)}
+                                        >
+                                            <FaUser className={styles.userIcon} />
+                                            {session?.user?.name && (
+                                                <span className={styles.userName}>{session.user.name}</span>
+                                            )}
+                                        </div>
+                                    }
+                                    content={
+                                        <div className={styles.userMenu}>
+                                            <div className={styles.userMenuHeader}>
+                                                <div className={styles.userMenuEmail}>
+                                                    {session?.user?.email || 'user@example.com'}
+                                                </div>
+                                                <Link href="/tokens" className={styles.userMenuCredits}>
+                                                    <HiOutlineCreditCard className={styles.creditsIcon} />
+                                                    <span>
+                                                        {tokensLoading ? '...' : formatTokenAmount(tokenBalance)} токенов
+                                                    </span>
                                                 </Link>
                                             </div>
-                                        </div>
-                                    </div>
-                                }
-                            />
 
-                            <button
-                                onClick={handleViewPresentation}
-                                className={styles.themeButton}
-                                aria-label="View presentation"
-                            >
-                                <FaEye size={16} />
-                                <span className={styles.viewButtonText}>Просмотр</span>
-                            </button>
+                                            {/* <div className={styles.userMenuDivider} /> */}
 
-                            <ThemeToggle />
+                                            <div className={styles.userMenuActions}>
+                                                <Link href="/settings" className={styles.userMenuAction}>
+                                                    <FaCog className={styles.actionIcon} />
+                                                    <span>Настройки</span>
+                                                </Link>
 
-                            <button
-                                type="button"
-                                className={styles.settingsButton}
-                                aria-label="Настроить фон презентации"
-                                tabIndex={0}
-                                onClick={handleOpenBgModal}
-                                onKeyDown={handleKeyDownCog}
-                            >
-                                <HiOutlineCog6Tooth className={styles.settingsIcon} aria-hidden="true" />
-                            </button>
-                            <UndoRedoControls presentationId={presentation.id} tiptapRefs={tiptapRefs} />
-
-                            <Popover
-                                isOpen={isUserMenuOpen}
-                                onOpen={() => setIsUserMenuOpen(true)}
-                                onClose={() => setIsUserMenuOpen(false)}
-                                portalContainer={containerRef.current}
-                                trigger={
-                                    <div
-                                        className={styles.userInfo}
-                                        role="button"
-                                        aria-label="Open user menu"
-                                        onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                                        onKeyDown={e => e.key === 'Enter' && setIsUserMenuOpen(!isUserMenuOpen)}
-                                    >
-                                        <FaUser className={styles.userIcon} />
-                                        {session?.user?.name && (
-                                            <span className={styles.userName}>{session.user.name}</span>
-                                        )}
-                                    </div>
-                                }
-                                content={
-                                    <div className={styles.userMenu}>
-                                        <div className={styles.userMenuHeader}>
-                                            <div className={styles.userMenuEmail}>
-                                                {session?.user?.email || 'user@example.com'}
+                                                <button
+                                                    onClick={handleSignOut}
+                                                    className={styles.userMenuSignOut}
+                                                    aria-label="Выйти"
+                                                >
+                                                    <FaSignOutAlt className={styles.signOutIcon} />
+                                                    <span>Выйти</span>
+                                                </button>
                                             </div>
-                                            <Link href="/tokens" className={styles.userMenuCredits}>
-                                                <HiOutlineCreditCard className={styles.creditsIcon} />
-                                                <span>
-                                                    {tokensLoading ? '...' : formatTokenAmount(tokenBalance)} токенов
-                                                </span>
-                                            </Link>
                                         </div>
-
-                                        {/* <div className={styles.userMenuDivider} /> */}
-
-                                        <div className={styles.userMenuActions}>
-                                            <Link href="/settings" className={styles.userMenuAction}>
-                                                <FaCog className={styles.actionIcon} />
-                                                <span>Настройки</span>
-                                            </Link>
-
-                                            <button
-                                                onClick={handleSignOut}
-                                                className={styles.userMenuSignOut}
-                                                aria-label="Выйти"
-                                            >
-                                                <FaSignOutAlt className={styles.signOutIcon} />
-                                                <span>Выйти</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                }
-                            />
+                                    }
+                                />
+                            </div>
                         </div>
-                    </div>
-                </header>
-                <main className={styles.main}>
-                    <Editor presentationId={presentation.id} tiptapRefs={tiptapRefs} />
+                    </header>
+                    <main className={styles.main}>
+                        <Editor presentationId={presentation.id} tiptapRefs={tiptapRefs} />
 
-                    <BackgroundSettingsModal
-                        isOpen={isBgModalOpen}
-                        onClose={handleCloseBgModal}
-                        presentationId={presentation.id}
-                    />
+                        <BackgroundSettingsModal
+                            isOpen={isBgModalOpen}
+                            onClose={handleCloseBgModal}
+                            presentationId={presentation.id}
+                        />
 
-                    <ThemeDebugButton />
-                </main>
+                        <ThemeDebugButton />
+                    </main>
 
-                <footer className={styles.footer}>
-                    <div className={styles.footerContent}>Presa - Create beautiful presentations with AI</div>
-                </footer>
-            </div>
-        </ReadOnlyProvider>
+                    <footer className={styles.footer}>
+                        <div className={styles.footerContent}>Presa - Create beautiful presentations with AI</div>
+                    </footer>
+                </div>
+            </ReadOnlyProvider>
+        </>
     );
 }
