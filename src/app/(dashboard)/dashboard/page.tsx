@@ -11,6 +11,8 @@ import { resetThemeStyles } from '@/utils/themeUtils';
 import { FaPlus, FaMagic, FaEllipsisV, FaPencilAlt, FaCopy, FaTrash, FaEye } from 'react-icons/fa';
 import { IPresentation } from '@/types';
 import { pluralize } from '@/utils/helpers';
+import getPreviewImage from '@/utils/getPreviewImage';
+import NextImage from 'next/image';
 import styles from './page.module.css';
 import { Button } from '@/components/ui/Button';
 
@@ -294,7 +296,16 @@ export default function DashboardPage() {
                             className={styles.presentationCard}
                         >
                             <div className={styles.previewArea}>
-                                <div className={styles.previewText}>Предпросмотр</div>
+                                {getPreviewImage(presentation) ? (
+                                    <NextImage
+                                        src={getPreviewImage(presentation) as string}
+                                        alt="preview"
+                                        fill
+                                        className={styles.previewImage}
+                                    />
+                                ) : (
+                                    <div className={styles.noPreview}>Нет изображения</div>
+                                )}
 
                                 <button onClick={e => toggleMenu(presentation.id, e)} className={styles.menuButton}>
                                     <FaEllipsisV />

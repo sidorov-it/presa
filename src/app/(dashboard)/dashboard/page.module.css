@@ -164,6 +164,19 @@
     position: relative;
 }
 
+.previewImage {
+    object-fit: cover;
+}
+
+.noPreview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-light);
+    height: 100%;
+    width: 100%;
+}
+
 .previewText {
     position: absolute;
     inset: 0;
