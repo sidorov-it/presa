@@ -1,4 +1,4 @@
-import { toPng } from 'html-to-image';
+import domtoimage from 'dom-to-image';
 import { jsPDF } from 'jspdf';
 import { IPresentation } from '@/types';
 
@@ -11,6 +11,112 @@ const clearImageCache = (element: HTMLElement) => {
         img.src = '';
         img.src = `${currentSrc}${currentSrc.includes('?') ? '&' : '?'}_t=${Date.now()}`;
     });
+};
+
+// Function to apply styles that prevent layout shifts during export
+const applyExportStyles = (element: HTMLElement): (() => void) => {
+    const elementsToRestore: Array<{ element: HTMLElement; originalStyles: string }> = [];
+
+    // Store original styles and apply new ones
+    const applyStylesRecursively = (el: HTMLElement) => {
+        // Store original style
+        elementsToRestore.push({ element: el, originalStyles: el.style.cssText });
+
+        // Get computed styles to understand current layout
+        const computedStyles = window.getComputedStyle(el);
+
+        // Apply box-sizing to all elements
+        el.style.setProperty('box-sizing', 'border-box', 'important');
+
+        // Handle flex containers
+        if (computedStyles.display === 'flex' || el.classList.contains('flex')) {
+            el.style.setProperty('flex-wrap', 'nowrap', 'important');
+            el.style.setProperty('overflow', 'visible', 'important');
+
+            // Handle flex children - prevent them from shrinking but allow text wrapping
+            Array.from(el.children).forEach(child => {
+                const childEl = child as HTMLElement;
+                const childComputed = window.getComputedStyle(childEl);
+
+                // Store original style for child
+                elementsToRestore.push({ element: childEl, originalStyles: childEl.style.cssText });
+
+                // Prevent flex children from shrinking but preserve their width
+                childEl.style.setProperty('flex-shrink', '0', 'important');
+
+                // Set a minimum width based on current width to prevent collapse
+                const currentWidth = childEl.offsetWidth;
+                if (currentWidth > 0) {
+                    childEl.style.setProperty('min-width', `${currentWidth}px`, 'important');
+                }
+
+                // For text containers, ensure text can wrap within the element
+                if (childComputed.display === 'block' || childComputed.display === 'inline-block') {
+                    childEl.style.setProperty('word-wrap', 'break-word', 'important');
+                    childEl.style.setProperty('overflow-wrap', 'break-word', 'important');
+                }
+            });
+        }
+
+        // Handle grid containers
+        if (computedStyles.display === 'grid' || el.classList.contains('grid')) {
+            el.style.setProperty('overflow', 'visible', 'important');
+        }
+
+        // Handle text elements - be more selective about preventing wrapping
+        if (['P', 'SPAN', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(el.tagName)) {
+            // Only prevent wrapping for inline elements or single-line text
+            const parentComputed = el.parentElement ? window.getComputedStyle(el.parentElement) : null;
+            const isInFlexContainer = parentComputed?.display === 'flex';
+
+            // If it's a single line of text in a flex container, we might need to be careful
+            if (isInFlexContainer && el.textContent && el.textContent.length < 50) {
+                // Short text - might be safe to prevent wrapping
+                el.style.setProperty('white-space', 'nowrap', 'important');
+            } else {
+                // Long text or not in flex - allow normal wrapping
+                el.style.setProperty('word-wrap', 'break-word', 'important');
+                el.style.setProperty('overflow-wrap', 'break-word', 'important');
+            }
+        }
+
+        // Handle DIV elements differently - they're often containers
+        if (el.tagName === 'DIV') {
+            // For divs, preserve their width and allow content to wrap
+            const currentWidth = el.offsetWidth;
+            if (currentWidth > 0 && computedStyles.position !== 'absolute') {
+                el.style.setProperty('max-width', `${currentWidth}px`, 'important');
+            }
+            el.style.setProperty('word-wrap', 'break-word', 'important');
+            el.style.setProperty('overflow-wrap', 'break-word', 'important');
+        }
+
+        // Handle images
+        if (el.tagName === 'IMG') {
+            el.style.setProperty('flex-shrink', '0', 'important');
+            // Don't remove max-width completely, preserve current dimensions
+            const currentWidth = el.offsetWidth;
+            if (currentWidth > 0) {
+                el.style.setProperty('width', `${currentWidth}px`, 'important');
+            }
+        }
+
+        // Recursively apply to children
+        Array.from(el.children).forEach(child => {
+            applyStylesRecursively(child as HTMLElement);
+        });
+    };
+
+    // Start with the root element
+    applyStylesRecursively(element);
+
+    // Return cleanup function
+    return () => {
+        elementsToRestore.reverse().forEach(({ element, originalStyles }) => {
+            // Restore original styles
+            element.style.cssText = originalStyles;
+        });
+    };
 };
 
 // Function to wait for all images to load
@@ -55,6 +161,50 @@ export interface PdfExportOptions {
     minPageMargin?: number; // Minimum margin in mm
 }
 
+// Function to add watermark to the slide DOM
+const addSlideWatermark = (slideElement: HTMLElement): HTMLElement | null => {
+    // Check if watermark already exists
+    const existingWatermark = slideElement.querySelector('[data-slydle-watermark="true"]');
+    if (existingWatermark) {
+        return existingWatermark as HTMLElement;
+    }
+
+    // Create watermark element
+    const watermark = document.createElement('div');
+    watermark.setAttribute('data-slydle-watermark', 'true');
+    watermark.style.cssText = `
+        position: absolute;
+        bottom: 8px;
+        right: 12px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-weight: 500;
+        z-index: 9999;
+        pointer-events: none;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    `;
+    watermark.textContent = 'Сделано в slydle.ru';
+
+    // Add to slide element
+    slideElement.style.position = 'relative';
+    slideElement.appendChild(watermark);
+
+    return watermark;
+};
+
+// Function to remove watermark from the slide DOM
+const removeSlideWatermark = (slideElement: HTMLElement): void => {
+    const watermark = slideElement.querySelector('[data-slydle-watermark="true"]');
+    if (watermark) {
+        watermark.remove();
+    }
+};
+
 /**
  * Exports a presentation to PDF, with each slide on a separate page
  * @param presentation The presentation to export
@@ -79,7 +229,6 @@ export const exportPresentationToPdf = async (
         await waitForFonts();
 
         let pdf: jsPDF | null = null;
-        const pxToMm = 0.264583333; // 1px = 0.264583333mm at 96 DPI
 
         // Process each slide
         for (let i = 0; i < slideElements.length; i++) {
@@ -91,85 +240,88 @@ export const exportPresentationToPdf = async (
             // Wait for all images to load
             await waitForImages(slideElement);
 
-            slideElement.style.borderRadius = '0px';
-            const slideContent = slideElement.querySelector('[data-slide-content="true"]');
-            if (slideContent) {
-                (slideContent as HTMLElement).style.borderRadius = '0px';
-            }
+            // Add watermark to slide before creating image
+            addSlideWatermark(slideElement);
 
-            // Get slide dimensions
-            const slideWidth = slideElement.offsetWidth;
-            const slideHeight = slideElement.offsetHeight;
+            // Apply export-specific styles to prevent layout shifts
+            const restoreStyles = applyExportStyles(slideElement);
 
-            // Calculate dimensions in mm
-            const contentWidthMm = slideWidth * pxToMm * scale;
-            const contentHeightMm = slideHeight * pxToMm * scale;
+            // Wait for layout recalculation after applying styles
+            await new Promise(resolve => setTimeout(resolve, 100));
 
-            // Capture slide as image using html-to-image
-            const imgData = await toPng(slideElement, {
-                quality: 1.0,
-                pixelRatio: scale,
-                skipAutoScale: true,
-                cacheBust: true,
-                includeQueryParams: true,
-                canvasWidth: slideWidth * scale,
-                canvasHeight: slideHeight * scale,
-                style: {
-                    transform: 'scale(1)',
-                    transformOrigin: 'top left',
-                    width: `${slideWidth}px`,
-                    height: `${slideHeight}px`,
-                },
-                imagePlaceholder: `slide-${i}-${Date.now()}`,
-            });
+            try {
+                slideElement.style.borderRadius = '0px';
+                const slideContent = slideElement.querySelector('[data-slide-content="true"]');
+                if (slideContent) {
+                    (slideContent as HTMLElement).style.borderRadius = '0px';
+                }
 
-            // Calculate page dimensions with margins
-            const pageWidthMm = contentWidthMm;
-            const pageHeightMm = contentHeightMm;
-            const orientation = pageHeightMm > pageWidthMm ? 'portrait' : 'landscape';
+                // Get slide dimensions
+                const slideWidth = slideElement.offsetWidth;
+                const slideHeight = slideElement.offsetHeight;
 
-            // Create or add new page
-            if (i === 0) {
-                pdf = new jsPDF({
-                    orientation,
-                    unit: 'mm',
-                    format: [pageWidthMm, pageHeightMm],
+                // Create high-quality image using dom-to-image
+                const imageDataUrl = await domtoimage.toPng(slideElement, {
+                    width: slideWidth * scale,
+                    height: slideHeight * scale,
+                    cacheBust: true,
+                    quality: 1,
+                    style: {
+                        transform: `scale(${scale})`,
+                        transformOrigin: 'top left',
+                        width: `${slideWidth}px`,
+                        height: `${slideHeight}px`,
+                    },
                 });
-            } else if (pdf) {
-                pdf.addPage([pageWidthMm, pageHeightMm], orientation);
-            }
 
-            if (!pdf) {
-                throw new Error('Failed to initialize PDF document');
-            }
+                // Calculate page dimensions in mm (using standard conversion: 1 inch = 25.4mm, 96px = 1 inch)
+                const pxToMm = 25.4 / 96;
+                const pageWidthMm = slideWidth * pxToMm;
+                const pageHeightMm = slideHeight * pxToMm;
+                const orientation = pageHeightMm > pageWidthMm ? 'portrait' : 'landscape';
 
-            // Add slide image to PDF
-            pdf.addImage(imgData, 'PNG', 0, 0, contentWidthMm, contentHeightMm);
+                // Create or add new page
+                if (i === 0) {
+                    pdf = new jsPDF({
+                        orientation,
+                        unit: 'mm',
+                        format: [pageWidthMm, pageHeightMm],
+                    });
+                } else if (pdf) {
+                    pdf.addPage([pageWidthMm, pageHeightMm], orientation);
+                }
 
-            // Add page number if requested
-            if (options.includeSlideNumbers) {
-                const pageNumber = `${i + 1} / ${slideElements.length}`;
-                pdf.setFontSize(10);
-                pdf.text(pageNumber, pageWidthMm - 20, pageHeightMm - 10);
-            }
+                if (!pdf) {
+                    throw new Error('Failed to initialize PDF document');
+                }
 
-            // Add slydle stamp link
-            const slydleText = 'Кирилица slydle.ru';
-            pdf.setFontSize(12);
-            const slydleWidth = pdf.getTextWidth(slydleText);
-            const slydleX = pageWidthMm / 2;
-            const slydleY = pageHeightMm - 15;
-            if ((pdf as any).textWithLink) {
-                (pdf as any).textWithLink(slydleText, slydleX, slydleY, {
-                    url: 'https://slydle.ru',
-                });
-            } else {
-                pdf.text(slydleText, slydleX, slydleY);
+                // Add slide image to PDF - fill the entire page
+                pdf.addImage(imageDataUrl, 'PNG', 0, 0, pageWidthMm, pageHeightMm);
+
+                // Add clickable link area over the watermark in PDF
+                // Calculate watermark position (right bottom corner)
+                const watermarkWidth = 50; // Approximate width in mm
+                const watermarkHeight = 6; // Approximate height in mm
+                const watermarkX = pageWidthMm - watermarkWidth - 3; // 3mm from right edge
+                const watermarkY = pageHeightMm - watermarkHeight - 3; // 3mm from bottom edge
+                
+                // Add invisible clickable link area
                 if ((pdf as any).link) {
-                    (pdf as any).link(slydleX, slydleY - 3, slydleWidth, 4, {
-                        url: 'https://slydle.ru',
+                    (pdf as any).link(watermarkX, watermarkY, watermarkWidth, watermarkHeight, {
+                        url: 'https://slydle.ru'
                     });
                 }
+
+                // Add page number if requested
+                if (options.includeSlideNumbers) {
+                    const pageNumber = `${i + 1} / ${slideElements.length}`;
+                    pdf.setFontSize(10);
+                    pdf.text(pageNumber, pageWidthMm - 20, pageHeightMm - 10);
+                }
+            } finally {
+                // Always restore original styles and remove watermark
+                restoreStyles();
+                removeSlideWatermark(slideElement);
             }
         }
 
