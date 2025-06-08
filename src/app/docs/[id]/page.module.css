@@ -89,6 +89,10 @@
     align-items: center;
     gap: 0.5rem;
     cursor: pointer;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 0.375rem 0.75rem;
+    transition: all 150ms ease;
 }
 
 .viewButton {
@@ -110,6 +114,7 @@
 .viewButtonText {
     font-size: 0.875rem;
     font-weight: 500;
+    /* color: :fff; */
 }
 
 .settingsButton {
@@ -125,8 +130,6 @@
 
 .settingsButton:focus {
     outline: none;
-    ring: 2px;
-    ring-color: var(--color-primary);
 }
 
 .settingsIcon {
@@ -204,13 +207,11 @@
 }
 
 .themeOption:hover {
-    background-color: #f3f4f6;
+    background-color: #0915fc2b;
 }
 
 .themeOptionSelected {
-    background-color: #eff6ff;
-    ring: 1px;
-    ring-color: #bfdbfe;
+    background-color: var(--color-primary-light, #eff6ff);
 }
 
 .themeColorPreview {
@@ -222,29 +223,39 @@
 
 .defaultThemeOption {
     composes: themeOption;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--color-border);
     padding-bottom: 0.75rem;
+}
+
+.defaultLabel {
+    font-size: 0.75rem;
+    color: var(--color-text-light);
+    margin-left: auto;
+    padding: 0.125rem 0.375rem;
+    background-color: var(--color-background);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
 }
 
 .themeManageLink {
     padding-top: 0.5rem;
     margin-top: 0.5rem;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--color-border);
 }
 
 .themeManageLinkText {
     font-size: 0.875rem;
-    color: var(--primary);
+    color: var(--color-primary);
 }
 
 .themeManageLinkText:hover {
-    color: var(--primary-dark);
+    color: var(--color-primary-dark);
 }
 
 .noThemesText {
     font-size: 0.875rem;
     line-height: 1.25rem;
-    color: #6b7280;
+    color: var(--color-text-light);
     padding: 0.5rem;
 }
 
@@ -396,3 +407,44 @@
 :global(.dark) .userMenuSignOut:hover {
     background-color: var(--color-background);
 } 
+
+.themePopover {
+    background-color: var(--color-surface);
+    border-color: var(--color-border);
+    color: var(--color-text);
+}
+
+/* Dark theme styles for theme popover */
+:global(.dark) .themeOption:hover {
+    background-color: var(--color-background);
+}
+
+:global(.dark) .themeOptionSelected {
+    background-color: var(--color-primary-dark, #1e40af);
+}
+
+:global(.dark) .defaultThemeOption {
+    border-bottom-color: var(--color-border);
+}
+
+:global(.dark) .themeManageLink {
+    border-top-color: var(--color-border);
+}
+
+:global(.dark) .themeManageLinkText {
+    color: var(--color-primary);
+}
+
+:global(.dark) .themeManageLinkText:hover {
+    color: var(--color-primary-light, #60a5fa);
+}
+
+:global(.dark) .noThemesText {
+    color: var(--color-text-light);
+}
+
+:global(.dark) .defaultLabel {
+    background-color: var(--color-background);
+    border-color: var(--color-border);
+    color: var(--color-text-light);
+}

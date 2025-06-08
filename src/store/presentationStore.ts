@@ -3251,7 +3251,7 @@ export const usePresentationStore = create<PresentationState>()(
                     const updatedState = {
                         presentations: state.presentations.map(presentation =>
                             presentation.id === presentationId
-                                ? { ...presentation, themeId, updatedAt: Date.now() }
+                                ? { ...presentation, themeId, updatedAt: Date.now(), backgroundSettings: undefined }
                                 : presentation
                         ),
                     };

@@ -23,6 +23,10 @@ export default function PresentationView() {
     const { colorMode } = useColorMode();
 
     const loadPresentation = usePresentationStore(state => state.loadPresentation);
+    const checkPresentationExists = usePresentationStore(state => state.checkPresentationExists);
+
+    // Get presentation from store instead of local state
+    const presentation = usePresentationStore(state => state.getPresentation(id as string));
 
     const themes = useThemeStore(state => state.themes);
     const loadThemes = useThemeStore(state => state.loadThemes);
@@ -34,18 +38,25 @@ export default function PresentationView() {
         editorRefs: [],
     });
 
-    const [presentation, setPresentation] = useState<IPresentation | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
+
     // Load presentation data only once when component mounts or ID changes
     useEffect(() => {
+        if (!id) return;
+
         const load = async () => {
             try {
+                // Check if presentation already exists in store
+                if (checkPresentationExists(id as string)) {
+                    setIsLoading(false);
+                    return;
+                }
+
+                // If not in store, load it
                 const loadedPresentation = await loadPresentation(id as string);
                 if (!loadedPresentation) {
                     setNotFound(true);
-                } else {
-                    setPresentation(loadedPresentation);
                 }
             } catch (error) {
                 console.error('Failed to load presentation:', error);
@@ -56,7 +67,7 @@ export default function PresentationView() {
         };
 
         load();
-    }, [id, loadPresentation]);
+    }, [id, loadPresentation, checkPresentationExists]);
 
     // Apply theme when presentation is loaded or themes change
     useEffect(() => {
@@ -74,95 +85,6 @@ export default function PresentationView() {
             console.error('Failed to load themes:', error);
         });
     }, [loadThemes]);
-
-    // useEffect(() => {
-    //     // Function to fetch presentation data
-    //     const fetchPresentation = async () => {
-    //         try {
-    //             const response = await fetch(`/api/presentations/${id}`);
-    //             if (!response.ok) {
-    //                 throw new Error('Failed to load presentation');
-    //             }
-
-    //             const fetchedPresentation = await response.json();
-    //             setPresentation(fetchedPresentation);
-
-    //             // Fetch theme if available
-    //             if (fetchedPresentation.themeId) {
-    //                 try {
-    //                     const themeResponse = await fetch(`/api/themes/${fetchedPresentation.themeId}`);
-    //                     if (themeResponse.ok) {
-    //                         const themeData = await themeResponse.json();
-    //                         console.log('Fetched theme data structure:', themeData);
-
-    //                         // Check the structure of the theme data
-    //                         let actualTheme = null;
-
-    //                         if (themeData && themeData.theme && themeData.theme.id) {
-    //                             // API returns { theme: Theme }
-    //                             actualTheme = themeData.theme;
-    //                             console.log('Using theme from themeData.theme structure');
-    //                         } else if (themeData && themeData.id) {
-    //                             // API returns Theme directly
-    //                             actualTheme = themeData;
-    //                             console.log('Using theme from direct structure');
-    //                         } else {
-    //                             console.warn('Invalid theme data structure, using default theme');
-    //                             actualTheme = DEFAULT_THEME;
-    //                         }
-
-    //                         // Validate the theme has all required sections
-    //                         if (!actualTheme.colors || !actualTheme.typography || !actualTheme.design) {
-    //                             console.warn('Theme missing required sections, using default theme');
-    //                             actualTheme = DEFAULT_THEME;
-    //                         }
-
-    //                         // Check for background image and log it
-    //                         if (
-    //                             actualTheme.colors &&
-    //                             actualTheme.colors.pageBackground &&
-    //                             actualTheme.colors.pageBackground.imageUrl
-    //                         ) {
-    //                             console.log(
-    //                                 'Theme has background image URL:',
-    //                                 actualTheme.colors.pageBackground.imageUrl
-    //                             );
-
-    //                             // Force apply the background to body
-    //                             document.body.style.backgroundImage = `url(${actualTheme.colors.pageBackground.imageUrl})`;
-    //                             document.body.style.backgroundSize = 'cover';
-    //                             document.body.style.backgroundPosition = 'center';
-    //                             document.body.style.backgroundRepeat = 'no-repeat';
-    //                             document.body.style.backgroundAttachment = 'fixed';
-    //                         } else {
-    //                             console.log('Theme has no background image URL');
-    //                         }
-
-    //                         setTheme(actualTheme);
-    //                     } else {
-    //                         console.warn('Failed to fetch theme, using default theme');
-    //                         setTheme(DEFAULT_THEME);
-    //                     }
-    //                 } catch (themeError) {
-    //                     console.error('Error fetching theme:', themeError);
-    //                     setTheme(DEFAULT_THEME);
-    //                 }
-    //             } else {
-    //                 setTheme(DEFAULT_THEME);
-    //             }
-
-    //             setIsLoading(false);
-    //         } catch (error) {
-    //             console.error('Error:', error);
-    //             setError('Failed to load presentation');
-    //             setIsLoading(false);
-    //         }
-    //     };
-
-    //     if (id) {
-    //         fetchPresentation();
-    //     }
-    // }, [id]);
 
     const loadingUI = useMemo(
         () => (
@@ -187,25 +109,6 @@ export default function PresentationView() {
 
     if (isLoading) return loadingUI;
     if (notFound || !presentation) return notFoundUI;
-
-    if (isLoading) {
-        return (
-            <div className={styles.loadingContainer}>
-                <div className={styles.spinner}></div>
-            </div>
-        );
-    }
-
-    if (!presentation) {
-        return (
-            <div className={styles.errorContainer}>
-                <h1 className={styles.errorTitle}>Presentation Not Found</h1>
-                <p className={styles.errorText}>
-                    {"The presentation you're looking for doesn't exist or you don't have access to it."}
-                </p>
-            </div>
-        );
-    }
 
     return (
         <ReadOnlyProvider isReadOnly={true}>

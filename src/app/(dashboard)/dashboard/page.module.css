@@ -296,7 +296,6 @@
 
 .input:focus {
     outline: none;
-    ring: 2px solid var(--color-primary);
     border-color: var(--color-primary);
 }
 
@@ -311,7 +310,6 @@
 
 .select:focus {
     outline: none;
-    ring: 2px solid var(--color-primary);
     border-color: var(--color-primary);
 }
 

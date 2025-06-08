@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { HexColorPicker } from 'react-colorful';
 import { Input } from '@/components/ui/Input/Input';
-import { Popover } from '@/components/ui/Popover';
+import { Popover } from '@/components/ui/Popover/Popover';
 import { cn } from '@/lib/utils';
 import { MdDeleteOutline } from 'react-icons/md';
 

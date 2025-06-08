@@ -135,7 +135,8 @@ class CommandsList {
             // Create an icon with SVG content
             const iconElement = document.createElement('div');
             iconElement.className = 'slash-menu-item-icon';
-            iconElement.innerHTML = getIconSvg(item.Icon || '');
+            // iconElement.innerHTML = getIconSvg(typeof item.Icon === 'string' ? item.Icon : '');
+            iconElement.innerHTML = item.Icon || '';
 
             const labelElement = document.createElement('div');
             labelElement.className = 'slash-menu-item-label';
@@ -294,6 +295,10 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
 
                             commandsList = new CommandsList(props, this.options.onAddElement);
 
+                            const isDarkMode = Array.from(document.body.children).some(element => {
+                                return element.classList.contains('dark');
+                            });
+
                             // Use document.body directly as the tippy target
                             const rect = props.clientRect?.() || new DOMRect(0, 0, 0, 0);
                             popup = tippy(document.body, {
@@ -318,6 +323,18 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
                                         },
                                     ],
                                 },
+                                onCreate(instance) {
+                                    // Add dark class to tippy box if dark mode is active
+                                    if (isDarkMode && instance.popper) {
+                                        instance.popper.classList.add('dark');
+                                    }
+                                },
+                                onMount(instance) {
+                                    // Ensure dark class is added when mounting
+                                    if (isDarkMode && instance.popper) {
+                                        instance.popper.classList.add('dark');
+                                    }
+                                },
                             });
                         },
 
@@ -325,11 +342,24 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
                             commandsList = new CommandsList(props, this.options.onAddElement);
 
                             if (popup) {
+                                // Check if dark mode is active
+                                const isDarkMode = document.documentElement.classList.contains('dark') || 
+                                                  document.body.classList.contains('dark');
+
                                 const rect = props.clientRect?.() || new DOMRect(0, 0, 0, 0);
                                 popup.setProps({
                                     getReferenceClientRect: () => rect,
                                     content: commandsList.getElement(),
                                 });
+
+                                // Ensure dark class is applied if dark mode is active
+                                if (popup.popper) {
+                                    if (isDarkMode) {
+                                        popup.popper.classList.add('dark');
+                                    } else {
+                                        popup.popper.classList.remove('dark');
+                                    }
+                                }
                             }
                         },
                         onKeyDown: props => {

@@ -7,10 +7,10 @@ import { usePresentationStore } from '@/store/presentationStore';
 // import Editor from '@/components/editor/Editor';
 import { useSession, signOut } from 'next-auth/react';
 import Editor from '@/components/editor/Editor/Editor';
-import { IPresentation, TipTapRefs } from '@/types';
+import { TipTapRefs } from '@/types';
 import UndoRedoControls from '@/components/UndoRedoControls/UndoRedoControls';
 import { ThemeIcon } from '@/components/icons';
-import { Popover } from '@/components/ui/Popover';
+import { Popover } from '@/components/ui/Popover/Popover';
 import { useThemeStore } from '@/store/themeStore';
 import { Theme } from '@/types/theme';
 import { cn } from '@/lib/utils';
@@ -40,8 +40,11 @@ export default function PresentationEditorPage() {
 
     // Access store values individually to prevent unnecessary re-renders
     const loadPresentation = usePresentationStore(state => state.loadPresentation);
+    const checkPresentationExists = usePresentationStore(state => state.checkPresentationExists);
     const setTheme = usePresentationStore(state => state.setTheme);
-    // const savingStatus = usePresentationStore(state => state.savingStatus);
+
+    // Get presentation from store instead of local state
+    const presentation = usePresentationStore(state => state.getPresentation(id as string));
 
     const themes = useThemeStore(state => state.themes);
     const loadThemes = useThemeStore(state => state.loadThemes);
@@ -59,7 +62,7 @@ export default function PresentationEditorPage() {
     const [notFound, setNotFound] = useState(false);
     const [isThemePopoverOpen, setIsThemePopoverOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-    const [presentation, setPresentation] = useState<IPresentation | null>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     // Load presentation data only once when component mounts or ID changes
     useEffect(() => {
@@ -67,11 +70,16 @@ export default function PresentationEditorPage() {
 
         const load = async () => {
             try {
+                // Check if presentation already exists in store
+                if (checkPresentationExists(id as string)) {
+                    setIsLoading(false);
+                    return;
+                }
+
+                // If not in store, load it
                 const loadedPresentation = await loadPresentation(id as string);
                 if (!loadedPresentation) {
                     setNotFound(true);
-                } else {
-                    setPresentation(loadedPresentation);
                 }
             } catch (error) {
                 console.error('Failed to load presentation:', error);
@@ -82,7 +90,7 @@ export default function PresentationEditorPage() {
         };
 
         load();
-    }, [id, loadPresentation, status]);
+    }, [id, loadPresentation, checkPresentationExists, status]);
 
     // Apply theme when presentation is loaded or themes change
     useEffect(() => {
@@ -180,7 +188,7 @@ export default function PresentationEditorPage() {
     return (
         <ReadOnlyProvider isReadOnly={false}>
             <ThemeStylesApplier theme={currentTheme} backgroundSettings={presentation.backgroundSettings} />
-            <div className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`}>
+            <div ref={containerRef} className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`}>
                 <header className={styles.header}>
                     <div className={styles.headerContent}>
                         <div className={styles.headerLeft}>
@@ -194,6 +202,7 @@ export default function PresentationEditorPage() {
                                 isOpen={isThemePopoverOpen}
                                 onOpen={() => setIsThemePopoverOpen(true)}
                                 onClose={() => setIsThemePopoverOpen(false)}
+                                portalContainer={containerRef.current}
                                 trigger={
                                     <div
                                         className={styles.themeButton}
@@ -207,7 +216,7 @@ export default function PresentationEditorPage() {
                                     </div>
                                 }
                                 content={
-                                    <div>
+                                    <div className={styles.themePopover}>
                                         <h3 className={styles.popoverTitle}>Выберите тему</h3>
                                         <div className={styles.themeGrid}>
                                             <div
@@ -266,7 +275,7 @@ export default function PresentationEditorPage() {
 
                             <button
                                 onClick={handleViewPresentation}
-                                className={styles.viewButton}
+                                className={styles.themeButton}
                                 aria-label="View presentation"
                             >
                                 <FaEye size={16} />
@@ -291,6 +300,7 @@ export default function PresentationEditorPage() {
                                 isOpen={isUserMenuOpen}
                                 onOpen={() => setIsUserMenuOpen(true)}
                                 onClose={() => setIsUserMenuOpen(false)}
+                                portalContainer={containerRef.current}
                                 trigger={
                                     <div
                                         className={styles.userInfo}

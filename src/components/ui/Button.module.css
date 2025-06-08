@@ -116,7 +116,6 @@
 
 .premiumButton:focus {
     outline: none;
-    ring: 3px solid rgba(102, 126, 234, 0.5);
 }
 
 .premiumButton.disabled {

@@ -23,7 +23,7 @@ const config = defineConfig({
         tokens: {
             colors: {
                 background: {
-                    DEFAULT: { value: '#0B0B0B' }, /* Jet Black */
+                    DEFAULT: { value: '#FFFFFF' }, /* White */
                     dark: { value: '#0B0B0B' }, /* Jet Black */
                 },
                 text: {
