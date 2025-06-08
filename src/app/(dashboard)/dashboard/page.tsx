@@ -7,6 +7,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
 import { useThemeStore } from '@/store/themeStore';
+import PresentationPreview from './components/PresentationPreview';
 import { resetThemeStyles } from '@/utils/themeUtils';
 import { FaPlus, FaMagic, FaEllipsisV, FaPencilAlt, FaCopy, FaTrash, FaEye } from 'react-icons/fa';
 import { IPresentation } from '@/types';
@@ -17,7 +18,7 @@ import { Button } from '@/components/ui/Button';
 export default function DashboardPage() {
     const router = useRouter();
     const { presentations, createPresentation, loadPresentationsList, deletePresentation } = usePresentationStore();
-    const { setCurrentTheme } = useThemeStore();
+    const { setCurrentTheme, loadThemes, themes, getDefaultTheme } = useThemeStore();
     const [showAIModal, setShowAIModal] = useState(false);
     const [userPresentations, setUserPresentations] = useState<IPresentation[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -36,6 +37,13 @@ export default function DashboardPage() {
     const [numSlides, setNumSlides] = useState(5);
     const [language, setLanguage] = useState('ru');
     const [aiError, setAiError] = useState('');
+
+    // Load themes for previews
+    useEffect(() => {
+        loadThemes().catch(err => {
+            console.error('Failed to load themes:', err);
+        });
+    }, [loadThemes]);
 
     // Fetch user's presentations from the database
     useEffect(() => {
@@ -287,14 +295,18 @@ export default function DashboardPage() {
                 </div>
             ) : (
                 <div className={styles.presentationsGrid}>
-                    {userPresentations.map(presentation => (
-                        <div
-                            key={presentation.id}
-                            onClick={() => handleOpenPresentation(presentation.id)}
-                            className={styles.presentationCard}
-                        >
-                            <div className={styles.previewArea}>
-                                <div className={styles.previewText}>Предпросмотр</div>
+                    {userPresentations.map(presentation => {
+                        const theme =
+                            themes.find(t => t.id === presentation.themeId) ||
+                            getDefaultTheme();
+                        return (
+                            <div
+                                key={presentation.id}
+                                onClick={() => handleOpenPresentation(presentation.id)}
+                                className={styles.presentationCard}
+                            >
+                                <div className={styles.previewArea}>
+                                    <PresentationPreview presentation={presentation} theme={theme} />
 
                                 <button onClick={e => toggleMenu(presentation.id, e)} className={styles.menuButton}>
                                     <FaEllipsisV />
@@ -340,7 +352,8 @@ export default function DashboardPage() {
                                 </p>
                             </div>
                         </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
 
