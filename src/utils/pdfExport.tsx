@@ -139,11 +139,11 @@ export const exportPresentationToPdf = async (
             }
 
             // Add slydle stamp link
-            const slydleText = 'Сделано в slydle.ru';
-            pdf.setFontSize(8);
+            const slydleText = 'Кирилица slydle.ru';
+            pdf.setFontSize(12);
             const slydleWidth = pdf.getTextWidth(slydleText);
-            const slydleX = pageWidthMm - slydleWidth - 5;
-            const slydleY = pageHeightMm - 5;
+            const slydleX = pageWidthMm / 2;
+            const slydleY = pageHeightMm - 15;
             if ((pdf as any).textWithLink) {
                 (pdf as any).textWithLink(slydleText, slydleX, slydleY, {
                     url: 'https://slydle.ru',
