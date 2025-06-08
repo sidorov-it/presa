@@ -137,6 +137,25 @@ export const exportPresentationToPdf = async (
                 pdf.setFontSize(10);
                 pdf.text(pageNumber, pageWidthMm - 20, pageHeightMm - 10);
             }
+
+            // Add slydle stamp link
+            const slydleText = 'Сделано в slydle.ru';
+            pdf.setFontSize(8);
+            const slydleWidth = pdf.getTextWidth(slydleText);
+            const slydleX = pageWidthMm - slydleWidth - 5;
+            const slydleY = pageHeightMm - 5;
+            if ((pdf as any).textWithLink) {
+                (pdf as any).textWithLink(slydleText, slydleX, slydleY, {
+                    url: 'https://slydle.ru',
+                });
+            } else {
+                pdf.text(slydleText, slydleX, slydleY);
+                if ((pdf as any).link) {
+                    (pdf as any).link(slydleX, slydleY - 3, slydleWidth, 4, {
+                        url: 'https://slydle.ru',
+                    });
+                }
+            }
         }
 
         // Save the PDF
