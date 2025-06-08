@@ -35,6 +35,18 @@ const waitForImages = async (element: HTMLElement): Promise<void> => {
     await new Promise(resolve => setTimeout(resolve, 500));
 };
 
+// Ensure that all fonts are loaded before rendering the slide
+const waitForFonts = async (): Promise<void> => {
+    const fonts: any = (document as any).fonts;
+    if (fonts && typeof fonts.ready === 'object') {
+        try {
+            await fonts.ready;
+        } catch (err) {
+            console.warn('Failed to load fonts before PDF export', err);
+        }
+    }
+};
+
 export interface PdfExportOptions {
     paperSize?: 'a4' | 'letter' | 'legal' | 'custom';
     orientation?: 'portrait' | 'landscape';
@@ -63,6 +75,9 @@ export const exportPresentationToPdf = async (
     }
 
     try {
+        // Ensure fonts are loaded to prevent fallbacks in the exported PDF
+        await waitForFonts();
+
         let pdf: jsPDF | null = null;
         const pxToMm = 0.264583333; // 1px = 0.264583333mm at 96 DPI
 
