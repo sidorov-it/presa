@@ -27,6 +27,7 @@ export async function GET() {
                 id: true,
                 title: true,
                 description: true,
+                themeId: true,
                 createdAt: true,
                 updatedAt: true,
                 slides: true,
