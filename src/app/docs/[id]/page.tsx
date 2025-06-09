@@ -28,7 +28,6 @@ import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import Logo from '@/components/icons/Logo/Logo';
-import PageHead from '@/components/PageHead';
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -141,21 +140,22 @@ export default function PresentationEditorPage() {
         }
     }, [presentation]);
 
-    const handleOpenBgModal = () => {
+    const handleOpenBgModal = useCallback(() => {
         setIsBgModalOpen(true);
         document.body.style.overflow = 'hidden';
-    };
-    const handleCloseBgModal = () => {
+    }, []);
+
+    const handleCloseBgModal = useCallback(() => {
         setIsBgModalOpen(false);
         document.body.style.overflow = 'auto';
-    };
+    }, []);
 
-    const handleKeyDownCog = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    const handleKeyDownCog = useCallback((e: React.KeyboardEvent<HTMLButtonElement>) => {
         if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
             setIsBgModalOpen(true);
         }
-    };
+    }, []);
 
     const handleSignOut = useCallback(() => {
         signOut({ callbackUrl: '/' });
@@ -186,6 +186,7 @@ export default function PresentationEditorPage() {
     if (isLoading) return loadingUI;
     if (notFound || !presentation) return notFoundUI;
 
+    console.log('rerender page ')
     return (
         <>
             <ReadOnlyProvider isReadOnly={false}>
@@ -211,7 +212,9 @@ export default function PresentationEditorPage() {
                                             role="button"
                                             aria-label="Open theme selector"
                                             onClick={() => setIsThemePopoverOpen(!isThemePopoverOpen)}
-                                            onKeyDown={e => e.key === 'Enter' && setIsThemePopoverOpen(!isThemePopoverOpen)}
+                                            onKeyDown={e =>
+                                                e.key === 'Enter' && setIsThemePopoverOpen(!isThemePopoverOpen)
+                                            }
                                         >
                                             <ThemeIcon />
                                             <span>Тема</span>
@@ -225,7 +228,7 @@ export default function PresentationEditorPage() {
                                                     className={cn(
                                                         styles.defaultThemeOption,
                                                         (!currentTheme || currentTheme.name === 'Default Theme') &&
-                                                        styles.themeOptionSelected
+                                                            styles.themeOptionSelected
                                                     )}
                                                     onClick={handleSetDefaultTheme}
                                                     role="button"
@@ -246,12 +249,15 @@ export default function PresentationEditorPage() {
                                                             key={theme.id}
                                                             className={cn(
                                                                 styles.themeOption,
-                                                                currentTheme?.id === theme.id && styles.themeOptionSelected
+                                                                currentTheme?.id === theme.id &&
+                                                                    styles.themeOptionSelected
                                                             )}
                                                             onClick={() => handleThemeChange(theme)}
                                                             role="button"
                                                             aria-label={`Select theme ${theme.name}`}
-                                                            onKeyDown={e => e.key === 'Enter' && handleThemeChange(theme)}
+                                                            onKeyDown={e =>
+                                                                e.key === 'Enter' && handleThemeChange(theme)
+                                                            }
                                                         >
                                                             <div
                                                                 className={styles.themeColorPreview}
@@ -262,12 +268,12 @@ export default function PresentationEditorPage() {
                                                     ))
                                                 ) : (
                                                     <div className={styles.noThemesText}>
-                                                    Нет доступных пользовательских тем
+                                                        Нет доступных пользовательских тем
                                                     </div>
                                                 )}
                                                 <div className={styles.themeManageLink}>
                                                     <Link href="/themes" className={styles.themeManageLinkText}>
-                                                    Управление темами
+                                                        Управление темами
                                                     </Link>
                                                 </div>
                                             </div>
@@ -326,7 +332,8 @@ export default function PresentationEditorPage() {
                                                 <Link href="/tokens" className={styles.userMenuCredits}>
                                                     <HiOutlineCreditCard className={styles.creditsIcon} />
                                                     <span>
-                                                        {tokensLoading ? '...' : formatTokenAmount(tokenBalance)} токенов
+                                                        {tokensLoading ? '...' : formatTokenAmount(tokenBalance)}{' '}
+                                                        токенов
                                                     </span>
                                                 </Link>
                                             </div>

@@ -28,11 +28,6 @@ const nextConfig = {
         // removeConsole: process.env.NODE_ENV === 'production',
     },
     webpack(config, { dev, _isServer }) {
-        // Включаем source maps для дебага в development
-        if (dev) {
-            config.devtool = 'eval-source-map';
-        }
-
         // Базовые оптимизации только для production
         if (!dev) {
             // Агрессивная оптимизация split chunks только для production
@@ -120,6 +115,25 @@ const nextConfig = {
         //         })
         //     );
         // }
+
+        const fileLoaderRule = config.module.rules.find(rule => rule.test?.test?.('.svg'));
+
+        config.module.rules.push(
+            {
+                ...fileLoaderRule,
+                test: /\.svg$/i,
+                resourceQuery: /url/,
+            },
+
+            {
+                test: /\.svg$/i,
+                issuer: fileLoaderRule.issuer,
+                resourceQuery: { not: [...fileLoaderRule.resourceQuery.not, /url/] },
+                use: ['@svgr/webpack'],
+            }
+        );
+
+        fileLoaderRule.exclude = /\.svg$/i;
 
         return config;
     },
