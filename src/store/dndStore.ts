@@ -464,7 +464,38 @@ export const useDndStore = create<{
                 return newState;
             });
         } else if (isTable) {
-            // TODO: Implement table drag
+            const newElement = getNewElement(menuItem) as {
+                id: string | null;
+                elementTypeId: string | null;
+                elementVariant: string | null;
+                props: any;
+            };
+
+            if (!newElement) {
+                console.error(`Element with type ${menuItem.elementTypeId} not found in registry`);
+                return;
+            }
+
+            set(state => {
+                const newState = {
+                    ...state,
+                    state: {
+                        ...state.state,
+                        dragState: 'dragging' as const,
+                        source: {
+                            ...initialState.source,
+                            dragElementType: 'table' as DragElementType,
+                        },
+                        target: cloneDeep(initialState.target),
+                        indicators: cloneDeep(initialState.indicators),
+                        dragElementType: 'table',
+                        newElement,
+                    },
+                };
+
+                prevState = newState.state;
+                return newState;
+            });
         } else {
             const newElement = getNewElement(menuItem) as {
                 id: string | null;
