@@ -91,6 +91,7 @@ export default function Item({
                         slideId={slideId}
                         layoutId={layoutId}
                         customRefKey={`title-${elementId}-${item.id}`}
+                        isHideSlashMenu={true}
                     />
                 </div>
                 <div className={styles.text}>
@@ -109,6 +110,7 @@ export default function Item({
                         onEnterPressed={() => {
                             return true;
                         }}
+                        isHideSlashMenu={true}
                     />
                 </div>
             </div>

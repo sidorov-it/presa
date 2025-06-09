@@ -273,6 +273,7 @@ export default function TextBoxes({
                                     slideId={slideId}
                                     layoutId={layoutId}
                                     customRefKey={`title-${elementId}-${itemId}`}
+                                    isHideSlashMenu={true}
                                 />
                             </div>
                             <div className={styles.content}>
@@ -287,6 +288,7 @@ export default function TextBoxes({
                                     placeholder="Текст"
                                     onContentChange={handleContentChange(itemId, 'text')}
                                     customRefKey={`text-${elementId}-${itemId}`}
+                                    isHideSlashMenu={true}
                                     onEnterPressed={() => {
                                         return true;
                                     }}

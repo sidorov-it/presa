@@ -107,7 +107,7 @@
     bottom: 0;
     left: 0; 
     z-index: 10; 
-    border-radius: var(--presentation-slide-border-radius); 
+    /* border-radius: var(--presentation-slide-border-radius);  */
     border-width: 2px; 
     border-color: var(--color-primary); 
     pointer-events: none; 

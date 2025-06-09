@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable jsx-a11y/no-autofocus */
 /* eslint-disable react/no-unknown-property */
 'use client';
@@ -50,19 +51,16 @@ import DetailsSummary from '@tiptap-pro/extension-details-summary';
 import { BlockquoteExtension } from './extensions/BlockquoteExtension';
 import { usePresentationStore } from '@/store/presentationStore';
 import { EditorElement } from '@/types';
-import { MenuItem } from '@/elements/menuRegistry';
+import { MenuItem } from '@/types/templates';
+
 // Определяем типы пропсов
 interface TiptapProps {
     // initialContent?: string;
-    onEnterPressed?: (content?: any) => void;
-    onBackspacePressed?: (isEmpty: boolean, textContent: string) => void;
-    onBlur?: () => void;
-    onContentChange?: (content: string, isEnterPress?: boolean, isTransaction?: boolean) => void;
     autoFocus?: boolean;
     id?: string;
     placeholder?: string;
+    defaultContent?: string;
     customBubbleMenuTrigger?: RefObject<HTMLElement>;
-    onAddElement?: (menuItem: MenuItem) => void;
     presentationId: string;
     slideId: string;
     layoutId: string;
@@ -73,6 +71,12 @@ interface TiptapProps {
     standardEnterBehavior?: boolean;
     isReadOnly?: boolean;
     isInTable?: boolean;
+    isHideSlashMenu?: boolean;
+    onEnterPressed?: (content?: any) => void;
+    onBackspacePressed?: (isEmpty: boolean, textContent: string) => void;
+    onBlur?: () => void;
+    onContentChange?: (content: string, isEnterPress?: boolean, isTransaction?: boolean) => void;
+    onAddElement?: (menuItem: MenuItem) => void;
 }
 
 // Define the ref type
@@ -82,22 +86,36 @@ export interface TiptapRef {
     isEmpty: () => boolean;
 }
 
-// Определяем массив расширений
-const getExtensions = (
-    onEnterPressed: (contentBeforeCursor?: string, contentAfterCursor?: string) => void,
-    onBackspacePressed: (isEmpty: boolean, textContent: string) => void,
-    placeholder: string,
-    onAddElement?: (menuItem: MenuItem) => void,
-    presentationId?: string,
-    slideId?: string,
-    layoutId?: string,
-    elementId?: string,
+interface GetExtensionsProps {
+    placeholder: string;
+    presentationId?: string;
+    slideId?: string;
+    layoutId?: string;
+    elementId?: string;
     tiptapRefs?: RefObject<{
         editors: Record<string, EditorWithMethods>;
         editorRefs: React.RefObject<HTMLDivElement>[];
-    }>,
-    standardEnterBehavior?: boolean
-) => [
+    }>;
+    standardEnterBehavior?: boolean;
+    isHideSlashMenu?: boolean;
+    onEnterPressed: (contentBeforeCursor?: string, contentAfterCursor?: string) => void;
+    onBackspacePressed: (isEmpty: boolean, textContent: string) => void;
+    onAddElement?: (menuItem: MenuItem) => void;
+}
+// Определяем массив расширений
+const getExtensions = ({
+    placeholder,
+    presentationId,
+    slideId,
+    layoutId,
+    elementId,
+    tiptapRefs,
+    standardEnterBehavior,
+    isHideSlashMenu,
+    onEnterPressed,
+    onBackspacePressed,
+    onAddElement,
+}: GetExtensionsProps) => [
     // Базовый набор расширений
     StarterKit.configure({
         dropcursor: false,
@@ -265,11 +283,11 @@ const getExtensions = (
             if (!contentBeforeCursor && !contentAfterCursor) return;
             const htmlBeforeCursor = generateHTML(
                 contentBeforeCursor!,
-                getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement)
+                getExtensions({ onEnterPressed, onBackspacePressed, placeholder, onAddElement, isHideSlashMenu })
             );
             const htmlAfterCursor = generateHTML(
                 contentAfterCursor!,
-                getExtensions(onEnterPressed, onBackspacePressed, placeholder, onAddElement)
+                getExtensions({ onEnterPressed, onBackspacePressed, placeholder, onAddElement, isHideSlashMenu })
             );
             onEnterPressed(htmlBeforeCursor, htmlAfterCursor);
         },
@@ -284,9 +302,13 @@ const getExtensions = (
         ? [ArrowNavigationExtension(presentationId, slideId, layoutId, elementId, tiptapRefs)]
         : []),
     // Slash command
-    SlashCommandExtension.configure({
-        onAddElement: onAddElement || (() => {}),
-    }),
+    ...(isHideSlashMenu
+        ? []
+        : [
+            SlashCommandExtension.configure({
+                onAddElement: onAddElement || (() => {}),
+            }),
+        ]),
     // Плейсхолдер
     Placeholder.configure({
         placeholder,
@@ -311,15 +333,11 @@ const getExtensions = (
 ];
 
 const Tiptap = ({
-    onEnterPressed = () => {},
-    onBackspacePressed = () => {},
-    onContentChange = () => {},
-    onBlur = () => {},
     isInTable = false,
+    isHideSlashMenu = false,
     id = '',
     autoFocus = false,
     customBubbleMenuTrigger,
-    onAddElement,
     presentationId,
     slideId,
     layoutId,
@@ -329,6 +347,13 @@ const Tiptap = ({
     customRefKey,
     standardEnterBehavior = false,
     isReadOnly = false,
+    defaultContent,
+    placeholder,
+    onEnterPressed = () => {},
+    onBackspacePressed = () => {},
+    onContentChange = () => {},
+    onBlur = () => {},
+    onAddElement,
 }: TiptapProps) => {
     const [hasInteraction, setHasInteraction] = useState(false);
     const element = usePresentationStore.getState().getElement(presentationId, slideId, layoutId, elementId);
@@ -343,19 +368,24 @@ const Tiptap = ({
         initialContent = (element as EditorElement)?.content || '';
     }
 
+    if (!isHideSlashMenu && defaultContent) {
+        initialContent = defaultContent;
+    }
+
     const editor = useEditor({
-        extensions: getExtensions(
+        extensions: getExtensions({
             onEnterPressed,
             onBackspacePressed,
-            'Введите текст или / для выбора готового шаблона',
+            placeholder: placeholder || 'Введите текст или / для выбора готового шаблона',
             onAddElement,
             presentationId,
             slideId,
             layoutId,
             elementId,
             tiptapRefs,
-            standardEnterBehavior
-        ),
+            standardEnterBehavior,
+            isHideSlashMenu,
+        }),
         content: initialContent,
         editorProps: {
             attributes: {
