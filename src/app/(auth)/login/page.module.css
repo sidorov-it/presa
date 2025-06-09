@@ -31,7 +31,7 @@
     line-height: 2.25rem;
     font-weight: 800;
     text-align: center;
-    color: #F5F5F5; /* Cool White */
+    color: var(--color-text);
 }
 
 .loginDescription {
@@ -39,15 +39,15 @@
     font-size: 0.875rem;
     line-height: 1.25rem;
     text-align: center;
-    color: #A0A0A0; /* Steel Gray */
+    color: var(--color-text-light);
 }
 
 .loginLink {
     font-weight: 500;
-    color: #007BFF; /* Electric Blue */
+    color: var(--color-primary);
 
     &:hover {
-        color: #2563EB; /* Blue */
+        color: var(--color-primary-dark);
     }
 }
 
@@ -71,10 +71,10 @@
     padding-right: 0.75rem;
     border-radius: 0;
     border-width: 1px;
-    border-color: #3A3F4B; /* Slate Gray */
+    border-color: var(--color-border);
     width: 100%;
-    color: #F5F5F5; /* Cool White */
-    background-color: #1E1E1E; /* Charcoal Gray */
+    color: var(--color-text);
+    background-color: var(--color-background);
     appearance: none;
 
     @media (min-width: 640px) {
@@ -98,7 +98,7 @@
     font-size: 0.875rem;
     line-height: 1.25rem;
     text-align: center;
-    color: #EF4444;
+    color: var(--color-error);
 }
 
 .loginFormRemember {
@@ -111,10 +111,10 @@
 
 .loginFormRememberCheckbox {
     border-radius: 0.25rem;
-    border-color: #3A3F4B; /* Slate Gray */
+    border-color: var(--color-border);
     width: 1rem;
     height: 1rem;
-    color: #007BFF; /* Electric Blue */
+    color: var(--color-primary);
 }
 
 .loginFormRememberLabel {
@@ -122,7 +122,7 @@
     margin-left: 0.5rem;
     font-size: 0.875rem;
     line-height: 1.25rem;
-    color: #F5F5F5; /* Cool White */
+    color: var(--color-text);
 }
 
 .loginFormButton {
@@ -140,19 +140,19 @@
     font-size: 0.875rem;
     line-height: 1.25rem;
     font-weight: 500;
-    color: #F5F5F5; /* Cool White */
-    background-color: #007BFF; /* Electric Blue */
+    color: white;
+    background-color: var(--color-primary);
 
     &:hover {
-        background-color: #2563EB; /* Blue */
-        color: white; /* White text on blue */
+        background-color: var(--color-primary-dark);
+        color: white;
     }
 
     &:focus {
-        outline-style: none; 
-        box-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color); 
-        --ring-color: #007BFF; /* Electric Blue */
+        outline-style: none;
+        box-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+        --ring-color: var(--color-primary);
         --ring-offset-width: 2px;
-        box-shadow: 0 0 0 var(--ring-offset-width) var(--ring-offset-color), var(--ring-shadow); 
+        box-shadow: 0 0 0 var(--ring-offset-width) var(--ring-offset-color), var(--ring-shadow);
     }
 }
