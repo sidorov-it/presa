@@ -36,18 +36,15 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme, backgrou
     // Apply theme to the DOM when the component mounts or theme changes
     useEffect(() => {
         if (!theme) {
-            console.log('ThemeStylesApplier: No theme provided');
             return;
         }
 
         // Check if we already applied this exact theme
         const themeId = theme.id || theme.name;
         if (appliedThemeRef.current === themeId) {
-            console.log('ThemeStylesApplier: Theme already applied, skipping', theme.name);
             return;
         }
 
-        console.log('ThemeStylesApplier: Applying theme', theme.name);
 
         // Check if theme structure is complete
         if (!theme.colors || !theme.typography || !theme.design) {
@@ -57,8 +54,6 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme, backgrou
                 hasDesign: !!theme.design,
             });
 
-            // Print the theme object for debugging
-            console.log('Theme object:', JSON.stringify(theme, null, 2));
             return;
         }
 
@@ -119,8 +114,6 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme, backgrou
                 }
 
                 if (theme.colors.pageBackground.imageUrl || backgroundSettings?.backgroundImage) {
-                    console.log('Applying background image URL:', theme.colors.pageBackground.imageUrl);
-
                     // Check if URL is valid
                     let imageUrl;
 
@@ -162,7 +155,6 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme, backgrou
                         document.body.style.backgroundImage = 'none';
                     }
                 } else {
-                    console.log('No background image URL provided');
                     document.documentElement.style.removeProperty('--presentation-page-background-image');
                     document.body.style.backgroundImage = 'none';
                 }
@@ -397,7 +389,6 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme, backgrou
 
             // Mark theme as applied
             appliedThemeRef.current = themeId;
-            console.log('ThemeStylesApplier: Theme applied successfully');
         } catch (error) {
             console.error('ThemeStylesApplier: Error applying theme', error);
         }
@@ -409,7 +400,6 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme, backgrou
 
             // Reset the applied theme reference
             appliedThemeRef.current = null;
-            console.log('ThemeStylesApplier: Theme reset to defaults on unmount');
         };
     }, [theme, setColorMode, backgroundSettings]);
 
