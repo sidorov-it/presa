@@ -463,7 +463,6 @@ export const useDndStore = create<{
                 prevState = newState.state;
                 return newState;
             });
-            console.log('newSlide', newSlide);
         } else if (isTable) {
             // TODO: Implement table drag
         } else {

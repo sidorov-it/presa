@@ -17,7 +17,6 @@ import ColumnTableMenu from './ColumnTableMenu/ColumnTableMenu';
 import {
     useMenuIsOpen,
     useMenuStore,
-    useMenuSelectedColumn,
     useMenuSelectedElement,
     useMenuSelectedLayout,
     useMenuSelectedSlide,
@@ -55,7 +54,6 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
 
     const slideId = useMenuSelectedSlide();
     const layoutId = useMenuSelectedLayout();
-    const columnId = useMenuSelectedColumn();
     const cellId = useMenuSelectedCell();
     const elementId = useMenuSelectedElement();
     const presentationId = useMenuStore(state => state.presentationId);
@@ -151,7 +149,7 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
         return () => {
             setPosition(null);
         };
-    }, [isOpen, slideId, elementId, elementType, layoutId, columnId, tableRowIndex, tableColumnIndex, cell, isInTable]);
+    }, [isOpen, slideId, elementId, elementType, layoutId, tableRowIndex, tableColumnIndex, cell, isInTable]);
 
     const handleAddColumnLeft = useCallback(() => {
         if (Number.isInteger(tableColumnIndex)) {
@@ -292,7 +290,7 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
                 <MenuComponent
                     slideId={slideId}
                     layoutId={layoutId}
-                    columnId={columnId}
+                    cellId={cellId}
                     elementId={elementId}
                     presentationId={presentation!.id}
                     editor={activeEditor}

@@ -29,7 +29,6 @@ export interface MenuState {
     elementId: string | null;
     elementType: MenuElementType | null;
     layoutId: string | null;
-    columnId: string | null;
     cellId: string | null;
     isTextEditor: boolean;
     isInTable: boolean;
@@ -58,7 +57,6 @@ export interface MenuState {
         elementId?: string | null;
         elementType?: MenuElementType | null;
         layoutId?: string | null;
-        columnId?: string | null;
         cellId?: string | null;
         isTextEditor?: boolean;
         isInTable?: boolean;
@@ -102,7 +100,7 @@ export interface MenuState {
         layoutId: string | null,
         elementId: string | null
     ) => BaseElement | null | undefined;
-    getCell: (slideId: string | null, layoutId: string | null, columnId: string | null) => GridCell | null | undefined;
+    getCell: (slideId: string | null, layoutId: string | null, cellId: string | null) => GridCell | null | undefined;
     getLayout: (slideId: string | null, layoutId: string | null) => Layout | null | undefined;
     getSlide: (slideId: string | null) => Slide | null | undefined;
     getPresentation: (presentationId: string) => IPresentation | null | undefined;
@@ -155,7 +153,7 @@ export const useMenuStore = create<MenuState>()(
             elementId: null,
             elementType: null,
             layoutId: null,
-            columnId: null,
+            cellId: null,
             isTextEditor: false,
             tableRowIndex: null,
             tableColumnIndex: null,
@@ -209,7 +207,6 @@ export const useMenuStore = create<MenuState>()(
                     elementId: menuData.elementId ?? null,
                     elementType: menuData.elementType ?? null,
                     layoutId: menuData.layoutId ?? null,
-                    columnId: menuData.columnId ?? null,
                     cellId: menuData.cellId ?? null,
                     isTextEditor: menuData.isTextEditor ?? false,
                     tableRowIndex: menuData.tableRowIndex ?? null,
@@ -225,7 +222,6 @@ export const useMenuStore = create<MenuState>()(
                     elementId: menuData.elementId ?? null,
                     elementType: menuData.elementType ?? null,
                     layoutId: menuData.layoutId ?? null,
-                    columnId: menuData.columnId ?? null,
                     cellId: menuData.cellId ?? null,
                     isTextEditor: menuData.isTextEditor ?? false,
                     tableRowIndex: menuData.tableRowIndex ?? null,
@@ -268,7 +264,6 @@ export const useMenuStore = create<MenuState>()(
                     elementId: null,
                     elementType: null,
                     layoutId: null,
-                    columnId: null,
                     isTextEditor: false,
                     tableRowIndex: null,
                     tableColumnIndex: null,
@@ -388,37 +383,37 @@ export const useMenuStore = create<MenuState>()(
             },
 
             duplicateColumn: () => {
-                const { presentationId, slideId, layoutId, columnId } = get();
-                if (presentationId && slideId && layoutId && columnId) {
-                    const { duplicateColumn: duplicateColumnInStore } = usePresentationStore.getState();
-                    duplicateColumnInStore(presentationId, slideId, layoutId, columnId);
+                const { presentationId, slideId, layoutId, cellId } = get();
+                if (presentationId && slideId && layoutId && cellId) {
+                    const { duplicateCell: duplicateCellInStore } = usePresentationStore.getState();
+                    duplicateCellInStore(presentationId, slideId, layoutId, cellId);
                     get().closeMenu();
                 }
             },
 
             alignColumnTop: () => {
-                const { presentationId, slideId, layoutId, columnId } = get();
-                if (presentationId && slideId && layoutId && columnId) {
+                const { presentationId, slideId, layoutId, cellId } = get();
+                if (presentationId && slideId && layoutId && cellId) {
                     const { alignColumnTop: alignColumnTopInStore } = usePresentationStore.getState();
-                    alignColumnTopInStore(presentationId, slideId, layoutId, columnId);
+                    alignColumnTopInStore(presentationId, slideId, layoutId, cellId);
                     get().closeMenu();
                 }
             },
 
             alignColumnCenter: () => {
-                const { presentationId, slideId, layoutId, columnId } = get();
-                if (presentationId && slideId && layoutId && columnId) {
+                const { presentationId, slideId, layoutId, cellId } = get();
+                if (presentationId && slideId && layoutId && cellId) {
                     const { alignColumnCenter: alignColumnCenterInStore } = usePresentationStore.getState();
-                    alignColumnCenterInStore(presentationId, slideId, layoutId, columnId);
+                    alignColumnCenterInStore(presentationId, slideId, layoutId, cellId);
                     get().closeMenu();
                 }
             },
 
             alignColumnBottom: () => {
-                const { presentationId, slideId, layoutId, columnId } = get();
-                if (presentationId && slideId && layoutId && columnId) {
+                const { presentationId, slideId, layoutId, cellId } = get();
+                if (presentationId && slideId && layoutId && cellId) {
                     const { alignColumnBottom: alignColumnBottomInStore } = usePresentationStore.getState();
-                    alignColumnBottomInStore(presentationId, slideId, layoutId, columnId);
+                    alignColumnBottomInStore(presentationId, slideId, layoutId, cellId);
                     get().closeMenu();
                 }
             },
@@ -433,10 +428,10 @@ export const useMenuStore = create<MenuState>()(
             },
 
             deleteColumn: () => {
-                const { presentationId, slideId, layoutId, columnId } = get();
-                if (presentationId && slideId && layoutId && columnId) {
-                    const { deleteColumn: deleteColumnInStore } = usePresentationStore.getState();
-                    deleteColumnInStore(presentationId, slideId, layoutId, columnId);
+                const { presentationId, slideId, layoutId, cellId } = get();
+                if (presentationId && slideId && layoutId && cellId) {
+                    const { deleteCell: deleteCellInStore } = usePresentationStore.getState();
+                    deleteCellInStore(presentationId, slideId, layoutId, cellId);
                     get().closeMenu();
                 }
             },
@@ -606,7 +601,6 @@ export const useMenuIsOpen = () => useMenuStore(state => state.isOpen);
 export const useMenuSelectedSlide = () => useMenuStore(state => state.slideId!);
 export const useMenuSelectedElement = () => useMenuStore(state => state.elementId);
 export const useMenuSelectedLayout = () => useMenuStore(state => state.layoutId);
-export const useMenuSelectedColumn = () => useMenuStore(state => state.columnId);
 export const useMenuSelectedCell = () => useMenuStore(state => state.cellId);
 
 // Hook for checking if a specific slide has its menu open

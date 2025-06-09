@@ -19,7 +19,6 @@ export type HistoryAction = {
     alignment?: 'top' | 'center' | 'bottom'; // which alignment was modified (if applicable)
     position?: 'left' | 'right'; // which position was modified (if applicable)
     cellId?: string; // which cell was modified (if applicable)
-    columnId?: string; // which cell was modified (if applicable)
     changes: deepDiff.Diff<any, any>[]; // generated diffs between before and after states
     timestamp: number; // when the action happened
     transactionId?: string; // ID to group related actions

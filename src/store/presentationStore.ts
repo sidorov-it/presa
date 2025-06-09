@@ -145,15 +145,15 @@ export interface PresentationState {
     ) => void;
     addColumnLeft: (presentationId: string, slideId: string, layoutId: string, columnIndex: number) => void;
     addColumnRight: (presentationId: string, slideId: string, layoutId: string, columnIndex: number) => void;
-    duplicateColumn: (presentationId: string, slideId: string, layoutId: string, columnId: string) => void;
-    alignColumnTop: (presentationId: string, slideId: string, layoutId: string, columnId: string) => void;
-    alignColumnCenter: (presentationId: string, slideId: string, layoutId: string, columnId: string) => void;
-    alignColumnBottom: (presentationId: string, slideId: string, layoutId: string, columnId: string) => void;
+    duplicateCell: (presentationId: string, slideId: string, layoutId: string, cellId: string) => void;
+    alignColumnTop: (presentationId: string, slideId: string, layoutId: string, cellId: string) => void;
+    alignColumnCenter: (presentationId: string, slideId: string, layoutId: string, cellId: string) => void;
+    alignColumnBottom: (presentationId: string, slideId: string, layoutId: string, cellId: string) => void;
     alignColumn: (
         presentationId: string,
         slideId: string,
         layoutId: string,
-        columnId: string,
+        cellId: string,
         alignment: 'top' | 'center' | 'bottom'
     ) => void;
     deleteColumn: (presentationId: string, slideId: string, layoutId: string, columnIndex: number) => void;
@@ -1513,7 +1513,6 @@ export const usePresentationStore = create<PresentationState>()(
                     presentationId,
                     slideId,
                     layoutId,
-                    // columnId: newColumnId,
                     position: 'right',
                     before: { presentations: beforeState.presentations },
                     after: updatedState,

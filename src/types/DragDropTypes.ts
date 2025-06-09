@@ -102,7 +102,6 @@ export type DndAction =
       }
     | { type: 'SET_LAYOUT_INDICATOR'; payload: { layoutId: string | null; position: Position | null } }
     | { type: 'SET_SLIDE_INDICATOR'; payload: { slideId: string | null; position: Position | null } }
-    | { type: 'SET_COLUMN_INDICATOR'; payload: { columnId: string | null; position: Position | null } }
     | { type: 'COMPLETE_DROP' }
     | { type: 'CANCEL_DRAG' }
     | { type: 'SET_READY_TO_DROP'; payload: boolean }
