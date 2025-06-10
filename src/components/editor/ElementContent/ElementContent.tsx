@@ -21,7 +21,7 @@ import { MenuItem } from '@/types/templates';
 import { getPredefinedGridStructures } from '@/utils/getPredefinedGridStructures';
 import { getElementConfig } from '@/utils/getElementConfig';
 import { getNewEditorElement } from '@/utils/getNewEditorElement';
-import { getNewTableElement } from '@/utils/getNewTableElement';
+import { getNewLayoutWithTable } from '@/utils/getNewLayoutWithTable';
 import { getNewElement } from '@/utils/getNewElement';
 import { ElementType } from '@/types/elements';
 
@@ -221,7 +221,7 @@ export const ElementContent = ({
     const handleAddElement = useCallback(
         (elementId: string) => (menuItem: MenuItem) => {
             if (menuItem.elementTypeId.startsWith('table')) {
-                const tableLayout = getNewTableElement(menuItem);
+                const tableLayout = getNewLayoutWithTable(menuItem.props?.columns || 2, menuItem.props?.rows || 2);
                 if (tableLayout) {
                     usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, tableLayout);
                 }
