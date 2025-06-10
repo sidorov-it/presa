@@ -186,12 +186,16 @@
 
 .menuButton {
     position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    padding: 0.5rem;
+    top: 8px;
+    right: 8px;
+    padding: 4px;
     color: var(--color-text-light);
     border-radius: 9999px;
     transition: all 0.2s ease;
+    z-index: 10;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    cursor: pointer;
 }
 
 .menuButton:hover {

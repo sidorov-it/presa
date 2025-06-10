@@ -9,12 +9,13 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { useThemeStore } from '@/store/themeStore';
 import SlidePreview from './components/SlidePreview';
 import { resetThemeStyles } from '@/utils/themeUtils';
-import { FaPlus, FaMagic, FaEllipsisV, FaPencilAlt, FaCopy, FaTrash, FaEye } from 'react-icons/fa';
+import { FaPlus, FaMagic, FaPencilAlt, FaCopy, FaTrash, FaEye } from 'react-icons/fa';
 import { IPresentation } from '@/types';
 import { pluralize } from '@/utils/helpers';
 import styles from './page.module.css';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
+import { HiOutlineDotsVertical } from 'react-icons/hi';
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -253,6 +254,15 @@ export default function DashboardPage() {
         setAiPrompt(example);
     };
 
+    const handleMenuClick = useCallback(
+        (id: string) => (e: React.MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
+            toggleMenu(id, e);
+        },
+        [toggleMenu]
+    );
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -313,8 +323,8 @@ export default function DashboardPage() {
                                     <div className={styles.previewAreaLink} />
                                     <SlidePreview presentation={presentation} theme={theme} />
 
-                                    <button onClick={e => toggleMenu(presentation.id, e)} className={styles.menuButton}>
-                                        <FaEllipsisV />
+                                    <button onClick={handleMenuClick(presentation.id)} className={styles.menuButton}>
+                                        <HiOutlineDotsVertical />
                                     </button>
 
                                     {activeMenu === presentation.id && (

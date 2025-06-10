@@ -103,7 +103,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </div>
 
                 <nav className={styles.nav}>
-                    <div className={styles.userProfile}>
+                    {/* <div className={styles.userProfile}>
                         <div className={styles.userProfileCard}>
                             <div className={styles.userAvatar}>{session?.user?.name?.charAt(0)}</div>
                             <div>
@@ -111,7 +111,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                 <div className={styles.userEmail}>{session?.user?.email}</div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
                     {menuItems.map(item => {
                         const isActive = pathname === item.path;

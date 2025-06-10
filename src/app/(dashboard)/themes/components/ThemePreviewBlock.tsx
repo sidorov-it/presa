@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Theme } from '@/types/theme';
 import styles from './ThemePreviewBlock.module.css';
-import { FaCopy, FaEllipsisV, FaEye, FaTrash } from 'react-icons/fa';
+import { FaCopy, FaEye, FaTrash } from 'react-icons/fa';
+import { HiOutlineDotsVertical } from 'react-icons/hi';
 
 interface ThemePreviewProps {
     theme: Theme;
@@ -144,13 +145,10 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({ theme, onClickEdit, on
                         ref={menuButtonRef}
                         className={`${styles.menuButton} ${isMenuOpen ? styles.menuButtonOpen : ''}`}
                     >
-                        <FaEllipsisV />
+                        <HiOutlineDotsVertical />
 
                         {isMenuOpen && (
-                            <div
-                                className={styles.menuDropdown}
-                                style={menuPosition}
-                            >
+                            <div className={styles.menuDropdown} style={menuPosition}>
                                 <button onClick={onClickEdit} className={styles.menuItem}>
                                     <FaEye className={styles.menuIcon} />
                                     Редактировать
