@@ -1,27 +1,13 @@
 import { BaseElement, Element, GridCell, GridRow, Layout } from '@/types';
 import { generateId } from './id';
 import { getNewEditorElement } from '@/utils/getNewEditorElement';
-import { MenuItem } from '@/types/templates';
 import getColumnWidths from './getColumnWidths';
 
-export const getNewTableElement = (menuItem: Pick<MenuItem, 'elementTypeId' | 'elementVariant' | 'props'>): Layout => {
-    const tableLayout: Layout = {
-        id: generateId(),
-        elements: [],
-        type: 'table',
-        gridStructure: {
-            rows: menuItem.props?.rows || 2,
-            columns: menuItem.props?.columns || 2,
-            columnWidths: getColumnWidths(menuItem.props?.columns || 2),
-        },
-        style: {},
-        isTable: true,
-    };
-
+export const getNewLayoutWithTable = (columnsCount = 2, rowsCount = 2): Layout => {
     const rows: GridRow[] = [];
     const elements: BaseElement[] = [];
 
-    for (let rowIndex = 0; rowIndex < menuItem.props?.rows; rowIndex++) {
+    for (let rowIndex = 0; rowIndex < rowsCount; rowIndex++) {
         const cells: GridCell[] = [];
 
         const row: GridRow = {
@@ -29,7 +15,7 @@ export const getNewTableElement = (menuItem: Pick<MenuItem, 'elementTypeId' | 'e
             cells: [],
         };
 
-        for (let columnIndex = 0; columnIndex < menuItem.props?.columns; columnIndex++) {
+        for (let columnIndex = 0; columnIndex < columnsCount; columnIndex++) {
             const cellId = generateId();
 
             const cell: GridCell = {
@@ -46,8 +32,19 @@ export const getNewTableElement = (menuItem: Pick<MenuItem, 'elementTypeId' | 'e
         row.cells = cells;
         rows.push(row);
     }
-    tableLayout.gridStructure.rows = rows;
-    tableLayout.elements = elements as Element[];
+
+    const tableLayout: Layout = {
+        id: generateId(),
+        elements: elements as Element[],
+        type: 'table',
+        gridStructure: {
+            rows,
+            columns: columnsCount,
+            columnWidths: getColumnWidths(columnsCount),
+        },
+        style: {},
+        isTable: true,
+    };
 
     return tableLayout;
 };

@@ -12,6 +12,7 @@ import { MenuItem } from '@/types/templates';
 import { getNewElement } from '@/utils/getNewElement';
 import { getNewEditorElement } from '@/utils/getNewEditorElement';
 import { createSlideFromTemplate } from '@/utils/createSlideFromTemplate';
+import { getNewLayoutWithTable } from '@/utils/getNewLayoutWithTable';
 
 const cloneDeep = (obj: any) => JSON.parse(JSON.stringify(obj));
 
@@ -1327,34 +1328,50 @@ export const useDndStore = create<{
         const presentationId = get().presentationId;
         if (!presentationId) return;
 
-        const newElement = get().getNewElementFromTypeId(elementTypeId, elementVariant);
-        if (!newElement) return;
+        let newLayout;
+        if (elementTypeId.startsWith('table')) {
+            let rowCount;
+            let columnCount;
+            switch (elementVariant) {
+                case 'table2x2':
+                    rowCount = 2;
+                    columnCount = 2;
+                    break;
+                case 'table3x3':
+                    rowCount = 3;
+                    columnCount = 3;
+                    break;
+                case 'table4x4':
+                    rowCount = 4;
+                    columnCount = 4;
+                    break;
+                default:
+                    rowCount = 2;
+                    columnCount = 2;
+                    break;
+            }
 
-        // Проверяем, имеет ли newElement свойство elementTypeId
-        if ('elementTypeId' in newElement && newElement.elementTypeId.startsWith('table')) {
-            const targetLayoutIndex = targetSlide.layouts.findIndex(l => l.id === targetLayout.id);
-            if (targetLayoutIndex === -1) return;
+            newLayout = getNewLayoutWithTable(columnCount, rowCount);
+        } else {
+            const newElement = get().getNewElementFromTypeId(elementTypeId, elementVariant);
 
-            const newLayoutIndex = position === 'top' ? targetLayoutIndex : targetLayoutIndex + 1;
+            if (!newElement) return;
 
-            DragDropTransactionHelper.addLayout(presentationId, targetSlide.id, newElement, newLayoutIndex);
-            return;
+            const newLayout: Layout = getEmptyLayout();
+
+            const newCellId = generateId();
+            const newCell: GridCell = {
+                id: newCellId,
+                row: 1,
+                column: 1,
+            };
+
+            newLayout.gridStructure.rows[0].cells.push(newCell);
+            newLayout.elements.push({
+                ...newElement,
+                cellId: newCellId,
+            } as BaseElement);
         }
-
-        const newLayout: Layout = getEmptyLayout();
-
-        const newCellId = generateId();
-        const newCell: GridCell = {
-            id: newCellId,
-            row: 1,
-            column: 1,
-        };
-
-        newLayout.gridStructure.rows[0].cells.push(newCell);
-        newLayout.elements.push({
-            ...newElement,
-            cellId: newCellId,
-        } as BaseElement);
 
         const targetLayoutIndex = targetSlide.layouts.findIndex(l => l.id === targetLayout.id);
         if (targetLayoutIndex === -1) return;

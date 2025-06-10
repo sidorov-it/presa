@@ -8,7 +8,7 @@ import { BaseElement } from '@/types';
 import { menuRegistry, SLIDE_TEMPLATE_TYPES } from '@/elements/menuRegistry';
 import { useDndStore } from '@/store/dndStore';
 import { MenuItem } from '@/types/templates';
-import { getNewTableElement } from '@/utils/getNewTableElement';
+import { getNewLayoutWithTable } from '@/utils/getNewLayoutWithTable';
 import { getNewElement } from '@/utils/getNewElement';
 
 interface ElementsPanelProps {
@@ -81,7 +81,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
             // }
         } else if (isTable) {
             // TODO: Implement table click
-            const tableLayout = getNewTableElement(element);
+            const tableLayout = getNewLayoutWithTable(element);
             usePresentationStore.getState().addTableLayout(presentationId, slideId, tableLayout);
         } else {
             // Normal element click
