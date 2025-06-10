@@ -95,6 +95,10 @@
     transition: all 150ms ease;
 }
 
+/* .themeButton:hover {
+    background-color: #f3f4f6;
+} */
+
 .viewButton {
     display: flex;
     align-items: center;
@@ -106,10 +110,10 @@
     transition: all 150ms ease;
 }
 
-.viewButton:hover {
+/* .viewButton:hover {
     background-color: var(--color-primary-dark);
     color: white;
-}
+} */
 
 .viewButtonText {
     font-size: 0.875rem;
@@ -123,10 +127,10 @@
     border-radius: 9999px;
     transition: all 150ms ease;
 }
-
+/* 
 .settingsButton:hover {
-    background-color: var(--color-background);
-}
+    background-color: #f3f4f6;
+} */
 
 .settingsButton:focus {
     outline: none;
@@ -148,9 +152,9 @@
     transition: all 150ms ease;
 }
 
-.userInfo:hover {
-    background-color: var(--color-background);
-}
+/* .userInfo:hover {
+    background-color: #f3f4f6;
+} */
 
 .userIcon {
     width: 1rem;
@@ -302,6 +306,15 @@
     color: var(--chakra-colors-neutral-text-default);
 }
 
+.userMenuCredits:hover {
+    background-color: #0915fc2b;
+}
+
+/* Dark theme styles for theme popover */
+:global(.dark) .userMenuCredits:hover {
+    background-color: var(--color-background);
+}
+
 .creditsIcon {
     width: 1rem;
     height: 1rem;
@@ -331,10 +344,20 @@
     border: none;
     background: none;
 }
-
+/* 
 .userMenuAction:hover {
     background-color: var(--chakra-colors-neutral-surface-subtle);
+} */
+
+.userMenuAction:hover {
+    background-color: #0915fc2b;
 }
+
+/* Dark theme styles for theme popover */
+:global(.dark) .userMenuAction:hover {
+    background-color: var(--color-background);
+}
+
 
 .actionIcon {
     width: 1rem;
