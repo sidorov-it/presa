@@ -469,7 +469,7 @@ const Tiptap = ({
             } else {
                 lastStyleRef.current = {
                     level: getHeadingLevel(editor),
-                    color: editor.getAttributes('color').color || null,
+                    color: editor.getAttributes('textStyle').color || null,
                     bold: editor.isActive('bold'),
                     italic: editor.isActive('italic'),
                     underline: editor.isActive('underline'),
