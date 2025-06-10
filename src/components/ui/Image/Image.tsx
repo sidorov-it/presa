@@ -78,6 +78,11 @@ export const Image: React.FC<ImageProps> = ({
                     onClearImage={onClearImage || (() => {})}
                     onUpdateLink={onUpdateLink || (() => {})}
                     isWidthRightMenu={isWidthRightMenu}
+                    elementId={elementId}
+                    presentationId={presentationId}
+                    slideId={slideId}
+                    layoutId={layoutId}
+                    itemId={itemId}
                 />
             )}
         </div>

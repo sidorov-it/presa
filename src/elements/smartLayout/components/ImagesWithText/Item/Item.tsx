@@ -55,7 +55,7 @@ export default function Item({
         const element = state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement;
         return element.items.find(item => item.id === itemId);
     }) as SmartLayoutItem;
-    
+
     // Check if item is generating (from AI store)
     const aiStoreId = `${presentationId}_${slideId}_${layoutId}_${elementId}_${itemId}`;
     const aiImageStore = useAIImageStore();
@@ -75,8 +75,10 @@ export default function Item({
         >
             {/* Show loading state for AI generation */}
             {isGenerating ? (
-                <div className={`${styles.image} ${styles.loadingContainer} ${imageShape ? styles[imageShape] : ''}`}
-                     style={{ width: imageWidth ? `calc(${imageWidth}% - 1em)` : undefined }}>
+                <div
+                    className={`${styles.image} ${styles.loadingContainer} ${imageShape ? styles[imageShape] : ''}`}
+                    style={{ width: imageWidth ? `calc(${imageWidth}% - 1em)` : undefined }}
+                >
                     <div className={styles.loadingSpinner}>
                         <FiLoader className={styles.spinningIcon} />
                     </div>

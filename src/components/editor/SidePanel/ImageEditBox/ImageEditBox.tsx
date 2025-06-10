@@ -23,6 +23,7 @@ interface ImageEditBoxProps {
     slideId?: string;
     layoutId?: string;
     itemId?: string; // For SmartLayout items
+    defaultMode?: 'upload' | 'ai'; // Optional default mode
 }
 
 type ImageMode = 'upload' | 'ai';
@@ -74,8 +75,9 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({
     slideId,
     layoutId,
     itemId,
+    defaultMode = 'upload',
 }) => {
-    const [imageMode, setImageMode] = useState<ImageMode>('upload');
+    const [imageMode, setImageMode] = useState<ImageMode>(defaultMode);
     const [imageUrlLocal, setImageUrlLocal] = useState(imageUrl);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
@@ -85,7 +87,9 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({
     const aiImageStore = useAIImageStore();
 
     // Create unique identifier for AI store (element or item)
-    const aiStoreId = itemId ? `${elementId}-${itemId}` : elementId;
+    const aiStoreId = itemId
+        ? `${presentationId}_${slideId}_${layoutId}_${elementId}_${itemId}`
+        : `${presentationId}_${slideId}_${layoutId}_${elementId}`;
 
     // Get current element data
     const currentElement = usePresentationStore(state => state.getElement(presentationId!, slideId!, layoutId!, elementId!))
@@ -292,7 +296,7 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({
                 const firstImage = images[0];
                 aiImageStore.setSelectedImage(aiStoreId, firstImage.id);
 
-                                if (itemId) {
+                if (itemId) {
                     // Update SmartLayout item
                     const element = usePresentationStore
                         .getState()
@@ -301,14 +305,14 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({
                         const updatedItems = (element as any).items.map((item: any) =>
                             item.id === itemId
                                 ? {
-                                      ...item,
-                                      imageUrl: firstImage.url,
-                                      generatedImages: images.map(img => img.url),
-                                      aiPrompt: prompt,
-                                      aiStyle: selectedStyle,
-                                      aiCustomStyle: customStyle,
-                                      uploaded: true,
-                                  }
+                                    ...item,
+                                    imageUrl: firstImage.url,
+                                    generatedImages: images.map(img => img.url),
+                                    aiPrompt: prompt,
+                                    aiStyle: selectedStyle,
+                                    aiCustomStyle: customStyle,
+                                    uploaded: true,
+                                }
                                 : item
                         );
                         usePresentationStore.getState().updateElement({
@@ -528,7 +532,7 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({
                 <Textarea
                     id="aiPrompt"
                     value={prompt}
-                    onChange={e => handlePromptChange(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handlePromptChange(e.target.value)}
                     placeholder="Опишите, какое изображение вы хотите создать..."
                     rows={3}
                     className={styles.promptTextarea}
@@ -561,7 +565,7 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({
                     <Textarea
                         id="customStyle"
                         value={customStyle}
-                        onChange={e => handleCustomStyleChange(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleCustomStyleChange(e.target.value)}
                         placeholder="Опишите желаемый стиль..."
                         rows={2}
                         className={styles.customStyleTextarea}

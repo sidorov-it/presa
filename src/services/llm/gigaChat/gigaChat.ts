@@ -244,7 +244,7 @@ export class GigaChatService implements LLMService {
             const DEFAULT_SYSTEM_PROMPT = 'Сгенерируй изображение для презентации';
 
             // Try to get recorded response first in replay mode
-            if (this.recordingOptions.replayMode && this.recordingService && false) {
+            if (this.recordingOptions.replayMode && this.recordingService) {
                 const recording = await this.recordingService.findRecording(prompt);
                 if (recording && recording.response.type === 'image') {
                     cached = true;

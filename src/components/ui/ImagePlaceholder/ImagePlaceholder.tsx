@@ -10,6 +10,12 @@ export type ImagePlaceholderProps = {
     isWidthRightMenu?: boolean;
     onClearImage: () => void;
     onUpdateLink: (link: string, uploaded: boolean) => void;
+    // Element context for AI generation (optional)
+    elementId?: string;
+    presentationId?: string;
+    slideId?: string;
+    layoutId?: string;
+    itemId?: string; // For SmartLayout items
 };
 
 import styles from './ImagePlaceholder.module.css';
@@ -196,6 +202,11 @@ export const ImagePlaceholder = ({
     imageUrl,
     onClearImage,
     isWidthRightMenu = false,
+    elementId,
+    presentationId,
+    slideId,
+    layoutId,
+    itemId,
 }: ImagePlaceholderProps) => {
     const [showLinkPopup, setShowLinkPopup] = useState(false);
     const linkBtnRef = useRef<HTMLButtonElement>(null);
@@ -210,10 +221,15 @@ export const ImagePlaceholder = ({
                 imageUrl,
                 onClearImage,
                 onUpdateLink,
+                elementId,
+                presentationId,
+                slideId,
+                layoutId,
+                itemId,
                 onCloseMenu: () => setIsOpenImageEditBox(false),
             });
         }
-    }, [isSmallImage, isOpenImageEditBox, imageUrl, onClearImage, onUpdateLink]);
+    }, [isSmallImage, isOpenImageEditBox, imageUrl, onClearImage, onUpdateLink, elementId, presentationId, slideId, layoutId, itemId]);
 
     useEffect(() => {
         if (!elementRef.current) return;
@@ -250,7 +266,20 @@ export const ImagePlaceholder = ({
     };
 
     const onGenerate = () => {
-        console.log('onGenerate');
+        // Open image edit panel in AI mode
+        if (isWidthRightMenu) {
+            useMenuStore.getState().openSideMenu('image-edit', {
+                imageUrl,
+                onClearImage,
+                onUpdateLink,
+                elementId,
+                presentationId,
+                slideId,
+                layoutId,
+                itemId,
+                defaultMode: 'ai', // Start in AI mode
+            });
+        }
     };
 
     const handleKeyDown =
@@ -291,18 +320,51 @@ export const ImagePlaceholder = ({
                             tabIndex={0}
                             aria-label="Загрузить изображение"
                             className={styles.imagePlaceholderUploadButton}
-                            onKeyDown={handleKeyDown(() => document.getElementById('image-upload-input')?.click())}
-                            onClick={e => e.stopPropagation()}
+                            onKeyDown={handleKeyDown(() => {
+                                if (isWidthRightMenu) {
+                                    useMenuStore.getState().openSideMenu('image-edit', {
+                                        imageUrl,
+                                        onClearImage,
+                                        onUpdateLink,
+                                        elementId,
+                                        presentationId,
+                                        slideId,
+                                        layoutId,
+                                        itemId,
+                                        defaultMode: 'upload',
+                                    });
+                                } else {
+                                    document.getElementById('image-upload-input')?.click();
+                                }
+                            })}
+                            onClick={e => {
+                                e.stopPropagation();
+                                if (isWidthRightMenu) {
+                                    useMenuStore.getState().openSideMenu('image-edit', {
+                                        imageUrl,
+                                        onClearImage,
+                                        onUpdateLink,
+                                        elementId,
+                                        presentationId,
+                                        slideId,
+                                        layoutId,
+                                        itemId,
+                                        defaultMode: 'upload',
+                                    });
+                                }
+                            }}
                         >
                             <FiUpload style={{ fontSize: '1.25rem', lineHeight: '1.75rem', color: '#6B7280' }} />
-                            <input
-                                id="image-upload-input"
-                                type="file"
-                                accept="image/*"
-                                style={{ display: 'none' }}
-                                onChange={handleFileChange}
-                                tabIndex={-1}
-                            />
+                            {!isWidthRightMenu && (
+                                <input
+                                    id="image-upload-input"
+                                    type="file"
+                                    accept="image/*"
+                                    style={{ display: 'none' }}
+                                    onChange={handleFileChange}
+                                    tabIndex={-1}
+                                />
+                            )}
                         </label>
                         {/* Вставить ссылку */}
                         <button
@@ -312,9 +374,39 @@ export const ImagePlaceholder = ({
                             className={styles.imagePlaceholderLinkButton}
                             onClick={e => {
                                 e.stopPropagation();
-                                setShowLinkPopup(true);
+                                if (isWidthRightMenu) {
+                                    useMenuStore.getState().openSideMenu('image-edit', {
+                                        imageUrl,
+                                        onClearImage,
+                                        onUpdateLink,
+                                        elementId,
+                                        presentationId,
+                                        slideId,
+                                        layoutId,
+                                        itemId,
+                                        defaultMode: 'upload',
+                                    });
+                                } else {
+                                    setShowLinkPopup(true);
+                                }
                             }}
-                            onKeyDown={handleKeyDown(() => setShowLinkPopup(true))}
+                            onKeyDown={handleKeyDown(() => {
+                                if (isWidthRightMenu) {
+                                    useMenuStore.getState().openSideMenu('image-edit', {
+                                        imageUrl,
+                                        onClearImage,
+                                        onUpdateLink,
+                                        elementId,
+                                        presentationId,
+                                        slideId,
+                                        layoutId,
+                                        itemId,
+                                        defaultMode: 'upload',
+                                    });
+                                } else {
+                                    setShowLinkPopup(true);
+                                }
+                            })}
                             ref={linkBtnRef}
                         >
                             <FiLink2 className={styles.linkIcon} />
@@ -334,7 +426,7 @@ export const ImagePlaceholder = ({
                             <FiZap className={styles.generateIcon} />
                         </button>
                         {/* Портал для попапа */}
-                        {showLinkPopup && (
+                        {showLinkPopup && !isWidthRightMenu && (
                             <LinkPopup
                                 onClose={() => setShowLinkPopup(false)}
                                 onSubmit={url => {

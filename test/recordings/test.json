@@ -32,6 +32,17 @@
         }
       },
       "timestamp": 1749554993136
+    },
+    {
+      "prompt": "форум \"ЭДО-СТРАТЕГИЯ\"",
+      "response": {
+        "type": "image",
+        "data": {
+          "imageUrl": "/uploads/f290d6e6-7848-4edf-ba89-766048ce9056.jpg",
+          "imageId": "f290d6e6-7848-4edf-ba89-766048ce9056"
+        }
+      },
+      "timestamp": 1749559572904
     }
   ],
   "version": "1.0.0"
