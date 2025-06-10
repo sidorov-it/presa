@@ -5,7 +5,7 @@
 
 import { EditorContent } from '@tiptap/react';
 import { useEditor } from '@tiptap/react';
-import { useCallback, useEffect, RefObject, useState } from 'react';
+import { useCallback, useEffect, RefObject, useState, useRef } from 'react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import TaskList from '@tiptap/extension-task-list';
@@ -52,6 +52,8 @@ import { BlockquoteExtension } from './extensions/BlockquoteExtension';
 import { usePresentationStore } from '@/store/presentationStore';
 import { EditorElement } from '@/types';
 import { MenuItem } from '@/types/templates';
+import getHeadingLevel from '@/utils/getHeadingLevel';
+import { NORMAL_TEXT_LEVEL } from '@/consts';
 
 // Определяем типы пропсов
 interface TiptapProps {
@@ -356,6 +358,15 @@ const Tiptap = ({
     onAddElement,
 }: TiptapProps) => {
     const [hasInteraction, setHasInteraction] = useState(false);
+    const lastStyleRef = useRef({
+        level: NORMAL_TEXT_LEVEL,
+        color: null as string | null,
+        bold: false,
+        italic: false,
+        underline: false,
+        strike: false,
+    });
+    const applyingStoredMarksRef = useRef(false);
     const element = usePresentationStore.getState().getElement(presentationId, slideId, layoutId, elementId);
     const isTempEditor = (element as EditorElement)?.tempEditor;
     const isTempLayout = (element as EditorElement)?.tempLayout;
@@ -429,6 +440,49 @@ const Tiptap = ({
             }
         }
     }, [editor, initialContent]);
+
+    // Preserve text styles when content is cleared
+    useEffect(() => {
+        if (!editor) return;
+
+        const handleUpdate = () => {
+            if (applyingStoredMarksRef.current) {
+                applyingStoredMarksRef.current = false;
+                return;
+            }
+
+            if (editor.isEmpty) {
+                const { level, color, bold, italic, underline, strike } = lastStyleRef.current;
+
+                if (level !== undefined || color || bold || italic || underline || strike) {
+                    const chain = editor.chain();
+                    if (level !== undefined && level !== null) chain.setFontSize(level);
+                    if (color) chain.setColor(color);
+                    if (bold) chain.setBold();
+                    if (italic) chain.setItalic();
+                    if (underline) chain.setUnderline();
+                    if (strike) chain.setStrike();
+
+                    applyingStoredMarksRef.current = true;
+                    chain.run();
+                }
+            } else {
+                lastStyleRef.current = {
+                    level: getHeadingLevel(editor),
+                    color: editor.getAttributes('textStyle').color || null,
+                    bold: editor.isActive('bold'),
+                    italic: editor.isActive('italic'),
+                    underline: editor.isActive('underline'),
+                    strike: editor.isActive('strike'),
+                };
+            }
+        };
+
+        editor.on('update', handleUpdate);
+        return () => {
+            editor.off('update', handleUpdate);
+        };
+    }, [editor]);
 
     useEffect(() => {
         if (editor) {

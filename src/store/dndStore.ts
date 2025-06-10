@@ -1357,7 +1357,7 @@ export const useDndStore = create<{
 
             if (!newElement) return;
 
-            const newLayout: Layout = getEmptyLayout();
+            newLayout = getEmptyLayout();
 
             const newCellId = generateId();
             const newCell: GridCell = {
