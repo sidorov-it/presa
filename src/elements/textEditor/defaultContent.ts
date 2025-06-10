@@ -29,7 +29,7 @@ export const getTextContent = (textType: TextType, text: string | string[]) => {
         case TextType.HEADING4:
             return `<span class="heading-text heading-4">${text}</span>`;
         case TextType.QUOTE:
-            return `<blockquote>${text}</blockquote>`;
+            return text;
         case TextType.BULLET_LIST:
             if (Array.isArray(text)) {
                 return `<ul>
