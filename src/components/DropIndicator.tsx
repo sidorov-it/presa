@@ -479,6 +479,8 @@ const DropIndicator = () => {
             let left;
             if (type === 'cell') {
                 left = targetRect.left - thickness / 2;
+            } else if (type === 'column') {
+                left = targetRect.left;
             } else {
                 left = targetRect.left - 22;
             }
@@ -495,6 +497,8 @@ const DropIndicator = () => {
             let left;
             if (type === 'cell') {
                 left = targetRect.right - thickness / 2;
+            } else if (type === 'column') {
+                left = targetRect.right;
             } else {
                 left = targetRect.right + 10;
             }
