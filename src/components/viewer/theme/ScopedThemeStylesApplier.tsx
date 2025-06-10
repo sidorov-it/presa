@@ -89,11 +89,6 @@ const ScopedThemeStylesApplier = forwardRef<HTMLDivElement, ScopedThemeStylesApp
                 container.style.setProperty('--presentation-text-color', theme.colors.textColor);
                 container.style.setProperty('--presentation-slide-background', theme.colors.slideBackground);
 
-
-                if (backgroundSettings?.backgroundColor) {
-
-
-
                 // Handle page background
                 if (theme.colors.pageBackground) {
                     if (theme.colors.pageBackground.color) {
@@ -282,26 +277,6 @@ const ScopedThemeStylesApplier = forwardRef<HTMLDivElement, ScopedThemeStylesApp
                 }
 
                 container.style.setProperty('--presentation-block-shadow', theme.design.blocks.shadow);
-
-                // Button and link design
-                // container.style.setProperty('--presentation-button-color', theme.design.buttons.buttonColor);
-
-                // const hoverColor = getHoverColor(theme.design.buttons.buttonColor, 15);
-                // container.style.setProperty('--presentation-button-hover-color', hoverColor);
-                // container.style.setProperty(
-                //     '--presentation-button-text-color',
-                //     getContrastTextColor(theme.design.buttons.buttonColor)
-                // );
-
-                // if (theme.design.buttons.buttonShape === 'square') {
-                //     container.style.setProperty('--presentation-button-radius', '1.5px');
-                // } else if (theme.design.buttons.buttonShape === 'capsule') {
-                //     container.style.setProperty('--presentation-button-radius', '9999px');
-                // } else if (theme.design.buttons.buttonShape === 'default') {
-                //     container.style.setProperty('--presentation-button-radius', '4px');
-                // } else if (theme.design.buttons.buttonShape === 'rounded') {
-                //     container.style.setProperty('--presentation-button-radius', '8px');
-                // }
 
                 container.style.setProperty(
                     '--presentation-link-color',

@@ -8,7 +8,9 @@ import ItemWrapper from '../../ItemWrapper/ItemWrapper';
 
 import styles from './Item.module.css';
 import { HiPlus } from 'react-icons/hi2';
+import { FiLoader } from 'react-icons/fi';
 import { usePresentationStore } from '@/store/presentationStore';
+import { useAIImageStore } from '@/store/aiImageStore';
 import Image from '@/components/ui/Image/Image';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
@@ -53,6 +55,11 @@ export default function Item({
         const element = state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement;
         return element.items.find(item => item.id === itemId);
     }) as SmartLayoutItem;
+    
+    // Check if item is generating (from AI store)
+    const aiStoreId = `${presentationId}_${slideId}_${layoutId}_${elementId}_${itemId}`;
+    const aiImageStore = useAIImageStore();
+    const isGenerating = aiImageStore.isGenerating(aiStoreId);
 
     const imageWidthCoof = 14;
     const imageWidth = 30 + imageWidthCoof * (imageSize - 1);
@@ -66,17 +73,33 @@ export default function Item({
             layoutId={layoutId}
             elementId={elementId}
         >
-            <Image
-                imageUrl={item.imageUrl || ''}
-                onClearImage={() => handleImageChange(item.id, '', false)}
-                onUpdateLink={(link, uploaded) => handleImageChange(item.id, link, uploaded)}
-                isWidthRightMenu={true}
-                className={`${styles.image} ${imageShape ? styles[imageShape] : ''}`}
-                style={{
-                    backgroundImage: item.imageUrl ? `url(${item.imageUrl})` : undefined,
-                    width: imageWidth ? `calc(${imageWidth}% - 1em)` : undefined,
-                }}
-            />
+            {/* Show loading state for AI generation */}
+            {isGenerating ? (
+                <div className={`${styles.image} ${styles.loadingContainer} ${imageShape ? styles[imageShape] : ''}`}
+                     style={{ width: imageWidth ? `calc(${imageWidth}% - 1em)` : undefined }}>
+                    <div className={styles.loadingSpinner}>
+                        <FiLoader className={styles.spinningIcon} />
+                    </div>
+                    <p className={styles.loadingText}>Генерируем изображение...</p>
+                </div>
+            ) : (
+                <Image
+                    imageUrl={item.imageUrl || ''}
+                    onClearImage={() => handleImageChange(item.id, '', false)}
+                    onUpdateLink={(link, uploaded) => handleImageChange(item.id, link, uploaded)}
+                    isWidthRightMenu={true}
+                    className={`${styles.image} ${imageShape ? styles[imageShape] : ''}`}
+                    style={{
+                        backgroundImage: item.imageUrl ? `url(${item.imageUrl})` : undefined,
+                        width: imageWidth ? `calc(${imageWidth}% - 1em)` : undefined,
+                    }}
+                    elementId={elementId}
+                    presentationId={presentationId}
+                    slideId={slideId}
+                    layoutId={layoutId}
+                    itemId={item.id}
+                />
+            )}
             <div className={styles.content}>
                 <div className={styles.text}>
                     <Tiptap

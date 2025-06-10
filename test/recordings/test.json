@@ -1,37 +1,37 @@
 {
   "recordings": [
     {
-      "prompt": "девочка в поле",
+      "prompt": "Земля с пятью вращающимися вокруг нее звездами, стиль: Фотография",
       "response": {
         "type": "image",
         "data": {
-          "imageUrl": "/uploads/10344d84-e9f2-4a3a-bd36-00246ae0d492.jpg",
-          "imageId": "10344d84-e9f2-4a3a-bd36-00246ae0d492"
+          "imageUrl": "/uploads/bd608c68-83af-4a9b-b18a-9fb65f83a35d.jpg",
+          "imageId": "bd608c68-83af-4a9b-b18a-9fb65f83a35d"
         }
       },
-      "timestamp": 1749551677982
+      "timestamp": 1749554952735
     },
     {
-      "prompt": "девочка в поле",
+      "prompt": "Земля с пятью вращающимися вокруг нее звездами, стиль: Фотография",
       "response": {
         "type": "image",
         "data": {
-          "imageUrl": "/uploads/d8ae9c5e-1951-4724-9eed-8374b9a5977c.jpg",
-          "imageId": "d8ae9c5e-1951-4724-9eed-8374b9a5977c"
+          "imageUrl": "/uploads/7f358b0a-4431-4b54-a368-d6c7cde41401.jpg",
+          "imageId": "7f358b0a-4431-4b54-a368-d6c7cde41401"
         }
       },
-      "timestamp": 1749551712143
+      "timestamp": 1749554967277
     },
     {
-      "prompt": "девочка в поле",
+      "prompt": "Земля с пятью вращающимися вокруг нее звездами, стиль: Фотография",
       "response": {
         "type": "image",
         "data": {
-          "imageUrl": "/uploads/7b24bc68-cdf9-4daa-9a76-3f251d4d04fc.jpg",
-          "imageId": "7b24bc68-cdf9-4daa-9a76-3f251d4d04fc"
+          "imageUrl": "/uploads/56ac9ebf-5bca-4ac9-8ec3-3a6a38af50a9.jpg",
+          "imageId": "56ac9ebf-5bca-4ac9-8ec3-3a6a38af50a9"
         }
       },
-      "timestamp": 1749551727835
+      "timestamp": 1749554993136
     }
   ],
   "version": "1.0.0"

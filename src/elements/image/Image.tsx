@@ -2,10 +2,12 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 'use client';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { FiLoader } from 'react-icons/fi';
 import { ImageElement } from '@/types';
 import { default as ImageComponent } from 'next/image';
 import { usePresentationStore } from '@/store/presentationStore';
 import { useMenuStore } from '@/store/menuStore';
+import { useAIImageStore } from '@/store/aiImageStore';
 import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlaceholder';
 
 import styles from './Image.module.css';
@@ -36,6 +38,10 @@ const Image: React.FC<ImageProps> = ({
     const element = usePresentationStore(state =>
         state.getElement(presentationId, slideId, layoutId, elementId)
     ) as ImageElement;
+
+    // Check if element is generating (from AI store)   
+    const aiImageStore = useAIImageStore();
+    const isGenerating = aiImageStore.isGenerating(elementId);
     const [error, setError] = useState<string | null>(null);
     const [isSelected, setIsSelected] = useState(false);
     const [resizing, setResizing] = useState(false);
@@ -344,7 +350,17 @@ const Image: React.FC<ImageProps> = ({
             >
                 {!isReadOnly && error && <div className={styles.error}>{error}</div>}
 
-                {!isReadOnly && (!element.src || !isValidUrl(element.src)) && (
+                {/* AI Generation Loading State */}
+                {isGenerating && (
+                    <div className={styles.loadingContainer}>
+                        <div className={styles.loadingSpinner}>
+                            <FiLoader className={styles.spinningIcon} />
+                        </div>
+                        <p className={styles.loadingText}>Генерируем изображение...</p>
+                    </div>
+                )}
+
+                {!isGenerating && !isReadOnly && (!element.src || !isValidUrl(element.src)) && (
                     <ImagePlaceholder
                         imageUrl={element.src || ''}
                         onClearImage={() => {
@@ -360,7 +376,7 @@ const Image: React.FC<ImageProps> = ({
                     />
                 )}
 
-                {element.src && isValidUrl(element.src) && !error && (
+                {!isGenerating && element.src && isValidUrl(element.src) && !error && (
                     <div className={`${styles.imageWrapper}`}>
                         {!hasMultipleCells && leftTextWidth > 0 && (
                             <div

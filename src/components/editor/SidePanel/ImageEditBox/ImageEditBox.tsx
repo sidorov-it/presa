@@ -1,6 +1,7 @@
+/* eslint-disable prettier/prettier */
 'use client';
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { FiUpload, FiLoader, FiZap } from 'react-icons/fi';
 
@@ -10,11 +11,18 @@ import { useMenuStore } from '@/store/menuStore';
 import { Select } from '@/components/ui/Select';
 import { Popover } from '@/components/ui/Popover/Popover';
 import { Textarea } from '@/components/ui/Textarea';
+import { useAIImageStore, GeneratedImage } from '@/store/aiImageStore';
+import { usePresentationStore } from '@/store/presentationStore';
 
 interface ImageEditBoxProps {
     imageUrl: string;
     onClearImage: () => void;
     onUpdateLink: (link: string, uploaded: boolean) => void;
+    elementId?: string;
+    presentationId?: string;
+    slideId?: string;
+    layoutId?: string;
+    itemId?: string; // For SmartLayout items
 }
 
 type ImageMode = 'upload' | 'ai';
@@ -37,11 +45,6 @@ type StyleOption =
     | 'pixel-art'
     | 'texture';
 
-interface GeneratedImage {
-    url: string;
-    id: string;
-}
-
 const styleOptions = [
     { value: 'none', label: 'Без стиля', prompt: 'Стиль: none' },
     { value: 'custom', label: 'Пользовательский', prompt: 'Стиль: custom' },
@@ -62,19 +65,73 @@ const styleOptions = [
     { value: 'texture', label: 'Текстура', prompt: 'Стиль: texture' },
 ];
 
-const ImageEditBox: React.FC<ImageEditBoxProps> = ({ imageUrl, onClearImage, onUpdateLink }) => {
+const ImageEditBox: React.FC<ImageEditBoxProps> = ({
+    imageUrl,
+    onClearImage,
+    onUpdateLink,
+    elementId,
+    presentationId,
+    slideId,
+    layoutId,
+    itemId,
+}) => {
     const [imageMode, setImageMode] = useState<ImageMode>('upload');
     const [imageUrlLocal, setImageUrlLocal] = useState(imageUrl);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-
-    // AI generation states
-    const [prompt, setPrompt] = useState('');
-    const [selectedStyle, setSelectedStyle] = useState<StyleOption>('none');
-    const [customStyle, setCustomStyle] = useState('');
-    const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
-    const [isGenerating, setIsGenerating] = useState(false);
     const [isStylePopoverOpen, setIsStylePopoverOpen] = useState(false);
+
+    // AI Image Store
+    const aiImageStore = useAIImageStore();
+
+    // Create unique identifier for AI store (element or item)
+    const aiStoreId = itemId ? `${elementId}-${itemId}` : elementId;
+
+    // Get current element data
+    const currentElement = usePresentationStore(state => state.getElement(presentationId!, slideId!, layoutId!, elementId!))
+
+    // Get current item data for SmartLayout
+    const currentItem =
+        itemId && currentElement ? (currentElement as any).items?.find((item: any) => item.id === itemId) : null;
+
+    // AI generation states from store
+    const isGenerating = aiStoreId ? aiImageStore.isGenerating(aiStoreId) : false;
+    const generatedImages = aiStoreId ? aiImageStore.getGeneratedImages(aiStoreId) : [];
+    const prompt = aiStoreId ? aiImageStore.getPrompt(aiStoreId) : '';
+    const selectedStyle = aiStoreId ? (aiImageStore.getStyle(aiStoreId) as StyleOption) : 'none';
+    const customStyle = aiStoreId ? aiImageStore.getCustomStyle(aiStoreId) : '';
+    const aiError = aiStoreId ? aiImageStore.getError(aiStoreId) : null;
+
+    // Initialize state from element data
+    useEffect(() => {
+        if (aiStoreId) {
+            const dataSource = currentItem || currentElement;
+
+            // Set AI mode if element/item has AI generation data
+            if ((dataSource?.aiPrompt || dataSource?.generatedImages?.length) && imageMode !== 'ai') {
+                setImageMode('ai');
+            }
+            // Initialize AI store with element/item data
+            if (dataSource?.aiPrompt) {
+                aiImageStore.setPrompt(aiStoreId, dataSource.aiPrompt);
+            }
+            if (dataSource?.aiStyle) {
+                aiImageStore.setStyle(aiStoreId, dataSource.aiStyle);
+            }
+            if (dataSource?.aiCustomStyle) {
+                aiImageStore.setCustomStyle(aiStoreId, dataSource.aiCustomStyle);
+            }
+            if (dataSource?.generatedImages?.length) {
+                const images: GeneratedImage[] = dataSource.generatedImages.map((url: string, index: number) => ({
+                    id: `${aiStoreId}-${index}`,
+                    url,
+                    alt: `Generated image ${index + 1}`,
+                }));
+                aiImageStore.setGeneratedImages(aiStoreId, images);
+            }
+            // Не инициализируем isGenerating из элемента - это только клиентское состояние
+        }
+    }, [currentElement, currentItem, aiStoreId, imageMode]);
 
     const onDrop = useCallback(
         (acceptedFiles: File[]) => {
@@ -170,17 +227,23 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({ imageUrl, onClearImage, onU
         onClearImage();
         setImageUrlLocal('');
         setError('');
-        setGeneratedImages([]);
-    }, [onClearImage]);
+        if (aiStoreId) {
+            aiImageStore.setGeneratedImages(aiStoreId, []);
+        }
+    }, [onClearImage, aiStoreId, aiImageStore]);
 
     const handleGenerateImages = async () => {
-        if (!prompt.trim()) {
+        if (!aiStoreId || !prompt.trim()) {
             setError('Введите описание изображения');
             return;
         }
 
-        setIsGenerating(true);
+        // Set generating state in store
+        aiImageStore.setGenerating(aiStoreId, true);
+        aiImageStore.clearError(aiStoreId);
         setError('');
+
+        // Не обновляем элемент с isGenerating в БД - это только клиентское состояние
 
         try {
             let fullPrompt = prompt.trim();
@@ -214,22 +277,140 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({ imageUrl, onClearImage, onU
             }
 
             const data = await response.json();
-            setGeneratedImages(data.images);
+            const images: GeneratedImage[] = data.images.map((image: {
+                url: string;
+            }, index: number) => ({
+                id: `${aiStoreId}-${index}`,
+                url: image.url,
+            }));
+
+            // Store generated images in AI store
+            aiImageStore.setGeneratedImages(aiStoreId, images);
+
+            // Select first image automatically and update element/item
+            if (images.length > 0 && presentationId && slideId && layoutId && elementId) {
+                const firstImage = images[0];
+                aiImageStore.setSelectedImage(aiStoreId, firstImage.id);
+
+                                if (itemId) {
+                    // Update SmartLayout item
+                    const element = usePresentationStore
+                        .getState()
+                        .getElement(presentationId, slideId, layoutId, elementId);
+                    if (element && (element as any).items) {
+                        const updatedItems = (element as any).items.map((item: any) =>
+                            item.id === itemId
+                                ? {
+                                      ...item,
+                                      imageUrl: firstImage.url,
+                                      generatedImages: images.map(img => img.url),
+                                      aiPrompt: prompt,
+                                      aiStyle: selectedStyle,
+                                      aiCustomStyle: customStyle,
+                                      uploaded: true,
+                                  }
+                                : item
+                        );
+                        usePresentationStore.getState().updateElement({
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            elementId,
+                            data: { items: updatedItems },
+                        });
+                    }
+                } else {
+                    // Update regular ImageElement
+                    usePresentationStore.getState().updateElement({
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        elementId,
+                        data: {
+                            src: firstImage.url,
+                            generatedImages: images.map(img => img.url),
+                            aiPrompt: prompt,
+                            aiStyle: selectedStyle,
+                            aiCustomStyle: customStyle,
+                            uploaded: true,
+                        },
+                    });
+                }
+
+                // Update local state and callback
+                setImageUrlLocal(firstImage.url);
+                onUpdateLink(firstImage.url, true);
+            }
         } catch (error) {
-            setError(error instanceof Error ? error.message : 'Не удалось сгенерировать изображения');
+            const errorMessage = error instanceof Error ? error.message : 'Не удалось сгенерировать изображения';
+            aiImageStore.setError(aiStoreId, errorMessage);
+            setError(errorMessage);
+
+            // Не обновляем элемент с isGenerating: false в БД при ошибке
         } finally {
-            setIsGenerating(false);
+            aiImageStore.setGenerating(aiStoreId, false);
         }
     };
 
     const handleSelectGeneratedImage = (image: GeneratedImage) => {
+        if (aiStoreId) {
+            aiImageStore.setSelectedImage(aiStoreId, image.id);
+        }
+
+        // Update element/item with selected image
+        if (elementId && presentationId && slideId && layoutId) {
+            if (itemId) {
+                // Update SmartLayout item
+                const element = usePresentationStore
+                    .getState()
+                    .getElement(presentationId, slideId, layoutId, elementId);
+                if (element && (element as any).items) {
+                    const updatedItems = (element as any).items.map((item: any) =>
+                        item.id === itemId ? { ...item, imageUrl: image.url } : item
+                    );
+                    usePresentationStore.getState().updateElement({
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        elementId,
+                        data: { items: updatedItems },
+                    });
+                }
+            } else {
+                // Update regular ImageElement
+                usePresentationStore.getState().updateElement({
+                    presentationId,
+                    slideId,
+                    layoutId,
+                    elementId,
+                    data: {
+                        src: image.url,
+                    },
+                });
+            }
+        }
+
         onUpdateLink(image.url, true);
         setImageUrlLocal(image.url);
     };
 
     const handleStyleOptionClick = (optionValue: StyleOption) => {
-        setSelectedStyle(optionValue);
+        if (aiStoreId) {
+            aiImageStore.setStyle(aiStoreId, optionValue);
+        }
         setIsStylePopoverOpen(false);
+    };
+
+    const handlePromptChange = (value: string) => {
+        if (aiStoreId) {
+            aiImageStore.setPrompt(aiStoreId, value);
+        }
+    };
+
+    const handleCustomStyleChange = (value: string) => {
+        if (aiStoreId) {
+            aiImageStore.setCustomStyle(aiStoreId, value);
+        }
     };
 
     const handleImageClick = (image: GeneratedImage) => {
@@ -250,10 +431,10 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({ imageUrl, onClearImage, onU
                     key={option.value}
                     className={`${styles.styleOption} ${selectedStyle === option.value ? styles.styleOptionSelected : ''}`}
                     onClick={() => {
-                        setCustomStyle(option.prompt);
-                        // setPrompt(option.prompt);
+                        handleCustomStyleChange(option.prompt);
                         handleStyleOptionClick(option.value as StyleOption);
                     }}
+                    disabled={isGenerating}
                 >
                     {option.label}
                 </button>
@@ -347,10 +528,11 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({ imageUrl, onClearImage, onU
                 <Textarea
                     id="aiPrompt"
                     value={prompt}
-                    onChange={e => setPrompt(e.target.value)}
+                    onChange={e => handlePromptChange(e.target.value)}
                     placeholder="Опишите, какое изображение вы хотите создать..."
                     rows={3}
                     className={styles.promptTextarea}
+                    disabled={isGenerating}
                 />
             </div>
 
@@ -379,10 +561,11 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({ imageUrl, onClearImage, onU
                     <Textarea
                         id="customStyle"
                         value={customStyle}
-                        onChange={e => setCustomStyle(e.target.value)}
+                        onChange={e => handleCustomStyleChange(e.target.value)}
                         placeholder="Опишите желаемый стиль..."
                         rows={2}
                         className={styles.customStyleTextarea}
+                        disabled={isGenerating}
                     />
                 </div>
             )}
@@ -402,7 +585,7 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({ imageUrl, onClearImage, onU
                 </Button>
             </div>
 
-            {error && <div className={styles.error}>{error}</div>}
+            {(error || aiError) && <div className={styles.error}>{error || aiError}</div>}
         </>
     );
 

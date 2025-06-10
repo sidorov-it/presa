@@ -13,6 +13,12 @@ export type ImageProps = {
     isWidthRightMenu?: boolean;
     className?: string;
     style?: React.CSSProperties;
+    // Element context for AI generation (optional)
+    elementId?: string;
+    presentationId?: string;
+    slideId?: string;
+    layoutId?: string;
+    itemId?: string; // For SmartLayout items
 } & React.HTMLAttributes<HTMLDivElement>;
 
 export const Image: React.FC<ImageProps> = ({
@@ -23,6 +29,11 @@ export const Image: React.FC<ImageProps> = ({
     isWidthRightMenu = false,
     className = '',
     style = {},
+    elementId,
+    presentationId,
+    slideId,
+    layoutId,
+    itemId,
     ...rest
 }) => {
     const handleImageClick = () => {
@@ -31,6 +42,11 @@ export const Image: React.FC<ImageProps> = ({
                 imageUrl,
                 onClearImage,
                 onUpdateLink,
+                elementId,
+                presentationId,
+                slideId,
+                layoutId,
+                itemId,
             });
         }
     };

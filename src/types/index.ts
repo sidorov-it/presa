@@ -115,6 +115,12 @@ export interface SmartLayoutItem {
     iconUrl?: string;
     stats?: { value: string; label: string };
     metadata?: Record<string, unknown>;
+    // AI generation fields for images (isGenerating хранится только на клиенте)
+    generatedImages?: string[]; // Array of generated image URLs saved on server
+    aiPrompt?: string;
+    aiStyle?: string;
+    aiCustomStyle?: string;
+    uploaded?: boolean;
 }
 
 export type ImageShape = 'square' | 'landscape' | 'portrait' | 'circle';
@@ -143,6 +149,11 @@ export interface ImageElement extends BaseElement {
     alignment?: 'left' | 'center' | 'right';
     width?: number;
     uploaded?: boolean;
+    // AI generation fields (isGenerating хранится только на клиенте)
+    generatedImages?: string[]; // Array of generated image URLs saved on server
+    aiPrompt?: string;
+    aiStyle?: string;
+    aiCustomStyle?: string;
 }
 
 // Элемент диаграммы
