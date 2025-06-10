@@ -89,6 +89,11 @@ const ScopedThemeStylesApplier = forwardRef<HTMLDivElement, ScopedThemeStylesApp
                 container.style.setProperty('--presentation-text-color', theme.colors.textColor);
                 container.style.setProperty('--presentation-slide-background', theme.colors.slideBackground);
 
+
+                if (backgroundSettings?.backgroundColor) {
+
+
+
                 // Handle page background
                 if (theme.colors.pageBackground) {
                     if (theme.colors.pageBackground.color) {

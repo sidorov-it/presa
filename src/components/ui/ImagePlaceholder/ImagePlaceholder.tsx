@@ -347,16 +347,6 @@ export const ImagePlaceholder = ({
                     </div>
                 )}
             </div>
-
-            {/* {isOpenImageEditBox &&
-                createPortal(
-                    <ImageEditBox
-                        imageUrl={imageUrl}
-                        onClearImage={onClearImage}
-                        onUpdateLink={(link: string, uploaded: boolean) => onUpdateLink(link, uploaded)}
-                    />,
-                    document.body
-                )} */}
         </>
     );
 };

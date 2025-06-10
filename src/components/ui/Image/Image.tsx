@@ -25,15 +25,12 @@ export const Image: React.FC<ImageProps> = ({
     style = {},
     ...rest
 }) => {
-    // const [isOpenImageEditBox, setIsOpenImageEditBox] = useState(false);
     const handleImageClick = () => {
         if (isWidthRightMenu) {
-            // setIsOpenImageEditBox(true);
             useMenuStore.getState().openSideMenu('image-edit', {
                 imageUrl,
                 onClearImage,
                 onUpdateLink,
-                // onCloseMenu: () => setIsOpenImageEditBox(false),
             });
         }
     };

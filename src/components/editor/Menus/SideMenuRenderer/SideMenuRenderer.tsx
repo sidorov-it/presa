@@ -6,6 +6,10 @@ import { SideMenus } from '../menusComponents';
 
 import styles from './SideMenuRenderer.module.css';
 
+const checkPopoverChildren = (element: HTMLElement) => {
+    return element.closest('[data-scope="popover"]');
+};
+
 const SideMenuRenderer: React.FC = () => {
     const { sideMenuState } = useMenuStore();
 
@@ -13,9 +17,14 @@ const SideMenuRenderer: React.FC = () => {
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+            if (
+                menuRef.current &&
+                !menuRef.current.contains(event.target as Node) &&
+                // варианты select рендерятся в портале как дочерние элементы body, поэтому нужно исключить их из закрытия меню
+                !(event.target as HTMLElement)?.id?.startsWith('select:') &&
+                !checkPopoverChildren(event.target as HTMLElement)
+            ) {
                 useMenuStore.getState().closeSideMenu();
-
                 sideMenuState.sideMenuData.onCloseMenu?.();
             }
         };
