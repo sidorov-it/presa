@@ -23,6 +23,32 @@
     z-index: 10;
 }
 
+.headerContent {
+    max-width: 80rem;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.headerLeft {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.headerRight {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
 .titleSection {
     display: flex;
     flex-direction: column;
@@ -55,6 +81,11 @@
     overflow-y: auto;
     background-color: transparent;
     background-image: none;
+}
+
+.main {
+    flex-grow: 1;
+    width: 100%;
 }
 
 /* Стили для компонента PresentationViewer */
@@ -114,6 +145,21 @@
 .errorText {
     font-size: 1rem;
     color: #6b7280;
+}
+
+.footer {
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    padding: 0.5rem 1rem;
+    color: var(--color-text-light);
+}
+
+.footerContent {
+    max-width: 80rem;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--color-text-light);
 }
 
 @keyframes spin {
