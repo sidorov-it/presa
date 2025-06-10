@@ -12,6 +12,10 @@
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 300ms;
 
+    &:hover:not(:disabled) {
+        background-color: #f3f4f6;
+    }
+
     &:disabled {
         cursor: not-allowed;
         opacity: 0.5;
@@ -24,14 +28,23 @@
 }
 
 .redoButton {
-    padding: 0.5rem; 
-    border-radius: 0.375rem; 
+    padding: 0.5rem;
+    border-radius: 0.375rem;
     transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 300ms; 
+    transition-duration: 300ms;
+
+    &:hover:not(:disabled) {
+        background-color: #f3f4f6;
+    }
 
     &:disabled {
         cursor: not-allowed;
         opacity: 0.5;
     }
+}
+
+:global(.dark) .undoButton:hover:not(:disabled),
+:global(.dark) .redoButton:hover:not(:disabled) {
+    background-color: var(--color-background);
 }

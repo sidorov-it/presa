@@ -95,6 +95,10 @@
     transition: all 150ms ease;
 }
 
+.themeButton:hover {
+    background-color: #f3f4f6;
+}
+
 .viewButton {
     display: flex;
     align-items: center;
@@ -125,7 +129,7 @@
 }
 
 .settingsButton:hover {
-    background-color: var(--color-background);
+    background-color: #f3f4f6;
 }
 
 .settingsButton:focus {
@@ -149,7 +153,7 @@
 }
 
 .userInfo:hover {
-    background-color: var(--color-background);
+    background-color: #f3f4f6;
 }
 
 .userIcon {
