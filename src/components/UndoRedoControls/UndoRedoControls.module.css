@@ -12,9 +12,9 @@
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 300ms;
 
-    &:hover:not(:disabled) {
+    /* &:hover:not(:disabled) {
         background-color: #f3f4f6;
-    }
+    } */
 
     &:disabled {
         cursor: not-allowed;
@@ -34,9 +34,9 @@
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 300ms;
 
-    &:hover:not(:disabled) {
+    /* &:hover:not(:disabled) {
         background-color: #f3f4f6;
-    }
+    } */
 
     &:disabled {
         cursor: not-allowed;
@@ -44,7 +44,7 @@
     }
 }
 
-:global(.dark) .undoButton:hover:not(:disabled),
+/* :global(.dark) .undoButton:hover:not(:disabled),
 :global(.dark) .redoButton:hover:not(:disabled) {
     background-color: var(--color-background);
-}
+} */

@@ -283,7 +283,7 @@ export default function PresentationEditorPage() {
 
                                 <button
                                     onClick={handleViewPresentation}
-                                    className={styles.viewButton}
+                                    className={styles.themeButton}
                                     aria-label="View presentation"
                                 >
                                     <FaEye size={16} />
