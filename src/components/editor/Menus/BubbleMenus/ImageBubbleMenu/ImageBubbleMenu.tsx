@@ -40,6 +40,10 @@ const ImageBubbleMenu: React.FC<ImageBubbleMenuProps> = ({ presentationId, slide
         useMenuStore.getState().closeMenu();
         useMenuStore.getState().openSideMenu('image-edit', {
             imageUrl: element.src,
+            elementId,
+            presentationId,
+            slideId,
+            layoutId,
             onClearImage: () => {
                 updateElement({
                     presentationId,
