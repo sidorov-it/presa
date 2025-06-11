@@ -27,7 +27,65 @@ export const TOKEN_COSTS = {
 } as const;
 ```
 
+## Middleware для токенов
+
+После рефакторинга все AI routes используют унифицированный middleware `withTokenDeduction`:
+
+### Принципы работы middleware
+
+1. **Серверная логика** - вся логика расчета токенов находится на сервере
+2. **Безопасность** - фронтенд не может влиять на количество списываемых токенов
+3. **Единообразие** - все AI операции используют одинаковый подход
+4. **Надежность** - токены списываются только после успешного выполнения операции
+
+### Пример использования
+
+```typescript
+export async function POST(request: NextRequest) {
+    return withTokenDeduction(
+        request,
+        {
+            operation: 'GENERATE_SLIDE',
+            description: 'Generate presentation slides',
+            calculateTokens: TokenCalculators.generateSlides,
+            metadata: MetadataExtractors.presentation,
+        },
+        async (session, requestData) => {
+            // Бизнес-логика операции
+            const result = await performAIOperation(requestData);
+            return result;
+        }
+    );
+}
+```
+
+### Серверные калькуляторы токенов
+
+```typescript
+export const TokenCalculators = {
+    generateSlides: (requestData: any): number => {
+        const { topics } = requestData;
+        if (!topics || !Array.isArray(topics)) {
+            throw new Error('Invalid topics data for token calculation');
+        }
+        return topics.length * TOKEN_COSTS.GENERATE_SLIDE;
+    },
+    generateSingleSlide: () => TOKEN_COSTS.GENERATE_SLIDE,
+    generateText: () => TOKEN_COSTS.GENERATE_TEXT,
+    improveContent: () => TOKEN_COSTS.GENERATE_TEXT,
+    generateImage: () => TOKEN_COSTS.GENERATE_IMAGE,
+    generateTheme: () => TOKEN_COSTS.GENERATE_THEME,
+};
+```
+
 ## API Endpoints
+
+### Отрефакторенные AI routes
+
+- `POST /api/ai/presentation` - генерация презентации (использует middleware)
+- `POST /api/ai/slide` - генерация отдельного слайда (использует middleware)
+- `POST /api/ai/topics` - генерация топиков презентации (использует middleware)
+- `POST /api/ai/improve` - улучшение содержимого слайда (использует middleware)
 
 ### Токены пользователя
 
@@ -37,6 +95,32 @@ export const TOKEN_COSTS = {
 ### Пакеты токенов
 
 - `GET /api/tokens/packages` - доступные пакеты для покупки
+
+## Преимущества после рефакторинга
+
+1. **Безопасность** - логика токенов полностью на сервере
+2. **DRY принцип** - отсутствие дублирования кода
+3. **Консистентность** - единообразное поведение всех AI routes
+4. **Простота поддержки** - изменения в логике токенов в одном месте
+5. **Надежность** - автоматическое отслеживание использования токенов
+
+## Мониторинг
+
+Все операции с токенами автоматически записываются в `TokenTransaction` с метаданными:
+
+- Тип операции
+- Количество использованных токенов
+- Описание операции
+- Контекстные данные (ID презентации, слайда и т.д.)
+
+## Обработка ошибок
+
+Middleware автоматически обрабатывает:
+
+- Неавторизованные запросы (401)
+- Недостаток токенов (402)
+- Некорректные данные (400)
+- Внутренние ошибки (500)
 
 ## Использование
 
@@ -116,23 +200,6 @@ const { balance, loading, packages, purchaseTokens } = useTokens();
 - `var(--chakra-radii-lg)`
 - `var(--chakra-shadows-sm)`
 
-## Middleware
-
-### Token Guard
-
-Middleware для автоматической проверки токенов:
-
-```typescript
-import { withTokenGuard } from '@/middleware/tokenGuard';
-
-export const POST = withTokenGuard(
-  { operation: 'GENERATE_SLIDE' },
-  async (request) => {
-    // Ваша логика здесь
-  }
-);
-```
-
 ## Инициализация
 
 ### Миграция базы данных
@@ -164,10 +231,6 @@ const purchaseTokens = useCallback(async (packageId: string) => {
   window.location.href = session.url;
 }, []);
 ```
-
-## Мониторинг
-
-Все операции с токенами логируются в таблице `TokenTransaction` для аудита и аналитики.
 
 ## Безопасность
 

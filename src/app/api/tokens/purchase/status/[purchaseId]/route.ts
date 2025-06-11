@@ -1,3 +1,5 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable indent */
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
@@ -48,7 +50,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
                         where: { id: purchase.id },
                         data: {
                             metadata: {
-                                ...(purchase.metadata as any || {}),
+                                ...((purchase.metadata as any) || {}),
                                 yookassaStatus: paymentInfo.status,
                                 lastChecked: new Date().toISOString(),
                             },
@@ -78,19 +80,18 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
                     tokens: purchase.package.tokens,
                 },
             },
-            payment: paymentInfo
-                ? {
-                      id: paymentInfo.id,
-                      status: paymentInfo.status,
-                      amount: paymentInfo.amount,
-                      createdAt: paymentInfo.created_at,
-                      confirmationUrl: paymentInfo.confirmation?.confirmation_url,
-                  }
+            payment: paymentInfo ?
+                {
+                    id: paymentInfo.id,
+                    status: paymentInfo.status,
+                    amount: paymentInfo.amount,
+                    createdAt: paymentInfo.created_at,
+                    confirmationUrl: paymentInfo.confirmation?.confirmation_url,
+                }
                 : null,
         };
 
         return NextResponse.json(response);
-
     } catch (error) {
         console.error('Error checking purchase status:', error);
         return NextResponse.json(
@@ -101,4 +102,4 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
             { status: 500 }
         );
     }
-} 
+}
