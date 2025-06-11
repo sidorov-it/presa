@@ -3,31 +3,19 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
-import { useThemeStore } from '@/store/themeStore';
-import { Heading } from '@/components/ui/heading';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card/Card';
-import { Button } from '@/components/ui/Button';
-import { Plus } from 'lucide-react';
 import SlidePreview from '../dashboard/components/SlidePreview';
-import {
-    PresentationTemplates,
-    PresentationTemplateKeys,
-} from '@/presentationTemplates';
+import { PresentationTemplates, PresentationTemplateKeys } from '@/presentationTemplates';
 import styles from './page.module.css';
+import { THEME_TEMPLATES } from '@/themes/themeTemplates';
+import Portal from '@/components/Portal';
 
-const TEMPLATE_KEYS = Object.keys(
-    PresentationTemplates
-) as PresentationTemplateKeys[];
-
-// export const metadata = {
-//     title: "Templates",
-//     description: "Manage your presentation templates"
-// }
+const TEMPLATE_KEYS = Object.keys(PresentationTemplates) as PresentationTemplateKeys[];
 
 const TemplatesPage = () => {
     const router = useRouter();
     const { createPresentation, updatePresentation } = usePresentationStore();
-    const defaultTheme = useThemeStore(state => state.getDefaultTheme());
+
     const [isLoading, setIsLoading] = useState(false);
 
     const handleTemplateSelect = async (templateId: PresentationTemplateKeys) => {
@@ -42,46 +30,43 @@ const TemplatesPage = () => {
                 slides: template.slides,
             });
             router.push(`/docs/${presentationId}`);
-        } finally {
+        } catch (error) {
+            console.error(error);
             setIsLoading(false);
         }
-    };
-
-    const handleCreateTemplate = () => {
-        // TODO: Implement template creation
     };
 
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <Heading title="Templates" description="Manage your presentation templates" />
-                <Button onClick={handleCreateTemplate} className={styles.addButton}>
-                    <Plus className={styles.buttonIcon} />
-                    New Template
-                </Button>
+                <h1 className={styles.title}>Шаблоны</h1>
             </div>
 
             {isLoading ? (
-                <div className={styles.loadingContainer}>
-                    <div className={styles.spinner}></div>
-                </div>
+                <Portal>
+                    <div className={styles.loadingContainer}>
+                        <div className={styles.spinner}></div>
+                    </div>
+                </Portal>
             ) : (
                 <div className={styles.templatesGrid}>
                     {TEMPLATE_KEYS.map(key => {
                         const template = PresentationTemplates[key];
+                        const theme = THEME_TEMPLATES.find(t => t.id === template.themeId);
+
+                        if (!theme) {
+                            return null;
+                        }
                         return (
-                            <Card
-                                key={key}
-                                className={styles.templateCard}
-                                onClick={() => handleTemplateSelect(key)}
-                            >
+                            <Card key={key} className={styles.templateCard} onClick={() => handleTemplateSelect(key)}>
                                 <CardHeader>
                                     <CardTitle>{template.title}</CardTitle>
                                     <CardDescription>{template.description}</CardDescription>
                                 </CardHeader>
                                 <CardContent>
+                                    <div className={styles.cap} />
                                     <div className={styles.templatePreview}>
-                                        <SlidePreview presentation={template} theme={defaultTheme} />
+                                        <SlidePreview presentation={template} theme={theme} />
                                     </div>
                                 </CardContent>
                             </Card>

@@ -1,8 +1,9 @@
 import { generatePresentationTemplate, PresentationDescriptor } from './generator';
 
 const personalPortfolioDescriptor: PresentationDescriptor = {
-    title: 'Personal Portfolio',
-    description: 'A simple portfolio to showcase your work and skills.',
+    title: 'Портфолио',
+    description: 'Простое портфолио для демонстрации ваших работ и навыков.',
+    themeId: 'atacama',
     slides: [
         {
             title: 'Welcome',
@@ -41,8 +42,9 @@ const personalPortfolioDescriptor: PresentationDescriptor = {
 };
 
 const salesDeckDescriptor: PresentationDescriptor = {
-    title: 'Sales Deck',
-    description: 'Template for presenting your product to potential clients.',
+    title: 'Презентация продаж',
+    themeId: 'ocean-breeze',
+    description: 'Шаблон для презентации вашего продукта потенциальным клиентам.',
     slides: [
         {
             title: 'Overview',
@@ -81,8 +83,9 @@ const salesDeckDescriptor: PresentationDescriptor = {
 };
 
 const salesPresentationDescriptor: PresentationDescriptor = {
-    title: 'Sales Presentation',
-    description: 'General sales presentation template.',
+    title: 'Презентация продаж',
+    description: 'Общая презентация продаж.',
+    themeId: 'forest-whisper',
     slides: [
         {
             title: 'Introduction',

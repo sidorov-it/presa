@@ -30,6 +30,7 @@ export interface SlideDescriptor {
 
 export interface PresentationDescriptor {
     title: string;
+    themeId: string;
     description?: string;
     slides: SlideDescriptor[];
 }
@@ -117,10 +118,8 @@ export function generatePresentationTemplate(desc: PresentationDescriptor): IPre
     const slides: Slide[] = desc.slides.map(slideDesc => {
         const slideId = generateId();
         const layouts: Layout[] = slideDesc.layouts.map(layoutDesc => {
-            const columnsCount = layoutDesc.columnsCount ?? Math.max(
-                1,
-                ...layoutDesc.elements.map((el, idx) => (el.column ?? idx) + 1)
-            );
+            const columnsCount =
+                layoutDesc.columnsCount ?? Math.max(1, ...layoutDesc.elements.map((el, idx) => (el.column ?? idx) + 1));
 
             const layout: Layout = {
                 id: generateId(),
@@ -167,6 +166,7 @@ export function generatePresentationTemplate(desc: PresentationDescriptor): IPre
         title: desc.title,
         description: desc.description,
         slides,
+        themeId: desc.themeId,
         createdAt: now,
         updatedAt: now,
     };
