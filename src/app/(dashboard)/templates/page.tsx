@@ -3,57 +3,21 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
+import { useThemeStore } from '@/store/themeStore';
 import { Heading } from '@/components/ui/heading';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card/Card';
 import { Button } from '@/components/ui/Button';
 import { Plus } from 'lucide-react';
+import SlidePreview from '../dashboard/components/SlidePreview';
+import {
+    PresentationTemplates,
+    PresentationTemplateKeys,
+} from '@/presentationTemplates';
 import styles from './page.module.css';
 
-// Sample template data
-const TEMPLATES = [
-    {
-        id: 'business-pitch',
-        title: 'Business Pitch',
-        description: 'Perfect for pitching your business idea',
-        image: '/templates/business-pitch.jpg',
-        slides: 10,
-    },
-    {
-        id: 'education',
-        title: 'Educational Presentation',
-        description: 'Great for teaching and educational content',
-        image: '/templates/education.jpg',
-        slides: 8,
-    },
-    {
-        id: 'portfolio',
-        title: 'Portfolio Showcase',
-        description: 'Showcase your work and achievements',
-        image: '/templates/portfolio.jpg',
-        slides: 12,
-    },
-    {
-        id: 'marketing',
-        title: 'Marketing Plan',
-        description: 'Present your marketing strategy',
-        image: '/templates/marketing.jpg',
-        slides: 9,
-    },
-    {
-        id: 'project-proposal',
-        title: 'Project Proposal',
-        description: 'Propose your project with this template',
-        image: '/templates/project-proposal.jpg',
-        slides: 7,
-    },
-    {
-        id: 'annual-report',
-        title: 'Annual Report',
-        description: 'Present annual financial and business results',
-        image: '/templates/annual-report.jpg',
-        slides: 15,
-    },
-];
+const TEMPLATE_KEYS = Object.keys(
+    PresentationTemplates
+) as PresentationTemplateKeys[];
 
 // export const metadata = {
 //     title: "Templates",
@@ -62,21 +26,25 @@ const TEMPLATES = [
 
 const TemplatesPage = () => {
     const router = useRouter();
-    const { createPresentation } = usePresentationStore();
+    const { createPresentation, updatePresentation } = usePresentationStore();
+    const defaultTheme = useThemeStore(state => state.getDefaultTheme());
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleTemplateSelect = (templateId: string) => {
+    const handleTemplateSelect = async (templateId: PresentationTemplateKeys) => {
         setIsLoading(true);
-        // Create a new presentation based on the template
-        // In a real app, you would fetch the template details from an API
-        const template = TEMPLATES.find(t => t.id === templateId);
+        const template = PresentationTemplates[templateId];
 
-        if (template) {
-            const presentationId = createPresentation(template.title);
+        try {
+            const presentationId = await createPresentation(template.title);
+            updatePresentation(presentationId, {
+                title: template.title,
+                description: template.description,
+                slides: template.slides,
+            });
             router.push(`/docs/${presentationId}`);
+        } finally {
+            setIsLoading(false);
         }
-
-        setIsLoading(false);
     };
 
     const handleCreateTemplate = () => {
@@ -99,21 +67,26 @@ const TemplatesPage = () => {
                 </div>
             ) : (
                 <div className={styles.templatesGrid}>
-                    {TEMPLATES.map(template => (
-                        <Card
-                            key={template.id}
-                            className={styles.templateCard}
-                            onClick={() => handleTemplateSelect(template.id)}
-                        >
-                            <CardHeader>
-                                <CardTitle>{template.title}</CardTitle>
-                                <CardDescription>{template.description}</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className={styles.templatePreview}></div>
-                            </CardContent>
-                        </Card>
-                    ))}
+                    {TEMPLATE_KEYS.map(key => {
+                        const template = PresentationTemplates[key];
+                        return (
+                            <Card
+                                key={key}
+                                className={styles.templateCard}
+                                onClick={() => handleTemplateSelect(key)}
+                            >
+                                <CardHeader>
+                                    <CardTitle>{template.title}</CardTitle>
+                                    <CardDescription>{template.description}</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className={styles.templatePreview}>
+                                        <SlidePreview presentation={template} theme={defaultTheme} />
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        );
+                    })}
                 </div>
             )}
         </div>
