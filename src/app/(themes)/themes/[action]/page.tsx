@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ThemeEditor } from '@/components/theme/ThemeEditor';
 import { ThemePreview } from '@/components/theme/ThemePreview';
 import { Theme } from '@/types/theme';
@@ -13,10 +13,12 @@ import { Label } from '@/components/ui/Label';
 import { generateId } from '@/utils/id';
 
 import styles from './page.module.css';
+import { THEME_TEMPLATES } from '@/themes/themeTemplates';
 
 export default function ThemeEditorPage(props: { params: Promise<{ action: string }> }) {
     const params = use(props.params);
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { addTheme, updateTheme, loadTheme } = useThemeStore();
 
     const [theme, setTheme] = useState<Theme>({
@@ -80,14 +82,29 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
     });
 
     useEffect(() => {
-        if (params.action !== 'new') {
+        if (params.action === 'new') {
+            const templateId = searchParams.get('template');
+            if (templateId) {
+                const tmpl = THEME_TEMPLATES.find(t => t.id === templateId);
+                if (tmpl) {
+                    setTheme({
+                        ...tmpl,
+                        id: generateId(),
+                        name: '',
+                        createdAt: new Date(),
+                        updatedAt: new Date(),
+                    });
+                    return;
+                }
+            }
+        } else {
             loadTheme(params.action).then((theme: Theme | null) => {
                 if (theme) {
                     setTheme(theme);
                 }
             });
         }
-    }, [loadTheme, params.action]);
+    }, [loadTheme, params.action, searchParams]);
 
     const handleSave = async () => {
         try {

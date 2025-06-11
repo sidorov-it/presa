@@ -1,10 +1,7 @@
 import { Theme } from '@/types/theme';
 import { createNewTheme } from '@/constants/defaultTheme';
 
-const createTheme = (
-    id: string,
-    data: Partial<Omit<Theme, 'id' | 'createdAt' | 'updatedAt'>>
-): Theme => {
+const createTheme = (id: string, data: Partial<Omit<Theme, 'id' | 'createdAt' | 'updatedAt'>>): Theme => {
     const theme = createNewTheme(data);
     theme.id = id;
     return theme;
@@ -282,4 +279,3 @@ export const THEME_TEMPLATES: Theme[] = [
         },
     }),
 ];
-
