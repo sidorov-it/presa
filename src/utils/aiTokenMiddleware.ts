@@ -7,43 +7,55 @@ import { getTokenCostForOperation, TOKEN_COSTS } from '@/utils/getTokenCostForOp
 interface AIOperationConfig {
     operation: keyof typeof TOKEN_COSTS;
     description: string;
-    calculateTokens?: (data: any) => number; // Custom token calculation function
-    metadata?: (data: any) => Record<string, any>; // Custom metadata extraction
+    calculateTokens: (requestData: any) => number; // Required server-side token calculation
+    metadata?: (requestData: any) => Record<string, any>; // Custom metadata extraction
 }
 
 /**
  * Middleware for handling token deduction in AI routes
  * Checks user authentication, token balance, executes operation, and deducts tokens
+ * All token logic is handled server-side for security
  */
 export async function withTokenDeduction<T>(
     request: NextRequest,
     config: AIOperationConfig,
     operation: (session: any, requestData: any) => Promise<T>
 ): Promise<NextResponse> {
+    let requestData: any;
+    
     try {
         // Check authentication
         const session = await getServerSession(authOptions);
         if (!session?.user) {
-            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         // Parse request data
-        const requestData = await request.json();
+        try {
+            requestData = await request.json();
+        } catch (parseError) {
+            return NextResponse.json({ error: 'Invalid JSON data' }, { status: 400 });
+        }
 
-        // Calculate required tokens
-        const requiredTokens = config.calculateTokens 
-            ? config.calculateTokens(requestData)
-            : getTokenCostForOperation(config.operation);
+        // Calculate required tokens server-side only
+        const requiredTokens = config.calculateTokens(requestData);
+        
+        if (requiredTokens <= 0) {
+            return NextResponse.json({ error: 'Invalid token calculation' }, { status: 400 });
+        }
 
         // Check if user has enough tokens
         const hasTokens = await hasEnoughTokens(session.user.id, requiredTokens);
         if (!hasTokens) {
-            return NextResponse.json({
-                error: 'Insufficient tokens',
-                message: `You need ${requiredTokens} tokens for this operation. Please purchase more tokens to continue.`,
-                requiredTokens,
-                operation: config.operation,
-            }, { status: 402 });
+            return NextResponse.json(
+                {
+                    error: 'Insufficient tokens',
+                    message: `You need ${requiredTokens} tokens for this operation. Please purchase more tokens to continue.`,
+                    requiredTokens,
+                    operation: config.operation,
+                },
+                { status: 402 }
+            );
         }
 
         // Execute the AI operation
@@ -52,7 +64,7 @@ export async function withTokenDeduction<T>(
         // Deduct tokens after successful operation
         try {
             const metadata = config.metadata ? config.metadata(requestData) : {};
-            
+
             await deductTokens({
                 userId: session.user.id,
                 amount: requiredTokens,
@@ -62,56 +74,113 @@ export async function withTokenDeduction<T>(
         } catch (tokenError) {
             console.error('Error deducting tokens:', tokenError);
             // Note: We don't fail the request here as the operation was already completed
+            // In production, you might want to implement a compensation mechanism
         }
 
         // Return result with token usage information
         return NextResponse.json({
-            ...(typeof result === 'object' ? result : { result }),
+            ...(typeof result === 'object' && result !== null ? result : { result }),
             tokensUsed: requiredTokens,
         });
-
     } catch (error) {
         console.error('Error in AI operation:', error);
-        return NextResponse.json({ 
-            error: 'Internal server error',
-            details: error instanceof Error ? error.message : 'Unknown error'
-        }, { status: 500 });
+        return NextResponse.json(
+            {
+                error: 'Internal server error',
+                details: error instanceof Error ? error.message : 'Unknown error',
+            },
+            { status: 500 }
+        );
     }
 }
 
 /**
- * Helper function to create token calculation for slide generation
+ * Server-side token calculators for different operations
+ * These functions ensure token calculation logic is secure and consistent
  */
-export const calculateSlideTokens = (requestData: any): number => {
-    const { topics, numSlides } = requestData;
-    const slideCount = topics?.length || numSlides || 1;
-    return slideCount * getTokenCostForOperation('GENERATE_SLIDE');
+export const TokenCalculators = {
+    /**
+     * Calculate tokens for slide generation based on number of topics
+     */
+    generateSlides: (requestData: any): number => {
+        const { topics } = requestData;
+        if (!topics || !Array.isArray(topics)) {
+            throw new Error('Invalid topics data for token calculation');
+        }
+        return topics.length * getTokenCostForOperation('GENERATE_SLIDE');
+    },
+
+    /**
+     * Calculate tokens for single slide generation
+     */
+    generateSingleSlide: (requestData: any): number => {
+        return getTokenCostForOperation('GENERATE_SLIDE');
+    },
+
+    /**
+     * Calculate tokens for text generation (topics, etc.)
+     */
+    generateText: (requestData: any): number => {
+        return getTokenCostForOperation('GENERATE_TEXT');
+    },
+
+    /**
+     * Calculate tokens for content improvement
+     */
+    improveContent: (requestData: any): number => {
+        return getTokenCostForOperation('GENERATE_TEXT');
+    },
+
+    /**
+     * Calculate tokens for image generation
+     */
+    generateImage: (requestData: any): number => {
+        return getTokenCostForOperation('GENERATE_IMAGE');
+    },
+
+    /**
+     * Calculate tokens for theme generation
+     */
+    generateTheme: (requestData: any): number => {
+        return getTokenCostForOperation('GENERATE_THEME');
+    },
 };
 
 /**
- * Common metadata extractors
+ * Common metadata extractors for different operations
  */
-export const extractPresentationMetadata = (requestData: any) => ({
-    title: requestData.title?.substring(0, 100),
-    prompt: requestData.prompt?.substring(0, 100),
-    slidesCount: requestData.topics?.length || requestData.numSlides || 1,
-});
+export const MetadataExtractors = {
+    presentation: (requestData: any) => ({
+        title: requestData.title?.substring(0, 100) || 'Untitled Presentation',
+        prompt: requestData.prompt?.substring(0, 100) || '',
+        slidesCount: Array.isArray(requestData.topics) ? requestData.topics.length : 0,
+        mode: 'presentation_generation',
+    }),
 
-export const extractSlideMetadata = (requestData: any) => ({
-    presentationId: requestData.presentationId,
-    slideIndex: requestData.slideIndex,
-    templateId: requestData.templateId,
-    prompt: requestData.prompt?.substring(0, 100),
-});
+    slide: (requestData: any) => ({
+        presentationId: requestData.presentationId || '',
+        slideIndex: requestData.slideIndex ?? -1,
+        templateId: requestData.templateId || 'auto',
+        prompt: requestData.prompt?.substring(0, 100) || '',
+        mode: 'single_slide_generation',
+    }),
 
-export const extractTopicsMetadata = (requestData: any) => ({
-    description: requestData.description?.substring(0, 100),
-    numSlides: requestData.numSlides,
-    tone: requestData.tone,
-});
+    topics: (requestData: any) => ({
+        description: requestData.description?.substring(0, 100) || '',
+        numSlides: requestData.numSlides || 1,
+        tone: requestData.tone || 'professional',
+        mode: 'topics_generation',
+    }),
 
-export const extractImproveMetadata = (requestData: any) => ({
-    slideId: requestData.slideId,
-    presentationId: requestData.presentationId,
-    comment: requestData.comment?.substring(0, 100),
-}); 
+    improvement: (requestData: any) => ({
+        slideId: requestData.slideId || '',
+        presentationId: requestData.presentationId || '',
+        comment: requestData.comment?.substring(0, 100) || '',
+        mode: 'content_improvement',
+    }),
+
+    images: (requestData: any) => ({
+        prompt: requestData.prompt?.substring(0, 100) || '',
+        mode: 'images_generation',
+    }),
+};

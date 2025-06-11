@@ -1,10 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import rewriteSlideContent from '@/services/llm/gigaChat/rewriteSlideContent';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../../auth/[...nextauth]/route';
-import { hasEnoughTokens, deductTokens } from '@/utils/tokens';
-import { getTokenCostForOperation } from '@/utils/getTokenCostForOperation';
+import { withTokenDeduction, TokenCalculators, MetadataExtractors } from '@/utils/aiTokenMiddleware';
 
 // function generateSlotDescription(slide: Slide): string {
 //     return slide.layouts
@@ -79,76 +76,41 @@ interface RewriteRequestBody {
     comment?: string;
 }
 
-export async function POST(request: Request) {
-    try {
-        const session = await getServerSession(authOptions);
+export async function POST(request: NextRequest) {
+    return withTokenDeduction(
+        request,
+        {
+            operation: 'GENERATE_TEXT',
+            description: 'Improve slide content',
+            calculateTokens: TokenCalculators.improveContent,
+            metadata: MetadataExtractors.improvement,
+        },
+        async (session, requestData: RewriteRequestBody) => {
+            const { slideId, presentationId, comment } = requestData;
 
-        if (!session?.user) {
-            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-        }
+            if (!slideId || !presentationId) {
+                throw new Error('Missing required fields: slideId or presentationId');
+            }
 
-        const body = (await request.json()) as RewriteRequestBody;
-        const { slideId, presentationId, comment } = body;
-
-        if (!slideId || !presentationId) {
-            return NextResponse.json({ error: 'Missing required fields: slideId or presentationId' }, { status: 400 });
-        }
-
-        // Calculate required tokens
-        const requiredTokens = getTokenCostForOperation('GENERATE_TEXT');
-
-        // Check if user has enough tokens
-        const hasTokens = await hasEnoughTokens(session.user.id, requiredTokens);
-        if (!hasTokens) {
-            return NextResponse.json({
-                error: 'Insufficient tokens',
-                message: `You need ${requiredTokens} tokens to improve slide content. Please purchase more tokens to continue.`,
-                requiredTokens,
-                operation: 'GENERATE_TEXT',
-            }, { status: 402 });
-        }
-
-        // Получаем презентацию
-        const presentation = await prisma.presentation.findUnique({
-            where: { id: presentationId },
-        });
-
-        if (!presentation) {
-            return NextResponse.json({ error: 'Presentation not found' }, { status: 404 });
-        }
-
-        // Находим текущий слайд и его соседей
-        const slideIndex = presentation.slides.findIndex(s => s.id === slideId);
-        if (slideIndex === -1) {
-            return NextResponse.json({ error: 'Slide not found' }, { status: 404 });
-        }
-
-        const currentSlide = presentation.slides[slideIndex];
-        const content = await rewriteSlideContent(session.user.id, currentSlide);
-
-        // Deduct tokens after successful improvement
-        try {
-            await deductTokens({
-                userId: session.user.id,
-                amount: requiredTokens,
-                description: `Improved slide content (Slide ${slideIndex + 1})`,
-                metadata: {
-                    slideId,
-                    presentationId,
-                    comment: comment?.substring(0, 100), // First 100 chars of comment
-                },
+            // Получаем презентацию
+            const presentation = await prisma.presentation.findUnique({
+                where: { id: presentationId },
             });
-        } catch (tokenError) {
-            console.error('Error deducting tokens:', tokenError);
-            // Note: We don't fail the request here as the content was already generated
-        }
 
-        return NextResponse.json({
-            ...content,
-            tokensUsed: requiredTokens,
-        });
-    } catch (error) {
-        console.error('Error in AI improve route:', error);
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-    }
+            if (!presentation) {
+                throw new Error('Presentation not found');
+            }
+
+            // Находим текущий слайд и его соседей
+            const slideIndex = presentation.slides.findIndex((s: any) => s.id === slideId);
+            if (slideIndex === -1) {
+                throw new Error('Slide not found');
+            }
+
+            const currentSlide = presentation.slides[slideIndex];
+            const content = await rewriteSlideContent(session.user.id, currentSlide);
+
+            return content;
+        }
+    );
 }
