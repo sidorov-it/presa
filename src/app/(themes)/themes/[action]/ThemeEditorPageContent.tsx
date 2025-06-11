@@ -13,14 +13,13 @@ import { Label } from '@/components/ui/Label';
 import { generateId } from '@/utils/id';
 
 import styles from './page.module.css';
-import { THEME_TEMPLATES } from '@/themes/themeTemplates';
 import { createNewTheme } from '@/constants/defaultTheme';
 
 const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) => {
     const params = use(props.params);
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { addTheme, updateTheme, loadTheme, themes } = useThemeStore();
+    const { addTheme, updateTheme, loadTheme, themes, defaultThemes, loadDefaultThemes } = useThemeStore();
 
     const existingTheme = params.action !== 'new' ? themes.find(t => t.id === params.action) : undefined;
 
@@ -28,7 +27,7 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
         if (params.action === 'new') {
             const templateId = searchParams.get('template');
             if (templateId) {
-                const tmpl = THEME_TEMPLATES.find(t => t.id === templateId);
+                const tmpl = defaultThemes.find(t => t.id === templateId);
                 if (tmpl) {
                     return {
                         ...tmpl,
@@ -45,9 +44,14 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
         return existingTheme || createNewTheme();
     });
 
-
-    console.log('theme', theme)
+    console.log('theme', theme);
     const [isLoading, setIsLoading] = useState(params.action !== 'new' && !existingTheme);
+
+    useEffect(() => {
+        loadDefaultThemes().catch(err => {
+            console.error('Failed to load themes:', err);
+        });
+    }, [loadDefaultThemes]);
 
     useEffect(() => {
         if (params.action === 'new') {
@@ -135,6 +139,5 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
         </div>
     );
 };
-
 
 export default ThemeEditorPageContent;

@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card/Card';
 import SlidePreview from '../dashboard/components/SlidePreview';
 import { PresentationTemplates, PresentationTemplateKeys } from '@/presentationTemplates';
 import styles from './page.module.css';
-import { THEME_TEMPLATES } from '@/themes/themeTemplates';
+import { useThemeStore } from '@/store/themeStore';
 import Portal from '@/components/Portal';
 
 const TEMPLATE_KEYS = Object.keys(PresentationTemplates) as PresentationTemplateKeys[];
@@ -15,6 +15,8 @@ const TEMPLATE_KEYS = Object.keys(PresentationTemplates) as PresentationTemplate
 const TemplatesPage = () => {
     const router = useRouter();
     const { createPresentation, updatePresentation } = usePresentationStore();
+    const defaultThemes = useThemeStore(state => state.defaultThemes);
+    const loadDefaultThemes = useThemeStore(state => state.loadDefaultThemes);
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -36,6 +38,12 @@ const TemplatesPage = () => {
         }
     };
 
+    useEffect(() => {
+        loadDefaultThemes().catch(err => {
+            console.error('Failed to load themes:', err);
+        });
+    }, [loadDefaultThemes]);
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -52,7 +60,7 @@ const TemplatesPage = () => {
                 <div className={styles.templatesGrid}>
                     {TEMPLATE_KEYS.map(key => {
                         const template = PresentationTemplates[key];
-                        const theme = THEME_TEMPLATES.find(t => t.id === template.themeId);
+                        const theme = defaultThemes.find(t => t.id === template.themeId);
 
                         if (!theme) {
                             return null;

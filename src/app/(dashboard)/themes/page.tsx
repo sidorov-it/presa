@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from '@/components/ui/Button';
-import { useThemeStore } from '@/store/themeStore';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -10,10 +9,10 @@ import styles from './page.module.css';
 import ThemePreviewBlock from './components/ThemePreviewBlock';
 import { useRouter } from 'next/navigation';
 import { Tabs as ChakraTabs } from '@chakra-ui/react';
-import { THEME_TEMPLATES } from '@/themes/themeTemplates';
+import { useThemeStore } from '@/store/themeStore';
 
 export default function ThemesPage() {
-    const { themes, loadThemes, addTheme, deleteTheme } = useThemeStore();
+    const { themes, defaultThemes, loadThemes, loadDefaultThemes, addTheme, deleteTheme } = useThemeStore();
     const router = useRouter();
     const [tabIndex, setTabIndex] = useState(0);
 
@@ -22,7 +21,10 @@ export default function ThemesPage() {
             console.error('Failed to load themes:', error);
             toast.error('Failed to load themes');
         });
-    }, [loadThemes]);
+        loadDefaultThemes().catch(error => {
+            console.error('Failed to load themes:', error);
+        });
+    }, [loadThemes, loadDefaultThemes]);
 
     const handleDuplicate = async (themeId: string) => {
         const theme = themes.find(theme => theme.id === themeId);
@@ -79,7 +81,7 @@ export default function ThemesPage() {
                 </ChakraTabs.Content>
                 <ChakraTabs.Content value="standard">
                     <div className={styles.themesGrid}>
-                        {THEME_TEMPLATES.map(theme => (
+                        {defaultThemes.map(theme => (
                             <ThemePreviewBlock
                                 key={theme.id}
                                 theme={theme}
