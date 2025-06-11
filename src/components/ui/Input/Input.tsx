@@ -4,7 +4,7 @@ import { cn } from '@/utils/cn';
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     size?: 'xs' | 'sm' | 'md' | 'lg';
-    containerClassName?: string;
+    // containerClassName?: string;
     variant?: 'outline' | 'filled' | 'flushed' | 'unstyled';
     isDisabled?: boolean;
     isInvalid?: boolean;

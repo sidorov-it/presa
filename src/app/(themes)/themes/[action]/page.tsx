@@ -45,9 +45,9 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
         return existingTheme || createNewTheme();
     });
 
-    const [isLoading, setIsLoading] = useState(
-        params.action !== 'new' && !existingTheme
-    );
+
+    console.log('theme', theme)
+    const [isLoading, setIsLoading] = useState(params.action !== 'new' && !existingTheme);
 
     useEffect(() => {
         if (params.action === 'new') {
@@ -60,15 +60,17 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
         }
 
         const start = Date.now();
-        loadTheme(params.action).then((theme: Theme | null) => {
-            if (theme) {
-                setTheme(theme);
-            }
-        }).finally(() => {
-            const elapsed = Date.now() - start;
-            const delay = elapsed < 300 ? 300 - elapsed : 0;
-            setTimeout(() => setIsLoading(false), delay);
-        });
+        loadTheme(params.action)
+            .then((theme: Theme | null) => {
+                if (theme) {
+                    setTheme(theme);
+                }
+            })
+            .finally(() => {
+                const elapsed = Date.now() - start;
+                const delay = elapsed < 300 ? 300 - elapsed : 0;
+                setTimeout(() => setIsLoading(false), delay);
+            });
     }, [loadTheme, params.action, existingTheme]);
 
     const handleSave = async () => {
@@ -83,13 +85,13 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
             router.push('/themes');
         } catch (error) {
             console.error('Failed to save theme:', error);
-    if (isLoading) {
-        return (
-            <div className={styles.loadingContainer}>
-                <div className={styles.spinner}></div>
-            </div>
-        );
-    }
+            if (isLoading) {
+                return (
+                    <div className={styles.loadingContainer}>
+                        <div className={styles.spinner}></div>
+                    </div>
+                );
+            }
 
             toast.error('Ошибка сохранения темы');
         }

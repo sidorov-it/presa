@@ -83,7 +83,7 @@ export default function Fonts({
                                                 min={1}
                                                 max={2}
                                                 leftElement={<CiLineHeight />}
-                                                containerClassName="pl-[2px]"
+                                                // containerClassName="pl-[2px]"
                                                 onChange={e =>
                                                     handleTypographyChange({
                                                         headingLineHeight: parseFloat(e.target.value),
@@ -96,7 +96,7 @@ export default function Fonts({
                                             <Input
                                                 type="number"
                                                 variant="filled"
-                                                containerClassName="pr-[2px]"
+                                                // containerClassName="pr-[2px]"
                                                 value={theme.typography.headingLetterSpacing}
                                                 step={1}
                                                 min={-10}
@@ -163,7 +163,7 @@ export default function Fonts({
                                                 min={1}
                                                 max={2}
                                                 leftElement={<CiLineHeight />}
-                                                containerClassName="pl-[2px]"
+                                                // containerClassName="pl-[2px]"
                                                 onChange={e =>
                                                     handleTypographyChange({
                                                         bodyLineHeight: parseFloat(e.target.value),
@@ -176,7 +176,7 @@ export default function Fonts({
                                             <Input
                                                 type="number"
                                                 variant="filled"
-                                                containerClassName="pr-[2px]"
+                                                // containerClassName="pr-[2px]"
                                                 value={theme.typography.bodyLetterSpacing}
                                                 step={1}
                                                 min={-10}

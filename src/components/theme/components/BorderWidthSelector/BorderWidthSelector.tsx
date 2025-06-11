@@ -37,7 +37,7 @@ export default function BorderWidthSelector({
                         <p className={styles.borderContent}>
                             {option.value === 'none' && <RxBorderNone />}
                             {option.value !== 'none' && (
-                                <div className={`${styles.borderBorder} ${styles[`border-${option.value}`]}`} />
+                                <span className={`${styles.borderBorder} ${styles[`border-${option.value}`]}`} />
                             )}
                         </p>
                     </Button>

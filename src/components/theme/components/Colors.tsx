@@ -1,5 +1,5 @@
 import { ColorPicker } from '../../ui/ColorPicker/ColorPicker';
-import { InfoIcon } from '../../ui/InfoIcon';
+// import { InfoIcon } from '../../ui/InfoIcon';
 import { Label } from '../../ui/Label';
 import { Select } from '../../ui/Select';
 import { Input } from '../../ui/Input/Input';
@@ -24,7 +24,7 @@ export default function Colors({
                 <h3 className={styles.sectionTitle}>Colors</h3>
                 <h4 className={styles.sectionSubtitle}>
                     Палитра
-                    <InfoIcon tooltip="Эти цвета появляются в палитре цветов при использовании этой темы. Основной акцентный цвет используется по умолчанию для ссылок, кнопок и других элементов." />
+                    {/* <InfoIcon tooltip="Эти цвета появляются в палитре цветов при использовании этой темы. Основной акцентный цвет используется по умолчанию для ссылок, кнопок и других элементов." /> */}
                 </h4>
 
                 <div style={{ marginBottom: '20px' }}>
