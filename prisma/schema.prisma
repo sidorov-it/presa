@@ -63,6 +63,12 @@ enum BlockFillColorsType {
   custom
 }
 
+// enum BackgroundFillType {
+//   fill
+//   semi
+//   none
+// }
+
 enum ButtonShape {
   square
   capsule
