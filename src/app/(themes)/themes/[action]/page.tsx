@@ -14,6 +14,7 @@ import { generateId } from '@/utils/id';
 
 import styles from './page.module.css';
 import { THEME_TEMPLATES } from '@/themes/themeTemplates';
+import { createNewTheme } from '@/constants/defaultTheme';
 
 export default function ThemeEditorPage(props: { params: Promise<{ action: string }> }) {
     const params = use(props.params);
@@ -21,65 +22,7 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
     const searchParams = useSearchParams();
     const { addTheme, updateTheme, loadTheme } = useThemeStore();
 
-    const [theme, setTheme] = useState<Theme>({
-        id: generateId(),
-        name: '',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        colors: {
-            additionalColors: [],
-            shapesColor: '#3b82f6',
-            accentBlocksColor: '#3b82f6',
-            secondaryButtonColor: '#3b82f6',
-            primaryAccent: '#3b82f6',
-            secondaryAccents: ['#60a5fa', '#93c5fd', '#bfdbfe'],
-            headingColor: '#1f2937',
-            textColor: '#4b5563',
-            slideBackground: '#ffffff',
-            pageBackground: {
-                type: 'color',
-                color: '#f3f4f6',
-                imageUrl: '',
-            },
-        },
-        typography: {
-            headingFont: 'inter',
-            headingWeight: 600,
-            bodyFont: 'inter',
-            bodyWeight: 400,
-            headingColor: '#1f2937',
-            bodyColor: '#4b5563',
-            headingLineHeight: 1.5,
-            headingLetterSpacing: 0,
-            headingCapitalization: 'none',
-            bodyLineHeight: 1.5,
-            bodyLetterSpacing: 0,
-            bodyCapitalization: 'none',
-        },
-        design: {
-            slide: {
-                borderRadius: '8px',
-                shadow: 'sm',
-                borderColor: '#e5e7eb',
-                imageShape: 'default',
-                borderWidth: 'thin',
-                opacity: 0.8,
-            },
-            blocks: {
-                backgroundColor: '#ffffff',
-                backgroundBlockFillType: 'fill',
-                blockFillColorsType: 'subtle',
-                blockBackgroundCustomColors: [],
-                borderWidth: 'thin',
-                shadow: 'sm',
-            },
-            buttons: {
-                // buttonColor: '#3b82f6',
-                // buttonShape: 'rounded',
-                // linkColor: '#2563eb',
-            },
-        },
-    });
+    const [theme, setTheme] = useState<Theme>(createNewTheme());
 
     useEffect(() => {
         if (params.action === 'new') {
@@ -118,7 +61,7 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
             router.push('/themes');
         } catch (error) {
             console.error('Failed to save theme:', error);
-            toast.error('Failed to save theme');
+            toast.error('Ошибка сохранения темы');
         }
     };
 

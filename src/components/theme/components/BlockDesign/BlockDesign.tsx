@@ -162,7 +162,7 @@ export default function BlockDesign({
                                             },
                                         })
                                     }
-                                    className={`${styles.opacityButton} ${theme.design.blocks.backgroundFillType === option.value ? styles.opacityActive : ''}`}
+                                    className={`${styles.opacityButton} ${theme.design.blocks.backgroundBlockFillType === option.value ? styles.opacityActive : ''}`}
                                     aria-label={`Граница ${option.label}`}
                                 >
                                     <p className={styles.opacityContent}>
