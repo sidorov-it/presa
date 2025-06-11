@@ -5,6 +5,7 @@ import fs from 'fs/promises';
 import GigaChat, { detectImage } from 'gigachat';
 import { performance } from 'perf_hooks';
 import { GigaChatConfig, LLMResponse, LLMService } from '@/types/llm';
+import { RateLimiter } from '../rateLimiter';
 import { RecordingOptions } from '@/types/llm/recordings';
 import { RecordingService } from '../recordings/recordingService';
 import { LLMHistoryService, LLMRequestData } from '../history/llmHistoryService';
@@ -32,9 +33,14 @@ export class GigaChatService implements LLMService {
     private recordingService?: RecordingService;
     private recordingOptions: RecordingOptions;
     private userId: string;
+    private static rateLimiter = new RateLimiter(10);
 
     static createGigaChatService(config: GigaChatConfig) {
         return new GigaChatService(config);
+    }
+
+    private async withRateLimit<T>(fn: () => Promise<T>): Promise<T> {
+        return GigaChatService.rateLimiter.run(fn);
     }
 
     constructor(config: GigaChatConfig) {
@@ -100,8 +106,6 @@ export class GigaChatService implements LLMService {
                     throw new Error('GigaChat client is not initialized');
                 }
 
-                await this.client.updateToken();
-
                 const messages = [
                     {
                         role: 'system',
@@ -114,9 +118,12 @@ export class GigaChatService implements LLMService {
                     },
                 ];
 
-                const apiResponse = await this.client.chat({
-                    messages: messages,
-                    ...options,
+                const apiResponse = await this.withRateLimit(async () => {
+                    await this.client.updateToken();
+                    return this.client.chat({
+                        messages: messages,
+                        ...options,
+                    });
                 });
 
                 const parsedResponse = this.parseResponse(apiResponse);
@@ -258,7 +265,7 @@ export class GigaChatService implements LLMService {
                     throw new Error('GigaChat client is not initialized');
                 }
 
-                const response = await this.client.chat({
+                const response = await this.withRateLimit(() => this.client.chat({
                     messages: [
                         {
                             role: 'system',
@@ -270,7 +277,7 @@ export class GigaChatService implements LLMService {
                         },
                     ],
                     function_call: { name: 'text2image' },
-                });
+                }));
 
                 // Calculate metrics
                 const inputTokens = response.usage.prompt_tokens;
