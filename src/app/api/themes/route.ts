@@ -1,9 +1,18 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function GET() {
+export async function GET(request: Request) {
     try {
+        const url = new URL(request.url);
+        const isDefaultParam = url.searchParams.get('default');
+
+        const where: any = { isActive: true };
+        if (isDefaultParam !== null) {
+            where.isDefault = isDefaultParam === 'true';
+        }
+
         const themes = await prisma.theme.findMany({
+            where,
             orderBy: {
                 createdAt: 'desc',
             },
@@ -32,6 +41,8 @@ export async function POST(request: Request) {
                 design: {
                     set: theme.design,
                 },
+                isDefault: theme.isDefault ?? false,
+                isActive: theme.isActive ?? true,
                 logo: null,
             },
         });

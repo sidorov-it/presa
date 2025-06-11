@@ -86,6 +86,8 @@ export type Theme = {
     colors: ThemeColors;
     typography: ThemeTypography;
     design: ThemeDesign;
+    isDefault: boolean;
+    isActive: boolean;
     createdAt: Date;
     updatedAt: Date;
 };

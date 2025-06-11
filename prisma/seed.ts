@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { THEME_TEMPLATES } from '../src/themes/themeTemplates';
 
 const prisma = new PrismaClient();
 
@@ -10,7 +11,6 @@ async function main() {
     
     if (existingPackages > 0) {
         console.log('Token packages already exist, skipping seed...');
-        return;
     }
 
     // Создаем тестовые пакеты токенов
@@ -56,6 +56,19 @@ async function main() {
     });
 
     console.log(`Created ${packages.count} token packages`);
+
+    console.log('Seeding default themes...');
+    const existingThemes = await prisma.theme.count();
+    if (existingThemes === 0) {
+        for (const theme of THEME_TEMPLATES) {
+            await prisma.theme.create({
+                data: theme,
+            });
+        }
+        console.log(`Created ${THEME_TEMPLATES.length} themes`);
+    } else {
+        console.log('Themes already exist, skipping');
+    }
 }
 
 main()

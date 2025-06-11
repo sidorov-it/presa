@@ -4,18 +4,21 @@ import { createNewTheme } from '@/constants/defaultTheme';
 
 interface ThemeState {
     themes: Theme[];
+    defaultThemes: Theme[];
     currentTheme: Theme | null;
     setCurrentTheme: (theme: Theme | null) => void;
     addTheme: (theme: Omit<Theme, 'id'>) => Promise<void>;
     updateTheme: (theme: Theme) => Promise<void>;
     deleteTheme: (themeId: string) => Promise<void>;
     loadThemes: () => Promise<void>;
+    loadDefaultThemes: () => Promise<void>;
     loadTheme: (themeId: string) => Promise<Theme | null>;
     getDefaultTheme: () => Theme;
 }
 
 export const useThemeStore = create<ThemeState>((set, get) => ({
     themes: [],
+    defaultThemes: [],
     currentTheme: null,
 
     setCurrentTheme: theme => {
@@ -108,6 +111,20 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
             }
             const themes = await response.json();
             set({ themes });
+        } catch (error) {
+            console.error('Failed to load themes:', error);
+            throw error;
+        }
+    },
+
+    loadDefaultThemes: async () => {
+        try {
+            const response = await fetch('/api/themes?default=true');
+            if (!response.ok) {
+                throw new Error('Failed to load themes');
+            }
+            const themes = await response.json();
+            set({ defaultThemes: themes });
         } catch (error) {
             console.error('Failed to load themes:', error);
             throw error;
