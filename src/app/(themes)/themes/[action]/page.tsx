@@ -20,34 +20,56 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
     const params = use(props.params);
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { addTheme, updateTheme, loadTheme } = useThemeStore();
+    const { addTheme, updateTheme, loadTheme, themes } = useThemeStore();
 
-    const [theme, setTheme] = useState<Theme>(createNewTheme());
+    const existingTheme = params.action !== 'new' ? themes.find(t => t.id === params.action) : undefined;
 
-    useEffect(() => {
+    const [theme, setTheme] = useState<Theme>(() => {
         if (params.action === 'new') {
             const templateId = searchParams.get('template');
             if (templateId) {
                 const tmpl = THEME_TEMPLATES.find(t => t.id === templateId);
                 if (tmpl) {
-                    setTheme({
+                    return {
                         ...tmpl,
                         id: generateId(),
                         name: '',
                         createdAt: new Date(),
                         updatedAt: new Date(),
-                    });
-                    return;
+                    };
                 }
             }
-        } else {
-            loadTheme(params.action).then((theme: Theme | null) => {
-                if (theme) {
-                    setTheme(theme);
-                }
-            });
+            return createNewTheme();
         }
-    }, [loadTheme, params.action, searchParams]);
+
+        return existingTheme || createNewTheme();
+    });
+
+    const [isLoading, setIsLoading] = useState(
+        params.action !== 'new' && !existingTheme
+    );
+
+    useEffect(() => {
+        if (params.action === 'new') {
+            return;
+        }
+
+        if (existingTheme) {
+            setTheme(existingTheme);
+            return;
+        }
+
+        const start = Date.now();
+        loadTheme(params.action).then((theme: Theme | null) => {
+            if (theme) {
+                setTheme(theme);
+            }
+        }).finally(() => {
+            const elapsed = Date.now() - start;
+            const delay = elapsed < 300 ? 300 - elapsed : 0;
+            setTimeout(() => setIsLoading(false), delay);
+        });
+    }, [loadTheme, params.action, existingTheme]);
 
     const handleSave = async () => {
         try {
@@ -61,6 +83,14 @@ export default function ThemeEditorPage(props: { params: Promise<{ action: strin
             router.push('/themes');
         } catch (error) {
             console.error('Failed to save theme:', error);
+    if (isLoading) {
+        return (
+            <div className={styles.loadingContainer}>
+                <div className={styles.spinner}></div>
+            </div>
+        );
+    }
+
             toast.error('Ошибка сохранения темы');
         }
     };
