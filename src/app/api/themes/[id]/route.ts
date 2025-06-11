@@ -37,6 +37,8 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
                 },
                 buttons: themeData.design.buttons,
             },
+            isDefault: themeData.isDefault,
+            isActive: themeData.isActive,
             createdAt: themeData.createdAt,
             updatedAt: themeData.updatedAt,
         };
@@ -101,6 +103,8 @@ export async function PUT(request: Request, props: { params: Promise<Params> }) 
                 design: {
                     set: theme.design,
                 },
+                isDefault: theme.isDefault ?? existingTheme.isDefault,
+                isActive: theme.isActive ?? existingTheme.isActive,
                 updatedAt: new Date(),
             },
         });
