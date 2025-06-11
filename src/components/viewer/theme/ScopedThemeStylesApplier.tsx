@@ -16,7 +16,7 @@ import diagonalTopImage from '@/elements/masks/diagonal-top.svg';
 import circleTopImage from '@/elements/masks/circle-top.svg';
 import circleInvertedTopImage from '@/elements/masks/circle-inverted-top.svg';
 
-import { useEffect, useRef, forwardRef } from 'react';
+import { useLayoutEffect, useRef, forwardRef } from 'react';
 import { Theme } from '@/types/theme';
 
 interface ScopedThemeStylesApplierProps {
@@ -30,7 +30,7 @@ const ScopedThemeStylesApplier = forwardRef<HTMLDivElement, ScopedThemeStylesApp
         const containerRef = useRef<HTMLDivElement>(null);
 
         // Apply theme to the container when the component mounts or theme changes
-        useEffect(() => {
+        useLayoutEffect(() => {
             const container = containerRef.current;
             if (!container || !theme) {
                 console.log('ScopedThemeStylesApplier: No container or theme provided');
