@@ -7,7 +7,6 @@ import CardsDesign from '../CardsDesign/CardsDesign';
 import BlockDesign from '../BlockDesign/BlockDesign';
 
 import styles from './Design.module.css';
-// import ButtonsDesign from '../ButtonsDesign/ButtonsDesign';
 
 export default function Design({
     theme,
@@ -16,14 +15,16 @@ export default function Design({
     theme: Theme;
     handleDesignChange: (design: Partial<ThemeDesign>) => void;
 }) {
-    const [selectedTab, setSelectedTab] = useState('Slides');
+    const [selectedTab, setSelectedTab] = useState('slides');
 
     const items = [
         {
+            id: 'slides',
             label: 'Слайды',
             content: <CardsDesign theme={theme} handleDesignChange={handleDesignChange} />,
         },
         {
+            id: 'blocks',
             label: 'Блоки',
             content: <BlockDesign theme={theme} handleDesignChange={handleDesignChange} />,
         },
@@ -49,10 +50,10 @@ export default function Design({
                     onValueChange={e => setSelectedTab(e.value)}
                 >
                     <ChakraTabs.List className={styles.tabs}>
-                        {items.map((item: { label: string; content: React.ReactNode }, idx: number) => (
+                        {items.map((item: { id: string; label: string; content: React.ReactNode }, idx: number) => (
                             <ChakraTabs.Trigger
                                 key={idx}
-                                value={item.label}
+                                value={item.id}
                                 className={`${styles.tab} ${selectedTab === item.label ? styles.selectedTab : ''}`}
                             >
                                 {item.label}

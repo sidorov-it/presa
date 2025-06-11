@@ -4,15 +4,18 @@ import { Button } from '@/components/ui/Button';
 import { useThemeStore } from '@/store/themeStore';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import styles from './page.module.css';
 import ThemePreviewBlock from './components/ThemePreviewBlock';
 import { useRouter } from 'next/navigation';
+import { Tabs as ChakraTabs } from '@chakra-ui/react';
+import { THEME_TEMPLATES } from '@/themes/themeTemplates';
 
 export default function ThemesPage() {
     const { themes, loadThemes, addTheme, deleteTheme } = useThemeStore();
     const router = useRouter();
+    const [tabIndex, setTabIndex] = useState(0);
 
     useEffect(() => {
         loadThemes().catch(error => {
@@ -53,33 +56,39 @@ export default function ThemesPage() {
                 </Link>
             </div>
 
-            <div className={styles.themesGrid}>
-                {themes.map(theme => (
-                    <ThemePreviewBlock
-                        key={theme.id}
-                        theme={theme}
-                        onClickEdit={() => router.push(`/themes/${theme.id}`)}
-                        onClickDuplicate={() => handleDuplicate(theme.id)}
-                        onClickDelete={() => handleDelete(theme.id)}
-                    />
-                    // <Card key={theme.id}>
-                    //     <CardHeader>
-                    //         <CardTitle>{theme.name}</CardTitle>
-                    //         {theme.description && <CardDescription>{theme.description}</CardDescription>}
-                    //     </CardHeader>
-                    //     <CardContent>
-                    //         <div className={styles.cardActions}>
-                    //             <Link href={`/themes/${theme.id}`}>
-                    //                 <Button variant="outline">Редактировать</Button>
-                    //             </Link>
-                    //             <Button variant="destructive" size="icon" onClick={() => handleDelete(theme.id)}>
-                    //                 <Trash2 className={styles.deleteIcon} />
-                    //             </Button>
-                    //         </div>
-                    //     </CardContent>
-                    // </Card>
-                ))}
-            </div>
+            <ChakraTabs.Root
+                value={tabIndex === 0 ? 'my' : 'standard'}
+                onValueChange={e => setTabIndex(e.value === 'my' ? 0 : 1)}
+            >
+                <ChakraTabs.List>
+                    <ChakraTabs.Trigger value="my">Мои темы</ChakraTabs.Trigger>
+                    <ChakraTabs.Trigger value="standard">Стандартные темы</ChakraTabs.Trigger>
+                </ChakraTabs.List>
+                <ChakraTabs.Content value="my">
+                    <div className={styles.themesGrid}>
+                        {themes.map(theme => (
+                            <ThemePreviewBlock
+                                key={theme.id}
+                                theme={theme}
+                                onClickEdit={() => router.push(`/themes/${theme.id}`)}
+                                onClickDuplicate={() => handleDuplicate(theme.id)}
+                                onClickDelete={() => handleDelete(theme.id)}
+                            />
+                        ))}
+                    </div>
+                </ChakraTabs.Content>
+                <ChakraTabs.Content value="standard">
+                    <div className={styles.themesGrid}>
+                        {THEME_TEMPLATES.map(theme => (
+                            <ThemePreviewBlock
+                                key={theme.id}
+                                theme={theme}
+                                onClickEdit={() => router.push(`/themes/new?template=${theme.id}`)}
+                            />
+                        ))}
+                    </div>
+                </ChakraTabs.Content>
+            </ChakraTabs.Root>
         </div>
     );
 }

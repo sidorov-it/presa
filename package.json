@@ -23,7 +23,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@pandacss/dev": "^0.53.4",
-    "@prisma/client": "^6.8.2",
+    "@prisma/client": "^6.9.0",
     "@radix-ui/react-accordion": "^1.2.7",
     "@radix-ui/react-alert-dialog": "^1.1.10",
     "@radix-ui/react-aspect-ratio": "^1.1.4",
@@ -137,7 +137,7 @@
     "postcss-import": "^16.1.0",
     "postcss-preset-env": "^10.1.6",
     "prettier": "^3.5.3",
-    "prisma": "^6.8.2",
+    "prisma": "^6.9.0",
     "ts-jest": "^29.1.2",
     "tsx": "^4.19.4",
     "typescript": "^5"
