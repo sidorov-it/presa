@@ -45,9 +45,6 @@ import {
 import { ElementConfig, TipTapRefs, SmartLayoutElement, SmartLayoutItem } from '@/types';
 import CommonBubbleMenu from './CommonBubbleMenu';
 import Link from '@tiptap/extension-link';
-import Details from '@tiptap-pro/extension-details';
-import DetailsContent from '@tiptap-pro/extension-details-content';
-import DetailsSummary from '@tiptap-pro/extension-details-summary';
 import { BlockquoteExtension } from './extensions/BlockquoteExtension';
 import { usePresentationStore } from '@/store/presentationStore';
 import { EditorElement } from '@/types';
@@ -316,14 +313,14 @@ const getExtensions = ({
         placeholder,
     }),
     ButtonNode,
-    Details.configure({
-        persist: true,
-        HTMLAttributes: {
-            class: 'details',
-        },
-    }),
-    DetailsSummary,
-    DetailsContent,
+    // Details.configure({
+    //     persist: true,
+    //     HTMLAttributes: {
+    //         class: 'details',
+    //     },
+    // }),
+    // DetailsSummary,
+    // DetailsContent,
     // Добавляем блоки разных типов
     BoxNode,
     NoteBoxNode,
