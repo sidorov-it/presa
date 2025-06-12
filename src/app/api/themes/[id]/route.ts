@@ -89,6 +89,10 @@ export async function PUT(request: Request, props: { params: Promise<Params> }) 
             return NextResponse.json({ error: 'Theme not found' }, { status: 404 });
         }
 
+        if (existingTheme.isDefault) {
+            return NextResponse.json({ error: 'Default theme cannot be updated' }, { status: 400 });
+        }
+
         // Update the theme
         const updatedTheme = await prisma.theme.update({
             where: { id },

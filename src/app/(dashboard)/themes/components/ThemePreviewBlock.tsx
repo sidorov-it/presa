@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useEffect, useRef, useState } from 'react';
 import { Theme } from '@/types/theme';
 import styles from './ThemePreviewBlock.module.css';
@@ -6,12 +8,13 @@ import { HiOutlineDotsVertical } from 'react-icons/hi';
 
 interface ThemePreviewProps {
     theme: Theme;
+    isReadOnly?: boolean;
     onClickEdit?: () => void;
     onClickDuplicate?: () => void;
     onClickDelete?: () => void;
 }
 
-const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({ theme, onClickEdit, onClickDuplicate, onClickDelete }) => {
+const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({ theme, isReadOnly = false, onClickEdit, onClickDuplicate, onClickDelete }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -140,33 +143,35 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({ theme, onClickEdit, on
                 <div className={styles.themeInfo}>
                     <h4 className={styles.themeName}>{theme.name}</h4>
 
-                    <button
-                        onClick={handleMenuClick}
-                        ref={menuButtonRef}
-                        className={`${styles.menuButton} ${isMenuOpen ? styles.menuButtonOpen : ''}`}
-                    >
-                        <HiOutlineDotsVertical />
+                    {!isReadOnly && (
+                        <button
+                            onClick={handleMenuClick}
+                            ref={menuButtonRef}
+                            className={`${styles.menuButton} ${isMenuOpen ? styles.menuButtonOpen : ''}`}
+                        >
+                            <HiOutlineDotsVertical />
 
-                        {isMenuOpen && (
-                            <div className={styles.menuDropdown} style={menuPosition}>
-                                <button onClick={onClickEdit} className={styles.menuItem}>
-                                    <FaEye className={styles.menuIcon} />
-                                    Редактировать
-                                </button>
-                                <button onClick={onClickDuplicate} className={styles.menuItem}>
-                                    <FaCopy className={styles.menuIcon} />
-                                    Дублировать
-                                </button>
-                                <button
-                                    onClick={onClickDelete}
-                                    className={`${styles.menuItem} ${styles.menuItemDanger}`}
-                                >
-                                    <FaTrash className={styles.menuIcon} />
-                                    Удалить
-                                </button>
-                            </div>
-                        )}
-                    </button>
+                            {isMenuOpen && (
+                                <div className={styles.menuDropdown} style={menuPosition}>
+                                    <button onClick={onClickEdit} className={styles.menuItem}>
+                                        <FaEye className={styles.menuIcon} />
+                                        Редактировать
+                                    </button>
+                                    <button onClick={onClickDuplicate} className={styles.menuItem}>
+                                        <FaCopy className={styles.menuIcon} />
+                                        Дублировать
+                                    </button>
+                                    <button
+                                        onClick={onClickDelete}
+                                        className={`${styles.menuItem} ${styles.menuItemDanger}`}
+                                    >
+                                        <FaTrash className={styles.menuIcon} />
+                                        Удалить
+                                    </button>
+                                </div>
+                            )}
+                        </button>
+                    )}
 
                     {/* <button
                         className={styles.menuButton}

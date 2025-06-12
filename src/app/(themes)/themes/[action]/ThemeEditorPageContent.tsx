@@ -14,6 +14,7 @@ import { generateId } from '@/utils/id';
 
 import styles from './page.module.css';
 import { createNewTheme } from '@/constants/defaultTheme';
+import FullPageLoader from '@/components/FullPageLoader/FullPageLoader';
 
 const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) => {
     const params = use(props.params);
@@ -21,9 +22,10 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
     const searchParams = useSearchParams();
     const { addTheme, updateTheme, loadTheme, themes, defaultThemes, loadDefaultThemes } = useThemeStore();
 
-    const existingTheme = params.action !== 'new' ? themes.find(t => t.id === params.action) : undefined;
+    const isNewTheme = params.action === 'new';
+    const existingTheme = !isNewTheme ? themes.find(t => t.id === params.action) : undefined;
 
-    const [theme, setTheme] = useState<Theme>(() => {
+    const [theme, setTheme] = useState<Theme | undefined>(() => {
         if (params.action === 'new') {
             const templateId = searchParams.get('template');
             if (templateId) {
@@ -32,6 +34,8 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
                     return {
                         ...tmpl,
                         id: generateId(),
+                        isDefault: false,
+                        isActive: true,
                         name: '',
                         createdAt: new Date(),
                         updatedAt: new Date(),
@@ -41,10 +45,9 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
             return createNewTheme();
         }
 
-        return existingTheme || createNewTheme();
+        return existingTheme;
     });
 
-    console.log('theme', theme);
     const [isLoading, setIsLoading] = useState(params.action !== 'new' && !existingTheme);
 
     useEffect(() => {
@@ -79,6 +82,10 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
 
     const handleSave = async () => {
         try {
+            if (!theme) {
+                return;
+            }
+
             if (params.action === 'new') {
                 await addTheme(theme);
                 toast.success('Тема создана успешно');
@@ -101,6 +108,10 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
         }
     };
 
+    if (!theme && ((isNewTheme && defaultThemes.length === 0) || (!isNewTheme && !theme))) {
+        return <FullPageLoader />;
+    }
+
     return (
         <div className={styles.container}>
             {/* Left section with editor */}
@@ -112,14 +123,14 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
                         </Label>
                         <Input
                             id="theme-name"
-                            value={theme.name}
-                            onChange={e => setTheme({ ...theme, name: e.target.value })}
+                            value={theme?.name || ''}
+                            onChange={e => setTheme({ ...theme!, name: e.target.value })}
                             placeholder="Название темы"
                             className={styles.input}
                         />
                     </div>
 
-                    <ThemeEditor theme={theme} onThemeChange={setTheme} />
+                    <ThemeEditor theme={theme!} onThemeChange={setTheme} />
                 </div>
 
                 <div className={styles.bottomSection}>
@@ -134,7 +145,7 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
 
             {/* Right section with preview */}
             <div className={styles.rightSection}>
-                <ThemePreview theme={theme} />
+                <ThemePreview theme={theme!} />
             </div>
         </div>
     );

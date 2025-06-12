@@ -9,6 +9,8 @@ export async function GET(request: Request) {
         const where: any = { isActive: true };
         if (isDefaultParam !== null) {
             where.isDefault = isDefaultParam === 'true';
+        } else {
+            where.isDefault = false;
         }
 
         const themes = await prisma.theme.findMany({

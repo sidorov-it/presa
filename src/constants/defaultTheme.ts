@@ -62,7 +62,7 @@ export const createNewTheme = (
     themeData: Partial<Omit<Theme, 'id' | 'createdAt' | 'updatedAt'>> = {}
 ): Theme => {
     return {
-        id: crypto.randomUUID(), // Generate a valid UUID
+        // id: new Prisma.ObjectId().toString(),// Generate a valid UUID
         name: themeData.name || DEFAULT_THEME.name,
         description: themeData.description || DEFAULT_THEME.description,
         logo: themeData.logo,

@@ -8,7 +8,7 @@ async function main() {
 
     // Проверяем, есть ли уже пакеты
     const existingPackages = await prisma.tokenPackage.count();
-    
+
     if (existingPackages > 0) {
         console.log('Token packages already exist, skipping seed...');
     }
@@ -61,6 +61,7 @@ async function main() {
     const existingThemes = await prisma.theme.count();
     if (existingThemes === 0) {
         for (const theme of THEME_TEMPLATES) {
+            console.log('Creating theme', theme);
             await prisma.theme.create({
                 data: theme,
             });

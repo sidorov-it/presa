@@ -8,7 +8,7 @@ import SlidePreview from '../dashboard/components/SlidePreview';
 import { PresentationTemplates, PresentationTemplateKeys } from '@/presentationTemplates';
 import styles from './page.module.css';
 import { useThemeStore } from '@/store/themeStore';
-import Portal from '@/components/Portal';
+import FullPageLoader from '@/components/FullPageLoader/FullPageLoader';
 
 const TEMPLATE_KEYS = Object.keys(PresentationTemplates) as PresentationTemplateKeys[];
 
@@ -51,11 +51,7 @@ const TemplatesPage = () => {
             </div>
 
             {isLoading ? (
-                <Portal>
-                    <div className={styles.loadingContainer}>
-                        <div className={styles.spinner}></div>
-                    </div>
-                </Portal>
+                <FullPageLoader />
             ) : (
                 <div className={styles.templatesGrid}>
                     {TEMPLATE_KEYS.map(key => {
