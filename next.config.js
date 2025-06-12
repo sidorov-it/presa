@@ -12,8 +12,8 @@ const nextConfig = {
         // !! WARN !!
         ignoreBuildErrors: true,
     },
-    // Включаем source maps для дебага
-    productionBrowserSourceMaps: true,
+    // Отключаем source maps для экономии памяти при сборке
+    productionBrowserSourceMaps: false,
     images: {
         remotePatterns: [
             {
@@ -28,6 +28,20 @@ const nextConfig = {
         // removeConsole: process.env.NODE_ENV === 'production',
     },
     webpack(config, { dev, _isServer }) {
+        // Ограничиваем использование памяти
+        config.infrastructureLogging = { level: 'error' };
+        
+        // Исключаем проблемные библиотеки из серверной сборки
+        if (_isServer) {
+            config.externals = config.externals || [];
+            config.externals.push({
+                canvas: 'canvas',
+                jsdom: 'jsdom',
+                'utf-8-validate': 'utf-8-validate',
+                'bufferutil': 'bufferutil',
+            });
+        }
+        
         // Базовые оптимизации только для production
         if (!dev) {
             // Агрессивная оптимизация split chunks только для production
@@ -96,25 +110,45 @@ const nextConfig = {
                 fs: false,
                 path: false,
                 crypto: false,
+                stream: false,
+                url: false,
+                zlib: false,
+                http: false,
+                https: false,
+                assert: false,
+                os: false,
+                tty: false,
             },
         };
 
-        // Fix for "self is not defined" error
-        // if (!isServer) {
-        //     config.resolve.fallback = {
-        //         ...config.resolve.fallback,
-        //         self: false,
-        //     };
-        // } else {
-        //     // Add polyfill for server environment
-        //     const webpack = require('webpack');
-        //     config.plugins = config.plugins || [];
-        //     config.plugins.push(
-        //         new webpack.DefinePlugin({
-        //             self: 'undefined',
-        //         })
-        //     );
-        // }
+        // Fix for "self is not defined" error  
+        const webpack = require('webpack');
+        config.plugins = config.plugins || [];
+        
+        if (!_isServer) {
+            config.resolve.fallback = {
+                ...config.resolve.fallback,
+                self: false,
+            };
+        } else {
+            // Add polyfill for server environment
+            config.plugins.push(
+                new webpack.DefinePlugin({
+                    self: 'undefined',
+                    window: 'undefined',
+                    document: 'undefined',
+                    navigator: 'undefined',
+                    location: 'undefined',
+                })
+            );
+            
+            // Дополнительная заглушка для глобального объекта self
+            config.plugins.push(
+                new webpack.ProvidePlugin({
+                    self: ['global', 'self'],
+                })
+            );
+        }
 
         const fileLoaderRule = config.module.rules.find(rule => rule.test?.test?.('.svg'));
 

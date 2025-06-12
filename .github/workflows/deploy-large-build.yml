@@ -1,0 +1,96 @@
+name: Deploy Large Build (Self-hosted)
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual deployment'
+        required: false
+        default: 'Large build deployment'
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted # Используем self-hosted runner с большим количеством памяти
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Generate Prisma Client
+        run: npx prisma generate
+      
+      - name: Build application with extended memory
+        run: |
+          export NODE_OPTIONS="--max-old-space-size=8192"
+          npm run build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+      
+      - name: Deploy to server
+        run: |
+          # Создаем директории на сервере
+          ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
+            mkdir -p /var/www/slydle
+            cd /var/www/slydle
+            
+            # Создаем бэкап
+            if [ -d 'current' ]; then
+              mv current backup-$(date +%Y%m%d-%H%M%S)
+            fi
+            
+            # Очищаем старые бэкапы
+            ls -dt backup-* 2>/dev/null | tail -n +4 | xargs -r rm -rf
+          "
+          
+          # Копируем файлы
+          rsync -avz --delete \
+            --exclude node_modules \
+            --exclude .git \
+            --exclude .next/cache \
+            ./ ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/var/www/slydle/current/
+          
+          # Настраиваем приложение на сервере
+          ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
+            cd /var/www/slydle/current
+            
+            # Устанавливаем зависимости
+            npm ci --only=production
+            
+            # Генерируем Prisma клиент
+            npx prisma generate
+            
+            # Запускаем миграции
+            npx prisma db push
+            
+            # Создаем .env файл
+            cat > .env << EOF
+DATABASE_URL='${{ secrets.DATABASE_URL }}'
+NEXTAUTH_SECRET='${{ secrets.NEXTAUTH_SECRET }}'
+NEXTAUTH_URL='${{ secrets.NEXTAUTH_URL }}'
+NODE_ENV=production
+PORT=3000
+EOF
+            
+            # Устанавливаем права
+            sudo chown -R deploy:deploy /var/www/slydle
+            sudo chmod -R 755 /var/www/slydle
+            
+            # Перезапускаем приложение
+            pm2 restart slydle || pm2 start npm --name 'slydle' -- start
+            pm2 save
+          "
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+      
+      - name: Health check
+        run: |
+          sleep 30
+          curl -f ${{ secrets.NEXTAUTH_URL }}/api/health || exit 1 
