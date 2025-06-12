@@ -1,0 +1,66 @@
+
+> presentations@0.1.0 build:debug
+> NODE_OPTIONS='--max-old-space-size=4096' WEBPACK_STATS=true next build
+
+   ▲ Next.js 15.3.3
+   - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+<t> [webpack.cache.PackFileCacheStrategy] restore cache container: 36.874667 ms
+    [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] /Users/sidorov/work/presa3/package.json invalidated because hashes differ (9f3468db6a646bd2 != 0370943e8f12312f)
+    [webpack.cache.PackFileCacheStrategy] Restored pack from /Users/sidorov/work/presa3/.next/cache/webpack/server-production.pack, but build dependencies have changed.
+    [webpack.cache.PackFileCacheStrategy] resolving of build dependencies is invalid, will re-resolve build dependencies
+    [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] /Users/sidorov/work/presa3/next.config.js invalidated because hashes differ (20d6eed621a78bfc != 4ca4c623a1f57bf6)
+<t> [webpack.cache.PackFileCacheStrategy] check build dependencies: 679.207167 ms
+    [IdleFileCachePlugin] Initial cache was generated and cache will be persisted in 5s.
+    [webpack.cache.PackFileCacheStrategy] Pack got invalid because of write to: ResolverCachePlugin|normal|default|dependencyType=|esm|path=|/Users/sidorov/work/presa3|request=|next/dist/pages/_app
+    [webpack.cache.PackFileCacheStrategy] Storing pack...
+    [webpack.cache.PackFileCacheStrategy] Capturing build dependencies... (/Users/sidorov/work/presa3/next.config.js, /Users/sidorov/work/presa3/node_modules/@svgr/webpack/dist/index.js)
+<t> [webpack.cache.PackFileCacheStrategy] resolve build dependencies: 904.988334 ms
+<t> [webpack.cache.PackFileCacheStrategy] snapshot build dependencies: 11.154042 ms
+    [webpack.cache.PackFileCacheStrategy] Captured build dependencies
+    [webpack.cache.PackFileCacheStrategy] 19588 fresh items in cache put into pack 0
+<t> [webpack.cache.PackFileCacheStrategy] store pack: 2978.164375 ms
+    [webpack.cache.PackFileCacheStrategy] Stored pack (19588 items, 1 files, 624 MiB)
+<t> [webpack.cache.PackFileCacheStrategy] restore cache container: 20.386833 ms
+    [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] /Users/sidorov/work/presa3/package.json invalidated because hashes differ (9f3468db6a646bd2 != 0370943e8f12312f)
+    [webpack.cache.PackFileCacheStrategy] Restored pack from /Users/sidorov/work/presa3/.next/cache/webpack/edge-server-production.pack, but build dependencies have changed.
+    [webpack.cache.PackFileCacheStrategy] resolving of build dependencies is invalid, will re-resolve build dependencies
+    [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] /Users/sidorov/work/presa3/next.config.js invalidated because hashes differ (20d6eed621a78bfc != 4ca4c623a1f57bf6)
+<t> [webpack.cache.PackFileCacheStrategy] check build dependencies: 918.531416 ms
+    [IdleFileCachePlugin] Initial cache was generated and cache will be persisted in 5s.
+    [webpack.cache.PackFileCacheStrategy] Pack got invalid because of write to: ResolverCachePlugin|loader|default|path=|/Users/sidorov/work/presa3|request=|next-middleware-loader
+    [webpack.cache.PackFileCacheStrategy] Storing pack...
+    [webpack.cache.PackFileCacheStrategy] Capturing build dependencies... (/Users/sidorov/work/presa3/next.config.js)
+<t> [webpack.cache.PackFileCacheStrategy] resolve build dependencies: 696.837292 ms
+<t> [webpack.cache.PackFileCacheStrategy] snapshot build dependencies: 8.837125 ms
+    [webpack.cache.PackFileCacheStrategy] Captured build dependencies
+    [webpack.cache.PackFileCacheStrategy] 725 fresh items in cache put into pack 0
+<t> [webpack.cache.PackFileCacheStrategy] store pack: 66.122167 ms
+    [webpack.cache.PackFileCacheStrategy] Stored pack (725 items, 1 files, 12 MiB)
+<t> [webpack.cache.PackFileCacheStrategy] restore cache container: 19.443791 ms
+    [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] /Users/sidorov/work/presa3/package.json invalidated because hashes differ (9f3468db6a646bd2 != 0370943e8f12312f)
+    [webpack.cache.PackFileCacheStrategy] Restored pack from /Users/sidorov/work/presa3/.next/cache/webpack/client-production.pack, but build dependencies have changed.
+    [webpack.cache.PackFileCacheStrategy] resolving of build dependencies is invalid, will re-resolve build dependencies
+    [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] /Users/sidorov/work/presa3/next.config.js invalidated because hashes differ (20d6eed621a78bfc != 4ca4c623a1f57bf6)
+<t> [webpack.cache.PackFileCacheStrategy] check build dependencies: 835.0205 ms
+    [IdleFileCachePlugin] Initial cache was generated and cache will be persisted in 5s.
+    [webpack.cache.PackFileCacheStrategy] Pack got invalid because of write to: ResolverCachePlugin|loader|default|path=|/Users/sidorov/work/presa3|request=|next-flight-client-entry-loader
+    [webpack.cache.PackFileCacheStrategy] Storing pack...
+    [webpack.cache.PackFileCacheStrategy] Capturing build dependencies... (/Users/sidorov/work/presa3/next.config.js, /Users/sidorov/work/presa3/node_modules/@svgr/webpack/dist/index.js)
+<t> [webpack.cache.PackFileCacheStrategy] resolve build dependencies: 1109.928416 ms
+<t> [webpack.cache.PackFileCacheStrategy] snapshot build dependencies: 12.959292 ms
+    [webpack.cache.PackFileCacheStrategy] Captured build dependencies
+    [webpack.cache.PackFileCacheStrategy] 10534 fresh items in cache put into pack 0
+<t> [webpack.cache.PackFileCacheStrategy] store pack: 1746.448083 ms
+    [webpack.cache.PackFileCacheStrategy] Stored pack (10534 items, 1 files, 472 MiB)
+ ✓ Compiled successfully in 33.0s
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+unhandledRejection ReferenceError: self is not defined
+    at Object.<anonymous> (.next/server/vendors.js:1:1)
+    at t.f.require (.next/server/webpack-runtime.js:1:1729)
+    at <unknown> (.next/server/webpack-runtime.js:1:916) {
+  type: 'ReferenceError'
+}

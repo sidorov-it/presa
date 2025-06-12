@@ -3,10 +3,6 @@ import { Slide, TextType } from '@/types';
 import createRewriteSlideMapping from '@/utils/createRewriteSlideMapping';
 import { GigaChatService } from './gigaChat';
 
-if (!process.env.GIGACHAT_API_KEY || !process.env.GIGACHAT_AUTH_KEY || !process.env.GIGACHAT_SCOPE) {
-    throw new Error('GIGACHAT_API_KEY, GIGACHAT_AUTH_KEY, and GIGACHAT_SCOPE environment variables are not set');
-}
-
 export interface SlotContent {
     key: string;
     value: {

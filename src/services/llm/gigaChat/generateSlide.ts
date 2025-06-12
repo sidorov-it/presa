@@ -3,10 +3,6 @@ import { createSlideFromTemplateWithContent } from '@/utils/createSlideFromTempl
 import generateSlideContent from './generateSlideContent';
 import { LLMRequestContext } from '@/types/gigachat';
 
-if (!process.env.GIGACHAT_API_KEY || !process.env.GIGACHAT_AUTH_KEY || !process.env.GIGACHAT_SCOPE) {
-    throw new Error('GIGACHAT_API_KEY, GIGACHAT_AUTH_KEY, and GIGACHAT_SCOPE environment variables are not set');
-}
-
 export default async function generateSlide({
     topic,
     index,
