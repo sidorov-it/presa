@@ -1,0 +1,165 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run linter
+        run: npm run lint
+      
+      - name: Run tests
+        run: npm test
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Generate Prisma Client
+        run: npx prisma generate
+      
+      - name: Build application
+        run: npm run build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+      
+      - name: Create deployment package
+        run: |
+          mkdir deploy-package
+          cp -r .next deploy-package/
+          cp -r public deploy-package/
+          cp -r prisma deploy-package/
+          cp package*.json deploy-package/
+          cp next.config.js deploy-package/
+          cp -r src deploy-package/
+          tar -czf deploy-package.tar.gz deploy-package/
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: deploy-package.tar.gz
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-files
+      
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            # Создаем директории
+            mkdir -p /var/www/slydle
+            cd /var/www/slydle
+            
+            # Создаем бэкап текущей версии
+            if [ -d "current" ]; then
+              mv current backup-$(date +%Y%m%d-%H%M%S)
+            fi
+            
+            # Очищаем старые бэкапы (оставляем только 3 последних)
+            ls -dt backup-* | tail -n +4 | xargs -r rm -rf
+      
+      - name: Copy files to server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          source: "deploy-package.tar.gz"
+          target: "/var/www/slydle/"
+      
+      - name: Setup application
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd /var/www/slydle
+            
+            # Распаковываем новую версию
+            tar -xzf deploy-package.tar.gz
+            mv deploy-package current
+            rm deploy-package.tar.gz
+            
+            cd current
+            
+            # Устанавливаем зависимости для продакшена
+            npm ci --only=production
+            
+            # Генерируем Prisma клиент
+            npx prisma generate
+            
+            # Запускаем миграции базы данных
+            npx prisma db push
+            
+            # Создаем .env файл
+            cat > .env << EOF
+            DATABASE_URL="${{ secrets.DATABASE_URL }}"
+            NEXTAUTH_SECRET="${{ secrets.NEXTAUTH_SECRET }}"
+            NEXTAUTH_URL="${{ secrets.NEXTAUTH_URL }}"
+            NODE_ENV=production
+            PORT=3000
+            EOF
+            
+            # Устанавливаем правильные права доступа
+            chown -R deploy:deploy /var/www/slydle
+            chmod -R 755 /var/www/slydle
+            
+            # Перезапускаем приложение через PM2
+            pm2 restart slydle || pm2 start npm --name "slydle" -- start
+            
+            # Проверяем статус
+            pm2 status slydle
+            
+            # Сохраняем конфигурацию PM2
+            pm2 save
+
+  health-check:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Health check
+        run: |
+          sleep 30
+          curl -f ${{ secrets.NEXTAUTH_URL }}/api/health || exit 1 
