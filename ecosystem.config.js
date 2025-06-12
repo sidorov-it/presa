@@ -2,57 +2,41 @@ module.exports = {
     apps: [
         {
             name: 'slydle',
-            script: './node_modules/.bin/next',
+            script: 'npm',
             args: 'start',
             cwd: '/var/www/slydle/current',
-            instances: 'max',
-            exec_mode: 'cluster',
+            instances: 1,
+            exec_mode: 'fork',
             env: {
                 NODE_ENV: 'production',
                 PORT: 3000,
             },
-            env_production: {
-                NODE_ENV: 'production',
-                PORT: 3000,
-            },
             // Логирование
-            log_file: '/var/log/slydle/combined.log',
-            out_file: '/var/log/slydle/out.log',
-            error_file: '/var/log/slydle/error.log',
+            log_file: '/var/www/slydle/logs/combined.log',
+            out_file: '/var/www/slydle/logs/out.log',
+            error_file: '/var/www/slydle/logs/error.log',
             log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
+            merge_logs: true,
 
-            // Мониторинг
+            // Настройки памяти и производительности
             max_memory_restart: '1G',
-            min_uptime: '10s',
-            max_restarts: 5,
+            node_args: '--max-old-space-size=1024',
 
-            // Автоматический перезапуск при изменении файлов (только для разработки)
-            watch: false,
-            ignore_watch: ['node_modules', 'logs'],
+            // Перезапуск и мониторинг
+            restart_delay: 4000,
+            max_restarts: 10,
+            min_uptime: '10s',
+            autorestart: true,
 
             // Graceful shutdown
             kill_timeout: 5000,
-            listen_timeout: 5000,
+            listen_timeout: 3000,
+            wait_ready: true,
+            ready_timeout: 3000,
 
-            // Health check
-            health_check_grace_period: 3000,
+            // Мониторинг
+            watch: false,
+            ignore_watch: ['node_modules', 'logs', '.git'],
         },
     ],
-
-    // Конфигурация для деплоя
-    deploy: {
-        production: {
-            user: 'deploy',
-            host: ['your-server-ip'],
-            ref: 'origin/main',
-            repo: 'https://github.com/your-username/slydle.git',
-            path: '/var/www/slydle',
-            'post-deploy':
-                'npm ci --only=production && npx prisma generate && npx prisma db push && pm2 reload ecosystem.config.js --env production',
-            'pre-deploy-local': '',
-            'post-deploy-local': '',
-            'pre-setup': '',
-            ssh_options: 'StrictHostKeyChecking=no',
-        },
-    },
 };
