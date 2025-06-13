@@ -28,6 +28,7 @@ import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import Logo from '@/components/icons/Logo/Logo';
+import MobileWarningOverlay from '@/components/MobileWarningOverlay/MobileWarningOverlay';
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -191,6 +192,7 @@ export default function PresentationEditorPage() {
         <>
             <ReadOnlyProvider isReadOnly={false}>
                 <ThemeStylesApplier theme={currentTheme} backgroundSettings={presentation.backgroundSettings} />
+                <MobileWarningOverlay />
                 <div ref={containerRef} className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`}>
                     <header className={styles.header}>
                         <div className={styles.headerContent}>

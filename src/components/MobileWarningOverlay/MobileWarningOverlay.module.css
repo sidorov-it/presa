@@ -1,0 +1,46 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+}
+
+.content {
+    border: 1px solid #000;
+    background-color: var(--color-surface, #ffffff);
+    padding: 2rem;
+    border-radius: var(--radius-md, 0.5rem);
+    text-align: center;
+    max-width: 20rem;
+}
+
+.text {
+    margin-bottom: 1rem;
+    color: var(--color-text, #000000);
+}
+
+.backButton {
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md, 0.5rem);
+    background-color: var(--color-primary, #2563EB);
+    color: #fff;
+}
+
+.backButton:hover {
+    background-color: var(--color-primary-dark, #1D4ED8);
+}
+
+.backButton:focus {
+    outline: none;
+}
+
+:global(.dark) .content {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+}
