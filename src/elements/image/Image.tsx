@@ -39,7 +39,7 @@ const Image: React.FC<ImageProps> = ({
         state.getElement(presentationId, slideId, layoutId, elementId)
     ) as ImageElement;
 
-    // Check if element is generating (from AI store)   
+    // Check if element is generating (from AI store)
     const aiImageStore = useAIImageStore();
     const isGenerating = aiImageStore.isGenerating(elementId);
     const [error, setError] = useState<string | null>(null);
@@ -311,9 +311,7 @@ const Image: React.FC<ImageProps> = ({
             } else {
                 let direction: 'right' | 'left' | 'both' | undefined;
 
-                if (element.alignment === 'center') {
-                    direction = 'both';
-                } else if (element.alignment === 'right') {
+                if (element.alignment === 'right') {
                     direction = 'left';
                 } else if (element.alignment === 'left') {
                     direction = 'right';
