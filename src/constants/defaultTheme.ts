@@ -1,34 +1,34 @@
 import { Theme } from '@/types/theme';
 
 export const DEFAULT_THEME: Omit<Theme, 'id' | 'createdAt' | 'updatedAt'> = {
-    name: 'Minimal Light Theme',
-    description: 'Clean light theme with blue accents',
+    name: 'Modern Dark Theme',
+    description: 'A sleek, modern dark theme with vibrant accents',
     colors: {
         additionalColors: [],
-        primaryAccent: '#3B82F6',
-        shapesColor: '#3B82F6',
-        secondaryAccents: ['#2563EB', '#60A5FA', '#93C5FD'],
-        headingColor: '#111827',
-        textColor: '#374151',
-        slideBackground: '#FFFFFF',
+        primaryAccent: '#007BFF', // Electric Blue
+        shapesColor: '#007BFF', // Electric Blue
+        secondaryAccents: ['#6C63FF', '#2563EB', '#A0A0A0'], // Indigo Purple, Blue, Steel Gray
+        headingColor: '#F5F5F5', // Cool White
+        textColor: '#A0A0A0', // Steel Gray
+        slideBackground: '#1E1E1E', // Charcoal Gray
         pageBackground: {
             type: 'color',
-            color: '#F3F4F6',
+            color: '#0B0B0B', // Jet Black
             imageUrl: '',
         },
-        accentBlocksColor: '#3B82F6',
-        secondaryButtonColor: '#2563EB',
+        accentBlocksColor: '#007BFF', // Electric Blue
+        secondaryButtonColor: '#6C63FF', // Indigo Purple
     },
     typography: {
         headingFont: 'inter',
         headingWeight: 600,
-        headingColor: '#111827',
+        headingColor: '#F5F5F5', // Cool White
         headingLineHeight: 1.25,
         headingLetterSpacing: 0,
         headingCapitalization: 'none',
         bodyFont: 'inter',
         bodyWeight: 400,
-        bodyColor: '#374151',
+        bodyColor: '#A0A0A0', // Steel Gray
         bodyLineHeight: 1.25,
         bodyLetterSpacing: 0,
         bodyCapitalization: 'none',
@@ -38,12 +38,12 @@ export const DEFAULT_THEME: Omit<Theme, 'id' | 'createdAt' | 'updatedAt'> = {
             borderRadius: '8px',
             shadow: 'sm',
             borderWidth: 'thin',
-            borderColor: '#E5E7EB',
+            borderColor: '#3A3F4B', // Slate Gray
             imageShape: 'round',
-            opacity: 1,
+            opacity: 0.8,
         },
         blocks: {
-            backgroundColor: '#FFFFFF',
+            backgroundColor: '#1E1E1E', // Charcoal Gray
             backgroundBlockFillType: 'fill',
             borderWidth: 'thin',
             shadow: 'sm',
@@ -51,9 +51,9 @@ export const DEFAULT_THEME: Omit<Theme, 'id' | 'createdAt' | 'updatedAt'> = {
             blockBackgroundCustomColors: [],
         },
         buttons: {
-            buttonColor: '#3B82F6',
+            buttonColor: '#007BFF', // Electric Blue
             buttonShape: 'rounded',
-            linkColor: '#3B82F6',
+            linkColor: '#007BFF', // Electric Blue
         },
     },
 };
