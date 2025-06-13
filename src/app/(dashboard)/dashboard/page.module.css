@@ -227,8 +227,10 @@
 
 .menuButton:hover {
     background-color: var(--color-surface);
-    color: var(--color-text);
+    color: var(--color-primary);
+    border-color: var(--color-primary);
 }
+
 
 .menuDropdown {
     position: absolute;

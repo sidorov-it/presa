@@ -119,7 +119,7 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
         backgroundSize: backgroundSettings?.backgroundImage ? 'cover' : undefined,
         backgroundPosition: backgroundSettings?.backgroundImage ? 'center' : undefined,
         backgroundAttachment: backgroundSettings?.backgroundImage ? 'fixed' : undefined,
-        minHeight: '100vh',
+        minHeight: 'calc(100vh - 75px - 38px)',
         transition: 'background 0.3s',
     };
 
@@ -134,7 +134,7 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
 
     return (
         <DndProvider presentationId={presentationId}>
-            <div style={editorBgStyle} className={styles.editorContainer}>
+            <div style={editorBgStyle}>
                 <EditorContent
                     presentationId={presentationId}
                     activeSlideId={activeSlideId}
