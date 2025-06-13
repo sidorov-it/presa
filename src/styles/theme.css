@@ -1,10 +1,10 @@
 :root {
   /* Default theme values - these will be overridden by dynamic theme settings */
-  --primary-accent: #007BFF; /* Electric Blue */
-  --heading-color: #F5F5F5; /* Cool White */
-  --text-color: #A0A0A0; /* Steel Gray */
-  --slide-background: #1E1E1E; /* Charcoal Gray */
-  --page-background-color: #0B0B0B; /* Jet Black */
+  --primary-accent: #3B82F6; /* Blue */
+  --heading-color: #111827; /* Dark Gray */
+  --text-color: #374151; /* Slate */
+  --slide-background: #ffffff; /* White */
+  --page-background-color: #F3F4F6; /* Light Gray */
   
   --heading-font: 'Inter', sans-serif;
   --heading-weight: 600;
@@ -12,22 +12,21 @@
   --body-weight: 400;
   
   --slide-border-radius: 8px;
-  --slide-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3);
+  --slide-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
   --slide-border: 1px solid;
-  --slide-border-color: #3A3F4B; /* Slate Gray */
+  --slide-border-color: #E5E7EB; /* Gray */
   
-  --block-background: #1E1E1E; /* Charcoal Gray */
-  --block-opacity: 0.8;
+  --block-background: #ffffff; /* White */
+  --block-opacity: 1;
   --block-border-width: 1px;
   --block-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.2);
   
-  --button-color: #007BFF; /* Electric Blue */
+  --button-color: #3B82F6; /* Blue */
   --button-shape: rounded;
-  --link-color: #007BFF; /* Electric Blue */
+  --link-color: #3B82F6; /* Blue */
   
-  --control-stroke: rgba(58, 63, 75, 0.6); /* Slate Gray with opacity */
-  --control-icon: rgba(245, 245, 245, 0.8); /* Cool White with opacity */
-  --control-background: #1E1E1E; /* Charcoal Gray */
-
-  --drag-handle-background: #1E1E1E; /* Charcoal Gray */
+  --control-stroke: rgba(0, 0, 0, 0.2);
+  --control-icon: rgba(0, 0, 0, 0.6);
+  --control-background: transparent;
+  --drag-handle-background: #F3F4F6;
 }

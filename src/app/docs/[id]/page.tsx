@@ -98,13 +98,19 @@ export default function PresentationEditorPage() {
 
     // Apply theme when presentation is loaded or themes change
     useEffect(() => {
-        if (!presentation || !presentation.themeId) return;
+        if (!presentation) return;
 
-        const savedTheme = themes.find(theme => theme.id === presentation.themeId);
-        if (savedTheme) {
-            setCurrentTheme(savedTheme);
+        if (presentation.themeId) {
+            const savedTheme = themes.find(theme => theme.id === presentation.themeId);
+            if (savedTheme) {
+                setCurrentTheme(savedTheme);
+                return;
+            }
         }
-    }, [presentation, themes, setCurrentTheme]);
+
+        // If presentation has no theme or theme is missing, use default
+        setCurrentTheme(getDefaultTheme());
+    }, [presentation, themes, setCurrentTheme, getDefaultTheme]);
 
     // Load themes separately
     useEffect(() => {
