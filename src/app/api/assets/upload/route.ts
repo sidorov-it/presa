@@ -10,7 +10,7 @@ const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 export const POST = async (req: NextRequest) => {
     const contentType = req.headers.get('content-type') || '';
     if (!contentType.startsWith('multipart/form-data')) {
-        return NextResponse.json({ error: 'Invalid content type' }, { status: 400 });
+        return NextResponse.json({ error: 'Неверный тип содержимого' }, { status: 400 });
     }
 
     const formData = await req.formData();

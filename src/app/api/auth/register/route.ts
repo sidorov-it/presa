@@ -9,11 +9,11 @@ export async function POST(req: NextRequest) {
 
         // Validate the input
         if (!name || !email || !password) {
-            return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
+            return NextResponse.json({ message: 'Не все обязательные поля заполнены' }, { status: 400 });
         }
 
         if (password.length < 8) {
-            return NextResponse.json({ message: 'Password must be at least 8 characters long' }, { status: 400 });
+            return NextResponse.json({ message: 'Пароль должен содержать не менее 8 символов' }, { status: 400 });
         }
 
         // Check if user already exists
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
         });
 
         if (existingUser) {
-            return NextResponse.json({ message: 'User with this email already exists' }, { status: 409 });
+            return NextResponse.json({ message: 'Пользователь с таким email уже существует' }, { status: 409 });
         }
 
         // Hash the password
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
         // Return success response (without sensitive data)
         return NextResponse.json(
             {
-                message: 'User registered successfully',
+                message: 'Пользователь успешно зарегистрирован',
                 user: {
                     id: user.id,
                     name: user.name,
@@ -53,6 +53,6 @@ export async function POST(req: NextRequest) {
         );
     } catch (error) {
         console.error('Registration error:', error);
-        return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+        return NextResponse.json({ message: 'Внутренняя ошибка сервера' }, { status: 500 });
     }
 }

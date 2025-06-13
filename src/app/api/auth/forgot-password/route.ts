@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
 
         // Validate the input
         if (!email) {
-            return NextResponse.json({ message: 'Email is required' }, { status: 400 });
+            return NextResponse.json({ message: 'Требуется указать email' }, { status: 400 });
         }
 
         // Find the user
@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
         // This prevents enumeration attacks
         if (!user) {
             return NextResponse.json(
-                { message: 'If a user with that email exists, a password reset link has been sent.' },
+                { message: 'Если пользователь с таким email существует, ссылка для сброса пароля была отправлена.' },
                 { status: 200 }
             );
         }
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json(
             {
-                message: 'If a user with that email exists, a password reset link has been sent.',
+                message: 'Если пользователь с таким email существует, ссылка для сброса пароля была отправлена.',
                 // Include token in development only
                 ...(process.env.NODE_ENV === 'development' && {
                     token: resetToken,
@@ -53,6 +53,6 @@ export async function POST(req: NextRequest) {
         );
     } catch (error) {
         console.error('Forgot password error:', error);
-        return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+        return NextResponse.json({ message: 'Внутренняя ошибка сервера' }, { status: 500 });
     }
 }

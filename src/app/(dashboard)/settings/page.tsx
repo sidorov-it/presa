@@ -32,14 +32,14 @@ const SettingsPage = () => {
 
             if (!authData.authenticated) {
                 console.error('User not authenticated properly');
-                toast.error('Authentication error. Please sign in again.');
+                toast.error('Ошибка аутентификации. Пожалуйста, войдите снова.');
                 return false;
             }
 
             return true;
         } catch (error) {
             console.error('Authentication check error:', error);
-            toast.error('Authentication error. Please try again.');
+            toast.error('Ошибка аутентификации. Попробуйте ещё раз.');
             return false;
         }
     };
@@ -81,11 +81,11 @@ const SettingsPage = () => {
                     }
                 } else {
                     console.error('Error fetching preferences:', data.message);
-                    toast.error('Failed to load preferences');
+                    toast.error('Не удалось загрузить настройки');
                 }
             } catch (error) {
                 console.error('Error fetching preferences:', error);
-                toast.error('Failed to load preferences');
+                toast.error('Не удалось загрузить настройки');
             } finally {
                 setIsLoading(false);
             }
@@ -128,7 +128,7 @@ const SettingsPage = () => {
             console.log('Profile update response data:', data);
 
             if (!response.ok) {
-                throw new Error(data.message || 'Failed to update profile');
+                throw new Error(data.message || 'Не удалось обновить профиль');
             }
 
             // Update the session to reflect the name change
@@ -138,10 +138,10 @@ const SettingsPage = () => {
             });
             console.log('Session updated successfully');
 
-            toast.success('Profile updated successfully');
+            toast.success('Профиль успешно обновлён');
         } catch (error) {
             console.error('Profile update error complete details:', error);
-            toast.error(error instanceof Error ? error.message : 'Failed to update profile');
+            toast.error(error instanceof Error ? error.message : 'Не удалось обновить профиль');
         } finally {
             setIsSaving(false);
         }
@@ -151,12 +151,12 @@ const SettingsPage = () => {
         e.preventDefault();
 
         if (newPassword !== confirmPassword) {
-            toast.error("New passwords don't match");
+            toast.error('Новые пароли не совпадают');
             return;
         }
 
         if (newPassword.length < 8) {
-            toast.error('Password must be at least 8 characters');
+            toast.error('Пароль должен содержать не менее 8 символов');
             return;
         }
 
@@ -184,17 +184,17 @@ const SettingsPage = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || 'Failed to change password');
+                throw new Error(data.message || 'Не удалось изменить пароль');
             }
 
-            toast.success('Password changed successfully');
+            toast.success('Пароль успешно изменён');
 
             // Reset password fields
             setCurrentPassword('');
             setNewPassword('');
             setConfirmPassword('');
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : 'Failed to change password');
+            toast.error(error instanceof Error ? error.message : 'Не удалось изменить пароль');
             console.error(error);
         } finally {
             setIsSaving(false);
@@ -229,12 +229,12 @@ const SettingsPage = () => {
             console.log('Email preferences response:', response.status, data);
 
             if (!response.ok) {
-                throw new Error(data.message || 'Failed to update preferences');
+                throw new Error(data.message || 'Не удалось обновить настройки');
             }
 
-            toast.success('Email preferences updated');
+            toast.success('Настройки почты обновлены');
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : 'Failed to update preferences');
+            toast.error(error instanceof Error ? error.message : 'Не удалось обновить настройки');
             console.error('Email preferences error:', error);
         } finally {
             setIsSaving(false);

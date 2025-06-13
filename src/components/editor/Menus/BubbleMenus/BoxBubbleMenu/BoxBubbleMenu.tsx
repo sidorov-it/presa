@@ -93,7 +93,7 @@ const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ presentationId, slideId, lay
                 className={styles.button}
             />
 
-            <button onClick={handleDelete} className={styles.deleteButton} aria-label="Delete box">
+            <button onClick={handleDelete} className={styles.deleteButton} aria-label="Удалить блок">
                 <DeleteIcon />
             </button>
         </BaseMenu>

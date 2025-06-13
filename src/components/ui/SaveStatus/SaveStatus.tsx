@@ -18,19 +18,19 @@ const SaveStatus: React.FC<SaveStatusProps> = ({ status }) => {
             {status === 'saving' && (
                 <>
                     <AiOutlineLoading3Quarters className={styles.savingIcon} />
-                    <span className={styles.savingText}>Saving...</span>
+                    <span className={styles.savingText}>Сохраняем...</span>
                 </>
             )}
             {status === 'saved' && (
                 <>
                     <FiCheck className={styles.savedIcon} />
-                    <span className={styles.savedText}>Saved</span>
+                    <span className={styles.savedText}>Сохранено</span>
                 </>
             )}
             {status === 'error' && (
                 <>
                     <FiAlertCircle className={styles.errorText} />
-                    <span className={styles.errorText}>Save failed</span>
+                    <span className={styles.errorText}>Ошибка сохранения</span>
                 </>
             )}
         </div>

@@ -7,7 +7,7 @@ const ThemeDebugButton: React.FC = () => {
 
     return (
         <>
-            <button onClick={() => setIsOpen(!isOpen)} className={styles.button} aria-label="Open theme debug">
+            <button onClick={() => setIsOpen(!isOpen)} className={styles.button} aria-label="Открыть окно отладки темы">
                 <svg className={styles.icon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                         strokeLinecap="round"

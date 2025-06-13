@@ -15,8 +15,8 @@ interface PdfExportButtonProps {
 const PdfExportButton: React.FC<PdfExportButtonProps> = ({
     presentation,
     filename = 'presentation.pdf',
-    buttonText = 'Export to PDF',
-    loadingText = 'Exporting...',
+    buttonText = 'Экспорт в PDF',
+    loadingText = 'Экспорт...',
 }) => {
     const [isExporting, setIsExporting] = useState(false);
 
@@ -49,7 +49,7 @@ const PdfExportButton: React.FC<PdfExportButtonProps> = ({
                 variant="solid"
                 size="md"
                 disabled={isExporting}
-                aria-label="Export presentation to PDF"
+                aria-label="Экспорт презентации в PDF"
                 display="flex"
                 alignItems="center"
                 gap={2}

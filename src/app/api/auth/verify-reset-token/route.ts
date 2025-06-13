@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
 
         // Validate the input
         if (!token) {
-            return NextResponse.json({ message: 'Token is required' }, { status: 400 });
+            return NextResponse.json({ message: 'Необходим токен' }, { status: 400 });
         }
 
         // Find user with this token and token not expired
@@ -22,13 +22,13 @@ export async function POST(req: NextRequest) {
         });
 
         if (!user) {
-            return NextResponse.json({ message: 'Invalid or expired token' }, { status: 400 });
+            return NextResponse.json({ message: 'Недействительный или просроченный токен' }, { status: 400 });
         }
 
         // Token is valid
-        return NextResponse.json({ message: 'Token is valid' }, { status: 200 });
+        return NextResponse.json({ message: 'Токен действителен' }, { status: 200 });
     } catch (error) {
         console.error('Verify token error:', error);
-        return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+        return NextResponse.json({ message: 'Внутренняя ошибка сервера' }, { status: 500 });
     }
 }
