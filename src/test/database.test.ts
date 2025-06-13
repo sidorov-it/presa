@@ -98,13 +98,13 @@ describe('Database Operations', () => {
     });
 
     test('can create a presentation with slides as JSON', async () => {
-        // Create a presentation with slides as JSON string
+        // Create a presentation with slides stored as JSON object
         const presentation = await prisma.presentation.create({
             data: {
                 title: testPresentation.title,
                 description: testPresentation.description,
                 userId,
-                slides: JSON.stringify(testPresentation.slides),
+                slides: testPresentation.slides,
             },
         });
 
@@ -114,14 +114,10 @@ describe('Database Operations', () => {
         expect(presentation).toBeDefined();
         expect(presentation.title).toBe(testPresentation.title);
 
-        // Verify slides were stored as JSON string
-        expect(typeof presentation.slides).toBe('string');
-
-        // Parse the slides and verify the structure
-        const parsedSlides = JSON.parse(presentation.slides as string);
-        expect(Array.isArray(parsedSlides)).toBe(true);
-        expect(parsedSlides.length).toBe(1);
-        expect(parsedSlides[0].id).toBe('slide-1');
+        // Verify slides were stored as a JSON object
+        expect(Array.isArray(presentation.slides)).toBe(true);
+        expect(presentation.slides.length).toBe(1);
+        expect(presentation.slides[0].id).toBe('slide-1');
     });
 
     test('can retrieve and update a presentation with parsed slides', async () => {
@@ -135,7 +131,7 @@ describe('Database Operations', () => {
         expect(presentation).toBeDefined();
 
         // Parse slides for manipulation
-        const slides = JSON.parse(presentation!.slides as string);
+        const slides = presentation!.slides as any[];
 
         // Modify slides
         slides[0].layouts[0].elements[0].content = 'Updated content';
@@ -146,12 +142,11 @@ describe('Database Operations', () => {
                 id: presentationId,
             },
             data: {
-                slides: JSON.stringify(slides),
+                slides,
             },
         });
 
         // Verify update
-        const updatedSlides = JSON.parse(updatedPresentation.slides as string);
-        expect(updatedSlides[0].layouts[0].elements[0].content).toBe('Updated content');
+        expect((updatedPresentation.slides as any[])[0].layouts[0].elements[0].content).toBe('Updated content');
     });
 });

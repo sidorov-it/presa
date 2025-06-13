@@ -4,7 +4,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
 import { generateId } from '@/utils/id';
 import { getNewEditorElement } from '@/utils/getNewEditorElement';
-import { parsePresentation, stringifyJsonField } from '@/utils/json';
+import { parsePresentation } from '@/utils/json';
 
 // Get a specific presentation
 export async function GET(request: Request, props: { params: Promise<{ id: string }> }) {
@@ -43,7 +43,7 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ id: s
         } = {
             ...data,
             updatedAt: new Date(),
-            slides: data.slides ? stringifyJsonField(data.slides) : undefined,
+            slides: data.slides ?? undefined,
         };
 
         const presentation = await prisma.presentation.update({
@@ -152,7 +152,7 @@ export async function POST(req: NextRequest) {
             data: {
                 title,
                 description: '',
-                slides: JSON.stringify([slideData]),
+                slides: [slideData],
                 userId,
                 createdAt: new Date(),
                 updatedAt: new Date(),

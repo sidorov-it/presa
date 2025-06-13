@@ -4,7 +4,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/route';
 import { generateId } from '@/utils/id';
 import { getNewEditorElement } from '@/utils/getNewEditorElement';
-import { parsePresentations, stringifyJsonField } from '@/utils/json';
+import { parsePresentations } from '@/utils/json';
 
 // Get list of presentations for a user (lightweight version for dashboard)
 export async function GET() {
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
             data: {
                 title,
                 description: '',
-                slides: stringifyJsonField([slideData]),
+                slides: [slideData],
                 userId,
             },
         });
