@@ -28,6 +28,10 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    # Build можно отменять - он не влияет на production
+    concurrency:
+      group: production-build
+      cancel-in-progress: true
     steps:
       - uses: actions/checkout@v4
       
@@ -83,6 +87,10 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    # Deploy нельзя отменять - он влияет на production
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
     steps:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -266,6 +274,10 @@ jobs:
   health-check:
     needs: deploy
     runs-on: ubuntu-latest
+    # Health-check тоже нельзя отменять - проверяет состояние после deploy
+    concurrency:
+      group: production-health-check
+      cancel-in-progress: false
     steps:
       - name: Health check
         run: |
