@@ -10,6 +10,12 @@
     margin-bottom: 1.5rem;
 }
 
+@media (max-width: 1023px) {
+    .header {
+        padding-left: 3rem;
+    }
+}
+
 .sortContainer {
     display: flex;
     align-items: center;
