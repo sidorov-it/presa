@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { hashPassword } from '@/lib/auth';
+import { sendEmail } from '@/lib/email';
 
 export async function POST(req: NextRequest) {
     try {
@@ -38,6 +39,17 @@ export async function POST(req: NextRequest) {
                 emailPreferences: { emailUpdates: true },
             },
         });
+
+        // Send welcome email (errors are logged but do not block registration)
+        try {
+            await sendEmail({
+                to: user.email,
+                subject: 'Добро пожаловать в slydle.ru',
+                text: `Здравствуйте, ${user.name}! Вы успешно зарегистрировались на slydle.ru.`,
+            });
+        } catch (emailError) {
+            console.error('Failed to send registration email:', emailError);
+        }
 
         // Return success response (without sensitive data)
         return NextResponse.json(
