@@ -163,7 +163,7 @@ Since the service hasn't started yet, there's no need for backward compatibility
 A new utility file has been created at `src/utils/json.ts` to centralize and standardize JSON handling across the application. This file provides several functions:
 
 - `parseJsonField<T>(data: unknown): T` - Safely parses a JSON string if needed
-- `stringifyJsonField(data: unknown): string` - Safely stringifies an object if needed
+- `stringifyJsonField(data: unknown): string` - Safely stringifies an object if needed (legacy support)
 - `parsePresentation<T>(presentation: T): T` - Transforms a presentation object by parsing its slides JSON
 - `parsePresentations<T>(presentations: T[]): T[]` - Parses an array of presentation objects
 - `getSlidesCount(slidesData: unknown): number` - Calculates the number of slides in a presentation
@@ -183,11 +183,9 @@ return NextResponse.json(parsePresentation(presentation));
 
 2. When updating a presentation:
 ```typescript
-import { stringifyJsonField } from '@/utils/json';
-
 const updateData = {
   ...data,
-  slides: data.slides ? stringifyJsonField(data.slides) : undefined,
+  slides: data.slides ?? undefined,
 };
 
 const presentation = await prisma.presentation.update({

@@ -2,7 +2,6 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateId } from '@/utils/id';
-import { stringifyJsonField } from '@/utils/json';
 import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
 import { generateSlidesTemplates } from '@/services/llm/gigaChat';
 import generateSlide from '@/services/llm/gigaChat/generateSlide';
@@ -63,7 +62,7 @@ export async function POST(request: NextRequest) {
                     data: {
                         title: title || 'AI Generated Presentation',
                         description: prompt?.substring(0, 500) || '',
-                        slides: stringifyJsonField(slides),
+                        slides,
                         userId,
                     },
                 });
@@ -120,7 +119,7 @@ export async function POST(request: NextRequest) {
                         title: title || 'AI Generated Presentation',
                         description: prompt?.substring(0, 500) || '',
                         userId,
-                        slides: stringifyJsonField(slidesData),
+                        slides: slidesData,
                     },
                 });
 

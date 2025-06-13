@@ -4,7 +4,7 @@
 
 import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
-import { stringifyJsonField, parseJsonField } from '@/utils/json';
+import { parseJsonField } from '@/utils/json';
 
 /**
  * Creates a presentation without using Prisma's transaction system
@@ -12,10 +12,9 @@ import { stringifyJsonField, parseJsonField } from '@/utils/json';
  */
 export async function createPresentationWithoutTransaction(data: any) {
     try {
-        // Ensure slides is properly stringified
         const presentationData = {
             ...data,
-            slides: data.slides ? stringifyJsonField(data.slides) : '[]',
+            slides: data.slides ?? [],
         };
 
         // Use direct MongoDB driver to create the document
@@ -52,10 +51,9 @@ export async function createPresentationWithoutTransaction(data: any) {
  */
 export async function updatePresentationWithoutTransaction(id: string, data: any) {
     try {
-        // Ensure slides is properly stringified
         const updateData = {
             ...data,
-            slides: data.slides ? stringifyJsonField(data.slides) : undefined,
+            slides: data.slides ?? undefined,
             updatedAt: new Date(),
         };
 
