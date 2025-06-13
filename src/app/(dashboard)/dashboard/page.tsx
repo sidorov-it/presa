@@ -40,6 +40,9 @@ export default function DashboardPage() {
     const [language, setLanguage] = useState('ru');
     const [aiError, setAiError] = useState('');
 
+    type SortOption = 'createdAt' | 'updatedAt' | 'title';
+    const [sortBy, setSortBy] = useState<SortOption>('updatedAt');
+
     // Load themes for previews
     useEffect(() => {
         loadThemes().catch(err => {
@@ -63,10 +66,17 @@ export default function DashboardPage() {
         loadPresentations();
     }, [loadPresentationsList]);
 
-    // This effect updates the local state when presentations change in the store
+    // Update local state when presentations or sorting change
     useEffect(() => {
-        setUserPresentations(presentations);
-    }, [presentations]);
+        const sorted = [...presentations].sort((a, b) => {
+            if (sortBy === 'title') {
+                return a.title.localeCompare(b.title);
+            } else {
+                return new Date(b[sortBy]).getTime() - new Date(a[sortBy]).getTime();
+            }
+        });
+        setUserPresentations(sorted);
+    }, [presentations, sortBy]);
 
     // Handle creating an empty presentation
     const handleCreateEmptyPresentation = async () => {
@@ -277,6 +287,21 @@ export default function DashboardPage() {
                         Создать пустую
                     </Button>
                 </div>
+            </div>
+            <div className={styles.sortContainer}>
+                <label className={styles.sortLabel} htmlFor="sort">
+                    Сортировать по:
+                </label>
+                <select
+                    id="sort"
+                    value={sortBy}
+                    onChange={e => setSortBy(e.target.value as SortOption)}
+                    className={styles.sortSelect}
+                >
+                    <option value="createdAt">дате создания</option>
+                    <option value="updatedAt">дате редактирования</option>
+                    <option value="title">заголовку</option>
+                </select>
             </div>
 
             {/* Loading state */}
