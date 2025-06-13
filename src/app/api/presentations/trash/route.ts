@@ -56,7 +56,7 @@ export async function DELETE(req: NextRequest) {
         const id = searchParams.get('id');
 
         if (!id) {
-            return NextResponse.json({ message: 'Invalid presentation ID' }, { status: 400 });
+            return NextResponse.json({ message: 'Неверный идентификатор презентации' }, { status: 400 });
         }
 
         const userId = session.user.id;

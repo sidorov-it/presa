@@ -13,7 +13,7 @@ export default function ForgotPasswordPage() {
         e.preventDefault();
 
         if (!email) {
-            setError('Please enter your email address');
+            setError('Пожалуйста, укажите вашу электронную почту');
             return;
         }
 
@@ -30,7 +30,7 @@ export default function ForgotPasswordPage() {
             const data = await response.json();
 
             if (!response.ok) {
-                setError(data.message || 'Failed to send reset link');
+                setError(data.message || 'Не удалось отправить ссылку для сброса');
                 setIsLoading(false);
                 return;
             }
@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
             setIsLoading(false);
         } catch (error) {
             console.error('Forgot password error:', error);
-            setError('Something went wrong. Please try again.');
+            setError('Что-то пошло не так. Попробуйте еще раз.');
             setIsLoading(false);
         }
     };
@@ -142,7 +142,7 @@ export default function ForgotPasswordPage() {
                     >
                         <div>
                             <label htmlFor="email-address" className={styles.label}>
-                                Email
+                                Электронная почта
                             </label>
                             <input
                                 id="email-address"
@@ -153,7 +153,7 @@ export default function ForgotPasswordPage() {
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
                                 className={styles.input}
-                                placeholder="Email address"
+                                placeholder="Электронная почта"
                             />
                         </div>
 

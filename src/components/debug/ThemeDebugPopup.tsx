@@ -86,8 +86,8 @@ const ThemeDebugPopup: React.FC<ThemeDebugPopupProps> = ({ isOpen, onClose }) =>
     return (
         <div className={styles.popup}>
             <div className={styles.header}>
-                <h3 className={styles.title}>Theme Variables Debug</h3>
-                <button onClick={onClose} className={styles.closeButton} aria-label="Close debug popup">
+                <h3 className={styles.title}>Отладка переменных темы</h3>
+                <button onClick={onClose} className={styles.closeButton} aria-label="Закрыть окно отладки">
                     <svg className={styles.icon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>

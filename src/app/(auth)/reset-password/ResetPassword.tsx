@@ -48,17 +48,17 @@ const ResetPassword = () => {
         e.preventDefault();
 
         if (!password || !confirmPassword) {
-            setError('Please fill in all fields');
+            setError('Пожалуйста, заполните все поля');
             return;
         }
 
         if (password !== confirmPassword) {
-            setError('Passwords do not match');
+            setError('Пароли не совпадают');
             return;
         }
 
         if (password.length < 8) {
-            setError('Password must be at least 8 characters long');
+            setError('Пароль должен содержать не менее 8 символов');
             return;
         }
 
@@ -75,7 +75,7 @@ const ResetPassword = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                setError(data.message || 'Failed to reset password');
+                setError(data.message || 'Не удалось сбросить пароль');
                 setIsLoading(false);
                 return;
             }
@@ -90,7 +90,7 @@ const ResetPassword = () => {
             }, 3000);
         } catch (error) {
             console.error('Password reset error:', error);
-            setError('Something went wrong. Please try again.');
+            setError('Что-то пошло не так. Попробуйте еще раз.');
             setIsLoading(false);
         }
     };
@@ -100,12 +100,12 @@ const ResetPassword = () => {
             <div className={styles.container}>
                 <div className={styles.formWrapper}>
                     <div className={styles.header}>
-                        <h1 className={styles.title}>Invalid or Expired Token</h1>
-                        <p className={styles.subtitle}>This password reset link is invalid or has expired.</p>
+                        <h1 className={styles.title}>Недействительный или просроченный токен</h1>
+                        <p className={styles.subtitle}>Ссылка для сброса пароля недействительна или устарела.</p>
                     </div>
                     <div className={styles.header}>
                         <Link href="/forgot-password" className={styles.link}>
-                            Request a new password reset link
+                            Запросить новую ссылку для сброса пароля
                         </Link>
                     </div>
                 </div>
@@ -117,8 +117,8 @@ const ResetPassword = () => {
         <div className={styles.container}>
             <div className={styles.formWrapper}>
                 <div className={styles.header}>
-                    <h1 className={styles.title}>Set new password</h1>
-                    <p className={styles.subtitle}>Enter your new password below</p>
+                    <h1 className={styles.title}>Создайте новый пароль</h1>
+                    <p className={styles.subtitle}>Введите новый пароль ниже</p>
                 </div>
 
                 {isSuccess ? (
@@ -140,11 +140,10 @@ const ResetPassword = () => {
                                 </svg>
                             </div>
                             <div className={styles.successContent}>
-                                <h3 className={styles.successTitle}>Password reset successful</h3>
+                                <h3 className={styles.successTitle}>Пароль успешно сброшен</h3>
                                 <div className={styles.successMessage}>
                                     <p>
-                                        Your password has been reset successfully. You'll be redirected to the login
-                                        page in a few seconds.
+                                        Пароль успешно изменён. Через несколько секунд вы будете перенаправлены на страницу входа.
                                     </p>
                                 </div>
                             </div>
@@ -155,7 +154,7 @@ const ResetPassword = () => {
                         <div className={styles.inputGroup}>
                             <div>
                                 <label htmlFor="password" className="sr-only">
-                                    New password
+                                    Новый пароль
                                 </label>
                                 <input
                                     id="password"
@@ -166,12 +165,12 @@ const ResetPassword = () => {
                                     value={password}
                                     onChange={e => setPassword(e.target.value)}
                                     className={`${styles.input} ${styles.inputFirst}`}
-                                    placeholder="New password"
+                                    placeholder="Новый пароль"
                                 />
                             </div>
                             <div>
                                 <label htmlFor="confirm-password" className="sr-only">
-                                    Confirm new password
+                                    Подтвердите новый пароль
                                 </label>
                                 <input
                                     id="confirm-password"
@@ -182,7 +181,7 @@ const ResetPassword = () => {
                                     value={confirmPassword}
                                     onChange={e => setConfirmPassword(e.target.value)}
                                     className={`${styles.input} ${styles.inputLast}`}
-                                    placeholder="Confirm new password"
+                                    placeholder="Подтвердите новый пароль"
                                 />
                             </div>
                         </div>
@@ -191,7 +190,7 @@ const ResetPassword = () => {
 
                         <div>
                             <button type="submit" className={styles.submitButton} disabled={isLoading}>
-                                {isLoading ? 'Resetting password...' : 'Reset password'}
+                                {isLoading ? 'Сбрасываем пароль...' : 'Сбросить пароль'}
                             </button>
                         </div>
                     </form>

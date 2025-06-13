@@ -37,7 +37,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         });
 
         if (!validSlides) {
-            return NextResponse.json({ message: 'Invalid slide structure' }, { status: 400 });
+            return NextResponse.json({ message: 'Неверная структура слайда' }, { status: 400 });
         }
 
         // Update presentation with new slides

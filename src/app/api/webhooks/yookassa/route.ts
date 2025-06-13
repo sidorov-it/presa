@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
             
             if (!isValid) {
                 console.error('Invalid YooKassa webhook signature');
-                return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+                return NextResponse.json({ error: 'Неверная подпись' }, { status: 401 });
             }
         }
 

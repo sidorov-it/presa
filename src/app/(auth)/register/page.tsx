@@ -18,17 +18,17 @@ export default function RegisterPage() {
         e.preventDefault();
 
         if (!name || !email || !password || !confirmPassword) {
-            setError('Please fill in all fields');
+            setError('Пожалуйста, заполните все поля');
             return;
         }
 
         if (password !== confirmPassword) {
-            setError('Passwords do not match');
+            setError('Пароли не совпадают');
             return;
         }
 
         if (password.length < 8) {
-            setError('Password must be at least 8 characters long');
+            setError('Пароль должен содержать не менее 8 символов');
             return;
         }
 
@@ -45,7 +45,7 @@ export default function RegisterPage() {
             const data = await response.json();
 
             if (!response.ok) {
-                setError(data.message || 'Registration failed');
+                setError(data.message || 'Не удалось зарегистрироваться');
                 setIsLoading(false);
                 return;
             }
@@ -54,7 +54,7 @@ export default function RegisterPage() {
             router.push('/login?registered=true');
         } catch (error) {
             console.error('Registration error:', error);
-            setError('Something went wrong. Please try again.');
+            setError('Что-то пошло не так. Попробуйте еще раз.');
             setIsLoading(false);
         }
     };
@@ -92,7 +92,7 @@ export default function RegisterPage() {
                         </div>
                         <div>
                             <label htmlFor="email-address" className="sr-only">
-                                Email
+                                Электронная почта
                             </label>
                             <input
                                 id="email-address"
@@ -103,7 +103,7 @@ export default function RegisterPage() {
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
                                 className={styles.input}
-                                placeholder="Email"
+                                placeholder="Электронная почта"
                             />
                         </div>
                         <div>

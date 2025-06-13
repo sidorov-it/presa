@@ -18,7 +18,7 @@ export default function LoginPage() {
         e.preventDefault();
 
         if (!email || !password) {
-            setError('Please fill in all fields');
+            setError('Пожалуйста, заполните все поля');
             return;
         }
 
@@ -33,7 +33,7 @@ export default function LoginPage() {
             });
 
             if (result?.error) {
-                setError('Invalid email or password');
+                setError('Неверный email или пароль');
                 setIsLoading(false);
                 return;
             }
@@ -42,7 +42,7 @@ export default function LoginPage() {
             router.push('/dashboard');
         } catch (error) {
             console.error('Login error:', error);
-            setError('Something went wrong. Please try again.');
+            setError('Что-то пошло не так. Попробуйте еще раз.');
             setIsLoading(false);
         }
     };
@@ -64,7 +64,7 @@ export default function LoginPage() {
                     <div className={styles.loginFormInput}>
                         <div>
                             <label htmlFor="email-address" className="sr-only">
-                                Email
+                                Электронная почта
                             </label>
                             <input
                                 id="email-address"
@@ -75,7 +75,7 @@ export default function LoginPage() {
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
                                 className={`${styles.loginFormInputField} ${styles.loginFormInputFieldTop}`}
-                                placeholder="Email"
+                                placeholder="Электронная почта"
                             />
                         </div>
                         <div>
