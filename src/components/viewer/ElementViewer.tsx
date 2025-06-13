@@ -81,6 +81,111 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
         return textStyles;
     };
 
+    const renderChart = () => {
+        const chartElement = element as unknown as ChartElement;
+        const data = chartElement.data || [];
+
+        // Use theme accent colors for charts
+        const chartColors = [
+            'var(--presentation-primary-accent, #8884d8)',
+            'var(--presentation-secondary-accent-1, #00C49F)',
+            'var(--presentation-secondary-accent-2, #FFBB28)',
+            'var(--presentation-secondary-accent-3, #FF8042)',
+            'var(--presentation-shapes-color, #82ca9d)',
+        ];
+
+        // Render the appropriate chart
+        switch (element.elementVariant) {
+            case 'bar':
+                return (
+                    <div className={styles.container}>
+                        <ResponsiveContainer width="100%" height={300}>
+                            <BarChart data={data}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="name" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Bar dataKey="value" fill={chartColors[0]} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                );
+
+            case 'line':
+                return (
+                    <div className={styles.container}>
+                        <ResponsiveContainer width="100%" height={300}>
+                            <LineChart data={data}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="name" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Line type="monotone" dataKey="value" stroke={chartColors[0]} />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                );
+
+            case 'pie':
+                return (
+                    <div className={styles.container}>
+                        <ResponsiveContainer width="100%" height={300}>
+                            <PieChart>
+                                <Pie
+                                    data={data}
+                                    cx="50%"
+                                    cy="50%"
+                                    labelLine={true}
+                                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                                    outerRadius={80}
+                                    fill={chartColors[0]}
+                                    dataKey="value"
+                                >
+                                    {data.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip />
+                                <Legend />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
+                );
+
+            case 'donut':
+                return (
+                    <div className={styles.container}>
+                        <ResponsiveContainer width="100%" height={300}>
+                            <PieChart>
+                                <Pie
+                                    data={data}
+                                    cx="50%"
+                                    cy="50%"
+                                    labelLine={true}
+                                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                                    outerRadius={80}
+                                    innerRadius={40}
+                                    fill={chartColors[0]}
+                                    dataKey="value"
+                                >
+                                    {data.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip />
+                                <Legend />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
+                );
+
+            default:
+                return <div className={styles.container}>Unsupported chart type</div>;
+        }
+    };
+
     // Render element based on its type
     const renderElementContent = () => {
         switch (element.elementTypeId) {
@@ -99,124 +204,19 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                 // For image elements, render the image
                 return (
                     <div className={styles.container}>
-                        <img
-                            src={(element as any).src || element.url || ''}
-                            alt={element.alt || 'Presentation image'}
-                            style={{ objectFit: 'contain', width: '100%', height: '100%' }}
-                        />
+                        {!element.url && !element.src && <div style={{ width: '100%', height: '100%' }} />}
+                        {(element.url || element.src) && (
+                            <img
+                                src={(element as any).src || element.url || ''}
+                                alt={element.alt || 'Presentation image'}
+                                style={{ objectFit: 'contain', width: '100%', height: '100%' }}
+                            />
+                        )}
                     </div>
                 );
 
             case ElementType.CHART:
-                // For chart elements, render the appropriate chart
-                const chartElement = element as unknown as ChartElement;
-                const data = chartElement.data || [];
-
-                // Use theme accent colors for charts
-                const chartColors = [
-                    'var(--presentation-primary-accent, #8884d8)',
-                    'var(--presentation-secondary-accent-1, #00C49F)',
-                    'var(--presentation-secondary-accent-2, #FFBB28)',
-                    'var(--presentation-secondary-accent-3, #FF8042)',
-                    'var(--presentation-shapes-color, #82ca9d)',
-                ];
-
-                // Render the appropriate chart
-                switch (element.elementVariant) {
-                    case 'bar':
-                        return (
-                            <div className={styles.container}>
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <BarChart data={data}>
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="name" />
-                                        <YAxis />
-                                        <Tooltip />
-                                        <Legend />
-                                        <Bar dataKey="value" fill={chartColors[0]} />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
-                        );
-
-                    case 'line':
-                        return (
-                            <div className={styles.container}>
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <LineChart data={data}>
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="name" />
-                                        <YAxis />
-                                        <Tooltip />
-                                        <Legend />
-                                        <Line type="monotone" dataKey="value" stroke={chartColors[0]} />
-                                    </LineChart>
-                                </ResponsiveContainer>
-                            </div>
-                        );
-
-                    case 'pie':
-                        return (
-                            <div className={styles.container}>
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <PieChart>
-                                        <Pie
-                                            data={data}
-                                            cx="50%"
-                                            cy="50%"
-                                            labelLine={true}
-                                            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                                            outerRadius={80}
-                                            fill={chartColors[0]}
-                                            dataKey="value"
-                                        >
-                                            {data.map((entry, index) => (
-                                                <Cell
-                                                    key={`cell-${index}`}
-                                                    fill={chartColors[index % chartColors.length]}
-                                                />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip />
-                                        <Legend />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                            </div>
-                        );
-
-                    case 'donut':
-                        return (
-                            <div className={styles.container}>
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <PieChart>
-                                        <Pie
-                                            data={data}
-                                            cx="50%"
-                                            cy="50%"
-                                            labelLine={true}
-                                            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                                            outerRadius={80}
-                                            innerRadius={40}
-                                            fill={chartColors[0]}
-                                            dataKey="value"
-                                        >
-                                            {data.map((entry, index) => (
-                                                <Cell
-                                                    key={`cell-${index}`}
-                                                    fill={chartColors[index % chartColors.length]}
-                                                />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip />
-                                        <Legend />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                            </div>
-                        );
-
-                    default:
-                        return <div className={styles.container}>Unsupported chart type</div>;
-                }
+                return renderChart();
 
             case ElementType.SMART_LAYOUT: {
                 // For smart layout elements, render the layout with its items
