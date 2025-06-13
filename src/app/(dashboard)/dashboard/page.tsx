@@ -100,6 +100,7 @@ export default function DashboardPage() {
     // Handle opening a presentation in view mode
     const handleViewPresentation = (presentationId: string, e: React.MouseEvent) => {
         e.stopPropagation();
+        e.preventDefault();
         setActiveMenu(null);
         router.push(`/view/${presentationId}`);
     };
@@ -127,6 +128,7 @@ export default function DashboardPage() {
     // Handle duplicating a presentation
     const handleDuplicate = async (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
+        e.preventDefault();
         setActiveMenu(null);
 
         try {
@@ -151,6 +153,7 @@ export default function DashboardPage() {
     // Open rename modal
     const handleRenameClick = (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
+        e.preventDefault();
         const presentation = presentations.find(p => p.id === id);
         if (presentation) {
             setNewTitle(presentation.title);
@@ -190,6 +193,7 @@ export default function DashboardPage() {
     // Open delete confirmation modal
     const handleDeleteClick = (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
+        e.preventDefault();
         setPresentationToDelete(id);
         setShowDeleteModal(true);
         setActiveMenu(null);

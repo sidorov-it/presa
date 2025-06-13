@@ -186,7 +186,6 @@ export default function PresentationEditorPage() {
     if (isLoading) return loadingUI;
     if (notFound || !presentation) return notFoundUI;
 
-    console.log('rerender page ')
     return (
         <>
             <ReadOnlyProvider isReadOnly={false}>
