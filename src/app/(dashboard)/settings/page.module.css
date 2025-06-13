@@ -8,6 +8,12 @@
     margin-bottom: 2rem;
 }
 
+@media (max-width: 1023px) {
+    .header {
+        padding-left: 3rem;
+    }
+}
+
 .settingsGrid {
     max-width: 48rem;
     margin: 0 auto;

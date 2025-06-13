@@ -17,6 +17,12 @@
     justify-content: space-between;
 }
 
+@media (max-width: 1023px) {
+    .header {
+        padding-left: 3rem;
+    }
+}
+
 .addButton {
     display: flex;
     align-items: center;

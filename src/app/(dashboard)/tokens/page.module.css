@@ -14,6 +14,12 @@
     margin-bottom: 2rem;
 }
 
+@media (max-width: 1023px) {
+    .header {
+        padding-left: 3rem;
+    }
+}
+
 .title {
     font-size: 1.875rem;
     font-weight: 700;
