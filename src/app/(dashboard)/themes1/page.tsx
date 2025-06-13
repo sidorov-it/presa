@@ -1,56 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Heading } from '@/components/ui/heading';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card/Card';
 import { Button } from '@/components/ui/Button';
 import { Plus } from 'lucide-react';
+import { useThemeStore } from '@/store/themeStore';
 
-// Sample theme data
-const THEMES = [
-    {
-        id: 'modern',
-        name: 'Modern',
-        description: 'Clean and minimalist design',
-        primaryColor: '#3B82F6',
-        previewBg: 'bg-blue-500',
-    },
-    {
-        id: 'corporate',
-        name: 'Corporate',
-        description: 'Professional and business-oriented',
-        primaryColor: '#1F2937',
-        previewBg: 'bg-gray-800',
-    },
-    {
-        id: 'creative',
-        name: 'Creative',
-        description: 'Bold and artistic design',
-        primaryColor: '#EC4899',
-        previewBg: 'bg-pink-500',
-    },
-    {
-        id: 'nature',
-        name: 'Nature',
-        description: 'Inspired by natural elements',
-        primaryColor: '#10B981',
-        previewBg: 'bg-green-500',
-    },
-    {
-        id: 'tech',
-        name: 'Tech',
-        description: 'Futuristic and technology-focused',
-        primaryColor: '#6366F1',
-        previewBg: 'bg-indigo-500',
-    },
-    {
-        id: 'elegant',
-        name: 'Elegant',
-        description: 'Sophisticated and refined',
-        primaryColor: '#9333EA',
-        previewBg: 'bg-purple-600',
-    },
-];
 
 // export const metadata = {
 //     title: "Themes",
@@ -59,6 +15,8 @@ const THEMES = [
 
 const ThemesPage = () => {
     const [activeTheme, setActiveTheme] = useState<string | null>(null);
+    const defaultThemes = useThemeStore(state => state.defaultThemes);
+    const loadDefaultThemes = useThemeStore(state => state.loadDefaultThemes);
 
     const handleThemeSelect = (themeId: string) => {
         setActiveTheme(themeId);
@@ -68,6 +26,12 @@ const ThemesPage = () => {
     const handleCreateTheme = () => {
         // TODO: Implement theme creation
     };
+
+    useEffect(() => {
+        loadDefaultThemes().catch(err => {
+            console.error('Failed to load themes:', err);
+        });
+    }, [loadDefaultThemes]);
 
     return (
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -80,7 +44,7 @@ const ThemesPage = () => {
             </div>
 
             <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                {THEMES.map(theme => (
+                {defaultThemes.map(theme => (
                     <Card
                         key={theme.id}
                         className={`hover:shadow-lg transition-shadow cursor-pointer ${
@@ -94,7 +58,10 @@ const ThemesPage = () => {
                         </CardHeader>
                         <CardContent>
                             <div className="aspect-video bg-white rounded-md border-2 border-gray-200 p-4">
-                                <div className={`h-2 ${theme.previewBg} rounded mb-2`} />
+                                <div
+                                    className="h-2 rounded mb-2"
+                                    style={{ backgroundColor: theme.colors.primaryAccent }}
+                                />
                                 <div style={{ marginTop: '0.5rem' }}>
                                     <div className="w-full h-1 bg-gray-100 rounded" />
                                     <div className="w-full h-1 bg-gray-100 rounded" />

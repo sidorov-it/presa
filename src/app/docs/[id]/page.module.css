@@ -202,6 +202,27 @@
     gap: 0.5rem;
 }
 
+.themeTabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.themeTab {
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+}
+
+.themeTabActive {
+    background-color: var(--color-primary-light, #eff6ff);
+}
+
+:global(.dark) .themeTabActive {
+    background-color: var(--color-primary-dark, #1e40af);
+}
+
 .themeOption {
     display: flex;
     align-items: center;

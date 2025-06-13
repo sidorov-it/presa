@@ -37,6 +37,8 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
                 },
                 buttons: themeData.design.buttons,
             },
+            isDefault: themeData.isDefault,
+            isActive: themeData.isActive,
             createdAt: themeData.createdAt,
             updatedAt: themeData.updatedAt,
         };
@@ -87,6 +89,10 @@ export async function PUT(request: Request, props: { params: Promise<Params> }) 
             return NextResponse.json({ error: 'Theme not found' }, { status: 404 });
         }
 
+        if (existingTheme.isDefault) {
+            return NextResponse.json({ error: 'Default theme cannot be updated' }, { status: 400 });
+        }
+
         // Update the theme
         const updatedTheme = await prisma.theme.update({
             where: { id },
@@ -101,6 +107,8 @@ export async function PUT(request: Request, props: { params: Promise<Params> }) 
                 design: {
                     set: theme.design,
                 },
+                isDefault: theme.isDefault ?? existingTheme.isDefault,
+                isActive: theme.isActive ?? existingTheme.isActive,
                 updatedAt: new Date(),
             },
         });

@@ -63,3 +63,31 @@
     width: 1rem;
     height: 1rem;
 } 
+
+.emptyState {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    text-align: center;
+}
+
+.emptyMessage {
+    font-size: 1.125rem;
+    color: #000;
+}
+
+.link {
+    color: #3b82f6;
+    text-decoration: underline;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: inherit;
+    font-family: inherit;
+    padding: 0;
+}
+
+.link:hover {
+    color: #1d4ed8;
+}

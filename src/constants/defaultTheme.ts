@@ -58,9 +58,11 @@ export const DEFAULT_THEME: Omit<Theme, 'id' | 'createdAt' | 'updatedAt'> = {
     },
 };
 
-export const createNewTheme = (themeData: Partial<Omit<Theme, 'id' | 'createdAt' | 'updatedAt'>> = {}): Theme => {
+export const createNewTheme = (
+    themeData: Partial<Omit<Theme, 'id' | 'createdAt' | 'updatedAt'>> = {}
+): Theme => {
     return {
-        id: crypto.randomUUID(), // Generate a valid UUID
+        // id: new Prisma.ObjectId().toString(),// Generate a valid UUID
         name: themeData.name || DEFAULT_THEME.name,
         description: themeData.description || DEFAULT_THEME.description,
         logo: themeData.logo,
@@ -86,6 +88,8 @@ export const createNewTheme = (themeData: Partial<Omit<Theme, 'id' | 'createdAt'
                 ...(themeData.design?.buttons || {}),
             },
         },
+        isDefault: themeData.isDefault ?? false,
+        isActive: themeData.isActive ?? true,
         createdAt: new Date(),
         updatedAt: new Date(),
     };

@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from '@/components/ui/Button';
-import { useThemeStore } from '@/store/themeStore';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -10,10 +9,10 @@ import styles from './page.module.css';
 import ThemePreviewBlock from './components/ThemePreviewBlock';
 import { useRouter } from 'next/navigation';
 import { Tabs as ChakraTabs } from '@chakra-ui/react';
-import { THEME_TEMPLATES } from '@/themes/themeTemplates';
+import { useThemeStore } from '@/store/themeStore';
 
 export default function ThemesPage() {
-    const { themes, loadThemes, addTheme, deleteTheme } = useThemeStore();
+    const { themes, defaultThemes, loadThemes, loadDefaultThemes, addTheme, deleteTheme } = useThemeStore();
     const router = useRouter();
     const [tabIndex, setTabIndex] = useState(0);
 
@@ -22,13 +21,16 @@ export default function ThemesPage() {
             console.error('Failed to load themes:', error);
             toast.error('Failed to load themes');
         });
-    }, [loadThemes]);
+        loadDefaultThemes().catch(error => {
+            console.error('Failed to load themes:', error);
+        });
+    }, [loadThemes, loadDefaultThemes]);
 
     const handleDuplicate = async (themeId: string) => {
         const theme = themes.find(theme => theme.id === themeId);
         if (theme) {
-            const result = await addTheme(theme);
-            router.push(`/themes/${result.id}`);
+            await addTheme(theme);
+            toast.success('Тема скопирована');
         }
     };
 
@@ -65,25 +67,44 @@ export default function ThemesPage() {
                     <ChakraTabs.Trigger value="standard">Стандартные темы</ChakraTabs.Trigger>
                 </ChakraTabs.List>
                 <ChakraTabs.Content value="my">
-                    <div className={styles.themesGrid}>
-                        {themes.map(theme => (
-                            <ThemePreviewBlock
-                                key={theme.id}
-                                theme={theme}
-                                onClickEdit={() => router.push(`/themes/${theme.id}`)}
-                                onClickDuplicate={() => handleDuplicate(theme.id)}
-                                onClickDelete={() => handleDelete(theme.id)}
-                            />
-                        ))}
-                    </div>
+                    {themes.length === 0 ? (
+                        <div className={styles.emptyState}>
+                            <p className={styles.emptyMessage}>
+                                <Link href="/themes/new" className={styles.link}>
+                                    Создайте свою тему
+                                </Link>{' '}
+                                или{' '}
+                                <button onClick={() => setTabIndex(1)} className={styles.link} type="button">
+                                    используйте одну из стандартных
+                                </button>
+                            </p>
+                        </div>
+                    ) : (
+                        <div className={styles.themesGrid}>
+                            {themes.map(theme => (
+                                <ThemePreviewBlock
+                                    key={theme.id}
+                                    theme={theme}
+                                    onClickEdit={() => {
+                                        router.push(`/themes/${theme.id}`);
+                                    }}
+                                    onClickDuplicate={() => handleDuplicate(theme.id)}
+                                    onClickDelete={() => handleDelete(theme.id)}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </ChakraTabs.Content>
                 <ChakraTabs.Content value="standard">
                     <div className={styles.themesGrid}>
-                        {THEME_TEMPLATES.map(theme => (
+                        {defaultThemes.map(theme => (
                             <ThemePreviewBlock
                                 key={theme.id}
                                 theme={theme}
-                                onClickEdit={() => router.push(`/themes/new?template=${theme.id}`)}
+                                isReadOnly={true}
+                                onClickEdit={() => {
+                                    router.push(`/themes/new?template=${theme.id}`);
+                                }}
                             />
                         ))}
                     </div>

@@ -2,8 +2,8 @@ import { Theme } from '@/types/theme';
 import { createNewTheme } from '@/constants/defaultTheme';
 
 const createTheme = (id: string, data: Partial<Omit<Theme, 'id' | 'createdAt' | 'updatedAt'>>): Theme => {
-    const theme = createNewTheme(data);
-    theme.id = id;
+    const theme = createNewTheme({ ...data, isDefault: true, isActive: true });
+    // theme.id = (Math.random() * 1000000).toString();
     return theme;
 };
 
