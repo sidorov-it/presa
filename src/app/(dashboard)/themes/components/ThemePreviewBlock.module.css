@@ -1,12 +1,11 @@
 .themeCard {
-    width: 100%;
-    max-width: 200px;
+    width: 200px;
+    flex-shrink: 0;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     border: 1px solid #e2e8f0;
     background: white;
     border-radius: 12px;
-    border: 1px solid #e2e8f0;
     position: relative;
 }
 
@@ -125,7 +124,8 @@
 /* Responsive adjustments */
 @media (max-width: 640px) {
     .themeCard {
-        max-width: 100%;
+        width: calc(50% - 0.5rem);
+        min-width: 160px;
     }
 
     .previewContainer {
