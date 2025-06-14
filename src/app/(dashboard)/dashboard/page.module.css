@@ -285,6 +285,13 @@
     color: var(--color-text-light);
 }
 
+.cardTimestamp {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: var(--color-text-light);
+    margin-top: 0.25rem;
+}
+
 .modal {
     position: fixed;
     inset: 0;
