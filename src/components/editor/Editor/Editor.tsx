@@ -47,7 +47,7 @@ const EditorContent: React.FC<{
             </div>
             {!isReadOnly && <SlideMenu tiptapRefs={tiptapRefs} />}
             {!isReadOnly && <DragDropIndicator />}
-            {!isReadOnly && <DragDropDebugInfo />}
+            {!isReadOnly && process.env.NODE_ENV === 'development' && <DragDropDebugInfo />}
         </div>
     );
 });

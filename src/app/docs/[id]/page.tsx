@@ -446,7 +446,7 @@ export default function PresentationEditorPage() {
                                 presentationId={presentation.id}
                             />
 
-                            <ThemeDebugButton />
+                            {process.env.NODE_ENV === 'development' && <ThemeDebugButton />}
                         </main>
 
                         <footer className={styles.footer}>

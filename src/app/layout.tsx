@@ -83,7 +83,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <Provider>
                         {children}
                         <SideMenuRenderer />
-                        <HistoryDebugPopup />
+                        {process.env.NODE_ENV === 'development' && <HistoryDebugPopup />}
                     </Provider>
                 </NextAuthProvider>
             </body>
