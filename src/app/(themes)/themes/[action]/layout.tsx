@@ -10,6 +10,12 @@ export default function ThemesLayout({ children }: { children: React.ReactNode }
     const pathname = usePathname();
     const [previousPath, setPreviousPath] = useState<string | null>(null);
 
+    // Reset theme variables on first render to prevent pages from inheriting
+    // the last used editor theme.
+    useEffect(() => {
+        resetThemeStyles();
+    }, []);
+
     // Track path changes to detect when leaving editor pages
     useEffect(() => {
         // If the previous path contained '/edit' or '/docs' and the current one doesn't

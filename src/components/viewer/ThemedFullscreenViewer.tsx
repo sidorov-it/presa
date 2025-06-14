@@ -20,13 +20,14 @@ const ThemedFullscreenViewer: React.FC<ThemedFullscreenViewerProps> = ({
     className = '',
 }) => {
     return (
-        <div className={`themed-fullscreen-viewer ${className}`}>
-            {/* Apply theme styles */}
-            <ThemeStylesApplier theme={theme} backgroundSettings={presentation.backgroundSettings} />
-
+        <ThemeStylesApplier
+            theme={theme}
+            backgroundSettings={presentation.backgroundSettings}
+            className={`themed-fullscreen-viewer ${className}`}
+        >
             {/* Render fullscreen viewer with theme */}
             <FullscreenViewer presentation={presentation} initialSlideIndex={initialSlideIndex} onClose={onClose} />
-        </div>
+        </ThemeStylesApplier>
     );
 };
 
