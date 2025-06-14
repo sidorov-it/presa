@@ -4,6 +4,13 @@
     flex-direction: column;
 }
 
+.hiddenExportPreview {
+    position: absolute;
+    top: 0;
+    left: -9999px;
+    pointer-events: none;
+}
+
 .loadingContainer {
     min-height: 100vh;
     display: flex;
@@ -55,7 +62,9 @@
     top: 0;
     z-index: 100;
     color: var(--color-text);
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+    transition:
+        background-color 0.3s ease,
+        border-color 0.3s ease;
     height: 75px;
 }
 
@@ -109,6 +118,10 @@
     color: var(--color-text);
     border-radius: var(--radius-md);
     transition: all 150ms ease;
+}
+
+.downloadButton {
+    composes: viewButton;
 }
 
 /* .viewButton:hover {
@@ -381,7 +394,6 @@
     background-color: var(--color-background);
 }
 
-
 .actionIcon {
     width: 1rem;
     height: 1rem;
@@ -438,6 +450,15 @@
     background-color: var(--color-primary-dark);
 }
 
+:global(.dark) .downloadButton {
+    background-color: var(--color-primary);
+    color: var(--color-background);
+}
+
+:global(.dark) .downloadButton:hover {
+    background-color: var(--color-primary-dark);
+}
+
 :global(.dark) .settingsButton:hover {
     background-color: var(--color-background);
 }
@@ -452,7 +473,7 @@
 
 :global(.dark) .userMenuSignOut:hover {
     background-color: var(--color-background);
-} 
+}
 
 .themePopover {
     background-color: var(--color-surface);
