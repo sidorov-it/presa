@@ -9,6 +9,8 @@ interface SlideViewerProps {
     themeClassName?: string;
     presentationId?: string;
     isPdfExport?: boolean;
+    /** Display slide without borders and fill entire page */
+    fullPage?: boolean;
 }
 
 const SlideViewer: React.FC<SlideViewerProps> = ({
@@ -16,6 +18,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     themeClassName = '',
     presentationId: _presentationId,
     isPdfExport = false,
+    fullPage = false,
 }) => {
     // Get slide background styling
     const getSlideStyle = () => {
@@ -190,20 +193,22 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
 
     // Slide wrapper style including theme CSS variables
     const slideWrapperStyle: React.CSSProperties = {
-        ...getSlideStyle(),
+        ...(fullPage ? {} : getSlideStyle()),
         // Apply border styles from CSS variables
-        borderRadius: 'var(--presentation-slide-border-radius)',
-        borderWidth: 'var(--presentation-slide-border-width)',
+        borderRadius: fullPage ? 0 : 'var(--presentation-slide-border-radius)',
+        borderWidth: fullPage ? 0 : 'var(--presentation-slide-border-width)',
         borderColor: 'var(--presentation-slide-border-color)',
-        borderStyle: 'solid',
+        borderStyle: fullPage ? 'none' : 'solid',
         // Apply background if not overridden by slide-specific background
-        backgroundColor: 'var(--presentation-slide-background)',
-        boxShadow: 'var(--presentation-slide-shadow)',
+        backgroundColor: fullPage
+            ? 'transparent'
+            : 'var(--presentation-slide-background)',
+        boxShadow: fullPage ? 'none' : 'var(--presentation-slide-shadow)',
         width: '100%',
         maxWidth: '100%',
         boxSizing: 'border-box',
-        minHeight: isPdfExport ? 'auto' : undefined,
-        height: isPdfExport ? 'auto' : undefined,
+        minHeight: fullPage ? '100vh' : isPdfExport ? 'auto' : undefined,
+        height: fullPage ? '100vh' : isPdfExport ? 'auto' : undefined,
         // Apply slide-specific text color if available
         ...(slide?.textColor && {
             '--presentation-text-color': slide.textColor,
@@ -218,18 +223,23 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
 
     // Slide content style
     const slideContentStyle: React.CSSProperties = {
-        backgroundColor: 'var(--presentation-slide-background)',
-        borderRadius: 'var(--presentation-slide-border-radius)',
-        minHeight: isPdfExport ? 'auto' : undefined,
-        height: isPdfExport ? 'auto' : undefined,
+        backgroundColor: fullPage
+            ? 'transparent'
+            : 'var(--presentation-slide-background)',
+        borderRadius: fullPage ? 0 : 'var(--presentation-slide-border-radius)',
+        minHeight: fullPage ? '100%' : isPdfExport ? 'auto' : undefined,
+        height: fullPage ? '100%' : isPdfExport ? 'auto' : undefined,
         overflow: isPdfExport ? 'visible' : undefined,
     };
 
     // Адаптируем класс слайда при экспорте в PDF
     const slideClassName = `${styles.slide} ${themeClassName} ${isPdfExport ? styles.pdfExport : ''}`;
+    const outerStyle = fullPage
+        ? { padding: 0, width: '100%', height: '100%' }
+        : undefined;
 
     return (
-        <div className={slideClassName}>
+        <div className={slideClassName} style={outerStyle}>
             <div className={styles.slideWrapper} style={slideWrapperStyle}>
                 <div className={styles.slideContent} style={slideContentStyle}>
                     {/* Template image if needed */}
