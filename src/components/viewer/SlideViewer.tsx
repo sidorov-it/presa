@@ -199,6 +199,9 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         // Apply background if not overridden by slide-specific background
         backgroundColor: 'var(--presentation-slide-background)',
         boxShadow: 'var(--presentation-slide-shadow)',
+        width: '100%',
+        maxWidth: '100%',
+        boxSizing: 'border-box',
         minHeight: isPdfExport ? 'auto' : undefined,
         height: isPdfExport ? 'auto' : undefined,
         // Apply slide-specific text color if available
