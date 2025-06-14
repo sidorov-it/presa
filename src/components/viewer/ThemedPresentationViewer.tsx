@@ -20,15 +20,17 @@ const ThemedPresentationViewer: React.FC<ThemedPresentationViewerProps> = ({
     showThumbnails = true,
 }) => {
     return (
-        <div className={`themed-presentation-viewer ${className}`}>
-            <ThemeStylesApplier theme={theme} backgroundSettings={presentation.backgroundSettings} />
-
+        <ThemeStylesApplier
+            theme={theme}
+            backgroundSettings={presentation.backgroundSettings}
+            className={`themed-presentation-viewer ${className}`}
+        >
             <PresentationViewer
                 presentation={presentation}
                 initialSlideIndex={initialSlideIndex}
                 showThumbnails={showThumbnails}
             />
-        </div>
+        </ThemeStylesApplier>
     );
 };
 

@@ -93,9 +93,8 @@ export default function PresentationEditorPage() {
     if (notFound || !presentation) return notFoundUI;
 
     return (
-        <>
-            <ThemeStylesApplier theme={currentTheme} />
+        <ThemeStylesApplier theme={currentTheme}>
             <PresentationViewer presentation={presentation} />
-        </>
+        </ThemeStylesApplier>
     );
 }

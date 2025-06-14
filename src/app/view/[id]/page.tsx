@@ -112,35 +112,40 @@ export default function PresentationView() {
 
     return (
         <ReadOnlyProvider isReadOnly={true}>
-            <ThemeStylesApplier theme={currentTheme} backgroundSettings={presentation.backgroundSettings} />
-            <div className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`}>
-                <header className={styles.header}>
-                    <div className={styles.headerContent}>
-                        <div className={styles.headerLeft}>
-                            <Link href="/dashboard" className={styles.logo}>
-                                <Logo size="md" />
-                            </Link>
-                        </div>
-                        <div className={styles.headerRight}>
-                            <div className={styles.actions}>
-                                <PdfExportButton
-                                    presentation={presentation}
-                                    buttonText="Скачать PDF"
-                                    loadingText="Скачивание..."
-                                    filename={`${presentation.title || 'presentation'}.pdf`}
-                                />
+            <ThemeStylesApplier
+                theme={currentTheme}
+                backgroundSettings={presentation.backgroundSettings}
+                className={styles.container}
+            >
+                <div className={colorMode === 'dark' ? 'dark' : ''}>
+                    <header className={styles.header}>
+                        <div className={styles.headerContent}>
+                            <div className={styles.headerLeft}>
+                                <Link href="/dashboard" className={styles.logo}>
+                                    <Logo size="md" />
+                                </Link>
+                            </div>
+                            <div className={styles.headerRight}>
+                                <div className={styles.actions}>
+                                    <PdfExportButton
+                                        presentation={presentation}
+                                        buttonText="Скачать PDF"
+                                        loadingText="Скачивание..."
+                                        filename={`${presentation.title || 'presentation'}.pdf`}
+                                    />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </header>
-                <main className={styles.main} data-read-only="true">
-                    <Editor presentationId={presentation.id} tiptapRefs={tiptapRefs} />
-                </main>
+                    </header>
+                    <main className={styles.main} data-read-only="true">
+                        <Editor presentationId={presentation.id} tiptapRefs={tiptapRefs} />
+                    </main>
 
-                <footer className={styles.footer}>
-                    <div className={styles.footerContent}>Presa - Create beautiful presentations with AI</div>
-                </footer>
-            </div>
+                    <footer className={styles.footer}>
+                        <div className={styles.footerContent}>Presa - Create beautiful presentations with AI</div>
+                    </footer>
+                </div>
+            </ThemeStylesApplier>
         </ReadOnlyProvider>
     );
 }
