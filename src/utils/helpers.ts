@@ -90,3 +90,35 @@ export const pluralize = (count: number = 0, forms: [string, string, string]): s
     const index = count % 100 > 4 && count % 100 < 20 ? 2 : cases[Math.min(count % 10, 5)];
     return `${count} ${forms[index]}`;
 };
+
+/**
+ * Возвращает строку с относительным временем в формате "n дней назад"
+ * @param dateInput дата или временная метка
+ * @returns строка с относительным временем
+ */
+export const formatRelativeTime = (dateInput: string | number | Date): string => {
+    const date = new Date(dateInput);
+    const now = Date.now();
+    const diffMinutes = Math.floor((now - date.getTime()) / (1000 * 60));
+
+    if (diffMinutes < 1) return 'только что';
+
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+    const diffMonths = Math.floor(diffDays / 30);
+    const diffYears = Math.floor(diffDays / 365);
+
+    if (diffYears > 0) {
+        return `${pluralize(diffYears, ['год', 'года', 'лет'])} назад`;
+    }
+    if (diffMonths > 0) {
+        return `${pluralize(diffMonths, ['месяц', 'месяца', 'месяцев'])} назад`;
+    }
+    if (diffDays > 0) {
+        return `${pluralize(diffDays, ['день', 'дня', 'дней'])} назад`;
+    }
+    if (diffHours > 0) {
+        return `${pluralize(diffHours, ['час', 'часа', 'часов'])} назад`;
+    }
+    return `${pluralize(diffMinutes, ['минута', 'минуты', 'минут'])} назад`;
+};

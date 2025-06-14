@@ -11,7 +11,7 @@ import SlidePreview from './components/SlidePreview';
 import { resetThemeStyles } from '@/utils/themeUtils';
 import { FaPlus, FaMagic, FaPencilAlt, FaCopy, FaTrash, FaEye } from 'react-icons/fa';
 import { IPresentation } from '@/types';
-import { pluralize } from '@/utils/helpers';
+import { pluralize, formatRelativeTime } from '@/utils/helpers';
 import styles from './page.module.css';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
@@ -393,6 +393,9 @@ export default function DashboardPage() {
                                     <h3 className={styles.cardTitle}>{presentation.title}</h3>
                                     <p className={styles.cardSubtitle}>
                                         {pluralize(presentation.slides.length, ['слайд', 'слайда', 'слайдов'])}
+                                    </p>
+                                    <p className={styles.cardTimestamp}>
+                                        Редактировано {formatRelativeTime(presentation.updatedAt)}
                                     </p>
                                 </div>
                             </Link>
