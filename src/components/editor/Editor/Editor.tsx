@@ -4,7 +4,6 @@ import ElementsPanel from '@/components/editor/ElementsPanel/ElementsPanel';
 import { DndProvider } from '@/contexts/DragDropContext';
 import Presentation from '../Presentation';
 import DragDropIndicator from '@/components/DragDropIndicator';
-import DragDropDebugInfo from '@/components/DragDropDebugInfo';
 import SlideMenu from '../SlideMenu/SlideMenu';
 import { useMenuStore } from '@/store/menuStore';
 import { TipTapRefs } from '@/types';
@@ -47,7 +46,6 @@ const EditorContent: React.FC<{
             </div>
             {!isReadOnly && <SlideMenu tiptapRefs={tiptapRefs} />}
             {!isReadOnly && <DragDropIndicator />}
-            {!isReadOnly && <DragDropDebugInfo />}
         </div>
     );
 });
