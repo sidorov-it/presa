@@ -15,7 +15,7 @@ import { useThemeStore } from '@/store/themeStore';
 import { Theme } from '@/types/theme';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { FaEye, FaUser, FaSignOutAlt, FaCog } from 'react-icons/fa';
+import { FaEye, FaUser, FaSignOutAlt, FaCog, FaDownload } from 'react-icons/fa';
 import { HiOutlineCreditCard } from 'react-icons/hi2';
 import BackgroundSettingsModal from '@/components/editor/BackgroundSettingsModal/BackgroundSettingsModal';
 import { HiOutlineCog6Tooth } from 'react-icons/hi2';
@@ -26,9 +26,13 @@ import { useColorMode } from '@/components/ui/color-mode';
 import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
+import { exportPresentationToPdf } from '@/utils/pdfExport';
+import { toast } from 'sonner';
+import { Tooltip } from '@/components/ui/tooltip';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import Logo from '@/components/icons/Logo/Logo';
 import MobileWarningOverlay from '@/components/MobileWarningOverlay/MobileWarningOverlay';
+import Presentation from '@/components/editor/Presentation';
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -67,6 +71,8 @@ export default function PresentationEditorPage() {
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const [themeTab, setThemeTab] = useState<'user' | 'default'>('user');
     const containerRef = useRef<HTMLDivElement>(null);
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [showDownloadPreview, setShowDownloadPreview] = useState(false);
 
     // Load presentation data only once when component mounts or ID changes
     useEffect(() => {
@@ -147,6 +153,34 @@ export default function PresentationEditorPage() {
         }
     }, [presentation]);
 
+    const handleDownloadPresentation = useCallback(async () => {
+        if (!presentation || isDownloading) return;
+
+        setIsDownloading(true);
+        setShowDownloadPreview(true);
+
+        const exportPromise = (async () => {
+            // Wait for preview to render
+            await new Promise(res => setTimeout(res, 100));
+            await exportPresentationToPdf(presentation, `${presentation.title || 'presentation'}.pdf`);
+        })();
+
+        toast.promise(exportPromise, {
+            loading: 'Подготавливаем PDF для скачивания. Пожалуйста, не закрывайте эту страницу.',
+            success: () => {
+                setIsDownloading(false);
+                setShowDownloadPreview(false);
+                return 'Презентация успешно экспортирована в PDF';
+            },
+            error: err => {
+                console.error('Error exporting presentation to PDF:', err);
+                setIsDownloading(false);
+                setShowDownloadPreview(false);
+                return 'Произошла ошибка при экспорте. Попробуйте позже.';
+            },
+        });
+    }, [presentation, isDownloading]);
+
     const handleOpenBgModal = useCallback(() => {
         setIsBgModalOpen(true);
         document.body.style.overflow = 'hidden';
@@ -202,6 +236,18 @@ export default function PresentationEditorPage() {
                     className={styles.container}
                 >
                     <MobileWarningOverlay />
+                    {showDownloadPreview && (
+                        <div className={styles.hiddenExportPreview} aria-hidden="true">
+                            <ReadOnlyProvider isReadOnly={true}>
+                                <ThemeStylesApplier
+                                    theme={currentTheme}
+                                    backgroundSettings={presentation.backgroundSettings}
+                                >
+                                    <Editor presentationId={presentation.id} tiptapRefs={tiptapRefs} />
+                                </ThemeStylesApplier>
+                            </ReadOnlyProvider>
+                        </div>
+                    )}
                     <div ref={containerRef} className={colorMode === 'dark' ? 'dark' : ''}>
                         <header className={styles.header}>
                             <div className={styles.headerContent}>
@@ -357,14 +403,26 @@ export default function PresentationEditorPage() {
                                         }
                                     />
 
-                                    <button
-                                        onClick={handleViewPresentation}
-                                        className={styles.themeButton}
-                                        aria-label="View presentation"
-                                    >
-                                        <FaEye size={16} />
-                                        <span className={styles.viewButtonText}>Просмотр</span>
-                                    </button>
+                                    <Tooltip content="Просмотр">
+                                        <button
+                                            onClick={handleViewPresentation}
+                                            className={styles.viewButton}
+                                            aria-label="View presentation"
+                                        >
+                                            <FaEye className={styles.viewIcon} aria-hidden="true" />
+                                        </button>
+                                    </Tooltip>
+
+                                    <Tooltip content="Скачать">
+                                        <button
+                                            onClick={handleDownloadPresentation}
+                                            className={styles.downloadButton}
+                                            aria-label="Download presentation"
+                                            disabled={isDownloading}
+                                        >
+                                            <FaDownload className={styles.downloadIcon} aria-hidden="true" />
+                                        </button>
+                                    </Tooltip>
 
                                     <ThemeToggle />
 
