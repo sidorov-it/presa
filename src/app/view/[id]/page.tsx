@@ -169,9 +169,15 @@ export default function PresentationView() {
 
     return (
         <ReadOnlyProvider isReadOnly={true}>
-            <ThemeStylesApplier theme={currentTheme} backgroundSettings={presentation.backgroundSettings} />
-            <div className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`} style={pageStyle}>
-                <main className={styles.main} data-read-only="true">
+            <ThemeStylesApplier
+                theme={currentTheme}
+                backgroundSettings={presentation.backgroundSettings}
+            >
+                <div
+                    className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`}
+                    style={pageStyle}
+                >
+                    <main className={styles.main} data-read-only="true">
                     <div className={styles.slidePage}>
                         <SlideViewer slide={presentation.slides[currentSlideIndex]} fullPage={true} />
                     </div>
@@ -204,7 +210,8 @@ export default function PresentationView() {
                         </div>
                     )}
                 </main>
-            </div>
+                </div>
+            </ThemeStylesApplier>
         </ReadOnlyProvider>
     );
 }
