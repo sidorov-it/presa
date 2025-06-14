@@ -6,6 +6,8 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background-color: var(--presentation-page-background-color);
+    background-image: var(--presentation-page-background-image);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -17,9 +19,9 @@
     align-items: center;
     justify-content: space-between;
     padding: 1rem 2rem;
-    background-color: rgba(249, 250, 251, 0.8);
-    backdrop-filter: blur(5px);
-    border-bottom: 1px solid #e5e7eb;
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
     z-index: 10;
 }
 
@@ -175,6 +177,16 @@
     border-top: 1px solid var(--color-border);
     padding: 0.5rem 1rem;
     color: var(--color-text-light);
+}
+
+:global(.dark) .header {
+    background-color: var(--color-surface);
+    border-bottom-color: var(--color-border);
+}
+
+:global(.dark) .footer {
+    background-color: var(--color-surface);
+    border-top-color: var(--color-border);
 }
 
 .footerContent {

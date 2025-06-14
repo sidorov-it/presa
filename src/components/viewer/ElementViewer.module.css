@@ -29,12 +29,12 @@
 }
 
 .table th {
-    background-color: #f8fafc;
+    background-color: var(--color-surface);
     font-weight: 600;
 }
 
 .table tr:nth-child(even) {
-    background-color: #f8fafc;
+    background-color: var(--color-surface);
 }
 
 /* Box styles */
@@ -58,7 +58,8 @@
     border-radius: 0.375rem;
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    background-color: white;
+    background-color: var(--presentation-block-background, var(--color-surface));
+    border: 1px solid var(--color-border);
 }
 
 /* Применение кастомных цветов фонов для smart-layout элементов */
