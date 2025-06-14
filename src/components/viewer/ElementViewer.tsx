@@ -106,7 +106,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                                 <YAxis />
                                 <Tooltip />
                                 <Legend />
-                                <Bar dataKey="value" fill={chartColors[0]} />
+                                <Bar dataKey="value" fill={chartColors[0]} isAnimationActive={false} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -122,7 +122,12 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                                 <YAxis />
                                 <Tooltip />
                                 <Legend />
-                                <Line type="monotone" dataKey="value" stroke={chartColors[0]} />
+                                <Line
+                                    type="monotone"
+                                    dataKey="value"
+                                    stroke={chartColors[0]}
+                                    isAnimationActive={false}
+                                />
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
@@ -142,6 +147,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                                     outerRadius={80}
                                     fill={chartColors[0]}
                                     dataKey="value"
+                                    isAnimationActive={false}
                                 >
                                     {data.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
@@ -169,6 +175,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                                     innerRadius={40}
                                     fill={chartColors[0]}
                                     dataKey="value"
+                                    isAnimationActive={false}
                                 >
                                     {data.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
