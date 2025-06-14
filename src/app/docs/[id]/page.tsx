@@ -22,6 +22,8 @@ import { HiOutlineCog6Tooth } from 'react-icons/hi2';
 import styles from './page.module.css';
 import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
 import ThemeDebugButton from '@/components/debug/ThemeDebugButton';
+import HistoryDebugPopup from '@/components/ui/HistoryDebugPopup';
+import DragDropDebugInfo from '@/components/DragDropDebugInfo';
 import { useColorMode } from '@/components/ui/color-mode';
 import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 import { useTokens } from '@/hooks/useTokens';
@@ -446,7 +448,13 @@ export default function PresentationEditorPage() {
                                 presentationId={presentation.id}
                             />
 
-                            {process.env.NODE_ENV === 'development' && <ThemeDebugButton />}
+                            {process.env.NODE_ENV === 'development' && (
+                                <>
+                                    <HistoryDebugPopup />
+                                    <ThemeDebugButton />
+                                    <DragDropDebugInfo />
+                                </>
+                            )}
                         </main>
 
                         <footer className={styles.footer}>
