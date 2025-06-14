@@ -409,7 +409,7 @@ export default function PresentationEditorPage() {
                                             className={styles.viewButton}
                                             aria-label="View presentation"
                                         >
-                                            <FaEye size={16} />
+                                            <FaEye className={styles.viewIcon} aria-hidden="true" />
                                         </button>
                                     </Tooltip>
 
@@ -420,7 +420,7 @@ export default function PresentationEditorPage() {
                                             aria-label="Download presentation"
                                             disabled={isDownloading}
                                         >
-                                            <FaDownload size={16} />
+                                            <FaDownload className={styles.downloadIcon} aria-hidden="true" />
                                         </button>
                                     </Tooltip>
 

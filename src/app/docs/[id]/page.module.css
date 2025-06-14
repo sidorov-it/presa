@@ -109,19 +109,24 @@
     background-color: #f3f4f6;
 } */
 
-.viewButton {
+.iconButton {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.375rem 0.75rem;
-    background-color: var(--color-primary);
-    color: var(--color-text);
-    border-radius: var(--radius-md);
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 9999px;
+    background-color: var(--color-background);
+    color: var(--color-text-light);
+    border: none;
     transition: all 150ms ease;
 }
 
+.viewButton {
+    composes: iconButton;
+}
+
 .downloadButton {
-    composes: viewButton;
+    composes: iconButton;
 }
 
 /* .viewButton:hover {
@@ -154,6 +159,14 @@
     width: 1.5rem;
     height: 1.5rem;
     color: var(--color-text-light);
+}
+
+.viewIcon {
+    composes: settingsIcon;
+}
+
+.downloadIcon {
+    composes: settingsIcon;
 }
 
 .userInfo {
@@ -441,23 +454,6 @@
     border-top-color: var(--color-border);
 }
 
-:global(.dark) .viewButton {
-    background-color: var(--color-primary);
-    color: var(--color-background);
-}
-
-:global(.dark) .viewButton:hover {
-    background-color: var(--color-primary-dark);
-}
-
-:global(.dark) .downloadButton {
-    background-color: var(--color-primary);
-    color: var(--color-background);
-}
-
-:global(.dark) .downloadButton:hover {
-    background-color: var(--color-primary-dark);
-}
 
 :global(.dark) .settingsButton:hover {
     background-color: var(--color-background);
