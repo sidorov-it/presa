@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/interactive-supports-focus */
 'use client';
 
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 // import Editor from '@/components/editor/Editor';
 import Editor from '@/components/editor/Editor/Editor';
@@ -15,12 +15,18 @@ import { useThemeStore } from '@/store/themeStore';
 import { usePresentationStore } from '@/store/presentationStore';
 import { PdfExportButton } from '@/components/export';
 import Logo from '@/components/icons/Logo/Logo';
+import { Button, Icon } from '@chakra-ui/react';
+import { FaExpand, FaCompress, FaUser } from 'react-icons/fa';
+import { useSession } from 'next-auth/react';
 
 export default function PresentationView() {
     const params = useParams();
     const { id } = params;
 
     const { colorMode } = useColorMode();
+    const { data: session } = useSession();
+
+    const [isFullscreen, setIsFullscreen] = useState(false);
 
     const loadPresentation = usePresentationStore(state => state.loadPresentation);
     const checkPresentationExists = usePresentationStore(state => state.checkPresentationExists);
@@ -37,6 +43,24 @@ export default function PresentationView() {
         editors: {},
         editorRefs: [],
     });
+
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        };
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        return () => {
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+        };
+    }, []);
+
+    const toggleFullscreen = useCallback(() => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen?.();
+        } else {
+            document.exitFullscreen?.();
+        }
+    }, []);
 
     const [isLoading, setIsLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
@@ -124,15 +148,30 @@ export default function PresentationView() {
                                 <Link href="/dashboard" className={styles.logo}>
                                     <Logo size="md" />
                                 </Link>
+                                <h1 className={styles.title}>{presentation.title}</h1>
                             </div>
                             <div className={styles.headerRight}>
                                 <div className={styles.actions}>
+                                    <Button
+                                        onClick={toggleFullscreen}
+                                        leftIcon={<Icon as={isFullscreen ? FaCompress : FaExpand} aria-hidden="true" />}
+                                        colorScheme="blue"
+                                        variant="solid"
+                                        size="md"
+                                        aria-label="Полный экран"
+                                        className={styles.fullscreenButton}
+                                    >
+                                        {isFullscreen ? 'Выйти' : 'Полный экран'}
+                                    </Button>
                                     <PdfExportButton
                                         presentation={presentation}
                                         buttonText="Скачать PDF"
                                         loadingText="Скачивание..."
                                         filename={`${presentation.title || 'presentation'}.pdf`}
                                     />
+                                </div>
+                                <div className={styles.userInfo} aria-label="User">
+                                    <FaUser className={styles.userIcon} />
                                 </div>
                             </div>
                         </div>
