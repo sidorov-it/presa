@@ -26,6 +26,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [previousPath, setPreviousPath] = useState<string | null>(null);
 
+    // Ensure any theme styles from editor pages are cleared when the dashboard
+    // layout first mounts. Without this, previews could inherit the last used
+    // theme when navigating back from the editor.
+    useEffect(() => {
+        resetThemeStyles();
+    }, []);
+
     // Track path changes to detect when leaving editor pages
     useEffect(() => {
         // If the previous path contained '/edit' or '/docs' and the current one doesn't
