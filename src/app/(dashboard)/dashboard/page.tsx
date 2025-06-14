@@ -20,7 +20,7 @@ import { HiOutlineDotsVertical } from 'react-icons/hi';
 export default function DashboardPage() {
     const router = useRouter();
     const { presentations, createPresentation, loadPresentationsList, deletePresentation } = usePresentationStore();
-    const { setCurrentTheme, loadThemes, themes, getDefaultTheme } = useThemeStore();
+    const { setCurrentTheme, loadThemes, themes } = useThemeStore();
     const [showAIModal, setShowAIModal] = useState(false);
     const [userPresentations, setUserPresentations] = useState<IPresentation[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -336,7 +336,9 @@ export default function DashboardPage() {
             ) : (
                 <div className={styles.presentationsGrid}>
                     {userPresentations.map(presentation => {
-                        const theme = themes.find(t => t.id === presentation.themeId) || getDefaultTheme();
+                        const theme = presentation.themeId
+                            ? themes.find(t => t.id === presentation.themeId) || null
+                            : null;
                         return (
                             <Link
                                 href={`/docs/${presentation.id}`}
