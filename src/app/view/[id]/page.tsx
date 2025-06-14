@@ -1,33 +1,25 @@
 /* eslint-disable jsx-a11y/interactive-supports-focus */
 'use client';
-
-import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'next/navigation';
-// import Editor from '@/components/editor/Editor';
-import Editor from '@/components/editor/Editor/Editor';
-import { IPresentation, TipTapRefs } from '@/types';
-import Link from 'next/link';
+import { SlideViewer } from '@/components/viewer';
+import viewerStyles from '@/components/viewer/PresentationViewer.module.css';
 import styles from './page.module.css';
 import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
 import { useColorMode } from '@/components/ui/color-mode';
 import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 import { useThemeStore } from '@/store/themeStore';
 import { usePresentationStore } from '@/store/presentationStore';
-import { PdfExportButton } from '@/components/export';
-import Logo from '@/components/icons/Logo/Logo';
-import { Button, Icon } from '@chakra-ui/react';
-import { FaExpand, FaCompress, FaUser } from 'react-icons/fa';
-import { useSession } from 'next-auth/react';
+import screenfull from 'screenfull';
+import { FullscreenIcon } from 'lucide-react';
 
 export default function PresentationView() {
     const params = useParams();
     const { id } = params;
 
     const { colorMode } = useColorMode();
-    const { data: session } = useSession();
 
     const [isFullscreen, setIsFullscreen] = useState(false);
-
     const loadPresentation = usePresentationStore(state => state.loadPresentation);
     const checkPresentationExists = usePresentationStore(state => state.checkPresentationExists);
 
@@ -39,28 +31,48 @@ export default function PresentationView() {
     const currentTheme = useThemeStore(state => state.currentTheme);
     const setCurrentTheme = useThemeStore(state => state.setCurrentTheme);
 
-    const tiptapRefs = useRef<TipTapRefs>({
-        editors: {},
-        editorRefs: [],
-    });
+    const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+
+    const handleNextSlide = () => {
+        if (presentation && currentSlideIndex < presentation.slides.length - 1) {
+            setCurrentSlideIndex(currentSlideIndex + 1);
+        }
+    };
+
+    const handlePrevSlide = () => {
+        if (currentSlideIndex > 0) {
+            setCurrentSlideIndex(currentSlideIndex - 1);
+        }
+    };
 
     useEffect(() => {
-        const handleFullscreenChange = () => {
-            setIsFullscreen(!!document.fullscreenElement);
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+                handleNextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                handlePrevSlide();
+            }
         };
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-        return () => {
-            document.removeEventListener('fullscreenchange', handleFullscreenChange);
-        };
-    }, []);
 
-    const toggleFullscreen = useCallback(() => {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen?.();
-        } else {
-            document.exitFullscreen?.();
-        }
-    }, []);
+        window.addEventListener('keydown', onKeyDown);
+        return () => {
+            window.removeEventListener('keydown', onKeyDown);
+        };
+    }, [currentSlideIndex, presentation]);
+
+    useEffect(() => {
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+                handleNextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                handlePrevSlide();
+            }
+        };
+        window.addEventListener('keydown', onKeyDown);
+        return () => {
+            window.removeEventListener('keydown', onKeyDown);
+        };
+    }, [currentSlideIndex, presentation]);
 
     const [isLoading, setIsLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
@@ -131,60 +143,68 @@ export default function PresentationView() {
         []
     );
 
+    const handleFullscreen = () => {
+        screenfull.request();
+        setIsFullscreen(true);
+    };
+
+    const currentSlide = presentation?.slides[currentSlideIndex];
+    const pageStyle = useMemo(() => {
+        const style: React.CSSProperties = {};
+        if (currentSlide?.templateType === 'imageBackground' && currentSlide?.imageUrl) {
+            style.backgroundImage = `url(${currentSlide.imageUrl})`;
+            style.backgroundSize = 'cover';
+            style.backgroundPosition = 'center';
+            style.backgroundRepeat = 'no-repeat';
+        } else if (currentSlide?.background?.type === 'color') {
+            style.backgroundColor = currentSlide.background.value;
+        } else {
+            style.backgroundColor = 'var(--presentation-slide-background)';
+        }
+        return style;
+    }, [currentSlide]);
+
     if (isLoading) return loadingUI;
     if (notFound || !presentation) return notFoundUI;
 
     return (
         <ReadOnlyProvider isReadOnly={true}>
-            <ThemeStylesApplier
-                theme={currentTheme}
-                backgroundSettings={presentation.backgroundSettings}
-                className={styles.container}
-            >
-                <div className={colorMode === 'dark' ? 'dark' : ''}>
-                    <header className={styles.header}>
-                        <div className={styles.headerContent}>
-                            <div className={styles.headerLeft}>
-                                <Link href="/dashboard" className={styles.logo}>
-                                    <Logo size="md" />
-                                </Link>
-                                <h1 className={styles.title}>{presentation.title}</h1>
-                            </div>
-                            <div className={styles.headerRight}>
-                                <div className={styles.actions}>
-                                    <Button
-                                        onClick={toggleFullscreen}
-                                        leftIcon={<Icon as={isFullscreen ? FaCompress : FaExpand} aria-hidden="true" />}
-                                        colorScheme="blue"
-                                        variant="solid"
-                                        size="md"
-                                        aria-label="Полный экран"
-                                        className={styles.fullscreenButton}
-                                    >
-                                        {isFullscreen ? 'Выйти' : 'Полный экран'}
-                                    </Button>
-                                    <PdfExportButton
-                                        presentation={presentation}
-                                        buttonText="Скачать PDF"
-                                        loadingText="Скачивание..."
-                                        filename={`${presentation.title || 'presentation'}.pdf`}
-                                    />
-                                </div>
-                                <div className={styles.userInfo} aria-label="User">
-                                    <FaUser className={styles.userIcon} />
-                                </div>
-                            </div>
+            <ThemeStylesApplier theme={currentTheme} backgroundSettings={presentation.backgroundSettings} />
+            <div className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`} style={pageStyle}>
+                <main className={styles.main} data-read-only="true">
+                    <div className={styles.slidePage}>
+                        <SlideViewer slide={presentation.slides[currentSlideIndex]} fullPage={true} />
+                    </div>
+                    <div className={styles.navControls}>
+                        <button
+                            onClick={handlePrevSlide}
+                            disabled={currentSlideIndex === 0}
+                            className={viewerStyles.navButton}
+                            aria-label="Previous slide"
+                        >
+                            ←
+                        </button>
+                        <div className={viewerStyles.slideCounter}>
+                            {currentSlideIndex + 1} / {presentation.slides.length}
                         </div>
-                    </header>
-                    <main className={styles.main} data-read-only="true">
-                        <Editor presentationId={presentation.id} tiptapRefs={tiptapRefs} />
-                    </main>
-
-                    <footer className={styles.footer}>
-                        <div className={styles.footerContent}>Presa - Create beautiful presentations with AI</div>
-                    </footer>
-                </div>
-            </ThemeStylesApplier>
+                        <button
+                            onClick={handleNextSlide}
+                            disabled={currentSlideIndex === presentation.slides.length - 1}
+                            className={viewerStyles.navButton}
+                            aria-label="Next slide"
+                        >
+                            →
+                        </button>
+                    </div>
+                    {screenfull.isEnabled && !isFullscreen && (
+                        <div className={styles.fullscreenButton}>
+                            <button onClick={handleFullscreen}>
+                                <FullscreenIcon size={24} color="#fff" />
+                            </button>
+                        </div>
+                    )}
+                </main>
+            </div>
         </ReadOnlyProvider>
     );
 }
