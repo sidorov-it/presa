@@ -110,6 +110,7 @@ export default function Colors({
                         <ColorPicker
                             value={theme.colors.slideBackground}
                             onChange={color => handleColorsChange({ slideBackground: color })}
+                            allowAlpha={true}
                         />
                     </div>
                     <div>
