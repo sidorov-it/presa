@@ -11,6 +11,7 @@ interface ColorPickerProps {
     value: string;
     onChange: (value: string) => void;
     className?: string;
+    allowAlpha?: boolean;
     isShowRemoveIcon?: boolean;
     handleRemove?: () => void;
 }
@@ -19,32 +20,65 @@ export const ColorPicker = ({
     value,
     onChange,
     className,
+    allowAlpha = false,
     isShowRemoveIcon = false,
     handleRemove,
 }: ColorPickerProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const [inputValue, setInputValue] = useState(value);
+    const [alpha, setAlpha] = useState(1);
 
     useEffect(() => {
-        setInputValue(value);
-    }, [value]);
+        if (allowAlpha) {
+            const match = value.match(/^#([0-9A-Fa-f]{6})([0-9A-Fa-f]{2})?$/);
+            if (match) {
+                setInputValue(value);
+                if (match[2]) {
+                    setAlpha(parseInt(match[2], 16) / 255);
+                } else {
+                    setAlpha(1);
+                }
+            } else {
+                setInputValue(value);
+                setAlpha(1);
+            }
+        } else {
+            setInputValue(value);
+        }
+    }, [value, allowAlpha]);
 
     const handleColorChange = (newColor: string) => {
-        setInputValue(newColor);
-        onChange(newColor);
+        let finalColor = newColor;
+        if (allowAlpha) {
+            const alphaHex = Math.round(alpha * 255)
+                .toString(16)
+                .padStart(2, '0');
+            finalColor = `${newColor}${alphaHex}`;
+        }
+        setInputValue(finalColor);
+        onChange(finalColor);
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
         setInputValue(newValue);
 
-        if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(newValue)) {
+        const regex = allowAlpha ? /^#([A-Fa-f0-9]{6})([A-Fa-f0-9]{2})?$/ : /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+
+        if (regex.test(newValue)) {
+            if (allowAlpha) {
+                const match = newValue.match(/^#([A-Fa-f0-9]{6})([A-Fa-f0-9]{2})?$/);
+                if (match) {
+                    setAlpha(match[2] ? parseInt(match[2], 16) / 255 : 1);
+                }
+            }
             onChange(newValue);
         }
     };
 
     const handleInputBlur = () => {
-        if (!/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(inputValue)) {
+        const regex = allowAlpha ? /^#([A-Fa-f0-9]{6})([A-Fa-f0-9]{2})?$/ : /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+        if (!regex.test(inputValue)) {
             setInputValue(value);
         }
     };
@@ -53,22 +87,24 @@ export const ColorPicker = ({
         <button
             type="button"
             className={styles.colorButton}
-            style={{ backgroundColor: value }}
+            style={{ backgroundColor: inputValue }}
             aria-label="Выбрать цвет"
             tabIndex={0}
         />
     );
 
+    const baseColor = allowAlpha ? inputValue.slice(0, 7) : value;
+
     const colorPickerContent = (
         <div style={{ width: '100%' }}>
             <HexColorPicker
-                color={value}
+                color={baseColor}
                 onChange={handleColorChange}
                 data-testid="color-picker"
                 className={styles.colorPicker}
             />
             <div className={styles.colorPickerContent}>
-                <div className={styles.colorPickerButton} style={{ backgroundColor: value }} />
+                <div className={styles.colorPickerButton} style={{ backgroundColor: inputValue }} />
                 <Input
                     type="text"
                     value={inputValue}
@@ -78,6 +114,30 @@ export const ColorPicker = ({
                     size="sm"
                     aria-label="Код цвета"
                 />
+                {allowAlpha && (
+                    <input
+                        type="range"
+                        min={0}
+                        max={1}
+                        step={0.01}
+                        value={alpha}
+                        onChange={e => {
+                            const a = parseFloat(e.target.value);
+                            setAlpha(a);
+                            const alphaHex = Math.round(a * 255)
+                                .toString(16)
+                                .padStart(2, '0');
+                            const base = inputValue.match(/^#([0-9A-Fa-f]{6})/);
+                            if (base) {
+                                const final = `#${base[1]}${alphaHex}`;
+                                setInputValue(final);
+                                onChange(final);
+                            }
+                        }}
+                        aria-label="Прозрачность"
+                        className={styles.alphaSlider}
+                    />
+                )}
             </div>
         </div>
     );
@@ -89,7 +149,10 @@ export const ColorPicker = ({
                 content={colorPickerContent}
                 isOpen={isOpen}
                 onOpen={() => setIsOpen(true)}
-                onClose={() => setIsOpen(false)}
+                onClose={() => {
+                    console.log('close');
+                    setIsOpen(false);
+                }}
             />
             <div style={{ position: 'relative', flex: '1 1 0%' }}>
                 <Input

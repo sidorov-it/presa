@@ -5,7 +5,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { useShallow } from 'zustand/react/shallow';
-import { ColorPicker } from '@/components/tiptap/ColorPicker';
+import ColorPicker from '@/components/ui/ColorPicker';
 
 import styles from './BackgroundSettingsModal.module.css';
 
@@ -92,10 +92,10 @@ const BackgroundSettingsModal: React.FC<BackgroundSettingsModalProps> = ({ isOpe
                         Цвет фона
                     </label>
                     <ColorPicker
-                        onColorChange={setBackgroundColor}
-                        initialColor={backgroundColor}
-                        mode="card"
-                        label="Выбрать цвет фона"
+                        value={backgroundColor}
+                        onChange={setBackgroundColor}
+                        className="" 
+                        allowAlpha={true}
                     />
                 </div>
                 <div style={{ marginBottom: '1.5rem' }}>

@@ -2,7 +2,7 @@ import React, { MutableRefObject, useCallback, useState } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { SLIDE_TEMPLATES, TipTapRefs } from '@/types';
 import styles from './SlideTemplateSelector.module.css';
-import { ColorPicker } from '@/components/tiptap/ColorPicker';
+import ColorPicker from '@/components/ui/ColorPicker';
 import { MdOutlineVerticalAlignTop, MdOutlineVerticalAlignCenter, MdOutlineVerticalAlignBottom } from 'react-icons/md';
 import { useHistoryStore } from '@/store/historyStore';
 import { FiLoader } from 'react-icons/fi';
@@ -72,6 +72,21 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
             });
         }
     };
+
+    const handleBackgroundColorChange = useCallback(
+        (color: string) => {
+            // Only update background if not using image background
+            if (templateType !== 'imageBackground') {
+                updateSlide(presentationId, slideId, {
+                    background: {
+                        type: 'color',
+                        value: color,
+                    },
+                });
+            }
+        },
+        [templateType, presentationId, slideId, updateSlide]
+    );
 
     const handleTextColorChange = useCallback(
         (color: string) => {
@@ -207,18 +222,6 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
         }
     };
 
-    const handleBackgroundColorChange = (color: string) => {
-        // Only update background if not using image background
-        if (templateType !== 'imageBackground') {
-            updateSlide(presentationId, slideId, {
-                background: {
-                    type: 'color',
-                    value: color,
-                },
-            });
-        }
-    };
-
     const handleContentAlignmentChange = (alignment: ContentAlignment) => {
         updateSlide(presentationId, slideId, {
             contentAlignment: alignment,
@@ -284,11 +287,10 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                     </label>
                     <div className={styles.templateSelectorBackgroundColorPicker}>
                         <ColorPicker
-                            onColorChange={color => handleBackgroundColorChange(color)}
-                            initialColor={backgroundColor}
-                            mode="card"
-                            label="Выбрать цвет фона"
-                            style={{ width: '100%' }}
+                            value={backgroundColor}
+                            onChange={color => handleBackgroundColorChange(color)}
+                            allowAlpha={true}
+                            className={styles.colorPicker}
                         />
                     </div>
                 </div>
@@ -300,11 +302,10 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                 </label>
                 <div className={styles.templateSelectorTextColorPicker}>
                     <ColorPicker
-                        onColorChange={color => handleTextColorChange(color)}
-                        initialColor={textColor}
-                        mode="card"
-                        label="Выбрать цвет текста"
-                        style={{ width: '100%' }}
+                        className={styles.colorPicker}
+                        value={textColor}
+                        allowAlpha={true}
+                        onChange={color => handleTextColorChange(color)}
                     />
                 </div>
             </div>

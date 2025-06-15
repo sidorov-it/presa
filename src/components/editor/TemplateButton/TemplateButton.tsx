@@ -41,7 +41,8 @@ const TemplateButton: React.FC<TemplateButtonProps> = ({
                 popupRef.current &&
                 buttonRef.current &&
                 !popupRef.current.contains(event.target as Node) &&
-                !buttonRef.current.contains(event.target as Node)
+                !buttonRef.current.contains(event.target as Node) &&
+                !(event.target as HTMLElement)?.closest('[data-scope="popover"]')
             ) {
                 setIsOpen(false);
             }
