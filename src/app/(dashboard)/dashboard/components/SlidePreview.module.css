@@ -3,18 +3,17 @@
   height: 100%;
   position: relative;
   overflow: hidden;
-  display: flex;
+  /* display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: center; */
 }
 
 .scaled {
-  width: 100%;
-  height: auto;
-  max-height: 100%;
-  /* Убираем scale и используем полную ширину */
-  transform: none;
-  transform-origin: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: scale(0.33);
+  transform-origin: top left;
 }
 
 .empty {

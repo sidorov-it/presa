@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/interactive-supports-focus */
 'use client';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { SlideViewer } from '@/components/viewer';
 import viewerStyles from '@/components/viewer/PresentationViewer.module.css';
@@ -29,8 +29,10 @@ export default function PresentationView() {
 
     const themes = useThemeStore(state => state.themes);
     const loadThemes = useThemeStore(state => state.loadThemes);
+    const loadDefaultThemes = useThemeStore(state => state.loadDefaultThemes);
     const currentTheme = useThemeStore(state => state.currentTheme);
     const setCurrentTheme = useThemeStore(state => state.setCurrentTheme);
+    const defaultThemes = useThemeStore(state => state.defaultThemes);
 
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
@@ -41,17 +43,17 @@ export default function PresentationView() {
         };
     }, []);
 
-    const handleNextSlide = () => {
+    const handleNextSlide = useCallback(() => {
         if (presentation && currentSlideIndex < presentation.slides.length - 1) {
             setCurrentSlideIndex(currentSlideIndex + 1);
         }
-    };
+    }, [currentSlideIndex, presentation]);
 
-    const handlePrevSlide = () => {
+    const handlePrevSlide = useCallback(() => {
         if (currentSlideIndex > 0) {
             setCurrentSlideIndex(currentSlideIndex - 1);
         }
-    };
+    }, [currentSlideIndex]);
 
     useEffect(() => {
         const onKeyDown = (e: KeyboardEvent) => {
@@ -66,7 +68,7 @@ export default function PresentationView() {
         return () => {
             window.removeEventListener('keydown', onKeyDown);
         };
-    }, [currentSlideIndex, presentation]);
+    }, [currentSlideIndex, handleNextSlide, handlePrevSlide, presentation]);
 
     useEffect(() => {
         const onKeyDown = (e: KeyboardEvent) => {
@@ -115,17 +117,19 @@ export default function PresentationView() {
 
     // Apply theme when presentation is loaded or themes change
     useEffect(() => {
-        if (!presentation || !presentation.themeId) return;
+        if (!presentation) return;
 
         const savedTheme = themes.find(theme => theme.id === presentation.themeId);
         if (savedTheme) {
             setCurrentTheme(savedTheme);
+        } else {
+            setCurrentTheme(defaultThemes[0]);
         }
 
         return () => {
             setCurrentTheme(null);
         };
-    }, [presentation, themes, setCurrentTheme]);
+    }, [presentation, themes, setCurrentTheme, defaultThemes]);
 
     // Load themes separately
     useEffect(() => {
@@ -133,6 +137,12 @@ export default function PresentationView() {
             console.error('Failed to load themes:', error);
         });
     }, [loadThemes]);
+
+    useEffect(() => {
+        loadDefaultThemes().catch(error => {
+            console.error('Failed to load themes:', error);
+        });
+    }, [loadDefaultThemes]);
 
     const loadingUI = useMemo(
         () => (

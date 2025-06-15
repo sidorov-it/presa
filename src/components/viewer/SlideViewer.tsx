@@ -204,9 +204,9 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
             ? 'transparent'
             : 'var(--presentation-slide-background)',
         boxShadow: fullPage ? 'none' : 'var(--presentation-slide-shadow)',
-        width: '100%',
-        maxWidth: '100%',
-        boxSizing: 'border-box',
+        // width: '100%',
+        // maxWidth: '100%',
+        // boxSizing: 'border-box',
         minHeight: fullPage ? '100vh' : isPdfExport ? 'auto' : undefined,
         height: fullPage ? '100vh' : isPdfExport ? 'auto' : undefined,
         // Apply slide-specific text color if available

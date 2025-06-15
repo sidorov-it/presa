@@ -32,6 +32,9 @@ export default function DashboardPage() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [presentationToDelete, setPresentationToDelete] = useState<string | null>(null);
 
+    const defaultThemes = useThemeStore(state => state.defaultThemes);
+    const loadDefaultThemes = useThemeStore(state => state.loadDefaultThemes);
+
     const menuRef = useRef<HTMLDivElement>(null);
 
     // AI form state
@@ -42,6 +45,12 @@ export default function DashboardPage() {
 
     type SortOption = 'createdAt' | 'updatedAt' | 'title';
     const [sortBy, setSortBy] = useState<SortOption>('updatedAt');
+
+    useEffect(() => {
+        loadDefaultThemes().catch(err => {
+            console.error('Failed to load themes:', err);
+        });
+    }, [loadDefaultThemes]);
 
     // Load themes for previews
     useEffect(() => {
@@ -277,6 +286,8 @@ export default function DashboardPage() {
         [toggleMenu]
     );
 
+    const defaultTheme = defaultThemes[0];
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -336,9 +347,8 @@ export default function DashboardPage() {
             ) : (
                 <div className={styles.presentationsGrid}>
                     {userPresentations.map(presentation => {
-                        const theme = presentation.themeId
-                            ? themes.find(t => t.id === presentation.themeId) || null
-                            : null;
+                        const theme = themes.find(t => t.id === presentation.themeId) || defaultTheme;
+
                         return (
                             <Link
                                 href={`/docs/${presentation.id}`}

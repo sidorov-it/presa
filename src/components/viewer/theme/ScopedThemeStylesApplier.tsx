@@ -18,7 +18,7 @@ import circleInvertedTopImage from '@/elements/masks/circle-inverted-top.svg';
 
 import { useLayoutEffect, useRef, forwardRef } from 'react';
 import { Theme } from '@/types/theme';
-import { DEFAULT_THEME } from '@/constants/defaultTheme';
+import { useThemeStore } from '@/store/themeStore';
 
 interface ScopedThemeStylesApplierProps {
     theme: Theme | null;
@@ -29,17 +29,18 @@ interface ScopedThemeStylesApplierProps {
 const ScopedThemeStylesApplier = forwardRef<HTMLDivElement, ScopedThemeStylesApplierProps>(
     ({ theme, children, className = '' }, ref) => {
         const containerRef = useRef<HTMLDivElement>(null);
+        const defaultThemes = useThemeStore(state => state.defaultThemes);
 
         // Apply theme to the container when the component mounts or theme changes
         useLayoutEffect(() => {
             const container = containerRef.current;
-            if (!container) {
+            if (!container || !defaultThemes || defaultThemes.length === 0) {
                 console.log('ScopedThemeStylesApplier: No container provided');
                 return;
             }
 
             // Use default theme if no theme is provided
-            const activeTheme = theme || DEFAULT_THEME;
+            const activeTheme = theme || defaultThemes[0];
             console.log('ScopedThemeStylesApplier: Applying theme', activeTheme.name);
 
             // Check if theme structure is complete
@@ -290,7 +291,7 @@ const ScopedThemeStylesApplier = forwardRef<HTMLDivElement, ScopedThemeStylesApp
             } catch (error) {
                 console.error('ScopedThemeStylesApplier: Error applying theme', error);
             }
-        }, [theme]);
+        }, [theme, defaultThemes]);
 
         return (
             <div

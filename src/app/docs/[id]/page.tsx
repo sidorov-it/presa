@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/interactive-supports-focus */
 'use client';
 
@@ -59,7 +61,8 @@ export default function PresentationEditorPage() {
     const loadDefaultThemes = useThemeStore(state => state.loadDefaultThemes);
     const currentTheme = useThemeStore(state => state.currentTheme);
     const setCurrentTheme = useThemeStore(state => state.setCurrentTheme);
-    const getDefaultTheme = useThemeStore(state => state.getDefaultTheme);
+    const defaultTheme = useThemeStore(state => state.defaultThemes[0]);
+
     const { colorMode } = useColorMode();
 
     const tiptapRefs = useRef<TipTapRefs>({
@@ -122,6 +125,10 @@ export default function PresentationEditorPage() {
         if (savedTheme) {
             setCurrentTheme(savedTheme);
         }
+
+        return () => {
+            setCurrentTheme(null);
+        };
     }, [presentation, themes, setCurrentTheme, defaultThemes]);
 
     // Load themes separately
@@ -148,7 +155,6 @@ export default function PresentationEditorPage() {
     );
 
     const handleSetDefaultTheme = useCallback(() => {
-        const defaultTheme = getDefaultTheme();
         setCurrentTheme(defaultTheme);
 
         if (presentation) {
@@ -156,7 +162,7 @@ export default function PresentationEditorPage() {
         }
 
         setIsThemePopoverOpen(false);
-    }, [presentation, getDefaultTheme, setCurrentTheme, setTheme]);
+    }, [presentation, defaultTheme, setCurrentTheme, setTheme]);
 
     // Function to navigate to view mode
     const handleViewPresentation = useCallback(() => {
@@ -243,7 +249,7 @@ export default function PresentationEditorPage() {
         <>
             <ReadOnlyProvider isReadOnly={false}>
                 <ThemeStylesApplier
-                    theme={currentTheme}
+                    theme={currentTheme || defaultTheme}
                     backgroundSettings={presentation.backgroundSettings}
                     className={styles.container}
                 >
@@ -252,7 +258,7 @@ export default function PresentationEditorPage() {
                         <div className={styles.hiddenExportPreview} aria-hidden="true">
                             <ReadOnlyProvider isReadOnly={true}>
                                 <ThemeStylesApplier
-                                    theme={currentTheme}
+                                    theme={currentTheme || defaultTheme}
                                     backgroundSettings={presentation.backgroundSettings}
                                 >
                                     <Editor presentationId={presentation.id} tiptapRefs={tiptapRefs} />

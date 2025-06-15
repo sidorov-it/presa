@@ -56,7 +56,7 @@ const TemplatesPage = () => {
                 <div className={styles.templatesGrid}>
                     {TEMPLATE_KEYS.map(key => {
                         const template = PresentationTemplates[key];
-                        const theme = defaultThemes.find(t => t.id === template.themeId);
+                        const theme = defaultThemes.find(t => t.id === template.themeId) || defaultThemes[0];
 
                         if (!theme) {
                             return null;
