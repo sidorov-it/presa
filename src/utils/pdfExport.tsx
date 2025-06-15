@@ -219,8 +219,8 @@ export const exportPresentationToPdf = async (
     const { scale = 2 } = options;
 
     // Get all slides from the DOM
-    const slideElements = document.querySelectorAll('[data-slide="true"]');
-    if (!slideElements.length) {
+    const slideElements = document.querySelector('#export-preview')?.querySelectorAll('[data-slide="true"]');
+    if (!slideElements || !slideElements.length) {
         throw new Error('No slides found in the DOM');
     }
 

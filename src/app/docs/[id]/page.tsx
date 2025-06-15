@@ -255,7 +255,7 @@ export default function PresentationEditorPage() {
                 >
                     <MobileWarningOverlay />
                     {showDownloadPreview && (
-                        <div className={styles.hiddenExportPreview} aria-hidden="true">
+                        <div className={styles.hiddenExportPreview} aria-hidden="true" id="export-preview">
                             <ReadOnlyProvider isReadOnly={true}>
                                 <ThemeStylesApplier
                                     theme={currentTheme || defaultTheme}
