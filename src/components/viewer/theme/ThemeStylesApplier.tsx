@@ -18,6 +18,7 @@ import circleInvertedTopImage from '@/elements/masks/circle-inverted-top.svg';
 
 import { useEffect, useRef } from 'react';
 import { Theme } from '@/types/theme';
+import { DEFAULT_THEME } from '@/constants/defaultTheme';
 import getContrastTextColor from '@/utils/getContrastTextColor';
 import getHoverColor from '@/utils/getHoverColor';
 import { useColorMode } from '@/components/ui/color-mode';
@@ -44,33 +45,35 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
     // Apply theme to the container when the component mounts or theme changes
     useEffect(() => {
         const container = containerRef.current;
-        if (!container || !theme) {
+        const activeTheme = theme ?? DEFAULT_THEME;
+
+        if (!container) {
             return;
         }
 
         // Check if we already applied this exact theme
-        const themeId = theme.id || theme.name;
+        const themeId = activeTheme.id || activeTheme.name;
         if (appliedThemeRef.current === themeId) {
             return;
         }
 
         // Check if theme structure is complete
-        if (!theme.colors || !theme.typography || !theme.design) {
+        if (!activeTheme.colors || !activeTheme.typography || !activeTheme.design) {
             console.error('ThemeStylesApplier: Theme is missing required properties', {
-                hasColors: !!theme.colors,
-                hasTypography: !!theme.typography,
-                hasDesign: !!theme.design,
+                hasColors: !!activeTheme.colors,
+                hasTypography: !!activeTheme.typography,
+                hasDesign: !!activeTheme.design,
             });
 
             return;
         }
 
         // Further validate theme structure
-        if (!theme.design.slide || !theme.design.blocks || !theme.design.buttons) {
+        if (!activeTheme.design.slide || !activeTheme.design.blocks || !activeTheme.design.buttons) {
             console.error('ThemeStylesApplier: Theme design is missing required properties', {
-                hasSlide: !!theme.design.slide,
-                hasBlocks: !!theme.design.blocks,
-                hasButtons: !!theme.design.buttons,
+                hasSlide: !!activeTheme.design.slide,
+                hasBlocks: !!activeTheme.design.blocks,
+                hasButtons: !!activeTheme.design.buttons,
             });
             return;
         }
@@ -78,50 +81,50 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
         try {
             // Apply theme to the document root
             // Base colors
-            container.style.setProperty('--presentation-primary-accent', theme.colors.primaryAccent);
+            container.style.setProperty('--presentation-primary-accent', activeTheme.colors.primaryAccent);
 
             // Set secondary accent colors (limit to first 3)
-            if (theme.colors.secondaryAccents && Array.isArray(theme.colors.secondaryAccents)) {
-                theme.colors.secondaryAccents.slice(0, 3).forEach((color, index) => {
+            if (activeTheme.colors.secondaryAccents && Array.isArray(activeTheme.colors.secondaryAccents)) {
+                activeTheme.colors.secondaryAccents.slice(0, 3).forEach((color, index) => {
                     container.style.setProperty(`--presentation-secondary-accent-${index + 1}`, color);
                 });
             }
 
             container.style.setProperty(
                 '--presentation-shapes-color',
-                theme.colors.shapesColor || theme.colors.primaryAccent
+                activeTheme.colors.shapesColor || activeTheme.colors.primaryAccent
             );
             container.style.setProperty(
                 '--presentation-accent-blocks-color',
-                theme.colors.accentBlocksColor || theme.colors.primaryAccent
+                activeTheme.colors.accentBlocksColor || activeTheme.colors.primaryAccent
             );
             container.style.setProperty(
                 '--presentation-secondary-button-color',
-                theme.colors.secondaryButtonColor || '#6b7280'
+                activeTheme.colors.secondaryButtonColor || '#6b7280'
             );
 
             // Set default theme text colors (these can be overridden by slide-specific colors)
-            container.style.setProperty('--presentation-heading-color', theme.colors.headingColor);
-            container.style.setProperty('--presentation-text-color', theme.colors.textColor);
-            container.style.setProperty('--presentation-slide-background', theme.colors.slideBackground);
+            container.style.setProperty('--presentation-heading-color', activeTheme.colors.headingColor);
+            container.style.setProperty('--presentation-text-color', activeTheme.colors.textColor);
+            container.style.setProperty('--presentation-slide-background', activeTheme.colors.slideBackground);
 
             // Handle page background
-            if (theme.colors.pageBackground || backgroundSettings?.backgroundColor) {
+            if (activeTheme.colors.pageBackground || backgroundSettings?.backgroundColor) {
                 if (backgroundSettings?.backgroundColor) {
                     container.style.setProperty(
                         '--presentation-page-background-color',
                         backgroundSettings.backgroundColor
                     );
-                } else if (theme.colors.pageBackground.color) {
+                } else if (activeTheme.colors.pageBackground.color) {
                     container.style.setProperty(
                         '--presentation-page-background-color',
-                        theme.colors.pageBackground.color
+                        activeTheme.colors.pageBackground.color
                     );
                 } else {
                     container.style.setProperty('--presentation-page-background-color', '#f9fafb');
                 }
 
-                if (theme.colors.pageBackground.imageUrl || backgroundSettings?.backgroundImage) {
+                if (activeTheme.colors.pageBackground.imageUrl || backgroundSettings?.backgroundImage) {
                     // Check if URL is valid
                     let imageUrl;
 
@@ -130,7 +133,7 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
                             imageUrl = backgroundSettings.backgroundImage;
                         }
                     } else {
-                        imageUrl = theme.colors.pageBackground.imageUrl.trim();
+                        imageUrl = activeTheme.colors.pageBackground.imageUrl.trim();
                     }
                     // const imageUrl = backgroundSettings?.backgroundImage || theme.colors.pageBackground.imageUrl.trim();
                     if (imageUrl) {
@@ -163,42 +166,57 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
                 container.style.removeProperty('--presentation-page-background-image');
             }
             // Typography
-            container.style.setProperty('--presentation-heading-font', `'${theme.typography.headingFont}', sans-serif`);
-            container.style.setProperty('--presentation-heading-weight', theme.typography.headingWeight.toString());
-            container.style.setProperty('--presentation-body-font', `'${theme.typography.bodyFont}', sans-serif`);
-            container.style.setProperty('--presentation-body-weight', theme.typography.bodyWeight.toString());
+            container.style.setProperty(
+                '--presentation-heading-font',
+                `'${activeTheme.typography.headingFont}', sans-serif`
+            );
+            container.style.setProperty(
+                '--presentation-heading-weight',
+                activeTheme.typography.headingWeight.toString()
+            );
+            container.style.setProperty('--presentation-body-font', `'${activeTheme.typography.bodyFont}', sans-serif`);
+            container.style.setProperty('--presentation-body-weight', activeTheme.typography.bodyWeight.toString());
 
             // New typography CSS vars for headings
             container.style.setProperty(
                 '--presentation-heading-line-height',
-                theme.typography.headingLineHeight.toString()
+                activeTheme.typography.headingLineHeight.toString()
             );
             container.style.setProperty(
                 '--presentation-heading-letter-spacing',
-                theme.typography.headingLetterSpacing + '%'
+                activeTheme.typography.headingLetterSpacing + '%'
             );
 
-            if (theme.typography.headingCapitalization === 'none') {
+            if (activeTheme.typography.headingCapitalization === 'none') {
                 container.style.setProperty('--presentation-heading-capitalization', 'none');
             } else {
                 container.style.setProperty('--presentation-heading-capitalization', 'uppercase');
             }
             // New typography CSS vars for body text
-            container.style.setProperty('--presentation-body-line-height', theme.typography.bodyLineHeight.toString());
-            container.style.setProperty('--presentation-body-letter-spacing', theme.typography.bodyLetterSpacing + '%');
+            container.style.setProperty(
+                '--presentation-body-line-height',
+                activeTheme.typography.bodyLineHeight.toString()
+            );
+            container.style.setProperty(
+                '--presentation-body-letter-spacing',
+                activeTheme.typography.bodyLetterSpacing + '%'
+            );
 
-            if (theme.typography.bodyCapitalization === 'none') {
+            if (activeTheme.typography.bodyCapitalization === 'none') {
                 container.style.setProperty('--presentation-body-capitalization', 'none');
             } else {
                 container.style.setProperty('--presentation-body-capitalization', 'uppercase');
             }
 
-            container.style.setProperty('--presentation-body-capitalization', theme.typography.bodyCapitalization);
+            container.style.setProperty(
+                '--presentation-body-capitalization',
+                activeTheme.typography.bodyCapitalization
+            );
 
             // Slide design
-            container.style.setProperty('--presentation-slide-border-radius', theme.design.slide.borderRadius);
+            container.style.setProperty('--presentation-slide-border-radius', activeTheme.design.slide.borderRadius);
 
-            const shadow = theme.design.slide.shadow;
+            const shadow = activeTheme.design.slide.shadow;
             if (shadow === 'none') {
                 container.style.setProperty('--presentation-slide-shadow', 'none');
             } else if (shadow === 'sm') {
@@ -210,7 +228,7 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
                 container.style.setProperty('--presentation-slide-shadow', 'rgba(0, 0, 0, 0.4) 4px 4px 0px 0px');
             }
 
-            const borderWidth = theme.design.slide.borderWidth;
+            const borderWidth = activeTheme.design.slide.borderWidth;
 
             if (borderWidth === 'none') {
                 container.style.setProperty('--presentation-slide-border-width', '0px');
@@ -222,33 +240,33 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
                 container.style.setProperty('--presentation-slide-border-width', '3px');
             }
 
-            container.style.setProperty('--presentation-slide-border-color', theme.design.slide.borderColor);
+            container.style.setProperty('--presentation-slide-border-color', activeTheme.design.slide.borderColor);
 
             let maskImageLeft = 'none';
             let maskImageRight = 'none';
             let maskImageTop = 'none';
 
-            if (theme.design.slide.imageShape === 'default') {
+            if (activeTheme.design.slide.imageShape === 'default') {
                 maskImageLeft = 'none';
                 maskImageRight = 'none';
                 maskImageTop = 'none';
-            } else if (theme.design.slide.imageShape === 'fade') {
+            } else if (activeTheme.design.slide.imageShape === 'fade') {
                 maskImageLeft = `url(${gradientLeftImage.src})`;
                 maskImageRight = `url(${gradientRightImage.src})`;
                 maskImageTop = `url(${gradientTopImage.src})`;
-            } else if (theme.design.slide.imageShape === 'diagonal') {
+            } else if (activeTheme.design.slide.imageShape === 'diagonal') {
                 maskImageLeft = `url(${diagonalLeftImage.src})`;
                 maskImageRight = `url(${diagonalRightImage.src})`;
                 maskImageTop = `url(${diagonalTopImage.src})`;
-            } else if (theme.design.slide.imageShape === 'round') {
+            } else if (activeTheme.design.slide.imageShape === 'round') {
                 maskImageLeft = `url(${circleLeftImage.src})`;
                 maskImageRight = `url(${circleRightImage.src})`;
                 maskImageTop = `url(${circleTopImage.src})`;
-            } else if (theme.design.slide.imageShape === 'round-inverse') {
+            } else if (activeTheme.design.slide.imageShape === 'round-inverse') {
                 maskImageLeft = `url(${circleInvertedLeftImage.src})`;
                 maskImageRight = `url(${circleInvertedRightImage.src})`;
                 maskImageTop = `url(${circleInvertedTopImage.src})`;
-            } else if (theme.design.slide.imageShape === 'wiggle') {
+            } else if (activeTheme.design.slide.imageShape === 'wiggle') {
                 maskImageLeft = `url(${wiggleLeftImage.src})`;
                 maskImageRight = `url(${wiggleRightImage.src})`;
                 maskImageTop = `url(${wiggleTopImage.src})`;
@@ -259,69 +277,72 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
             container.style.setProperty('--presentation-slide-image-mask-image-top', maskImageTop);
 
             // Block design
-            container.style.setProperty('--presentation-block-fill-type', theme.design.blocks.backgroundBlockFillType);
+            container.style.setProperty(
+                '--presentation-block-fill-type',
+                activeTheme.design.blocks.backgroundBlockFillType
+            );
 
             let blockBorderWidth = '0px';
-            if (theme.design.blocks.borderWidth === 'none') {
+            if (activeTheme.design.blocks.borderWidth === 'none') {
                 blockBorderWidth = '0px';
-            } else if (theme.design.blocks.borderWidth === 'thin') {
+            } else if (activeTheme.design.blocks.borderWidth === 'thin') {
                 blockBorderWidth = '1px';
-            } else if (theme.design.blocks.borderWidth === 'medium') {
+            } else if (activeTheme.design.blocks.borderWidth === 'medium') {
                 blockBorderWidth = '2px';
-            } else if (theme.design.blocks.borderWidth === 'thick') {
+            } else if (activeTheme.design.blocks.borderWidth === 'thick') {
                 blockBorderWidth = '3px';
             }
 
             container.style.setProperty('--presentation-block-border-width', blockBorderWidth);
 
-            if (theme.design.blocks.blockFillColorsType !== 'custom') {
-                container.style.setProperty('--presentation-block-background', theme.colors.primaryAccent);
+            if (activeTheme.design.blocks.blockFillColorsType !== 'custom') {
+                container.style.setProperty('--presentation-block-background', activeTheme.colors.primaryAccent);
 
                 container.style.setProperty(
                     '--presentation-block-background-custom-type',
-                    theme.design.blocks.blockFillColorsType
+                    activeTheme.design.blocks.blockFillColorsType
                 );
-            } else if (theme.design.blocks.blockFillColorsType === 'custom') {
-                theme.design.blocks.blockBackgroundCustomColors.forEach((color, index) => {
+            } else if (activeTheme.design.blocks.blockFillColorsType === 'custom') {
+                activeTheme.design.blocks.blockBackgroundCustomColors.forEach((color, index) => {
                     container.style.setProperty(`--presentation-block-background-custom-${index + 1}`, color);
                 });
 
                 container.style.setProperty(
                     '--presentation-block-background-custom-count',
-                    theme.design.blocks.blockBackgroundCustomColors.length.toString()
+                    activeTheme.design.blocks.blockBackgroundCustomColors.length.toString()
                 );
             }
 
-            container.style.setProperty('--presentation-block-shadow', theme.design.blocks.shadow);
+            container.style.setProperty('--presentation-block-shadow', activeTheme.design.blocks.shadow);
 
             // Button and link design
-            container.style.setProperty('--presentation-button-color', theme.design.buttons.buttonColor);
+            container.style.setProperty('--presentation-button-color', activeTheme.design.buttons.buttonColor);
 
-            const hoverColor = getHoverColor(theme.design.buttons.buttonColor, 15);
+            const hoverColor = getHoverColor(activeTheme.design.buttons.buttonColor, 15);
             container.style.setProperty('--presentation-button-hover-color', hoverColor);
             container.style.setProperty(
                 '--presentation-button-text-color',
-                getContrastTextColor(theme.design.buttons.buttonColor)
+                getContrastTextColor(activeTheme.design.buttons.buttonColor)
             );
 
-            if (theme.design.buttons.buttonShape === 'square') {
+            if (activeTheme.design.buttons.buttonShape === 'square') {
                 container.style.setProperty('--presentation-button-radius', '1.5px');
-            } else if (theme.design.buttons.buttonShape === 'capsule') {
+            } else if (activeTheme.design.buttons.buttonShape === 'capsule') {
                 container.style.setProperty('--presentation-button-radius', 'var(--chakra-radii-full)');
-            } else if (theme.design.buttons.buttonShape === 'default') {
+            } else if (activeTheme.design.buttons.buttonShape === 'default') {
                 container.style.setProperty('--presentation-button-radius', '4px');
-            } else if (theme.design.buttons.buttonShape === 'rounded') {
+            } else if (activeTheme.design.buttons.buttonShape === 'rounded') {
                 container.style.setProperty('--presentation-button-radius', '8px');
             }
 
             container.style.setProperty(
                 '--presentation-link-color',
-                theme.design.buttons.linkColor || theme.colors.primaryAccent
+                activeTheme.design.buttons.linkColor || activeTheme.colors.primaryAccent
             );
 
             // Определяем isDarkMode и устанавливаем colorMode Chakra
             let isDarkMode = false;
-            if (theme && theme.colors && theme.colors.slideBackground) {
+            if (activeTheme && activeTheme.colors && activeTheme.colors.slideBackground) {
                 isDarkMode = (function isColorDark(color) {
                     if (color.startsWith('#')) {
                         const hex = color.replace('#', '');
@@ -342,7 +363,7 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
                         }
                     }
                     return false;
-                })(theme.colors.slideBackground);
+                })(activeTheme.colors.slideBackground);
             }
 
             setColorMode(isDarkMode ? 'dark' : 'light');
@@ -358,6 +379,7 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
             if (container) {
                 container.removeAttribute('style');
             }
+            setColorMode('light');
             appliedThemeRef.current = null;
         };
     }, [theme, setColorMode, backgroundSettings]);

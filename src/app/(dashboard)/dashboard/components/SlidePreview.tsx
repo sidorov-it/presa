@@ -13,9 +13,7 @@ interface SlidePreviewProps {
 export default function SlidePreview({ presentation, theme }: SlidePreviewProps) {
     const firstSlide = presentation.slides[0];
     if (!firstSlide || !firstSlide.layouts) {
-        return (
-            <div className={styles.empty}>Нет слайдов</div>
-        );
+        return <div className={styles.empty}>Нет слайдов</div>;
     }
 
     return (

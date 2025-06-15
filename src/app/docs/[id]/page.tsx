@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/interactive-supports-focus */
 'use client';
 
@@ -34,7 +36,7 @@ import { Tooltip } from '@/components/ui/tooltip';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import Logo from '@/components/icons/Logo/Logo';
 import MobileWarningOverlay from '@/components/MobileWarningOverlay/MobileWarningOverlay';
-import Presentation from '@/components/editor/Presentation';
+import { clearAllThemeStyles } from '@/utils/themeUtils';
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -59,7 +61,8 @@ export default function PresentationEditorPage() {
     const loadDefaultThemes = useThemeStore(state => state.loadDefaultThemes);
     const currentTheme = useThemeStore(state => state.currentTheme);
     const setCurrentTheme = useThemeStore(state => state.setCurrentTheme);
-    const getDefaultTheme = useThemeStore(state => state.getDefaultTheme);
+    const defaultTheme = useThemeStore(state => state.defaultThemes[0]);
+
     const { colorMode } = useColorMode();
 
     const tiptapRefs = useRef<TipTapRefs>({
@@ -75,6 +78,13 @@ export default function PresentationEditorPage() {
     const containerRef = useRef<HTMLDivElement>(null);
     const [isDownloading, setIsDownloading] = useState(false);
     const [showDownloadPreview, setShowDownloadPreview] = useState(false);
+
+    // Cleanup function to clear theme styles when component unmounts
+    useEffect(() => {
+        return () => {
+            clearAllThemeStyles();
+        };
+    }, []);
 
     // Load presentation data only once when component mounts or ID changes
     useEffect(() => {
@@ -106,13 +116,20 @@ export default function PresentationEditorPage() {
 
     // Apply theme when presentation is loaded or themes change
     useEffect(() => {
-        if (!presentation || !presentation.themeId) return;
+        if (!presentation || !presentation.themeId) {
+            setCurrentTheme(defaultThemes[0]);
+            return;
+        }
 
         const savedTheme = themes.find(theme => theme.id === presentation.themeId);
         if (savedTheme) {
             setCurrentTheme(savedTheme);
         }
-    }, [presentation, themes, setCurrentTheme]);
+
+        return () => {
+            setCurrentTheme(null);
+        };
+    }, [presentation, themes, setCurrentTheme, defaultThemes]);
 
     // Load themes separately
     useEffect(() => {
@@ -138,7 +155,6 @@ export default function PresentationEditorPage() {
     );
 
     const handleSetDefaultTheme = useCallback(() => {
-        const defaultTheme = getDefaultTheme();
         setCurrentTheme(defaultTheme);
 
         if (presentation) {
@@ -146,7 +162,7 @@ export default function PresentationEditorPage() {
         }
 
         setIsThemePopoverOpen(false);
-    }, [presentation, getDefaultTheme, setCurrentTheme, setTheme]);
+    }, [presentation, defaultTheme, setCurrentTheme, setTheme]);
 
     // Function to navigate to view mode
     const handleViewPresentation = useCallback(() => {
@@ -233,7 +249,7 @@ export default function PresentationEditorPage() {
         <>
             <ReadOnlyProvider isReadOnly={false}>
                 <ThemeStylesApplier
-                    theme={currentTheme}
+                    theme={currentTheme || defaultTheme}
                     backgroundSettings={presentation.backgroundSettings}
                     className={styles.container}
                 >
@@ -242,7 +258,7 @@ export default function PresentationEditorPage() {
                         <div className={styles.hiddenExportPreview} aria-hidden="true">
                             <ReadOnlyProvider isReadOnly={true}>
                                 <ThemeStylesApplier
-                                    theme={currentTheme}
+                                    theme={currentTheme || defaultTheme}
                                     backgroundSettings={presentation.backgroundSettings}
                                 >
                                     <Editor presentationId={presentation.id} tiptapRefs={tiptapRefs} />

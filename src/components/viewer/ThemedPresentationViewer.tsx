@@ -7,29 +7,17 @@ import ThemeStylesApplier from './theme/ThemeStylesApplier';
 interface ThemedPresentationViewerProps {
     presentation: IPresentation;
     theme: Theme;
-    initialSlideIndex?: number;
     className?: string;
-    showThumbnails?: boolean;
 }
 
-const ThemedPresentationViewer: React.FC<ThemedPresentationViewerProps> = ({
-    presentation,
-    theme,
-    initialSlideIndex = 0,
-    className = '',
-    showThumbnails = true,
-}) => {
+const ThemedPresentationViewer: React.FC<ThemedPresentationViewerProps> = ({ presentation, theme, className = '' }) => {
     return (
         <ThemeStylesApplier
             theme={theme}
             backgroundSettings={presentation.backgroundSettings}
             className={`themed-presentation-viewer ${className}`}
         >
-            <PresentationViewer
-                presentation={presentation}
-                initialSlideIndex={initialSlideIndex}
-                showThumbnails={showThumbnails}
-            />
+            <PresentationViewer presentation={presentation} />
         </ThemeStylesApplier>
     );
 };
