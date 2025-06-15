@@ -91,6 +91,7 @@ const ScopedThemeStylesApplier = forwardRef<HTMLDivElement, ScopedThemeStylesApp
                 // Set default theme text colors (these can be overridden by slide-specific colors)
                 container.style.setProperty('--presentation-heading-color', activeTheme.colors.headingColor);
                 container.style.setProperty('--presentation-text-color', activeTheme.colors.textColor);
+                debugger;
                 container.style.setProperty('--presentation-slide-background', activeTheme.colors.slideBackground);
 
                 // Handle page background

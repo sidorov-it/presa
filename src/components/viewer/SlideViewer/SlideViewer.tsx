@@ -1,8 +1,11 @@
+/* eslint-disable no-nested-ternary */
 import React, { useMemo } from 'react';
 import { Layout, Slide } from '@/types';
-import LayoutViewer from './LayoutViewer';
-import styles from '../editor/SlideEditor/SlideEditor.module.css';
-import ViewerTemplateImage from './ViewerTemplateImage';
+import LayoutViewer from '../LayoutViewer';
+import ViewerTemplateImage from '../ViewerTemplateImage';
+
+import styles from '../../editor/SlideEditor/SlideEditor.module.css';
+import localStyles from './SlideViewer.module.css';
 
 interface SlideViewerProps {
     slide: Slide;
@@ -200,9 +203,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         borderColor: 'var(--presentation-slide-border-color)',
         borderStyle: fullPage ? 'none' : 'solid',
         // Apply background if not overridden by slide-specific background
-        backgroundColor: fullPage
-            ? 'transparent'
-            : 'var(--presentation-slide-background)',
+        backgroundColor: fullPage ? 'transparent' : 'var(--presentation-slide-background)',
         boxShadow: fullPage ? 'none' : 'var(--presentation-slide-shadow)',
         // width: '100%',
         // maxWidth: '100%',
@@ -223,9 +224,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
 
     // Slide content style
     const slideContentStyle: React.CSSProperties = {
-        backgroundColor: fullPage
-            ? 'transparent'
-            : 'var(--presentation-slide-background)',
+        backgroundColor: fullPage ? 'transparent' : 'var(--presentation-slide-background)',
         borderRadius: fullPage ? 0 : 'var(--presentation-slide-border-radius)',
         minHeight: fullPage ? '100%' : isPdfExport ? 'auto' : undefined,
         height: fullPage ? '100%' : isPdfExport ? 'auto' : undefined,
@@ -234,14 +233,12 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
 
     // Адаптируем класс слайда при экспорте в PDF
     const slideClassName = `${styles.slide} ${themeClassName} ${isPdfExport ? styles.pdfExport : ''}`;
-    const outerStyle = fullPage
-        ? { padding: 0, width: '100%', height: '100%' }
-        : undefined;
+    const outerStyle = fullPage ? { padding: 0, width: '100%', height: '100%' } : undefined;
 
     return (
         <div className={slideClassName} style={outerStyle}>
-            <div className={styles.slideWrapper} style={slideWrapperStyle}>
-                <div className={styles.slideContent} style={slideContentStyle}>
+            <div className={`${styles.slideWrapper} ${localStyles.slideWrapper}`} style={slideWrapperStyle}>
+                <div className={`${styles.slideContent} ${localStyles.slideContent}`} style={slideContentStyle}>
                     {/* Template image if needed */}
                     {slide?.templateType && slide.templateType !== 'imageBackground' && (
                         <ViewerTemplateImage

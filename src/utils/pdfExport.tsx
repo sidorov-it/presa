@@ -304,11 +304,11 @@ export const exportPresentationToPdf = async (
                 const watermarkHeight = 6; // Approximate height in mm
                 const watermarkX = pageWidthMm - watermarkWidth - 3; // 3mm from right edge
                 const watermarkY = pageHeightMm - watermarkHeight - 3; // 3mm from bottom edge
-                
+
                 // Add invisible clickable link area
                 if ((pdf as any).link) {
                     (pdf as any).link(watermarkX, watermarkY, watermarkWidth, watermarkHeight, {
-                        url: 'https://slydle.ru'
+                        url: 'https://slydle.ru',
                     });
                 }
 

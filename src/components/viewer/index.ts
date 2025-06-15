@@ -1,4 +1,4 @@
-export { default as SlideViewer } from './SlideViewer';
+export { default as SlideViewer } from './SlideViewer/SlideViewer';
 export { default as PresentationViewer } from './PresentationViewer';
 export { default as FullscreenViewer } from './FullscreenViewer';
 export { default as LayoutViewer } from './LayoutViewer';

@@ -1,0 +1,12 @@
+.slideContent {
+    overflow: auto;
+    border: none;
+}
+
+.slideWrapper {
+    border: none;
+    width: 100%;
+    max-width: 100%;
+    min-height: 100vh;
+    overflow: auto;
+}

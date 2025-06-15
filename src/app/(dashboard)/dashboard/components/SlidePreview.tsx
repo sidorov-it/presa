@@ -2,7 +2,7 @@ import React from 'react';
 import { IPresentation } from '@/types';
 import { Theme } from '@/types/theme';
 import ScopedThemeStylesApplier from '@/components/viewer/theme/ScopedThemeStylesApplier';
-import SlideViewer from '@/components/viewer/SlideViewer';
+import SlideViewer from '@/components/viewer/SlideViewer/SlideViewer';
 import styles from './SlidePreview.module.css';
 
 interface SlidePreviewProps {

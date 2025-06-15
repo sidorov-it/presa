@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useCallback, useEffect, useState } from 'react';
 import { IPresentation } from '@/types';
-import SlideViewer from './SlideViewer';
+import SlideViewer from './SlideViewer/SlideViewer';
 
 interface FullscreenViewerProps {
     presentation: IPresentation;
