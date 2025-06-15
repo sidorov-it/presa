@@ -166,8 +166,14 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
                 container.style.removeProperty('--presentation-page-background-image');
             }
             // Typography
-            container.style.setProperty('--presentation-heading-font', `'${activeTheme.typography.headingFont}', sans-serif`);
-            container.style.setProperty('--presentation-heading-weight', activeTheme.typography.headingWeight.toString());
+            container.style.setProperty(
+                '--presentation-heading-font',
+                `'${activeTheme.typography.headingFont}', sans-serif`
+            );
+            container.style.setProperty(
+                '--presentation-heading-weight',
+                activeTheme.typography.headingWeight.toString()
+            );
             container.style.setProperty('--presentation-body-font', `'${activeTheme.typography.bodyFont}', sans-serif`);
             container.style.setProperty('--presentation-body-weight', activeTheme.typography.bodyWeight.toString());
 
@@ -187,8 +193,14 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
                 container.style.setProperty('--presentation-heading-capitalization', 'uppercase');
             }
             // New typography CSS vars for body text
-            container.style.setProperty('--presentation-body-line-height', activeTheme.typography.bodyLineHeight.toString());
-            container.style.setProperty('--presentation-body-letter-spacing', activeTheme.typography.bodyLetterSpacing + '%');
+            container.style.setProperty(
+                '--presentation-body-line-height',
+                activeTheme.typography.bodyLineHeight.toString()
+            );
+            container.style.setProperty(
+                '--presentation-body-letter-spacing',
+                activeTheme.typography.bodyLetterSpacing + '%'
+            );
 
             if (activeTheme.typography.bodyCapitalization === 'none') {
                 container.style.setProperty('--presentation-body-capitalization', 'none');
@@ -196,7 +208,10 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
                 container.style.setProperty('--presentation-body-capitalization', 'uppercase');
             }
 
-            container.style.setProperty('--presentation-body-capitalization', activeTheme.typography.bodyCapitalization);
+            container.style.setProperty(
+                '--presentation-body-capitalization',
+                activeTheme.typography.bodyCapitalization
+            );
 
             // Slide design
             container.style.setProperty('--presentation-slide-border-radius', activeTheme.design.slide.borderRadius);
@@ -262,7 +277,10 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
             container.style.setProperty('--presentation-slide-image-mask-image-top', maskImageTop);
 
             // Block design
-            container.style.setProperty('--presentation-block-fill-type', activeTheme.design.blocks.backgroundBlockFillType);
+            container.style.setProperty(
+                '--presentation-block-fill-type',
+                activeTheme.design.blocks.backgroundBlockFillType
+            );
 
             let blockBorderWidth = '0px';
             if (activeTheme.design.blocks.borderWidth === 'none') {

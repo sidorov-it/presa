@@ -12,6 +12,7 @@ import { useThemeStore } from '@/store/themeStore';
 import { usePresentationStore } from '@/store/presentationStore';
 import screenfull from 'screenfull';
 import { FullscreenIcon } from 'lucide-react';
+import { clearAllThemeStyles } from '@/utils/themeUtils';
 
 export default function PresentationView() {
     const params = useParams();
@@ -32,6 +33,13 @@ export default function PresentationView() {
     const setCurrentTheme = useThemeStore(state => state.setCurrentTheme);
 
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+
+    // Cleanup function to clear theme styles when component unmounts
+    useEffect(() => {
+        return () => {
+            clearAllThemeStyles();
+        };
+    }, []);
 
     const handleNextSlide = () => {
         if (presentation && currentSlideIndex < presentation.slides.length - 1) {
@@ -113,6 +121,10 @@ export default function PresentationView() {
         if (savedTheme) {
             setCurrentTheme(savedTheme);
         }
+
+        return () => {
+            setCurrentTheme(null);
+        };
     }, [presentation, themes, setCurrentTheme]);
 
     // Load themes separately
@@ -169,47 +181,41 @@ export default function PresentationView() {
 
     return (
         <ReadOnlyProvider isReadOnly={true}>
-            <ThemeStylesApplier
-                theme={currentTheme}
-                backgroundSettings={presentation.backgroundSettings}
-            >
-                <div
-                    className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`}
-                    style={pageStyle}
-                >
+            <ThemeStylesApplier theme={currentTheme} backgroundSettings={presentation.backgroundSettings}>
+                <div className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`} style={pageStyle}>
                     <main className={styles.main} data-read-only="true">
-                    <div className={styles.slidePage}>
-                        <SlideViewer slide={presentation.slides[currentSlideIndex]} fullPage={true} />
-                    </div>
-                    <div className={styles.navControls}>
-                        <button
-                            onClick={handlePrevSlide}
-                            disabled={currentSlideIndex === 0}
-                            className={viewerStyles.navButton}
-                            aria-label="Previous slide"
-                        >
-                            ←
-                        </button>
-                        <div className={viewerStyles.slideCounter}>
-                            {currentSlideIndex + 1} / {presentation.slides.length}
+                        <div className={styles.slidePage}>
+                            <SlideViewer slide={presentation.slides[currentSlideIndex]} fullPage={true} />
                         </div>
-                        <button
-                            onClick={handleNextSlide}
-                            disabled={currentSlideIndex === presentation.slides.length - 1}
-                            className={viewerStyles.navButton}
-                            aria-label="Next slide"
-                        >
-                            →
-                        </button>
-                    </div>
-                    {screenfull.isEnabled && !isFullscreen && (
-                        <div className={styles.fullscreenButton}>
-                            <button onClick={handleFullscreen}>
-                                <FullscreenIcon size={24} color="#fff" />
+                        <div className={styles.navControls}>
+                            <button
+                                onClick={handlePrevSlide}
+                                disabled={currentSlideIndex === 0}
+                                className={viewerStyles.navButton}
+                                aria-label="Previous slide"
+                            >
+                                ←
+                            </button>
+                            <div className={viewerStyles.slideCounter}>
+                                {currentSlideIndex + 1} / {presentation.slides.length}
+                            </div>
+                            <button
+                                onClick={handleNextSlide}
+                                disabled={currentSlideIndex === presentation.slides.length - 1}
+                                className={viewerStyles.navButton}
+                                aria-label="Next slide"
+                            >
+                                →
                             </button>
                         </div>
-                    )}
-                </main>
+                        {screenfull.isEnabled && !isFullscreen && (
+                            <div className={styles.fullscreenButton}>
+                                <button onClick={handleFullscreen}>
+                                    <FullscreenIcon size={24} color="#fff" />
+                                </button>
+                            </div>
+                        )}
+                    </main>
                 </div>
             </ThemeStylesApplier>
         </ReadOnlyProvider>

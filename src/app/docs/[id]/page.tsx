@@ -34,7 +34,7 @@ import { Tooltip } from '@/components/ui/tooltip';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import Logo from '@/components/icons/Logo/Logo';
 import MobileWarningOverlay from '@/components/MobileWarningOverlay/MobileWarningOverlay';
-import Presentation from '@/components/editor/Presentation';
+import { clearAllThemeStyles } from '@/utils/themeUtils';
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -76,6 +76,13 @@ export default function PresentationEditorPage() {
     const [isDownloading, setIsDownloading] = useState(false);
     const [showDownloadPreview, setShowDownloadPreview] = useState(false);
 
+    // Cleanup function to clear theme styles when component unmounts
+    useEffect(() => {
+        return () => {
+            clearAllThemeStyles();
+        };
+    }, []);
+
     // Load presentation data only once when component mounts or ID changes
     useEffect(() => {
         if (status === 'loading' || !id) return;
@@ -106,13 +113,16 @@ export default function PresentationEditorPage() {
 
     // Apply theme when presentation is loaded or themes change
     useEffect(() => {
-        if (!presentation || !presentation.themeId) return;
+        if (!presentation || !presentation.themeId) {
+            setCurrentTheme(defaultThemes[0]);
+            return;
+        }
 
         const savedTheme = themes.find(theme => theme.id === presentation.themeId);
         if (savedTheme) {
             setCurrentTheme(savedTheme);
         }
-    }, [presentation, themes, setCurrentTheme]);
+    }, [presentation, themes, setCurrentTheme, defaultThemes]);
 
     // Load themes separately
     useEffect(() => {
