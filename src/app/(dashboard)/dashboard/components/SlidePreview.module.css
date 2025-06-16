@@ -12,7 +12,8 @@
   position: absolute;
   top: 0;
   left: 0;
-  transform: scale(0.33);
+  transform: scale(0.4);
+  width: 250%;
   transform-origin: top left;
 }
 
