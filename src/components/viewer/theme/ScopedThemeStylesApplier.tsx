@@ -19,6 +19,7 @@ import circleInvertedTopImage from '@/elements/masks/circle-inverted-top.svg';
 import { useLayoutEffect, useRef, forwardRef } from 'react';
 import { Theme } from '@/types/theme';
 import { useThemeStore } from '@/store/themeStore';
+import ThemeDebugButton from '@/components/debug/ThemeDebugButton';
 
 interface ScopedThemeStylesApplierProps {
     theme: Theme | null;
@@ -305,6 +306,12 @@ const ScopedThemeStylesApplier = forwardRef<HTMLDivElement, ScopedThemeStylesApp
                 }
             >
                 {children}
+
+                {process.env.NODE_ENV === 'development' && (
+                    <>
+                        <ThemeDebugButton />
+                    </>
+                )}
             </div>
         );
     }

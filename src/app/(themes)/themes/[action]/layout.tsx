@@ -2,35 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { resetThemeStyles } from '@/utils/themeUtils';
 
 export default function ThemesLayout({ children }: { children: React.ReactNode }) {
-    const { data: session } = useSession();
     const pathname = usePathname();
     const [previousPath, setPreviousPath] = useState<string | null>(null);
 
-    // Reset theme variables on first render to prevent pages from inheriting
-    // the last used editor theme.
-    useEffect(() => {
-        resetThemeStyles();
-    }, []);
-
     // Track path changes to detect when leaving editor pages
     useEffect(() => {
-        // If the previous path contained '/edit' or '/docs' and the current one doesn't
-        // we're navigating away from an editor page
-        if (
-            previousPath &&
-            (previousPath.includes('/edit') || previousPath.includes('/docs')) &&
-            !pathname.includes('/edit') &&
-            !pathname.includes('/docs')
-        ) {
-            console.log('Navigating away from editor page, resetting theme styles');
-            resetThemeStyles();
-        }
-
-        // Update the previous path
         setPreviousPath(pathname);
     }, [pathname, previousPath]);
 

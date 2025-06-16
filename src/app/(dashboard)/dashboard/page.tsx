@@ -8,7 +8,6 @@ import { useRouter } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
 import { useThemeStore } from '@/store/themeStore';
 import SlidePreview from './components/SlidePreview';
-import { resetThemeStyles } from '@/utils/themeUtils';
 import { FaPlus, FaMagic, FaPencilAlt, FaCopy, FaTrash, FaEye } from 'react-icons/fa';
 import { IPresentation } from '@/types';
 import { pluralize, formatRelativeTime } from '@/utils/helpers';
@@ -90,7 +89,6 @@ export default function DashboardPage() {
     // Handle creating an empty presentation
     const handleCreateEmptyPresentation = async () => {
         setCurrentTheme(null);
-        resetThemeStyles();
 
         const presentationId = await createPresentation('Новая презентация');
         router.push(`/docs/${presentationId}`);

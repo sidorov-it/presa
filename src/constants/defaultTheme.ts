@@ -58,9 +58,7 @@ export const DEFAULT_THEME: Omit<Theme, 'id' | 'createdAt' | 'updatedAt'> = {
     },
 };
 
-export const createNewTheme = (
-    themeData: Partial<Omit<Theme, 'id' | 'createdAt' | 'updatedAt'>> = {}
-): Theme => {
+export const createNewTheme = (themeData: Partial<Omit<Theme, 'id' | 'createdAt' | 'updatedAt'>> = {}): Theme => {
     return {
         // id: new Prisma.ObjectId().toString(),// Generate a valid UUID
         name: themeData.name || DEFAULT_THEME.name,

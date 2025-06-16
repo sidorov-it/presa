@@ -136,5 +136,5 @@
     height: 100%;
     cursor: col-resize;
     z-index: 30;
-    background-color: var(--control-background, transparent);
+    background-color: #1E1E1E;
 }

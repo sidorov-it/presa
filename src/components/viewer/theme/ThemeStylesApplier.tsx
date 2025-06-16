@@ -18,7 +18,6 @@ import circleInvertedTopImage from '@/elements/masks/circle-inverted-top.svg';
 
 import { useEffect, useRef } from 'react';
 import { Theme } from '@/types/theme';
-import { DEFAULT_THEME } from '@/constants/defaultTheme';
 import getContrastTextColor from '@/utils/getContrastTextColor';
 import getHoverColor from '@/utils/getHoverColor';
 import { useColorMode } from '@/components/ui/color-mode';
@@ -45,9 +44,9 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
     // Apply theme to the container when the component mounts or theme changes
     useEffect(() => {
         const container = containerRef.current;
-        const activeTheme = theme ?? DEFAULT_THEME;
+        const activeTheme = theme;
 
-        if (!container) {
+        if (!container || !activeTheme) {
             return;
         }
 

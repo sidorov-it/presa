@@ -465,10 +465,10 @@ const DropIndicator = () => {
         };
 
         const colors: Record<IndicatorType, string> = {
-                element: '#007BFF', // Electric Blue
-    cell: '#007BFF', // Electric Blue
+            element: '#007BFF', // Electric Blue
+            cell: '#007BFF', // Electric Blue
             layout: '#2563EB', // Blue
-    slide: '#6C63FF', // Indigo Purple
+            slide: '#6C63FF', // Indigo Purple
             column: '#4f46e5', // indigo - different color for column indicator
             row: '#4f46e5', // indigo - same color as column for consistency
         };

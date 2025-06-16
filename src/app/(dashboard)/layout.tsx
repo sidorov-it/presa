@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useSession, signOut } from 'next-auth/react';
-import { resetThemeStyles } from '@/utils/themeUtils';
+import { signOut } from 'next-auth/react';
 import styles from './layout.module.css';
 import {
     FaChalkboard,
@@ -21,33 +20,13 @@ import { clsx } from 'clsx';
 import Logo from '@/components/icons/Logo/Logo';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-    const { data: session } = useSession();
+    // const { data: session } = useSession();
     const pathname = usePathname();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [previousPath, setPreviousPath] = useState<string | null>(null);
 
-    // Ensure any theme styles from editor pages are cleared when the dashboard
-    // layout first mounts. Without this, previews could inherit the last used
-    // theme when navigating back from the editor.
-    useEffect(() => {
-        resetThemeStyles();
-    }, []);
-
     // Track path changes to detect when leaving editor pages
     useEffect(() => {
-        // If the previous path contained '/edit' or '/docs' and the current one doesn't
-        // we're navigating away from an editor page
-        if (
-            previousPath &&
-            (previousPath.includes('/edit') || previousPath.includes('/docs')) &&
-            !pathname.includes('/edit') &&
-            !pathname.includes('/docs')
-        ) {
-            console.log('Navigating away from editor page, resetting theme styles');
-            resetThemeStyles();
-        }
-
-        // Update the previous path
         setPreviousPath(pathname);
     }, [pathname, previousPath]);
 

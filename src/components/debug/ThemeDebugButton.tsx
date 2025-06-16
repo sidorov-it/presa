@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import ThemeDebugPopup from './ThemeDebugPopup';
 import styles from './ThemeDebugButton.module.css';
