@@ -1,6 +1,7 @@
 import { getTextContent } from '@/elements/textEditor/defaultContent';
 import { TextType } from '@/types';
 import { ElementType } from '@/types/elements';
+import image from './image.jpg';
 
 // Slide 1 - Theme Preview
 export const slide1Content = {
@@ -35,32 +36,7 @@ export const slide2Content = {
         elementTypeId: ElementType.TEXT,
         content: getTextContent(TextType.HEADING1, 'Умные макеты'),
     },
-    // timelineTitle: {
-    //     elementTypeId: ElementType.TEXT,
-    //     content: getTextContent(TextType.HEADING2, 'Timeline'),
-    // },
-    // timelineItem1: {
-    //     elementTypeId: ElementType.TEXT,
-    //     content:
-    //         getTextContent(TextType.HEADING3, 'First title') +
-    //         getTextContent(TextType.DEFAULT, 'This is the first point of a timeline'),
-    // },
-    // timelineItem2: {
-    //     elementTypeId: ElementType.TEXT,
-    //     content:
-    //         getTextContent(TextType.HEADING3, 'Second title') +
-    //         getTextContent(TextType.DEFAULT, 'You can easily add and remove points and change their order'),
-    // },
-    // timelineItem3: {
-    //     elementTypeId: ElementType.TEXT,
-    //     content:
-    //         getTextContent(TextType.HEADING3, 'Third title') +
-    //         getTextContent(TextType.DEFAULT, "This is why we call them 'smart layouts'"),
-    // },
-    // pyramidTitle: {
-    //     elementTypeId: ElementType.TEXT,
-    //     content: getTextContent(TextType.HEADING2, 'Pyramid'),
-    // },
+
     smartLayout: {
         elementTypeId: ElementType.SMART_LAYOUT,
         elementVariant: 'text-boxes',
@@ -106,21 +82,22 @@ export const slide3Content = {
     description: {
         elementTypeId: ElementType.TEXT,
         content:
-            getTextContent(
+            (getTextContent(
                 TextType.DEFAULT,
                 'Gamma поставляется с предопределенными наборами шрифтов, которые лучше всего подходят для читаемости. Не стесняйтесь выбирать шрифты для заголовков и основной текстовой части.'
-            ) + getTextContent(TextType.DEFAULT, 'Вы можете выбрать цвет по умолчанию для вашего текста.'),
+            ) as string) +
+            (getTextContent(TextType.DEFAULT, 'Вы можете выбрать цвет по умолчанию для вашего текста.') as string),
     },
 
     fontExamples: {
         elementTypeId: ElementType.TEXT,
         content:
-            getTextContent(TextType.TITLE, 'Заголовок') +
-            getTextContent(TextType.HEADING1, 'Заголовок 1') +
-            getTextContent(TextType.HEADING2, 'Заголовок 2') +
-            getTextContent(TextType.HEADING3, 'Заголовок 3') +
-            getTextContent(TextType.HEADING4, 'Заголовок 4') +
-            getTextContent(TextType.DEFAULT, 'Обычный текст'),
+            (getTextContent(TextType.TITLE, 'Заголовок') as string) +
+            (getTextContent(TextType.HEADING1, 'Заголовок 1') as string) +
+            (getTextContent(TextType.HEADING2, 'Заголовок 2') as string) +
+            (getTextContent(TextType.HEADING3, 'Заголовок 3') as string) +
+            (getTextContent(TextType.HEADING4, 'Заголовок 4') as string) +
+            (getTextContent(TextType.DEFAULT, 'Обычный текст') as string),
     },
     // bodyTextExamples: {
     //     elementTypeId: ElementType.TEXT,
@@ -176,7 +153,7 @@ export const slide5Content = {
     },
     colorPalette: {
         elementTypeId: ElementType.IMAGE,
-        src: '/api/placeholder/400/200',
+        src: image.src,
         alt: 'Color palette preview',
         alignment: 'center' as const,
     },
