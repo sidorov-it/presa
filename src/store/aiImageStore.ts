@@ -132,21 +132,21 @@ export const useAIImageStore = create<AIImageStore>()(
 
             // Getters
             isGenerating: (elementId: string) => get().generating[elementId] || false,
-            
+
             getGeneratedImages: (elementId: string) => get().generatedImages[elementId] || [],
-            
+
             getSelectedImage: (elementId: string) => {
                 const images = get().generatedImages[elementId] || [];
                 const selectedId = get().selectedImages[elementId];
                 return images.find(img => img.id === selectedId) || null;
             },
-            
+
             getPrompt: (elementId: string) => get().prompts[elementId] || '',
-            
+
             getStyle: (elementId: string) => get().styles[elementId] || 'none',
-            
+
             getCustomStyle: (elementId: string) => get().customStyles[elementId] || '',
-            
+
             getError: (elementId: string) => get().errors[elementId] || null,
         }),
         {
@@ -154,4 +154,4 @@ export const useAIImageStore = create<AIImageStore>()(
             enabled: process.env.NODE_ENV === 'development',
         }
     )
-); 
+);

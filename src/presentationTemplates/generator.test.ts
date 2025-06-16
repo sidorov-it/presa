@@ -9,9 +9,7 @@ describe('generatePresentationTemplate', () => {
                     title: 'Slide 1',
                     layouts: [
                         {
-                            elements: [
-                                { type: 'text', content: 'Hello world' },
-                            ],
+                            elements: [{ type: 'text', content: 'Hello world' }],
                         },
                     ],
                 },

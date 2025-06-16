@@ -112,4 +112,4 @@ export const useYooKassaPayment = () => {
         loading,
         error,
     };
-}; 
+};

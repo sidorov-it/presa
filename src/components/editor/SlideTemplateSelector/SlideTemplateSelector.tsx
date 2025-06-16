@@ -62,7 +62,7 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                     value: imageUrl,
                 },
             });
-        } else if (slide?.background.type === 'image' && value !== 'imageBackground') {
+        } else if (slide?.background?.type === 'image' && value !== 'imageBackground') {
             // Reset background to color if changing from imageBackground to another template
             updateSlide(presentationId, slideId, {
                 background: {

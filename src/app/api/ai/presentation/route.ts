@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
                 };
             } catch (templateError) {
                 console.error('Error selecting templates:', templateError);
-                
+
                 // Fallback to basic slides if template selection fails
                 const slidesData = topics.map((topic: any) => ({
                     id: `slide-${generateId()}`,

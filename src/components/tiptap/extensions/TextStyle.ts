@@ -95,22 +95,23 @@ export const TextStyle = Mark.create<TextStyleOptions>({
         return {
             removeEmptyTextStyle:
                 () =>
-                    ({ tr }) => {
-                        const { selection } = tr;
-                        tr.doc.nodesBetween(selection.from, selection.to, (node, pos) => {
+                ({ tr }) => {
+                    const { selection } = tr;
+                    tr.doc.nodesBetween(selection.from, selection.to, (node, pos) => {
+                        if (node.isTextblock) {
+                            return true;
+                        }
 
-                            if (node.isTextblock) {
-                                return true
-                            }
-
-                            if (
-                                !node.marks.filter(mark => mark.type === this.type).some(mark => Object.values(mark.attrs).some(value => !!value))
-                            ) {
-                                tr.removeMark(pos, pos + node.nodeSize, this.type);
-                            }
-                        });
-                        return true
-                    },
-        }
+                        if (
+                            !node.marks
+                                .filter(mark => mark.type === this.type)
+                                .some(mark => Object.values(mark.attrs).some(value => !!value))
+                        ) {
+                            tr.removeMark(pos, pos + node.nodeSize, this.type);
+                        }
+                    });
+                    return true;
+                },
+        };
     },
 });

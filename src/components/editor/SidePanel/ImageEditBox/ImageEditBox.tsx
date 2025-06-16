@@ -92,7 +92,9 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({
         : `${presentationId}_${slideId}_${layoutId}_${elementId}`;
 
     // Get current element data
-    const currentElement = usePresentationStore(state => state.getElement(presentationId!, slideId!, layoutId!, elementId!))
+    const currentElement = usePresentationStore(state =>
+        state.getElement(presentationId!, slideId!, layoutId!, elementId!)
+    );
 
     // Get current item data for SmartLayout
     const currentItem =
@@ -281,12 +283,17 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({
             }
 
             const data = await response.json();
-            const images: GeneratedImage[] = data.images.map((image: {
-                url: string;
-            }, index: number) => ({
-                id: `${aiStoreId}-${index}`,
-                url: image.url,
-            }));
+            const images: GeneratedImage[] = data.images.map(
+                (
+                    image: {
+                        url: string;
+                    },
+                    index: number
+                ) => ({
+                    id: `${aiStoreId}-${index}`,
+                    url: image.url,
+                })
+            );
 
             // Store generated images in AI store
             aiImageStore.setGeneratedImages(aiStoreId, images);
@@ -305,14 +312,14 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({
                         const updatedItems = (element as any).items.map((item: any) =>
                             item.id === itemId
                                 ? {
-                                    ...item,
-                                    imageUrl: firstImage.url,
-                                    generatedImages: images.map(img => img.url),
-                                    aiPrompt: prompt,
-                                    aiStyle: selectedStyle,
-                                    aiCustomStyle: customStyle,
-                                    uploaded: true,
-                                }
+                                      ...item,
+                                      imageUrl: firstImage.url,
+                                      generatedImages: images.map(img => img.url),
+                                      aiPrompt: prompt,
+                                      aiStyle: selectedStyle,
+                                      aiCustomStyle: customStyle,
+                                      uploaded: true,
+                                  }
                                 : item
                         );
                         usePresentationStore.getState().updateElement({
@@ -565,7 +572,9 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({
                     <Textarea
                         id="customStyle"
                         value={customStyle}
-                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleCustomStyleChange(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                            handleCustomStyleChange(e.target.value)
+                        }
                         placeholder="Опишите желаемый стиль..."
                         rows={2}
                         className={styles.customStyleTextarea}

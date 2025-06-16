@@ -72,9 +72,7 @@ export const TokenBalance = ({
         <>
             <div className={containerClasses} onClick={onClick}>
                 <div className="flex items-center gap-2">
-                    {showIcon && (
-                        <Icon className={`${iconClasses} ${isLowBalance ? 'text-orange-500' : ''}`} />
-                    )}
+                    {showIcon && <Icon className={`${iconClasses} ${isLowBalance ? 'text-orange-500' : ''}`} />}
                     <span className={`${textClasses} ${isLowBalance ? 'text-orange-600' : ''}`}>
                         {loading ? '...' : formatTokenAmount(balance)}
                         {variant !== 'compact' && ' токенов'}
@@ -97,10 +95,7 @@ export const TokenBalance = ({
                 <div className="mt-2 text-xs text-orange-600 bg-orange-50 border border-orange-200 rounded px-2 py-1">
                     <div className="flex items-center justify-between">
                         <span>Мало токенов для ИИ операций</span>
-                        <button
-                            onClick={handleBuyTokens}
-                            className="text-orange-700 hover:text-orange-800 underline"
-                        >
+                        <button onClick={handleBuyTokens} className="text-orange-700 hover:text-orange-800 underline">
                             Пополнить
                         </button>
                     </div>

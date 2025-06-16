@@ -26,8 +26,8 @@ export async function POST(request: NextRequest) {
     try {
         // Получаем тело запроса как текст для валидации подписи
         const body = await request.text();
-        
-        console.log('body', body)
+
+        console.log('body', body);
         // Получаем заголовок с подписью (если используется)
         const signature = request.headers.get('X-Yookassa-Signature') || '';
 
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
         if (signature) {
             const yooKassaService = getYooKassaService();
             const isValid = yooKassaService.validateWebhookSignature(body, signature);
-            
+
             if (!isValid) {
                 console.error('Invalid YooKassa webhook signature');
                 return NextResponse.json({ error: 'Неверная подпись' }, { status: 401 });
@@ -73,27 +73,29 @@ export async function POST(request: NextRequest) {
             case 'payment.succeeded':
                 await handleSuccessfulPayment(purchase, payment);
                 break;
-                
+
             case 'payment.canceled':
                 await handleCanceledPayment(purchase, payment);
                 break;
-                
+
             case 'payment.waiting_for_capture':
                 await handleWaitingForCapture(purchase, payment);
                 break;
-                
+
             default:
                 console.log('Unhandled webhook type:', webhookData.type);
         }
 
         return NextResponse.json({ success: true });
-
     } catch (error) {
         console.error('Error processing YooKassa webhook:', error);
-        return NextResponse.json({
-            error: 'Webhook processing failed',
-            details: error instanceof Error ? error.message : 'Unknown error',
-        }, { status: 500 });
+        return NextResponse.json(
+            {
+                error: 'Webhook processing failed',
+                details: error instanceof Error ? error.message : 'Unknown error',
+            },
+            { status: 500 }
+        );
     }
 }
 
@@ -106,7 +108,7 @@ async function handleSuccessfulPayment(purchase: any, payment: any) {
 
     try {
         // Начинаем транзакцию
-        await prisma.$transaction(async (tx) => {
+        await prisma.$transaction(async tx => {
             // Обновляем статус покупки
             await tx.tokenPurchase.update({
                 where: { id: purchase.id },
@@ -143,10 +145,9 @@ async function handleSuccessfulPayment(purchase: any, payment: any) {
             tokensAdded: purchase.tokensAmount,
             paymentId: payment.id,
         });
-
     } catch (error) {
         console.error('Error processing successful payment:', error);
-        
+
         // Обновляем статус на failed
         await prisma.tokenPurchase.update({
             where: { id: purchase.id },
@@ -159,7 +160,7 @@ async function handleSuccessfulPayment(purchase: any, payment: any) {
                 },
             },
         });
-        
+
         throw error;
     }
 }
@@ -182,7 +183,6 @@ async function handleCanceledPayment(purchase: any, payment: any) {
             purchaseId: purchase.id,
             paymentId: payment.id,
         });
-
     } catch (error) {
         console.error('Error processing canceled payment:', error);
         throw error;
@@ -208,9 +208,8 @@ async function handleWaitingForCapture(purchase: any, payment: any) {
             purchaseId: purchase.id,
             paymentId: payment.id,
         });
-
     } catch (error) {
         console.error('Error processing waiting for capture:', error);
         throw error;
     }
-} 
+}

@@ -2,7 +2,7 @@
 import React, { useMemo } from 'react';
 import { Layout, Slide } from '@/types';
 import LayoutViewer from '../LayoutViewer';
-import ViewerTemplateImage from '../ViewerTemplateImage';
+import ViewerTemplateImageWithPlaceholder from '../ViewerTemplateImageWithPlaceholder';
 
 import styles from '../../editor/SlideEditor/SlideEditor.module.css';
 import localStyles from './SlideViewer.module.css';
@@ -14,6 +14,8 @@ interface SlideViewerProps {
     isPdfExport?: boolean;
     /** Display slide without borders and fill entire page */
     fullPage?: boolean;
+    /** Show image placeholder when image is not provided (for preview modes) */
+    showImagePlaceholder?: boolean;
 }
 
 const SlideViewer: React.FC<SlideViewerProps> = ({
@@ -22,6 +24,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     presentationId: _presentationId,
     isPdfExport = false,
     fullPage = false,
+    showImagePlaceholder = false,
 }) => {
     // Get slide background styling
     const getSlideStyle = () => {
@@ -241,10 +244,11 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                 <div className={`${styles.slideContent} ${localStyles.slideContent}`} style={slideContentStyle}>
                     {/* Template image if needed */}
                     {slide?.templateType && slide.templateType !== 'imageBackground' && (
-                        <ViewerTemplateImage
+                        <ViewerTemplateImageWithPlaceholder
                             templateType={slide.templateType}
                             imageUrl={slide.imageUrl}
                             imageStyle={imageStyle}
+                            showPlaceholder={showImagePlaceholder}
                         />
                     )}
 

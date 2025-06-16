@@ -10,7 +10,6 @@ import { HiOutlineCreditCard } from 'react-icons/hi2';
 import { PaymentStatus } from '@/components/tokens/PaymentStatus';
 import styles from './page.module.css';
 
-
 interface TransactionRowProps {
     transaction: any;
 }

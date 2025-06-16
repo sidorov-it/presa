@@ -73,7 +73,7 @@ const salesDeckDescriptor: PresentationDescriptor = {
             layouts: [
                 {
                     elements: [
-                        { type: 'Heading', content: 'Let\'s Work Together' },
+                        { type: 'Heading', content: "Let's Work Together" },
                         { type: 'text', content: 'Call to action or contact information.' },
                     ],
                 },

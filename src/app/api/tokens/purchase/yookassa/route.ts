@@ -97,13 +97,15 @@ export async function POST(request: NextRequest) {
             amount: payment.amount,
             status: payment.status,
         });
-
     } catch (error) {
         console.error('Error creating YooKassa payment:', error);
-        
-        return NextResponse.json({
-            error: 'Failed to create payment',
-            details: error instanceof Error ? error.message : 'Unknown error',
-        }, { status: 500 });
+
+        return NextResponse.json(
+            {
+                error: 'Failed to create payment',
+                details: error instanceof Error ? error.message : 'Unknown error',
+            },
+            { status: 500 }
+        );
     }
-} 
+}

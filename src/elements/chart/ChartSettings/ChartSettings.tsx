@@ -205,11 +205,7 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                         <button type="button" className={styles.buttonData} onClick={handleAddColumn}>
                             Добавить столбец
                         </button>
-                        <button
-                            type="button"
-                            className={styles.buttonData}
-                            onClick={handleAddRow}
-                        >
+                        <button type="button" className={styles.buttonData} onClick={handleAddRow}>
                             Добавить строку
                         </button>
                     </div>
@@ -226,11 +222,10 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                         </colgroup>
                         <thead className={styles.tableHead}>
                             <tr>
-                                <th className={styles.firstTableHeadItem}>
-                                    Название
-                                </th>
+                                <th className={styles.firstTableHeadItem}>Название</th>
                                 {series.map((s, colIndex) => {
-                                    const isPieOrDonut = element?.elementVariant === 'pie' || element?.elementVariant === 'donut';
+                                    const isPieOrDonut =
+                                        element?.elementVariant === 'pie' || element?.elementVariant === 'donut';
                                     const isUnusedColumn = isPieOrDonut && colIndex > 0;
 
                                     return (
@@ -238,7 +233,9 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                                             key={s.key}
                                             className={`${styles.tableHeadItem} ${isUnusedColumn ? styles.tableHeadItemUnused : ''}`}
                                         >
-                                            <div style={{ "display": "flex", "marginLeft": "0.5rem", "alignItems": "center" }}>
+                                            <div
+                                                style={{ display: 'flex', marginLeft: '0.5rem', alignItems: 'center' }}
+                                            >
                                                 <div style={{ flex: '1 1 0%' }}>
                                                     <input
                                                         type="text"
@@ -283,13 +280,16 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                                         const isUnusedColumn = isPieOrDonut && colIndex > 0;
 
                                         return (
-                                            <td key={s.key} style={{
-                                                paddingLeft: "0.75rem",
-                                                paddingRight: "0.75rem",
-                                                paddingTop: "1rem",
-                                                paddingBottom: "1rem",
-                                                whiteSpace: "nowrap"
-                                            }}>
+                                            <td
+                                                key={s.key}
+                                                style={{
+                                                    paddingLeft: '0.75rem',
+                                                    paddingRight: '0.75rem',
+                                                    paddingTop: '1rem',
+                                                    paddingBottom: '1rem',
+                                                    whiteSpace: 'nowrap',
+                                                }}
+                                            >
                                                 <input
                                                     type="number"
                                                     className={`${styles.tableBodyItemInput} ${isUnusedColumn ? styles.tableHeadItemInputUnused : ''}`}
@@ -318,11 +318,7 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
             </div>
 
             <div className={styles.applyButtonContainer}>
-                <button
-                    type="button"
-                    className={styles.applyButton}
-                    onClick={handleApplyData}
-                >
+                <button type="button" className={styles.applyButton} onClick={handleApplyData}>
                     Применить изменения
                 </button>
             </div>

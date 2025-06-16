@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
         // Имитируем успешную покупку
         // В реальном приложении здесь была бы интеграция с платежной системой
         const purchaseId = `test_${Date.now()}`;
-        
+
         // Добавляем токены пользователю
         await addTokens(
             session.user.id,
@@ -52,9 +52,6 @@ export async function POST(request: NextRequest) {
         });
     } catch (error) {
         console.error('Error processing token purchase:', error);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
-} 
+}

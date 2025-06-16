@@ -91,12 +91,7 @@ const BackgroundSettingsModal: React.FC<BackgroundSettingsModalProps> = ({ isOpe
                     <label className={styles.backgroundSettingsModalContentColorPickerLabel} htmlFor="color-picker">
                         Цвет фона
                     </label>
-                    <ColorPicker
-                        value={backgroundColor}
-                        onChange={setBackgroundColor}
-                        className="" 
-                        allowAlpha={true}
-                    />
+                    <ColorPicker value={backgroundColor} onChange={setBackgroundColor} className="" allowAlpha={true} />
                 </div>
                 <div style={{ marginBottom: '1.5rem' }}>
                     <label className={styles.backgroundSettingsModalContentColorPickerLabel} htmlFor="bg-image-url">

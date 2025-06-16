@@ -188,4 +188,4 @@ export function getYooKassaService(): YooKassaService {
     }
 
     return yooKassaService;
-} 
+}

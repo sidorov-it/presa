@@ -14,7 +14,13 @@ interface ThemePreviewProps {
     onClickDelete?: () => void;
 }
 
-const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({ theme, isReadOnly = false, onClickEdit, onClickDuplicate, onClickDelete }) => {
+const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
+    theme,
+    isReadOnly = false,
+    onClickEdit,
+    onClickDuplicate,
+    onClickDelete,
+}) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const menuButtonRef = useRef<HTMLButtonElement>(null);

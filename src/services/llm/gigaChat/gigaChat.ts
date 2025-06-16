@@ -22,7 +22,7 @@ interface Message {
     };
 }
 
-const COST_PER_1K_TOKENS = 5000 / 25000000 * 1000;
+const COST_PER_1K_TOKENS = (5000 / 25000000) * 1000;
 
 const GIGACHAT_AUTH_KEY = process.env.GIGACHAT_AUTH_KEY!;
 const GIGACHAT_SCOPE = process.env.GIGACHAT_SCOPE;
@@ -64,7 +64,6 @@ export class GigaChatService implements LLMService {
             httpsAgent,
         });
 
-
         this.messages = [
             {
                 role: 'system',
@@ -78,13 +77,15 @@ export class GigaChatService implements LLMService {
         return (tokens / 1000) * COST_PER_1K_TOKENS;
     }
 
-
     async generateFromCache(prompt: string): Promise<LLMResponse> {
         const recording = await this.recordingService?.findRecordingByPrompt(prompt);
         return recording?.response.data;
     }
 
-    async generate(prompt: string, options: { presentationId?: string, functions?: any[]; function_call?: any } = {}): Promise<LLMResponse> {
+    async generate(
+        prompt: string,
+        options: { presentationId?: string; functions?: any[]; function_call?: any } = {}
+    ): Promise<LLMResponse> {
         const startTime = performance.now();
         let cached = false;
         const success = true;
@@ -142,7 +143,7 @@ export class GigaChatService implements LLMService {
 
                 // Calculate metrics
                 const inputTokens = apiResponse.usage.prompt_tokens;
-                const outputTokens = apiResponse.usage.completion_tokens
+                const outputTokens = apiResponse.usage.completion_tokens;
                 const totalTokens = apiResponse.usage.total_tokens;
                 const duration = Math.round(performance.now() - startTime);
                 const cost = this.calculateCost(totalTokens);
@@ -164,7 +165,7 @@ export class GigaChatService implements LLMService {
                         options,
                         response,
                     },
-                }
+                };
 
                 if (parsedResponse.function_call) {
                     try {
@@ -177,7 +178,9 @@ export class GigaChatService implements LLMService {
                             },
                         });
 
-                        const functionSpec = options.functions?.find(f => f.name === parsedResponse.function_call?.name);
+                        const functionSpec = options.functions?.find(
+                            f => f.name === parsedResponse.function_call?.name
+                        );
                         if (!functionSpec) {
                             throw new Error(`Function ${parsedResponse.function_call.name} not found`);
                         }
@@ -197,7 +200,9 @@ export class GigaChatService implements LLMService {
                             });
 
                             logMessage.functionCall = (parsedResponse as LLMResponse).function_call?.name || '';
-                            logMessage.functionArguments = JSON.stringify((parsedResponse as LLMResponse).function_call?.arguments || {});
+                            logMessage.functionArguments = JSON.stringify(
+                                (parsedResponse as LLMResponse).function_call?.arguments || {}
+                            );
                             logMessage.responseContent = apiResponse?.choices[0]?.message.content;
 
                             await LLMHistoryService.logRequest(logMessage);
@@ -209,7 +214,8 @@ export class GigaChatService implements LLMService {
                                 content: JSON.stringify({
                                     status: 'error',
                                     error: validationError.message,
-                                    message: 'Please try again with valid arguments that match the function specification.',
+                                    message:
+                                        'Please try again with valid arguments that match the function specification.',
                                 }),
                             });
 
@@ -260,24 +266,25 @@ export class GigaChatService implements LLMService {
             }
 
             if (!cached) {
-
                 if (!this.client) {
                     throw new Error('GigaChat client is not initialized');
                 }
 
-                const response = await this.withRateLimit(() => this.client.chat({
-                    messages: [
-                        {
-                            role: 'system',
-                            content: DEFAULT_SYSTEM_PROMPT,
-                        },
-                        {
-                            role: 'user',
-                            content: prompt,
-                        },
-                    ],
-                    function_call: { name: 'text2image' },
-                }));
+                const response = await this.withRateLimit(() =>
+                    this.client.chat({
+                        messages: [
+                            {
+                                role: 'system',
+                                content: DEFAULT_SYSTEM_PROMPT,
+                            },
+                            {
+                                role: 'user',
+                                content: prompt,
+                            },
+                        ],
+                        function_call: { name: 'text2image' },
+                    })
+                );
 
                 // Calculate metrics
                 const inputTokens = response.usage.prompt_tokens;
@@ -370,7 +377,7 @@ export class GigaChatService implements LLMService {
 
             const content = message.content;
             if (!content) {
-                console.error(message)
+                console.error(message);
                 throw new Error('Empty content in GigaChat response');
             }
 

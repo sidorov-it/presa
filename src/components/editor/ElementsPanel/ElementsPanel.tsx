@@ -32,14 +32,13 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
 
         // Check if this is a slide template
         const categoryData = menuRegistry.find(cat => cat.id === category);
-        const isSlideTemplate = categoryData?.isSlideTemplate ||
-            SLIDE_TEMPLATE_TYPES.includes(element.elementTypeId);
+        const isSlideTemplate = categoryData?.isSlideTemplate || SLIDE_TEMPLATE_TYPES.includes(element.elementTypeId);
 
         if (isSlideTemplate) {
             // Start drag with special handling for slide templates
             useDndStore.getState().startNewElementDrag({
                 ...element,
-                isSlideTemplate: true
+                isSlideTemplate: true,
             });
         } else {
             // Normal element drag
@@ -51,8 +50,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
     const handleElementClick = (element: MenuItem) => {
         // Check if this is a slide template
         const categoryData = menuRegistry.find(cat => cat.id === category);
-        const isSlideTemplate = categoryData?.isSlideTemplate ||
-            SLIDE_TEMPLATE_TYPES.includes(element.elementTypeId);
+        const isSlideTemplate = categoryData?.isSlideTemplate || SLIDE_TEMPLATE_TYPES.includes(element.elementTypeId);
 
         const isTable = element.elementTypeId.startsWith('table');
 
@@ -62,7 +60,6 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
             // const currentSlideIndex = usePresentationStore.getState().getSlideIndex(presentationId, slideId);
             // Add template slide after current slide
             // const newSlideId = usePresentationStore.getState().addEmptySlide(presentationId, currentSlideIndex + 1);
-
             // Apply template to the new slide
             // if (element.defaultProps?.elements && Array.isArray(element.defaultProps.elements)) {
             //     element.defaultProps.elements.forEach(templateElement => {
@@ -71,7 +68,6 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
             //             defaultProps: templateElement.props,
             //             elementVariant: templateElement.variant
             //         });
-
             //         usePresentationStore.getState().addLayoutWithElement(
             //             presentationId,
             //             newSlideId,
@@ -118,7 +114,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
                                             onDragStart={e => handleDragStart(e, element)}
                                             onClick={() => handleElementClick(element)}
                                             aria-label={`${subCategory.label}: ${element.label}`}
-                                            onKeyDown={(e) => {
+                                            onKeyDown={e => {
                                                 if (e.key === 'Enter' || e.key === ' ') {
                                                     e.preventDefault();
                                                     handleElementClick(element);
@@ -144,7 +140,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
                                 onDragStart={e => handleDragStart(e, element)}
                                 onClick={() => handleElementClick(element)}
                                 aria-label={element.label}
-                                onKeyDown={(e) => {
+                                onKeyDown={e => {
                                     if (e.key === 'Enter' || e.key === ' ') {
                                         e.preventDefault();
                                         handleElementClick(element);
@@ -170,11 +166,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
                     <h3 className={styles.popupMenuHeaderTitle}>
                         {menuRegistry.find(cat => cat.id === category)?.label}
                     </h3>
-                    <button
-                        onClick={onClose}
-                        className={styles.popupMenuHeaderCloseButton}
-                        aria-label="Закрыть"
-                    >
+                    <button onClick={onClose} className={styles.popupMenuHeaderCloseButton} aria-label="Закрыть">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="20"
@@ -229,9 +221,7 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ presentationId, slideId }
 
                             {/* Всплывающая подсказка */}
                             <div className={`${styles.elementsPanelTooltip} group-hover:block`}>
-                                <div className={styles.elementsPanelTooltipText}>
-                                    {category.label}
-                                </div>
+                                <div className={styles.elementsPanelTooltipText}>{category.label}</div>
                             </div>
                         </div>
                     ))}

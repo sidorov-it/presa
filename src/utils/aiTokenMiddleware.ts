@@ -22,7 +22,7 @@ export async function withTokenDeduction<T>(
     operation: (session: any, requestData: any) => Promise<T>
 ): Promise<NextResponse> {
     let requestData: any;
-    
+
     try {
         // Check authentication
         const session = await getServerSession(authOptions);
@@ -39,7 +39,7 @@ export async function withTokenDeduction<T>(
 
         // Calculate required tokens server-side only
         const requiredTokens = config.calculateTokens(requestData);
-        
+
         if (requiredTokens <= 0) {
             return NextResponse.json({ error: 'Invalid token calculation' }, { status: 400 });
         }

@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/Button';
 import { Plus } from 'lucide-react';
 import { useThemeStore } from '@/store/themeStore';
 
-
 // export const metadata = {
 //     title: "Themes",
 //     description: "Customize your presentation themes"

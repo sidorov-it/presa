@@ -10,11 +10,7 @@ interface PaymentStatusProps {
     onError?: (error: string) => void;
 }
 
-export const PaymentStatus: React.FC<PaymentStatusProps> = ({
-    purchaseId,
-    onSuccess,
-    onError,
-}) => {
+export const PaymentStatus: React.FC<PaymentStatusProps> = ({ purchaseId, onSuccess, onError }) => {
     const { checkPaymentStatus, loading, error } = useYooKassaPayment();
     const [status, setStatus] = useState<any>(null);
     const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
@@ -87,12 +83,7 @@ export const PaymentStatus: React.FC<PaymentStatusProps> = ({
                         <p className="text-sm text-red-600">{error}</p>
                     </div>
                 </div>
-                <Button
-                    onClick={() => checkStatus()}
-                    variant="outline"
-                    size="sm"
-                    className="mt-3"
-                >
+                <Button onClick={() => checkStatus()} variant="outline" size="sm" className="mt-3">
                     Попробовать снова
                 </Button>
             </div>
@@ -158,16 +149,16 @@ export const PaymentStatus: React.FC<PaymentStatusProps> = ({
                 <div className="flex-1">
                     <h3 className="font-medium">{statusInfo.title}</h3>
                     <p className="text-sm mt-1">{statusInfo.description}</p>
-                    
+
                     {status.purchase.status === 'pending' && (
-                        <div className="mt-3 text-xs">
-                            Автоматическая проверка каждые 5 секунд...
-                        </div>
+                        <div className="mt-3 text-xs">Автоматическая проверка каждые 5 секунд...</div>
                     )}
-                    
+
                     <div className="mt-3 text-xs space-y-1">
                         <div>Пакет: {status.purchase.package.name}</div>
-                        <div>Сумма: {status.purchase.price} {status.purchase.currency.toUpperCase()}</div>
+                        <div>
+                            Сумма: {status.purchase.price} {status.purchase.currency.toUpperCase()}
+                        </div>
                         <div>Создан: {new Date(status.purchase.createdAt).toLocaleString('ru-RU')}</div>
                         {status.purchase.completedAt && (
                             <div>Завершен: {new Date(status.purchase.completedAt).toLocaleString('ru-RU')}</div>
@@ -177,4 +168,4 @@ export const PaymentStatus: React.FC<PaymentStatusProps> = ({
             </div>
         </div>
     );
-}; 
+};

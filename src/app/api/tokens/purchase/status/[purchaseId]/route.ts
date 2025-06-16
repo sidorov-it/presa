@@ -80,14 +80,14 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
                     tokens: purchase.package.tokens,
                 },
             },
-            payment: paymentInfo ?
-                {
-                    id: paymentInfo.id,
-                    status: paymentInfo.status,
-                    amount: paymentInfo.amount,
-                    createdAt: paymentInfo.created_at,
-                    confirmationUrl: paymentInfo.confirmation?.confirmation_url,
-                }
+            payment: paymentInfo
+                ? {
+                      id: paymentInfo.id,
+                      status: paymentInfo.status,
+                      amount: paymentInfo.amount,
+                      createdAt: paymentInfo.created_at,
+                      confirmationUrl: paymentInfo.confirmation?.confirmation_url,
+                  }
                 : null,
         };
 

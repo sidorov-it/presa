@@ -107,10 +107,10 @@ const SlideItem = memo(
         );
 
         // Highlight indicator based on drag position
-        const isTopIndicator = dndState.indicators.slideIndicator === slide.id &&
-                              dndState.indicators.slidePosition === 'top';
-        const isBottomIndicator = dndState.indicators.slideIndicator === slide.id &&
-                                 dndState.indicators.slidePosition === 'bottom';
+        const isTopIndicator =
+            dndState.indicators.slideIndicator === slide.id && dndState.indicators.slidePosition === 'top';
+        const isBottomIndicator =
+            dndState.indicators.slideIndicator === slide.id && dndState.indicators.slidePosition === 'bottom';
 
         return (
             <div
@@ -228,11 +228,7 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
         <div className={styles.leftPanel}>
             <div className={styles.leftPanelHeader}>
                 <div className={styles.leftPanelHeaderButtons}>
-                    <button
-                        className={styles.leftPanelHeaderButton}
-                        aria-label="Показать в виде таблицы"
-                        tabIndex={0}
-                    >
+                    <button className={styles.leftPanelHeaderButton} aria-label="Показать в виде таблицы" tabIndex={0}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="16"
@@ -250,11 +246,7 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
                             <rect x="3" y="14" width="7" height="7" />
                         </svg>
                     </button>
-                    <button
-                        className={styles.leftPanelHeaderButton}
-                        aria-label="Показать список"
-                        tabIndex={0}
-                    >
+                    <button className={styles.leftPanelHeaderButton} aria-label="Показать список" tabIndex={0}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="16"

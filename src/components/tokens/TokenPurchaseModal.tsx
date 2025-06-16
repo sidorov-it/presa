@@ -13,11 +13,7 @@ interface TokenPurchaseModalProps {
     onSuccess?: () => void;
 }
 
-export const TokenPurchaseModal: React.FC<TokenPurchaseModalProps> = ({
-    isOpen,
-    onClose,
-    onSuccess,
-}) => {
+export const TokenPurchaseModal: React.FC<TokenPurchaseModalProps> = ({ isOpen, onClose, onSuccess }) => {
     const [packages, setPackages] = useState<TokenPackage[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -44,11 +40,11 @@ export const TokenPurchaseModal: React.FC<TokenPurchaseModalProps> = ({
         try {
             setLoading(true);
             const response = await fetch('/api/tokens/packages');
-            
+
             if (!response.ok) {
                 throw new Error('Failed to load token packages');
             }
-            
+
             const data = await response.json();
             setPackages(data.packages || []);
         } catch (err) {
@@ -103,12 +99,8 @@ export const TokenPurchaseModal: React.FC<TokenPurchaseModalProps> = ({
             onKeyDown={handleKeyDown}
         >
             {/* Backdrop */}
-            <div
-                className="absolute inset-0"
-                onClick={onClose}
-                aria-label="Закрыть модальное окно"
-            />
-            
+            <div className="absolute inset-0" onClick={onClose} aria-label="Закрыть модальное окно" />
+
             {/* Modal content */}
             <div
                 ref={modalRef}
@@ -152,19 +144,12 @@ export const TokenPurchaseModal: React.FC<TokenPurchaseModalProps> = ({
                             <div className="text-red-800">
                                 <strong>Ошибка:</strong> {error}
                             </div>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="mt-3"
-                                onClick={loadTokenPackages}
-                            >
+                            <Button variant="outline" size="sm" className="mt-3" onClick={loadTokenPackages}>
                                 Попробовать снова
                             </Button>
                         </div>
                     ) : packages.length === 0 ? (
-                        <div className="text-center py-8 text-gray-500">
-                            Пакеты токенов не найдены
-                        </div>
+                        <div className="text-center py-8 text-gray-500">Пакеты токенов не найдены</div>
                     ) : (
                         <div className="space-y-4">
                             <div className="text-sm text-gray-600 bg-blue-50 border border-blue-200 rounded-lg p-3">
@@ -177,13 +162,11 @@ export const TokenPurchaseModal: React.FC<TokenPurchaseModalProps> = ({
                             </div>
 
                             <div className="grid gap-4 md:grid-cols-2">
-                                {packages.map((pkg) => (
+                                {packages.map(pkg => (
                                     <div
                                         key={pkg.id}
                                         className={`relative border rounded-lg p-4 ${
-                                            pkg.isPopular
-                                                ? 'border-blue-500 bg-blue-50'
-                                                : 'border-gray-200 bg-white'
+                                            pkg.isPopular ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white'
                                         }`}
                                     >
                                         {pkg.isPopular && (
@@ -194,22 +177,20 @@ export const TokenPurchaseModal: React.FC<TokenPurchaseModalProps> = ({
                                                 </div>
                                             </div>
                                         )}
-                                        
+
                                         <div className="text-center">
                                             <h3 className="font-bold text-lg">{pkg.name}</h3>
                                             {pkg.description && (
-                                                <p className="text-sm text-gray-600 mt-1">
-                                                    {pkg.description}
-                                                </p>
+                                                <p className="text-sm text-gray-600 mt-1">{pkg.description}</p>
                                             )}
-                                            
+
                                             <div className="mt-3">
                                                 <div className="text-3xl font-bold text-blue-600">
                                                     {pkg.tokens.toLocaleString()}
                                                 </div>
                                                 <div className="text-sm text-gray-500">токенов</div>
                                             </div>
-                                            
+
                                             <div className="mt-2">
                                                 <div className="text-2xl font-bold">
                                                     {formatPrice(pkg.price, pkg.currency)}
@@ -218,7 +199,7 @@ export const TokenPurchaseModal: React.FC<TokenPurchaseModalProps> = ({
                                                     {calculateTokensPerRuble(pkg.tokens, pkg.price)} токенов за ₽
                                                 </div>
                                             </div>
-                                            
+
                                             <div className="mt-4">
                                                 <YooKassaPaymentButton
                                                     tokenPackage={pkg}
@@ -227,12 +208,12 @@ export const TokenPurchaseModal: React.FC<TokenPurchaseModalProps> = ({
                                                     className="w-full"
                                                 />
                                             </div>
-                                            
+
                                             {/* Примеры использования */}
                                             <div className="mt-3 text-xs text-gray-500">
                                                 <div className="flex items-center justify-center gap-1">
-                                                    <FaCheck className="w-3 h-3 text-green-500" />
-                                                    ~{Math.floor(pkg.tokens / 50)} слайдов
+                                                    <FaCheck className="w-3 h-3 text-green-500" />~
+                                                    {Math.floor(pkg.tokens / 50)} слайдов
                                                 </div>
                                             </div>
                                         </div>
@@ -245,4 +226,4 @@ export const TokenPurchaseModal: React.FC<TokenPurchaseModalProps> = ({
             </div>
         </div>
     );
-}; 
+};

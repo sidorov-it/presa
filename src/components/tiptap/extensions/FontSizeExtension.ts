@@ -204,55 +204,52 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
         return {
             setFontSize:
                 fontSize =>
-                    ({ chain }) => {
-                        let fontSizeValue;
+                ({ chain }) => {
+                    let fontSizeValue;
 
-                        switch (fontSize) {
-                            case SMALL_TEXT_LEVEL:
-                                fontSizeValue = FONT_SIZE_SMALL_TEXT;
-                                break;
-                            case NORMAL_TEXT_LEVEL:
-                                fontSizeValue = null; // Default font size
-                                break;
-                            case BIG_TEXT_LEVEL:
-                                fontSizeValue = FONT_SIZE_BIG_TEXT;
-                                break;
-                            case HEADING_4_LEVEL:
-                                fontSizeValue = FONT_SIZE_HEADING_4; // Heading 4 size
-                                break;
-                            case HEADING_3_LEVEL:
-                                fontSizeValue = FONT_SIZE_HEADING_3; // Heading 3 size
-                                break;
-                            case HEADING_2_LEVEL:
-                                fontSizeValue = FONT_SIZE_HEADING_2; // Heading 2 size
-                                break;
-                            case HEADING_1_LEVEL:
-                                fontSizeValue = FONT_SIZE_HEADING_1; // Heading 1 size
-                                break;
-                            case TITLE_LEVEL:
-                                fontSizeValue = FONT_SIZE_TITLE;
-                                break;
-                            case BIG_HEADING_LEVEL:
-                                fontSizeValue = FONT_SIZE_BIG_HEADING;
-                                break;
-                            case VERY_BIG_HEADING_LEVEL:
-                                fontSizeValue = FONT_SIZE_VERY_BIG_HEADING;
-                                break;
-                            default:
-                                fontSizeValue = null;
-                        }
+                    switch (fontSize) {
+                        case SMALL_TEXT_LEVEL:
+                            fontSizeValue = FONT_SIZE_SMALL_TEXT;
+                            break;
+                        case NORMAL_TEXT_LEVEL:
+                            fontSizeValue = null; // Default font size
+                            break;
+                        case BIG_TEXT_LEVEL:
+                            fontSizeValue = FONT_SIZE_BIG_TEXT;
+                            break;
+                        case HEADING_4_LEVEL:
+                            fontSizeValue = FONT_SIZE_HEADING_4; // Heading 4 size
+                            break;
+                        case HEADING_3_LEVEL:
+                            fontSizeValue = FONT_SIZE_HEADING_3; // Heading 3 size
+                            break;
+                        case HEADING_2_LEVEL:
+                            fontSizeValue = FONT_SIZE_HEADING_2; // Heading 2 size
+                            break;
+                        case HEADING_1_LEVEL:
+                            fontSizeValue = FONT_SIZE_HEADING_1; // Heading 1 size
+                            break;
+                        case TITLE_LEVEL:
+                            fontSizeValue = FONT_SIZE_TITLE;
+                            break;
+                        case BIG_HEADING_LEVEL:
+                            fontSizeValue = FONT_SIZE_BIG_HEADING;
+                            break;
+                        case VERY_BIG_HEADING_LEVEL:
+                            fontSizeValue = FONT_SIZE_VERY_BIG_HEADING;
+                            break;
+                        default:
+                            fontSizeValue = null;
+                    }
 
-                        // Only set the font size mark without changing the block type
-                        return chain()
-                            .focus()
-                            .setMark('textStyle', { fontSize: fontSizeValue })
-                            .run();
-                    },
+                    // Only set the font size mark without changing the block type
+                    return chain().focus().setMark('textStyle', { fontSize: fontSizeValue }).run();
+                },
             unsetFontSize:
                 () =>
-                    ({ chain }) => {
-                        return chain().setMark('textStyle', { fontSize: null }).removeEmptyTextStyle().run();
-                    },
+                ({ chain }) => {
+                    return chain().setMark('textStyle', { fontSize: null }).removeEmptyTextStyle().run();
+                },
         };
     },
 });

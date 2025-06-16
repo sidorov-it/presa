@@ -74,14 +74,10 @@ export const YooKassaPaymentButton: React.FC<YooKassaPaymentButtonProps> = ({
             </Button>
 
             {error && (
-                <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md p-2">
-                    {error}
-                </div>
+                <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md p-2">{error}</div>
             )}
 
-            <div className="text-xs text-gray-500 text-center">
-                Безопасная оплата через YooKassa
-            </div>
+            <div className="text-xs text-gray-500 text-center">Безопасная оплата через YooKassa</div>
         </div>
     );
-}; 
+};

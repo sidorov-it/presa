@@ -20,7 +20,7 @@ export default function SlidePreview({ presentation, theme }: SlidePreviewProps)
         <div className={styles.wrapper}>
             <div className={styles.scaled}>
                 <ScopedThemeStylesApplier theme={theme}>
-                    <SlideViewer slide={firstSlide} />
+                    <SlideViewer slide={firstSlide} showImagePlaceholder={true} />
                 </ScopedThemeStylesApplier>
             </div>
         </div>
