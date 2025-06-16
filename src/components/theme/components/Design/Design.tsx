@@ -1,4 +1,4 @@
-import { ThemeDesign } from '@/types/theme';
+import { ThemeDesign, ThemeDesignImageShape } from '@/types/theme';
 import { Theme } from '@/types/theme';
 import { Tabs as ChakraTabs } from '@chakra-ui/react';
 
@@ -11,9 +11,11 @@ import styles from './Design.module.css';
 export default function Design({
     theme,
     handleDesignChange,
+    handleImageShapeChange,
 }: {
     theme: Theme;
     handleDesignChange: (design: Partial<ThemeDesign>) => void;
+    handleImageShapeChange: (imageShape: ThemeDesignImageShape) => void;
 }) {
     const [selectedTab, setSelectedTab] = useState('slides');
 
@@ -21,7 +23,13 @@ export default function Design({
         {
             id: 'slides',
             label: 'Слайды',
-            content: <CardsDesign theme={theme} handleDesignChange={handleDesignChange} />,
+            content: (
+                <CardsDesign
+                    theme={theme}
+                    handleDesignChange={handleDesignChange}
+                    handleImageShapeChange={handleImageShapeChange}
+                />
+            ),
         },
         {
             id: 'blocks',
@@ -60,8 +68,8 @@ export default function Design({
                             </ChakraTabs.Trigger>
                         ))}
                     </ChakraTabs.List>
-                    {items.map((item: { label: string; content: React.ReactNode }, idx: number) => (
-                        <ChakraTabs.Content value={item.label} key={idx} className={styles.tabContent}>
+                    {items.map((item: { id: string; label: string; content: React.ReactNode }, idx: number) => (
+                        <ChakraTabs.Content value={item.id} key={idx} className={styles.tabContent}>
                             <div>{item.content}</div>
                         </ChakraTabs.Content>
                     ))}

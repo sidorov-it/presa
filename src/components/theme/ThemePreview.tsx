@@ -1,38 +1,60 @@
 import React from 'react';
 import ScopedPresentationThemeWrapper from '@/components/viewer/theme/ScopedPresentationThemeWrapper';
 import PresentationViewer from '@/components/viewer/PresentationViewer';
-import { IPresentation, EditorElement, SmartLayoutElement, ImageElement } from '@/types';
-import { generateId } from '@/utils/id';
+import { BoxElement, EditorElement, IPresentation, SmartLayoutElement } from '@/types';
 import { Theme } from '@/types/theme';
 import { ElementType } from '@/types/elements';
-import { slide1Content, slide2Content, slide3Content, slide5Content } from './content';
 
 interface ThemePreviewProps {
     theme: Theme;
 }
 
 export const ThemePreview = ({ theme }: ThemePreviewProps) => {
-    const samplePresentation: IPresentation = {
-        id: generateId(),
-        title: 'Theme Preview',
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
+    const samplePresentation: Partial<IPresentation> = {
+        title: 'Пример презентации',
+        description: '',
         slides: [
             {
-                id: 'slide-1',
-                title: 'Theme Preview',
+                id: 't3akl78koxp',
                 layouts: [
                     {
-                        id: 'layout-0',
-                        type: 'blank',
+                        id: 'wo6zz2k8ai',
+                        elements: [
+                            {
+                                id: 'codhq1g5at',
+                                content: '<p><strong>Hello</strong> <span class="emoji">👋</span></p>',
+                                cellId: '73uronundiv',
+                                elementTypeId: ElementType.TEXT,
+                            } as EditorElement,
+                        ],
+                        gridStructure: {
+                            rows: [
+                                {
+                                    id: 'yql56ktb04h',
+                                    cells: [
+                                        {
+                                            id: '73uronundiv',
+                                            row: 0,
+                                            column: 0,
+                                        },
+                                    ],
+                                },
+                            ],
+                            columns: 1,
+                            columnWidths: ['100%'],
+                        },
+                        style: {},
+                    },
+                    {
+                        id: '8wwot6',
                         gridStructure: {
                             columns: 1,
                             rows: [
                                 {
-                                    id: 'row-1',
+                                    id: 'ggml3x',
                                     cells: [
                                         {
-                                            id: 'cell-1',
+                                            id: 'iy8fln',
                                             row: 1,
                                             column: 1,
                                         },
@@ -41,27 +63,27 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
                             ],
                             columnWidths: ['100%'],
                         },
+                        type: 'blank',
                         style: {},
                         elements: [
                             {
-                                id: 'element-1',
-                                cellId: 'cell-1',
+                                id: 'r7gtjywbt0i',
+                                content: '<p><span class="heading-text heading-1">This is a theme preview</span></p>',
+                                cellId: 'iy8fln',
                                 elementTypeId: ElementType.TEXT,
-                                content: slide1Content.title.content,
-                            },
+                            } as EditorElement,
                         ],
                     },
                     {
-                        id: 'layout-1',
-                        type: 'blank',
+                        id: 'ynczui',
                         gridStructure: {
                             columns: 1,
                             rows: [
                                 {
-                                    id: 'row-1',
+                                    id: 'wyqibd',
                                     cells: [
                                         {
-                                            id: 'cell-1',
+                                            id: '3891ja',
                                             row: 1,
                                             column: 1,
                                         },
@@ -70,27 +92,28 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
                             ],
                             columnWidths: ['100%'],
                         },
+                        type: 'blank',
                         style: {},
                         elements: [
                             {
-                                id: 'element-2',
-                                cellId: 'cell-1',
+                                id: 'mzfzkn9f73',
+                                content:
+                                    '<p>Here\'s an example of body text. You can change its font and the color. <a target="_blank" rel="noopener noreferrer" class="link" href="http://gamma.app">Your accent color will be used for links.</a> It will also be used for layouts and buttons. </p><p></p>',
+                                cellId: '3891ja',
                                 elementTypeId: ElementType.TEXT,
-                                content: slide1Content.bodyText.content,
-                            },
+                            } as EditorElement,
                         ],
                     },
                     {
-                        id: 'layout-2',
-                        type: 'blank',
+                        id: 'kvb8rl',
                         gridStructure: {
                             columns: 1,
                             rows: [
                                 {
-                                    id: 'row-1',
+                                    id: 'i9voaa',
                                     cells: [
                                         {
-                                            id: 'cell-1',
+                                            id: 'vbhbfh',
                                             row: 1,
                                             column: 1,
                                         },
@@ -99,295 +122,216 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
                             ],
                             columnWidths: ['100%'],
                         },
-                        style: {},
-                        elements: [
-                            {
-                                id: 'element-3',
-                                cellId: 'cell-1',
-                                elementTypeId: ElementType.TEXT,
-                                content: slide1Content.linkText.content,
-                            },
-                        ],
-                    },
-                    {
-                        id: 'layout-3',
                         type: 'blank',
-                        gridStructure: {
-                            columns: 1,
-                            rows: [
-                                {
-                                    id: 'row-1',
-                                    cells: [
-                                        {
-                                            id: 'cell-1',
-                                            row: 1,
-                                            column: 1,
-                                        },
-                                    ],
-                                },
-                            ],
-                            columnWidths: ['100%'],
-                        },
                         style: {},
                         elements: [
                             {
-                                id: 'rlus2yolrcs',
-                                content: '<p>/smar</p>',
-                                cellId: 'cell-1',
-                                elementTypeId: 'smart-layout',
+                                id: 'ju1pwp0yi0n',
+                                content: '<p>/sm</p>',
+                                cellId: 'vbhbfh',
+                                elementTypeId: ElementType.SMART_LAYOUT,
                                 elementVariant: 'text-boxes',
                                 items: [
                                     {
-                                        title: '<p>Это специальный макет. Он действует как текстовое поле.</p>',
+                                        title: '<p>This is a smart layout: it acts as a text box.</p>',
                                         text: '<p></p>',
                                         imageUrl: '',
                                         iconUrl: '',
-                                        id: 'x4xabs3loa',
+                                        id: 'rdsh1o5jj9n',
                                     },
                                     {
-                                        title: '<p>Вы можете получить это, набрав /layout</p>',
+                                        title: '<p>You can get these by typing /smart</p>',
                                         text: '<p></p>',
                                         imageUrl: '',
                                         iconUrl: '',
-                                        id: 'hzfuw57h7s9',
+                                        id: 'ac93qnhle58',
                                     },
                                 ],
                                 columnSize: 3,
                                 align: 'center',
                                 imageShape: 'square',
                                 imageSize: 5,
-                            },
-                        ],
-                    },
-                    {
-                        id: 'layout-4',
-                        type: 'blank',
-                        gridStructure: {
-                            columns: 1,
-                            rows: [
-                                {
-                                    id: 'row-1',
-                                    cells: [
-                                        {
-                                            id: 'cell-1',
-                                            row: 1,
-                                            column: 1,
-                                        },
-                                    ],
-                                },
-                            ],
-                            columnWidths: ['100%'],
-                        },
-                        style: {},
-                        elements: [
-                            {
-                                id: 'element-5',
-                                cellId: 'cell-1',
-                                elementTypeId: ElementType.TEXT,
-                                content: slide1Content.layoutText2.content,
-                            },
-                        ],
-                    },
-                ],
-            },
-            {
-                id: 'slide-2',
-                title: 'Smart layouts',
-                layouts: [
-                    {
-                        id: 'layout-2-1',
-                        type: 'heading',
-                        gridStructure: {
-                            columns: 1,
-                            rows: [
-                                {
-                                    id: 'row-2-1',
-                                    cells: [{ id: 'cell-2-1', row: 1, column: 1 }],
-                                },
-                            ],
-                            columnWidths: ['100%'],
-                        },
-                        style: {},
-                        elements: [
-                            {
-                                id: 'element-2-1',
-                                cellId: 'cell-2-1',
-                                elementTypeId: ElementType.TEXT,
-                                content: slide2Content.title.content,
-                            } as EditorElement,
-                        ],
-                    },
-                    {
-                        id: 'layout-2-5',
-                        type: 'blank',
-                        gridStructure: {
-                            columns: 1,
-                            rows: [
-                                {
-                                    id: 'row-2-5',
-                                    cells: [{ id: 'cell-2-5', row: 1, column: 1 }],
-                                },
-                            ],
-                            columnWidths: ['100%'],
-                        },
-                        style: {},
-                        elements: [
-                            {
-                                id: 'element-2-5',
-                                cellId: 'cell-2-5',
-                                elementTypeId: ElementType.SMART_LAYOUT,
-                                elementVariant: slide2Content.smartLayout.elementVariant,
-                                items: slide2Content.smartLayout.items,
-                                columnSize: slide2Content.smartLayout.columnSize,
-                                align: slide2Content.smartLayout.align,
-                                imageShape: slide2Content.smartLayout.imageShape,
-                                imageSize: slide2Content.smartLayout.imageSize,
                             } as SmartLayoutElement,
                         ],
                     },
-                ],
-            },
-            {
-                id: 'slide-3',
-                title: 'Fonts',
-                layouts: [
                     {
-                        id: 'layout-3-1',
-                        type: 'heading',
+                        id: 'evvojarxfs8',
                         gridStructure: {
                             columns: 1,
-                            rows: [
-                                {
-                                    id: 'row-3-1',
-                                    cells: [{ id: 'cell-3-1', row: 1, column: 1 }],
-                                },
-                            ],
                             columnWidths: ['100%'],
-                        },
-                        style: {},
-                        elements: [
-                            {
-                                id: 'element-3-1',
-                                cellId: 'cell-3-1',
-                                elementTypeId: ElementType.TEXT,
-                                content: slide3Content.title.content,
-                            } as EditorElement,
-                        ],
-                    },
-                    {
-                        id: 'layout-3-2',
-                        type: 'two-columns-equal',
-                        gridStructure: {
-                            columns: 1,
                             rows: [
                                 {
-                                    id: 'row-3-2',
-                                    cells: [
-                                        { id: 'cell-3-2-1', row: 1, column: 1 },
-                                        { id: 'cell-3-2-2', row: 1, column: 2 },
-                                    ],
-                                },
-                            ],
-                            columnWidths: ['100%'],
-                        },
-                        style: {},
-                        elements: [
-                            {
-                                id: 'element-3-2-1',
-                                cellId: 'cell-3-2-1',
-                                elementTypeId: ElementType.TEXT,
-                                content: slide3Content.description.content + slide3Content.fontExamples.content,
-                            } as EditorElement,
-                            // {
-                            //     id: 'element-3-2-2',
-                            //     cellId: 'cell-3-2-2',
-                            //     elementTypeId: ElementType.TEXT,
-                            //     content: slide3Content.bodyTextExamples.content,
-                            // } as EditorElement,
-                        ],
-                    },
-                ],
-            },
-            {
-                id: 'slide-4',
-                title: 'Primary accent color',
-                layouts: [
-                    {
-                        id: 'hky8pnajws7',
-                        gridStructure: {
-                            columns: 1,
-                            rows: [
-                                {
-                                    id: 'kku4xk',
+                                    id: 'nltlakhypk',
                                     cells: [
                                         {
-                                            id: '3nj4yx',
-                                            row: 1,
+                                            id: '71ytiygj5j3',
+                                            row: 0,
                                             column: 1,
                                         },
                                     ],
                                 },
                             ],
-                            columnWidths: ['100%'],
                         },
                         type: 'blank',
-                        style: {},
                         elements: [
                             {
-                                id: 'wpbcsjitz',
-                                content: '<p><span class="heading-text title-text">Fonts</span></p><p></p>',
-                                cellId: '3nj4yx',
-                                elementTypeId: ElementType.TEXT,
-                            },
-                        ],
-                    },
-                    {
-                        id: 'nj88fo',
-                        gridStructure: {
-                            columns: 1,
-                            rows: [
-                                {
-                                    id: 'lbwhm7',
-                                    cells: [
-                                        {
-                                            id: 'dgmmhc',
-                                            row: 1,
-                                            column: 1,
-                                        },
-                                    ],
-                                },
-                            ],
-                            columnWidths: ['100%'],
-                        },
-                        type: 'blank',
-                        style: {},
-                        elements: [
-                            {
-                                id: 'avkxhmrg9au',
+                                id: '59ul6dj1muw',
                                 content:
-                                    '<p><span>Gamma comes with pre-defined sizes of typography that work best for legibility. Feel free to choose font families for your headings and body font.</span></p><p><span>You can choose a solid default color for your text. For headings, you can also choose a gradient color.</span></p>',
-                                cellId: 'dgmmhc',
+                                    '<p>To the right, this is what we call an accent image. We have a set of them with our default themes, but you can change them!  <span class="emoji">➡️</span></p>',
+                                cellId: '71ytiygj5j3',
+                                elementTypeId: ElementType.TEXT,
+                                tempLayout: true,
+                            },
+                        ],
+                        style: {},
+                    },
+                    {
+                        id: '9d3yrp',
+                        gridStructure: {
+                            columns: 1,
+                            rows: [
+                                {
+                                    id: '04k86n',
+                                    cells: [
+                                        {
+                                            id: 'ganjyu',
+                                            row: 1,
+                                            column: 1,
+                                        },
+                                    ],
+                                },
+                            ],
+                            columnWidths: ['100%'],
+                        },
+                        type: 'blank',
+                        style: {},
+                        elements: [
+                            {
+                                id: 'uhdm7b95hi',
+                                content: "<p>Let's get started customizing your theme!</p>",
+                                cellId: 'ganjyu',
+                                elementTypeId: ElementType.TEXT,
+                            } as EditorElement,
+                        ],
+                    },
+                ],
+                templateType: 'imageRight',
+                imageSize: {
+                    width: '33%',
+                },
+            },
+            {
+                id: 'bnzt2llzvpo',
+                title: 'Слайд 2',
+                layouts: [
+                    {
+                        id: 'sx8xu17xav9',
+                        gridStructure: {
+                            columns: 1,
+                            rows: [
+                                {
+                                    id: 'dh09zx',
+                                    cells: [
+                                        {
+                                            id: 'luaz2x',
+                                            row: 1,
+                                            column: 1,
+                                        },
+                                    ],
+                                },
+                            ],
+                            columnWidths: ['100%'],
+                        },
+                        type: 'blank',
+                        style: {},
+                        elements: [
+                            {
+                                id: 'clkwqg2pi4f',
+                                content: '<p>Fonts</p>',
+                                cellId: 'luaz2x',
                                 elementTypeId: ElementType.TEXT,
                             },
                         ],
                     },
                     {
-                        id: 'sovv9v',
+                        id: '3tod7j',
+                        gridStructure: {
+                            columns: 1,
+                            rows: [
+                                {
+                                    id: '8egdsy',
+                                    cells: [
+                                        {
+                                            id: '87x4z5',
+                                            row: 1,
+                                            column: 1,
+                                        },
+                                    ],
+                                },
+                            ],
+                            columnWidths: ['100%'],
+                        },
+                        type: 'blank',
+                        style: {},
+                        elements: [
+                            {
+                                id: 'w3qnyhz3as',
+                                content:
+                                    '<p>Gamma comes with pre-defined sizes of typography that work best for legibility. Feel free to choose font families for your headings and body font.</p>',
+                                cellId: '87x4z5',
+                                elementTypeId: ElementType.TEXT,
+                            },
+                        ],
+                    },
+                    {
+                        id: 'vneeuk',
+                        gridStructure: {
+                            columns: 1,
+                            rows: [
+                                {
+                                    id: 'mgdilk',
+                                    cells: [
+                                        {
+                                            id: 'e7mkvq',
+                                            row: 1,
+                                            column: 1,
+                                        },
+                                    ],
+                                },
+                            ],
+                            columnWidths: ['100%'],
+                        },
+                        type: 'blank',
+                        style: {},
+                        elements: [
+                            {
+                                id: '35k5dmgpacq',
+                                content:
+                                    '<p>You can choose a solid default color for your text. For headings, you can also choose a gradient color.</p>',
+                                cellId: 'e7mkvq',
+                                elementTypeId: ElementType.TEXT,
+                            } as EditorElement,
+                        ],
+                    },
+                    {
+                        id: 'gg20yk',
                         gridStructure: {
                             columns: 2,
                             rows: [
                                 {
-                                    id: '19149g',
+                                    id: 'qhmiqd',
                                     cells: [
                                         {
-                                            id: 'wfgyjw',
+                                            id: 'nw494v',
                                             row: 1,
                                             column: 1,
+                                            alignment: 'center',
                                         },
                                         {
-                                            id: 'pyqnm6jz4xa',
+                                            id: 'altq37ro96p',
                                             row: 1,
                                             column: 2,
+                                            alignment: 'center',
                                         },
                                     ],
                                 },
@@ -398,118 +342,279 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
                         style: {},
                         elements: [
                             {
-                                id: '3jo3m07iv1n',
+                                id: '51xb61h6b5d',
                                 content: '<p><span class="heading-text title-text">Title font</span></p>',
-                                cellId: 'wfgyjw',
+                                cellId: 'nw494v',
+                                elementTypeId: ElementType.TEXT,
+                            } as EditorElement,
+                            {
+                                id: 'vdg57oghq7b',
+                                content: '<p><span class="heading-text heading-1">Heading 1</span></p>',
+                                cellId: 'nw494v',
                                 elementTypeId: ElementType.TEXT,
                             },
                             {
-                                id: 'ukq45qvbdl9',
-                                content: '<p><span class="heading-text big-heading">Heading 1</span></p>',
-                                cellId: 'wfgyjw',
-                                elementTypeId: ElementType.TEXT,
-                            },
-                            {
-                                id: 'b1mj2v9z4cq',
+                                id: 'a72j66435rw',
                                 content: '<p><span class="heading-text heading-2">Heading 2</span></p>',
-                                cellId: 'wfgyjw',
+                                cellId: 'nw494v',
                                 elementTypeId: ElementType.TEXT,
                             },
                             {
-                                id: '4i3v822we0b',
+                                id: 'j7cs1ue560i',
                                 content: '<p><span class="heading-text heading-3">Heading 3</span></p>',
-                                cellId: 'wfgyjw',
+                                cellId: 'nw494v',
                                 elementTypeId: ElementType.TEXT,
                             },
                             {
-                                id: 'yhjj11lcfyi',
-                                content: '<p><span class="body-text big-text">Heading 4</span></p>',
-                                cellId: 'wfgyjw',
-                                elementTypeId: ElementType.TEXT,
-                            },
-                            {
-                                id: 'n0887rsznvi',
+                                id: 'hklx9e39unb',
                                 content: '<p><span class="body-text big-text">Large body text</span></p>',
-                                cellId: 'pyqnm6jz4xa',
+                                cellId: 'altq37ro96p',
                                 elementTypeId: ElementType.TEXT,
                             },
                             {
-                                id: 'sfauf1h40w',
-                                content: '<p><span>Normal body text</span></p>',
-                                cellId: 'pyqnm6jz4xa',
+                                id: 'ivrcrubv3sg',
+                                content: '<p>Normal body text</p>',
+                                cellId: 'altq37ro96p',
                                 elementTypeId: ElementType.TEXT,
                             },
                             {
-                                id: 'eh4wkql7iyh',
+                                id: 'jws6vyf5f4',
                                 content: '<p><span class="body-text small-text">Small body text</span></p>',
-                                cellId: 'pyqnm6jz4xa',
+                                cellId: 'altq37ro96p',
                                 elementTypeId: ElementType.TEXT,
                             },
                         ],
                     },
                 ],
+                style: {},
+                contentAlignment: 'top',
+                templateType: 'standard',
             },
             {
-                id: 'slide-5',
-                title: 'Secondary accent colors',
+                id: 'x8xsuzkh26',
+                title: 'Слайд 3',
                 layouts: [
                     {
-                        id: 'layout-5-1',
-                        type: 'heading',
+                        id: 'udlujny8m7r',
                         gridStructure: {
                             columns: 1,
                             rows: [
                                 {
-                                    id: 'row-5-1',
-                                    cells: [{ id: 'cell-5-1', row: 1, column: 1 }],
+                                    id: '3ny1fc',
+                                    cells: [
+                                        {
+                                            id: 'm07s35',
+                                            row: 1,
+                                            column: 1,
+                                        },
+                                    ],
                                 },
                             ],
                             columnWidths: ['100%'],
                         },
+                        type: 'blank',
                         style: {},
                         elements: [
                             {
-                                id: 'element-5-1',
-                                cellId: 'cell-5-1',
+                                id: 'prvbqde9m5q',
+                                content: '<p>Primary accent color</p>',
+                                cellId: 'm07s35',
                                 elementTypeId: ElementType.TEXT,
-                                content: slide5Content.title.content,
                             } as EditorElement,
                         ],
                     },
                     {
-                        id: 'layout-5-2',
-                        type: 'blank',
+                        id: 'uzfnyl',
                         gridStructure: {
                             columns: 1,
                             rows: [
                                 {
-                                    id: 'row-5-2',
-                                    cells: [{ id: 'cell-5-2', row: 1, column: 1 }],
+                                    id: 'f62eq9',
+                                    cells: [
+                                        {
+                                            id: 'h5k6v8',
+                                            row: 1,
+                                            column: 1,
+                                        },
+                                    ],
                                 },
                             ],
                             columnWidths: ['100%'],
                         },
+                        type: 'blank',
                         style: {},
                         elements: [
                             {
-                                id: 'element-5-2',
-                                cellId: 'cell-5-2',
+                                id: 'c9h6knqe7e',
+                                content:
+                                    '<ul><li><p>This could be 1 solid color or, a gradient</p></li><li><p>It will apply to buttons, block quotes, smart layouts, callout boxes, <a target="_blank" rel="noopener noreferrer" class="link" href="http://gamma.app">hyperlinks</a> and <span class="footnote-label">footnotes</span>.</p></li></ul><p></p>',
+                                cellId: 'h5k6v8',
                                 elementTypeId: ElementType.TEXT,
-                                content: slide5Content.description.content,
+                            } as EditorElement,
+                        ],
+                    },
+                    {
+                        id: 'd2x5ie',
+                        gridStructure: {
+                            columns: 1,
+                            rows: [
+                                {
+                                    id: 'ttfqxv',
+                                    cells: [
+                                        {
+                                            id: 'txkveh',
+                                            row: 1,
+                                            column: 1,
+                                        },
+                                    ],
+                                },
+                            ],
+                            columnWidths: ['100%'],
+                        },
+                        type: 'blank',
+                        style: {},
+                        elements: [
+                            {
+                                id: 'g8tuy9nymuj',
+                                content:
+                                    "<p><span><strong>Attention all</strong></span><br></p><p><span>This is a callout box. Its default color will be your primary accent color, but don't worry, you can change it.</span></p>",
+                                cellId: 'txkveh',
+                                elementTypeId: 'box',
+                                elementVariant: 'warning-box',
+                                iconType: 'warning-box',
+                                backgroundColor: '#fcf2b5',
+                                darkBackgroundColor: '#032349',
+                            } as BoxElement,
+                        ],
+                    },
+                    {
+                        id: '9mg64excfd',
+                        gridStructure: {
+                            columns: 2,
+                            columnWidths: ['50%', '50%'],
+                            rows: [
+                                {
+                                    id: 'agt3mysdu9',
+                                    cells: [
+                                        {
+                                            id: 'fe1yhyet5y',
+                                            row: 0,
+                                            column: 1,
+                                        },
+                                        {
+                                            id: 'w3wakt4h2z',
+                                            row: 1,
+                                            column: 2,
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                        type: 'blank',
+                        elements: [
+                            {
+                                id: 'yi69hll5z6l',
+                                content: '<p><span>тут будет кнопка</span></p>',
+                                cellId: 'fe1yhyet5y',
+                                elementTypeId: ElementType.TEXT,
+                                tempLayout: true,
                             } as EditorElement,
                             {
-                                id: 'element-5-3',
-                                cellId: 'cell-5-2',
-                                elementTypeId: ElementType.IMAGE,
-                                src: slide5Content.colorPalette.src,
-                                alt: slide5Content.colorPalette.alt,
-                                alignment: slide5Content.colorPalette.alignment,
-                            } as ImageElement,
+                                id: '6ejk3l6ul82',
+                                content: '<p>и вторая кнопка/</p>',
+                                cellId: 'fe1yhyet5y',
+                                elementTypeId: ElementType.TEXT,
+                            } as EditorElement,
+                            {
+                                id: 'j1ax3dna81p',
+                                content:
+                                    '<blockquote class="blockquote"><p>Example of a block quote, here you can write a quote and we will style it.<br><br>— Author</p></blockquote>',
+                                cellId: 'w3wakt4h2z',
+                                elementTypeId: 'quote',
+                                elementVariant: 'quote',
+                                textType: 'quote',
+                            } as EditorElement,
+                        ],
+                        style: {},
+                    },
+                ],
+                style: {},
+                contentAlignment: 'top',
+                templateType: 'imageRight',
+                imageSize: {
+                    width: '33%',
+                },
+            },
+            {
+                id: 'uqzxx80oz0l',
+                title: 'Слайд 4',
+                layouts: [
+                    {
+                        id: 'wbtkz4in5dj',
+                        gridStructure: {
+                            columns: 1,
+                            rows: [
+                                {
+                                    id: 'c10xe6',
+                                    cells: [
+                                        {
+                                            id: 'qf4rjd',
+                                            row: 1,
+                                            column: 1,
+                                        },
+                                    ],
+                                },
+                            ],
+                            columnWidths: ['100%'],
+                        },
+                        type: 'blank',
+                        style: {},
+                        elements: [
+                            {
+                                id: 'p1cdlb9vph',
+                                content: '<p><span class="heading-text heading-1">That\'s it!</span></p>',
+                                cellId: 'qf4rjd',
+                                elementTypeId: ElementType.TEXT,
+                            },
+                        ],
+                    },
+                    {
+                        id: 'foakul',
+                        gridStructure: {
+                            columns: 1,
+                            rows: [
+                                {
+                                    id: 'fq1s8p',
+                                    cells: [
+                                        {
+                                            id: 'y0dtaz',
+                                            row: 1,
+                                            column: 1,
+                                        },
+                                    ],
+                                },
+                            ],
+                            columnWidths: ['100%'],
+                        },
+                        type: 'blank',
+                        style: {},
+                        elements: [
+                            {
+                                id: '4rpmjnpd0qj',
+                                content:
+                                    '<p>Thank you, and we hope you enjoy your Gamma experience <span class="emoji">💜</span></p>',
+                                cellId: 'y0dtaz',
+                                elementTypeId: ElementType.TEXT,
+                            } as EditorElement,
                         ],
                     },
                 ],
+                style: {},
+                contentAlignment: 'center',
+                templateType: 'standard',
             },
         ],
+        themeId: '6849685caa44f16cec6f09ec',
     };
 
     return (

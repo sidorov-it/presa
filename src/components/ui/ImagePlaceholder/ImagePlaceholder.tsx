@@ -229,7 +229,18 @@ export const ImagePlaceholder = ({
                 onCloseMenu: () => setIsOpenImageEditBox(false),
             });
         }
-    }, [isSmallImage, isOpenImageEditBox, imageUrl, onClearImage, onUpdateLink, elementId, presentationId, slideId, layoutId, itemId]);
+    }, [
+        isSmallImage,
+        isOpenImageEditBox,
+        imageUrl,
+        onClearImage,
+        onUpdateLink,
+        elementId,
+        presentationId,
+        slideId,
+        layoutId,
+        itemId,
+    ]);
 
     useEffect(() => {
         if (!elementRef.current) return;
@@ -312,6 +323,7 @@ export const ImagePlaceholder = ({
                 role="button"
                 aria-label="Открыть настройки изображения"
             >
+                <h1>test</h1>
                 <FaRegImage className={styles.imagePlaceholderIcon} aria-label="Пустое изображение" />
                 {!isSmallImage && (
                     <div className={styles.imagePlaceholderButtons}>

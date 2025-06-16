@@ -1,12 +1,13 @@
 import { create } from 'zustand';
-import { Theme } from '@/types/theme';
+import { Theme, ThemeDesignImageShape } from '@/types/theme';
 import { createNewTheme } from '@/constants/defaultTheme';
 
 interface ThemeState {
     themes: Theme[];
     defaultThemes: Theme[];
     currentTheme: Theme | null;
-    setCurrentTheme: (theme: Theme | null) => void;
+    setCurrentTheme: (theme: Theme | undefined) => void;
+    getCurrentThemeImageShape: () => ThemeDesignImageShape | undefined;
     addTheme: (theme: Omit<Theme, 'id'>) => Promise<void>;
     updateTheme: (theme: Theme) => Promise<void>;
     deleteTheme: (themeId: string) => Promise<void>;
@@ -23,6 +24,10 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
 
     setCurrentTheme: theme => {
         set({ currentTheme: theme });
+    },
+
+    getCurrentThemeImageShape: () => {
+        return get().currentTheme?.imageShape;
     },
 
     getDefaultTheme: () => {

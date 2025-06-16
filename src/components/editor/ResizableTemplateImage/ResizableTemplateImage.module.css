@@ -26,29 +26,39 @@
     border-top-left-radius: 0.4em;
     border-top-right-radius: 0.4em;
     mask-position: top center;
-    mask-image: var(--presentation-slide-image-mask-image-top);
-    
+}
+.maskImageTop {
+    mask-image: var(--presentation-slide-image-mask-image-top, none);
 }
 
 .imageBottom {
     border-bottom-left-radius: 0.4em;
     border-bottom-right-radius: 0.4em;
     mask-position: bottom center;
-    mask-image: var(--presentation-slide-image-mask-image-bottom);
+}
+
+.maskImageBottom {
+    mask-image: var(--presentation-slide-image-mask-image-bottom, none);
 }
 
 .imageLeft {
     border-top-left-radius: 0.4em;
     border-bottom-left-radius: 0.4em;
     mask-position: left center;
-    mask-image: var(--presentation-slide-image-mask-image-left);
+}
+
+.maskImageLeft {
+    mask-image: var(--presentation-slide-image-mask-image-left, none);
 }
 
 .imageRight {
     border-top-right-radius: 0.4em;
     border-bottom-right-radius: 0.4em;
     mask-position: right center;
-    mask-image: var(--presentation-slide-image-mask-image-right);
+}
+
+.maskImageRight {
+    mask-image: var(--presentation-slide-image-mask-image-right, none);
 }
 
 .resizeHandleLeft,

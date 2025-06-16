@@ -245,30 +245,30 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
             let maskImageRight = 'none';
             let maskImageTop = 'none';
 
-            if (activeTheme.design.slide.imageShape === 'default') {
+            if (activeTheme.imageShape === 'default') {
                 maskImageLeft = 'none';
                 maskImageRight = 'none';
                 maskImageTop = 'none';
-            } else if (activeTheme.design.slide.imageShape === 'fade') {
-                maskImageLeft = `url(${gradientLeftImage.src})`;
-                maskImageRight = `url(${gradientRightImage.src})`;
-                maskImageTop = `url(${gradientTopImage.src})`;
-            } else if (activeTheme.design.slide.imageShape === 'diagonal') {
-                maskImageLeft = `url(${diagonalLeftImage.src})`;
-                maskImageRight = `url(${diagonalRightImage.src})`;
-                maskImageTop = `url(${diagonalTopImage.src})`;
-            } else if (activeTheme.design.slide.imageShape === 'round') {
-                maskImageLeft = `url(${circleLeftImage.src})`;
-                maskImageRight = `url(${circleRightImage.src})`;
-                maskImageTop = `url(${circleTopImage.src})`;
-            } else if (activeTheme.design.slide.imageShape === 'round-inverse') {
-                maskImageLeft = `url(${circleInvertedLeftImage.src})`;
-                maskImageRight = `url(${circleInvertedRightImage.src})`;
-                maskImageTop = `url(${circleInvertedTopImage.src})`;
-            } else if (activeTheme.design.slide.imageShape === 'wiggle') {
-                maskImageLeft = `url(${wiggleLeftImage.src})`;
-                maskImageRight = `url(${wiggleRightImage.src})`;
-                maskImageTop = `url(${wiggleTopImage.src})`;
+            } else if (activeTheme.imageShape === 'fade') {
+                maskImageLeft = `url(/masks/gradient-left.svg)`;
+                maskImageRight = `url(/masks/gradient-right.svg)`;
+                maskImageTop = `url(/masks/gradient-top.svg)`;
+            } else if (activeTheme.imageShape === 'diagonal') {
+                maskImageLeft = `url(/masks/diagonal-left.svg)`;
+                maskImageRight = `url(/masks/diagonal-right.svg)`;
+                maskImageTop = `url(/masks/diagonal-top.svg)`;
+            } else if (activeTheme.imageShape === 'round') {
+                maskImageLeft = `url(/masks/circle-left.svg)`;
+                maskImageRight = `url(/masks/circle-right.svg)`;
+                maskImageTop = `url(/masks/circle-top.svg)`;
+            } else if (activeTheme.imageShape === 'round-inverse') {
+                maskImageLeft = `url(/masks/circle-inverted-left.svg)`;
+                maskImageRight = `url(/masks/circle-inverted-right.svg)`;
+                maskImageTop = `url(/masks/circle-inverted-top.svg)`;
+            } else if (activeTheme.imageShape === 'wiggle') {
+                maskImageLeft = `url(/masks/wiggle-left.svg)`;
+                maskImageRight = `url(/masks/wiggle-right.svg)`;
+                maskImageTop = `url(/masks/wiggle-top.svg)`;
             }
 
             container.style.setProperty('--presentation-slide-image-mask-image-left', maskImageLeft);

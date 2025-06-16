@@ -210,7 +210,7 @@ export type Element =
 export interface Layout {
     id: string;
     gridStructure: GridStructure;
-    type: LayoutType;
+    type?: LayoutType;
     style: Record<string, unknown>;
     elements: BaseElement[];
     isTable?: boolean; // Flag to identify when layout should be treated as a table

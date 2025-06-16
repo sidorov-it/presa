@@ -1,4 +1,4 @@
-import { Theme, ThemeColors, ThemeTypography, ThemeDesign } from '@/types/theme';
+import { Theme, ThemeColors, ThemeTypography, ThemeDesign, ThemeDesignImageShape } from '@/types/theme';
 import { Tabs as ChakraTabs } from '@chakra-ui/react';
 import Colors from './components/Colors';
 import Fonts from './components/Fonts/Fonts';
@@ -144,6 +144,13 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
         });
     };
 
+    const handleImageShapeChange = (imageShape: ThemeDesignImageShape) => {
+        onThemeChange({
+            ...theme,
+            imageShape,
+        });
+    };
+
     const handleDesignChange = (design: Partial<ThemeDesign>) => {
         onThemeChange({
             ...theme,
@@ -167,7 +174,13 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
         {
             label: 'Дизайн',
             icon: <MdOutlineDesignServices />,
-            content: <Design theme={theme} handleDesignChange={handleDesignChange} />,
+            content: (
+                <Design
+                    theme={theme}
+                    handleDesignChange={handleDesignChange}
+                    handleImageShapeChange={handleImageShapeChange}
+                />
+            ),
         },
     ];
 

@@ -1,21 +1,5 @@
 'use client';
 
-import circleInvertedLeftImage from '@/elements/masks/circle-inverted-left.svg';
-import circleInvertedRightImage from '@/elements/masks/circle-inverted-right.svg';
-import circleLeftImage from '@/elements/masks/circle-left.svg';
-import circleRightImage from '@/elements/masks/circle-right.svg';
-import diagonalLeftImage from '@/elements/masks/diagonal-left.svg';
-import diagonalRightImage from '@/elements/masks/diagonal-right.svg';
-import gradientLeftImage from '@/elements/masks/gradient-left.svg';
-import gradientRightImage from '@/elements/masks/gradient-right.svg';
-import gradientTopImage from '@/elements/masks/gradient-top.svg';
-import wiggleLeftImage from '@/elements/masks/wiggle-left.svg';
-import wiggleRightImage from '@/elements/masks/wiggle-right.svg';
-import wiggleTopImage from '@/elements/masks/wiggle-top.svg';
-import diagonalTopImage from '@/elements/masks/diagonal-top.svg';
-import circleTopImage from '@/elements/masks/circle-top.svg';
-import circleInvertedTopImage from '@/elements/masks/circle-inverted-top.svg';
-
 import { useLayoutEffect, useRef, forwardRef } from 'react';
 import { Theme } from '@/types/theme';
 import { useThemeStore } from '@/store/themeStore';
@@ -145,8 +129,14 @@ const ScopedThemeStylesApplier = forwardRef<HTMLDivElement, ScopedThemeStylesApp
                     '--presentation-heading-font',
                     `'${activeTheme.typography.headingFont}', sans-serif`
                 );
-                container.style.setProperty('--presentation-heading-weight', activeTheme.typography.headingWeight.toString());
-                container.style.setProperty('--presentation-body-font', `'${activeTheme.typography.bodyFont}', sans-serif`);
+                container.style.setProperty(
+                    '--presentation-heading-weight',
+                    activeTheme.typography.headingWeight.toString()
+                );
+                container.style.setProperty(
+                    '--presentation-body-font',
+                    `'${activeTheme.typography.bodyFont}', sans-serif`
+                );
                 container.style.setProperty('--presentation-body-weight', activeTheme.typography.bodyWeight.toString());
 
                 // New typography CSS vars for headings
@@ -182,7 +172,10 @@ const ScopedThemeStylesApplier = forwardRef<HTMLDivElement, ScopedThemeStylesApp
                 }
 
                 // Slide design
-                container.style.setProperty('--presentation-slide-border-radius', activeTheme.design.slide.borderRadius);
+                container.style.setProperty(
+                    '--presentation-slide-border-radius',
+                    activeTheme.design.slide.borderRadius
+                );
 
                 const shadow = activeTheme.design.slide.shadow;
                 if (shadow === 'none') {
@@ -214,30 +207,30 @@ const ScopedThemeStylesApplier = forwardRef<HTMLDivElement, ScopedThemeStylesApp
                 let maskImageRight = 'none';
                 let maskImageTop = 'none';
 
-                if (activeTheme.design.slide.imageShape === 'default') {
+                if (activeTheme.imageShape === 'default') {
                     maskImageLeft = 'none';
                     maskImageRight = 'none';
                     maskImageTop = 'none';
-                } else if (activeTheme.design.slide.imageShape === 'fade') {
-                    maskImageLeft = `url(${gradientLeftImage.src})`;
-                    maskImageRight = `url(${gradientRightImage.src})`;
-                    maskImageTop = `url(${gradientTopImage.src})`;
-                } else if (activeTheme.design.slide.imageShape === 'diagonal') {
-                    maskImageLeft = `url(${diagonalLeftImage.src})`;
-                    maskImageRight = `url(${diagonalRightImage.src})`;
-                    maskImageTop = `url(${diagonalTopImage.src})`;
-                } else if (activeTheme.design.slide.imageShape === 'round') {
-                    maskImageLeft = `url(${circleLeftImage.src})`;
-                    maskImageRight = `url(${circleRightImage.src})`;
-                    maskImageTop = `url(${circleTopImage.src})`;
-                } else if (activeTheme.design.slide.imageShape === 'round-inverse') {
-                    maskImageLeft = `url(${circleInvertedLeftImage.src})`;
-                    maskImageRight = `url(${circleInvertedRightImage.src})`;
-                    maskImageTop = `url(${circleInvertedTopImage.src})`;
-                } else if (activeTheme.design.slide.imageShape === 'wiggle') {
-                    maskImageLeft = `url(${wiggleLeftImage.src})`;
-                    maskImageRight = `url(${wiggleRightImage.src})`;
-                    maskImageTop = `url(${wiggleTopImage.src})`;
+                } else if (activeTheme.imageShape === 'fade') {
+                    maskImageLeft = `url(/masks/gradient-left.svg)`;
+                    maskImageRight = `url(/masks/gradient-right.svg)`;
+                    maskImageTop = `url(/masks/gradient-top.svg)`;
+                } else if (activeTheme.imageShape === 'diagonal') {
+                    maskImageLeft = `url(/masks/diagonal-left.svg)`;
+                    maskImageRight = `url(/masks/diagonal-right.svg)`;
+                    maskImageTop = `url(/masks/diagonal-top.svg)`;
+                } else if (activeTheme.imageShape === 'round') {
+                    maskImageLeft = `url(/masks/circle-left.svg)`;
+                    maskImageRight = `url(/masks/circle-right.svg)`;
+                    maskImageTop = `url(/masks/circle-top.svg)`;
+                } else if (activeTheme.imageShape === 'round-inverse') {
+                    maskImageLeft = `url(/masks/circle-inverted-left.svg)`;
+                    maskImageRight = `url(/masks/circle-inverted-right.svg)`;
+                    maskImageTop = `url(/masks/circle-inverted-top.svg)`;
+                } else if (activeTheme.imageShape === 'wiggle') {
+                    maskImageLeft = `url(/masks/wiggle-left.svg)`;
+                    maskImageRight = `url(/masks/wiggle-right.svg)`;
+                    maskImageTop = `url(/masks/wiggle-top.svg)`;
                 }
 
                 container.style.setProperty('--presentation-slide-image-mask-image-left', maskImageLeft);

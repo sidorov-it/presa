@@ -164,7 +164,8 @@ type ThemeSlide {
   borderWidth  BorderWidth
   borderColor  String
   opacity      Float
-  imageShape   ImageShape
+  // не используется
+  imageShape   ImageShape?
 }
 
 type ThemeBlocks {
@@ -201,6 +202,7 @@ model Theme {
   colors      ThemeColors
   typography  ThemeTypography
   design      ThemeDesign
+  imageShape  ImageShape?
   isDefault   Boolean         @default(false)
   isActive    Boolean         @default(true)
   createdAt   DateTime        @default(now())

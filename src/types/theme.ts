@@ -57,7 +57,6 @@ export type ThemeDesign = {
         borderWidth: ThemeDesignBorderWidth;
         borderColor: string;
         opacity: number;
-        imageShape: ThemeDesignImageShape;
     };
 
     // Blocks and Content
@@ -85,6 +84,7 @@ export type Theme = {
     logo?: string;
     colors: ThemeColors;
     typography: ThemeTypography;
+    imageShape: ThemeDesignImageShape | null;
     design: ThemeDesign;
     isDefault: boolean;
     isActive: boolean;

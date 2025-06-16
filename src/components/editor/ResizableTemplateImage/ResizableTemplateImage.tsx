@@ -5,6 +5,7 @@ import { usePresentationStore } from '@/store/presentationStore';
 import styles from './ResizableTemplateImage.module.css';
 import deepEqual from 'deep-equal';
 import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlaceholder';
+import { useThemeStore } from '@/store/themeStore';
 
 const MIN_SIZE = 20;
 const MAX_SIZE = 50;
@@ -30,6 +31,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     const containerRef = useRef<HTMLDivElement>(null);
 
     const updateSlide = usePresentationStore(state => state.updateSlide);
+    const currentThemeImageShape = useThemeStore(state => state.getCurrentThemeImageShape());
 
     const slide = usePresentationStore(
         useCallback(state => state.getSlide(presentationId, slideId), [presentationId, slideId])
@@ -352,6 +354,26 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     if (templateType === 'standard' || (templateType === 'imageBackground' && !imageUrl)) {
         return null;
     }
+
+    let imageMaskClass = '';
+    if (currentThemeImageShape) {
+        switch (templateType) {
+            case 'imageTop':
+                imageMaskClass = styles.maskImageTop;
+                break;
+            case 'imageLeft':
+                imageMaskClass = styles.maskImageLeft;
+                break;
+            case 'imageRight':
+                imageMaskClass = styles.maskImageRight;
+                break;
+            case 'imageBottom':
+                imageMaskClass = styles.maskImageBottom;
+                break;
+            default:
+                break;
+        }
+    }
     // Render template image with resize handles
     return (
         <div
@@ -364,7 +386,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
         >
             <div
                 ref={imageRef}
-                className={`${styles.templateImage} ${styles[templateType]}`}
+                className={`${styles.templateImage} ${styles[templateType]} ${imageMaskClass}`}
                 style={imageStyle}
                 aria-label={`Resizable ${templateType} image template`}
                 role="region"
