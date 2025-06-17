@@ -1,34 +1,27 @@
-import { Theme } from '@/types/theme';
+import { Theme, ThemeData } from '@/types/theme';
 
-export const DEFAULT_THEME: Omit<Theme, 'id' | 'createdAt' | 'updatedAt'> = {
+export const DEFAULT_THEME: ThemeData = {
     name: 'Modern Dark Theme',
     description: 'A sleek, modern dark theme with vibrant accents',
     colors: {
-        additionalColors: [],
-        primaryAccent: '#007BFF', // Electric Blue
-        shapesColor: '#007BFF', // Electric Blue
-        secondaryAccents: ['#6C63FF', '#2563EB', '#A0A0A0'], // Indigo Purple, Blue, Steel Gray
-        headingColor: '#F5F5F5', // Cool White
-        textColor: '#A0A0A0', // Steel Gray
-        slideBackground: '#1E1E1E', // Charcoal Gray
+        primaryAccent: '#2B0AFF',
+        slideBackground: '#FFFFFF',
         pageBackground: {
             type: 'color',
-            color: '#0B0B0B', // Jet Black
+            color: '#FFFFFF', // Jet Black
             imageUrl: '',
         },
-        accentBlocksColor: '#007BFF', // Electric Blue
-        secondaryButtonColor: '#6C63FF', // Indigo Purple
     },
     typography: {
         headingFont: 'inter',
         headingWeight: 600,
-        headingColor: '#F5F5F5', // Cool White
+        headingColor: '#000000',
         headingLineHeight: 1.25,
         headingLetterSpacing: 0,
         headingCapitalization: 'none',
         bodyFont: 'inter',
         bodyWeight: 400,
-        bodyColor: '#A0A0A0', // Steel Gray
+        bodyColor: '#272525',
         bodyLineHeight: 1.25,
         bodyLetterSpacing: 0,
         bodyCapitalization: 'none',
@@ -38,56 +31,55 @@ export const DEFAULT_THEME: Omit<Theme, 'id' | 'createdAt' | 'updatedAt'> = {
             borderRadius: '8px',
             shadow: 'sm',
             borderWidth: 'thin',
-            borderColor: '#3A3F4B', // Slate Gray
-            imageShape: 'round',
+            borderColor: '#3A3F4B',
             opacity: 0.8,
+            imageShape: 'default',
         },
         blocks: {
-            backgroundColor: '#1E1E1E', // Charcoal Gray
+            backgroundColor: '#1E1E1E',
             backgroundBlockFillType: 'fill',
             borderWidth: 'thin',
-            shadow: 'sm',
-            blockFillColorsType: 'subtle',
+            shadow: 'none',
+            blockFillColorsType: 'primary',
             blockBackgroundCustomColors: [],
         },
         buttons: {
-            buttonColor: '#007BFF', // Electric Blue
-            buttonShape: 'rounded',
-            linkColor: '#007BFF', // Electric Blue
+            buttonColor: '',
+            buttonShape: 'default',
+            linkColor: '',
         },
     },
 };
 
-export const createNewTheme = (themeData: Partial<Omit<Theme, 'id' | 'createdAt' | 'updatedAt'>> = {}): Theme => {
+export const createNewTheme = (): Omit<Theme, 'id'> => {
     return {
-        // id: new Prisma.ObjectId().toString(),// Generate a valid UUID
-        name: themeData.name || DEFAULT_THEME.name,
-        description: themeData.description || DEFAULT_THEME.description,
-        logo: themeData.logo,
+        name: '',
+        description: '',
+        // logo: themeData.logo,
         colors: {
             ...DEFAULT_THEME.colors,
-            ...(themeData.colors || {}),
+            // ...(themeData.colors || {}),
         },
         typography: {
             ...DEFAULT_THEME.typography,
-            ...(themeData.typography || {}),
+            // ...(themeData.typography || {}),
         },
         design: {
             slide: {
                 ...DEFAULT_THEME.design.slide,
-                ...(themeData.design?.slide || {}),
+                // ...(themeData.design?.slide || {}),
             },
             blocks: {
                 ...DEFAULT_THEME.design.blocks,
-                ...(themeData.design?.blocks || {}),
+                // ...(themeData.design?.blocks || {}),
             },
             buttons: {
                 ...DEFAULT_THEME.design.buttons,
-                ...(themeData.design?.buttons || {}),
+                // ...(themeData.design?.buttons || {}),
             },
         },
-        isDefault: themeData.isDefault ?? false,
-        isActive: themeData.isActive ?? true,
+        isDefault: false,
+        isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
     };

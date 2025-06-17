@@ -68,6 +68,7 @@ export default function ButtonsDesign({
                 <ColorPicker
                     value={theme.design.buttons.linkColor}
                     isShowRemoveIcon={true}
+                    placeholder={theme.colors.primaryAccent}
                     onChange={newColor => {
                         handleDesignChange({
                             buttons: {

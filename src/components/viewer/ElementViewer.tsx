@@ -91,7 +91,7 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
             'var(--presentation-secondary-accent-1, #00C49F)',
             'var(--presentation-secondary-accent-2, #FFBB28)',
             'var(--presentation-secondary-accent-3, #FF8042)',
-            'var(--presentation-shapes-color, #82ca9d)',
+            '#82ca9d',
         ];
 
         // Render the appropriate chart

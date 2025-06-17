@@ -22,10 +22,10 @@ sudo bash scripts/server-setup.sh
 #### 1.2 Настройка SSH ключей
 ```bash
 # На сервере создайте SSH ключи для GitHub Actions
-sudo -u deploy ssh-keygen -t rsa -b 4096 -C "github-actions@your-domain.com"
+sudo -u deploy ssh-keygen -t rsa -b 4096 -C "github-actions@slydle.ru"
 
 # Добавьте публичный ключ в ~/.ssh/authorized_keys
-sudo -u deploy cat /var/www/.ssh/id_rsa.pub >> /var/www/.ssh/authorized_keys
+sudo -u deploy cat /home/deploy/.ssh/id_rsa.pub >> /var/www/.ssh/authorized_keys
 sudo -u deploy chmod 600 /var/www/.ssh/authorized_keys
 
 # Скопируйте приватный ключ для GitHub Secrets

@@ -4,7 +4,7 @@ import { Label } from '../../ui/Label';
 import { Select } from '../../ui/Select';
 import { Input } from '../../ui/Input/Input';
 
-import { Theme, ThemeDesign } from '@/types/theme';
+import { Theme, ThemeTypography } from '@/types/theme';
 import { ThemeColors } from '@/types/theme';
 import { Button } from '../../ui/Button';
 import styles from '../ThemeEditor.module.css';
@@ -12,11 +12,11 @@ import styles from '../ThemeEditor.module.css';
 export default function Colors({
     theme,
     handleColorsChange,
-    handleDesignChange,
+    handleTypographyChange,
 }: {
     theme: Theme;
     handleColorsChange: (colors: Partial<ThemeColors>) => void;
-    handleDesignChange: (design: Partial<ThemeDesign>) => void;
+    handleTypographyChange: (typography: Partial<ThemeTypography>) => void;
 }) {
     return (
         <div style={{ width: '100%' }}>
@@ -35,50 +35,6 @@ export default function Colors({
                             onChange={color => handleColorsChange({ primaryAccent: color })}
                         />
                     </div>
-                    <div>
-                        <Label>Дополнительные цвета (необязательно)</Label>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
-                            {theme.colors.secondaryAccents.map((color, index) => (
-                                <ColorPicker
-                                    key={index}
-                                    value={color}
-                                    isShowRemoveIcon={true}
-                                    onChange={newColor => {
-                                        const newSecondaryAccents = [...theme.colors.secondaryAccents];
-                                        newSecondaryAccents[index] = newColor;
-                                        handleColorsChange({
-                                            secondaryAccents: newSecondaryAccents,
-                                        });
-                                    }}
-                                    handleRemove={() => {
-                                        const newSecondaryAccents = [...theme.colors.secondaryAccents];
-                                        newSecondaryAccents.splice(index, 1);
-                                        handleColorsChange({
-                                            secondaryAccents: newSecondaryAccents,
-                                        });
-                                    }}
-                                />
-                            ))}
-
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() =>
-                                    handleColorsChange({
-                                        secondaryAccents: [...(theme.colors.secondaryAccents || []), '#000000'],
-                                    })
-                                }
-                                style={{
-                                    marginTop: '8px',
-                                    alignSelf: 'flex-start',
-                                    fontSize: '14px',
-                                    padding: '8px 16px',
-                                }}
-                            >
-                                Добавить цвет
-                            </Button>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -88,15 +44,15 @@ export default function Colors({
                     <div>
                         <Label>Цвет заголовков</Label>
                         <ColorPicker
-                            value={theme.colors.headingColor}
-                            onChange={color => handleColorsChange({ headingColor: color })}
+                            value={theme.typography.headingColor}
+                            onChange={color => handleTypographyChange({ headingColor: color })}
                         />
                     </div>
                     <div>
                         <Label>Цвет текста</Label>
                         <ColorPicker
-                            value={theme.colors.textColor}
-                            onChange={color => handleColorsChange({ textColor: color })}
+                            value={theme.typography.bodyColor}
+                            onChange={color => handleTypographyChange({ bodyColor: color })}
                         />
                     </div>
                 </div>

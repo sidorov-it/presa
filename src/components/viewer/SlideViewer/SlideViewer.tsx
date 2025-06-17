@@ -1,3 +1,5 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable indent */
 /* eslint-disable no-nested-ternary */
 import React, { useMemo } from 'react';
 import { Layout, Slide } from '@/types';
@@ -16,6 +18,7 @@ interface SlideViewerProps {
     fullPage?: boolean;
     /** Show image placeholder when image is not provided (for preview modes) */
     showImagePlaceholder?: boolean;
+    isPreview?: boolean;
 }
 
 const SlideViewer: React.FC<SlideViewerProps> = ({
@@ -25,6 +28,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     isPdfExport = false,
     fullPage = false,
     showImagePlaceholder = false,
+    isPreview = false,
 }) => {
     // Get slide background styling
     const getSlideStyle = () => {
@@ -197,6 +201,20 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         return baseStyle;
     }, [slide]);
 
+    // let minHeight;
+    let height;
+
+    if (isPreview) {
+        // minHeight = 'unset';
+        height = 'auto';
+    } else if (fullPage) {
+        // minHeight = '100vh';
+        height = '100vh';
+    } else if (isPdfExport) {
+        // minHeight = 'auto';
+        height = 'auto';
+    }
+
     // Slide wrapper style including theme CSS variables
     const slideWrapperStyle: React.CSSProperties = {
         ...(fullPage ? {} : getSlideStyle()),
@@ -211,13 +229,8 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         // width: '100%',
         // maxWidth: '100%',
         // boxSizing: 'border-box',
-        minHeight: fullPage ? '100vh' : isPdfExport ? 'auto' : undefined,
-        height: fullPage ? '100vh' : isPdfExport ? 'auto' : undefined,
-        // Apply slide-specific text color if available
-        ...(slide?.textColor && {
-            '--presentation-text-color': slide.textColor,
-            '--presentation-heading-color': slide.textColor,
-        }),
+        minHeight: height,
+        height,
         // Дополнительные стили для PDF экспорта
         ...(isPdfExport && {
             overflow: 'visible',
@@ -243,13 +256,16 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
             <div className={`${styles.slideWrapper} ${localStyles.slideWrapper}`} style={slideWrapperStyle}>
                 <div className={`${styles.slideContent} ${localStyles.slideContent}`} style={slideContentStyle}>
                     {/* Template image if needed */}
-                    {slide?.templateType && slide.templateType !== 'imageBackground' && (
-                        <ViewerTemplateImageWithPlaceholder
-                            templateType={slide.templateType}
-                            imageUrl={slide.imageUrl}
-                            imageStyle={imageStyle}
-                            showPlaceholder={showImagePlaceholder}
-                        />
+                    {
+                        slide?.templateType &&
+                        slide.templateType !== 'imageBackground' &&
+                        slide.templateType !== 'standard' && (
+                            <ViewerTemplateImageWithPlaceholder
+                                templateType={slide.templateType}
+                                imageUrl={slide.imageUrl}
+                                imageStyle={imageStyle}
+                                showPlaceholder={showImagePlaceholder}
+                            />
                     )}
 
                     <div className={styles.slideContainer} style={contentStyle}>

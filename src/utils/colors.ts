@@ -86,22 +86,20 @@ export const getBlockColors = (
     iconTiny = isBlockDark ? iconTiny.lighten(20) : iconTiny.darken(20);
     const iconColor = iconTiny.toRgbString();
 
-    let textColor = options?.textColor;
-    if (!textColor) {
-        const blackContrast = tinycolor.readability(blockBgColor, '#000');
-        const whiteContrast = tinycolor.readability(blockBgColor, '#fff');
-        textColor = blackContrast > whiteContrast ? '#000' : '#fff';
-        // If neither black nor white is sufficient, try to adjust
-        if (Math.max(blackContrast, whiteContrast) < 4.5) {
-            // Try a slightly lighter or darker gray
-            const altGray =
-                blackContrast > whiteContrast
-                    ? tinycolor('#000').setAlpha(0.87).toRgbString()
-                    : tinycolor('#fff').setAlpha(0.87).toRgbString();
-            const altContrast = tinycolor.readability(blockBgColor, altGray);
-            if (altContrast > 4.5) {
-                textColor = altGray;
-            }
+    let textColor;
+    const blackContrast = tinycolor.readability(blockBgColor, '#000');
+    const whiteContrast = tinycolor.readability(blockBgColor, '#fff');
+    textColor = blackContrast > whiteContrast ? '#000' : '#fff';
+    // If neither black nor white is sufficient, try to adjust
+    if (Math.max(blackContrast, whiteContrast) < 4.5) {
+        // Try a slightly lighter or darker gray
+        const altGray =
+            blackContrast > whiteContrast
+                ? tinycolor('#000').setAlpha(0.87).toRgbString()
+                : tinycolor('#fff').setAlpha(0.87).toRgbString();
+        const altContrast = tinycolor.readability(blockBgColor, altGray);
+        if (altContrast > 4.5) {
+            textColor = altGray;
         }
     }
 

@@ -46,7 +46,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     const backgroundType = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background?.type);
     const backgroundValue = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background?.value);
-    const textColor = usePresentationStore(state => state.getSlide(presentationId, slideId)?.textColor);
 
     const contentAlignment = usePresentationStore(state => state.getSlide(presentationId, slideId)?.contentAlignment);
     const imageSize = usePresentationStore(state => state.getSlide(presentationId, slideId)?.imageSize);
@@ -105,13 +104,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             style.backgroundColor = backgroundValue;
         }
 
-        if (textColor) {
-            style['--presentation-text-color'] = textColor;
-            style['--presentation-heading-color'] = textColor;
-        }
-
         return style;
-    }, [imageUrl, templateType, backgroundType, backgroundValue, textColor]);
+    }, [imageUrl, templateType, backgroundType, backgroundValue]);
 
     const getSlideClassName = useCallback(() => {
         let className = styles.slideWrapper;

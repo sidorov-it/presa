@@ -121,23 +121,9 @@ model Presentation {
 }
 
 type ThemeColors {
-  // Accent Colors
   primaryAccent    String
-  additionalColors String[]
-  secondaryAccents String[]
-  shapesColor      String
-
-  // Text Colors
-  headingColor String
-  textColor    String
-
-  // Background Colors
   slideBackground String
   pageBackground  PageBackground
-
-  // Additional Colors
-  accentBlocksColor    String
-  secondaryButtonColor String
 }
 
 type ThemeTypography {
@@ -202,7 +188,6 @@ model Theme {
   colors      ThemeColors
   typography  ThemeTypography
   design      ThemeDesign
-  imageShape  ImageShape?
   isDefault   Boolean         @default(false)
   isActive    Boolean         @default(true)
   createdAt   DateTime        @default(now())

@@ -1,15 +1,14 @@
 export type ThemeColors = {
     // Accent Colors
     primaryAccent: string;
-    additionalColors: string[];
 
-    secondaryAccents: string[];
+    // secondaryAccents: string[];
 
-    shapesColor: string;
+    // shapesColor: string;
 
     // Text Colors
-    headingColor: string;
-    textColor: string;
+    // headingColor: string;
+    // textColor: string;
 
     // Background Colors
     slideBackground: string;
@@ -20,8 +19,8 @@ export type ThemeColors = {
     };
 
     // Additional Colors
-    accentBlocksColor: string;
-    secondaryButtonColor: string;
+    // accentBlocksColor: string;
+    // secondaryButtonColor: string;
 };
 
 export type ThemeTypography = {
@@ -57,6 +56,7 @@ export type ThemeDesign = {
         borderWidth: ThemeDesignBorderWidth;
         borderColor: string;
         opacity: number;
+        imageShape: ThemeDesignImageShape | null;
     };
 
     // Blocks and Content
@@ -77,15 +77,17 @@ export type ThemeDesign = {
     };
 };
 
-export type Theme = {
-    id: string;
+export type ThemeData = {
     name: string;
     description?: string;
     logo?: string;
     colors: ThemeColors;
     typography: ThemeTypography;
-    imageShape: ThemeDesignImageShape | null;
     design: ThemeDesign;
+};
+
+export type Theme = ThemeData & {
+    id: string;
     isDefault: boolean;
     isActive: boolean;
     createdAt: Date;

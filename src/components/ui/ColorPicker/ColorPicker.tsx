@@ -9,20 +9,22 @@ import styles from './ColorPicker.module.css';
 
 interface ColorPickerProps {
     value: string;
-    onChange: (value: string) => void;
     className?: string;
     allowAlpha?: boolean;
     isShowRemoveIcon?: boolean;
+    placeholder?: string;
     handleRemove?: () => void;
+    onChange: (value: string) => void;
 }
 
 export const ColorPicker = ({
     value,
-    onChange,
     className,
     allowAlpha = false,
     isShowRemoveIcon = false,
+    placeholder = '',
     handleRemove,
+    onChange,
 }: ColorPickerProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const [inputValue, setInputValue] = useState(value);
@@ -158,10 +160,11 @@ export const ColorPicker = ({
                 <Input
                     type="text"
                     value={inputValue}
-                    onChange={handleInputChange}
-                    onBlur={handleInputBlur}
                     className={styles.colorPickerInput}
                     aria-label="Код цвета"
+                    placeholder={placeholder}
+                    onChange={handleInputChange}
+                    onBlur={handleInputBlur}
                 />
                 {isShowRemoveIcon && handleRemove && (
                     <button

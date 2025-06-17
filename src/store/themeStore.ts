@@ -7,7 +7,7 @@ interface ThemeState {
     defaultThemes: Theme[];
     currentTheme: Theme | null;
     setCurrentTheme: (theme: Theme | undefined) => void;
-    getCurrentThemeImageShape: () => ThemeDesignImageShape | undefined;
+    getCurrentThemeImageShape: () => ThemeDesignImageShape | null | undefined;
     addTheme: (theme: Omit<Theme, 'id'>) => Promise<void>;
     updateTheme: (theme: Theme) => Promise<void>;
     deleteTheme: (themeId: string) => Promise<void>;
@@ -27,7 +27,7 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
     },
 
     getCurrentThemeImageShape: () => {
-        return get().currentTheme?.imageShape;
+        return get().currentTheme?.design.slide.imageShape;
     },
 
     getDefaultTheme: () => {

@@ -6,9 +6,14 @@ import styles from './PresentationViewer.module.css';
 interface PresentationViewerProps {
     slides: Slide[];
     showImagePlaceholder?: boolean;
+    isPreview?: boolean;
 }
 
-const PresentationViewer: React.FC<PresentationViewerProps> = ({ slides, showImagePlaceholder = false }) => {
+const PresentationViewer: React.FC<PresentationViewerProps> = ({
+    slides,
+    showImagePlaceholder = false,
+    isPreview = false,
+}) => {
     if (!slides || slides.length === 0) {
         return <div>No slides to display</div>;
     }
@@ -18,7 +23,7 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({ slides, showIma
             <div className={styles.allSlidesContainer}>
                 {slides.map((slide: Slide, index: number) => (
                     <div key={slide.id} id={`slide-${index + 1}`} className={styles.slideWrapper}>
-                        <SlideViewer slide={slide} showImagePlaceholder={showImagePlaceholder} />
+                        <SlideViewer slide={slide} showImagePlaceholder={showImagePlaceholder} isPreview={isPreview} />
                     </div>
                 ))}
             </div>

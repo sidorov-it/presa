@@ -17,7 +17,6 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
             return NextResponse.json({ error: 'Theme not found' }, { status: 404 });
         }
 
-        console.log(themeData.imageShape);
         // Convert to proper Theme type with correct structure
         const theme: Theme = {
             id: themeData.id,
@@ -25,7 +24,6 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
             description: themeData.description || undefined,
             logo: themeData.logo || undefined,
             colors: themeData.colors,
-            imageShape: themeData.imageShape as ThemeDesignImageShape | null,
             typography: {
                 ...themeData.typography,
                 // Ensure numbers are parsed correctly
@@ -109,7 +107,7 @@ export async function PUT(request: Request, props: { params: Promise<Params> }) 
                 design: {
                     set: theme.design,
                 },
-                imageShape: theme.imageShape,
+                // imageShape: theme.imageShape,
                 isDefault: theme.isDefault ?? existingTheme.isDefault,
                 isActive: theme.isActive ?? existingTheme.isActive,
                 updatedAt: new Date(),

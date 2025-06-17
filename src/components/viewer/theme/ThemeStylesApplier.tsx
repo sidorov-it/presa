@@ -83,28 +83,25 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
             container.style.setProperty('--presentation-primary-accent', activeTheme.colors.primaryAccent);
 
             // Set secondary accent colors (limit to first 3)
-            if (activeTheme.colors.secondaryAccents && Array.isArray(activeTheme.colors.secondaryAccents)) {
-                activeTheme.colors.secondaryAccents.slice(0, 3).forEach((color, index) => {
-                    container.style.setProperty(`--presentation-secondary-accent-${index + 1}`, color);
-                });
-            }
+            // if (activeTheme.colors.secondaryAccents && Array.isArray(activeTheme.colors.secondaryAccents)) {
+            //     activeTheme.colors.secondaryAccents.slice(0, 3).forEach((color, index) => {
+            //         container.style.setProperty(`--presentation-secondary-accent-${index + 1}`, color);
+            //     });
+            // }
 
-            container.style.setProperty(
-                '--presentation-shapes-color',
-                activeTheme.colors.shapesColor || activeTheme.colors.primaryAccent
-            );
             container.style.setProperty(
                 '--presentation-accent-blocks-color',
-                activeTheme.colors.accentBlocksColor || activeTheme.colors.primaryAccent
+                // activeTheme.colors.accentBlocksColor ||
+                activeTheme.colors.primaryAccent
             );
-            container.style.setProperty(
-                '--presentation-secondary-button-color',
-                activeTheme.colors.secondaryButtonColor || '#6b7280'
-            );
+            // container.style.setProperty(
+            //     '--presentation-secondary-button-color',
+            //     activeTheme.colors.secondaryButtonColor || '#6b7280'
+            // );
 
             // Set default theme text colors (these can be overridden by slide-specific colors)
-            container.style.setProperty('--presentation-heading-color', activeTheme.colors.headingColor);
-            container.style.setProperty('--presentation-text-color', activeTheme.colors.textColor);
+            container.style.setProperty('--presentation-heading-color', activeTheme.typography.headingColor);
+            container.style.setProperty('--presentation-text-color', activeTheme.typography.bodyColor);
             container.style.setProperty('--presentation-slide-background', activeTheme.colors.slideBackground);
 
             // Handle page background
@@ -245,23 +242,24 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
             let maskImageRight = 'none';
             let maskImageTop = 'none';
 
-            if (activeTheme.imageShape === 'default') {
+            const imageShape = activeTheme.design.slide.imageShape;
+            if (imageShape === 'default') {
                 maskImageLeft = 'none';
                 maskImageRight = 'none';
                 maskImageTop = 'none';
-            } else if (activeTheme.imageShape === 'fade') {
+            } else if (imageShape === 'fade') {
                 maskImageLeft = `url(/masks/gradient-left.svg)`;
                 maskImageRight = `url(/masks/gradient-right.svg)`;
                 maskImageTop = `url(/masks/gradient-top.svg)`;
-            } else if (activeTheme.imageShape === 'diagonal') {
+            } else if (imageShape === 'diagonal') {
                 maskImageLeft = `url(/masks/diagonal-left.svg)`;
                 maskImageRight = `url(/masks/diagonal-right.svg)`;
                 maskImageTop = `url(/masks/diagonal-top.svg)`;
-            } else if (activeTheme.imageShape === 'round') {
+            } else if (imageShape === 'round') {
                 maskImageLeft = `url(/masks/circle-left.svg)`;
                 maskImageRight = `url(/masks/circle-right.svg)`;
                 maskImageTop = `url(/masks/circle-top.svg)`;
-            } else if (activeTheme.imageShape === 'round-inverse') {
+            } else if (imageShape === 'round-inverse') {
                 maskImageLeft = `url(/masks/circle-inverted-left.svg)`;
                 maskImageRight = `url(/masks/circle-inverted-right.svg)`;
                 maskImageTop = `url(/masks/circle-inverted-top.svg)`;

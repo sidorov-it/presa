@@ -618,7 +618,7 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
 
     return (
         <ScopedPresentationThemeWrapper theme={theme}>
-            <PresentationViewer slides={sampleSlides} showImagePlaceholder={true} />
+            <PresentationViewer slides={sampleSlides} showImagePlaceholder={true} isPreview={true} />
         </ScopedPresentationThemeWrapper>
     );
 };

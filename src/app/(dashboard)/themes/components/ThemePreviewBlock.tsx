@@ -117,7 +117,7 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
                                 style={{
                                     fontFamily: theme.typography.headingFont,
                                     fontWeight: theme.typography.headingWeight,
-                                    color: theme.colors.headingColor,
+                                    color: theme.typography.headingColor,
                                     lineHeight: theme.typography.headingLineHeight,
                                     // letterSpacing: `${theme.typography.headingLetterSpacing}px`,
                                     textTransform: theme.typography.headingCapitalization,
@@ -130,14 +130,17 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
                                 style={{
                                     fontFamily: theme.typography.bodyFont,
                                     fontWeight: theme.typography.bodyWeight,
-                                    color: theme.colors.textColor,
+                                    color: theme.typography.bodyColor,
                                     lineHeight: theme.typography.bodyLineHeight,
                                     // letterSpacing: `${theme.typography.bodyLetterSpacing}px`,
                                     textTransform: theme.typography.bodyCapitalization,
                                 }}
                             >
                                 Body &{' '}
-                                <span className={styles.slideLink} style={{ color: theme.design.buttons.linkColor }}>
+                                <span
+                                    className={styles.slideLink}
+                                    style={{ color: theme.design.buttons.linkColor || theme.colors.primaryAccent }}
+                                >
                                     link
                                 </span>
                             </p>

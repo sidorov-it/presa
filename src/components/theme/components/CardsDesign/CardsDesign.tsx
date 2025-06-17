@@ -1,6 +1,6 @@
 import { Label } from '@/components/ui/Label';
 import ColorPicker from '@/components/ui/ColorPicker';
-import { Theme, ThemeDesignImageShape, ThemeDesignShadow } from '@/types/theme';
+import { Theme, ThemeDesignShadow } from '@/types/theme';
 import { ThemeDesign } from '@/types/theme';
 import { FaRegImage } from 'react-icons/fa6';
 
@@ -11,11 +11,9 @@ import ShadowSelector from '../ShadowSelector/ShadowSelector';
 export default function CardsDesign({
     theme,
     handleDesignChange,
-    handleImageShapeChange,
 }: {
     theme: Theme;
     handleDesignChange: (design: Partial<ThemeDesign>) => void;
-    handleImageShapeChange: (imageShape: ThemeDesignImageShape) => void;
 }) {
     return (
         <div
@@ -174,9 +172,22 @@ export default function CardsDesign({
                     {['default', 'fade', 'diagonal', 'round', 'round-inverse', 'wiggle'].map(option => (
                         <button
                             key={option}
-                            onClick={() => handleImageShapeChange(option as ThemeDesignImageShape)}
+                            onClick={() =>
+                                handleDesignChange({
+                                    slide: {
+                                        ...theme.design.slide,
+                                        imageShape: option as
+                                            | 'default'
+                                            | 'fade'
+                                            | 'diagonal'
+                                            | 'round'
+                                            | 'round-inverse'
+                                            | 'wiggle',
+                                    },
+                                })
+                            }
                             className={`${styles.imageShapeButton} ${
-                                theme.imageShape === option ? styles.imageShapeActive : ''
+                                theme.design.slide.imageShape === option ? styles.imageShapeActive : ''
                             }`}
                             aria-label={`Форма изображения ${option}`}
                         >
