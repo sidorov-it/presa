@@ -2,12 +2,7 @@ export type ThemeColors = {
     // Accent Colors
     primaryAccent: string;
 
-    // secondaryAccents: string[];
-
-    // shapesColor: string;
-
     // Text Colors
-    // headingColor: string;
     // textColor: string;
 
     // Background Colors
