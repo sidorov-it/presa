@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { HexColorPicker } from 'react-colorful';
 import { Input } from '@/components/ui/Input/Input';
 import { Popover } from '@/components/ui/Popover/Popover';
@@ -17,6 +17,50 @@ interface ColorPickerProps {
     onChange: (value: string) => void;
 }
 
+// Utility functions to prevent rounding errors
+const hexToAlpha = (hex: string): number => {
+    if (hex.length === 2) {
+        return parseInt(hex, 16) / 255;
+    }
+    return 1;
+};
+
+const alphaToHex = (alpha: number): string => {
+    const value = Math.round(alpha * 255);
+    return value.toString(16).padStart(2, '0');
+};
+
+const parseColorValue = (value: string) => {
+    if (!value || !value.startsWith('#')) {
+        return { baseColor: '#000000', alpha: 1, isValid: false };
+    }
+
+    const match = value.match(/^#([0-9A-Fa-f]{6})([0-9A-Fa-f]{2})?$/);
+    if (match) {
+        return {
+            baseColor: `#${match[1]}`,
+            alpha: match[2] ? hexToAlpha(match[2]) : 1,
+            isValid: true,
+        };
+    }
+
+    // Handle 3-digit hex colors
+    const shortMatch = value.match(/^#([0-9A-Fa-f]{3})$/);
+    if (shortMatch) {
+        const expanded = shortMatch[1]
+            .split('')
+            .map(c => c + c)
+            .join('');
+        return {
+            baseColor: `#${expanded}`,
+            alpha: 1,
+            isValid: true,
+        };
+    }
+
+    return { baseColor: value, alpha: 1, isValid: false };
+};
+
 export const ColorPicker = ({
     value,
     className,
@@ -27,121 +71,142 @@ export const ColorPicker = ({
     onChange,
 }: ColorPickerProps) => {
     const [isOpen, setIsOpen] = useState(false);
+
+    // Parse initial value
+    const parsedValue = useMemo(() => parseColorValue(value), [value]);
     const [inputValue, setInputValue] = useState(value);
-    const [alpha, setAlpha] = useState(1);
+    const [alpha, setAlpha] = useState(parsedValue.alpha);
 
+    // Update local state only when external value changes significantly
     useEffect(() => {
-        if (allowAlpha) {
-            const match = value.match(/^#([0-9A-Fa-f]{6})([0-9A-Fa-f]{2})?$/);
-            if (match) {
-                setInputValue(value);
-                if (match[2]) {
-                    setAlpha(parseInt(match[2], 16) / 255);
-                } else {
-                    setAlpha(1);
-                }
-            } else {
-                setInputValue(value);
-                setAlpha(1);
-            }
-        } else {
+        const currentParsed = parseColorValue(inputValue);
+        const newParsed = parseColorValue(value);
+
+        // Only update if the values are significantly different to prevent infinite loops
+        const colorChanged = currentParsed.baseColor.toLowerCase() !== newParsed.baseColor.toLowerCase();
+        const alphaChanged = allowAlpha && Math.abs(currentParsed.alpha - newParsed.alpha) > 0.01;
+
+        if (colorChanged || alphaChanged || !currentParsed.isValid) {
             setInputValue(value);
+            setAlpha(newParsed.alpha);
         }
-    }, [value, allowAlpha]);
+    }, [value, allowAlpha, inputValue]);
 
-    const handleColorChange = (newColor: string) => {
-        let finalColor = newColor;
-        if (allowAlpha) {
-            const alphaHex = Math.round(alpha * 255)
-                .toString(16)
-                .padStart(2, '0');
-            finalColor = `${newColor}${alphaHex}`;
-        }
-        setInputValue(finalColor);
-        onChange(finalColor);
-    };
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = e.target.value;
-        setInputValue(newValue);
-
-        const regex = allowAlpha ? /^#([A-Fa-f0-9]{6})([A-Fa-f0-9]{2})?$/ : /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
-
-        if (regex.test(newValue)) {
-            if (allowAlpha) {
-                const match = newValue.match(/^#([A-Fa-f0-9]{6})([A-Fa-f0-9]{2})?$/);
-                if (match) {
-                    setAlpha(match[2] ? parseInt(match[2], 16) / 255 : 1);
-                }
+    const handleColorChange = useCallback(
+        (newColor: string) => {
+            let finalColor = newColor;
+            if (allowAlpha && alpha < 1) {
+                const alphaHex = alphaToHex(alpha);
+                finalColor = `${newColor}${alphaHex}`;
             }
-            onChange(newValue);
-        }
-    };
-
-    const handleInputBlur = () => {
-        const regex = allowAlpha ? /^#([A-Fa-f0-9]{6})([A-Fa-f0-9]{2})?$/ : /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
-        if (!regex.test(inputValue)) {
-            setInputValue(value);
-        }
-    };
-
-    const colorButton = (
-        <button
-            type="button"
-            className={styles.colorButton}
-            style={{ backgroundColor: inputValue }}
-            aria-label="Выбрать цвет"
-            tabIndex={0}
-        />
+            setInputValue(finalColor);
+            onChange(finalColor);
+        },
+        [allowAlpha, alpha, onChange]
     );
 
-    const baseColor = allowAlpha ? inputValue.slice(0, 7) : value;
+    const handleAlphaChange = useCallback(
+        (newAlpha: number) => {
+            setAlpha(newAlpha);
+            const parsed = parseColorValue(inputValue);
+            let finalColor = parsed.baseColor;
 
-    const colorPickerContent = (
-        <div style={{ width: '100%' }}>
-            <HexColorPicker
-                color={baseColor}
-                onChange={handleColorChange}
-                data-testid="color-picker"
-                className={styles.colorPicker}
+            if (allowAlpha && newAlpha < 1) {
+                const alphaHex = alphaToHex(newAlpha);
+                finalColor = `${parsed.baseColor}${alphaHex}`;
+            }
+
+            setInputValue(finalColor);
+            onChange(finalColor);
+        },
+        [allowAlpha, inputValue, onChange]
+    );
+
+    const handleInputChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const newValue = e.target.value;
+            setInputValue(newValue);
+
+            const parsed = parseColorValue(newValue);
+            if (parsed.isValid) {
+                setAlpha(parsed.alpha);
+                onChange(newValue);
+            }
+        },
+        [onChange]
+    );
+
+    const handleInputBlur = useCallback(() => {
+        const parsed = parseColorValue(inputValue);
+        if (!parsed.isValid) {
+            setInputValue(value);
+            setAlpha(parseColorValue(value).alpha);
+        }
+    }, [inputValue, value]);
+
+    const colorButton = useMemo(
+        () => (
+            <button
+                type="button"
+                className={styles.colorButton}
+                style={{ backgroundColor: inputValue }}
+                aria-label="Выбрать цвет"
+                tabIndex={0}
             />
-            <div className={styles.colorPickerContent}>
-                <div className={styles.colorPickerButton} style={{ backgroundColor: inputValue }} />
-                <Input
-                    type="text"
-                    value={inputValue}
-                    onChange={handleInputChange}
-                    onBlur={handleInputBlur}
-                    className={styles.colorPickerInput}
-                    size="sm"
-                    aria-label="Код цвета"
+        ),
+        [inputValue]
+    );
+
+    const baseColor = useMemo(() => {
+        const parsed = parseColorValue(inputValue);
+        return parsed.baseColor;
+    }, [inputValue]);
+
+    const colorPickerContent = useMemo(
+        () => (
+            <div style={{ width: '100%' }}>
+                <HexColorPicker
+                    color={baseColor}
+                    onChange={handleColorChange}
+                    data-testid="color-picker"
+                    className={styles.colorPicker}
                 />
-                {allowAlpha && (
-                    <input
-                        type="range"
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        value={alpha}
-                        onChange={e => {
-                            const a = parseFloat(e.target.value);
-                            setAlpha(a);
-                            const alphaHex = Math.round(a * 255)
-                                .toString(16)
-                                .padStart(2, '0');
-                            const base = inputValue.match(/^#([0-9A-Fa-f]{6})/);
-                            if (base) {
-                                const final = `#${base[1]}${alphaHex}`;
-                                setInputValue(final);
-                                onChange(final);
-                            }
-                        }}
-                        aria-label="Прозрачность"
-                        className={styles.alphaSlider}
+                <div className={styles.colorPickerContent}>
+                    <div className={styles.colorPickerButton} style={{ backgroundColor: inputValue }} />
+                    <Input
+                        type="text"
+                        value={inputValue}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
+                        className={styles.colorPickerInput}
+                        size="sm"
+                        aria-label="Код цвета"
                     />
-                )}
+                    {allowAlpha && (
+                        <input
+                            type="range"
+                            min={0}
+                            max={1}
+                            step={0.01}
+                            value={alpha}
+                            onChange={e => handleAlphaChange(parseFloat(e.target.value))}
+                            aria-label="Прозрачность"
+                            className={styles.alphaSlider}
+                        />
+                    )}
+                </div>
             </div>
-        </div>
+        ),
+        [
+            baseColor,
+            inputValue,
+            allowAlpha,
+            alpha,
+            handleColorChange,
+            handleInputChange,
+            handleInputBlur,
+            handleAlphaChange,
+        ]
     );
 
     return (

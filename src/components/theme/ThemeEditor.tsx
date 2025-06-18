@@ -3,7 +3,7 @@ import { Tabs as ChakraTabs } from '@chakra-ui/react';
 import Colors from './components/Colors';
 import Fonts from './components/Fonts/Fonts';
 import Design from './components/Design/Design';
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import styles from './ThemeEditor.module.css';
 import { BiSolidColorFill } from 'react-icons/bi';
 import { FaFont } from 'react-icons/fa';
@@ -130,50 +130,62 @@ interface ThemeEditorProps {
 // }
 
 export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
-    const handleColorsChange = (colors: Partial<ThemeColors>) => {
-        onThemeChange({
-            ...theme,
-            colors: { ...theme.colors, ...colors },
-        });
-    };
-
-    const handleTypographyChange = (typography: Partial<ThemeTypography>) => {
-        onThemeChange({
-            ...theme,
-            typography: { ...theme.typography, ...typography },
-        });
-    };
-
-    const handleDesignChange = (design: Partial<ThemeDesign>) => {
-        onThemeChange({
-            ...theme,
-            design: { ...theme.design, ...design },
-        });
-    };
-
-    const items = [
-        {
-            label: 'Цвета',
-            icon: <BiSolidColorFill />,
-            content: (
-                <Colors
-                    theme={theme}
-                    handleColorsChange={handleColorsChange}
-                    handleTypographyChange={handleTypographyChange}
-                />
-            ),
+    const handleColorsChange = useCallback(
+        (colors: Partial<ThemeColors>) => {
+            onThemeChange({
+                ...theme,
+                colors: { ...theme.colors, ...colors },
+            });
         },
-        {
-            label: 'Шрифты',
-            icon: <FaFont />,
-            content: <Fonts theme={theme} handleTypographyChange={handleTypographyChange} />,
+        [theme, onThemeChange]
+    );
+
+    const handleTypographyChange = useCallback(
+        (typography: Partial<ThemeTypography>) => {
+            onThemeChange({
+                ...theme,
+                typography: { ...theme.typography, ...typography },
+            });
         },
-        {
-            label: 'Дизайн',
-            icon: <MdOutlineDesignServices />,
-            content: <Design theme={theme} handleDesignChange={handleDesignChange} />,
+        [theme, onThemeChange]
+    );
+
+    const handleDesignChange = useCallback(
+        (design: Partial<ThemeDesign>) => {
+            onThemeChange({
+                ...theme,
+                design: { ...theme.design, ...design },
+            });
         },
-    ];
+        [theme, onThemeChange]
+    );
+
+    const items = useMemo(
+        () => [
+            {
+                label: 'Цвета',
+                icon: <BiSolidColorFill />,
+                content: (
+                    <Colors
+                        theme={theme}
+                        onColorsChange={handleColorsChange}
+                        onTypographyChange={handleTypographyChange}
+                    />
+                ),
+            },
+            {
+                label: 'Шрифты',
+                icon: <FaFont />,
+                content: <Fonts theme={theme} handleTypographyChange={handleTypographyChange} />,
+            },
+            {
+                label: 'Дизайн',
+                icon: <MdOutlineDesignServices />,
+                content: <Design theme={theme} handleDesignChange={handleDesignChange} />,
+            },
+        ],
+        [theme, handleColorsChange, handleTypographyChange, handleDesignChange]
+    );
 
     const [selectedTab, setSelectedTab] = useState(items[0].label);
 

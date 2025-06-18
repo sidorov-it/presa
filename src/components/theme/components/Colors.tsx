@@ -15,12 +15,12 @@ import { getContrastingTextColor } from '@/utils/themeUtils';
 
 export default function Colors({
     theme,
-    handleColorsChange,
-    handleTypographyChange,
+    onColorsChange,
+    onTypographyChange,
 }: {
     theme: Theme;
-    handleColorsChange: (colors: Partial<ThemeColors>) => void;
-    handleTypographyChange: (typography: Partial<ThemeTypography>) => void;
+    onColorsChange: (colors: Partial<ThemeColors>) => void;
+    onTypographyChange: (typography: Partial<ThemeTypography>) => void;
 }) {
     const [isLoadingImage, setIsLoadingImage] = useState(false);
     const [imageError, setImageError] = useState('');
@@ -43,7 +43,7 @@ export default function Colors({
                             throw new Error('Не удалось загрузить изображение');
                         }
                         const data = await response.json();
-                        handleColorsChange({
+                        onColorsChange({
                             pageBackground: {
                                 ...theme.colors.pageBackground,
                                 imageUrl: data.url,
@@ -59,7 +59,7 @@ export default function Colors({
                     });
             }
         },
-        [handleColorsChange, theme.colors.pageBackground]
+        [onColorsChange, theme.colors.pageBackground]
     );
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -70,75 +70,143 @@ export default function Colors({
         disabled: isLoadingImage,
     });
 
-    const handleImageUrlChange = async (imageUrl: string) => {
-        if (!imageUrl) {
-            handleColorsChange({
-                pageBackground: {
-                    ...theme.colors.pageBackground,
-                    imageUrl: '',
-                },
-            });
-            return;
-        }
-
-        try {
-            const url = new URL(imageUrl);
-            const isExternalUrl = !url.hostname.includes(window.location.hostname);
-
-            if (isExternalUrl) {
-                setIsLoadingImage(true);
-                setImageError('');
-
-                const imageResponse = await fetch(imageUrl);
-                if (!imageResponse.ok) {
-                    throw new Error('Не удалось загрузить изображение');
-                }
-
-                const blob = await imageResponse.blob();
-                const formData = new FormData();
-                formData.append('file', blob, 'image.' + blob.type.split('/')[1]);
-
-                const response = await fetch('/api/assets/upload', {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                if (!response.ok) {
-                    throw new Error('Не удалось сохранить изображение');
-                }
-
-                const data = await response.json();
-                handleColorsChange({
+    const handleImageUrlChange = useCallback(
+        async (e: React.ChangeEvent<HTMLInputElement>) => {
+            const imageUrl = e.target.value;
+            if (!imageUrl) {
+                onColorsChange({
                     pageBackground: {
                         ...theme.colors.pageBackground,
-                        imageUrl: data.url,
+                        imageUrl: '',
                     },
                 });
-                setImageError('');
-            } else {
-                handleColorsChange({
-                    pageBackground: {
-                        ...theme.colors.pageBackground,
-                        imageUrl: imageUrl,
-                    },
-                });
+                return;
             }
-        } catch (error) {
-            setImageError(error instanceof Error ? error.message : 'Не удалось загрузить изображение');
-        } finally {
-            setIsLoadingImage(false);
-        }
-    };
 
-    const handleClearImage = () => {
-        handleColorsChange({
+            try {
+                const url = new URL(imageUrl);
+                const isExternalUrl = !url.hostname.includes(window.location.hostname);
+
+                if (isExternalUrl) {
+                    setIsLoadingImage(true);
+                    setImageError('');
+
+                    const imageResponse = await fetch(imageUrl);
+                    if (!imageResponse.ok) {
+                        throw new Error('Не удалось загрузить изображение');
+                    }
+
+                    const blob = await imageResponse.blob();
+                    const formData = new FormData();
+                    formData.append('file', blob, 'image.' + blob.type.split('/')[1]);
+
+                    const response = await fetch('/api/assets/upload', {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Не удалось сохранить изображение');
+                    }
+
+                    const data = await response.json();
+                    onColorsChange({
+                        pageBackground: {
+                            ...theme.colors.pageBackground,
+                            imageUrl: data.url,
+                        },
+                    });
+                    setImageError('');
+                } else {
+                    onColorsChange({
+                        pageBackground: {
+                            ...theme.colors.pageBackground,
+                            imageUrl: imageUrl,
+                        },
+                    });
+                }
+            } catch (error) {
+                setImageError(error instanceof Error ? error.message : 'Не удалось загрузить изображение');
+            } finally {
+                setIsLoadingImage(false);
+            }
+        },
+        [onColorsChange, theme.colors.pageBackground]
+    );
+
+    const handleClearImage = useCallback(() => {
+        onColorsChange({
             pageBackground: {
                 ...theme.colors.pageBackground,
                 imageUrl: '',
             },
         });
         setImageError('');
-    };
+    }, [theme.colors.pageBackground]);
+
+    const handlePrimaryAccentChange = useCallback(
+        (color: string) => {
+            const primaryAccentTextColor = getContrastingTextColor(color);
+            onColorsChange({
+                primaryAccent: color,
+                primaryAccentTextColor: primaryAccentTextColor as '#000000' | '#FFFFFF',
+            });
+        },
+        [onColorsChange]
+    );
+
+    const handleTypographyChange = useCallback(
+        (key: keyof ThemeTypography, value: string) => {
+            onTypographyChange({
+                [key]: value,
+            });
+        },
+        [onTypographyChange]
+    );
+
+    const handleHeadingColorChange = useCallback(
+        (color: string) => {
+            handleTypographyChange('headingColor', color);
+        },
+        [handleTypographyChange]
+    );
+
+    const handleBodyColorChange = useCallback(
+        (color: string) => {
+            handleTypographyChange('bodyColor', color);
+        },
+        [handleTypographyChange]
+    );
+
+    const handleSlideBackgroundChange = useCallback(
+        (color: string) => {
+            onColorsChange({ slideBackground: color });
+        },
+        [onColorsChange]
+    );
+
+    const handlePageBackgroundTypeChange = useCallback(
+        ({ value }: { value: string[] }) =>
+            onColorsChange({
+                pageBackground: {
+                    ...theme.colors.pageBackground,
+                    type: value[0] as 'color' | 'image',
+                },
+            }),
+        [onColorsChange, theme.colors.pageBackground]
+    );
+
+    const handlePageBackgroundColorChange = useCallback(
+        (color: string) => {
+            onColorsChange({
+                pageBackground: {
+                    ...theme.colors.pageBackground,
+                    color,
+                },
+            });
+        },
+        [onColorsChange, theme.colors.pageBackground]
+    );
 
     return (
         <div style={{ width: '100%' }}>
@@ -152,16 +220,7 @@ export default function Colors({
                 <div style={{ marginBottom: '20px' }}>
                     <div style={{ marginBottom: '16px' }}>
                         <Label>Основной акцентный цвет</Label>
-                        <ColorPicker
-                            value={theme.colors?.primaryAccent}
-                            onChange={color => {
-                                const primaryAccentTextColor = getContrastingTextColor(color);
-                                handleColorsChange({
-                                    primaryAccent: color,
-                                    primaryAccentTextColor: primaryAccentTextColor as '#000000' | '#FFFFFF',
-                                });
-                            }}
-                        />
+                        <ColorPicker value={theme.colors?.primaryAccent} onChange={handlePrimaryAccentChange} />
                     </div>
                 </div>
             </div>
@@ -171,17 +230,11 @@ export default function Colors({
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div>
                         <Label>Цвет заголовков</Label>
-                        <ColorPicker
-                            value={theme.typography.headingColor}
-                            onChange={color => handleTypographyChange({ headingColor: color })}
-                        />
+                        <ColorPicker value={theme.typography.headingColor} onChange={handleHeadingColorChange} />
                     </div>
                     <div>
                         <Label>Цвет текста</Label>
-                        <ColorPicker
-                            value={theme.typography.bodyColor}
-                            onChange={color => handleTypographyChange({ bodyColor: color })}
-                        />
+                        <ColorPicker value={theme.typography.bodyColor} onChange={handleBodyColorChange} />
                     </div>
                 </div>
             </div>
@@ -193,7 +246,7 @@ export default function Colors({
                         <Label>Цвет слайда</Label>
                         <ColorPicker
                             value={theme.colors.slideBackground}
-                            onChange={color => handleColorsChange({ slideBackground: color })}
+                            onChange={handleSlideBackgroundChange}
                             allowAlpha={true}
                         />
                     </div>
@@ -206,26 +259,12 @@ export default function Colors({
                                     { value: 'image', label: 'Изображение' },
                                 ]}
                                 value={[theme.colors.pageBackground.type]}
-                                onValueChange={({ value }: { value: string[] }) =>
-                                    handleColorsChange({
-                                        pageBackground: {
-                                            ...theme.colors.pageBackground,
-                                            type: value[0] as 'color' | 'image',
-                                        },
-                                    })
-                                }
+                                onValueChange={handlePageBackgroundTypeChange}
                             />
                             {theme.colors.pageBackground.type === 'color' ? (
                                 <ColorPicker
                                     value={theme.colors.pageBackground.color}
-                                    onChange={color =>
-                                        handleColorsChange({
-                                            pageBackground: {
-                                                ...theme.colors.pageBackground,
-                                                color,
-                                            },
-                                        })
-                                    }
+                                    onChange={handlePageBackgroundColorChange}
                                 />
                             ) : (
                                 <>
@@ -233,9 +272,7 @@ export default function Colors({
                                     <Input
                                         variant="outline"
                                         value={theme.colors.pageBackground.imageUrl}
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                            handleImageUrlChange(e.target.value)
-                                        }
+                                        onChange={handleImageUrlChange}
                                         placeholder="Адрес изображения"
                                         disabled={isLoadingImage}
                                         isInvalid={!!imageError}
