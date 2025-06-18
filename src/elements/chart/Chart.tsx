@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 'use client';
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { ChartElement } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import ChartModal from '@/components/editor/ChartModal';
@@ -33,6 +33,8 @@ import { HiOutlineTrash } from 'react-icons/hi';
 import { OpenCustomMenuEvent } from '@/customEvents/OpenCustomMenuEvent';
 
 import styles from './Chart.module.css';
+import { useThemeStore } from '@/store/themeStore';
+import { getChartColors } from '@/utils/colors';
 import { LayoutType } from 'recharts/types/util/types';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
@@ -54,8 +56,6 @@ const defaultData = [
     { name: 'Q4', value: 500 },
 ];
 
-// Default colors for charts
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
 // Types for resize direction
 type ResizeDirection = 'top' | 'right' | 'bottom' | 'left' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
@@ -100,6 +100,16 @@ const Chart: React.FC<ChartProps> = ({
     const updateElement = usePresentationStore(state => state.updateElement);
 
     const data = element.data || defaultData;
+
+    const currentTheme = useThemeStore(state => state.currentTheme);
+    const chartColors = useMemo(
+        () =>
+            getChartColors(
+                currentTheme?.colors.slideBackground || '#ffffff',
+                currentTheme?.colors.primaryAccent || '#8884d8'
+            ),
+        [currentTheme]
+    );
 
     // Initialize component with element data
     useEffect(() => {
@@ -478,7 +488,7 @@ const Chart: React.FC<ChartProps> = ({
                                     key={serie.key}
                                     dataKey={serie.key}
                                     name={serie.label?.trim() || ' '}
-                                    fill={serie.color || COLORS[index % COLORS.length]}
+                                    fill={serie.color || chartColors[index % chartColors.length]}
                                     label={getLabelProps()}
                                 />
                             ))}
@@ -506,7 +516,7 @@ const Chart: React.FC<ChartProps> = ({
                                     key={serie.key}
                                     dataKey={serie.key}
                                     name={serie.label?.trim() || ' '}
-                                    fill={serie.color || COLORS[index % COLORS.length]}
+                                    fill={serie.color || chartColors[index % chartColors.length]}
                                     label={{
                                         position: 'right',
                                         formatter: (value: number) => (showValues ? `${value}` : ''),
@@ -538,7 +548,7 @@ const Chart: React.FC<ChartProps> = ({
                                     type="monotone"
                                     dataKey={serie.key}
                                     name={serie.label?.trim() || ' '}
-                                    stroke={serie.color || COLORS[index % COLORS.length]}
+                                    stroke={serie.color || chartColors[index % chartColors.length]}
                                     label={getLabelProps()}
                                 />
                             ))}
@@ -567,11 +577,14 @@ const Chart: React.FC<ChartProps> = ({
                                 labelLine={showLabels || showValues}
                                 label={getPieLabel}
                                 outerRadius={80}
-                                fill="#8884d8"
+                                fill={chartColors[0]}
                                 dataKey="value"
                             >
                                 {pieData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    <Cell
+                                        key={`cell-${index}`}
+                                        fill={chartColors[index % chartColors.length]}
+                                    />
                                 ))}
                             </Pie>
                             {showValues && <Tooltip />}
@@ -608,11 +621,14 @@ const Chart: React.FC<ChartProps> = ({
                                 label={getPieLabel}
                                 outerRadius={80}
                                 innerRadius={40}
-                                fill="#8884d8"
+                                fill={chartColors[0]}
                                 dataKey="value"
                             >
                                 {donutData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    <Cell
+                                        key={`cell-${index}`}
+                                        fill={chartColors[index % chartColors.length]}
+                                    />
                                 ))}
                             </Pie>
                             {showValues && <Tooltip />}
