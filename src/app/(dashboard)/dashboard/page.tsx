@@ -88,7 +88,7 @@ export default function DashboardPage() {
 
     // Handle creating an empty presentation
     const handleCreateEmptyPresentation = async () => {
-        setCurrentTheme(null);
+        setCurrentTheme(defaultThemes[0]);
 
         const presentationId = await createPresentation('Новая презентация');
         router.push(`/docs/${presentationId}`);

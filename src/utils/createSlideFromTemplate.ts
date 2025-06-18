@@ -50,7 +50,7 @@ export const createSlideFromTemplate = (templateConfig: SlideTemplateConfig): Sl
             const cell: GridCell = {
                 id: generateId(),
                 row: 0,
-                column: i,
+                column: i + 1,
             };
 
             newLayout.gridStructure.rows[0].cells.push(cell);

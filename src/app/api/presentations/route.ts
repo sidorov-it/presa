@@ -67,6 +67,8 @@ export async function POST(request: NextRequest) {
         // Create slide structure
         const slideData = {
             id: slideId,
+            templateType: 'standard',
+            contentAlignment: 'center',
             layouts: [
                 {
                     id: layoutId,
