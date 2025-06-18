@@ -85,3 +85,25 @@
     cursor: default;
     pointer-events: none;
 }
+
+/* Table styles */
+.viewer-tiptap table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.viewer-tiptap th,
+.viewer-tiptap td {
+    border: 1px solid #e2e8f0;
+    padding: 0.5rem;
+    text-align: left;
+}
+
+.viewer-tiptap th {
+    background-color: var(--color-surface);
+    font-weight: 600;
+}
+
+.viewer-tiptap tr:nth-child(even) {
+    background-color: var(--color-surface);
+}
