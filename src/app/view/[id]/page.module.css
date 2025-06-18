@@ -112,6 +112,7 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+    z-index: 300;
 }
 
 /* Стили для компонента PresentationViewer */
@@ -222,4 +223,33 @@
     bottom: 1rem;
     right: 1rem;
     z-index: 10;
+}
+
+.navButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background-color: var(--presentation-primary-accent, #3b82f6);
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1.2rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.navButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.navButton:disabled {
+    background-color: #e2e8f0;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    opacity: 0.5;
 }

@@ -1,17 +1,22 @@
 .button {
-    border: none !important;
-    background-color: transparent;
-    border-radius: 4px;
-    padding: 6px 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s;
-    color: #333 !important;
-  }
-  
-  .deleteButton {
-    padding: 6px 8px !important;
-    color: red !important;
-  }
+  border: none !important;
+  background-color: transparent;
+  border-radius: 4px;
+  padding: 6px 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+  color: #333 !important;
+}
+
+.deleteButton {
+  padding: 6px 8px !important;
+  color: red !important;
+}
+
+.resetColorButton {
+  padding: 6px 8px !important;
+  color: #333 !important;
+}

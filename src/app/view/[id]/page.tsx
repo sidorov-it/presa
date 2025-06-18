@@ -3,7 +3,6 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { SlideViewer } from '@/components/viewer';
-import viewerStyles from '@/components/viewer/PresentationViewer.module.css';
 import styles from './page.module.css';
 import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
 import { useColorMode } from '@/components/ui/color-mode';
@@ -201,18 +200,18 @@ export default function PresentationView() {
                             <button
                                 onClick={handlePrevSlide}
                                 disabled={currentSlideIndex === 0}
-                                className={viewerStyles.navButton}
+                                className={styles.navButton}
                                 aria-label="Previous slide"
                             >
                                 ←
                             </button>
-                            <div className={viewerStyles.slideCounter}>
+                            <div className={styles.slideCounter}>
                                 {currentSlideIndex + 1} / {presentation.slides.length}
                             </div>
                             <button
                                 onClick={handleNextSlide}
                                 disabled={currentSlideIndex === presentation.slides.length - 1}
-                                className={viewerStyles.navButton}
+                                className={styles.navButton}
                                 aria-label="Next slide"
                             >
                                 →

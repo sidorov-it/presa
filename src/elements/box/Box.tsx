@@ -2,7 +2,7 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { BoxElement, TipTapRefs } from '@/types';
 import { Box } from '@chakra-ui/react';
 import Tiptap from '@/components/tiptap/Tiptap';
-import { RefObject, useMemo, useState, useEffect } from 'react';
+import { CSSProperties, RefObject, useMemo, useState, useEffect } from 'react';
 
 import { useShallow } from 'zustand/react/shallow';
 
@@ -36,7 +36,7 @@ export default function BoxComponent({
 
     const { elementTypeId, iconType, customBackgroundColor } = element;
 
-    const [fontSize, setFontSize] = useState<string | null>(null);
+    const [fontSize, setFontSize] = useState<string>('1.125em');
 
     useEffect(() => {
         const newFontSize = tiptapRefs.current!.editors[element.id]?.editor.getAttributes('textStyle').fontSize;
@@ -44,8 +44,6 @@ export default function BoxComponent({
             setFontSize(newFontSize);
         } else if (newFontSize) {
             setFontSize(newFontSize?.fontSize);
-        } else {
-            setFontSize('1.125em');
         }
     }, [element.content, element.id, tiptapRefs]);
 
@@ -69,10 +67,15 @@ export default function BoxComponent({
             bg={customBackgroundColor || blockBgColor || '#FFFFFF'}
             borderRadius="md"
             className={styles.box}
-            style={{
-                '--presentation-heading-color': textColor,
-                '--presentation-text-color': textColor,
-            }}
+            style={
+                {
+                    '--presentation-text-color': textColor,
+                    '--presentation-block-background': customBackgroundColor || blockBgColor || '#FFFFFF',
+                    '--presentation-block-background-custom-type': 'primary',
+                    '--presentation-block-background-custom-count': '1',
+                    '--presentation-block-background-custom-1': customBackgroundColor || blockBgColor || '#FFFFFF',
+                } as CSSProperties
+            }
         >
             {IconComponent && (
                 <span className={styles.icon} style={{ fontSize: fontSize }}>

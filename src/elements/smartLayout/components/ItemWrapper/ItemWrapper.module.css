@@ -11,7 +11,12 @@
 .container {
     position: relative;
     height: 100%;
-    border-radius: var(--presentation-slide-border-radius);
+    /* border-radius: var(--presentation-slide-border-radius);
+    border-width: var(--presentation-block-border-width);
+    box-shadow: var(--presentation-block-shadow); */
+    /* border-color: var(--color-border); */
+    border-style: solid;
+    position: relative;
 }
 
 .dragImage {

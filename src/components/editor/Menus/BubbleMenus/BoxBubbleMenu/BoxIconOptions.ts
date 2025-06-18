@@ -44,4 +44,8 @@ export const BoxIconOptions = [
         Icon: BsQuestionCircle,
         defaultIconColor: '#7a7a7a',
     },
+    {
+        id: 'without-icon',
+        label: 'Без иконки',
+    },
 ];

@@ -37,7 +37,7 @@ export default function ItemWrapper({
     useEffect(() => {
         if (itemRef.current && isMenuOpen) {
             const clientRect = itemRef.current.getBoundingClientRect();
-            setMenuPosition({ x: clientRect.width / 2, y: 0 });
+            setMenuPosition({ x: clientRect.left + clientRect.width / 2, y: clientRect.top + window.scrollY });
         } else if (!isMenuOpen) {
             setMenuPosition(null);
         }

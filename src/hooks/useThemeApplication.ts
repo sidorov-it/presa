@@ -3,6 +3,7 @@ import { Theme } from '@/types/theme';
 import getContrastTextColor from '@/utils/getContrastTextColor';
 import getHoverColor from '@/utils/getHoverColor';
 import { BackgroundSettings } from '@/types';
+import { getBorderColorForBackground } from '@/utils/themeUtils';
 
 interface UseThemeApplicationOptions {
     theme: Theme | null;
@@ -22,7 +23,7 @@ const applyThemeStyles = (
     container.style.setProperty('--presentation-primary-accent', theme.colors.primaryAccent);
     container.style.setProperty('--presentation-accent-blocks-color', theme.colors.primaryAccent);
 
-    container.style.setProperty('--presentation-accent-blocks-text-color', theme.colors.primaryAccentTextColor);
+    // container.style.setProperty('--presentation-accent-blocks-text-color', theme.colors.primaryAccentTextColor);
 
     // Text colors
     container.style.setProperty('--presentation-heading-color', theme.typography.headingColor);
@@ -196,12 +197,21 @@ const applyThemeStyles = (
     if (theme.design.blocks.blockFillColorsType !== 'custom') {
         container.style.setProperty('--presentation-block-background', theme.colors.primaryAccent);
         container.style.setProperty(
+            '--presentation-block-border-color',
+            getBorderColorForBackground(theme.colors.primaryAccent)
+        );
+
+        container.style.setProperty(
             '--presentation-block-background-custom-type',
             theme.design.blocks.blockFillColorsType
         );
     } else if (theme.design.blocks.blockFillColorsType === 'custom') {
         theme.design.blocks.blockBackgroundCustomColors.forEach((color, index) => {
             container.style.setProperty(`--presentation-block-background-custom-${index + 1}`, color);
+            container.style.setProperty(
+                `--presentation-block-border-color-custom-${index + 1}`,
+                getBorderColorForBackground(color)
+            );
         });
         container.style.setProperty(
             '--presentation-block-background-custom-count',

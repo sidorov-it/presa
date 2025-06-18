@@ -58,50 +58,53 @@ export const getBlockColors = (
     blockType: string,
     options?: GetBlockColorsOptions
 ): BlockColorsResult => {
-    // 1. Parse slide background color
     const slideColor = tinycolor(slideBgColor);
     const isSlideDark = slideColor.isDark();
 
-    // 2. Get default block background color for blockType
     const blockDefaults = BLOCK_TYPE_DEFAULTS[blockType] || BLOCK_TYPE_DEFAULTS['note-box'];
-    let blockBgColor =
-        options?.blockBgColor || (isSlideDark ? blockDefaults.darkBlockBgColor : blockDefaults.blockBgColor);
-    let blockColor = tinycolor(blockBgColor);
+    const baseBlockColorHex = options?.blockBgColor || (isSlideDark ? blockDefaults.darkBlockBgColor : blockDefaults.blockBgColor);
+    let blockColor = tinycolor(baseBlockColorHex);
 
+    // Подстройка цвета блока под фон слайда
     if (!options?.blockBgColor) {
-        // 3. Ensure block background color contrasts with slide background
-        let contrast = tinycolor.readability(slideColor, blockColor);
-        let attempts = 0;
-        while (contrast < 3 && attempts < 5) {
-            blockColor = isSlideDark ? blockColor.lighten(10) : blockColor.darken(10);
-            contrast = tinycolor.readability(slideColor, blockColor);
-            attempts++;
-        }
+        blockColor = isSlideDark ? blockColor.lighten(20) : blockColor.darken(10);
     }
-    blockBgColor = blockColor.toRgbString();
 
-    // 4. Get icon color based on block background color
-    let iconTiny = tinycolor(blockColor);
-    const isBlockDark = blockColor.isDark();
-    iconTiny = isBlockDark ? iconTiny.lighten(20) : iconTiny.darken(20);
-    const iconColor = iconTiny.toRgbString();
+    let blockBgColor = blockColor.toRgbString();
 
-    let textColor;
+    // Цвет текста (черный или белый в зависимости от контраста)
+    let textColor: string;
     const blackContrast = tinycolor.readability(blockBgColor, '#000');
     const whiteContrast = tinycolor.readability(blockBgColor, '#fff');
     textColor = blackContrast > whiteContrast ? '#000' : '#fff';
-    // If neither black nor white is sufficient, try to adjust
-    if (Math.max(blackContrast, whiteContrast) < 4.5) {
-        // Try a slightly lighter or darker gray
-        const altGray =
-            blackContrast > whiteContrast
-                ? tinycolor('#000').setAlpha(0.87).toRgbString()
-                : tinycolor('#fff').setAlpha(0.87).toRgbString();
-        const altContrast = tinycolor.readability(blockBgColor, altGray);
-        if (altContrast > 4.5) {
-            textColor = altGray;
+
+    // Цвет иконки: та же гамма, но контрастная яркость
+    let iconColor: string;
+
+    if (options?.iconColor) {
+        iconColor = options.iconColor;
+    } else {
+        const isBlockDark = blockColor.isDark();
+        let iconColorObj = tinycolor(blockColor);
+
+        // Осветляем или затемняем ту же гамму для иконки
+        iconColorObj = isBlockDark ? iconColorObj.lighten(35) : iconColorObj.darken(35);
+
+        // Гарантируем читаемость
+        let contrast = tinycolor.readability(blockBgColor, iconColorObj);
+        let attempts = 0;
+        while (contrast < 4 && attempts < 5) {
+            iconColorObj = isBlockDark ? iconColorObj.lighten(5) : iconColorObj.darken(5);
+            contrast = tinycolor.readability(blockBgColor, iconColorObj);
+            attempts++;
         }
+
+        iconColor = iconColorObj.toRgbString();
     }
 
-    return { blockBgColor, iconColor, textColor };
+    return {
+        blockBgColor,
+        iconColor,
+        textColor,
+    };
 };

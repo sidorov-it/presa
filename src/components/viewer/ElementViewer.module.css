@@ -57,17 +57,30 @@
     flex-direction: column;
     border-radius: 0.375rem;
     overflow: hidden;
-    /* box-shadow: 0 1px 3px hsla(0, 0%, 0%, 0.1); */
-    border-width: var(--presentation-block-border-width);
     border-color: var(--color-border);
     border-style: solid;
     position: relative;
+    /* box-shadow: 0 1px 3px hsla(0, 0%, 0%, 0.1);
+    border-width: var(--presentation-block-border-width);
+    box-shadow: var(--presentation-block-shadow); */
+
+    border-radius: var(--presentation-slide-border-radius);
+    border-width: var(--presentation-block-border-width);
     box-shadow: var(--presentation-block-shadow);
+}
+
+[style*="--presentation-block-background-custom-type: primary"] .smartLayoutItem {
+    border-color: var(--presentation-block-border-color, var(--color-border));
+}
+
+/* Для 1 цвета */
+[style*="--presentation-block-background-custom-count: 1"] .smartLayoutItem::before {
+    background: var(--presentation-block-background-custom-1, var(--presentation-block-background));
 }
 
 /* Применение кастомных цветов фонов для smart-layout элементов */
 [style*="--presentation-block-background-custom-type: primary"] .smartLayoutItem::before {
-    background-color: var(--presentation-block-background, #ffffff);
+    background-color: var(--presentation-block-background, var(--color-surface));
 }
 
 /* Для 1 цвета */
@@ -122,8 +135,69 @@
     background: var(--presentation-block-background-custom-4, var(--presentation-block-background));
 }
 [style*="--presentation-block-background-custom-count: 5"] .smartLayoutItem:nth-child(5n)::before {
-    background: var(--presentation-block-background-custom-5, var(--presentation-block-background));
+    background: var(--presentation-block-background-custom-5, var(--presentation-block-background));}
+
+
+/* Для 1 цвета */
+[style*="--presentation-block-background-custom-count: 1"] .smartLayoutItem {
+    border-color: var(--presentation-block-border-color-custom-1, var(--color-border));
 }
+
+/* Для 1 цвета */
+[style*="--presentation-block-background-custom-count: 1"] .smartLayoutItem {
+    border-color: var(--presentation-block-border-color-custom-1, var(--color-border));
+}
+
+/* Для 2 цветов */
+[style*="--presentation-block-background-custom-count: 2"] .smartLayoutItem:nth-child(2n+1) {
+    border-color: var(--presentation-block-border-color-custom-1, var(--color-border));
+}
+[style*="--presentation-block-background-custom-count: 2"] .smartLayoutItem:nth-child(2n) {
+    border-color: var(--presentation-block-border-color-custom-2, var(--color-border));
+}
+
+/* Для 3 цветов */
+[style*="--presentation-block-background-custom-count: 3"] .smartLayoutItem:nth-child(3n+1) {
+    border-color: var(--presentation-block-border-color-custom-1, var(--color-border));
+}
+[style*="--presentation-block-background-custom-count: 3"] .smartLayoutItem:nth-child(3n+2) {
+    border-color: var(--presentation-block-border-color-custom-2, var(--color-border));
+}
+[style*="--presentation-block-background-custom-count: 3"] .smartLayoutItem:nth-child(3n) {
+    border-color: var(--presentation-block-border-color-custom-3, var(--color-border));
+}
+
+/* Для 4 цветов */
+[style*="--presentation-block-background-custom-count: 4"] .smartLayoutItem:nth-child(4n+1) {
+    border-color: var(--presentation-block-border-color-custom-1, var(--color-border));
+}
+[style*="--presentation-block-background-custom-count: 4"] .smartLayoutItem:nth-child(4n+2) {
+    border-color: var(--presentation-block-border-color-custom-2, var(--color-border));
+}
+[style*="--presentation-block-background-custom-count: 4"] .smartLayoutItem:nth-child(4n+3) {
+    border-color: var(--presentation-block-border-color-custom-3, var(--color-border));
+}
+[style*="--presentation-block-background-custom-count: 4"] .smartLayoutItem:nth-child(4n) {
+    border-color: var(--presentation-block-border-color-custom-4, var(--color-border));
+}
+
+/* Для 5 цветов */
+[style*="--presentation-block-background-custom-count: 5"] .smartLayoutItem:nth-child(5n+1) {
+    border-color: var(--presentation-block-border-color-custom-1, var(--color-border));
+}
+[style*="--presentation-block-background-custom-count: 5"] .smartLayoutItem:nth-child(5n+2) {
+    border-color: var(--presentation-block-border-color-custom-2, var(--color-border));
+}
+[style*="--presentation-block-background-custom-count: 5"] .smartLayoutItem:nth-child(5n+3) {
+    border-color: var(--presentation-block-border-color-custom-3, var(--color-border));
+}
+[style*="--presentation-block-background-custom-count: 5"] .smartLayoutItem:nth-child(5n+4) {
+    border-color: var(--presentation-block-border-color-custom-4, var(--color-border));
+}
+[style*="--presentation-block-background-custom-count: 5"] .smartLayoutItem:nth-child(5n) {
+    border-color: var(--presentation-block-border-color-custom-5, var(--color-border));
+}
+
 
 .smartLayoutItem::before {
     content: '';
@@ -147,11 +221,11 @@
     font-size: 1.125rem;
     font-weight: 600;
     margin: 0.75rem 1rem 0.25rem;
-    color: var(--presentation-accent-blocks-text-color);
+    /* color: var(--presentation-accent-blocks-text-color); */
 }
 
 .smartLayoutItemDescription {
     font-size: 0.875rem;
     margin: 0 1rem 0.75rem;
-    color: var(--presentation-accent-blocks-text-color);
+    /* color: var(--presentation-accent-blocks-text-color); */
 }

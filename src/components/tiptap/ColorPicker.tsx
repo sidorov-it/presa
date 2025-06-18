@@ -36,12 +36,14 @@ export const ColorPicker = ({
     initialColor = '#000000',
     mode = 'icon',
     label = '',
+    customFooter,
 }: {
     className?: string;
     onColorChange: (color: string) => void;
     initialColor?: string;
     mode?: ColorPickerMode;
     label?: string;
+    customFooter?: React.ReactNode;
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [currentColor, setCurrentColor] = useState(initialColor);
@@ -211,6 +213,8 @@ export const ColorPicker = ({
                             </div>
                         )}
                     </div>
+
+                    {customFooter && <div className={styles.customFooter}>{customFooter}</div>}
                 </div>
             )}
         </div>

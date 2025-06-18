@@ -91,3 +91,49 @@ export function getContrastingTextColor(hexColor: string): '#000000' | '#FFFFFF'
     // Порог для определения черного или белого текста
     return luminance > 166 ? '#000000' : '#FFFFFF';
 }
+
+/**
+ * Возвращает подходящий цвет границы на основе цвета фона
+ * Для светлых фонов возвращает более темную границу
+ * Для темных фонов возвращает более светлую границу
+ */
+export function getBorderColorForBackground(hexColor: string): string {
+    // Удаляем символ "#" если есть
+    const hex = hexColor.replace('#', '');
+
+    // Проверка на валидность
+    if (!/^([0-9A-Fa-f]{6})$/.test(hex)) {
+        throw new Error(`Invalid hex color format: ${hexColor}`);
+    }
+
+    // Преобразуем hex в R, G, B
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+
+    // Вычисляем яркость по формуле для восприятия
+    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+
+    // Определяем, светлый это цвет или темный
+    const isLight = luminance > 128;
+
+    let newR: number, newG: number, newB: number;
+
+    if (isLight) {
+        // Для светлых цветов делаем границу темнее на 20-30%
+        const darkenFactor = 0.25;
+        newR = Math.max(0, Math.round(r * (1 - darkenFactor)));
+        newG = Math.max(0, Math.round(g * (1 - darkenFactor)));
+        newB = Math.max(0, Math.round(b * (1 - darkenFactor)));
+    } else {
+        // Для темных цветов делаем границу светлее на 30-40%
+        const lightenFactor = 0.35;
+        newR = Math.min(255, Math.round(r + (255 - r) * lightenFactor));
+        newG = Math.min(255, Math.round(g + (255 - g) * lightenFactor));
+        newB = Math.min(255, Math.round(b + (255 - b) * lightenFactor));
+    }
+
+    // Преобразуем обратно в hex
+    const toHex = (value: number) => value.toString(16).padStart(2, '0');
+    return `#${toHex(newR)}${toHex(newG)}${toHex(newB)}`;
+}

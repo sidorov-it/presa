@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Editor } from '@tiptap/react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { BoxElement } from '@/types';
@@ -8,14 +8,13 @@ import SettingsSelector from '@/components/ui/SettingsSelector/SettingsSelector'
 
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
 import { useMenuStore } from '@/store/menuStore';
-// import { BoxCategories } from '@/elements/menuRegistry';
 import DeleteIcon from '@/components/icons/DeleteIcon';
 
-import { BaseMenu } from '../../../SlideMenu/BaseMenu';
 import { BoxIconOptions } from './BoxIconOptions';
 
 import styles from './BoxBubbleMenu.module.css';
 import { ElementRegistry } from '@/elements/commonRegisrty';
+import { RiResetLeftFill } from 'react-icons/ri';
 
 interface BubbleMenuProps {
     editor: Editor;
@@ -39,7 +38,17 @@ const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ presentationId, slideId, lay
     const deleteElement = usePresentationStore(state => state.deleteElement);
 
     const handleIconChange = (iconType: string) => {
-        if (element.customBackgroundColor) {
+        if (iconType === 'without-icon') {
+            updateElement({
+                presentationId,
+                slideId,
+                layoutId,
+                elementId,
+                data: {
+                    iconType,
+                },
+            });
+        } else if (element.customBackgroundColor) {
             updateElement({
                 presentationId,
                 slideId,
@@ -65,6 +74,21 @@ const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ presentationId, slideId, lay
         }
     };
 
+    const handleResetColor = useCallback(() => {
+        const defaultBackgroundColor = elementConfig?.props?.backgroundColor;
+
+        updateElement({
+            presentationId,
+            slideId,
+            layoutId,
+            elementId,
+            data: {
+                customBackgroundColor: undefined,
+                backgroundColor: defaultBackgroundColor,
+            },
+        });
+    }, []);
+
     const handleBackgroundColorChange = (color: string) => {
         updateElement({
             presentationId,
@@ -83,7 +107,7 @@ const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ presentationId, slideId, lay
     };
 
     return (
-        <BaseMenu>
+        <>
             <SettingsSelector value={element.iconType || 'box'} setValue={handleIconChange} options={BoxIconOptions} />
 
             <ColorPicker
@@ -91,12 +115,18 @@ const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ presentationId, slideId, lay
                 onColorChange={handleBackgroundColorChange}
                 mode="icon"
                 className={styles.button}
+                customFooter={
+                    <button onClick={handleResetColor} className={styles.resetColorButton} aria-label="Удалить блок">
+                        <RiResetLeftFill />
+                        Сбросить цвет
+                    </button>
+                }
             />
 
             <button onClick={handleDelete} className={styles.deleteButton} aria-label="Удалить блок">
                 <DeleteIcon />
             </button>
-        </BaseMenu>
+        </>
     );
 };
 

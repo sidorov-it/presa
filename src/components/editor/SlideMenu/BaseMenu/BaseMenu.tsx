@@ -1,9 +1,11 @@
 'use client';
 
 import React, { CSSProperties, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useMenuStore } from '@/store/menuStore';
 import { cn } from '@/lib/utils';
 import styles from './BaseMenu.module.css';
+
 export interface BaseMenuProps {
     children: React.ReactNode;
     position?: { x: number; y: number; rect?: DOMRect };
@@ -68,14 +70,16 @@ export const BaseMenu: React.FC<BaseMenuProps> = ({ children, isForceOpen, posit
         top: `${menuPosition.top}px`,
         ...lightThemeStyle,
         ...style,
-        zIndex: 1000,
+        zIndex: 9999,
     };
 
     if (!isOpen) return null;
 
-    return (
+    // Render in portal to ensure proper z-index stacking
+    return createPortal(
         <div ref={menuRef} className={cn(styles.layoutMenu, 'light-theme-only', className)} style={menuStyle}>
             <ul className={styles.layoutMenuList}>{children}</ul>
-        </div>
+        </div>,
+        document.body
     );
 };
