@@ -18,7 +18,7 @@ import {
 
 import styles from './ElementViewer.module.css';
 import { ElementType } from '@/types/elements';
-import { getBlockColors } from '@/utils/colors';
+import { getBlockColors, getChartColors, getChartAxisColors } from '@/utils/colors';
 import { BoxIconOptions } from '@/components/editor/Menus/BubbleMenus/BoxBubbleMenu/BoxIconOptions';
 
 interface ElementViewerProps {
@@ -60,14 +60,22 @@ const ElementViewer = ({ element, slideBackground, primaryAccentColor }: Element
         const chartElement = element as unknown as ChartElement;
         const data = chartElement.data || [];
 
-        // Use theme accent colors for charts
-        const chartColors = [
-            'var(--presentation-primary-accent, #8884d8)',
-            'var(--presentation-secondary-accent-1, #00C49F)',
-            'var(--presentation-secondary-accent-2, #FFBB28)',
-            'var(--presentation-secondary-accent-3, #FF8042)',
-            '#82ca9d',
-        ];
+        // Determine slide background and accent colors from props or CSS variables
+        const slideBgColor =
+            slideBackground ||
+            getComputedStyle(document.documentElement)
+                .getPropertyValue('--presentation-slide-background')
+                ?.trim() ||
+            '#ffffff';
+        const accentColor =
+            primaryAccentColor ||
+            getComputedStyle(document.documentElement)
+                .getPropertyValue('--presentation-primary-accent')
+                ?.trim() ||
+            '#8884d8';
+
+        const chartColors = getChartColors(slideBgColor, accentColor);
+        const axisColors = getChartAxisColors(slideBgColor, accentColor);
 
         // Render the appropriate chart
         switch (element.elementVariant) {
@@ -77,8 +85,15 @@ const ElementViewer = ({ element, slideBackground, primaryAccentColor }: Element
                         <ResponsiveContainer width="100%" height={300}>
                             <BarChart data={data}>
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
-                                <YAxis />
+                                <XAxis
+                                    dataKey="name"
+                                    stroke={axisColors.axisLineColor}
+                                    tick={{ fill: axisColors.tickColor }}
+                                />
+                                <YAxis
+                                    stroke={axisColors.axisLineColor}
+                                    tick={{ fill: axisColors.tickColor }}
+                                />
                                 <Tooltip />
                                 <Legend />
                                 <Bar dataKey="value" fill={chartColors[0]} isAnimationActive={false} />
@@ -93,8 +108,15 @@ const ElementViewer = ({ element, slideBackground, primaryAccentColor }: Element
                         <ResponsiveContainer width="100%" height={300}>
                             <LineChart data={data}>
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
-                                <YAxis />
+                                <XAxis
+                                    dataKey="name"
+                                    stroke={axisColors.axisLineColor}
+                                    tick={{ fill: axisColors.tickColor }}
+                                />
+                                <YAxis
+                                    stroke={axisColors.axisLineColor}
+                                    tick={{ fill: axisColors.tickColor }}
+                                />
                                 <Tooltip />
                                 <Legend />
                                 <Line
