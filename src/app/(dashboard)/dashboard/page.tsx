@@ -325,7 +325,7 @@ export default function DashboardPage() {
             )}
 
             {/* Empty state */}
-            {!isLoading && userPresentations.length === 0 ? (
+            {!isLoading && userPresentations.length === 0 && (
                 <div className={styles.emptyState}>
                     <h2 className={styles.emptyStateTitle}>У вас еще нет презентаций</h2>
                     <p className={styles.emptyStateText}>
@@ -342,7 +342,9 @@ export default function DashboardPage() {
                         </Button>
                     </div>
                 </div>
-            ) : (
+            )}
+
+            {!isLoading && userPresentations.length > 0 && (
                 <div className={styles.presentationsGrid}>
                     {userPresentations.map(presentation => {
                         const theme = themes.find(t => t.id === presentation.themeId) || defaultTheme;

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../auth/[...nextauth]/route';
+import { generateId } from '@/utils/id';
 
 export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
@@ -31,12 +32,12 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
         // Create a deep copy of the slides data
         const slidesData = originalPresentation.slides as any;
         const newSlides = slidesData.map((slide: any) => {
-            const newSlideId = crypto.randomUUID();
+            const newSlideId = generateId();
             const newLayouts = slide.layouts.map((layout: any) => {
-                const newLayoutId = crypto.randomUUID();
+                const newLayoutId = generateId();
                 const newElements = layout.elements.map((element: any) => ({
                     ...element,
-                    id: crypto.randomUUID(),
+                    id: generateId(),
                 }));
                 return {
                     ...layout,
@@ -59,6 +60,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
                 slides: newSlides,
                 userId: userId,
                 isDeleted: false,
+                themeId: originalPresentation.themeId,
             },
         });
 
