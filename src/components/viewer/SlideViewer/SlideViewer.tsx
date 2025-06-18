@@ -245,7 +245,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         // backgroundColor: fullPage ? 'transparent' : 'var(--presentation-slide-background)',
         borderRadius: fullPage ? 0 : 'var(--presentation-slide-border-radius)',
         minHeight: fullPage ? '100%' : isPdfExport ? 'auto' : undefined,
-        height: fullPage ? '100%' : isPdfExport ? 'auto' : undefined,
+        // height: fullPage ? '100%' : isPdfExport ? 'auto' : undefined,
         overflow: isPdfExport ? 'visible' : undefined,
     };
 
