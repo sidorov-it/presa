@@ -200,26 +200,19 @@ export default function PresentationView() {
                                 primaryAccentColor={currentTheme?.colors.primaryAccent || '#000000'}
                             />
                         </div>
-                        <div className={styles.navControls}>
-                            <button
-                                onClick={handlePrevSlide}
-                                disabled={currentSlideIndex === 0}
-                                className={styles.navButton}
-                                aria-label="Previous slide"
-                            >
-                                ←
-                            </button>
-                            <div className={styles.slideCounter}>
-                                {currentSlideIndex + 1} / {presentation.slides.length}
-                            </div>
-                            <button
-                                onClick={handleNextSlide}
-                                disabled={currentSlideIndex === presentation.slides.length - 1}
-                                className={styles.navButton}
-                                aria-label="Next slide"
-                            >
-                                →
-                            </button>
+                        <div className={styles.progressBar}>
+                            {presentation.slides.map((_, index) => (
+                                <div
+                                    key={index}
+                                    className={`${styles.progressBlock} ${
+                                        index < currentSlideIndex
+                                            ? styles.progressBlockPast
+                                            : index === currentSlideIndex
+                                            ? styles.progressBlockCurrent
+                                            : ''
+                                    }`}
+                                ></div>
+                            ))}
                         </div>
                         {screenfull.isEnabled && !isFullscreen && (
                             <div className={styles.fullscreenButton}>

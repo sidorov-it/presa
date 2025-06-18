@@ -258,3 +258,31 @@
     box-shadow: none;
     border: 1px solid var(--color-border);
 }
+
+/* Progress bar indicator */
+.progressBar {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    width: 90%;
+    height: 8px;
+    z-index: 300;
+}
+
+.progressBlock {
+    flex: 1;
+    margin: 0 2px;
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+    background-color: #ffffff;
+}
+
+.progressBlockPast {
+    background-color: #4b5563;
+}
+
+.progressBlockCurrent {
+    background-color: #94a3b8;
+}
