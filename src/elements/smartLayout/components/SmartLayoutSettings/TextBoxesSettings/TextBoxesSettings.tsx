@@ -25,6 +25,20 @@ export default function TextBoxesSettings({
 }) {
     const updateElement = usePresentationStore(state => state.updateElement);
 
+    const syncItems = () => {
+        return (
+            element.items?.map(item => ({
+                ...item,
+                title:
+                    tiptapRefs.current.editors[`title-${elementId}-${item.id}`]?.editor?.getHTML() ||
+                    item.title,
+                text:
+                    tiptapRefs.current.editors[`text-${elementId}-${item.id}`]?.editor?.getHTML() ||
+                    item.text,
+            })) || []
+        );
+    };
+
     const handleAlignment = (alignment: 'left' | 'center' | 'right') => {
         updateElement({
             presentationId,
@@ -62,7 +76,10 @@ export default function TextBoxesSettings({
                         slideId,
                         layoutId,
                         elementId,
-                        data: { elementVariant: value as SmartLayoutType },
+                        data: {
+                            elementVariant: value as SmartLayoutType,
+                            items: syncItems(),
+                        },
                     });
                 }}
             />

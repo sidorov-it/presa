@@ -134,9 +134,26 @@ export default function ImageWithTextSettings({
 
     const handleChangeElementVariant = useCallback(
         (value: string) => {
-            handleChangeElement('elementVariant', value as SmartLayoutType);
+            const updatedItems =
+                element.items?.map(item => ({
+                    ...item,
+                    title:
+                        tiptapRefs.current.editors[`title-${elementId}-${item.id}`]?.editor?.getHTML() ||
+                        item.title,
+                    text:
+                        tiptapRefs.current.editors[`text-${elementId}-${item.id}`]?.editor?.getHTML() ||
+                        item.text,
+                })) || [];
+
+            updateElement({
+                presentationId,
+                slideId,
+                layoutId,
+                elementId,
+                data: { elementVariant: value as SmartLayoutType, items: updatedItems },
+            });
         },
-        [handleChangeElement]
+        [updateElement, presentationId, slideId, layoutId, elementId, element.items, tiptapRefs]
     );
 
     const handleChangeColumnSize = useCallback(
