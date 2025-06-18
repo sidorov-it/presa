@@ -323,7 +323,6 @@ export const ImagePlaceholder = ({
                 role="button"
                 aria-label="Открыть настройки изображения"
             >
-                <h1>test</h1>
                 <FaRegImage className={styles.imagePlaceholderIcon} aria-label="Пустое изображение" />
                 {!isSmallImage && (
                     <div className={styles.imagePlaceholderButtons}>
