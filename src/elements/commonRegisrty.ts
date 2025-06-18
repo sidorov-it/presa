@@ -16,6 +16,7 @@ import { TbChartDonutFilled } from 'react-icons/tb';
 import { IconType } from 'react-icons';
 
 import { ElementType } from '@/types/elements';
+import { TextType } from '@/types';
 import { BoxIconOptions } from '@/components/editor/Menus/BubbleMenus/BoxBubbleMenu/BoxIconOptions';
 import { MenuElementType, ImageElement, EditorElement, TipTapRefs, SmartLayoutElement, BaseElement } from '@/types';
 
@@ -553,8 +554,10 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         hasTextEditor: true,
         Icon: FaList,
         label: 'Список',
+        elementVariant: 'bullet-list',
         props: {
-            content: '\n<ul>\n    <li>Элемент списка</li>\n    <li>Еще один элемент списка</li>\n</ul>',
+            textType: TextType.BULLET_LIST,
+            content: ['Элемент списка', 'Еще один элемент списка'],
         },
         slots: [{ slot: 'content', llmHint: 'Текст списка', type: 'text' }],
         llmHints: {
@@ -567,8 +570,10 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         hasTextEditor: true,
         Icon: FaListOl,
         label: 'Нумерованный список',
+        elementVariant: 'numbered-list',
         props: {
-            content: '\n<ol>\n    <li>Первый элемент списка</li>\n    <li>Второй элемент списка</li>\n</ol>',
+            textType: TextType.NUMERED_LIST,
+            content: ['Первый элемент списка', 'Второй элемент списка'],
         },
         slots: [{ slot: 'content', llmHint: 'Текст списка', type: 'text' }],
         llmHints: {
@@ -581,9 +586,10 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         hasTextEditor: true,
         Icon: FaListCheck,
         label: 'Список задач',
+        elementVariant: 'todo-list',
         props: {
-            content:
-                '\n<ul data-type="taskList">\n    <li data-type="taskItem" data-checked="true">Первый элемент списка</li>\n    <li data-type="taskItem" data-checked="false">Второй элемент списка</li>\n</ul>',
+            textType: TextType.TODO_LIST,
+            content: ['Первый элемент списка', 'Второй элемент списка'],
         },
         slots: [{ slot: 'content', llmHint: 'Текст списка', type: 'text' }],
         llmHints: {
