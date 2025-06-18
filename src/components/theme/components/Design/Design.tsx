@@ -54,7 +54,7 @@ export default function Design({
                             <ChakraTabs.Trigger
                                 key={idx}
                                 value={item.id}
-                                className={`${styles.tab} ${selectedTab === item.label ? styles.selectedTab : ''}`}
+                                className={`${styles.tab} ${selectedTab === item.id ? styles.selectedTab : ''}`}
                             >
                                 {item.label}
                             </ChakraTabs.Trigger>

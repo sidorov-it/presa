@@ -19,21 +19,17 @@
 
 .slideContent {
     position: relative;
-    background-color: var(--presentation-slide-background);
     border-color: var(--presentation-slide-border-color);
     border-radius: var(--presentation-slide-border-radius);
     border-width: var(--presentation-slide-border-width);
     box-shadow: var(--presentation-slide-shadow);
     width: 100%;
     cursor: text;
-    /* padding-right: 1rem; */
-    /* padding-left: calc(1rem + 25px); */
     margin-left: 0;
     overflow: hidden;
-    /* font-size: var(--font-size); */
 }
 
-.slideContent::before {
+.slideContent::after {
     content: '';
     position: absolute;
     top: 0;
@@ -41,6 +37,20 @@
     width: 25px;
     height: 100%;
     z-index: 21;
+}
+
+.slideContent::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background-color: var(--presentation-slide-background);
+    opacity: var(--presentation-slide-opacity);
 }
 
 .slideBorder {

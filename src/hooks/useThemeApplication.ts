@@ -22,6 +22,8 @@ const applyThemeStyles = (
     container.style.setProperty('--presentation-primary-accent', theme.colors.primaryAccent);
     container.style.setProperty('--presentation-accent-blocks-color', theme.colors.primaryAccent);
 
+    container.style.setProperty('--presentation-accent-blocks-text-color', theme.colors.primaryAccentTextColor);
+
     // Text colors
     container.style.setProperty('--presentation-heading-color', theme.typography.headingColor);
     container.style.setProperty('--presentation-text-color', theme.typography.bodyColor);
@@ -81,7 +83,7 @@ const applyThemeStyles = (
 
     // Heading typography
     container.style.setProperty('--presentation-heading-line-height', theme.typography.headingLineHeight.toString());
-    container.style.setProperty('--presentation-heading-letter-spacing', theme.typography.headingLetterSpacing + '%');
+    container.style.setProperty('--presentation-heading-letter-spacing', theme.typography.headingLetterSpacing + 'px');
     container.style.setProperty(
         '--presentation-heading-capitalization',
         theme.typography.headingCapitalization === 'none' ? 'none' : 'uppercase'
@@ -89,7 +91,7 @@ const applyThemeStyles = (
 
     // Body typography
     container.style.setProperty('--presentation-body-line-height', theme.typography.bodyLineHeight.toString());
-    container.style.setProperty('--presentation-body-letter-spacing', theme.typography.bodyLetterSpacing + '%');
+    container.style.setProperty('--presentation-body-letter-spacing', theme.typography.bodyLetterSpacing + 'px');
     container.style.setProperty(
         '--presentation-body-capitalization',
         theme.typography.bodyCapitalization === 'none' ? 'none' : 'uppercase'
@@ -97,6 +99,8 @@ const applyThemeStyles = (
 
     // Slide design
     container.style.setProperty('--presentation-slide-border-radius', theme.design.slide.borderRadius);
+
+    container.style.setProperty('--presentation-slide-opacity', theme.design.slide.opacity.toString());
 
     // Shadow
     const shadow = theme.design.slide.shadow;
@@ -114,9 +118,9 @@ const applyThemeStyles = (
     // Border width
     const borderWidthMap = {
         none: '0px',
-        thin: '1px',
-        medium: '2px',
-        thick: '3px',
+        thin: '3px',
+        medium: '4px',
+        thick: '5px',
     };
     container.style.setProperty(
         '--presentation-slide-border-width',
@@ -126,7 +130,7 @@ const applyThemeStyles = (
     container.style.setProperty('--presentation-slide-border-color', theme.design.slide.borderColor);
 
     // Image masks
-    const getMaskImages = (imageShape: string) => {
+    const getMaskImages = (imageShape: string | null) => {
         const maskMap = {
             default: { left: 'none', right: 'none', top: 'none' },
             fade: {
@@ -155,7 +159,11 @@ const applyThemeStyles = (
                 top: 'url(/masks/wiggle-top.svg)',
             },
         };
-        return maskMap[imageShape] || maskMap.default;
+        if (!imageShape) {
+            return maskMap.default;
+        }
+
+        return maskMap[imageShape as keyof typeof maskMap];
     };
 
     const maskImages = getMaskImages(theme.design.slide.imageShape);
@@ -166,11 +174,19 @@ const applyThemeStyles = (
     // Block design
     container.style.setProperty('--presentation-block-fill-type', theme.design.blocks.backgroundBlockFillType);
 
+    if (theme.design.blocks.backgroundBlockFillType === 'fill') {
+        container.style.setProperty('--presentation-block-background-opacity', '1');
+    } else if (theme.design.blocks.backgroundBlockFillType === 'semi') {
+        container.style.setProperty('--presentation-block-background-opacity', '0.5');
+    } else if (theme.design.blocks.backgroundBlockFillType === 'none') {
+        container.style.setProperty('--presentation-block-background-opacity', '0');
+    }
+
     const blockBorderWidthMap = {
         none: '0px',
-        thin: '1px',
-        medium: '2px',
-        thick: '3px',
+        thin: '3px',
+        medium: '4px',
+        thick: '5px',
     };
     container.style.setProperty(
         '--presentation-block-border-width',
@@ -193,17 +209,31 @@ const applyThemeStyles = (
         );
     }
 
-    container.style.setProperty('--presentation-block-shadow', theme.design.blocks.shadow);
+    const shadowMap = [
+        { value: 'none', shadow: 'none' },
+        { value: 'sm', shadow: '0 1px 2px 0 rgb(0 0 0 / 0.2)' },
+        { value: 'md', shadow: '0 4px 6px -1px rgb(0 0 0 / 0.4)' },
+    ];
 
+    if (theme.design.blocks.shadow === 'none') {
+        container.style.setProperty('--presentation-block-shadow', 'none');
+    } else if (theme.design.blocks.shadow === 'sm') {
+        container.style.setProperty('--presentation-block-shadow', shadowMap[1].shadow);
+    } else if (theme.design.blocks.shadow === 'md') {
+        container.style.setProperty('--presentation-block-shadow', shadowMap[2].shadow);
+    }
+
+    if (theme.design.buttons.buttonColor) {
+        container.style.setProperty('--presentation-button-color', theme.design.buttons.buttonColor);
+
+        const hoverColor = getHoverColor(theme.design.buttons.buttonColor, 15);
+        container.style.setProperty('--presentation-button-hover-color', hoverColor);
+        container.style.setProperty(
+            '--presentation-button-text-color',
+            getContrastTextColor(theme.design.buttons.buttonColor)
+        );
+    }
     // Button and link design
-    container.style.setProperty('--presentation-button-color', theme.design.buttons.buttonColor);
-
-    const hoverColor = getHoverColor(theme.design.buttons.buttonColor, 15);
-    container.style.setProperty('--presentation-button-hover-color', hoverColor);
-    container.style.setProperty(
-        '--presentation-button-text-color',
-        getContrastTextColor(theme.design.buttons.buttonColor)
-    );
 
     const buttonRadiusMap = {
         square: '1.5px',

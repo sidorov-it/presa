@@ -10,20 +10,25 @@ export default function ShadowSelector({
 }) {
     return (
         <div style={{ display: 'flex', marginTop: '0.5rem', gap: '0.5rem' }}>
-            {[
-                { value: 'none', shadow: 'none' },
-                { value: 'sm', shadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' },
-                { value: 'md', shadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' },
-            ].map(option => (
-                <button
-                    key={option.value}
-                    onClick={() => onChange(option.value as ThemeDesignShadow)}
-                    className={`${styles.shadowButton} ${value === option.value ? styles.shadowActive : ''}`}
-                    aria-label={`Тень ${option.value}`}
-                >
-                    <div className={`${styles.shadowContent} ${styles[`shadow-${option.value}`]}`} />
-                </button>
-            ))}
+            {
+                /** TODO: вынести в констранты
+                 * дублируется в useThemeApplication.ts
+                 */
+                [
+                    { value: 'none', shadow: 'none' },
+                    { value: 'sm', shadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' },
+                    { value: 'md', shadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' },
+                ].map(option => (
+                    <button
+                        key={option.value}
+                        onClick={() => onChange(option.value as ThemeDesignShadow)}
+                        className={`${styles.shadowButton} ${value === option.value ? styles.shadowActive : ''}`}
+                        aria-label={`Тень ${option.value}`}
+                    >
+                        <div className={`${styles.shadowContent} ${styles[`shadow-${option.value}`]}`} />
+                    </button>
+                ))
+            }
         </div>
     );
 }

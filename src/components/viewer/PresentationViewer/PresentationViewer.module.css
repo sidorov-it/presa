@@ -8,6 +8,12 @@
   position: relative;
   overflow-y: auto;
   padding: 2rem 0;
+  background-color: var(--presentation-page-background-color, #FFFFFF);
+  background-image: var(--presentation-page-background-image, none);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .allSlidesContainer {
@@ -29,8 +35,22 @@
   transition: transform 0.2s;
 }
 
-.slideWrapper:hover {
+/* .slideWrapper:hover {
   transform: translateY(-2px);
+} */
+
+.slideWrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--presentation-slide-background);
+  opacity: var(--presentation-slide-opacity);
+  z-index: -1;
 }
 
 /* Стили для одиночного просмотра (оставлены для совместимости) */

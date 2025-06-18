@@ -1,6 +1,6 @@
 import React from 'react';
 import ScopedPresentationThemeWrapper from '@/components/viewer/theme/ScopedPresentationThemeWrapper';
-import PresentationViewer from '@/components/viewer/PresentationViewer';
+import PresentationViewer from '@/components/viewer/PresentationViewer/PresentationViewer';
 import { EditorElement, Slide } from '@/types';
 import { Theme } from '@/types/theme';
 import { ElementType } from '@/types/elements';

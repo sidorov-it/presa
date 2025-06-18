@@ -73,7 +73,7 @@ export default function Fonts({
                             </Accordion.ItemTrigger>
                             <Accordion.ItemContent>
                                 <Accordion.ItemBody>
-                                    <div style={{ display: 'flex', flexDirection: 'row', gap: '16px' }}>
+                                    <div className={styles.accordionContent}>
                                         <div style={{ flex: '1' }}>
                                             <Label>Высота строки</Label>
                                             <Input
@@ -153,7 +153,7 @@ export default function Fonts({
                             </Accordion.ItemTrigger>
                             <Accordion.ItemContent>
                                 <Accordion.ItemBody>
-                                    <div style={{ display: 'flex', flexDirection: 'row', gap: '16px' }}>
+                                    <div className={styles.accordionContent}>
                                         <div style={{ flex: '1' }}>
                                             <Label>Высота строки</Label>
                                             <Input

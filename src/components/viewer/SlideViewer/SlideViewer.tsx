@@ -224,7 +224,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         borderColor: 'var(--presentation-slide-border-color)',
         borderStyle: fullPage ? 'none' : 'solid',
         // Apply background if not overridden by slide-specific background
-        backgroundColor: fullPage ? 'transparent' : 'var(--presentation-slide-background)',
+        // backgroundColor: fullPage ? 'transparent' : 'var(--presentation-slide-background)',
         boxShadow: fullPage ? 'none' : 'var(--presentation-slide-shadow)',
         // width: '100%',
         // maxWidth: '100%',
@@ -240,7 +240,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
 
     // Slide content style
     const slideContentStyle: React.CSSProperties = {
-        backgroundColor: fullPage ? 'transparent' : 'var(--presentation-slide-background)',
+        // backgroundColor: fullPage ? 'transparent' : 'var(--presentation-slide-background)',
         borderRadius: fullPage ? 0 : 'var(--presentation-slide-border-radius)',
         minHeight: fullPage ? '100%' : isPdfExport ? 'auto' : undefined,
         height: fullPage ? '100%' : isPdfExport ? 'auto' : undefined,

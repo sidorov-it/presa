@@ -312,14 +312,14 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({
                         const updatedItems = (element as any).items.map((item: any) =>
                             item.id === itemId
                                 ? {
-                                      ...item,
-                                      imageUrl: firstImage.url,
-                                      generatedImages: images.map(img => img.url),
-                                      aiPrompt: prompt,
-                                      aiStyle: selectedStyle,
-                                      aiCustomStyle: customStyle,
-                                      uploaded: true,
-                                  }
+                                    ...item,
+                                    imageUrl: firstImage.url,
+                                    generatedImages: images.map(img => img.url),
+                                    aiPrompt: prompt,
+                                    aiStyle: selectedStyle,
+                                    aiCustomStyle: customStyle,
+                                    uploaded: true,
+                                }
                                 : item
                         );
                         usePresentationStore.getState().updateElement({

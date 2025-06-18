@@ -1,6 +1,6 @@
 import React from 'react';
 import { Slide } from '@/types';
-import SlideViewer from './SlideViewer/SlideViewer';
+import SlideViewer from '../SlideViewer/SlideViewer';
 import styles from './PresentationViewer.module.css';
 
 interface PresentationViewerProps {

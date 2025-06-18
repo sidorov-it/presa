@@ -5,6 +5,7 @@ export const DEFAULT_THEME: ThemeData = {
     description: 'A sleek, modern dark theme with vibrant accents',
     colors: {
         primaryAccent: '#2B0AFF',
+        primaryAccentTextColor: '#FFFFFF',
         slideBackground: '#FFFFFF',
         pageBackground: {
             type: 'color',

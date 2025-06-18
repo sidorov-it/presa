@@ -13,6 +13,7 @@ export const clearAllThemeStyles = (): void => {
         '--presentation-secondary-accent-3',
         // '--presentation-shapes-color',
         '--presentation-accent-blocks-color',
+        '--presentation-accent-blocks-text-color',
         // '--presentation-secondary-button-color',
         '--presentation-heading-color',
         '--presentation-text-color',
@@ -69,3 +70,24 @@ export const clearAllThemeStyles = (): void => {
     document.body.style.backgroundAttachment = '';
     document.body.style.backgroundColor = '';
 };
+
+export function getContrastingTextColor(hexColor: string): '#000000' | '#FFFFFF' {
+    // Удаляем символ "#" если есть
+    const hex = hexColor.replace('#', '');
+
+    // Проверка на валидность
+    if (!/^([0-9A-Fa-f]{6})$/.test(hex)) {
+        throw new Error(`Invalid hex color format: ${hexColor}`);
+    }
+
+    // Преобразуем hex в R, G, B
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+
+    // Вычисляем яркость по формуле для восприятия
+    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+
+    // Порог для определения черного или белого текста
+    return luminance > 166 ? '#000000' : '#FFFFFF';
+}

@@ -115,7 +115,9 @@ export default function BlockDesign({
 
                                 <Button
                                     variant="solid"
-                                    onClick={() =>
+                                    disabled={theme.design.blocks.blockBackgroundCustomColors?.length >= 5}
+                                    onClick={() => {
+                                        if (theme.design.blocks.blockBackgroundCustomColors?.length >= 5) return;
                                         handleDesignChange({
                                             blocks: {
                                                 ...theme.design.blocks,
@@ -124,8 +126,8 @@ export default function BlockDesign({
                                                     '#000000',
                                                 ],
                                             },
-                                        })
-                                    }
+                                        });
+                                    }}
                                 >
                                     Добавить цвет
                                 </Button>

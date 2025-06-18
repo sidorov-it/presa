@@ -18,9 +18,15 @@
 .accordion {
     border: 1px solid #e5e7eb;
     border-radius: 8px;
-    padding: 16px;
+    padding: 0 8px;
     margin: 16px 0;
     background-color: #f9fafb;
+}
+
+.accordionContent {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .accordionItem {

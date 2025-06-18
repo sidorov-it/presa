@@ -92,20 +92,20 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         [slideId, openMenu, handleSelectSlide]
     );
 
-    const getSlideStyle = useCallback(() => {
-        const style: React.CSSProperties & Record<string, string> = {};
+    // const getSlideStyle = useCallback(() => {
+    //     const style: React.CSSProperties & Record<string, string> = {};
 
-        if (templateType === 'imageBackground' && imageUrl) {
-            style.backgroundImage = `url(${imageUrl})`;
-        }
+    //     if (templateType === 'imageBackground' && imageUrl) {
+    //         style.backgroundImage = `url(${imageUrl})`;
+    //     }
 
-        // Use background color from slide data
-        if (backgroundType === 'color') {
-            style.backgroundColor = backgroundValue;
-        }
+    //     // Use background color from slide data
+    //     if (backgroundType === 'color') {
+    //         style.backgroundColor = backgroundValue;
+    //     }
 
-        return style;
-    }, [imageUrl, templateType, backgroundType, backgroundValue]);
+    //     return style;
+    // }, [imageUrl, templateType, backgroundType, backgroundValue]);
 
     const getSlideClassName = useCallback(() => {
         let className = styles.slideWrapper;
@@ -425,13 +425,12 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             }}
             data-slide-dragging={isDragging ? 'true' : undefined}
         >
-            <div className={`${getSlideClassName()}`} style={getSlideStyle()} data-slide="true">
+            <div className={`${getSlideClassName()}`} data-slide="true">
                 <div className={`${styles.slideBorder} ${isSelected || isHovered ? styles.slideBorderMenuOpen : ''}`} />
                 <div
                     ref={editorRef}
                     className={`${styles.slideContent}`}
                     data-slide-content="true"
-                    style={getSlideStyle()}
                 >
                     {(isSelected || slideMenuOpen || isHovered) && !isReadOnly && (
                         <>
