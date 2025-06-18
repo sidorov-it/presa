@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/interactive-supports-focus */
 'use client';
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useParams } from 'next/navigation';
 import { SlideViewer } from '@/components/viewer';
 import styles from './page.module.css';
@@ -41,9 +42,9 @@ export default function PresentationView() {
 
     const [scrollProgress, setScrollProgress] = useState(0);
     const [scrollDirection, setScrollDirection] = useState<'next' | 'prev' | null>(null);
-    const scrollStartRef = useRef<number | null>(null);
     const lastWheelRef = useRef<number>(0);
-    const animationFrameRef = useRef<number | null>(null);
+    const accumulatedScrollTimeRef = useRef(0);
+    const idleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const scrollDirectionRef = useRef<'next' | 'prev' | null>(null);
 
     // Cleanup function to clear theme styles when component unmounts
@@ -82,57 +83,54 @@ export default function PresentationView() {
 
     useEffect(() => {
         const resetScroll = () => {
-            scrollStartRef.current = null;
+            accumulatedScrollTimeRef.current = 0;
             lastWheelRef.current = 0;
             setScrollProgress(0);
             setScrollDirection(null);
             scrollDirectionRef.current = null;
-            if (animationFrameRef.current) {
-                cancelAnimationFrame(animationFrameRef.current);
-                animationFrameRef.current = null;
+            if (idleTimeoutRef.current) {
+                clearTimeout(idleTimeoutRef.current);
+                idleTimeoutRef.current = null;
             }
         };
 
-        const updateProgress = () => {
-            if (scrollStartRef.current === null) return;
+        const onWheel = (e: WheelEvent) => {
+            if (!presentation) return;
+            e.preventDefault();
             const now = Date.now();
-            const progress = (now - scrollStartRef.current) / SCROLL_HOLD_DURATION;
+            const dir: 'next' | 'prev' = e.deltaY > 0 ? 'next' : 'prev';
+
+            if (
+                scrollDirectionRef.current &&
+                dir !== scrollDirectionRef.current
+            ) {
+                resetScroll();
+            }
+
+            if (lastWheelRef.current && now - lastWheelRef.current <= SCROLL_IDLE_THRESHOLD) {
+                accumulatedScrollTimeRef.current += now - lastWheelRef.current;
+            }
+
+            scrollDirectionRef.current = dir;
+            setScrollDirection(dir);
+            lastWheelRef.current = now;
+            const progress = accumulatedScrollTimeRef.current / SCROLL_HOLD_DURATION;
             setScrollProgress(Math.min(progress, 1));
 
             if (progress >= 1) {
-                if (scrollDirectionRef.current === 'next') {
+                if (dir === 'next') {
                     handleNextSlide();
-                } else if (scrollDirectionRef.current === 'prev') {
+                } else {
                     handlePrevSlide();
                 }
                 resetScroll();
                 return;
             }
 
-            if (now - lastWheelRef.current > SCROLL_IDLE_THRESHOLD) {
-                resetScroll();
-                return;
+            if (idleTimeoutRef.current) {
+                clearTimeout(idleTimeoutRef.current);
             }
-
-            animationFrameRef.current = requestAnimationFrame(updateProgress);
-        };
-
-        const onWheel = (e: WheelEvent) => {
-            if (!presentation) return;
-            e.preventDefault();
-            const dir: 'next' | 'prev' = e.deltaY > 0 ? 'next' : 'prev';
-            if (scrollDirectionRef.current && dir !== scrollDirectionRef.current) {
-                resetScroll();
-            }
-
-            scrollDirectionRef.current = dir;
-            setScrollDirection(dir);
-            scrollStartRef.current = scrollStartRef.current ?? Date.now();
-            lastWheelRef.current = Date.now();
-
-            if (!animationFrameRef.current) {
-                animationFrameRef.current = requestAnimationFrame(updateProgress);
-            }
+            idleTimeoutRef.current = setTimeout(resetScroll, SCROLL_IDLE_THRESHOLD);
         };
 
         window.addEventListener('wheel', onWheel, { passive: false });
@@ -253,13 +251,22 @@ export default function PresentationView() {
             <ThemeStylesApplier theme={currentTheme} backgroundSettings={presentation.backgroundSettings}>
                 <div className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`} style={pageStyle}>
                     <main className={styles.main} data-read-only="true">
-                        <div className={styles.slidePage}>
-                            <SlideViewer
-                                slide={presentation.slides[currentSlideIndex]}
-                                fullPage={true}
-                                primaryAccentColor={currentTheme?.colors.primaryAccent || '#000000'}
-                            />
-                        </div>
+                        <AnimatePresence mode="wait" initial={false}>
+                            <motion.div
+                                key={currentSlideIndex}
+                                className={styles.slidePage}
+                                initial={{ opacity: 0, x: scrollDirection === 'next' ? 50 : -50 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: scrollDirection === 'next' ? -50 : 50 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <SlideViewer
+                                    slide={presentation.slides[currentSlideIndex]}
+                                    fullPage={true}
+                                    primaryAccentColor={currentTheme?.colors.primaryAccent || '#000000'}
+                                />
+                            </motion.div>
+                        </AnimatePresence>
                         <div className={styles.progressBar}>
                             {presentation.slides.map((_, index) => (
                                 <div
