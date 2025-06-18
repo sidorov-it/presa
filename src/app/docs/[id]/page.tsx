@@ -6,7 +6,6 @@
 import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
-// import Editor from '@/components/editor/Editor';
 import { useSession, signOut } from 'next-auth/react';
 import Editor from '@/components/editor/Editor/Editor';
 import { TipTapRefs } from '@/types';
@@ -51,6 +50,8 @@ export default function PresentationEditorPage() {
     const loadPresentation = usePresentationStore(state => state.loadPresentation);
     const checkPresentationExists = usePresentationStore(state => state.checkPresentationExists);
     const setTheme = usePresentationStore(state => state.setTheme);
+    const unsavedChanges = usePresentationStore(state => state.unsavedChanges);
+    const savingStatus = usePresentationStore(state => state.savingStatus);
 
     // Get presentation from store instead of local state
     const presentation = usePresentationStore(state => state.getPresentation(id as string));
@@ -85,6 +86,21 @@ export default function PresentationEditorPage() {
             clearAllThemeStyles();
         };
     }, []);
+
+    // Warn user about unsaved changes when leaving the page
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (unsavedChanges || savingStatus === 'saving') {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [unsavedChanges, savingStatus]);
 
     // Load presentation data only once when component mounts or ID changes
     useEffect(() => {

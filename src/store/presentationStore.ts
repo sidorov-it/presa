@@ -31,6 +31,7 @@ export interface PresentationState {
     isLoading: boolean;
     isSaving: boolean;
     savingStatus: 'idle' | 'saving' | 'saved' | 'error';
+    unsavedChanges: boolean;
     error: string | null;
     version: number;
     incrementVersion: () => void;
@@ -319,11 +320,12 @@ export const usePresentationStore = create<PresentationState>()(
             isLoading: false,
             isSaving: false,
             savingStatus: 'idle',
+            unsavedChanges: false,
             error: null,
             version: 1,
 
             incrementVersion: () => {
-                set(state => ({ version: state.version + 1 }));
+                set(state => ({ version: state.version + 1, unsavedChanges: true }));
             },
 
             saveChanges: debounce(async (id: string) => {
@@ -345,7 +347,7 @@ export const usePresentationStore = create<PresentationState>()(
                         throw new Error('Failed to save presentation');
                     }
 
-                    set({ savingStatus: 'saved' });
+                    set({ savingStatus: 'saved', unsavedChanges: false });
                     setTimeout(() => {
                         set({ savingStatus: 'idle' });
                     }, 2000);
