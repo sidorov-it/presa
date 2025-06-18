@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { Theme, ThemeDesignImageShape } from '@/types/theme';
+import { Theme } from '@/types/theme';
 
 interface Params {
     id: string;

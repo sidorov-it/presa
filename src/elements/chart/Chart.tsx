@@ -35,8 +35,6 @@ import { OpenCustomMenuEvent } from '@/customEvents/OpenCustomMenuEvent';
 import styles from './Chart.module.css';
 import { LayoutType } from 'recharts/types/util/types';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
-import { useMenuStore } from '@/store/menuStore';
-import { ElementType } from '@/types/elements';
 
 interface ChartProps {
     elementId: string;

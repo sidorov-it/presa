@@ -194,7 +194,11 @@ export default function PresentationView() {
                 <div className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`} style={pageStyle}>
                     <main className={styles.main} data-read-only="true">
                         <div className={styles.slidePage}>
-                            <SlideViewer slide={presentation.slides[currentSlideIndex]} fullPage={true} />
+                            <SlideViewer
+                                slide={presentation.slides[currentSlideIndex]}
+                                fullPage={true}
+                                primaryAccentColor={currentTheme?.colors.primaryAccent || '#000000'}
+                            />
                         </div>
                         <div className={styles.navControls}>
                             <button

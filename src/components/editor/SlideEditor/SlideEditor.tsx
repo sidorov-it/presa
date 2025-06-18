@@ -427,11 +427,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         >
             <div className={`${getSlideClassName()}`} data-slide="true">
                 <div className={`${styles.slideBorder} ${isSelected || isHovered ? styles.slideBorderMenuOpen : ''}`} />
-                <div
-                    ref={editorRef}
-                    className={`${styles.slideContent}`}
-                    data-slide-content="true"
-                >
+                <div ref={editorRef} className={`${styles.slideContent}`} data-slide-content="true">
                     {(isSelected || slideMenuOpen || isHovered) && !isReadOnly && (
                         <>
                             <DragHandler

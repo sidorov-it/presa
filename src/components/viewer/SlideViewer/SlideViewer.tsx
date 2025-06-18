@@ -19,6 +19,7 @@ interface SlideViewerProps {
     /** Show image placeholder when image is not provided (for preview modes) */
     showImagePlaceholder?: boolean;
     isPreview?: boolean;
+    primaryAccentColor: string;
 }
 
 const SlideViewer: React.FC<SlideViewerProps> = ({
@@ -29,6 +30,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     fullPage = false,
     showImagePlaceholder = false,
     isPreview = false,
+    primaryAccentColor,
 }) => {
     // Get slide background styling
     const getSlideStyle = () => {
@@ -270,7 +272,13 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
 
                     <div className={styles.slideContainer} style={contentStyle}>
                         {slide.layouts.map((layout: Layout) => (
-                            <LayoutViewer key={layout.id} layout={layout} slideId={slide.id} />
+                            <LayoutViewer
+                                key={layout.id}
+                                layout={layout}
+                                slideId={slide.id}
+                                slideBackground={slide.background?.value || slide.style?.backgroundColor}
+                                primaryAccentColor={primaryAccentColor}
+                            />
                         ))}
                     </div>
                 </div>

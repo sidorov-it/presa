@@ -7,12 +7,14 @@ interface PresentationViewerProps {
     slides: Slide[];
     showImagePlaceholder?: boolean;
     isPreview?: boolean;
+    primaryAccentColor: string;
 }
 
 const PresentationViewer: React.FC<PresentationViewerProps> = ({
     slides,
     showImagePlaceholder = false,
     isPreview = false,
+    primaryAccentColor,
 }) => {
     if (!slides || slides.length === 0) {
         return <div>No slides to display</div>;
@@ -23,7 +25,12 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
             <div className={styles.allSlidesContainer}>
                 {slides.map((slide: Slide, index: number) => (
                     <div key={slide.id} id={`slide-${index + 1}`} className={styles.slideWrapper}>
-                        <SlideViewer slide={slide} showImagePlaceholder={showImagePlaceholder} isPreview={isPreview} />
+                        <SlideViewer
+                            slide={slide}
+                            showImagePlaceholder={showImagePlaceholder}
+                            isPreview={isPreview}
+                            primaryAccentColor={primaryAccentColor}
+                        />
                     </div>
                 ))}
             </div>

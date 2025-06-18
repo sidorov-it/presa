@@ -267,7 +267,7 @@ export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
                 type: 'color',
                 color: '#111827',
                 imageUrl: '',
-            },  
+            },
         },
         typography: {
             headingColor: '#F3F4F6',

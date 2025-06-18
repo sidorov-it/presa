@@ -618,7 +618,12 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
 
     return (
         <ScopedPresentationThemeWrapper theme={theme}>
-            <PresentationViewer slides={sampleSlides} showImagePlaceholder={true} isPreview={true} />
+            <PresentationViewer
+                slides={sampleSlides}
+                showImagePlaceholder={true}
+                isPreview={true}
+                primaryAccentColor={theme?.colors.primaryAccent || '#000000'}
+            />
         </ScopedPresentationThemeWrapper>
     );
 };

@@ -1,7 +1,7 @@
 import { Label } from '@/components/ui/Label';
 import { Theme } from '@/types/theme';
 import { ThemeDesign } from '@/types/theme';
-import { ButtonGroup, RadioGroup, Span, Stack } from '@chakra-ui/react';
+import { ButtonGroup, RadioGroup, Stack } from '@chakra-ui/react';
 import styles from './BlockDesign.module.css';
 import ColorPicker from '@/components/ui/ColorPicker';
 import { Button } from '@/components/ui/Button';

@@ -20,7 +20,11 @@ export default function SlidePreview({ presentation, theme }: SlidePreviewProps)
         <div className={styles.wrapper}>
             <div className={styles.scaled}>
                 <ScopedThemeStylesApplier theme={theme}>
-                    <SlideViewer slide={firstSlide} showImagePlaceholder={true} />
+                    <SlideViewer
+                        slide={firstSlide}
+                        showImagePlaceholder={true}
+                        primaryAccentColor={theme?.colors.primaryAccent || '#000000'}
+                    />
                 </ScopedThemeStylesApplier>
             </div>
         </div>

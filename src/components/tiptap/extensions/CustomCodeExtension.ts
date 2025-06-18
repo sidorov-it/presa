@@ -103,51 +103,51 @@ export const Code = Mark.create<CodeOptions>({
         return {
             setCode:
                 () =>
-                ({ commands }) => {
-                    return commands.setMark(this.name);
-                },
+                    ({ commands }) => {
+                        return commands.setMark(this.name);
+                    },
             toggleCode:
                 () =>
-                ({ commands, editor }) => {
-                    const isActive = editor.isActive('code');
+                    ({ commands, editor }) => {
+                        const isActive = editor.isActive('code');
 
-                    if (isActive) {
-                        return commands.toggleMark('code');
-                    }
+                        if (isActive) {
+                            return commands.toggleMark('code');
+                        }
 
-                    // Get the font size class from the surrounding textStyle mark
-                    const marks = editor.getAttributes('textStyle');
-                    let sizeClasses;
+                        // Get the font size class from the surrounding textStyle mark
+                        const marks = editor.getAttributes('textStyle');
+                        let sizeClasses;
 
-                    // eslint-disable-next-line no-prototype-builtins
-                    if (marks.fontSize?.hasOwnProperty('classList')) {
-                        sizeClasses = marks.fontSize.classList.value.split(' ');
-                    } else {
-                        sizeClasses = marks.fontSize ? getSizeClasses(marks.fontSize) : [];
-                    }
+                        // eslint-disable-next-line no-prototype-builtins
+                        if (marks.fontSize?.hasOwnProperty('classList')) {
+                            sizeClasses = marks.fontSize.classList.value.split(' ');
+                        } else {
+                            sizeClasses = marks.fontSize ? getSizeClasses(marks.fontSize) : [];
+                        }
 
-                    // First apply the code mark
-                    const preparedClasses = [
-                        'custom-code',
-                        ...(Array.isArray(sizeClasses) ? sizeClasses : [sizeClasses]),
-                    ]
-                        .filter(Boolean)
-                        .join(' ');
-                    const result = commands.toggleMark(this.name, {
-                        class: preparedClasses,
-                    });
+                        // First apply the code mark
+                        const preparedClasses = [
+                            'custom-code',
+                            ...(Array.isArray(sizeClasses) ? sizeClasses : [sizeClasses]),
+                        ]
+                            .filter(Boolean)
+                            .join(' ');
+                        const result = commands.toggleMark(this.name, {
+                            class: preparedClasses,
+                        });
 
-                    // Ensure the editor state is updated
-                    editor.view.dispatch(editor.state.tr.setMeta('transaction', true));
+                        // Ensure the editor state is updated
+                        editor.view.dispatch(editor.state.tr.setMeta('transaction', true));
 
-                    console.log('finished toggle code');
-                    return result;
-                },
+                        console.log('finished toggle code');
+                        return result;
+                    },
             unsetCode:
                 () =>
-                ({ commands }) => {
-                    return commands.unsetMark(this.name);
-                },
+                    ({ commands }) => {
+                        return commands.unsetMark(this.name);
+                    },
         };
     },
 

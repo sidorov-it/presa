@@ -304,10 +304,10 @@ const getExtensions = ({
     ...(isHideSlashMenu
         ? []
         : [
-              SlashCommandExtension.configure({
-                  onAddElement: onAddElement || (() => {}),
-              }),
-          ]),
+            SlashCommandExtension.configure({
+                onAddElement: onAddElement || (() => {}),
+            }),
+        ]),
     // Плейсхолдер
     Placeholder.configure({
         placeholder,

@@ -1,46 +1,83 @@
 import tinycolor from 'tinycolor2';
 
-// Block type to default background color mapping (from menuRegistry)
-const BLOCK_TYPE_DEFAULTS: Record<
-    string,
-    { blockBgColor: string; darkBlockBgColor: string; defaultIconColor: string }
-> = {
-    'note-box': {
-        blockBgColor: '#bbb8fa',
-        darkBlockBgColor: '#01004d',
-        defaultIconColor: '#3f3f5a',
+// New color scheme data
+const BLOCK_COLORS = {
+    light: {
+        gray: { hex: '#D6D6D6', name: 'Gray' },
+        red: { hex: '#FFBDBD', name: 'Red' },
+        orange: { hex: '#F8CB96', name: 'Orange' },
+        yellow: { hex: '#FBEB8F', name: 'Yellow' },
+        green: { hex: '#C9FDCB', name: 'Green' },
+        blue: { hex: '#D1E5FD', name: 'Blue' },
+        purple: { hex: '#D5CCFB', name: 'Purple' },
+        primary: { hex: '#FFD300' },
+        secondary: { hex: '#FF7979' },
+        tertiary: { hex: '#A9FF8B' },
     },
-    'info-box': {
-        blockBgColor: '#b6d6fc',
-        darkBlockBgColor: '#032349',
-        defaultIconColor: '#006ed6',
-    },
-    'warning-box': {
-        blockBgColor: '#ffb3b3',
-        darkBlockBgColor: '#450808',
-        defaultIconColor: '#b29500',
-    },
-    'caution-box': {
-        blockBgColor: '#ffb3b3',
-        darkBlockBgColor: '#4a3f03',
-        defaultIconColor: '#eb0000',
-    },
-    'success-box': {
-        blockBgColor: '#b5fcb8',
-        darkBlockBgColor: '#183a13',
-        defaultIconColor: '#0c3f8d',
-    },
-    'question-box': {
-        blockBgColor: '#b5fcb8',
-        darkBlockBgColor: '#262626',
-        defaultIconColor: '#7a7a7a',
+    dark: {
+        gray: { hex: '#999999', name: 'Gray' },
+        red: { hex: '#EB5252', name: 'Red' },
+        orange: { hex: '#DD8404', name: 'Orange' },
+        yellow: { hex: '#CAAD07', name: 'Yellow' },
+        green: { hex: '#50BD3D', name: 'Green' },
+        blue: { hex: '#85BAFA', name: 'Blue' },
+        purple: { hex: '#B1A0F8', name: 'Purple' },
+        primary: { hex: '#856E01' },
+        secondary: { hex: '#952222' },
+        tertiary: { hex: '#257D04' },
     },
 };
+
+const ICON_COLORS = {
+    light: {
+        gray: { hex: '#7A7A7A', name: 'Gray' },
+        red: { hex: '#EB0000', name: 'Red' },
+        orange: { hex: '#BD6F00', name: 'Orange' },
+        yellow: { hex: '#B29500', name: 'Yellow' },
+        green: { hex: '#008545', name: 'Green' },
+        blue: { hex: '#006ED6', name: 'Blue' },
+        purple: { hex: '#7B57FF', name: 'Purple' },
+    },
+    dark: {
+        gray: { hex: '#AFAFAF', name: 'Gray' },
+        red: { hex: '#EF8784', name: 'Red' },
+        orange: { hex: '#F5C274', name: 'Orange' },
+        yellow: { hex: '#F5F380', name: 'Yellow' },
+        green: { hex: '#8CE29F', name: 'Green' },
+        blue: { hex: '#8DD4FB', name: 'Blue' },
+        purple: { hex: '#A08CF8', name: 'Purple' },
+    },
+};
+
+// Block type to color scheme mapping
+const BLOCK_TYPE_TO_COLOR_SCHEME: Record<string, string> = {
+    'note-box': 'gray',
+    'info-box': 'blue',
+    'warning-box': 'orange',
+    'caution-box': 'red',
+    'success-box': 'green',
+    'question-box': 'purple',
+};
+
+/**
+ * Устанавливает уровень светлоты (lightness) для заданного цвета.
+ * Возвращает цвет в формате HEX с альфой (#RRGGBBAA).
+ *
+ * @param {string} color - Цвет в hex или любом формате, поддерживаемом tinycolor
+ * @param {number} lightness - Значение lightness от 0 до 1
+ * @returns {string} Цвет в формате #RRGGBBAA
+ */
+function setLightness(color: string, lightness: number): string {
+    const hsl = tinycolor(color).toHsl();
+    hsl.l = lightness;
+    return tinycolor(hsl).toHex8String();
+}
 
 export interface GetBlockColorsOptions {
     blockBgColor?: string;
     iconColor?: string;
     textColor?: string;
+    accentColor?: string;
 }
 
 export interface BlockColorsResult {
@@ -51,7 +88,7 @@ export interface BlockColorsResult {
 
 /**
  * Returns accessible block background, icon, and text colors for a given slide background and block type.
- * Ensures sufficient contrast and visual harmony.
+ * Uses the new color calculation logic with proper lightness adjustments.
  */
 export const getBlockColors = (
     slideBgColor: string,
@@ -59,52 +96,51 @@ export const getBlockColors = (
     options?: GetBlockColorsOptions
 ): BlockColorsResult => {
     const slideColor = tinycolor(slideBgColor);
-    const isSlideDark = slideColor.isDark();
+    const isDarkTheme = slideColor.isDark();
 
-    const blockDefaults = BLOCK_TYPE_DEFAULTS[blockType] || BLOCK_TYPE_DEFAULTS['note-box'];
-    const baseBlockColorHex = options?.blockBgColor || (isSlideDark ? blockDefaults.darkBlockBgColor : blockDefaults.blockBgColor);
-    let blockColor = tinycolor(baseBlockColorHex);
+    // Get color scheme from block type or use accent if accentColor is provided
+    const colorScheme = options?.accentColor ? 'accent' : BLOCK_TYPE_TO_COLOR_SCHEME[blockType] || 'gray';
+    const accentColor = options?.accentColor || '#FFD300'; // Default accent color
 
-    // Подстройка цвета блока под фон слайда
-    if (!options?.blockBgColor) {
-        blockColor = isSlideDark ? blockColor.lighten(20) : blockColor.darken(10);
+    // If custom colors are provided in options, use them directly
+    if (options?.blockBgColor && options?.iconColor) {
+        return {
+            blockBgColor: options.blockBgColor,
+            iconColor: options.iconColor,
+            textColor: options.textColor || (isDarkTheme ? 'white' : 'black'),
+        };
     }
 
-    let blockBgColor = blockColor.toRgbString();
-
-    // Цвет текста (черный или белый в зависимости от контраста)
-    let textColor: string;
-    const blackContrast = tinycolor.readability(blockBgColor, '#000');
-    const whiteContrast = tinycolor.readability(blockBgColor, '#fff');
-    textColor = blackContrast > whiteContrast ? '#000' : '#fff';
-
-    // Цвет иконки: та же гамма, но контрастная яркость
-    let iconColor: string;
-
-    if (options?.iconColor) {
-        iconColor = options.iconColor;
-    } else {
-        const isBlockDark = blockColor.isDark();
-        let iconColorObj = tinycolor(blockColor);
-
-        // Осветляем или затемняем ту же гамму для иконки
-        iconColorObj = isBlockDark ? iconColorObj.lighten(35) : iconColorObj.darken(35);
-
-        // Гарантируем читаемость
-        let contrast = tinycolor.readability(blockBgColor, iconColorObj);
-        let attempts = 0;
-        while (contrast < 4 && attempts < 5) {
-            iconColorObj = isBlockDark ? iconColorObj.lighten(5) : iconColorObj.darken(5);
-            contrast = tinycolor.readability(blockBgColor, iconColorObj);
-            attempts++;
+    // 1. Calculate background color
+    const baseBackgroundColor = (() => {
+        if (colorScheme === 'accent') {
+            return accentColor;
         }
+        const colorKey = colorScheme as keyof typeof BLOCK_COLORS.light;
+        return isDarkTheme ? BLOCK_COLORS.dark[colorKey]?.hex : BLOCK_COLORS.light[colorKey]?.hex;
+    })();
 
-        iconColor = iconColorObj.toRgbString();
+    const backgroundColor = isDarkTheme
+        ? setLightness(baseBackgroundColor, 0.15) // lighten for dark theme
+        : setLightness(baseBackgroundColor, 0.85); // very light background for light theme
+
+    // 2. Calculate icon color
+    let iconColor: string;
+    if (colorScheme === 'accent') {
+        iconColor = isDarkTheme
+            ? setLightness(accentColor, 0.7) // strongly lighten accent
+            : setLightness(accentColor, 0.3); // slightly lighten accent
+    } else {
+        const colorKey = colorScheme as keyof typeof ICON_COLORS.light;
+        iconColor = isDarkTheme ? ICON_COLORS.dark[colorKey]?.hex : ICON_COLORS.light[colorKey]?.hex;
     }
+
+    // 3. Text color
+    const textColor = isDarkTheme ? 'white' : 'black';
 
     return {
-        blockBgColor,
-        iconColor,
+        blockBgColor: backgroundColor,
+        iconColor: iconColor || '#7A7A7A', // fallback color
         textColor,
     };
 };

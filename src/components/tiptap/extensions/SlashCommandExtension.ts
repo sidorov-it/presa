@@ -117,12 +117,12 @@ class CommandsList {
 
                 return category.subCategories
                     ? category.subCategories.flatMap(sub => {
-                          if (isInTable && sub.excludeFromTable) {
-                              return [];
-                          }
+                        if (isInTable && sub.excludeFromTable) {
+                            return [];
+                        }
 
-                          return sub.elements || [];
-                      })
+                        return sub.elements || [];
+                    })
                     : category.elements || [];
             })
             .filter(element => element !== undefined);

@@ -8,9 +8,11 @@ import generateGridTemplateAreas from '@/utils/generateGridTemplateAreas';
 interface LayoutViewerProps {
     layout: Layout;
     slideId: string;
+    slideBackground?: string;
+    primaryAccentColor: string;
 }
 
-const LayoutViewer = ({ layout, slideId }: LayoutViewerProps) => {
+const LayoutViewer = ({ layout, slideId, slideBackground, primaryAccentColor }: LayoutViewerProps) => {
     // Calculate grid template columns based on column widths
     const getGridTemplateColumns = () => {
         if (layout.gridStructure.columnWidths) {
@@ -57,6 +59,8 @@ const LayoutViewer = ({ layout, slideId }: LayoutViewerProps) => {
                                         element={element as Element & ViewerElement}
                                         slideId={slideId}
                                         layoutId={layout.id}
+                                        slideBackground={slideBackground}
+                                        primaryAccentColor={primaryAccentColor}
                                     />
                                 ))}
                             </div>

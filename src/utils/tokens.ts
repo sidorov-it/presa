@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { TransactionType, PurchaseStatus, Prisma } from '@prisma/client';
+import { TransactionType, PurchaseStatus } from '@prisma/client';
 import { TokenUsageData } from '@/types/tokens';
 
 /**

@@ -18,14 +18,18 @@ import {
 
 import styles from './ElementViewer.module.css';
 import { ElementType } from '@/types/elements';
+import { getBlockColors } from '@/utils/colors';
+import { BoxIconOptions } from '@/components/editor/Menus/BubbleMenus/BoxBubbleMenu/BoxIconOptions';
 
 interface ElementViewerProps {
     element: Element & ViewerElement;
     slideId: string;
     layoutId: string;
+    slideBackground?: string;
+    primaryAccentColor?: string;
 }
 
-const ElementViewer = ({ element }: ElementViewerProps) => {
+const ElementViewer = ({ element, slideBackground, primaryAccentColor }: ElementViewerProps) => {
     // Get element-specific styles
     const getElementStyles = () => {
         const baseStyles: React.CSSProperties = {
@@ -50,35 +54,6 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
         }
 
         return baseStyles;
-    };
-
-    // Get text-specific theme styles
-    const getTextStyles = () => {
-        const isHeading = element.elementTypeId === ElementType.TEXT;
-        const isQuote = element.elementTypeId === ElementType.QUOTE;
-
-        const textStyles: React.CSSProperties = {
-            // Apply text styling from theme variables
-            color: isHeading ? 'var(--presentation-heading-color)' : 'var(--presentation-text-color)',
-            fontFamily: isHeading ? 'var(--presentation-heading-font)' : 'var(--presentation-body-font)',
-            fontWeight: isHeading ? 'var(--presentation-heading-weight)' : 'var(--presentation-body-weight)',
-            lineHeight: isHeading ? 'var(--presentation-heading-line-height)' : 'var(--presentation-body-line-height)',
-            letterSpacing: isHeading
-                ? 'var(--presentation-heading-letter-spacing)'
-                : 'var(--presentation-body-letter-spacing)',
-            textTransform: isHeading
-                ? ('var(--presentation-heading-capitalization)' as any)
-                : ('var(--presentation-body-capitalization)' as any),
-        };
-
-        // Additional styles for quotes
-        if (isQuote) {
-            textStyles.fontStyle = 'italic';
-            textStyles.borderLeft = '4px solid var(--presentation-primary-accent)';
-            textStyles.paddingLeft = '1rem';
-        }
-
-        return textStyles;
     };
 
     const renderChart = () => {
@@ -211,8 +186,8 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                 // For image elements, render the image
                 return (
                     <div className={styles.container}>
-                        {!element.url && !element.src && <div style={{ width: '100%', height: '100%' }} />}
-                        {(element.url || element.src) && (
+                        {!element.url && !(element as any).src && <div style={{ width: '100%', height: '100%' }} />}
+                        {(element.url || (element as any).src) && (
                             <img
                                 src={(element as any).src || element.url || ''}
                                 alt={element.alt || 'Presentation image'}
@@ -266,21 +241,68 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
                     />
                 );
 
-            case ElementType.BOX:
-                // For box elements, render a styled container with content
+            case ElementType.BOX: {
+                // For box elements, render a styled container with content using new color logic
+                const boxElement = element as Element &
+                    ViewerElement & {
+                        customBackgroundColor?: string;
+                        darkBackgroundColor?: string;
+                        darkColor?: string;
+                        iconType?: string;
+                    };
+
+                // Get slide background color (from prop, slide background, or CSS variable)
+                const slideBgColor =
+                    slideBackground ||
+                    getComputedStyle(document.documentElement)
+                        .getPropertyValue('--presentation-slide-background')
+                        ?.trim() ||
+                    '#ffffff';
+
+                // Determine block type based on iconType or elementVariant
+                const blockType = boxElement.iconType || element.elementVariant || 'info-box';
+
+                // Get colors using new logic
+                const blockColors = getBlockColors(primaryAccentColor!, blockType, {
+                    blockBgColor: boxElement.customBackgroundColor || boxElement.backgroundColor,
+                    iconColor: (boxElement as any).iconColor,
+                    textColor: (boxElement as any).textColor,
+                });
+
+                // Get icon component
+                const IconInfo = BoxIconOptions.find(option => option.id === boxElement.iconType);
+                const IconComponent = IconInfo?.Icon;
+
                 return (
                     <div
                         className={styles.box}
                         style={{
                             ...getElementStyles(),
+                            display: 'flex',
+                            flexDirection: 'row',
+                            gap: '1rem',
                             padding: '1rem',
-                            backgroundColor: element.backgroundColor || 'var(--presentation-accent-blocks-color)',
-                            color: '#fff',
+                            backgroundColor: blockColors.blockBgColor,
+                            color: blockColors.textColor,
                         }}
                     >
-                        <div dangerouslySetInnerHTML={{ __html: element.content || '' }} />
+                        {IconComponent && boxElement.iconType !== 'without-icon' && (
+                            <span className={styles.boxIcon}>
+                                <IconComponent color={blockColors.iconColor} size="1.25em" />
+                            </span>
+                        )}
+                        <div
+                            style={{
+                                flex: 1,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                            }}
+                            dangerouslySetInnerHTML={{ __html: element.content || '' }}
+                        />
                     </div>
                 );
+            }
 
             default:
                 // For unsupported element types, render a placeholder
@@ -291,11 +313,11 @@ const ElementViewer = ({ element }: ElementViewerProps) => {
     return (
         <div
             style={{
-                ...getElementStyles(),
+                // ...getElementStyles(),
                 zIndex: 0,
                 transform: element.transform || 'none',
             }}
-            className="element-viewer"
+            // className="element-viewer"
         >
             {renderElementContent()}
         </div>
