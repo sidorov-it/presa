@@ -51,8 +51,26 @@ const LayoutViewer = ({ layout, slideId, slideBackground, primaryAccentColor }: 
                         // Find elements for this cell
                         const cellElements = layout.elements.filter(element => element.cellId === cell.id);
 
+                        // Determine vertical alignment for the cell
+                        let justifyContent: React.CSSProperties['justifyContent'] = 'flex-start';
+                        if (cell.alignment === 'center') {
+                            justifyContent = 'center';
+                        } else if (cell.alignment === 'bottom') {
+                            justifyContent = 'flex-end';
+                        }
+
                         return (
-                            <div key={cell.id} style={{ position: 'relative' }}>
+                            <div
+                                key={cell.id}
+                                style={{
+                                    position: 'relative',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent,
+                                    width: '100%',
+                                    height: '100%',
+                                }}
+                            >
                                 {cellElements.map(element => (
                                     <ElementViewer
                                         key={element.id}
