@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/interactive-supports-focus */
 'use client';
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { SlideViewer } from '@/components/viewer';
 import styles from './page.module.css';
@@ -34,6 +34,17 @@ export default function PresentationView() {
     const defaultThemes = useThemeStore(state => state.defaultThemes);
 
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+
+    // Duration the user must keep scrolling (ms) before changing slide
+    const SCROLL_HOLD_DURATION = 800;
+    const SCROLL_IDLE_THRESHOLD = 150;
+
+    const [scrollProgress, setScrollProgress] = useState(0);
+    const [scrollDirection, setScrollDirection] = useState<'next' | 'prev' | null>(null);
+    const scrollStartRef = useRef<number | null>(null);
+    const lastWheelRef = useRef<number>(0);
+    const animationFrameRef = useRef<number | null>(null);
+    const scrollDirectionRef = useRef<'next' | 'prev' | null>(null);
 
     // Cleanup function to clear theme styles when component unmounts
     useEffect(() => {
@@ -70,18 +81,67 @@ export default function PresentationView() {
     }, [currentSlideIndex, handleNextSlide, handlePrevSlide, presentation]);
 
     useEffect(() => {
-        const onKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'ArrowRight' || e.key === 'PageDown') {
-                handleNextSlide();
-            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-                handlePrevSlide();
+        const resetScroll = () => {
+            scrollStartRef.current = null;
+            lastWheelRef.current = 0;
+            setScrollProgress(0);
+            setScrollDirection(null);
+            scrollDirectionRef.current = null;
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+                animationFrameRef.current = null;
             }
         };
-        window.addEventListener('keydown', onKeyDown);
-        return () => {
-            window.removeEventListener('keydown', onKeyDown);
+
+        const updateProgress = () => {
+            if (scrollStartRef.current === null) return;
+            const now = Date.now();
+            const progress = (now - scrollStartRef.current) / SCROLL_HOLD_DURATION;
+            setScrollProgress(Math.min(progress, 1));
+
+            if (progress >= 1) {
+                if (scrollDirectionRef.current === 'next') {
+                    handleNextSlide();
+                } else if (scrollDirectionRef.current === 'prev') {
+                    handlePrevSlide();
+                }
+                resetScroll();
+                return;
+            }
+
+            if (now - lastWheelRef.current > SCROLL_IDLE_THRESHOLD) {
+                resetScroll();
+                return;
+            }
+
+            animationFrameRef.current = requestAnimationFrame(updateProgress);
         };
-    }, [currentSlideIndex, presentation]);
+
+        const onWheel = (e: WheelEvent) => {
+            if (!presentation) return;
+            e.preventDefault();
+            const dir: 'next' | 'prev' = e.deltaY > 0 ? 'next' : 'prev';
+            if (scrollDirectionRef.current && dir !== scrollDirectionRef.current) {
+                resetScroll();
+            }
+
+            scrollDirectionRef.current = dir;
+            setScrollDirection(dir);
+            scrollStartRef.current = scrollStartRef.current ?? Date.now();
+            lastWheelRef.current = Date.now();
+
+            if (!animationFrameRef.current) {
+                animationFrameRef.current = requestAnimationFrame(updateProgress);
+            }
+        };
+
+        window.addEventListener('wheel', onWheel, { passive: false });
+        return () => {
+            window.removeEventListener('wheel', onWheel);
+            resetScroll();
+        };
+    }, [presentation, handleNextSlide, handlePrevSlide]);
+
 
     const [isLoading, setIsLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
@@ -214,6 +274,36 @@ export default function PresentationView() {
                                 ></div>
                             ))}
                         </div>
+                        {scrollProgress > 0 && (
+                            <div className={styles.scrollProgressContainer}>
+                                <svg
+                                    className={styles.scrollProgressSvg}
+                                    viewBox="0 0 36 36"
+                                    width="40"
+                                    height="40"
+                                >
+                                    <circle
+                                        cx="18"
+                                        cy="18"
+                                        r="16"
+                                        stroke="#e5e7eb"
+                                        strokeWidth="4"
+                                        fill="none"
+                                    />
+                                    <circle
+                                        cx="18"
+                                        cy="18"
+                                        r="16"
+                                        stroke="#3b82f6"
+                                        strokeWidth="4"
+                                        fill="none"
+                                        strokeDasharray="100"
+                                        strokeDashoffset={100 - scrollProgress * 100}
+                                        strokeLinecap="round"
+                                    />
+                                </svg>
+                            </div>
+                        )}
                         {screenfull.isEnabled && !isFullscreen && (
                             <div className={styles.fullscreenButton}>
                                 <button onClick={handleFullscreen}>
