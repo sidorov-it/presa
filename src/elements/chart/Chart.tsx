@@ -34,7 +34,7 @@ import { OpenCustomMenuEvent } from '@/customEvents/OpenCustomMenuEvent';
 
 import styles from './Chart.module.css';
 import { useThemeStore } from '@/store/themeStore';
-import { getChartColors } from '@/utils/colors';
+import { getChartColors, getChartAxisColors } from '@/utils/colors';
 import { LayoutType } from 'recharts/types/util/types';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
@@ -105,6 +105,14 @@ const Chart: React.FC<ChartProps> = ({
     const chartColors = useMemo(
         () =>
             getChartColors(
+                currentTheme?.colors.slideBackground || '#ffffff',
+                currentTheme?.colors.primaryAccent || '#8884d8'
+            ),
+        [currentTheme]
+    );
+    const axisColors = useMemo(
+        () =>
+            getChartAxisColors(
                 currentTheme?.colors.slideBackground || '#ffffff',
                 currentTheme?.colors.primaryAccent || '#8884d8'
             ),
@@ -475,8 +483,19 @@ const Chart: React.FC<ChartProps> = ({
                     <ResponsiveContainer width="100%" height={chartHeight}>
                         <BarChart data={data}>
                             <CartesianGrid strokeDasharray="3 3" />
-                            {showLabels && <XAxis dataKey="name" />}
-                            {showLabels && <YAxis />}
+                            {showLabels && (
+                                <XAxis
+                                    dataKey="name"
+                                    stroke={axisColors.axisLineColor}
+                                    tick={{ fill: axisColors.tickColor }}
+                                />
+                            )}
+                            {showLabels && (
+                                <YAxis
+                                    stroke={axisColors.axisLineColor}
+                                    tick={{ fill: axisColors.tickColor }}
+                                />
+                            )}
                             {showValues && <Tooltip />}
                             <Legend
                                 layout={legendProps.layout}
@@ -502,8 +521,19 @@ const Chart: React.FC<ChartProps> = ({
                         <BarChart data={data} layout="vertical" margin={{ top: 5, right: 45, bottom: 5, left: 40 }}>
                             <CartesianGrid strokeDasharray="3 3" />
 
-                            <XAxis type="number" hide={!showLabels} />
-                            <YAxis dataKey="name" type="category" hide={!showLabels} />
+                            <XAxis
+                                type="number"
+                                hide={!showLabels}
+                                stroke={axisColors.axisLineColor}
+                                tick={{ fill: axisColors.tickColor }}
+                            />
+                            <YAxis
+                                dataKey="name"
+                                type="category"
+                                hide={!showLabels}
+                                stroke={axisColors.axisLineColor}
+                                tick={{ fill: axisColors.tickColor }}
+                            />
 
                             {showValues && <Tooltip />}
                             <Legend
@@ -534,8 +564,19 @@ const Chart: React.FC<ChartProps> = ({
                     <ResponsiveContainer width="100%" height={chartHeight}>
                         <LineChart data={[{ name: '' }, ...data, { name: '' }]}>
                             <CartesianGrid strokeDasharray="3 3" />
-                            {showLabels && <XAxis dataKey="name" />}
-                            {showLabels && <YAxis />}
+                            {showLabels && (
+                                <XAxis
+                                    dataKey="name"
+                                    stroke={axisColors.axisLineColor}
+                                    tick={{ fill: axisColors.tickColor }}
+                                />
+                            )}
+                            {showLabels && (
+                                <YAxis
+                                    stroke={axisColors.axisLineColor}
+                                    tick={{ fill: axisColors.tickColor }}
+                                />
+                            )}
                             {showValues && <Tooltip />}
                             <Legend
                                 layout={legendProps.layout}
