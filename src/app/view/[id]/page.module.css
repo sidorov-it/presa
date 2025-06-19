@@ -291,11 +291,19 @@
 
 }.scrollProgressContainer {
     position: absolute;
-    bottom: 48px;
-    right: 12px;
     width: 40px;
     height: 40px;
     z-index: 400;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.scrollProgressTop {
+    top: 20px;
+}
+
+.scrollProgressBottom {
+    bottom: 60px;
 }
 
 .scrollProgressSvg {
