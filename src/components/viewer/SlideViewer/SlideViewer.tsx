@@ -20,6 +20,8 @@ interface SlideViewerProps {
     showImagePlaceholder?: boolean;
     isPreview?: boolean;
     primaryAccentColor: string;
+    /** Reference to the scrollable wrapper element */
+    wrapperRef?: React.Ref<HTMLDivElement>;
 }
 
 const SlideViewer: React.FC<SlideViewerProps> = ({
@@ -31,6 +33,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     showImagePlaceholder = false,
     isPreview = false,
     primaryAccentColor,
+    wrapperRef,
 }) => {
     // Get slide background styling
     const getSlideStyle = () => {
@@ -255,11 +258,14 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
 
     return (
         <div className={slideClassName} style={outerStyle}>
-            <div className={`${styles.slideWrapper} ${localStyles.slideWrapper}`} style={slideWrapperStyle}>
+            <div
+                ref={wrapperRef}
+                className={`${styles.slideWrapper} ${localStyles.slideWrapper}`}
+                style={slideWrapperStyle}
+            >
                 <div className={`${styles.slideContent} ${localStyles.slideContent}`} style={slideContentStyle}>
                     {/* Template image if needed */}
-                    {
-                        slide?.templateType &&
+                    {slide?.templateType &&
                         slide.templateType !== 'imageBackground' &&
                         slide.templateType !== 'standard' && (
                             <ViewerTemplateImageWithPlaceholder
@@ -268,7 +274,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                                 imageStyle={imageStyle}
                                 showPlaceholder={showImagePlaceholder}
                             />
-                    )}
+                        )}
 
                     <div className={styles.slideContainer} style={contentStyle}>
                         {slide.layouts.map((layout: Layout) => (

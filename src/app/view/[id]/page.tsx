@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/interactive-supports-focus */
 'use client';
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useParams } from 'next/navigation';
 import { SlideViewer } from '@/components/viewer';
 import styles from './page.module.css';
@@ -35,22 +36,75 @@ export default function PresentationView() {
 
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
+    // Distance the user must scroll before changing slide
+    const SCROLL_DISTANCE_THRESHOLD = 1000;
+    const SCROLL_IDLE_THRESHOLD = 300;
+    const PROGRESS_HOLD_DURATION = 3000; // Hold progress for 3 seconds after stopping
+
+    const [scrollProgress, setScrollProgress] = useState(0);
+    const [scrollDirection, setScrollDirection] = useState<'next' | 'prev' | null>(null);
+    // const [isScrollBlocked, setIsScrollBlocked] = useState(false);
+    const isScrollBlocked = useRef(false);
+    const lastWheelRef = useRef<number>(0);
+    const accumulatedScrollDistanceRef = useRef(0);
+    const idleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const progressHoldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    // const scrollBlockTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const scrollDirectionRef = useRef<'next' | 'prev' | null>(null);
+    const slideWrapperRef = useRef<HTMLDivElement>(null);
+    const EDGE_THRESHOLD = 20;
+    const SCROLL_BLOCK_DURATION = 2000; // Block scroll for 2 seconds after slide change
+
     // Cleanup function to clear theme styles when component unmounts
     useEffect(() => {
         return () => {
             clearAllThemeStyles();
+            // Clear all timeouts
+            if (idleTimeoutRef.current) {
+                clearTimeout(idleTimeoutRef.current);
+            }
+            if (progressHoldTimeoutRef.current) {
+                clearTimeout(progressHoldTimeoutRef.current);
+            }
+            // if (scrollBlockTimeoutRef.current) {
+            //     clearTimeout(scrollBlockTimeoutRef.current);
+            // }
         };
     }, []);
 
     const handleNextSlide = useCallback(() => {
         if (presentation && currentSlideIndex < presentation.slides.length - 1) {
             setCurrentSlideIndex(currentSlideIndex + 1);
+            // Block scroll and hide progress bar after slide change
+            isScrollBlocked.current = true;
+            setScrollProgress(0);
+            setScrollDirection(null);
+            // if (scrollBlockTimeoutRef.current) {
+            //     clearTimeout(scrollBlockTimeoutRef.current);
+            // }
+
+            setTimeout(() => {
+                console.log('setTimeout scrollBlockTimeoutRef.current');
+                isScrollBlocked.current = false;
+            }, SCROLL_BLOCK_DURATION);
         }
     }, [currentSlideIndex, presentation]);
 
     const handlePrevSlide = useCallback(() => {
         if (currentSlideIndex > 0) {
             setCurrentSlideIndex(currentSlideIndex - 1);
+            // Block scroll and hide progress bar after slide change
+            isScrollBlocked.current = true;
+            setScrollProgress(0);
+            setScrollDirection(null);
+            // if (scrollBlockTimeoutRef.current) {
+            //     clearTimeout(scrollBlockTimeoutRef.current);
+            // }
+
+            setTimeout(() => {
+                console.log('setTimeout scrollBlockTimeoutRef.current');
+                isScrollBlocked.current = false;
+            }, SCROLL_BLOCK_DURATION);
         }
     }, [currentSlideIndex]);
 
@@ -70,18 +124,103 @@ export default function PresentationView() {
     }, [currentSlideIndex, handleNextSlide, handlePrevSlide, presentation]);
 
     useEffect(() => {
-        const onKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'ArrowRight' || e.key === 'PageDown') {
-                handleNextSlide();
-            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-                handlePrevSlide();
+        const resetScroll = () => {
+            accumulatedScrollDistanceRef.current = 0;
+            lastWheelRef.current = 0;
+            setScrollProgress(0);
+            setScrollDirection(null);
+            scrollDirectionRef.current = null;
+            if (idleTimeoutRef.current) {
+                clearTimeout(idleTimeoutRef.current);
+                idleTimeoutRef.current = null;
+            }
+            if (progressHoldTimeoutRef.current) {
+                clearTimeout(progressHoldTimeoutRef.current);
+                progressHoldTimeoutRef.current = null;
             }
         };
-        window.addEventListener('keydown', onKeyDown);
-        return () => {
-            window.removeEventListener('keydown', onKeyDown);
+
+        const onWheel = (e: WheelEvent) => {
+            if (!presentation || isScrollBlocked.current) return;
+            const dir: 'next' | 'prev' = e.deltaY > 0 ? 'next' : 'prev';
+
+            // Check if we're at the boundaries where scrolling is not possible
+            const isLastSlide = currentSlideIndex >= presentation.slides.length - 1;
+            const isFirstSlide = currentSlideIndex <= 0;
+            
+            if ((dir === 'next' && isLastSlide) || (dir === 'prev' && isFirstSlide)) {
+                resetScroll();
+                return;
+            }
+
+            const wrapper = slideWrapperRef.current;
+            if (!wrapper) return;
+            const atBottom = wrapper.scrollTop + wrapper.clientHeight >= wrapper.scrollHeight - EDGE_THRESHOLD;
+            const atTop = wrapper.scrollTop <= EDGE_THRESHOLD;
+            const atEdge = dir === 'next' ? atBottom : atTop;
+
+            if (!atEdge) {
+                resetScroll();
+                return;
+            }
+
+            e.preventDefault();
+            const now = Date.now();
+
+            // Clear progress hold timeout if user starts scrolling again
+            if (progressHoldTimeoutRef.current) {
+                clearTimeout(progressHoldTimeoutRef.current);
+                progressHoldTimeoutRef.current = null;
+            }
+
+            // Reset if direction changed
+            if (scrollDirectionRef.current && dir !== scrollDirectionRef.current) {
+                resetScroll();
+            }
+
+            // Accumulate scroll distance based on wheel delta
+            const scrollDistance = Math.abs(e.deltaY);
+            accumulatedScrollDistanceRef.current += scrollDistance;
+
+            scrollDirectionRef.current = dir;
+            setScrollDirection(dir);
+            lastWheelRef.current = now;
+
+            const progress = accumulatedScrollDistanceRef.current / SCROLL_DISTANCE_THRESHOLD;
+            setScrollProgress(Math.min(progress, 1));
+
+            if (progress >= 1) {
+                if (dir === 'next') {
+                    handleNextSlide();
+                } else {
+                    handlePrevSlide();
+                }
+                resetScroll();
+                return;
+            }
+
+            // Clear existing idle timeout
+            if (idleTimeoutRef.current) {
+                clearTimeout(idleTimeoutRef.current);
+            }
+
+            // Set timeout to hold progress for 3 seconds after user stops scrolling
+            idleTimeoutRef.current = setTimeout(() => {
+                console.log('setTimeout idleTimeoutRef.current');
+                progressHoldTimeoutRef.current = setTimeout(resetScroll, PROGRESS_HOLD_DURATION);
+            }, SCROLL_IDLE_THRESHOLD);
         };
-    }, [currentSlideIndex, presentation]);
+
+        window.addEventListener('wheel', onWheel, { passive: false });
+        return () => {
+            window.removeEventListener('wheel', onWheel);
+            resetScroll();
+            // scrollBlockTimeoutRef.current = null;
+            // if (scrollBlockTimeoutRef.current) {
+            //     clearTimeout(scrollBlockTimeoutRef.current);
+            // }
+        };
+    }, [presentation, handleNextSlide, handlePrevSlide]);
 
     const [isLoading, setIsLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
@@ -126,7 +265,7 @@ export default function PresentationView() {
         }
 
         return () => {
-            setCurrentTheme(null);
+            setCurrentTheme(undefined);
         };
     }, [presentation, themes, setCurrentTheme, defaultThemes]);
 
@@ -193,34 +332,59 @@ export default function PresentationView() {
             <ThemeStylesApplier theme={currentTheme} backgroundSettings={presentation.backgroundSettings}>
                 <div className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`} style={pageStyle}>
                     <main className={styles.main} data-read-only="true">
-                        <div className={styles.slidePage}>
-                            <SlideViewer
-                                slide={presentation.slides[currentSlideIndex]}
-                                fullPage={true}
-                                primaryAccentColor={currentTheme?.colors.primaryAccent || '#000000'}
-                            />
-                        </div>
-                        <div className={styles.navControls}>
-                            <button
-                                onClick={handlePrevSlide}
-                                disabled={currentSlideIndex === 0}
-                                className={styles.navButton}
-                                aria-label="Previous slide"
+                        <AnimatePresence mode="wait" initial={false}>
+                            <motion.div
+                                key={currentSlideIndex}
+                                className={styles.slidePage}
+                                initial={{ opacity: 0, y: scrollDirection === 'next' ? 50 : -50 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: scrollDirection === 'next' ? -50 : 50 }}
+                                transition={{ duration: 0.3 }}
                             >
-                                ←
-                            </button>
-                            <div className={styles.slideCounter}>
-                                {currentSlideIndex + 1} / {presentation.slides.length}
+                                <SlideViewer
+                                    slide={presentation.slides[currentSlideIndex]}
+                                    fullPage={true}
+                                    primaryAccentColor={currentTheme?.colors.primaryAccent || '#000000'}
+                                    wrapperRef={slideWrapperRef}
+                                />
+                            </motion.div>
+                        </AnimatePresence>
+                        <div className={styles.progressBar}>
+                            {presentation.slides.map((_, index) => {
+                                let progressBlockClass = styles.progressBlock;
+                                if (index < currentSlideIndex) {
+                                    progressBlockClass += ` ${styles.progressBlockPast}`;
+                                } else if (index === currentSlideIndex) {
+                                    progressBlockClass += ` ${styles.progressBlockCurrent}`;
+                                }
+
+                                return <div key={index} className={progressBlockClass}></div>;
+                            })}
+                        </div>
+                        {scrollProgress > 0 && (
+                            <div
+                                className={`${styles.scrollProgressContainer} ${
+                                    scrollDirection === 'next'
+                                        ? styles.scrollProgressBottom
+                                        : styles.scrollProgressTop
+                                }`}
+                            >
+                                <svg className={styles.scrollProgressSvg} viewBox="0 0 36 36" width="40" height="40">
+                                    <circle cx="18" cy="18" r="16" stroke="#e5e7eb" strokeWidth="4" fill="none" />
+                                    <circle
+                                        cx="18"
+                                        cy="18"
+                                        r="16"
+                                        stroke="#3b82f6"
+                                        strokeWidth="4"
+                                        fill="none"
+                                        strokeDasharray="100"
+                                        strokeDashoffset={100 - scrollProgress * 100}
+                                        strokeLinecap="round"
+                                    />
+                                </svg>
                             </div>
-                            <button
-                                onClick={handleNextSlide}
-                                disabled={currentSlideIndex === presentation.slides.length - 1}
-                                className={styles.navButton}
-                                aria-label="Next slide"
-                            >
-                                →
-                            </button>
-                        </div>
+                        )}
                         {screenfull.isEnabled && !isFullscreen && (
                             <div className={styles.fullscreenButton}>
                                 <button onClick={handleFullscreen}>
