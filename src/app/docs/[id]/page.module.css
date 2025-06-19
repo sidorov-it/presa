@@ -2,6 +2,12 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background-color: var(--presentation-page-background-color);
+    background-image: var(--presentation-page-background-image);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 .hiddenExportPreview {
