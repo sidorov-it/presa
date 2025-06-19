@@ -46,6 +46,8 @@ export default function PresentationView() {
     const accumulatedScrollTimeRef = useRef(0);
     const idleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const scrollDirectionRef = useRef<'next' | 'prev' | null>(null);
+    const slideWrapperRef = useRef<HTMLDivElement>(null);
+    const EDGE_THRESHOLD = 20;
 
     // Cleanup function to clear theme styles when component unmounts
     useEffect(() => {
@@ -96,14 +98,23 @@ export default function PresentationView() {
 
         const onWheel = (e: WheelEvent) => {
             if (!presentation) return;
-            e.preventDefault();
-            const now = Date.now();
             const dir: 'next' | 'prev' = e.deltaY > 0 ? 'next' : 'prev';
 
-            if (
-                scrollDirectionRef.current &&
-                dir !== scrollDirectionRef.current
-            ) {
+            const wrapper = slideWrapperRef.current;
+            if (!wrapper) return;
+            const atBottom = wrapper.scrollTop + wrapper.clientHeight >= wrapper.scrollHeight - EDGE_THRESHOLD;
+            const atTop = wrapper.scrollTop <= EDGE_THRESHOLD;
+            const atEdge = dir === 'next' ? atBottom : atTop;
+
+            if (!atEdge) {
+                resetScroll();
+                return;
+            }
+
+            e.preventDefault();
+            const now = Date.now();
+
+            if (scrollDirectionRef.current && dir !== scrollDirectionRef.current) {
                 resetScroll();
             }
 
@@ -139,7 +150,6 @@ export default function PresentationView() {
             resetScroll();
         };
     }, [presentation, handleNextSlide, handlePrevSlide]);
-
 
     const [isLoading, setIsLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
@@ -264,6 +274,7 @@ export default function PresentationView() {
                                     slide={presentation.slides[currentSlideIndex]}
                                     fullPage={true}
                                     primaryAccentColor={currentTheme?.colors.primaryAccent || '#000000'}
+                                    wrapperRef={slideWrapperRef}
                                 />
                             </motion.div>
                         </AnimatePresence>
@@ -275,28 +286,16 @@ export default function PresentationView() {
                                         index < currentSlideIndex
                                             ? styles.progressBlockPast
                                             : index === currentSlideIndex
-                                            ? styles.progressBlockCurrent
-                                            : ''
+                                              ? styles.progressBlockCurrent
+                                              : ''
                                     }`}
                                 ></div>
                             ))}
                         </div>
                         {scrollProgress > 0 && (
                             <div className={styles.scrollProgressContainer}>
-                                <svg
-                                    className={styles.scrollProgressSvg}
-                                    viewBox="0 0 36 36"
-                                    width="40"
-                                    height="40"
-                                >
-                                    <circle
-                                        cx="18"
-                                        cy="18"
-                                        r="16"
-                                        stroke="#e5e7eb"
-                                        strokeWidth="4"
-                                        fill="none"
-                                    />
+                                <svg className={styles.scrollProgressSvg} viewBox="0 0 36 36" width="40" height="40">
+                                    <circle cx="18" cy="18" r="16" stroke="#e5e7eb" strokeWidth="4" fill="none" />
                                     <circle
                                         cx="18"
                                         cy="18"
