@@ -420,8 +420,22 @@
     transition: all 0.2s ease;
 }
 
+.buttonDelete:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .buttonDelete:hover {
     opacity: 0.8;
+}
+
+.buttonSpinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
 }
 
 

@@ -30,6 +30,7 @@ export default function DashboardPage() {
     const [newTitle, setNewTitle] = useState('');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [presentationToDelete, setPresentationToDelete] = useState<string | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const defaultThemes = useThemeStore(state => state.defaultThemes);
     const loadDefaultThemes = useThemeStore(state => state.loadDefaultThemes);
@@ -211,6 +212,7 @@ export default function DashboardPage() {
         if (!presentationToDelete) return;
 
         try {
+            setIsDeleting(true);
             const response = await fetch(`/api/presentations/${presentationToDelete}`, {
                 method: 'DELETE',
             });
@@ -225,6 +227,8 @@ export default function DashboardPage() {
             setPresentationToDelete(null);
         } catch (error) {
             console.error('Ошибка при удалении презентации:', error);
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -591,8 +595,8 @@ export default function DashboardPage() {
                                 <button onClick={() => setShowDeleteModal(false)} className={styles.buttonCancel}>
                                     Отмена
                                 </button>
-                                <button onClick={handleDelete} className={styles.buttonDelete}>
-                                    Удалить
+                                <button onClick={handleDelete} disabled={isDeleting} className={styles.buttonDelete}>
+                                    {isDeleting ? <div className={styles.buttonSpinner}></div> : 'Удалить'}
                                 </button>
                             </div>
                         </div>
