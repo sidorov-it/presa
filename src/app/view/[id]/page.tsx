@@ -13,6 +13,7 @@ import { usePresentationStore } from '@/store/presentationStore';
 import screenfull from 'screenfull';
 import { FullscreenIcon } from 'lucide-react';
 import { clearAllThemeStyles } from '@/utils/themeUtils';
+import { Theme } from '@/types/theme';
 
 export default function PresentationView() {
     const params = useParams();
@@ -30,7 +31,7 @@ export default function PresentationView() {
     const themes = useThemeStore(state => state.themes);
     const loadThemes = useThemeStore(state => state.loadThemes);
     const loadDefaultThemes = useThemeStore(state => state.loadDefaultThemes);
-    const currentTheme = useThemeStore(state => state.currentTheme);
+    const currentTheme = useThemeStore(state => state.currentTheme) as Theme;
     const setCurrentTheme = useThemeStore(state => state.setCurrentTheme);
     const defaultThemes = useThemeStore(state => state.defaultThemes);
 
@@ -342,6 +343,7 @@ export default function PresentationView() {
                                 transition={{ duration: 0.3 }}
                             >
                                 <SlideViewer
+                                    theme={currentTheme}
                                     slide={presentation.slides[currentSlideIndex]}
                                     fullPage={true}
                                     primaryAccentColor={currentTheme?.colors.primaryAccent || '#000000'}

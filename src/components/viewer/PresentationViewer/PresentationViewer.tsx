@@ -2,12 +2,14 @@ import React from 'react';
 import { Slide } from '@/types';
 import SlideViewer from '../SlideViewer/SlideViewer';
 import styles from './PresentationViewer.module.css';
+import { Theme } from '@/types/theme';
 
 interface PresentationViewerProps {
     slides: Slide[];
     showImagePlaceholder?: boolean;
     isPreview?: boolean;
     primaryAccentColor: string;
+    theme: Theme;
 }
 
 const PresentationViewer: React.FC<PresentationViewerProps> = ({
@@ -15,6 +17,7 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
     showImagePlaceholder = false,
     isPreview = false,
     primaryAccentColor,
+    theme,
 }) => {
     if (!slides || slides.length === 0) {
         return <div>No slides to display</div>;
@@ -26,6 +29,7 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
                 {slides.map((slide: Slide, index: number) => (
                     <div key={slide.id} id={`slide-${index + 1}`} className={`${styles.slideWrapper} slideWrapper`}>
                         <SlideViewer
+                            theme={theme}
                             slide={slide}
                             showImagePlaceholder={showImagePlaceholder}
                             isPreview={isPreview}

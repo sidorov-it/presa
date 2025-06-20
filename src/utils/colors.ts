@@ -149,11 +149,7 @@ export const getBlockColors = (
  * Generates a palette of chart colors based on slide background and accent color.
  * Colors are rotated around the accent hue and adjusted for contrast.
  */
-export const getChartColors = (
-    slideBgColor: string,
-    accentColor: string,
-    count = 5
-): string[] => {
+export const getChartColors = (slideBgColor: string, accentColor: string, count = 5): string[] => {
     const isDark = tinycolor(slideBgColor).isDark();
     const base = tinycolor(accentColor);
     const step = 360 / count;
@@ -179,12 +175,8 @@ export const getChartAxisColors = (
     const isDark = tinycolor(slideBgColor).isDark();
     const base = tinycolor(accentColor);
 
-    const axisLineColor = isDark
-        ? base.lighten(20).toHexString()
-        : base.darken(20).toHexString();
-    const tickColor = isDark
-        ? base.lighten(40).toHexString()
-        : base.darken(40).toHexString();
+    const axisLineColor = isDark ? base.lighten(20).toHexString() : base.darken(20).toHexString();
+    const tickColor = isDark ? base.lighten(40).toHexString() : base.darken(40).toHexString();
 
     return { axisLineColor, tickColor };
 };

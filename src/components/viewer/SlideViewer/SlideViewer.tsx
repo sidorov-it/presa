@@ -8,6 +8,7 @@ import ViewerTemplateImageWithPlaceholder from '../ViewerTemplateImageWithPlaceh
 
 import styles from '../../editor/SlideEditor/SlideEditor.module.css';
 import localStyles from './SlideViewer.module.css';
+import { Theme } from '@/types/theme';
 
 interface SlideViewerProps {
     slide: Slide;
@@ -22,6 +23,7 @@ interface SlideViewerProps {
     primaryAccentColor: string;
     /** Reference to the scrollable wrapper element */
     wrapperRef?: React.Ref<HTMLDivElement>;
+    theme: Theme;
 }
 
 const SlideViewer: React.FC<SlideViewerProps> = ({
@@ -34,6 +36,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     isPreview = false,
     primaryAccentColor,
     wrapperRef,
+    theme,
 }) => {
     // Get slide background styling
     const getSlideStyle = () => {
@@ -285,10 +288,11 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                     <div className={styles.slideContainer} style={contentStyle}>
                         {slide.layouts.map((layout: Layout) => (
                             <LayoutViewer
+                                theme={theme}
                                 key={layout.id}
                                 layout={layout}
                                 slideId={slide.id}
-                                slideBackground={slide.background?.value || slide.style?.backgroundColor}
+                                slideBackground={slide.background?.value}
                                 primaryAccentColor={primaryAccentColor}
                             />
                         ))}
