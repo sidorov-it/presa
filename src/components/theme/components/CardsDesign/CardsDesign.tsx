@@ -166,8 +166,7 @@ export default function CardsDesign({
             </div>
 
             {/* Image Shape */}
-            {/* FIXME: нужно поправить применение при экспорте в pdf */}
-            {/* <div>
+            <div>
                 <Label>Форма изображения</Label>
                 <div style={{ display: 'flex', marginTop: '0.5rem', gap: '0.5rem', flexWrap: 'wrap' }}>
                     {['default', 'fade', 'diagonal', 'round', 'round-inverse', 'wiggle'].map(option => (
@@ -199,7 +198,7 @@ export default function CardsDesign({
                         </button>
                     ))}
                 </div>
-            </div> */}
+            </div>
         </div>
     );
 }
