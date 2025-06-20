@@ -9,12 +9,12 @@ import { generateId } from '@/utils/id';
 import { useEditorStore } from '@/store/editorStore';
 import { useHistoryStore } from '@/store/historyStore';
 
-import { Image } from '@/elements/image';
+import Image from '@/elements/image';
 import { useMenuStore } from '@/store/menuStore';
 import { useShallow } from 'zustand/react/shallow';
-import Chart from '@/elements/chart/Chart';
+import Chart from '@/elements/chart';
 import SmartLayout from '@/elements/smartLayout/SmartLayout';
-import Box from '@/elements/box/Box';
+import Box from '@/elements/box';
 import getColumnWidths from '@/utils/getColumnWidths';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
 import { MenuItem } from '@/types/templates';

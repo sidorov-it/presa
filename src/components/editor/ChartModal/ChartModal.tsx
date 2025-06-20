@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { ChartElement } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import { ChartSettings } from '@/elements/chart';
-import Chart from '@/elements/chart/Chart';
+import Chart from '@/elements/chart';
 import styles from './ChartModal.module.css';
 
 interface ChartModalProps {

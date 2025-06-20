@@ -6,7 +6,7 @@ import { createNewTheme } from '@/constants/defaultTheme';
 import themeToCSSVariables from '@/utils/themeCssVariables';
 import { Theme } from '@/types/theme';
 
-export default async function SlidePage(props: { 
+export default async function SlidePage(props: {
     params: Promise<{ id: string; index: string }>;
     searchParams: Promise<{ pdf?: string }>;
 }) {
@@ -91,6 +91,7 @@ export default async function SlidePage(props: {
             <div style={themeStyle}>
                 <div style={pageStyle}>
                     <SlideViewer
+                        theme={finalTheme}
                         slide={slide}
                         primaryAccentColor={finalTheme.colors.primaryAccent}
                         fullPage={true}
