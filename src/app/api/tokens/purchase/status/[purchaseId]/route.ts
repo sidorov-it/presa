@@ -7,12 +7,13 @@ import { prisma } from '@/lib/prisma';
 import { getYooKassaService } from '@/services/payments/yookassa';
 
 interface RouteParams {
-    params: {
+    params: Promise<{
         purchaseId: string;
-    };
+    }>;
 }
 
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(request: NextRequest, props: RouteParams) {
+    const params = await props.params;
     try {
         const session = await getServerSession(authOptions);
 

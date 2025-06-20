@@ -1192,3 +1192,37 @@ button {
 .tiptap :where(a:not(:has(span))) {
     color: var(--presentation-link-color);
 }
+
+/* PDF Export Global Styles */
+@media print {
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  
+  * {
+    overflow: visible !important;
+    max-height: none !important;
+    page-break-inside: avoid !important;
+  }
+}
+
+/* PDF Export Utility Classes */
+.pdf-export-body {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  width: 100vw !important;
+  height: auto !important;
+  min-height: auto !important;
+}
+
+.pdf-export-container {
+  width: 100% !important;
+  height: auto !important;
+  min-height: auto !important;
+  overflow: visible !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}

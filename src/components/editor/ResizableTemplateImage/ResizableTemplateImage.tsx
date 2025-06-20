@@ -380,6 +380,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
             className={`${styles.container} ${isSelected ? styles.selected : ''}`}
             style={containerStyle}
             ref={containerRef}
+            data-template-type={templateType}
             onClick={() => {
                 setIsSelected(true);
             }}
