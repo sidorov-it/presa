@@ -264,14 +264,6 @@ const ElementViewer = ({ element, slideBackground, primaryAccentColor }: Element
                         iconType?: string;
                     };
 
-                // Get slide background color (from prop, slide background, or CSS variable)
-                const slideBgColor =
-                    slideBackground ||
-                    // getComputedStyle(document.documentElement)
-                    //     .getPropertyValue('--presentation-slide-background')
-                    //     ?.trim() ||
-                    '#ffffff';
-
                 // Determine block type based on iconType or elementVariant
                 const blockType = boxElement.iconType || element.elementVariant || 'info-box';
 

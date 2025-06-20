@@ -13,7 +13,7 @@ function encodeRFC5987(v: string) {
         .replace(/\*/g, '%2A');
 }
 
-export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
     try {
         const params = await props.params;
         // Check authentication
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
         }
 
         const presentationId = params.id;
-        
+
         // Get slideIndex from query parameters
         const { searchParams } = new URL(request.url);
         const slideIndexParam = searchParams.get('slideIndex');
@@ -54,7 +54,10 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
         // Validate slideIndex if provided
         if (slideIndex !== null) {
             if (slideIndex < 0 || slideIndex >= slides.length) {
-                return NextResponse.json({ error: `Invalid slide index. Must be between 0 and ${slides.length - 1}` }, { status: 400 });
+                return NextResponse.json(
+                    { error: `Invalid slide index. Must be between 0 and ${slides.length - 1}` },
+                    { status: 400 }
+                );
             }
         }
 
@@ -67,7 +70,7 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
 
         // Launch Puppeteer browser
         const browser = await puppeteer.launch({
-            headless: false,
+            headless: true,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
@@ -245,10 +248,9 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
         const file = new Blob([new Uint8Array(pdfBytes)]);
 
         const baseFileName = presentation.title || 'presentation';
-        const fileName = slideIndex !== null 
-            ? encodeRFC5987(`${baseFileName}-slide-${slideIndex}`) 
-            : encodeRFC5987(baseFileName);
-        
+        const fileName =
+            slideIndex !== null ? encodeRFC5987(`${baseFileName}-slide-${slideIndex}`) : encodeRFC5987(baseFileName);
+
         return new Response(file, {
             status: 200,
             headers: {

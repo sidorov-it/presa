@@ -95,7 +95,7 @@ const LayoutViewer = ({ layout, slideId, slideBackground, primaryAccentColor, th
             >
                 {layout.gridStructure.rows.map((row, rowIndex) => (
                     <React.Fragment key={`row-${rowIndex}`}>
-                        {row.cells.map((cell, cellIndex) => {
+                        {row.cells.map((cell) => {
                             // Find elements for this cell
                             const cellElements = layout.elements.filter(element => element.cellId === cell.id);
 
@@ -119,7 +119,7 @@ const LayoutViewer = ({ layout, slideId, slideBackground, primaryAccentColor, th
                                         width: '100%',
                                         height: '100%',
                                         minHeight: layout.isTable ? '3rem' : 'auto',
-                                        ...getCellStyles(rowIndex, cellIndex),
+                                        ...getCellStyles(rowIndex),
                                     }}
                                 >
                                     {cellElements.map(element => (
