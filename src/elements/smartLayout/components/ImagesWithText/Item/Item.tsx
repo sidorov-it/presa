@@ -92,7 +92,7 @@ export default function Item({
                     isWidthRightMenu={true}
                     className={`${styles.image} ${imageShape ? styles[imageShape] : ''}`}
                     style={{
-                        backgroundImage: item.imageUrl ? `url(${item.imageUrl})` : undefined,
+                        // backgroundImage: item.imageUrl ? `url(${item.imageUrl})` : undefined,
                         width: imageWidth ? `calc(${imageWidth}% - 1em)` : undefined,
                     }}
                     elementId={elementId}

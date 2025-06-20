@@ -128,3 +128,9 @@
     box-shadow: 0 0 0 3px rgba(0, 120, 215, 0.8);
     opacity: 1;
 }
+
+.templateImagePlaceholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

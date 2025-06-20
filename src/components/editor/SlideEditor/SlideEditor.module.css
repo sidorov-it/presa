@@ -67,7 +67,7 @@
     /* outline: 2px solid rgba(66, 153, 225, 0.6);
     box-shadow: 0 0 0 0.0625em #E5E0DF,0 0.25em 0.375em -0.0625em rgba(0, 0, 0, 0.1),0 0.125em 0.25em -0.0625em rgba(0, 0, 0, 0.06); */
     outline: 2px solid rgba(58, 63, 75, 0.6);
-    box-shadow: 0 0 0 0.0625em rgba(58, 63, 75, 0.6),0 0.25em 0.375em -0.0625em rgba(0, 0, 0, 0.1),0 0.125em 0.25em -0.0625em rgba(0, 0, 0, 0.06);
+    box-shadow: 0 0 0 0.0625em rgba(58, 63, 75, 0.6), 0 0.25em 0.375em -0.0625em rgba(0, 0, 0, 0.1), 0 0.125em 0.25em -0.0625em rgba(0, 0, 0, 0.06);
     backdrop-filter: none;
     /* background-color: #fff; */
     border-radius: var(--presentation-slide-border-radius);
@@ -77,7 +77,7 @@
     position: absolute;
     inset: 0px;
     outline: 2px solid #806cff;
-    box-shadow: 0 0 0 0.0625em #E5E0DF,0 0.25em 0.375em -0.0625em rgba(0, 0, 0, 0.1),0 0.125em 0.25em -0.0625em rgba(0, 0, 0, 0.06);
+    box-shadow: 0 0 0 0.0625em #E5E0DF, 0 0.25em 0.375em -0.0625em rgba(0, 0, 0, 0.1), 0 0.125em 0.25em -0.0625em rgba(0, 0, 0, 0.06);
     backdrop-filter: none;
     border-radius: var(--presentation-slide-border-radius);
 }
@@ -169,74 +169,142 @@
 }
 
 .slideContainer {
-    position: relative; 
-    width: calc(51.705882352941174em / var(--card-font-scale, 1)); 
-    height: 100%; 
+    position: relative;
+    width: calc(51.705882352941174em / var(--card-font-scale, 1));
+    height: 100%;
     padding: var(--card-inner-padding);
     min-height: calc(min(calc(64.5em / 1), 100vw) / 1.7777777777777777);
     border-style: solid;
 }
 
 /* PDF Export Styles */
+.pdfExport {
+    min-height: calc(min(calc(64.5em / 1), 100vw) / 1.7777777777777777);
+    /* height: calc(min(calc(64.5em / 1), 100vw) / 1.7777777777777777) !important; */
+    width: 100% !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
 .pdfExport .slideWrapper {
-  min-height: auto !important;
-  height: auto !important;
-  overflow: visible !important;
-  box-shadow: none !important;
+    min-height: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: static;
 }
 
 .pdfExport .slideContent {
-  min-height: auto !important;
-  height: auto !important;
-  overflow: visible !important;
+    min-height: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    position: static;
 }
 
 .pdfExport .slideContainer {
-  min-height: auto !important;
-  height: auto !important;
-  overflow: visible !important;
-  padding: 20px !important;
-  display: block !important;
+    min-height: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: 40px;
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 /* Ensure text elements expand properly in PDF */
-.pdfExport p, 
-.pdfExport h1, 
-.pdfExport h2, 
-.pdfExport h3, 
-.pdfExport h4, 
-.pdfExport h5, 
+.pdfExport p,
+.pdfExport h1,
+.pdfExport h2,
+.pdfExport h3,
+.pdfExport h4,
+.pdfExport h5,
 .pdfExport h6,
 .pdfExport ul,
 .pdfExport ol,
 .pdfExport div {
-  overflow-wrap: break-word !important;
-  word-wrap: break-word !important;
-  overflow: visible !important;
-  page-break-inside: avoid !important;
+    overflow-wrap: break-word !important;
+    word-wrap: break-word !important;
+    overflow: visible !important;
+    page-break-inside: avoid !important;
 }
 
 /* Fix layout positioning in PDF */
 .pdfExport [data-layout],
 .pdfExport [data-element] {
-  position: relative !important;
-  overflow: visible !important;
-  page-break-inside: avoid !important;
-}
-
-/* Fix image rendering in PDFs */
-.pdfExport img {
-  max-width: 100% !important;
-  height: auto !important;
-  object-fit: contain !important;
+    position: relative !important;
+    overflow: visible !important;
+    page-break-inside: avoid !important;
 }
 
 /* Ensure columns and grids render properly */
 .pdfExport [data-columns="2"],
 .pdfExport [data-columns="3"],
 .pdfExport [data-grid] {
-  display: flex !important;
-  flex-direction: row !important;
-  flex-wrap: wrap !important;
-  gap: 20px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 20px !important;
+}
+
+/* Fix ResizableTemplateImage for PDF export */
+/* .pdfExport [data-template-type="imageTop"] {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 0 !important;
+}
+
+.pdfExport [data-template-type="imageLeft"] {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    height: 100% !important;
+    z-index: 0 !important;
+}
+
+.pdfExport [data-template-type="imageRight"] {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    height: 100% !important;
+    z-index: 0 !important;
+}
+
+.pdfExport [data-template-type="imageBottom"] {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 0 !important;
+}
+
+.pdfExport [data-template-type="imageBackground"] {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    height: 100% !important;
+    width: 100% !important;
+    z-index: 0 !important;
+} */
+
+/* Hide resize handles in PDF export */
+.pdfExport [data-template-type] .resizeHandleLeft,
+.pdfExport [data-template-type] .resizeHandleRight,
+.pdfExport [data-template-type] .resizeHandleTop,
+.pdfExport [data-template-type] .resizeHandleBottom {
+    display: none !important;
 }

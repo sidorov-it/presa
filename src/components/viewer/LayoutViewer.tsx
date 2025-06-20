@@ -1,6 +1,5 @@
 import { Layout } from '@/types';
 import ElementViewer from './ElementViewer';
-import { useMemo } from 'react';
 import { ViewerElement } from '@/types/elements';
 import { type Element } from '@/types';
 import generateGridTemplateAreas from '@/utils/generateGridTemplateAreas';
@@ -24,7 +23,8 @@ const LayoutViewer = ({ layout, slideId, slideBackground, primaryAccentColor }: 
         return `repeat(${columns}, 1fr)`;
     };
 
-    const gridTemplateAreas = useMemo(() => generateGridTemplateAreas(layout.gridStructure), [layout.gridStructure]);
+    // Calculate grid template areas without useMemo for server compatibility
+    const gridTemplateAreas = generateGridTemplateAreas(layout.gridStructure);
 
     return (
         <div

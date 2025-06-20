@@ -56,7 +56,6 @@ const defaultData = [
     { name: 'Q4', value: 500 },
 ];
 
-
 // Types for resize direction
 type ResizeDirection = 'top' | 'right' | 'bottom' | 'left' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
@@ -491,10 +490,7 @@ const Chart: React.FC<ChartProps> = ({
                                 />
                             )}
                             {showLabels && (
-                                <YAxis
-                                    stroke={axisColors.axisLineColor}
-                                    tick={{ fill: axisColors.tickColor }}
-                                />
+                                <YAxis stroke={axisColors.axisLineColor} tick={{ fill: axisColors.tickColor }} />
                             )}
                             {showValues && <Tooltip />}
                             <Legend
@@ -572,10 +568,7 @@ const Chart: React.FC<ChartProps> = ({
                                 />
                             )}
                             {showLabels && (
-                                <YAxis
-                                    stroke={axisColors.axisLineColor}
-                                    tick={{ fill: axisColors.tickColor }}
-                                />
+                                <YAxis stroke={axisColors.axisLineColor} tick={{ fill: axisColors.tickColor }} />
                             )}
                             {showValues && <Tooltip />}
                             <Legend
@@ -622,10 +615,7 @@ const Chart: React.FC<ChartProps> = ({
                                 dataKey="value"
                             >
                                 {pieData.map((entry, index) => (
-                                    <Cell
-                                        key={`cell-${index}`}
-                                        fill={chartColors[index % chartColors.length]}
-                                    />
+                                    <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
                                 ))}
                             </Pie>
                             {showValues && <Tooltip />}
@@ -666,10 +656,7 @@ const Chart: React.FC<ChartProps> = ({
                                 dataKey="value"
                             >
                                 {donutData.map((entry, index) => (
-                                    <Cell
-                                        key={`cell-${index}`}
-                                        fill={chartColors[index % chartColors.length]}
-                                    />
+                                    <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
                                 ))}
                             </Pie>
                             {showValues && <Tooltip />}

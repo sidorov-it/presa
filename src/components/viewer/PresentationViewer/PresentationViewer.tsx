@@ -24,7 +24,7 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
         <div className={styles.viewerContainer}>
             <div className={styles.allSlidesContainer}>
                 {slides.map((slide: Slide, index: number) => (
-                    <div key={slide.id} id={`slide-${index + 1}`} className={styles.slideWrapper}>
+                    <div key={slide.id} id={`slide-${index + 1}`} className={`${styles.slideWrapper} slideWrapper`}>
                         <SlideViewer
                             slide={slide}
                             showImagePlaceholder={showImagePlaceholder}

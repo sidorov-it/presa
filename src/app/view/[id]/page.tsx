@@ -147,7 +147,7 @@ export default function PresentationView() {
             // Check if we're at the boundaries where scrolling is not possible
             const isLastSlide = currentSlideIndex >= presentation.slides.length - 1;
             const isFirstSlide = currentSlideIndex <= 0;
-            
+
             if ((dir === 'next' && isLastSlide) || (dir === 'prev' && isFirstSlide)) {
                 resetScroll();
                 return;
@@ -364,9 +364,7 @@ export default function PresentationView() {
                         {scrollProgress > 0 && (
                             <div
                                 className={`${styles.scrollProgressContainer} ${
-                                    scrollDirection === 'next'
-                                        ? styles.scrollProgressBottom
-                                        : styles.scrollProgressTop
+                                    scrollDirection === 'next' ? styles.scrollProgressBottom : styles.scrollProgressTop
                                 }`}
                             >
                                 <svg className={styles.scrollProgressSvg} viewBox="0 0 36 36" width="40" height="40">

@@ -188,7 +188,13 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                         ...baseStyle,
                         position: 'relative',
                         zIndex: 2,
-                        marginLeft: imageWidth,
+                        ...(isPdfExport
+                            ? {
+                                  paddingLeft: `calc(${imageWidth} + var(--card-inner-padding-x))`,
+                              }
+                            : {
+                                  marginLeft: imageWidth,
+                              }),
                         width: remainingWidth,
                     };
                 case 'imageRight':
@@ -204,7 +210,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         }
 
         return baseStyle;
-    }, [slide]);
+    }, [slide, isPdfExport]);
 
     // let minHeight;
     let height;

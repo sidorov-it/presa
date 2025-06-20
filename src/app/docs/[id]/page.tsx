@@ -16,7 +16,7 @@ import { useThemeStore } from '@/store/themeStore';
 import { Theme } from '@/types/theme';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { FaEye, FaUser, FaSignOutAlt, FaCog, FaDownload } from 'react-icons/fa';
+import { FaEye, FaUser, FaSignOutAlt, FaCog } from 'react-icons/fa';
 import { HiOutlineCreditCard } from 'react-icons/hi2';
 import BackgroundSettingsModal from '@/components/editor/BackgroundSettingsModal/BackgroundSettingsModal';
 import { HiOutlineCog6Tooth } from 'react-icons/hi2';
@@ -36,6 +36,7 @@ import ThemeToggle from '@/components/ui/ThemeToggle';
 import Logo from '@/components/icons/Logo/Logo';
 import MobileWarningOverlay from '@/components/MobileWarningOverlay/MobileWarningOverlay';
 import { clearAllThemeStyles } from '@/utils/themeUtils';
+import { SimplePdfExportButton } from '@/components/export';
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -447,7 +448,11 @@ export default function PresentationEditorPage() {
                                         </button>
                                     </Tooltip>
 
-                                    <Tooltip content="Скачать">
+                                    <SimplePdfExportButton
+                                        presentationId={presentation.id}
+                                        presentationTitle={presentation.title}
+                                    />
+                                    {/* <Tooltip content="Скачать">
                                         <button
                                             onClick={handleDownloadPresentation}
                                             className={styles.downloadButton}
@@ -456,7 +461,7 @@ export default function PresentationEditorPage() {
                                         >
                                             <FaDownload className={styles.downloadIcon} aria-hidden="true" />
                                         </button>
-                                    </Tooltip>
+                                    </Tooltip> */}
 
                                     <ThemeToggle />
 

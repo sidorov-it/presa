@@ -1,3 +1,4 @@
+'use client';
 import { ChartElement, SmartLayoutElement, SmartLayoutItem, Element } from '@/types';
 import { ViewerElement } from '@/types/elements';
 import {
@@ -63,15 +64,11 @@ const ElementViewer = ({ element, slideBackground, primaryAccentColor }: Element
         // Determine slide background and accent colors from props or CSS variables
         const slideBgColor =
             slideBackground ||
-            getComputedStyle(document.documentElement)
-                .getPropertyValue('--presentation-slide-background')
-                ?.trim() ||
+            // getComputedStyle(document.documentElement).getPropertyValue('--presentation-slide-background')?.trim() ||
             '#ffffff';
         const accentColor =
             primaryAccentColor ||
-            getComputedStyle(document.documentElement)
-                .getPropertyValue('--presentation-primary-accent')
-                ?.trim() ||
+            // getComputedStyle(document.documentElement).getPropertyValue('--presentation-primary-accent')?.trim() ||
             '#8884d8';
 
         const chartColors = getChartColors(slideBgColor, accentColor);
@@ -90,10 +87,7 @@ const ElementViewer = ({ element, slideBackground, primaryAccentColor }: Element
                                     stroke={axisColors.axisLineColor}
                                     tick={{ fill: axisColors.tickColor }}
                                 />
-                                <YAxis
-                                    stroke={axisColors.axisLineColor}
-                                    tick={{ fill: axisColors.tickColor }}
-                                />
+                                <YAxis stroke={axisColors.axisLineColor} tick={{ fill: axisColors.tickColor }} />
                                 <Tooltip />
                                 <Legend />
                                 <Bar dataKey="value" fill={chartColors[0]} isAnimationActive={false} />
@@ -113,10 +107,7 @@ const ElementViewer = ({ element, slideBackground, primaryAccentColor }: Element
                                     stroke={axisColors.axisLineColor}
                                     tick={{ fill: axisColors.tickColor }}
                                 />
-                                <YAxis
-                                    stroke={axisColors.axisLineColor}
-                                    tick={{ fill: axisColors.tickColor }}
-                                />
+                                <YAxis stroke={axisColors.axisLineColor} tick={{ fill: axisColors.tickColor }} />
                                 <Tooltip />
                                 <Legend />
                                 <Line
@@ -276,9 +267,9 @@ const ElementViewer = ({ element, slideBackground, primaryAccentColor }: Element
                 // Get slide background color (from prop, slide background, or CSS variable)
                 const slideBgColor =
                     slideBackground ||
-                    getComputedStyle(document.documentElement)
-                        .getPropertyValue('--presentation-slide-background')
-                        ?.trim() ||
+                    // getComputedStyle(document.documentElement)
+                    //     .getPropertyValue('--presentation-slide-background')
+                    //     ?.trim() ||
                     '#ffffff';
 
                 // Determine block type based on iconType or elementVariant
