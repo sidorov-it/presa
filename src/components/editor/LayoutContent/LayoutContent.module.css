@@ -136,5 +136,10 @@
     height: 100%;
     cursor: col-resize;
     z-index: 30;
-    background-color: #1E1E1E;
+    background-color: transparent;
+}
+
+.tableColumnResizeBorderActive, .tableColumnResizeBorder:hover {
+    background-color: var(--chakra-colors-blue-500);
+    border-color: var(--chakra-colors-blue-500);
 }
