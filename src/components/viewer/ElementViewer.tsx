@@ -330,7 +330,8 @@ const ElementViewer = ({ element, slideBackground, primaryAccentColor }: Element
     return (
         <div
             style={{
-                // ...getElementStyles(),
+                ...getElementStyles(),
+                margin: '0.9em 0',
                 zIndex: 0,
                 transform: element.transform || 'none',
             }}

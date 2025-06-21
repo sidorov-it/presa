@@ -91,6 +91,7 @@ const LayoutViewer = ({ layout, slideId, slideBackground, primaryAccentColor, th
                     marginBottom: '1.125em',
                     gridTemplateColumns: getGridTemplateColumns(),
                     gridTemplateAreas: gridTemplateAreas,
+                    fontSize: '18px',
                 }}
             >
                 {layout.gridStructure.rows.map((row, rowIndex) => (

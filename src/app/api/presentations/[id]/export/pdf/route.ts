@@ -13,7 +13,7 @@ function encodeRFC5987(v: string) {
         .replace(/\*/g, '%2A');
 }
 
-export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+const handleRequest = async (request: NextRequest, props: { params: Promise<{ id: string }> }) => {
     try {
         const params = await props.params;
         // Check authentication
@@ -263,4 +263,12 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
         console.error('PDF generation error:', error);
         return NextResponse.json({ error: 'Failed to generate PDF' }, { status: 500 });
     }
+};
+
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+    return handleRequest(request, props);
+}
+
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+    return handleRequest(request, props);
 }

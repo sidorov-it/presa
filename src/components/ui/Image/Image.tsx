@@ -64,8 +64,9 @@ export const Image: React.FC<ImageProps> = ({
                     alt={alt}
                     style={{
                         width: '100%',
-                        height: 'auto',
-                        objectFit: 'contain',
+                        // height is controlled via CSS to allow proper sizing in different rendering contexts (e.g. PDF export)
+                        // height: 'auto',
+                        // objectFit: 'contain',
                         display: 'block',
                         cursor: isWidthRightMenu ? 'pointer' : undefined,
                     }}

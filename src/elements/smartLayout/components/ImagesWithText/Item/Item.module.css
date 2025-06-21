@@ -12,19 +12,58 @@
     display: flex;
     justify-content: center;
     align-items: flex-start;
+    position: relative;
+    clip-path: inset(0 0 0 0);
 }
 
 .image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
-    height: auto;
-    object-fit: contain;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
     display: block;
 }
 
-.square { aspect-ratio: 1 / 1; }
-.landscape { aspect-ratio: 16 / 9; }
-.portrait { aspect-ratio: 9 / 16; }
-.circle { border-radius: 50%; overflow: hidden; aspect-ratio: 1 / 1; }
+/* Fallback for environments (e.g. Chrome print/Puppeteer PDF) that ignore the CSS aspect-ratio property */
+.square,
+.landscape,
+.portrait,
+.circle {
+    position: relative;
+}
+
+.square::before,
+.landscape::before,
+.portrait::before,
+.circle::before {
+    content: '';
+    display: block;
+    width: 100%;
+}
+
+/* Maintain the same visual aspect ratios as the "aspect-ratio" declarations */
+.square::before,
+.circle::before {
+    padding-top: 100%; /* 1 / 1 */
+}
+
+.landscape::before {
+    padding-top: 56.25%; /* 9 / 16 */
+}
+
+.portrait::before {
+    padding-top: 177.78%; /* 16 / 9 */
+}
+
+.circle {
+    border-radius: 50%;
+    overflow: hidden;
+}
 
 .content {
     align-items: inherit;
