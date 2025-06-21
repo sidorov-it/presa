@@ -1,7 +1,7 @@
 import { BoxElement, TipTapRefs } from '@/types';
 import { Theme } from '@/types/theme';
 import { Box } from '@chakra-ui/react';
-import Tiptap from '@/components/tiptap/Tiptap';
+import Tiptap from '@/components/tiptap/Tiptap/Tiptap';
 import { CSSProperties, RefObject, useEffect, useMemo, useState } from 'react';
 import { BoxIconOptions } from '@/components/editor/Menus/BubbleMenus/BoxBubbleMenu/BoxIconOptions';
 import styles from './Box.module.css';

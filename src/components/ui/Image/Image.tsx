@@ -3,7 +3,6 @@
 import { ImagePlaceholder } from '../ImagePlaceholder/ImagePlaceholder';
 import React from 'react';
 import { useMenuStore } from '@/store/menuStore';
-import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 export type ImageProps = {
     imageUrl: string;
@@ -19,6 +18,7 @@ export type ImageProps = {
     slideId?: string;
     layoutId?: string;
     itemId?: string; // For SmartLayout items
+    isReadOnly: boolean;
 } & React.HTMLAttributes<HTMLDivElement>;
 
 export const Image: React.FC<ImageProps> = ({
@@ -34,6 +34,7 @@ export const Image: React.FC<ImageProps> = ({
     slideId,
     layoutId,
     itemId,
+    isReadOnly = false,
     ...rest
 }) => {
     const handleImageClick = () => {
@@ -50,8 +51,6 @@ export const Image: React.FC<ImageProps> = ({
             });
         }
     };
-
-    const isReadOnly = useReadOnly();
 
     if (isReadOnly && !imageUrl) {
         return null;

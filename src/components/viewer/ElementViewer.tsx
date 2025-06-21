@@ -1,5 +1,5 @@
 'use client';
-import { ChartElement, SmartLayoutElement, SmartLayoutItem, Element } from '@/types';
+import { ChartElement, Element, SmartLayoutElement } from '@/types';
 import { ViewerElement } from '@/types/elements';
 import {
     BarChart,
@@ -21,6 +21,8 @@ import styles from './ElementViewer.module.css';
 import { ElementType } from '@/types/elements';
 import { getBlockColors, getChartColors, getChartAxisColors } from '@/utils/colors';
 import { BoxIconOptions } from '@/components/editor/Menus/BubbleMenus/BoxBubbleMenu/BoxIconOptions';
+import SmartLayoutComponent from '@/elements/smartLayout/SmartLayoutComponent';
+import SmartLayoutView from '@/elements/smartLayout/SmartLayoutView';
 
 interface ElementViewerProps {
     element: Element & ViewerElement;
@@ -215,33 +217,43 @@ const ElementViewer = ({ element, slideBackground, primaryAccentColor }: Element
 
             case ElementType.SMART_LAYOUT: {
                 // For smart layout elements, render the layout with its items
-                const smartLayout = element as unknown as SmartLayoutElement;
+                // const smartLayout = element as unknown as SmartLayoutElement;
+                // return (
+                //     <div className={styles.smartLayout} data-test="smart-layout">
+                //         {smartLayout.items?.map((item: SmartLayoutItem) => (
+                //             <div key={item.id} className={styles.smartLayoutItem}>
+                //                 {item.imageUrl && (
+                //                     <img
+                //                         src={item.imageUrl}
+                //                         alt={item.title || 'Item image'}
+                //                         className={styles.smartLayoutItemImage}
+                //                     />
+                //                 )}
+                //                 {item.title && (
+                //                     <span
+                //                         dangerouslySetInnerHTML={{ __html: item.title }}
+                //                         className={styles.smartLayoutItemTitle}
+                //                     />
+                //                 )}
+                //                 {item.text && (
+                //                     <span
+                //                         dangerouslySetInnerHTML={{ __html: item.text }}
+                //                         className={styles.smartLayoutItemDescription}
+                //                     />
+                //                 )}
+                //             </div>
+                //         ))}
+                //     </div>
+                // );
                 return (
-                    <div className={styles.smartLayout} data-test="smart-layout">
-                        {smartLayout.items?.map((item: SmartLayoutItem) => (
-                            <div key={item.id} className={styles.smartLayoutItem}>
-                                {item.imageUrl && (
-                                    <img
-                                        src={item.imageUrl}
-                                        alt={item.title || 'Item image'}
-                                        className={styles.smartLayoutItemImage}
-                                    />
-                                )}
-                                {item.title && (
-                                    <span
-                                        dangerouslySetInnerHTML={{ __html: item.title }}
-                                        className={styles.smartLayoutItemTitle}
-                                    />
-                                )}
-                                {item.text && (
-                                    <span
-                                        dangerouslySetInnerHTML={{ __html: item.text }}
-                                        className={styles.smartLayoutItemDescription}
-                                    />
-                                )}
-                            </div>
-                        ))}
-                    </div>
+                    <SmartLayoutView
+                        element={element as SmartLayoutElement}
+                        presentationId={''}
+                        slideId={''}
+                        layoutId={''}
+                        tiptapRefs={null}
+                        isFocused={false}
+                    />
                 );
             }
 

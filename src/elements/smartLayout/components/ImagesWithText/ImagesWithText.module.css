@@ -38,3 +38,8 @@
     border-radius: 2px;
 }
 
+.imageViewer {
+    max-height: 100%;
+    object-fit: cover;
+    object-position: top;
+}

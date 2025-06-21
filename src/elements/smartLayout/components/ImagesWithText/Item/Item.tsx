@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/img-redundant-alt */
-import Tiptap from '@/components/tiptap/Tiptap';
+import Tiptap from '@/components/tiptap/Tiptap/Tiptap';
 import { ImageShape, SmartLayoutElement, SmartLayoutItem, TipTapRefs } from '@/types';
 import { RefObject } from 'react';
 import ItemWrapper from '../../ItemWrapper/ItemWrapper';
@@ -13,6 +13,7 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { useAIImageStore } from '@/store/aiImageStore';
 import Image from '@/components/ui/Image/Image';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
+import getImageWidth from '../getImageWidth';
 
 type ItemProps = {
     itemId: string;
@@ -61,8 +62,7 @@ export default function Item({
     const aiImageStore = useAIImageStore();
     const isGenerating = aiImageStore.isGenerating(aiStoreId);
 
-    const imageWidthCoof = 14;
-    const imageWidth = 30 + imageWidthCoof * (imageSize - 1);
+    const imageWidth = getImageWidth(imageSize);
 
     return (
         <ItemWrapper
@@ -100,6 +100,7 @@ export default function Item({
                     slideId={slideId}
                     layoutId={layoutId}
                     itemId={item.id}
+                    isReadOnly={isReadOnly}
                 />
             )}
             <div className={styles.content}>

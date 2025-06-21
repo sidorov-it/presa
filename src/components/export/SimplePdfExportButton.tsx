@@ -1,4 +1,8 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { FaDownload, FaSpinner } from 'react-icons/fa';
+import { Tooltip } from '@/components/ui/tooltip';
+import styles from './SimplePdfExportButton.module.css';
+import { toast } from 'sonner';
 
 interface SimplePdfExportButtonProps {
     presentationId: string;
@@ -9,9 +13,52 @@ interface SimplePdfExportButtonProps {
 const SimplePdfExportButton: React.FC<SimplePdfExportButtonProps> = ({
     presentationId,
     presentationTitle = 'presentation',
-    className = '',
 }) => {
     const [isExporting, setIsExporting] = useState(false);
+
+    const exportPresentationToPdf = useCallback(async (presentationId: string, presentationTitle: string) => {
+        return new Promise((resolve, reject) => {
+            try {
+                fetch(`/api/presentations/${presentationId}/export/pdf`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            response.json().then(error => {
+                                throw new Error(error.error || 'Failed to export PDF');
+                            });
+                        }
+
+                        response
+                            .blob()
+                            .then(pdfBlob => {
+                                const url = window.URL.createObjectURL(pdfBlob);
+                                const link = document.createElement('a');
+                                link.href = url;
+                                link.download = `${presentationTitle}.pdf`;
+
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                window.URL.revokeObjectURL(url);
+
+                                resolve(true);
+                            })
+                            .catch(error => {
+                                reject(error);
+                            });
+                    })
+                    .catch(error => {
+                        reject(error);
+                    });
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }, []);
 
     const handleExportToPdf = async () => {
         if (!presentationId) {
@@ -22,31 +69,20 @@ const SimplePdfExportButton: React.FC<SimplePdfExportButtonProps> = ({
         setIsExporting(true);
 
         try {
-            const response = await fetch(`/api/presentations/${presentationId}/export/pdf`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
+            const exportPromise = exportPresentationToPdf(presentationId, presentationTitle);
+
+            toast.promise(exportPromise, {
+                loading: 'Подготавливаем PDF для скачивания. Пожалуйста, не закрывайте эту страницу.',
+                success: () => {
+                    setIsExporting(false);
+                    return 'Презентация успешно экспортирована в PDF';
+                },
+                error: err => {
+                    console.error('Error exporting presentation to PDF:', err);
+                    setIsExporting(false);
+                    return 'Произошла ошибка при экспорте. Попробуйте еще раз.';
                 },
             });
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || 'Failed to export PDF');
-            }
-
-            const pdfBlob = await response.blob();
-            const url = window.URL.createObjectURL(pdfBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `${presentationTitle}.pdf`;
-            
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-
-            alert('PDF exported successfully');
-
         } catch (error) {
             console.error('PDF export error:', error);
             alert(`Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -56,23 +92,21 @@ const SimplePdfExportButton: React.FC<SimplePdfExportButtonProps> = ({
     };
 
     return (
-        <button
-            onClick={handleExportToPdf}
-            disabled={isExporting}
-            className={`pdf-export-btn ${className}`}
-            type="button"
-            style={{
-                padding: '8px 16px',
-                backgroundColor: isExporting ? '#ccc' : '#007bff',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: isExporting ? 'not-allowed' : 'pointer',
-            }}
-        >
-            {isExporting ? 'Exporting...' : 'Export PDF'}
-        </button>
+        <Tooltip content="Скачать">
+            <button
+                onClick={handleExportToPdf}
+                // className={styles.downloadButton}
+                aria-label="Скачать презентацию"
+                disabled={isExporting}
+            >
+                {isExporting ? (
+                    <FaSpinner aria-hidden="true" className={styles.spinner} />
+                ) : (
+                    <FaDownload aria-hidden="true" />
+                )}
+            </button>
+        </Tooltip>
     );
 };
 
-export default SimplePdfExportButton; 
+export default SimplePdfExportButton;

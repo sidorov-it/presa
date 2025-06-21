@@ -95,7 +95,7 @@ const LayoutViewer = ({ layout, slideId, slideBackground, primaryAccentColor, th
             >
                 {layout.gridStructure.rows.map((row, rowIndex) => (
                     <React.Fragment key={`row-${rowIndex}`}>
-                        {row.cells.map((cell) => {
+                        {row.cells.map(cell => {
                             // Find elements for this cell
                             const cellElements = layout.elements.filter(element => element.cellId === cell.id);
 

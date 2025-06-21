@@ -30,7 +30,6 @@ type ResizeDirection = 'top' | 'right' | 'bottom' | 'left' | 'top-left' | 'top-r
 const ImageComponent: React.FC<ImageComponentProps> = ({
     element,
     className = '',
-    presentationId,
     slideId,
     layoutId,
     hasMultipleCells,
@@ -53,7 +52,6 @@ const ImageComponent: React.FC<ImageComponentProps> = ({
 
     const containerRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
-
 
     const handleImageLoad = () => {
         // Сохраняем соотношение сторон изображения при загрузке

@@ -6,7 +6,7 @@ import { SmartLayoutElement, SmartLayoutItem, TipTapRefs } from '@/types';
 import { useShallow } from 'zustand/react/shallow';
 import { generateId } from '@/utils/id';
 import { HiPlus } from 'react-icons/hi2';
-import Tiptap from '@/components/tiptap/Tiptap';
+import Tiptap from '@/components/tiptap/Tiptap/Tiptap';
 import ItemWrapper from '../ItemWrapper/ItemWrapper';
 
 import styles from './TextBoxes.module.css';

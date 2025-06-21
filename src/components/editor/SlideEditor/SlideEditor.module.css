@@ -183,7 +183,7 @@
     min-height: calc(min(calc(64.5em / 1), 100vw) / 1.7777777777777777);
     /* height: calc(min(calc(64.5em / 1), 100vw) / 1.7777777777777777) !important; */
     width: 100% !important;
-    overflow: visible !important;
+    /* overflow: visible !important; */
     padding: 0 !important;
     margin: 0 !important;
 }
@@ -191,10 +191,10 @@
 .pdfExport .slideWrapper {
     min-height: auto !important;
     height: auto !important;
-    overflow: visible !important;
+    /* overflow: visible !important; */
     box-shadow: none !important;
     border: none !important;
-    width: 100% !important;
+    /* width: 100% !important; */
     max-width: none !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -204,7 +204,7 @@
 .pdfExport .slideContent {
     min-height: auto !important;
     height: auto !important;
-    overflow: visible !important;
+    /* overflow: visible !important; */
     border: none !important;
     box-shadow: none !important;
     border-radius: 0 !important;
@@ -214,10 +214,10 @@
 .pdfExport .slideContainer {
     min-height: auto !important;
     height: auto !important;
-    overflow: visible !important;
+    /* overflow: visible !important; */
     padding: 40px;
     display: block !important;
-    width: 100% !important;
+    /* width: 100% !important; */
     box-sizing: border-box !important;
 }
 
@@ -234,7 +234,7 @@
 .pdfExport div {
     overflow-wrap: break-word !important;
     word-wrap: break-word !important;
-    overflow: visible !important;
+    /* overflow: visible !important; */
     page-break-inside: avoid !important;
 }
 
@@ -242,7 +242,7 @@
 .pdfExport [data-layout],
 .pdfExport [data-element] {
     position: relative !important;
-    overflow: visible !important;
+    /* overflow: visible !important; */
     page-break-inside: avoid !important;
 }
 

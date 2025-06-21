@@ -1,5 +1,5 @@
 /* eslint-disable indent */
-import Tiptap from '@/components/tiptap/Tiptap';
+import Tiptap from '@/components/tiptap/Tiptap/Tiptap';
 import styles from './ElementContent.module.css';
 import DragHandler from '../DragHandler';
 import { memo, RefObject, useCallback, useMemo, useState } from 'react';
