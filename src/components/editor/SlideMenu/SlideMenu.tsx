@@ -66,6 +66,7 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
 
     const tableRowIndex = useMenuStore(state => state.tableRowIndex);
     const tableColumnIndex = useMenuStore(state => state.tableColumnIndex);
+    const columnIndex = useMenuStore(state => state.columnIndex);
 
     const cell = getCell(slideId, layoutId, cellId);
     const element = getElement(slideId, layoutId, elementId);
@@ -151,19 +152,19 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
         };
     }, [isOpen, slideId, elementId, elementType, layoutId, tableRowIndex, tableColumnIndex, cell, isInTable]);
 
-    const handleAddColumnLeft = useCallback(() => {
-        if (Number.isInteger(tableColumnIndex)) {
-            addColumnLeft(tableColumnIndex!);
+    const handleAddCellLeft = useCallback(() => {
+        if (Number.isInteger(columnIndex)) {
+            addColumnLeft(columnIndex!);
             useMenuStore.getState().closeMenu();
         }
-    }, [tableColumnIndex, addColumnLeft]);
+    }, [columnIndex, addColumnLeft]);
 
-    const handleAddColumnRight = useCallback(() => {
-        if (Number.isInteger(tableColumnIndex)) {
-            addColumnRight(tableColumnIndex!);
+    const handleAddCellRight = useCallback(() => {
+        if (Number.isInteger(columnIndex)) {
+            addColumnRight(columnIndex!);
             useMenuStore.getState().closeMenu();
         }
-    }, [tableColumnIndex, addColumnRight]);
+    }, [columnIndex, addColumnRight]);
 
     const handleDuplicateColumn = useCallback(() => {
         duplicateColumn();
@@ -211,12 +212,8 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
             case 'cell':
                 return (
                     <>
-                        <MenuItem icon={<AddColumnLeftIcon />} label="Add column left" onClick={handleAddColumnLeft} />
-                        <MenuItem
-                            icon={<AddColumnRightIcon />}
-                            label="Add column right"
-                            onClick={handleAddColumnRight}
-                        />
+                        <MenuItem icon={<AddColumnLeftIcon />} label="Add cell left" onClick={handleAddCellLeft} />
+                        <MenuItem icon={<AddColumnRightIcon />} label="Add cell right" onClick={handleAddCellRight} />
                         <MenuItem icon={<DuplicateIcon />} label="Duplicate" onClick={handleDuplicateColumn} />
                         <MenuItem
                             icon={<AlignTopIcon />}

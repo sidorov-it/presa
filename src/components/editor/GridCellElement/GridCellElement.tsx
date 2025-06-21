@@ -385,9 +385,10 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             cellId: cell.id,
             tableColumnIndex: null,
             tableRowIndex: null,
+            columnIndex: columnIndex,
             tableId: null,
         });
-    }, [slideId, layoutId, cell.id]);
+    }, [slideId, layoutId, cell.id, columnIndex]);
 
     const handleKeyDownCellDragHandle = useCallback(
         (e: any) => {

@@ -46,7 +46,7 @@ const LayoutViewer = ({ layout, slideId, slideBackground, primaryAccentColor, th
         if (isDarkBackground) {
             // Dark background: even rows lighter, odd rows transparent
             return {
-                evenRowColor: 'rgba(255, 255, 255, 0.3)',
+                evenRowColor: 'rgba(255, 255, 255, 0.05)',
                 oddRowColor: 'transparent',
             };
         } else {

@@ -35,6 +35,7 @@ export interface MenuState {
     tableRowIndex: number | null;
     tableColumnIndex: number | null;
     tableId: string | null;
+    columnIndex: number | null;
 
     sideMenuState: {
         isOpen: boolean;
@@ -64,6 +65,7 @@ export interface MenuState {
         tableColumnIndex?: number | null;
         tableId?: string | null;
         smartLayoutItemId?: string | null;
+        columnIndex?: number | null;
     }) => void;
 
     openSideMenu: (sideMenuId: string, sideMenuData: any) => void;
@@ -159,6 +161,7 @@ export const useMenuStore = create<MenuState>()(
             tableColumnIndex: null,
             tableId: null,
             smartLayoutItemId: null,
+            columnIndex: null,
 
             sideMenuState: {
                 isOpen: false,
@@ -214,6 +217,7 @@ export const useMenuStore = create<MenuState>()(
                     tableId: menuData.tableId ?? null,
                     smartLayoutItemId: menuData.smartLayoutItemId ?? null,
                     isInTable: isInTable ?? false,
+                    columnIndex: menuData.columnIndex ?? null,
                 });
 
                 set({
@@ -229,6 +233,7 @@ export const useMenuStore = create<MenuState>()(
                     tableId: menuData.tableId ?? null,
                     smartLayoutItemId: menuData.smartLayoutItemId ?? null,
                     isInTable,
+                    columnIndex: menuData.columnIndex ?? null,
                 });
             },
 
@@ -270,6 +275,7 @@ export const useMenuStore = create<MenuState>()(
                     tableId: null,
                     cellId: null,
                     smartLayoutItemId: null,
+                    columnIndex: null,
                 });
             },
 
@@ -365,19 +371,19 @@ export const useMenuStore = create<MenuState>()(
 
             // Column actions
             addColumnLeft: () => {
-                const { presentationId, slideId, layoutId, tableColumnIndex } = get();
-                if (presentationId && slideId && layoutId && Number.isInteger(tableColumnIndex)) {
+                const { presentationId, slideId, layoutId, columnIndex } = get();
+                if (presentationId && slideId && layoutId && Number.isInteger(columnIndex)) {
                     const { addColumnLeft: addColumnLeftInStore } = usePresentationStore.getState();
-                    addColumnLeftInStore(presentationId, slideId, layoutId, tableColumnIndex!);
+                    addColumnLeftInStore(presentationId, slideId, layoutId, columnIndex!);
                     get().closeMenu();
                 }
             },
 
             addColumnRight: () => {
-                const { presentationId, slideId, layoutId, tableColumnIndex } = get();
-                if (presentationId && slideId && layoutId && Number.isInteger(tableColumnIndex)) {
+                const { presentationId, slideId, layoutId, columnIndex } = get();
+                if (presentationId && slideId && layoutId && Number.isInteger(columnIndex)) {
                     const { addColumnRight: addColumnRightInStore } = usePresentationStore.getState();
-                    addColumnRightInStore(presentationId, slideId, layoutId, tableColumnIndex!);
+                    addColumnRightInStore(presentationId, slideId, layoutId, columnIndex!);
                     get().closeMenu();
                 }
             },
@@ -385,8 +391,8 @@ export const useMenuStore = create<MenuState>()(
             duplicateColumn: () => {
                 const { presentationId, slideId, layoutId, cellId } = get();
                 if (presentationId && slideId && layoutId && cellId) {
-                    const { duplicateCell: duplicateCellInStore } = usePresentationStore.getState();
-                    duplicateCellInStore(presentationId, slideId, layoutId, cellId);
+                    const { duplicateColumn: duplicateColumnInStore } = usePresentationStore.getState();
+                    duplicateColumnInStore(presentationId, slideId, layoutId, cellId);
                     get().closeMenu();
                 }
             },

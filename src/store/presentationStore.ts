@@ -146,7 +146,7 @@ export interface PresentationState {
     ) => void;
     addColumnLeft: (presentationId: string, slideId: string, layoutId: string, columnIndex: number) => void;
     addColumnRight: (presentationId: string, slideId: string, layoutId: string, columnIndex: number) => void;
-    duplicateCell: (presentationId: string, slideId: string, layoutId: string, cellId: string) => void;
+    duplicateColumn: (presentationId: string, slideId: string, layoutId: string, cellId: string) => void;
     alignColumnTop: (presentationId: string, slideId: string, layoutId: string, cellId: string) => void;
     alignColumnCenter: (presentationId: string, slideId: string, layoutId: string, cellId: string) => void;
     alignColumnBottom: (presentationId: string, slideId: string, layoutId: string, cellId: string) => void;
@@ -2649,7 +2649,92 @@ export const usePresentationStore = create<PresentationState>()(
                 const cellIndex = currentLayout.gridStructure.rows[0].cells.findIndex(cell => cell.id === cellId);
                 if (cellIndex === -1) return;
 
-                get().addColumn(presentationId, slideId, layoutId, cellIndex + 1);
+                // 1. Get all elements from the original cell
+                const elementsToClone = currentLayout.elements.filter(element => element.cellId === cellId);
+
+                // 2. Generate new cell ID and create cell structure
+                const newCellId = generateId();
+                const newCell: GridCell = {
+                    id: newCellId,
+                    row: 0,
+                    column: cellIndex + 1,
+                };
+
+                // 3. Clone elements and assign new IDs
+                const clonedElements = elementsToClone.map(element => {
+                    // Create base clone with new ID
+                    const baseClone = {
+                        ...element,
+                        id: generateId(),
+                        cellId: newCellId,
+                    };
+
+                    // Handle special cases for different element types
+                    if (element.elementTypeId === 'smart-layout') {
+                        // Clone SmartLayout items with new IDs
+                        const smartLayoutElement = element as SmartLayoutElement;
+                        return {
+                            ...baseClone,
+                            items: smartLayoutElement.items.map(item => ({
+                                ...item,
+                                id: generateId(),
+                            })),
+                        };
+                    }
+
+                    return baseClone;
+                });
+
+                // 4. Update the state with new cell and cloned elements
+                set(state => ({
+                    presentations: state.presentations.map(presentation => {
+                        if (presentation.id === presentationId) {
+                            return {
+                                ...presentation,
+                                slides: presentation.slides.map(slide => {
+                                    if (slide.id === slideId) {
+                                        return {
+                                            ...slide,
+                                            layouts: slide.layouts.map(layout => {
+                                                if (layout.id === layoutId) {
+                                                    // Calculate new column widths
+                                                    const columnCount = layout.gridStructure.rows[0].cells.length + 1;
+                                                    const columnWidths = getColumnWidths(columnCount);
+
+                                                    return {
+                                                        ...layout,
+                                                        elements: [...layout.elements, ...clonedElements],
+                                                        gridStructure: {
+                                                            ...layout.gridStructure,
+                                                            columns: columnCount,
+                                                            columnWidths,
+                                                            rows: layout.gridStructure.rows.map((row, rowIndex) => {
+                                                                if (rowIndex === 0) {
+                                                                    // Insert new cell after the current cell
+                                                                    const cells = [...row.cells];
+                                                                    cells.splice(cellIndex + 1, 0, newCell);
+                                                                    return {
+                                                                        ...row,
+                                                                        cells,
+                                                                    };
+                                                                }
+                                                                return row;
+                                                            }),
+                                                        },
+                                                    };
+                                                }
+                                                return layout;
+                                            }),
+                                        };
+                                    }
+                                    return slide;
+                                }),
+                                updatedAt: Date.now(),
+                            };
+                        }
+                        return presentation;
+                    }),
+                }));
             },
 
             alignColumn: (presentationId, slideId, layoutId, cellId, alignment) => {

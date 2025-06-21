@@ -12,6 +12,7 @@
 .itemContainer {
     position: relative;
     grid-column: span 6;
+    z-index: 1;
 }
 
 .dropIndicator {
