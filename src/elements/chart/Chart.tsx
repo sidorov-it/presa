@@ -11,6 +11,7 @@ interface ChartProps {
     layoutId: string;
     hasMultipleCells?: boolean;
     inSettings?: boolean;
+    slideBackground?: string;
 }
 
 export default function Chart({
@@ -21,6 +22,7 @@ export default function Chart({
     layoutId,
     hasMultipleCells,
     inSettings,
+    slideBackground,
 }: ChartProps) {
     const element = usePresentationStore(state =>
         state.getElement(presentationId, slideId, layoutId, elementId)
@@ -39,6 +41,7 @@ export default function Chart({
             hasMultipleCells={hasMultipleCells}
             inSettings={inSettings}
             theme={currentTheme}
+            slideBackground={slideBackground}
             onUpdateElement={data =>
                 updateElement({
                     presentationId,

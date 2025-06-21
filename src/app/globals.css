@@ -57,6 +57,7 @@
         --color-accent: #2563EB;
         /* Blue 600 - better for readability */
         --color-text: #1A202C;
+        --color-button-text: #fff;
         /* Dark Gray for light theme */
         --color-text-light: #718096;
         /* Gray for light theme */

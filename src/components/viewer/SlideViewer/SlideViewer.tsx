@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable indent */
 /* eslint-disable no-nested-ternary */
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Layout, Slide } from '@/types';
 import LayoutViewer from '../LayoutViewer/LayoutViewer';
 import ViewerTemplateImageWithPlaceholder from '../ViewerTemplateImageWithPlaceholder';
@@ -39,23 +39,23 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     theme,
 }) => {
     // Get slide background styling
-    // const getSlideStyle = useCallback(() => {
-    //     // Base style with CSS variables
-    //     const style: React.CSSProperties = {};
+    const getSlideStyle = useCallback(() => {
+        // Base style with CSS variables
+        const style: React.CSSProperties = {};
 
-    //     // Apply slide-specific background if available
-    //     if (slide?.templateType === 'imageBackground') {
-    //         if (slide?.imageUrl) {
-    //             style.backgroundImage = `url(${slide.imageUrl})`;
-    //         }
-    //     } else if (slide?.background?.type === 'color' && slide.background.value) {
-    //         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //         // @ts-expect-error
-    //         style['--presentation-slide-background'] = slide.background.value;
-    //     }
+        // Apply slide-specific background if available
+        if (slide?.templateType === 'imageBackground') {
+            if (slide?.imageUrl) {
+                style.backgroundImage = `url(${slide.imageUrl})`;
+            }
+        } else if (slide?.background?.type === 'color' && slide.background.value) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            style['--presentation-slide-background'] = slide.background.value;
+        }
 
-    //     return style;
-    // }, [slide?.templateType, slide?.imageUrl, slide?.background]);
+        return style;
+    }, [slide?.templateType, slide?.imageUrl, slide?.background]);
 
     // Image rendering based on template type
     const imageStyle: React.CSSProperties = useMemo(() => {
@@ -233,7 +233,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
 
     // Slide wrapper style including theme CSS variables
     const slideWrapperStyle: React.CSSProperties = {
-        // ...getSlideStyle(),
+        ...getSlideStyle(),
         // Apply border styles from CSS variables
         // borderRadius: fullPage ? 0 : 'var(--presentation-slide-border-radius)',
         // borderWidth: fullPage ? 0 : 'var(--presentation-slide-border-width)',

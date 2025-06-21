@@ -3,6 +3,9 @@
     cursor: default;
     border: none;
 }
+.slideContent::before {
+    background-color: var(--presentation-slide-background) !important;
+}
 
 .slideContent :global(.ProseMirror) {
     cursor: default !important;
@@ -48,6 +51,7 @@
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     cursor: default !important;
+    /* background-color: var(--presentation-slide-background) !important; */
 }
 
 /* Ensure masks are properly applied in PDF export */

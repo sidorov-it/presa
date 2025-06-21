@@ -33,7 +33,7 @@
 .buttonActive {
     border-color: var(--color-primary);
     background-color: var(--color-primary);
-    color: var(--color-text);
+    color: var(--color-button-text);
 }
 
 .icon {
@@ -225,7 +225,7 @@
 }
 
 .applyButton {
-    color: var(--color-text);
+    color: var(--color-button-text);
     background-color: var(--color-primary);
     border-radius: 0.375rem;
     padding: 0.5rem 1rem;

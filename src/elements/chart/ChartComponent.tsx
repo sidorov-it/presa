@@ -35,17 +35,19 @@ import styles from './Chart.module.css';
 import { Theme } from '@/types/theme';
 import { getChartColors, getChartAxisColors } from '@/utils/colors';
 import { LayoutType } from 'recharts/types/util/types';
-import { useReadOnly } from '@/contexts/ReadOnlyContext';
+// import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 interface ChartComponentProps {
     element: ChartElement;
     className?: string;
-    presentationId: string;
-    slideId: string;
-    layoutId: string;
+    presentationId?: string;
+    slideId?: string;
+    layoutId?: string;
     hasMultipleCells?: boolean;
     inSettings?: boolean;
     theme: Theme | null | undefined;
+    slideBackground?: string;
+    isReadOnly?: boolean;
     onUpdateElement?: (data: Partial<ChartElement>) => void;
     onDeleteElement?: () => void;
 }
@@ -58,7 +60,6 @@ const defaultData = [
     { name: 'Q4', value: 500 },
 ];
 
-
 // Types for resize direction
 type ResizeDirection = 'top' | 'right' | 'bottom' | 'left' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
@@ -70,10 +71,12 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
     layoutId,
     inSettings = false,
     theme,
+    slideBackground,
+    isReadOnly = false,
     onUpdateElement,
     onDeleteElement,
 }) => {
-    const isReadOnly = useReadOnly();
+    // const isReadOnly = useReadOnly();
     const [isSelected, setIsSelected] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -103,18 +106,18 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
     const chartColors = useMemo(
         () =>
             getChartColors(
-                theme?.colors.slideBackground || '#ffffff',
+                slideBackground || theme?.colors.slideBackground || '#ffffff',
                 theme?.colors.primaryAccent || '#8884d8'
             ),
-        [theme]
+        [slideBackground, theme?.colors.primaryAccent, theme?.colors.slideBackground]
     );
     const axisColors = useMemo(
         () =>
             getChartAxisColors(
-                theme?.colors.slideBackground || '#ffffff',
+                slideBackground || theme?.colors.slideBackground || '#ffffff',
                 theme?.colors.primaryAccent || '#8884d8'
             ),
-        [theme]
+        [slideBackground, theme?.colors.primaryAccent, theme?.colors.slideBackground]
     );
 
     // Initialize component with element data
@@ -423,7 +426,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
         };
 
         switch (element.elementVariant) {
-            case 'bar':
+            case 'column':
                 return (
                     <ResponsiveContainer width="100%" height={chartHeight}>
                         <BarChart data={data}>
@@ -436,10 +439,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
                                 />
                             )}
                             {showLabels && (
-                                <YAxis
-                                    stroke={axisColors.axisLineColor}
-                                    tick={{ fill: axisColors.tickColor }}
-                                />
+                                <YAxis stroke={axisColors.axisLineColor} tick={{ fill: axisColors.tickColor }} />
                             )}
                             {showValues && <Tooltip />}
                             <Legend
@@ -460,7 +460,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
                     </ResponsiveContainer>
                 );
 
-            case 'column':
+            case 'bar':
                 return (
                     <ResponsiveContainer width="100%" height={chartHeight}>
                         <BarChart data={data} layout="vertical" margin={{ top: 5, right: 45, bottom: 5, left: 40 }}>
@@ -517,10 +517,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
                                 />
                             )}
                             {showLabels && (
-                                <YAxis
-                                    stroke={axisColors.axisLineColor}
-                                    tick={{ fill: axisColors.tickColor }}
-                                />
+                                <YAxis stroke={axisColors.axisLineColor} tick={{ fill: axisColors.tickColor }} />
                             )}
                             {showValues && <Tooltip />}
                             <Legend
@@ -567,10 +564,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
                                 dataKey="value"
                             >
                                 {pieData.map((entry, index) => (
-                                    <Cell
-                                        key={`cell-${index}`}
-                                        fill={chartColors[index % chartColors.length]}
-                                    />
+                                    <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
                                 ))}
                             </Pie>
                             {showValues && <Tooltip />}
@@ -611,10 +605,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
                                 dataKey="value"
                             >
                                 {donutData.map((entry, index) => (
-                                    <Cell
-                                        key={`cell-${index}`}
-                                        fill={chartColors[index % chartColors.length]}
-                                    />
+                                    <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
                                 ))}
                             </Pie>
                             {showValues && <Tooltip />}
@@ -809,15 +800,15 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
                     {/* Chart type selector */}
                     <div className={styles.chartTypeSelector}>
                         <div
-                            className={`${styles.chartControlButton} ${element.elementVariant === 'bar' ? styles.chartControlButtonActive : ''}`}
-                            onClick={() => handleChangeChartType('bar')}
+                            className={`${styles.chartControlButton} ${element.elementVariant === 'column' ? styles.chartControlButtonActive : ''}`}
+                            onClick={() => handleChangeChartType('column')}
                         >
                             <FaChartColumn className={styles.icon} />
                         </div>
 
                         <div
-                            className={`${styles.chartControlButton} ${element.elementVariant === 'column' ? styles.chartControlButtonActive : ''}`}
-                            onClick={() => handleChangeChartType('column')}
+                            className={`${styles.chartControlButton} ${element.elementVariant === 'bar' ? styles.chartControlButtonActive : ''}`}
+                            onClick={() => handleChangeChartType('bar')}
                         >
                             <FaChartBar className={styles.icon} />
                         </div>

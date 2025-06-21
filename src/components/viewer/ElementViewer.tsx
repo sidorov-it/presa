@@ -20,7 +20,14 @@ interface ElementViewerProps {
     theme: Theme;
 }
 
-const ElementViewer = ({ element, slideBackground, primaryAccentColor, theme }: ElementViewerProps) => {
+const ElementViewer = ({
+    element,
+    slideId,
+    layoutId,
+    slideBackground,
+    primaryAccentColor,
+    theme,
+}: ElementViewerProps) => {
     // Get element-specific styles
     // const getElementStyles = () => {
     //     const baseStyles: React.CSSProperties = {
@@ -52,10 +59,10 @@ const ElementViewer = ({ element, slideBackground, primaryAccentColor, theme }: 
         return (
             <ChartComponent
                 element={chartElement}
-                presentationId=""
-                slideId={slideId}
-                layoutId={layoutId}
+                slideBackground={slideBackground}
                 theme={theme}
+                isReadOnly={true}
+                layoutId={layoutId}
             />
         );
     };
@@ -126,8 +133,8 @@ const ElementViewer = ({ element, slideBackground, primaryAccentColor, theme }: 
                     <SmartLayoutView
                         element={element as SmartLayoutElement}
                         presentationId={''}
-                        slideId={''}
-                        layoutId={''}
+                        slideId={slideId}
+                        layoutId={layoutId}
                         tiptapRefs={null}
                         isFocused={false}
                     />
