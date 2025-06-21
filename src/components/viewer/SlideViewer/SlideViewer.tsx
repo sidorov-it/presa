@@ -3,7 +3,7 @@
 /* eslint-disable no-nested-ternary */
 import React, { useMemo } from 'react';
 import { Layout, Slide } from '@/types';
-import LayoutViewer from '../LayoutViewer';
+import LayoutViewer from '../LayoutViewer/LayoutViewer';
 import ViewerTemplateImageWithPlaceholder from '../ViewerTemplateImageWithPlaceholder';
 
 import styles from '../../editor/SlideEditor/SlideEditor.module.css';

@@ -298,7 +298,7 @@ const ElementViewer = ({ element, slideBackground, primaryAccentColor }: Element
                             display: 'flex',
                             flexDirection: 'row',
                             gap: '1rem',
-                            padding: '1rem',
+                            padding: '1.25em',
                             backgroundColor: blockColors.blockBgColor,
                             color: blockColors.textColor,
                         }}

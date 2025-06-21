@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { ImagePlaceholder } from '../ImagePlaceholder/ImagePlaceholder';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useMenuStore } from '@/store/menuStore';
 
 export type ImageProps = {
@@ -37,8 +37,8 @@ export const Image: React.FC<ImageProps> = ({
     isReadOnly = false,
     ...rest
 }) => {
-    const handleImageClick = () => {
-        if (isWidthRightMenu) {
+    const handleImageClick = useCallback(() => {
+        if (isWidthRightMenu && !isReadOnly) {
             useMenuStore.getState().openSideMenu('image-edit', {
                 imageUrl,
                 onClearImage,
@@ -50,7 +50,18 @@ export const Image: React.FC<ImageProps> = ({
                 itemId,
             });
         }
-    };
+    }, [
+        isWidthRightMenu,
+        isReadOnly,
+        imageUrl,
+        onClearImage,
+        onUpdateLink,
+        elementId,
+        presentationId,
+        slideId,
+        layoutId,
+        itemId,
+    ]);
 
     if (isReadOnly && !imageUrl) {
         return null;
@@ -68,7 +79,7 @@ export const Image: React.FC<ImageProps> = ({
                         // height: 'auto',
                         // objectFit: 'contain',
                         display: 'block',
-                        cursor: isWidthRightMenu ? 'pointer' : undefined,
+                        cursor: isWidthRightMenu && !isReadOnly ? 'pointer' : undefined,
                     }}
                     onClick={handleImageClick}
                 />

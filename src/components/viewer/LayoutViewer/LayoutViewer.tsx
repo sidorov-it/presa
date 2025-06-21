@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import tinycolor from 'tinycolor2';
 import { Layout } from '@/types';
-import ElementViewer from './ElementViewer';
+import ElementViewer from '../ElementViewer';
 import { ViewerElement } from '@/types/elements';
 import { type Element } from '@/types';
 import generateGridTemplateAreas from '@/utils/generateGridTemplateAreas';
