@@ -359,7 +359,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     return {
                         ...baseStyle,
                         position: 'relative',
-                        zIndex: 2,
                         paddingTop: imageHeight,
                         height: remainingHeight,
                     };
@@ -367,7 +366,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     return {
                         ...baseStyle,
                         position: 'relative',
-                        zIndex: 2,
                         marginLeft: imageWidth,
                         width: remainingWidth,
                     };
@@ -375,14 +373,12 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     return {
                         ...baseStyle,
                         position: 'relative',
-                        zIndex: 2,
                         width: remainingWidth,
                     };
                 case 'imageBackground':
                     return {
                         ...baseStyle,
                         position: 'relative',
-                        zIndex: 2,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
