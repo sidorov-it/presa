@@ -119,11 +119,12 @@ const handleRequest = async (request: NextRequest, props: { params: Promise<{ id
                             padding: 0 !important; 
                             overflow: visible !important;
                         }
-                        .slideWrapper { 
-                            // min-height: auto !important; 
-                            // height: auto !important; 
+                        .slideWrapper {
+                            // min-height: auto !important;
+                            // height: auto !important;
                             overflow: visible !important;
                             width: 1032px !important; /* Standard slide width */
+                            max-width: 1032px !important;
                         }
                         .slideContent { 
                             // min-height: auto !important; 

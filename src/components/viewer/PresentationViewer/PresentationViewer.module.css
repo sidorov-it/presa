@@ -21,7 +21,7 @@
   flex-direction: column;
   gap: 2rem;
   width: 100%;
-  max-width: 1200px;
+  max-width: calc(64.5em / 1);
   margin: 0 auto;
 }
 
