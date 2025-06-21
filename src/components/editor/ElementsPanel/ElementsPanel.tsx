@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 import styles from './ElementsPanel.module.css';
 import { usePresentationStore } from '@/store/presentationStore';
 import { BaseElement } from '@/types';
@@ -191,6 +191,12 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ isOpen, category, onClose, slideI
 
 const ElementsPanel: React.FC<ElementsPanelProps> = ({ presentationId, slideId }) => {
     const [activeCategory, setActiveCategory] = useState<CategoryType | null>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const dragState = useDndStore(state => state.state.dragState);
+    const indicators = useDndStore(state => state.state.indicators);
+    const [dragStartTime, setDragStartTime] = useState<number | null>(null);
+    const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleCategoryClick = (category: CategoryType) => {
         if (activeCategory === category) {
@@ -204,8 +210,62 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ presentationId, slideId }
         setActiveCategory(null);
     }, []);
 
+    // Close on outside click
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (
+                activeCategory &&
+                containerRef.current &&
+                !containerRef.current.contains(e.target as Node)
+            ) {
+                setActiveCategory(null);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [activeCategory]);
+
+    // Track drag start time
+    useEffect(() => {
+        if (dragState === 'dragging' && dragStartTime === null) {
+            setDragStartTime(Date.now());
+        }
+
+        if (dragState !== 'dragging') {
+            setDragStartTime(null);
+            if (closeTimeoutRef.current) {
+                clearTimeout(closeTimeoutRef.current);
+                closeTimeoutRef.current = null;
+            }
+        }
+    }, [dragState, dragStartTime]);
+
+    // Close menu when drop indicator appears after at least 1s from drag start
+    useEffect(() => {
+        if (!activeCategory) return;
+        if (dragState !== 'dragging') return;
+
+        const hasIndicator =
+            indicators.elementIndicator ||
+            indicators.layoutIndicator ||
+            indicators.slideIndicator ||
+            indicators.cellIndicator ||
+            indicators.tableColumnIndicator ||
+            indicators.tableRowIndicator;
+
+        if (hasIndicator) {
+            const elapsed = dragStartTime ? Date.now() - dragStartTime : 0;
+            const delay = Math.max(1000 - elapsed, 0);
+            if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+            closeTimeoutRef.current = setTimeout(() => {
+                setActiveCategory(null);
+            }, delay);
+        }
+    }, [indicators, dragState, activeCategory, dragStartTime]);
+
     return (
-        <div className={styles.elementsPanel}>
+        <div ref={containerRef} className={styles.elementsPanel}>
             <div className={styles.elementsPanelContent}>
                 <div className={styles.elementsPanelCategories}>
                     {menuRegistry.map(category => (

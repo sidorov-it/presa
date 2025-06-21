@@ -219,20 +219,20 @@
     height: 1.5rem;
     min-width: 1.5rem;
     font-size: .75rem;
-    color: var(--color-text);
+    color: rgba(0, 0, 0, 0.6);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    background: var(--color-surface);
+    background: rgba(255, 255, 255, 1);
     border-width: 1px;
     border-style: solid;
-    border-color: var(--color-border);
+    border-color: rgba(0, 0, 0, 0.2);
     padding: 0px;
     border-radius: 9999px;
 }
 
-.addButton:hover {
+/* .addButton:hover {
     color: var(--color-primary);
     background: var(--color-background);
-}
+} */
 
 .focused .itemContainer:last-child .addButton,
 .itemContainer:hover .addButton {
