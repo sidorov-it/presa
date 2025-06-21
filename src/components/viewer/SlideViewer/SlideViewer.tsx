@@ -47,6 +47,12 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         if (slide?.templateType === 'imageBackground') {
             if (slide?.imageUrl) {
                 style.backgroundImage = `url(${slide.imageUrl})`;
+                style.backgroundRepeat = 'no-repeat';
+                style.backgroundPosition = 'center';
+                style.backgroundSize = 'cover';
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
+                style['--presentation-slide-background'] = 'transparent';
             }
         } else if (slide?.background?.type === 'color' && slide.background.value) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment

@@ -1,5 +1,5 @@
 'use client';
-import { ChartElement, Element, SmartLayoutElement } from '@/types';
+import { ChartElement, Element, ImageElement, SmartLayoutElement } from '@/types';
 import { ViewerElement } from '@/types/elements';
 import ChartComponent from '@/elements/chart/ChartComponent';
 
@@ -10,6 +10,7 @@ import { BoxIconOptions } from '@/components/editor/Menus/BubbleMenus/BoxBubbleM
 import SmartLayoutView from '@/elements/smartLayout/SmartLayoutView';
 
 import { Theme } from '@/types/theme';
+import ImageComponentView from '@/elements/image/ImageComponentView';
 
 interface ElementViewerProps {
     element: Element & ViewerElement;
@@ -87,11 +88,7 @@ const ElementViewer = ({
                     <div className={styles.container}>
                         {!element.url && !(element as any).src && <div style={{ width: '100%', height: '100%' }} />}
                         {(element.url || (element as any).src) && (
-                            <img
-                                src={(element as any).src || element.url || ''}
-                                alt={element.alt || 'Presentation image'}
-                                style={{ objectFit: 'contain', width: '100%', height: '100%' }}
-                            />
+                            <ImageComponentView element={element as ImageElement} />
                         )}
                     </div>
                 );
