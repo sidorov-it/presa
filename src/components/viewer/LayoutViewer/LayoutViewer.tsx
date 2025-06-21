@@ -131,6 +131,7 @@ const LayoutViewer = ({ layout, slideId, slideBackground, primaryAccentColor, th
                                             layoutId={layout.id}
                                             slideBackground={slideBackground}
                                             primaryAccentColor={primaryAccentColor}
+                                            theme={theme}
                                         />
                                     ))}
                                 </div>
