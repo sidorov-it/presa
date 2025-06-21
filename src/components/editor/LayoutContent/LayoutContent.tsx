@@ -1,4 +1,5 @@
 import React, { RefObject, useState, useCallback, useMemo, memo, useRef } from 'react';
+import tinycolor from 'tinycolor2';
 import { GridRow, GridCell, TipTapRefs } from '@/types';
 import { useDnd } from '@/contexts/DragDropContext';
 import GridCellElement from '../GridCellElement';
@@ -12,6 +13,7 @@ import { LayoutHoverEvent } from '@/customEvents/LayoutHoverEvent';
 import generateGridTemplateAreas from '@/utils/generateGridTemplateAreas';
 import generateGridTemplateColumns from '@/utils/generateGridTemplateColumns';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
+import { useThemeStore } from '@/store/themeStore';
 
 interface LayoutContentProps {
     layoutId: string;
@@ -51,8 +53,59 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     const menuElementId = useMenuSelectedElement();
     const menuCellId = useMenuSelectedCell();
 
+    const themeSlideBackground = useThemeStore(useShallow(state => state.getCurrentThemeSlideBackground()));
+
     const isTableContentSelected = useMenuStore(
         state => state.tableColumnIndex !== null || state.tableRowIndex !== null
+    );
+
+    // Retrieve slide background color (if any)
+    const slideBackground = usePresentationStore(
+        useShallow(state => {
+            const presentation = state.getPresentation(presentationId);
+            if (!presentation) return '#ffffff';
+
+            const slide = presentation.slides.find(s => s.id === slideId);
+            if (!slide) return '#ffffff';
+            return slide?.background?.value;
+        })
+    );
+
+    // Helper to compute alternating row colors for table layouts
+    const rowColors = useMemo(() => {
+        if (!layout.isTable) {
+            return { evenRowColor: 'transparent', oddRowColor: 'transparent' } as const;
+        }
+
+        const bgColor = tinycolor(slideBackground || themeSlideBackground || '#ffffff');
+        const isDark = bgColor.isDark();
+
+        if (isDark) {
+            // Dark background: make even rows lighter
+            return {
+                evenRowColor: 'rgba(255, 255, 255, 0.05)',
+                oddRowColor: 'transparent',
+            } as const;
+        }
+
+        // Light background: make even rows slightly darker
+        return {
+            evenRowColor: 'rgba(0, 0, 0, 0.05)',
+            oddRowColor: 'transparent',
+        } as const;
+    }, [layout.isTable, slideBackground, themeSlideBackground]);
+
+    // Function to get row styles (alternating colors)
+    const getRowStyles = useCallback(
+        (rowIndex: number): React.CSSProperties => {
+            if (!layout.isTable) return {};
+
+            const isEvenRow = rowIndex % 2 === 0;
+            return {
+                backgroundColor: isEvenRow ? rowColors.evenRowColor : rowColors.oddRowColor,
+            };
+        },
+        [layout.isTable, rowColors]
     );
 
     const handleMouseEnter = useCallback(() => {
@@ -360,6 +413,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                             style={{
                                 gridTemplateAreas,
                                 gridTemplateColumns,
+                                ...getRowStyles(rowIndex),
                             }}
                         >
                             {row.cells.map((cell: GridCell, cellIndex: number) => {

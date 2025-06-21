@@ -8,6 +8,7 @@ interface ThemeState {
     currentTheme: Theme | null;
     setCurrentTheme: (theme: Theme | undefined) => void;
     getCurrentThemeImageShape: () => ThemeDesignImageShape | null | undefined;
+    getCurrentThemeSlideBackground: () => string | null | undefined;
     addTheme: (theme: Omit<Theme, 'id'>) => Promise<void>;
     updateTheme: (theme: Theme) => Promise<void>;
     deleteTheme: (themeId: string) => Promise<void>;
@@ -28,6 +29,10 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
 
     getCurrentThemeImageShape: () => {
         return get().currentTheme?.design.slide.imageShape;
+    },
+
+    getCurrentThemeSlideBackground: () => {
+        return get().currentTheme?.colors.slideBackground;
     },
 
     getDefaultTheme: () => {
