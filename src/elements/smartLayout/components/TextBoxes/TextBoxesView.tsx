@@ -5,7 +5,7 @@ import { SmartLayoutElement, TipTapRefs } from '@/types';
 import Tiptap from '@/components/tiptap/Tiptap/Tiptap';
 
 import styles from './TextBoxes.module.css';
-import wrapperStyles from '../ItemWrapper/ItemWrapper.module.css';
+// import wrapperStyles from '../ItemWrapper/ItemWrapper.module.css';
 
 export default function TextBoxesView({
     element,
@@ -65,45 +65,45 @@ export default function TextBoxesView({
                             width: `calc(${elementWidth} - 1em)`,
                         }}
                     >
-                        <div className={`${wrapperStyles.item} ${align ? wrapperStyles[align] : ''}`}>
-                            <div className={`${styles.textBox} ${align ? styles[align] : ''}`}>
-                                <div className={styles.title}>
-                                    <Tiptap
-                                        isReadOnly={isReadOnly}
-                                        defaultContent={item.title}
-                                        elementId={element.id}
-                                        tiptapRefs={tiptapRefs}
-                                        id={element.id}
-                                        placeholder="Заголовок"
-                                        onContentChange={() => {}}
-                                        presentationId={presentationId}
-                                        slideId={slideId}
-                                        layoutId={layoutId}
-                                        // customRefKey={`title-${element.id}-${itemId}`}
-                                        isHideSlashMenu={false}
-                                    />
-                                </div>
-                                <div className={styles.content}>
-                                    <Tiptap
-                                        isReadOnly={isReadOnly}
-                                        defaultContent={item.text}
-                                        elementId={element.id}
-                                        tiptapRefs={tiptapRefs}
-                                        id={element.id}
-                                        presentationId={presentationId}
-                                        slideId={slideId}
-                                        layoutId={layoutId}
-                                        placeholder="Текст"
-                                        onContentChange={() => {}}
-                                        // customRefKey={`text-${element.id}-${itemId}`}
-                                        isHideSlashMenu={false}
-                                        onEnterPressed={() => {
-                                            return true;
-                                        }}
-                                    />
-                                </div>
+                        {/* <div className={`${wrapperStyles.item} ${align ? wrapperStyles[align] : ''}`}> */}
+                        <div className={`${styles.textBox} ${align ? styles[align] : ''}`}>
+                            <div className={styles.title}>
+                                <Tiptap
+                                    isReadOnly={isReadOnly}
+                                    defaultContent={item.title}
+                                    elementId={element.id}
+                                    tiptapRefs={tiptapRefs}
+                                    id={element.id}
+                                    placeholder="Заголовок"
+                                    onContentChange={() => {}}
+                                    presentationId={presentationId}
+                                    slideId={slideId}
+                                    layoutId={layoutId}
+                                    // customRefKey={`title-${element.id}-${itemId}`}
+                                    isHideSlashMenu={false}
+                                />
+                            </div>
+                            <div className={styles.content}>
+                                <Tiptap
+                                    isReadOnly={isReadOnly}
+                                    defaultContent={item.text}
+                                    elementId={element.id}
+                                    tiptapRefs={tiptapRefs}
+                                    id={element.id}
+                                    presentationId={presentationId}
+                                    slideId={slideId}
+                                    layoutId={layoutId}
+                                    placeholder="Текст"
+                                    onContentChange={() => {}}
+                                    // customRefKey={`text-${element.id}-${itemId}`}
+                                    isHideSlashMenu={false}
+                                    onEnterPressed={() => {
+                                        return true;
+                                    }}
+                                />
                             </div>
                         </div>
+                        {/* </div> */}
                         {/* </ItemWrapper> */}
                     </div>
                 );

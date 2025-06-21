@@ -34,30 +34,30 @@ interface ElementViewerProps {
 
 const ElementViewer = ({ element, slideBackground, primaryAccentColor }: ElementViewerProps) => {
     // Get element-specific styles
-    const getElementStyles = () => {
-        const baseStyles: React.CSSProperties = {
-            // Apply base element styles
-            // width: '100%',
-            // height: '100%',
-        };
+    // const getElementStyles = () => {
+    //     const baseStyles: React.CSSProperties = {
+    //         // Apply base element styles
+    //         // width: '100%',
+    //         // height: '100%',
+    //     };
 
-        // Apply opacity if defined
-        if (element.opacity !== undefined) {
-            baseStyles.opacity = element.opacity;
-        }
+    //     // Apply opacity if defined
+    //     if (element.opacity !== undefined) {
+    //         baseStyles.opacity = element.opacity;
+    //     }
 
-        // Apply background color if defined
-        if (element.backgroundColor) {
-            baseStyles.backgroundColor = element.backgroundColor;
-        }
+    //     // Apply background color if defined
+    //     if (element.backgroundColor) {
+    //         baseStyles.backgroundColor = element.backgroundColor;
+    //     }
 
-        // Apply border radius if defined
-        if (element.borderRadius) {
-            baseStyles.borderRadius = element.borderRadius;
-        }
+    //     // Apply border radius if defined
+    //     if (element.borderRadius) {
+    //         baseStyles.borderRadius = element.borderRadius;
+    //     }
 
-        return baseStyles;
-    };
+    //     return baseStyles;
+    // };
 
     const renderChart = () => {
         const chartElement = element as unknown as ChartElement;
@@ -294,7 +294,7 @@ const ElementViewer = ({ element, slideBackground, primaryAccentColor }: Element
                     <div
                         className={styles.box}
                         style={{
-                            ...getElementStyles(),
+                            // ...getElementStyles(),
                             display: 'flex',
                             flexDirection: 'row',
                             gap: '1rem',
@@ -330,7 +330,7 @@ const ElementViewer = ({ element, slideBackground, primaryAccentColor }: Element
     return (
         <div
             style={{
-                ...getElementStyles(),
+                // ...getElementStyles(),
                 margin: '0.9em 0',
                 zIndex: 0,
                 transform: element.transform || 'none',

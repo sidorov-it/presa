@@ -44,10 +44,13 @@ export default function BoxComponent({
         }
     }, [element.content, element.id, tiptapRefs]);
 
-    const slideBgColor = theme?.colors.slideBackground;
+    // const slideBgColor = theme?.colors.slideBackground;
     const { blockBgColor, iconColor, textColor } = useMemo(
-        () => getBlockColors(theme?.colors.primaryAccent || '#000000', iconType || 'info-box', { blockBgColor: customBackgroundColor }),
-        [slideBgColor, customBackgroundColor, iconType, theme]
+        () =>
+            getBlockColors(theme?.colors.primaryAccent || '#000000', iconType || 'info-box', {
+                blockBgColor: customBackgroundColor,
+            }),
+        [customBackgroundColor, iconType, theme]
     );
 
     const elementConfig = getElementConfig(elementTypeId);

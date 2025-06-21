@@ -70,7 +70,7 @@ const handleRequest = async (request: NextRequest, props: { params: Promise<{ id
 
         // Launch Puppeteer browser
         const browser = await puppeteer.launch({
-            headless: false,
+            headless: true,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
