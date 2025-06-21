@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
+// eslint-disable-next-line no-undef
+const isProd = process.env.NODE_ENV === 'production';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     eslint: {
@@ -27,35 +30,37 @@ const nextConfig = {
     reactStrictMode: true,
     experimental: {
         // Оптимизируем импорты больших библиотек
-        optimizePackageImports: [
-            '@chakra-ui/react',
-            '@radix-ui/react-accordion',
-            '@radix-ui/react-alert-dialog',
-            '@radix-ui/react-aspect-ratio',
-            '@radix-ui/react-avatar',
-            '@radix-ui/react-checkbox',
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-dropdown-menu',
-            '@radix-ui/react-hover-card',
-            '@radix-ui/react-label',
-            '@radix-ui/react-menubar',
-            '@radix-ui/react-navigation-menu',
-            '@radix-ui/react-progress',
-            '@radix-ui/react-radio-group',
-            '@radix-ui/react-scroll-area',
-            '@radix-ui/react-select',
-            '@radix-ui/react-separator',
-            '@radix-ui/react-slider',
-            '@radix-ui/react-slot',
-            '@radix-ui/react-switch',
-            '@radix-ui/react-tabs',
-            '@radix-ui/react-toast',
-            '@radix-ui/react-tooltip',
-            'lucide-react',
-            '@tiptap/react',
-            '@tiptap/starter-kit',
-            'framer-motion',
-        ],
+        ...(isProd && {
+            optimizePackageImports: [
+                '@chakra-ui/react',
+                '@radix-ui/react-accordion',
+                '@radix-ui/react-alert-dialog',
+                '@radix-ui/react-aspect-ratio',
+                '@radix-ui/react-avatar',
+                '@radix-ui/react-checkbox',
+                '@radix-ui/react-dialog',
+                '@radix-ui/react-dropdown-menu',
+                '@radix-ui/react-hover-card',
+                '@radix-ui/react-label',
+                '@radix-ui/react-menubar',
+                '@radix-ui/react-navigation-menu',
+                '@radix-ui/react-progress',
+                '@radix-ui/react-radio-group',
+                '@radix-ui/react-scroll-area',
+                '@radix-ui/react-select',
+                '@radix-ui/react-separator',
+                '@radix-ui/react-slider',
+                '@radix-ui/react-slot',
+                '@radix-ui/react-switch',
+                '@radix-ui/react-tabs',
+                '@radix-ui/react-toast',
+                '@radix-ui/react-tooltip',
+                'lucide-react',
+                '@tiptap/react',
+                '@tiptap/starter-kit',
+                'framer-motion',
+            ],
+        }),
     },
     webpack(config, { dev, _isServer }) {
         // Ограничиваем использование памяти
