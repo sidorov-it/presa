@@ -6,6 +6,8 @@ import ColorPicker from '@/components/ui/ColorPicker';
 import { MdOutlineVerticalAlignTop, MdOutlineVerticalAlignCenter, MdOutlineVerticalAlignBottom } from 'react-icons/md';
 import { useHistoryStore } from '@/store/historyStore';
 import { FiLoader } from 'react-icons/fi';
+import { useThemeStore } from '@/store/themeStore';
+import { useShallow } from 'zustand/react/shallow';
 
 type SlideTemplateType = (typeof SLIDE_TEMPLATES)[number]['value'];
 type ContentAlignment = 'top' | 'center' | 'bottom';
@@ -21,20 +23,28 @@ const DEFAULT_BACKGROUND_COLOR = '#ffffff';
 const DEFAULT_TEXT_COLOR = '#000000';
 
 const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentationId, slideId, tiptapRefs }) => {
-    const slide = usePresentationStore(
-        useCallback(state => state.getSlide(presentationId, slideId), [presentationId, slideId])
-    );
+    const slide = usePresentationStore(state => state.getSlide(presentationId, slideId));
+    const currentTheme = useThemeStore(useShallow(state => state.currentTheme));
     const updateSlide = usePresentationStore(state => state.updateSlide);
 
     const templateType = slide?.templateType || 'standard';
     const imageUrl = slide?.imageUrl || '';
-    const backgroundColor = slide?.background?.type === 'color' ? slide.background.value : DEFAULT_BACKGROUND_COLOR;
+
+    let backgroundColor: string | undefined;
+
+    if (!slide?.background?.type || slide?.background?.type === 'color') {
+        backgroundColor = slide?.background?.value || currentTheme?.colors.slideBackground || DEFAULT_BACKGROUND_COLOR;
+    }
+
     const contentAlignment = slide?.contentAlignment || 'center';
 
     const commonSlideTextColor = usePresentationStore
         .getState()
         .getCommonSlideTextColor(tiptapRefs, presentationId, slideId);
-    const [textColor, setTextColor] = useState(commonSlideTextColor || DEFAULT_TEXT_COLOR);
+
+    const defaultTextColor = currentTheme?.typography.bodyColor || DEFAULT_TEXT_COLOR;
+
+    const [textColor, setTextColor] = useState(commonSlideTextColor || defaultTextColor);
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');

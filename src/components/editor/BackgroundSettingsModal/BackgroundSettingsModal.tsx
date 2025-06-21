@@ -10,15 +10,23 @@ import ColorPicker from '@/components/ui/ColorPicker';
 import styles from './BackgroundSettingsModal.module.css';
 
 interface BackgroundSettingsModalProps {
+    defaultSlideBackground?: string;
     isOpen: boolean;
     onClose: () => void;
     presentationId: string;
 }
 
-const BackgroundSettingsModal: React.FC<BackgroundSettingsModalProps> = ({ isOpen, onClose, presentationId }) => {
+const BackgroundSettingsModal: React.FC<BackgroundSettingsModalProps> = ({
+    defaultSlideBackground,
+    isOpen,
+    onClose,
+    presentationId,
+}) => {
     const initialSettings = usePresentationStore(useShallow(state => state.getBackgroundSettings(presentationId)));
 
-    const [backgroundColor, setBackgroundColor] = useState<string>(initialSettings?.backgroundColor || '#ffffff00');
+    const [backgroundColor, setBackgroundColor] = useState<string>(
+        initialSettings?.backgroundColor || defaultSlideBackground
+    );
     const [backgroundImage, setBackgroundImage] = useState<string>(initialSettings?.backgroundImage || '');
 
     // Фокус-ловушка
@@ -33,10 +41,10 @@ const BackgroundSettingsModal: React.FC<BackgroundSettingsModalProps> = ({ isOpe
 
     useEffect(() => {
         if (isOpen) {
-            setBackgroundColor(initialSettings?.backgroundColor || '#ffffff00');
+            setBackgroundColor(initialSettings?.backgroundColor || defaultSlideBackground);
             setBackgroundImage(initialSettings?.backgroundImage || '');
         }
-    }, [isOpen, initialSettings]);
+    }, [isOpen, initialSettings, defaultSlideBackground]);
 
     const handleSave = () => {
         usePresentationStore.getState().setBackgroundSettings(presentationId, {

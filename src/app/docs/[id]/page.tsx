@@ -538,6 +538,7 @@ export default function PresentationEditorPage() {
                             <Editor presentationId={presentation.id} tiptapRefs={tiptapRefs} />
 
                             <BackgroundSettingsModal
+                                defaultSlideBackground={currentTheme?.colors.slideBackground}
                                 isOpen={isBgModalOpen}
                                 onClose={handleCloseBgModal}
                                 presentationId={presentation.id}

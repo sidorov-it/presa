@@ -39,21 +39,23 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     theme,
 }) => {
     // Get slide background styling
-    const getSlideStyle = () => {
-        // Base style with CSS variables
-        const style: React.CSSProperties = {};
+    // const getSlideStyle = useCallback(() => {
+    //     // Base style with CSS variables
+    //     const style: React.CSSProperties = {};
 
-        // Apply slide-specific background if available
-        if (slide?.templateType === 'imageBackground') {
-            if (slide?.imageUrl) {
-                style.backgroundImage = `url(${slide.imageUrl})`;
-            }
-        } else if (slide?.background?.type === 'color') {
-            style.backgroundColor = slide.background.value;
-        }
+    //     // Apply slide-specific background if available
+    //     if (slide?.templateType === 'imageBackground') {
+    //         if (slide?.imageUrl) {
+    //             style.backgroundImage = `url(${slide.imageUrl})`;
+    //         }
+    //     } else if (slide?.background?.type === 'color' && slide.background.value) {
+    //         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //         // @ts-expect-error
+    //         style['--presentation-slide-background'] = slide.background.value;
+    //     }
 
-        return style;
-    };
+    //     return style;
+    // }, [slide?.templateType, slide?.imageUrl, slide?.background]);
 
     // Image rendering based on template type
     const imageStyle: React.CSSProperties = useMemo(() => {
@@ -231,15 +233,15 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
 
     // Slide wrapper style including theme CSS variables
     const slideWrapperStyle: React.CSSProperties = {
-        ...(fullPage ? {} : getSlideStyle()),
+        // ...getSlideStyle(),
         // Apply border styles from CSS variables
-        borderRadius: fullPage ? 0 : 'var(--presentation-slide-border-radius)',
-        borderWidth: fullPage ? 0 : 'var(--presentation-slide-border-width)',
-        borderColor: 'var(--presentation-slide-border-color)',
-        borderStyle: fullPage ? 'none' : 'solid',
+        // borderRadius: fullPage ? 0 : 'var(--presentation-slide-border-radius)',
+        // borderWidth: fullPage ? 0 : 'var(--presentation-slide-border-width)',
+        // borderColor: 'var(--presentation-slide-border-color)',
+        // borderStyle: fullPage ? 'none' : 'solid',
         // Apply background if not overridden by slide-specific background
         // backgroundColor: fullPage ? 'transparent' : 'var(--presentation-slide-background)',
-        boxShadow: fullPage ? 'none' : 'var(--presentation-slide-shadow)',
+        // boxShadow: fullPage ? 'none' : 'var(--presentation-slide-shadow)',
         // width: '100%',
         // maxWidth: '100%',
         // boxSizing: 'border-box',
