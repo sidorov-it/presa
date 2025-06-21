@@ -65,6 +65,7 @@ export const ElementContent = ({
 
     const isCurrentEditorActive = useEditorStore(state => state.getActiveEditorId() === elementId);
     const elementConfig = useMemo(() => getElementConfig(elementTypeId), [elementTypeId]);
+    const slideBackground = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background?.value);
 
     const isMenuOpenOnCurrentElement = useMenuStore(
         useShallow(
@@ -501,6 +502,7 @@ export const ElementContent = ({
                         slideId={slideId}
                         layoutId={layoutId}
                         hasMultipleCells={hasMultipleCells}
+                        slideBackground={slideBackground}
                     />
                 );
             } else if (elementTypeId === 'smart-layout') {

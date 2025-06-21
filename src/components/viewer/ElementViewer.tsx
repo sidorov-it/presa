@@ -1,28 +1,15 @@
 'use client';
 import { ChartElement, Element, SmartLayoutElement } from '@/types';
 import { ViewerElement } from '@/types/elements';
-import {
-    BarChart,
-    Bar,
-    LineChart,
-    Line,
-    PieChart,
-    Pie,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-    Cell,
-    ResponsiveContainer,
-} from 'recharts';
+import ChartComponent from '@/elements/chart/ChartComponent';
 
 import styles from './ElementViewer.module.css';
 import { ElementType } from '@/types/elements';
-import { getBlockColors, getChartColors, getChartAxisColors } from '@/utils/colors';
+import { getBlockColors } from '@/utils/colors';
 import { BoxIconOptions } from '@/components/editor/Menus/BubbleMenus/BoxBubbleMenu/BoxIconOptions';
-import SmartLayoutComponent from '@/elements/smartLayout/SmartLayoutComponent';
 import SmartLayoutView from '@/elements/smartLayout/SmartLayoutView';
+
+import { Theme } from '@/types/theme';
 
 interface ElementViewerProps {
     element: Element & ViewerElement;
@@ -30,9 +17,17 @@ interface ElementViewerProps {
     layoutId: string;
     slideBackground?: string;
     primaryAccentColor?: string;
+    theme: Theme;
 }
 
-const ElementViewer = ({ element, slideBackground, primaryAccentColor }: ElementViewerProps) => {
+const ElementViewer = ({
+    element,
+    slideId,
+    layoutId,
+    slideBackground,
+    primaryAccentColor,
+    theme,
+}: ElementViewerProps) => {
     // Get element-specific styles
     // const getElementStyles = () => {
     //     const baseStyles: React.CSSProperties = {
@@ -60,127 +55,16 @@ const ElementViewer = ({ element, slideBackground, primaryAccentColor }: Element
     // };
 
     const renderChart = () => {
-        const chartElement = element as unknown as ChartElement;
-        const data = chartElement.data || [];
-
-        // Determine slide background and accent colors from props or CSS variables
-        const slideBgColor =
-            slideBackground ||
-            // getComputedStyle(document.documentElement).getPropertyValue('--presentation-slide-background')?.trim() ||
-            '#ffffff';
-        const accentColor =
-            primaryAccentColor ||
-            // getComputedStyle(document.documentElement).getPropertyValue('--presentation-primary-accent')?.trim() ||
-            '#8884d8';
-
-        const chartColors = getChartColors(slideBgColor, accentColor);
-        const axisColors = getChartAxisColors(slideBgColor, accentColor);
-
-        // Render the appropriate chart
-        switch (element.elementVariant) {
-            case 'bar':
-                return (
-                    <div className={styles.container}>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <BarChart data={data}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis
-                                    dataKey="name"
-                                    stroke={axisColors.axisLineColor}
-                                    tick={{ fill: axisColors.tickColor }}
-                                />
-                                <YAxis stroke={axisColors.axisLineColor} tick={{ fill: axisColors.tickColor }} />
-                                <Tooltip />
-                                <Legend />
-                                <Bar dataKey="value" fill={chartColors[0]} isAnimationActive={false} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                );
-
-            case 'line':
-                return (
-                    <div className={styles.container}>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <LineChart data={data}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis
-                                    dataKey="name"
-                                    stroke={axisColors.axisLineColor}
-                                    tick={{ fill: axisColors.tickColor }}
-                                />
-                                <YAxis stroke={axisColors.axisLineColor} tick={{ fill: axisColors.tickColor }} />
-                                <Tooltip />
-                                <Legend />
-                                <Line
-                                    type="monotone"
-                                    dataKey="value"
-                                    stroke={chartColors[0]}
-                                    isAnimationActive={false}
-                                />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </div>
-                );
-
-            case 'pie':
-                return (
-                    <div className={styles.container}>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <PieChart>
-                                <Pie
-                                    data={data}
-                                    cx="50%"
-                                    cy="50%"
-                                    labelLine={true}
-                                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                                    outerRadius={80}
-                                    fill={chartColors[0]}
-                                    dataKey="value"
-                                    isAnimationActive={false}
-                                >
-                                    {data.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip />
-                                <Legend />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </div>
-                );
-
-            case 'donut':
-                return (
-                    <div className={styles.container}>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <PieChart>
-                                <Pie
-                                    data={data}
-                                    cx="50%"
-                                    cy="50%"
-                                    labelLine={true}
-                                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                                    outerRadius={80}
-                                    innerRadius={40}
-                                    fill={chartColors[0]}
-                                    dataKey="value"
-                                    isAnimationActive={false}
-                                >
-                                    {data.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip />
-                                <Legend />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </div>
-                );
-
-            default:
-                return <div className={styles.container}>Unsupported chart type</div>;
-        }
+        const chartElement = element as ChartElement;
+        return (
+            <ChartComponent
+                element={chartElement}
+                slideBackground={slideBackground}
+                theme={theme}
+                isReadOnly={true}
+                layoutId={layoutId}
+            />
+        );
     };
 
     // Render element based on its type
@@ -249,8 +133,8 @@ const ElementViewer = ({ element, slideBackground, primaryAccentColor }: Element
                     <SmartLayoutView
                         element={element as SmartLayoutElement}
                         presentationId={''}
-                        slideId={''}
-                        layoutId={''}
+                        slideId={slideId}
+                        layoutId={layoutId}
                         tiptapRefs={null}
                         isFocused={false}
                     />
