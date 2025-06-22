@@ -129,6 +129,15 @@ export const DndProvider: React.FC<{ children: ReactNode; presentationId: string
             if (now - lastProcessedTime < THROTTLE_INTERVAL) return;
             lastProcessedTime = now;
 
+            // Auto scroll when cursor nears top or bottom of the viewport
+            const SCROLL_THRESHOLD = 75 + 40; // header + 40px from edge
+            const SCROLL_SPEED = 20; // amount to scroll
+            if (e.clientY < SCROLL_THRESHOLD) {
+                window.scrollBy({ top: -SCROLL_SPEED });
+            } else if (e.clientY > window.innerHeight - SCROLL_THRESHOLD) {
+                window.scrollBy({ top: SCROLL_SPEED });
+            }
+
             // Get element under cursor
             const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
             if (!elemBelow) return;
