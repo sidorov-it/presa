@@ -30,7 +30,7 @@ import { MdOutlineEdit } from 'react-icons/md';
 import { HiOutlineTrash } from 'react-icons/hi';
 
 import { OpenCustomMenuEvent } from '@/customEvents/OpenCustomMenuEvent';
-import { useMenuStore } from '@/store/menuStore';
+import { useMenuStore as menuStore, useSelectedElement } from '@/store/menuStore';
 
 import styles from './Chart.module.css';
 import { Theme } from '@/types/theme';
@@ -78,7 +78,11 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
     onDeleteElement,
 }) => {
     // const isReadOnly = useReadOnly();
-    const [isSelected, setIsSelected] = useState(false);
+    const selected = useSelectedElement();
+    const isSelected =
+        selected?.elementId === element.id &&
+        selected?.layoutId === layoutId &&
+        selected?.slideId === slideId;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [showLabels, setShowLabels] = useState(element.showLabels !== undefined ? element.showLabels : true);
@@ -141,9 +145,13 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
         }
 
         if (presentationId && slideId && layoutId) {
-            setIsSelected(true);
+            menuStore.getState().setSelectedElement({
+                slideId,
+                layoutId,
+                elementId: element.id,
+            });
             setIsSettingsOpen(true);
-            useMenuStore.getState().openMenu({
+            menuStore.getState().openMenu({
                 slideId,
                 elementId: element.id,
                 layoutId,
@@ -166,9 +174,9 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
                 settingsRef.current &&
                 !settingsRef.current.contains(event.target as Node)
             ) {
-                setIsSelected(false);
+                menuStore.getState().clearSelectedElement();
                 setIsSettingsOpen(false);
-                useMenuStore.getState().closeMenu();
+                menuStore.getState().closeMenu();
             }
         };
 
@@ -183,7 +191,12 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
             if (e.detail.elementId === element.id && e.detail.elementType === 'chart') {
                 setIsSettingsOpen(true);
                 if (presentationId && slideId && layoutId) {
-                    useMenuStore.getState().openMenu({
+                    menuStore.getState().setSelectedElement({
+                        slideId,
+                        layoutId,
+                        elementId: element.id,
+                    });
+                    menuStore.getState().openMenu({
                         slideId,
                         elementId: element.id,
                         layoutId,
@@ -311,7 +324,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
     );
 
     const handleRemoveChart = useCallback(() => {
-        useMenuStore.getState().closeMenu();
+        menuStore.getState().closeMenu();
         onDeleteElement?.();
     }, [onDeleteElement]);
 

@@ -54,6 +54,15 @@ export interface MenuState {
 
     focusedLayoutId: string | null;
 
+    selectedElement: {
+        slideId: string | null;
+        layoutId: string | null;
+        elementId: string | null;
+    } | null;
+
+    setSelectedElement: (data: { slideId: string; layoutId: string; elementId: string }) => void;
+    clearSelectedElement: () => void;
+
     setPresentationId: (presentationId: string) => void;
 
     setSelectedSmartLayoutItemId: (layoutId: string, elementId: string, smartLayoutItemId: string) => void;
@@ -180,6 +189,8 @@ export const useMenuStore = create<MenuState>()(
 
             focusedLayoutId: null,
 
+            selectedElement: null,
+
             setPresentationId: (presentationId: string) => set({ presentationId }),
 
             setSelectedSmartLayoutItemId: (layoutId: string, elementId: string, smartLayoutItemId: string) =>
@@ -243,6 +254,13 @@ export const useMenuStore = create<MenuState>()(
                     smartLayoutItemId: menuData.smartLayoutItemId ?? null,
                     isInTable,
                     columnIndex: menuData.columnIndex ?? null,
+                    selectedElement: menuData.elementId
+                        ? {
+                              slideId: menuData.slideId ?? null,
+                              layoutId: menuData.layoutId ?? null,
+                              elementId: menuData.elementId,
+                          }
+                        : null,
                 });
             },
 
@@ -459,6 +477,19 @@ export const useMenuStore = create<MenuState>()(
                 set({ focusedLayoutId: null });
             },
 
+            setSelectedElement: data =>
+                set({
+                    selectedElement: {
+                        slideId: data.slideId,
+                        layoutId: data.layoutId,
+                        elementId: data.elementId,
+                    },
+                }),
+            clearSelectedElement: () =>
+                set({
+                    selectedElement: null,
+                }),
+
             // Getter methods
             getElement: (slideId, layoutId, elementId) => {
                 const { presentationId } = get();
@@ -617,6 +648,7 @@ export const useMenuSelectedSlide = () => useMenuStore(state => state.slideId!);
 export const useMenuSelectedElement = () => useMenuStore(state => state.elementId);
 export const useMenuSelectedLayout = () => useMenuStore(state => state.layoutId);
 export const useMenuSelectedCell = () => useMenuStore(state => state.cellId);
+export const useSelectedElement = () => useMenuStore(state => state.selectedElement);
 
 // Hook for checking if a specific slide has its menu open
 export const useMenuCheckOpen = (slideId: string) =>

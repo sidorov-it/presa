@@ -7,6 +7,7 @@ import { ImageElement } from '@/types';
 import { default as NextImage } from 'next/image';
 import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlaceholder';
 import type { useMenuStore } from '@/store/menuStore';
+import { useSelectedElement, useMenuStore as menuStore } from '@/store/menuStore';
 
 import styles from './Image.module.css';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
@@ -41,7 +42,11 @@ const ImageComponent: React.FC<ImageComponentProps> = ({
     const isReadOnly = useReadOnly();
 
     const [error, setError] = useState<string | null>(null);
-    const [isSelected, setIsSelected] = useState(false);
+    const selected = useSelectedElement();
+    const isSelected =
+        selected?.elementId === element.id &&
+        selected?.layoutId === layoutId &&
+        selected?.slideId === slideId;
     const [resizing, setResizing] = useState(false);
     const [startWidth, setStartWidth] = useState(0);
     const [startHeight, setStartHeight] = useState(0);
@@ -78,7 +83,11 @@ const ImageComponent: React.FC<ImageComponentProps> = ({
         }
 
         e.stopPropagation();
-        setIsSelected(true);
+        menuStore.getState().setSelectedElement({
+            slideId,
+            layoutId,
+            elementId: element.id,
+        });
 
         openMenu?.({
             slideId: slideId,
@@ -96,7 +105,7 @@ const ImageComponent: React.FC<ImageComponentProps> = ({
 
         const handleClickOutside = (event: MouseEvent) => {
             if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-                setIsSelected(false);
+                menuStore.getState().clearSelectedElement();
             }
         };
 

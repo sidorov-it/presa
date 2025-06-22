@@ -143,6 +143,15 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 layoutId,
                 isTextEditor: !!menuData.activeEditor,
             });
+            if (menuData.elementType !== 'editor') {
+                useMenuStore.getState().setSelectedElement({
+                    slideId,
+                    layoutId,
+                    elementId: menuData.elementId,
+                });
+            } else {
+                useMenuStore.getState().clearSelectedElement();
+            }
         },
         [slideId, layoutId]
     );
@@ -339,6 +348,8 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 return;
             }
 
+            useMenuStore.getState().clearSelectedElement();
+
             const target = ev.target as HTMLElement;
             if (tiptapRefs.current?.editors[elementId]?.editor && !target.closest('[data-type="link-editor"]')) {
                 tiptapRefs.current?.editors[elementId]?.editor.chain().focus().run();
@@ -460,6 +471,8 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             if (isReadOnly) {
                 return;
             }
+
+            useMenuStore.getState().clearSelectedElement();
 
             // If there's only one element and it's a text editor, focus it
             if (elementsIds.length === 1) {
