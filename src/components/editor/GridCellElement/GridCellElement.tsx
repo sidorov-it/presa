@@ -151,6 +151,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 });
             } else {
                 useMenuStore.getState().clearSelectedElement();
+                useMenuStore.getState().clearSelectedSmartLayoutItemId();
             }
         },
         [slideId, layoutId]
@@ -349,6 +350,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             }
 
             useMenuStore.getState().clearSelectedElement();
+            useMenuStore.getState().clearSelectedSmartLayoutItemId();
 
             const target = ev.target as HTMLElement;
             if (tiptapRefs.current?.editors[elementId]?.editor && !target.closest('[data-type="link-editor"]')) {
@@ -473,6 +475,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             }
 
             useMenuStore.getState().clearSelectedElement();
+            useMenuStore.getState().clearSelectedSmartLayoutItemId();
 
             // If there's only one element and it's a text editor, focus it
             if (elementsIds.length === 1) {

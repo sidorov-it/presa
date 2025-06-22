@@ -66,6 +66,7 @@ export interface MenuState {
     setPresentationId: (presentationId: string) => void;
 
     setSelectedSmartLayoutItemId: (layoutId: string, elementId: string, smartLayoutItemId: string) => void;
+    clearSelectedSmartLayoutItemId: () => void;
     // Table hover actions
     setSelectedRowIndex: (tableId: string, rowIndex: number | null) => void;
     setSelectedColumnIndex: (tableId: string, columnIndex: number | null) => void;
@@ -195,6 +196,7 @@ export const useMenuStore = create<MenuState>()(
 
             setSelectedSmartLayoutItemId: (layoutId: string, elementId: string, smartLayoutItemId: string) =>
                 set({ selectedSmartLayoutItemId: smartLayoutItemId, focusedLayoutId: layoutId, elementId }),
+            clearSelectedSmartLayoutItemId: () => set({ selectedSmartLayoutItemId: null }),
 
             // Table hover actions
             setSelectedRowIndex: (tableId: string, rowIndex: number | null) => {
@@ -649,6 +651,8 @@ export const useMenuSelectedElement = () => useMenuStore(state => state.elementI
 export const useMenuSelectedLayout = () => useMenuStore(state => state.layoutId);
 export const useMenuSelectedCell = () => useMenuStore(state => state.cellId);
 export const useSelectedElement = () => useMenuStore(state => state.selectedElement);
+export const useSelectedSmartLayoutItemId = () =>
+    useMenuStore(state => state.selectedSmartLayoutItemId);
 
 // Hook for checking if a specific slide has its menu open
 export const useMenuCheckOpen = (slideId: string) =>

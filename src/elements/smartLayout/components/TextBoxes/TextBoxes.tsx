@@ -12,6 +12,7 @@ import ItemWrapper from '../ItemWrapper/ItemWrapper';
 import styles from './TextBoxes.module.css';
 import { useDndStore } from '@/store/dndStore';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
+import { useSelectedElement } from '@/store/menuStore';
 
 export default function TextBoxes({
     elementId,
@@ -29,6 +30,11 @@ export default function TextBoxes({
     isFocused: boolean;
 }) {
     const isReadOnly = useReadOnly();
+    const selected = useSelectedElement();
+    const isSelected =
+        selected?.elementId === elementId &&
+        selected?.layoutId === layoutId &&
+        selected?.slideId === slideId;
     const smartLayoutItemId = useDndStore(state => state.state.source.smartLayoutItemId);
     // const source = useDndStore(state => state.state.source);
     const isDraggingFromSameLayout = useDndStore(
@@ -233,7 +239,11 @@ export default function TextBoxes({
     }
 
     return (
-        <div className={`${styles.container} ${isFocused ? styles.focused : ''}`}>
+        <div
+            className={`${styles.container} ${
+                isFocused || isSelected ? styles.focused : ''
+            }`}
+        >
             {itemsIds?.map((itemId, index) => (
                 <div
                     key={itemId}

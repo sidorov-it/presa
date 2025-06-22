@@ -12,6 +12,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { generateId } from '@/utils/id';
 import { useDndStore } from '@/store/dndStore';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
+import { useSelectedElement } from '@/store/menuStore';
 
 export default function ImagesWithText({
     elementId,
@@ -29,6 +30,11 @@ export default function ImagesWithText({
     isFocused: boolean;
 }) {
     const isReadOnly = useReadOnly();
+    const selected = useSelectedElement();
+    const isSelected =
+        selected?.elementId === elementId &&
+        selected?.layoutId === layoutId &&
+        selected?.slideId === slideId;
 
     // const source = useDndStore(({ state }) => state.source);
     const smartLayoutItemId = useDndStore(state => state.state.source.smartLayoutItemId);
@@ -228,7 +234,9 @@ export default function ImagesWithText({
 
     return (
         <div
-            className={`${styles.container} ${isFocused ? styles.focused : ''}`}
+            className={`${styles.container} ${
+                isFocused || isSelected ? styles.focused : ''
+            }`}
             style={{ gridTemplateColumns: `repeat(${columnSize * 6}, minmax(0px, 1fr))` }}
         >
             {itemsIds?.map((itemId, index) => (
@@ -247,7 +255,7 @@ export default function ImagesWithText({
                         />
                     )}
                     <Item
-                        isElementFocused={isFocused}
+                        isElementFocused={isFocused || isSelected}
                         itemId={itemId}
                         elementId={elementId}
                         tiptapRefs={tiptapRefs}

@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useEffect, useRef, useState } from 'react';
 import DragHandler from '@/components/editor/DragHandler';
-import { useMenuStore } from '@/store/menuStore';
+import { useMenuStore, useSelectedSmartLayoutItemId } from '@/store/menuStore';
 import styles from './ItemWrapper.module.css';
 import ImageWithTextItemMenu from '../ImagesWithText/ImageWithTextItemMenu/ImageWithTextItemMenu';
 import { useDnd } from '@/contexts/DragDropContext';
@@ -28,7 +28,8 @@ export default function ItemWrapper({
     const isReadOnly = useReadOnly();
 
     const [hovered, setHovered] = useState(false);
-    const isSelected = useMenuStore(state => state.smartLayoutItemId === itemId);
+    const selectedItemId = useSelectedSmartLayoutItemId();
+    const isSelected = selectedItemId === itemId;
     const isMenuOpen = useMenuStore(state => state.isOpen && state.smartLayoutItemId === itemId);
     const itemRef = useRef<HTMLDivElement>(null);
     const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
@@ -78,9 +79,15 @@ export default function ItemWrapper({
             ref={itemRef}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
-            onClick={() => {
+            onClick={e => {
+                e.stopPropagation();
                 if (!isReadOnly) {
                     useMenuStore.getState().setSelectedSmartLayoutItemId(layoutId, elementId, itemId);
+                    useMenuStore.getState().setSelectedElement({
+                        slideId,
+                        layoutId,
+                        elementId,
+                    });
                 }
             }}
             data-smart-layout-item-id={itemId}
@@ -92,7 +99,15 @@ export default function ItemWrapper({
                     slideId={slideId}
                     isActive={isMenuOpen}
                     ariaLabel="Drag handle"
-                    handleClick={() => useMenuStore.getState().openMenu({ smartLayoutItemId: itemId })}
+                    handleClick={() => {
+                        useMenuStore.getState().setSelectedSmartLayoutItemId(layoutId, elementId, itemId);
+                        useMenuStore.getState().setSelectedElement({
+                            slideId,
+                            layoutId,
+                            elementId,
+                        });
+                        useMenuStore.getState().openMenu({ smartLayoutItemId: itemId });
+                    }}
                     handleKeyDown={() => {}}
                     handleDragStart={handleItemDragStart}
                     dataAttributes={{
