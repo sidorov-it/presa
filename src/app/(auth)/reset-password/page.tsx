@@ -1,12 +1,11 @@
-'use client';
+import type { Metadata } from 'next';
+import ResetPasswordPage from './page.client';
 
-import { Suspense } from 'react';
-import ResetPassword from './ResetPassword';
+export const metadata: Metadata = {
+    title: 'Сброс пароля',
+    description: 'Страница для установки нового пароля',
+};
 
-export default function ResetPasswordPage() {
-    return (
-        <Suspense>
-            <ResetPassword />
-        </Suspense>
-    );
+export default function ResetPasswordWrapper() {
+    return <ResetPasswordPage />;
 }

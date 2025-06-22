@@ -1,64 +1,11 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-'use client';
+import type { Metadata } from 'next';
+import HomeClient from './page.client';
 
-import React, { useState, useEffect } from 'react';
-// import { usePresentationStore } from '@/store/presentationStore';
-import Editor from '@/components/editor/Editor';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+export const metadata: Metadata = {
+    title: 'Главная страница',
+    description: 'Перенаправление на вход или панель управления',
+};
 
-export default function Home() {
-    // const { presentations, createPresentation } = usePresentationStore();
-    const [selectedPresentationId] = useState<string | null>(null);
-    const { data: session, status } = useSession();
-    const router = useRouter();
-
-    useEffect(() => {
-        if (status === 'loading') return;
-
-        if (session) {
-            router.push('/dashboard');
-        } else {
-            router.push('/login');
-        }
-    }, [session, status, router]);
-
-    // // Обработчик создания новой презентации
-    // const handleCreatePresentation = () => {
-    //     createPresentation('Новая презентация');
-    //     // Выбираем последнюю созданную презентацию
-    //     if (presentations.length > 0) {
-    //         setSelectedPresentationId(presentations[presentations.length - 1].id);
-    //     }
-    // };
-
-    // Если выбрана презентация, показываем редактор
-    if (selectedPresentationId) {
-        return <Editor presentationId={selectedPresentationId} />;
-    }
-
-    // Иначе показываем список презентаций или предложение создать новую
-    return (
-        <div
-            style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                minHeight: '100vh',
-                backgroundColor: 'var(--color-background)',
-            }}
-        >
-            <div
-                style={{
-                    borderRadius: '9999px',
-                    borderTopWidth: '2px',
-                    borderBottomWidth: '2px',
-                    borderColor: 'var(--color-primary)',
-                    width: '3rem',
-                    height: '3rem',
-                    animation: 'spin 1s linear infinite',
-                }}
-            ></div>
-        </div>
-    );
+export default function HomePage() {
+    return <HomeClient />;
 }
