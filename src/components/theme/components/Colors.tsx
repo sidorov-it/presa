@@ -243,7 +243,7 @@ export default function Colors({
                 <h4 className={styles.sectionSubtitle}>Фон</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div>
-                        <Label>Цвет слайда</Label>
+                        <Label>Фон слайда</Label>
                         <ColorPicker
                             value={theme.colors.slideBackground}
                             onChange={handleSlideBackgroundChange}

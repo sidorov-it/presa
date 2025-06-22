@@ -59,6 +59,43 @@ export const getTextContent = (textType: TextType, text: string | string[]) => {
 </ul>`;
 
         default:
+            // Enhance default text handling to support AI-generated Markdown-style headings (e.g. **Heading**) and line breaks.
+            if (typeof text === 'string') {
+                const convertAiTextToHtml = (raw: string): string => {
+                    // Normalize line endings and split into logical lines
+                    const lines = raw
+                        .replace(/\r\n/g, "\n")
+                        .split("\n")
+                        .map(l => l.trim());
+
+                    const htmlParts: string[] = [];
+
+                    for (const line of lines) {
+                        if (!line) {
+                            // Empty line – acts as paragraph separator; add an explicit line break
+                            htmlParts.push('<br />');
+                            continue;
+                        }
+
+                        // Detect Markdown-style heading wrapped with ** **
+                        const headingMatch = line.match(/^\*\*(.+?)\*\*$/);
+                        if (headingMatch) {
+                            const headingText = headingMatch[1].trim();
+                            htmlParts.push(`<span class="heading-text heading-1">${headingText}</span>`);
+                            continue;
+                        }
+
+                        // Regular paragraph line
+                        htmlParts.push(`<p>${line}</p>`);
+                    }
+
+                    // Join and remove possible consecutive <br />
+                    return htmlParts.join('\n');
+                };
+
+                return convertAiTextToHtml(text as string);
+            }
+            // Fallback to simple paragraph handling
             return `<p>${text}</p>`;
     }
 };
