@@ -275,6 +275,10 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
         return null;
     }
 
+    if (elementType === 'chart') {
+        return null;
+    }
+
     if (elementType === 'layout' && layoutId && !isTable) {
         return <LayoutMenu position={position} layoutId={layoutId} />;
     } else if (isTable && elementType === 'layout') {

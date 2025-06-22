@@ -6,7 +6,16 @@ import { MutableRefObject } from 'react';
 import { TipTapRefs } from '@/types';
 
 // Define menu element types
-export type MenuElementType = 'element' | 'cell' | 'layout' | 'slide' | 'editor' | 'row' | 'table' | 'column';
+export type MenuElementType =
+    | 'element'
+    | 'cell'
+    | 'layout'
+    | 'slide'
+    | 'editor'
+    | 'row'
+    | 'table'
+    | 'column'
+    | 'chart';
 
 export interface MenuState {
     // Table hover state
