@@ -2,6 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Просмотр презентации',
+    description: 'Введите идентификатор презентации для просмотра',
+};
 
 export default function ViewerHomePage() {
     const router = useRouter();

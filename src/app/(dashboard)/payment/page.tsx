@@ -6,7 +6,13 @@ import { Heading } from '@/components/ui/heading';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/Card/Card';
 import { Button } from '@/components/ui/Button';
 import { Check } from 'lucide-react';
+import type { Metadata } from 'next';
 import styles from './page.module.css';
+
+export const metadata: Metadata = {
+    title: 'Тарифные планы',
+    description: 'Выбор и оплата подходящего тарифа',
+};
 
 // Sample plan data
 const PLANS = [

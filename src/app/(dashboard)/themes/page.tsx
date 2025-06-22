@@ -8,8 +8,14 @@ import { toast } from 'sonner';
 import styles from './page.module.css';
 import ThemePreviewBlock from './components/ThemePreviewBlock';
 import { useRouter } from 'next/navigation';
+import type { Metadata } from 'next';
 import { Tabs as ChakraTabs } from '@chakra-ui/react';
 import { useThemeStore } from '@/store/themeStore';
+
+export const metadata: Metadata = {
+    title: 'Темы оформления',
+    description: 'Создание и управление темами для презентаций',
+};
 
 export default function ThemesPage() {
     const { themes, defaultThemes, loadThemes, loadDefaultThemes, addTheme, deleteTheme } = useThemeStore();

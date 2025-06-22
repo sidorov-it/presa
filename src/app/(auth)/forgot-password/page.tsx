@@ -2,7 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import styles from './page.module.css';
+
+export const metadata: Metadata = {
+    title: 'Восстановление пароля',
+    description: 'Запрос на ссылку для восстановления пароля',
+};
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState('');
     const [isSubmitted, setIsSubmitted] = useState(false);
