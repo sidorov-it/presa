@@ -9,16 +9,27 @@ interface YaGPTMessage {
 
 export class YaGptService implements LLMService {
     private static rateLimiter = new RateLimiter(10);
-    private readonly iamToken: string;
+    private readonly apiKey: string;
     private readonly folderId: string;
     private readonly userId: string;
+    private static cachedApiKey: string | null = null;
 
     constructor(config: YaGptConfig) {
-        if (!process.env.YAGPT_IAM_TOKEN || !process.env.YAGPT_FOLDER_ID) {
-            throw new Error('YAGPT_IAM_TOKEN and YAGPT_FOLDER_ID environment variables are required');
+        if (!process.env.YAGPT_FOLDER_ID) {
+            throw new Error('YAGPT_FOLDER_ID environment variable is required');
         }
 
-        this.iamToken = process.env.YAGPT_IAM_TOKEN;
+        // Prefer explicit API key if provided; otherwise attempt to create using IAM token and service account id.
+        if (process.env.YAGPT_API_KEY) {
+            this.apiKey = process.env.YAGPT_API_KEY;
+        } else {
+            if (!process.env.YAGPT_IAM_TOKEN || !process.env.YAGPT_SERVICE_ACCOUNT_ID) {
+                throw new Error(
+                    'Either YAGPT_API_KEY or both YAGPT_IAM_TOKEN and YAGPT_SERVICE_ACCOUNT_ID environment variables must be set'
+                );
+            }
+            this.apiKey = '';
+        }
         this.folderId = process.env.YAGPT_FOLDER_ID;
         this.userId = config.userId;
     }
@@ -31,7 +42,10 @@ export class YaGptService implements LLMService {
         return YaGptService.rateLimiter.run(fn);
     }
 
-    private buildRequestBody(prompt: string): Record<string, unknown> {
+    private buildRequestBody(
+        prompt: string,
+        callOptions?: { functions?: any[]; function_call?: any }
+    ): Record<string, unknown> {
         const messages: YaGPTMessage[] = [
             {
                 role: 'system',
@@ -40,7 +54,7 @@ export class YaGptService implements LLMService {
             { role: 'user', text: prompt },
         ];
 
-        return {
+        const request: Record<string, unknown> = {
             modelUri: `gpt://${this.folderId}/yandexgpt/latest`,
             completionOptions: {
                 stream: false,
@@ -49,6 +63,13 @@ export class YaGptService implements LLMService {
             },
             messages,
         };
+
+        if (callOptions?.functions && callOptions.functions.length) {
+            // YandexGPT expects tools: [ { function: {...schema} } ]
+            request.tools = callOptions.functions.map(fn => ({ function: fn }));
+        }
+
+        return request;
     }
 
     async generate(
@@ -58,14 +79,18 @@ export class YaGptService implements LLMService {
         const start = Date.now();
 
         const endpoint = 'https://llm.api.cloud.yandex.net/foundationModels/v1/completion';
-        const body = this.buildRequestBody(prompt);
+
+        // Ensure we have an API key ready
+        const apiKey = process.env.YAGPT_IAM_TOKEN;
+
+        const body = this.buildRequestBody(prompt, options);
 
         const responseJson = await this.withRateLimit(async () => {
             const res = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${this.iamToken}`,
+                    Authorization: `Api-Key ${apiKey}`,
                 },
                 body: JSON.stringify(body),
             });
@@ -78,28 +103,46 @@ export class YaGptService implements LLMService {
             return res.json();
         });
 
-        // Yandex GPT returns choices array similar to OpenAI
-        const textResponse: string =
-            responseJson.choices?.[0]?.message?.text || responseJson.choices?.[0]?.text || '';
+        const yaResult = responseJson.result || responseJson;
+        const firstAlt = yaResult.alternatives?.[0] || {};
+        const message = firstAlt.message || yaResult.message || responseJson.message || responseJson.choices?.[0]?.message || responseJson.choices?.[0];
 
-        const elements = textResponse
-            .split('\n\n')
-            .filter((b: string) => b.trim().length)
-            .map((block: string) => {
-                if (block.toLowerCase().startsWith('image:')) {
+        let elements = [] as LLMResponse['elements'];
+        let functionCall: LLMResponse['function_call'];
+
+        if (message?.toolCallList?.toolCalls?.length) {
+            const tool = message.toolCallList.toolCalls[0];
+            functionCall = {
+                name: tool.functionCall?.name,
+                arguments: tool.functionCall?.arguments,
+            };
+        } else if (message?.function_call) {
+            functionCall = {
+                name: message.function_call.name,
+                arguments: message.function_call.arguments,
+            };
+        } else {
+            const textResponse: string = message?.text || message?.content || '';
+
+            elements = textResponse
+                .split('\n\n')
+                .filter((b: string) => b.trim().length)
+                .map((block: string) => {
+                    if (block.toLowerCase().startsWith('image:')) {
+                        return {
+                            type: 'image' as const,
+                            content: block.replace(/^image:\s*/i, '').trim(),
+                            metadata: {},
+                        };
+                    }
+
                     return {
-                        type: 'image' as const,
-                        content: block.replace(/^image:\s*/i, '').trim(),
+                        type: 'text' as const,
+                        content: block.trim(),
                         metadata: {},
                     };
-                }
-
-                return {
-                    type: 'text' as const,
-                    content: block.trim(),
-                    metadata: {},
-                };
-            });
+                });
+        }
 
         const duration = Date.now() - start;
 
@@ -128,8 +171,55 @@ export class YaGptService implements LLMService {
 
         await LLMHistoryService.logRequest(logData);
 
-        return { elements };
+        return {
+            elements,
+            ...(functionCall ? { function_call: functionCall } : {}),
+        };
+    }
+
+    /**
+     * Returns API key, creating it once per application lifetime if necessary.
+     */
+    private async obtainApiKey(): Promise<string> {
+        if (this.apiKey) {
+            return this.apiKey;
+        }
+
+        if (YaGptService.cachedApiKey) {
+            this.apiKey = YaGptService.cachedApiKey;
+            return this.apiKey;
+        }
+
+        // Create new API key via IAM API
+        const iamToken = process.env.YAGPT_IAM_TOKEN!;
+        const serviceAccountId = process.env.YAGPT_SERVICE_ACCOUNT_ID!;
+
+        const res = await fetch('https://iam.api.cloud.yandex.net/iam/v1/apiKeys', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${iamToken}`,
+            },
+            body: JSON.stringify({ serviceAccountId }),
+        });
+
+        if (!res.ok) {
+            const text = await res.text();
+            throw new Error(`Failed to create Yandex GPT API key: ${res.status} - ${text}`);
+        }
+
+        const data = await res.json();
+        const createdKey = data?.secret;
+
+        if (!createdKey) {
+            throw new Error('No api key returned from IAM service');
+        }
+
+        // Cache for future use
+        YaGptService.cachedApiKey = createdKey;
+        this.apiKey = createdKey;
+        return createdKey;
     }
 }
 
-export default YaGptService; 
+export default YaGptService;

@@ -2,7 +2,7 @@ import { createLLMService } from '@/services/llm';
 
 const generateTopicsFunction = {
     name: 'generate_presentation_topics',
-    description: 'Создайте список тем для презентации на основе заданного описания',
+    description: 'Создает список тем для презентации на основе заданного описания. Выдает список тем и инструкции для каждого слайда',
     parameters: {
         type: 'object',
         properties: {
