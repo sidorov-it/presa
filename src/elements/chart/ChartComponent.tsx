@@ -30,6 +30,7 @@ import { MdOutlineEdit } from 'react-icons/md';
 import { HiOutlineTrash } from 'react-icons/hi';
 
 import { OpenCustomMenuEvent } from '@/customEvents/OpenCustomMenuEvent';
+import { useMenuStore } from '@/store/menuStore';
 
 import styles from './Chart.module.css';
 import { Theme } from '@/types/theme';
@@ -142,6 +143,13 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
         if (presentationId && slideId && layoutId) {
             setIsSelected(true);
             setIsSettingsOpen(true);
+            useMenuStore.getState().openMenu({
+                slideId,
+                elementId: element.id,
+                layoutId,
+                elementType: 'chart',
+                isTextEditor: false,
+            });
         }
     };
 
@@ -160,6 +168,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
             ) {
                 setIsSelected(false);
                 setIsSettingsOpen(false);
+                useMenuStore.getState().closeMenu();
             }
         };
 
@@ -170,12 +179,25 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
     }, [isReadOnly]);
 
     useEffect(() => {
-        OpenCustomMenuEvent.addEventListener(e => {
+        const handleOpenCustomMenu = (e: any) => {
             if (e.detail.elementId === element.id && e.detail.elementType === 'chart') {
                 setIsSettingsOpen(true);
+                if (presentationId && slideId && layoutId) {
+                    useMenuStore.getState().openMenu({
+                        slideId,
+                        elementId: element.id,
+                        layoutId,
+                        elementType: 'chart',
+                        isTextEditor: false,
+                    });
+                }
             }
-        });
-    }, [element.id]);
+        };
+        OpenCustomMenuEvent.addEventListener(handleOpenCustomMenu);
+        return () => {
+            OpenCustomMenuEvent.removeEventListener(handleOpenCustomMenu);
+        };
+    }, [element.id, presentationId, slideId, layoutId]);
 
     // Open data edit modal
     const handleOpenDataModal = (e: React.MouseEvent) => {
@@ -289,6 +311,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
     );
 
     const handleRemoveChart = useCallback(() => {
+        useMenuStore.getState().closeMenu();
         onDeleteElement?.();
     }, [onDeleteElement]);
 
