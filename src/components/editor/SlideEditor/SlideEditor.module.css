@@ -24,7 +24,7 @@
     border-width: var(--presentation-slide-border-width);
     box-shadow: var(--presentation-slide-shadow);
     width: 100%;
-    cursor: text;
+    /* cursor: text; */
     margin-left: 0;
     overflow: hidden;
 }
