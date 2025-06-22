@@ -13,6 +13,7 @@ import { getNewElement } from '@/utils/getNewElement';
 import { getNewEditorElement } from '@/utils/getNewEditorElement';
 import { createSlideFromTemplate } from '@/utils/createSlideFromTemplate';
 import { getNewLayoutWithTable } from '@/utils/getNewLayoutWithTable';
+import { useHistoryStore } from './historyStore';
 
 const cloneDeep = (obj: any) => JSON.parse(JSON.stringify(obj));
 
@@ -3270,6 +3271,9 @@ export const useDndStore = create<{
 
         const state = get().state;
 
+        const presentationId = get().presentationId;
+        useHistoryStore.getState().beginTransaction(presentationId!, 'drop element');
+
         if (state.dragState === 'dragging') {
             // Process drop based on indicators
             if (state.indicators.slideIndicator) {
@@ -3288,6 +3292,8 @@ export const useDndStore = create<{
             } else if (Number.isInteger(state.source.rowIndex as number)) {
                 get().processTableRowDrop();
             }
+
+            useHistoryStore.getState().commitTransaction(presentationId!);
 
             // Complete the drop operation
             get().completeDrop();
