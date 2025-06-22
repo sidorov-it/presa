@@ -7,6 +7,7 @@ import { usePresentationStore } from './presentationStore';
 import getValueByPath from '@/utils/getValueByPath';
 import { getElementConfig } from '@/utils/getElementConfig';
 import { TEXT_ELEMENT_TYPES } from '@/elements/menuRegistry';
+import { ElementType } from '@/types/elements';
 
 // Define history action types
 export type HistoryAction = {
@@ -132,6 +133,17 @@ const findTextElements = (state: any) => {
                         textElements.push({
                             id: element.id,
                             content: element.content,
+                        });
+                    } else if (element.elementTypeId === ElementType.SMART_LAYOUT) {
+                        element.items.forEach((item: any) => {
+                            textElements.push({
+                                id: `title-${element.id}-${item.id}`,
+                                content: item.title,
+                            });
+                            textElements.push({
+                                id: `text-${element.id}-${item.id}`,
+                                content: item.text,
+                            });
                         });
                     }
                 });

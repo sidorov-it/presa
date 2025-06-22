@@ -37,6 +37,7 @@ import Logo from '@/components/icons/Logo/Logo';
 import MobileWarningOverlay from '@/components/MobileWarningOverlay/MobileWarningOverlay';
 import { clearAllThemeStyles } from '@/utils/themeUtils';
 import { SimplePdfExportButton } from '@/components/export';
+import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -87,6 +88,23 @@ export default function PresentationEditorPage() {
             clearAllThemeStyles();
         };
     }, []);
+
+    useEffect(() => {
+        // window.tiptapRefs = tiptapRefs.current;
+        const handleChangeTiptapRefs = (e: ChangeTiptapRefsEvent) => {
+            if (e.detail.type === 'remove') {
+                delete tiptapRefs.current.editors[e.detail.elementId];
+            } else if (e.detail.type === 'update') {
+                tiptapRefs.current.editors[e.detail.elementId].editor.commands.setContent(e.detail.content);
+            }
+        };
+
+        ChangeTiptapRefsEvent.addEventListener(handleChangeTiptapRefs);
+
+        return () => {
+            ChangeTiptapRefsEvent.removeEventListener(handleChangeTiptapRefs);
+        };
+    }, [presentation]);
 
     // Warn user about unsaved changes when leaving the page
     useEffect(() => {

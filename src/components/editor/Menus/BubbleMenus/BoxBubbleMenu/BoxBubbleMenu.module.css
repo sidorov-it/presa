@@ -19,4 +19,13 @@
 .resetColorButton {
   padding: 6px 8px !important;
   color: #333 !important;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: #333 !important;
 }
