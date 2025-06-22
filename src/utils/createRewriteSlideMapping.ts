@@ -3,7 +3,6 @@ import { SlotKeyMapping } from '@/services/llm/gigaChat/rewriteSlideContent';
 import { Slide, SmartLayoutElement } from '@/types';
 import { ElementType } from '@/types/elements';
 import { stripHtml } from './stripeHtml';
-import logger from '@/utils/logger';
 
 export default function createRewriteSlideMapping(slide: Slide) {
     try {
@@ -100,6 +99,6 @@ export default function createRewriteSlideMapping(slide: Slide) {
 
         return mapping;
     } catch (error) {
-        logger.error(String(error));
+        console.error(error);
     }
 }

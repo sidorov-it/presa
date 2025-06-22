@@ -3,7 +3,6 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { hasEnoughTokens, deductTokens } from '@/utils/tokens';
 import { getTokenCostForOperation, TOKEN_COSTS } from '@/utils/getTokenCostForOperation';
-import logger from '@/utils/logger';
 
 interface AIOperationConfig {
     operation: keyof typeof TOKEN_COSTS;
@@ -73,7 +72,7 @@ export async function withTokenDeduction<T>(
                 metadata,
             });
         } catch (tokenError) {
-            logger.error(`Error deducting tokens: ${String(tokenError)}`);
+            console.error('Error deducting tokens:', tokenError);
             // Note: We don't fail the request here as the operation was already completed
             // In production, you might want to implement a compensation mechanism
         }
@@ -84,7 +83,7 @@ export async function withTokenDeduction<T>(
             tokensUsed: requiredTokens,
         });
     } catch (error) {
-        logger.error(`Error in AI operation: ${String(error)}`);
+        console.error('Error in AI operation:', error);
         return NextResponse.json(
             {
                 error: 'Internal server error',

@@ -1,4 +1,3 @@
-import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
@@ -56,7 +55,7 @@ export async function PUT(req: NextRequest, props: { params: Promise<{ id: strin
 
         return NextResponse.json({ presentation });
     } catch (error) {
-        logger.error('Error updating slides:', error);
+        console.error('Error updating slides:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

@@ -2,14 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 import fs from 'fs/promises';
-import logger from '@/utils/logger';
 
 const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
 export const POST = async (req: NextRequest) => {
-    logger.info('POST /api/assets/upload');
     const contentType = req.headers.get('content-type') || '';
     if (!contentType.startsWith('multipart/form-data')) {
         return NextResponse.json({ error: 'Неверный тип содержимого' }, { status: 400 });

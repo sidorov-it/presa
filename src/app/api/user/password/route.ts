@@ -1,4 +1,3 @@
-import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { prisma } from '@/lib/prisma';
@@ -9,7 +8,7 @@ import { comparePassword, hashPassword } from '@/lib/auth';
 export async function PUT(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
-        logger.debug('PUT /api/user/password - Session:', session?.user ? 'Authenticated' : 'Not authenticated');
+        console.log('PUT /api/user/password - Session:', session?.user ? 'Authenticated' : 'Not authenticated');
 
         if (!session?.user) {
             return NextResponse.json({ message: 'Неавторизованный запрос' }, { status: 401 });
@@ -17,7 +16,7 @@ export async function PUT(req: NextRequest) {
 
         const userId = session.user.id;
         const { currentPassword, newPassword } = await req.json();
-        logger.debug('PUT /api/user/password - UserId:', userId, 'Password change request received');
+        console.log('PUT /api/user/password - UserId:', userId, 'Password change request received');
 
         if (!currentPassword || !newPassword) {
             return NextResponse.json({ message: 'Необходимо указать текущий и новый пароль' }, { status: 400 });
@@ -28,15 +27,15 @@ export async function PUT(req: NextRequest) {
         }
 
         // Find user
-        logger.debug('PUT /api/user/password - Looking up user with ID:', userId);
+        console.log('PUT /api/user/password - Looking up user with ID:', userId);
         const user = await prisma.user.findUnique({ where: { id: userId } });
-        logger.debug('PUT /api/user/password - User found by ID:', !!user);
+        console.log('PUT /api/user/password - User found by ID:', !!user);
 
         if (!user) {
             // Try alternative lookup by email as fallback
-            logger.debug('PUT /api/user/password - User not found by ID, trying email lookup');
+            console.log('PUT /api/user/password - User not found by ID, trying email lookup');
             const userByEmail = await prisma.user.findUnique({ where: { email: session.user.email } });
-            logger.debug('PUT /api/user/password - User found by email:', !!userByEmail);
+            console.log('PUT /api/user/password - User found by email:', !!userByEmail);
 
             if (!userByEmail) {
                 return NextResponse.json({ message: 'Пользователь не найден' }, { status: 404 });
@@ -44,7 +43,7 @@ export async function PUT(req: NextRequest) {
 
             // Verify current password
             const isPasswordValid = await comparePassword(currentPassword, userByEmail.password);
-            logger.debug('PUT /api/user/password - Password valid:', isPasswordValid);
+            console.log('PUT /api/user/password - Password valid:', isPasswordValid);
 
             if (!isPasswordValid) {
                 return NextResponse.json({ message: 'Неверный текущий пароль' }, { status: 400 });
@@ -53,7 +52,7 @@ export async function PUT(req: NextRequest) {
             // Update password
             userByEmail.password = newPassword;
             await prisma.user.update({ where: { id: userByEmail.id }, data: { password: newPassword } });
-            logger.debug('PUT /api/user/password - Password updated by email lookup');
+            console.log('PUT /api/user/password - Password updated by email lookup');
 
             return NextResponse.json({
                 message: 'Пароль успешно изменён',
@@ -62,7 +61,7 @@ export async function PUT(req: NextRequest) {
 
         // Verify current password
         const isPasswordValid = await comparePassword(currentPassword, user.password);
-        logger.debug('PUT /api/user/password - Password valid:', isPasswordValid);
+        console.log('PUT /api/user/password - Password valid:', isPasswordValid);
 
         if (!isPasswordValid) {
             return NextResponse.json({ message: 'Неверный текущий пароль' }, { status: 400 });
@@ -71,13 +70,13 @@ export async function PUT(req: NextRequest) {
         // Update password
         user.password = await hashPassword(newPassword);
         await prisma.user.update({ where: { id: user.id }, data: { password: newPassword } });
-        logger.debug('PUT /api/user/password - Password updated successfully');
+        console.log('PUT /api/user/password - Password updated successfully');
 
         return NextResponse.json({
             message: 'Пароль успешно изменён',
         });
     } catch (error) {
-        logger.error('Change password error:', error);
+        console.error('Change password error:', error);
         return NextResponse.json({ message: 'Внутренняя ошибка сервера' }, { status: 500 });
     }
 }

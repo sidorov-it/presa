@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { TestRateLimiterService } from '@/services/llm/test/testRateLimiterService';
-import logger from '@/utils/logger';
 
 const testService = new TestRateLimiterService(2); // Limit to 2 concurrent requests
 
 export async function POST(request: NextRequest) {
     try {
-        logger.info('POST /api/test/rate-limiter');
         const body = await request.json();
         const { count = 1, delay = 1000, shouldFail = false } = body;
 
@@ -18,19 +16,16 @@ export async function POST(request: NextRequest) {
         const results = await testService.processBatch(count, delay);
         return NextResponse.json(results);
     } catch (error) {
-        logger.error(`Rate limiter test POST failed: ${String(error)}`);
         return NextResponse.json({ error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
     }
 }
 
 export async function GET() {
     try {
-        logger.info('GET /api/test/rate-limiter');
         // Simple test with a single request
         const result = await testService.simulateApiCall();
         return NextResponse.json(result);
     } catch (error) {
-        logger.error(`Rate limiter test GET failed: ${String(error)}`);
         return NextResponse.json({ error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
     }
 }

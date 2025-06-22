@@ -5,7 +5,6 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { parseJsonField } from '@/utils/json';
-import logger from '@/utils/logger';
 
 /**
  * Creates a presentation without using Prisma's transaction system
@@ -42,7 +41,7 @@ export async function createPresentationWithoutTransaction(data: any) {
             slides: parseJsonField(presentation.slides),
         };
     } catch (error) {
-        logger.error(`Error creating presentation without transaction: ${String(error)}`);
+        console.error('Error creating presentation without transaction:', error);
         throw error;
     }
 }
@@ -72,7 +71,7 @@ export async function updatePresentationWithoutTransaction(id: string, data: any
             slides: parseJsonField(presentation.slides),
         };
     } catch (error) {
-        logger.error(`Error updating presentation without transaction: ${String(error)}`);
+        console.error('Error updating presentation without transaction:', error);
         throw error;
     }
 }

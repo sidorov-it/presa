@@ -1,4 +1,3 @@
-import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
@@ -24,7 +23,7 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
 
         return NextResponse.json(presentation, { status: 200 });
     } catch (error) {
-        logger.error('Error fetching presentation:', error);
+        console.error('Error fetching presentation:', error);
         return NextResponse.json({ error: 'Failed to fetch presentation' }, { status: 500 });
     }
 }
@@ -55,7 +54,7 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ id: s
         // Use the utility function to parse the slides JSON in the response
         return NextResponse.json(parsePresentation(presentation));
     } catch (error) {
-        logger.error('Error updating presentation:', error);
+        console.error('Error updating presentation:', error);
         return NextResponse.json({ error: 'Error updating presentation' }, { status: 500 });
     }
 }
@@ -99,7 +98,7 @@ export async function DELETE(req: NextRequest, props: { params: Promise<{ id: st
             message: 'Presentation moved to trash successfully',
         });
     } catch (error) {
-        logger.error('Delete presentation error:', error);
+        console.error('Delete presentation error:', error);
         return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }
@@ -168,7 +167,7 @@ export async function POST(req: NextRequest) {
             },
         });
     } catch (error) {
-        logger.error('Create presentation error:', error);
+        console.error('Create presentation error:', error);
         return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }

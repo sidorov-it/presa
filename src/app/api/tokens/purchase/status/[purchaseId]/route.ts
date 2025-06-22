@@ -1,4 +1,3 @@
-import logger from '@/utils/logger';
 /* eslint-disable prettier/prettier */
 /* eslint-disable indent */
 import { NextRequest, NextResponse } from 'next/server';
@@ -60,7 +59,7 @@ export async function GET(request: NextRequest, props: RouteParams) {
                     });
                 }
             } catch (error) {
-                logger.error('Error fetching payment info from YooKassa:', error);
+                console.error('Error fetching payment info from YooKassa:', error);
                 // Не блокируем ответ, если не удалось получить данные из YooKassa
             }
         }
@@ -95,7 +94,7 @@ export async function GET(request: NextRequest, props: RouteParams) {
 
         return NextResponse.json(response);
     } catch (error) {
-        logger.error('Error checking purchase status:', error);
+        console.error('Error checking purchase status:', error);
         return NextResponse.json(
             {
                 error: 'Failed to check purchase status',

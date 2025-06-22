@@ -1,4 +1,3 @@
-import logger from '@/utils/logger';
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
@@ -24,7 +23,7 @@ export async function GET() {
             },
         });
     } catch (error) {
-        logger.error('Authentication check error:', error);
+        console.error('Authentication check error:', error);
         return NextResponse.json(
             {
                 authenticated: false,

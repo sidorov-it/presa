@@ -1,4 +1,3 @@
-import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
@@ -16,7 +15,7 @@ export async function GET() {
         // Use the utility function to parse the slides JSON in all presentations
         return NextResponse.json(parsePresentations(presentations));
     } catch (error) {
-        logger.error('Error fetching deleted presentations:', error);
+        console.error('Error fetching deleted presentations:', error);
         return NextResponse.json({ error: 'Error fetching deleted presentations' }, { status: 500 });
     }
 }
@@ -39,7 +38,7 @@ export async function PUT(request: NextRequest) {
             message: 'Presentation restored successfully',
         });
     } catch (error) {
-        logger.error('Error restoring presentation:', error);
+        console.error('Error restoring presentation:', error);
         return NextResponse.json({ error: 'Error restoring presentation' }, { status: 500 });
     }
 }
@@ -79,7 +78,7 @@ export async function DELETE(req: NextRequest) {
             message: 'Presentation permanently deleted',
         });
     } catch (error) {
-        logger.error('Permanent delete presentation error:', error);
+        console.error('Permanent delete presentation error:', error);
         return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }

@@ -1,4 +1,3 @@
-import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
@@ -21,7 +20,7 @@ export async function GET(request: NextRequest) {
             transactions,
         });
     } catch (error) {
-        logger.error('Error getting token transactions:', error);
+        console.error('Error getting token transactions:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

@@ -1,4 +1,3 @@
-import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { getYooKassaService } from '@/services/payments/yookassa';
 import { prisma } from '@/lib/prisma';
@@ -28,7 +27,7 @@ export async function POST(request: NextRequest) {
         // Получаем тело запроса как текст для валидации подписи
         const body = await request.text();
 
-        logger.debug('body', body);
+        console.log('body', body);
         // Получаем заголовок с подписью (если используется)
         const signature = request.headers.get('X-Yookassa-Signature') || '';
 
@@ -38,7 +37,7 @@ export async function POST(request: NextRequest) {
             const isValid = yooKassaService.validateWebhookSignature(body, signature);
 
             if (!isValid) {
-                logger.error('Invalid YooKassa webhook signature');
+                console.error('Invalid YooKassa webhook signature');
                 return NextResponse.json({ error: 'Неверная подпись' }, { status: 401 });
             }
         }
@@ -47,7 +46,7 @@ export async function POST(request: NextRequest) {
         const webhookData: YooKassaWebhookEvent = JSON.parse(body);
         const payment = webhookData.object;
 
-        logger.debug('YooKassa webhook received:', {
+        console.log('YooKassa webhook received:', {
             type: webhookData.type,
             paymentId: payment.id,
             status: payment.status,
@@ -65,7 +64,7 @@ export async function POST(request: NextRequest) {
         });
 
         if (!purchase) {
-            logger.error('Purchase not found for payment ID:', payment.id);
+            console.error('Purchase not found for payment ID:', payment.id);
             return NextResponse.json({ error: 'Purchase not found' }, { status: 404 });
         }
 
@@ -84,12 +83,12 @@ export async function POST(request: NextRequest) {
                 break;
 
             default:
-                logger.debug('Unhandled webhook type:', webhookData.type);
+                console.log('Unhandled webhook type:', webhookData.type);
         }
 
         return NextResponse.json({ success: true });
     } catch (error) {
-        logger.error('Error processing YooKassa webhook:', error);
+        console.error('Error processing YooKassa webhook:', error);
         return NextResponse.json(
             {
                 error: 'Webhook processing failed',
@@ -103,7 +102,7 @@ export async function POST(request: NextRequest) {
 async function handleSuccessfulPayment(purchase: any, payment: any) {
     // Проверяем, что платеж еще не был обработан
     if (purchase.status === PurchaseStatus.completed) {
-        logger.debug('Payment already processed:', payment.id);
+        console.log('Payment already processed:', payment.id);
         return;
     }
 
@@ -140,14 +139,14 @@ async function handleSuccessfulPayment(purchase: any, payment: any) {
             );
         });
 
-        logger.debug('Successfully processed payment:', {
+        console.log('Successfully processed payment:', {
             purchaseId: purchase.id,
             userId: purchase.userId,
             tokensAdded: purchase.tokensAmount,
             paymentId: payment.id,
         });
     } catch (error) {
-        logger.error('Error processing successful payment:', error);
+        console.error('Error processing successful payment:', error);
 
         // Обновляем статус на failed
         await prisma.tokenPurchase.update({
@@ -180,12 +179,12 @@ async function handleCanceledPayment(purchase: any, payment: any) {
             },
         });
 
-        logger.debug('Payment canceled:', {
+        console.log('Payment canceled:', {
             purchaseId: purchase.id,
             paymentId: payment.id,
         });
     } catch (error) {
-        logger.error('Error processing canceled payment:', error);
+        console.error('Error processing canceled payment:', error);
         throw error;
     }
 }
@@ -205,12 +204,12 @@ async function handleWaitingForCapture(purchase: any, payment: any) {
             },
         });
 
-        logger.debug('Payment waiting for capture:', {
+        console.log('Payment waiting for capture:', {
             purchaseId: purchase.id,
             paymentId: payment.id,
         });
     } catch (error) {
-        logger.error('Error processing waiting for capture:', error);
+        console.error('Error processing waiting for capture:', error);
         throw error;
     }
 }

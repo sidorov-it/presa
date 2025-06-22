@@ -1,4 +1,3 @@
-import logger from '@/utils/logger';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Theme } from '@/types/theme';
@@ -46,7 +45,7 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
 
         return NextResponse.json(theme, { status: 200 });
     } catch (error) {
-        logger.error('Error fetching theme:', error);
+        console.error('Error fetching theme:', error);
         return NextResponse.json({ error: 'Failed to fetch theme' }, { status: 500 });
     }
 }
@@ -70,7 +69,7 @@ export async function DELETE(request: Request, props: { params: Promise<Params> 
 
         return NextResponse.json({ success: true });
     } catch (error) {
-        logger.error('Failed to delete theme:', error);
+        console.error('Failed to delete theme:', error);
         return NextResponse.json({ error: 'Failed to delete theme' }, { status: 500 });
     }
 }
@@ -117,7 +116,7 @@ export async function PUT(request: Request, props: { params: Promise<Params> }) 
 
         return NextResponse.json(updatedTheme);
     } catch (error) {
-        logger.error('Failed to update theme:', error);
+        console.error('Failed to update theme:', error);
         return NextResponse.json({ error: 'Failed to update theme' }, { status: 500 });
     }
 }

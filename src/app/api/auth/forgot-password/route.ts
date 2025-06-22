@@ -1,4 +1,3 @@
-import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
@@ -47,7 +46,7 @@ export async function POST(req: NextRequest) {
                 text: `Чтобы сбросить пароль, перейдите по ссылке: ${resetUrl}`,
             });
         } catch (emailError) {
-            logger.error('Failed to send reset password email:', emailError);
+            console.error('Failed to send reset password email:', emailError);
         }
 
         return NextResponse.json(
@@ -62,7 +61,7 @@ export async function POST(req: NextRequest) {
             { status: 200 }
         );
     } catch (error) {
-        logger.error('Forgot password error:', error);
+        console.error('Forgot password error:', error);
         return NextResponse.json({ message: 'Внутренняя ошибка сервера' }, { status: 500 });
     }
 }

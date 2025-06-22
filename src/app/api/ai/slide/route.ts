@@ -6,7 +6,6 @@ import extractTextsFromPresentation from '@/utils/extractTextsFromPresentation';
 import { IPresentation } from '@/types';
 import generateSlide from '@/services/llm/gigaChat/generateSlide';
 import { withTokenDeduction, TokenCalculators, MetadataExtractors } from '@/utils/aiTokenMiddleware';
-import logger from '@/utils/logger';
 
 interface RequestBody {
     presentationId: string;
@@ -20,7 +19,6 @@ interface RequestBody {
 }
 
 export async function POST(request: NextRequest) {
-    logger.info('POST /api/ai/slide');
     return withTokenDeduction(
         request,
         {

@@ -1,4 +1,3 @@
-import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
@@ -99,7 +98,7 @@ export async function POST(request: NextRequest) {
             status: payment.status,
         });
     } catch (error) {
-        logger.error('Error creating YooKassa payment:', error);
+        console.error('Error creating YooKassa payment:', error);
 
         return NextResponse.json(
             {
