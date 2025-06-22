@@ -3212,9 +3212,11 @@ export const usePresentationStore = create<PresentationState>()(
                                             ...layout,
                                             elements: layout.elements.map(element => {
                                                 if (element.id === elementId && 'items' in element) {
-                                                    (element as SmartLayoutElement).items = (
-                                                        element as SmartLayoutElement
-                                                    ).items.filter(item => item.id !== itemId);
+                                                    const updatedItems = (element as SmartLayoutElement).items.filter(
+                                                        item => item.id !== itemId
+                                                    );
+
+                                                    return { ...element, items: updatedItems } as SmartLayoutElement;
                                                 }
                                                 return element;
                                             }),
@@ -3249,14 +3251,11 @@ export const usePresentationStore = create<PresentationState>()(
                                             ...layout,
                                             elements: layout.elements.map(element => {
                                                 if (element.id === elementId && 'items' in element) {
-                                                    (element as SmartLayoutElement).items = (
-                                                        element as SmartLayoutElement
-                                                    ).items.map(item => {
-                                                        if (item.id === itemId) {
-                                                            return { ...item, imageUrl: '' };
-                                                        }
-                                                        return item;
-                                                    });
+                                                    const updatedItems = (element as SmartLayoutElement).items.map(item =>
+                                                        item.id === itemId ? { ...item, imageUrl: '' } : item
+                                                    );
+
+                                                    return { ...element, items: updatedItems } as SmartLayoutElement;
                                                 }
                                                 return element;
                                             }),
