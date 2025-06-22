@@ -154,7 +154,11 @@ export const ColorPicker = ({
             {renderTriggerButton()}
 
             {isOpen && (
-                <div className={`${styles.colorPopover} light-theme-only ${mode === 'card' ? styles.cardPopover : ''}`}>
+                <div
+                    className={`${
+                        styles.colorPopover
+                    } light-theme-only ${mode === 'card' ? styles.cardPopover : ''} ${customFooter ? styles.withFooter : ''}`}
+                >
                     <div className={styles.colorGrid}>
                         {COLOR_PRESETS.map(color => (
                             <button
