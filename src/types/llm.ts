@@ -13,7 +13,12 @@ export interface SlideElement {
 }
 
 export interface LLMService {
-    generate(prompt: string, options?: { functions?: any[]; function_call?: any }): Promise<LLMResponse>;
+    generate(prompt: string, options?: { functions?: any[]; function_call?: any; presentationId?: string }): Promise<LLMResponse>;
+    // Optional image generation capability. Not all providers implement this method.
+    generateImage?(
+        prompt: string,
+        options: { presentationId?: string; userId: string }
+    ): Promise<{ imageUrl: string; imageId: string }>;
 }
 
 export interface SlideGenerationContext {
@@ -29,3 +34,10 @@ export interface SlideGenerationContext {
 export interface GigaChatConfig {
     userId: string;
 }
+
+// Configuration for YaGPT initialization
+export interface YaGptConfig {
+    userId: string;
+}
+
+export type SupportedLLMProvider = 'gigachat' | 'yagpt';
