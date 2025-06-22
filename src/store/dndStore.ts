@@ -706,41 +706,40 @@ export const useDndStore = create<{
 
         // Handle row drag
         if (source.dragElementType === 'table-row') {
-            const targetRowIndex = layout.gridStructure.rows.findIndex(row =>
-                row.cells.some(cell => cell.id === cellId)
-            );
+            const boundaries: { y: number; rowIndex: number; position: Position; cellId: string }[] = [];
+            layout.gridStructure.rows.forEach((row, index) => {
+                const cell = row.cells[0];
+                const node = document.querySelector(`[data-cell-id="${cell.id}"]`);
+                if (!node) return;
+                const rect = node.getBoundingClientRect();
+                if (index === 0) {
+                    boundaries.push({ y: rect.top, rowIndex: 0, position: 'top', cellId: cell.id });
+                }
+                boundaries.push({ y: rect.bottom, rowIndex: index, position: 'bottom', cellId: cell.id });
+            });
 
-            const firstCellInRow = layout.gridStructure.rows[targetRowIndex]?.cells[0];
-            if (!firstCellInRow) return;
-
-            const firstNodeInRow = document.querySelector(`[data-cell-id="${firstCellInRow.id}"]`);
-            if (!firstNodeInRow) return;
-
-            const rectCell = firstNodeInRow.getBoundingClientRect();
-            const distanceFromCellTop = e.clientY - rectCell.top;
-            const distanceFromCellBottom = rectCell.bottom - e.clientY;
-
-            const minDistance = Math.min(distanceFromCellTop, distanceFromCellBottom);
-
-            let position: Position | null = null;
-            if (minDistance === distanceFromCellTop) {
-                position = 'top';
-            } else if (minDistance === distanceFromCellBottom) {
-                position = 'bottom';
-            }
+            let closest = boundaries[0];
+            let minDist = Math.abs(e.clientY - closest.y);
+            boundaries.forEach(b => {
+                const dist = Math.abs(e.clientY - b.y);
+                if (dist < minDist) {
+                    minDist = dist;
+                    closest = b;
+                }
+            });
 
             const updatedIndicators = getUpdatedIndicators({
-                cellId: firstCellInRow.id,
-                tableRowIndicator: targetRowIndex,
-                tableRowPosition: position,
+                cellId: closest.cellId,
+                tableRowIndicator: closest.rowIndex,
+                tableRowPosition: closest.position,
                 tableId: tableId,
             });
 
             const updatedTarget = {
                 elementId: null,
                 tableId,
-                rowIndex: targetRowIndex,
-                position,
+                rowIndex: closest.rowIndex,
+                position: closest.position,
             };
 
             set(state => ({
@@ -3065,11 +3064,15 @@ export const useDndStore = create<{
             (state.source.dragElementType === 'table-row' || state.source.dragElementType === 'table-column') &&
             !isTargetTable
         ) {
-            console.log('return');
             return;
         }
 
         if (isTargetTable && !isSourceTable) {
+            if (!cellNode) {
+                get().resetAllIndicators();
+                return;
+            }
+
             // Only check for table exclusion if we're trying to drop inside a cell
             if (cellNode) {
                 let isExcluded = false;
