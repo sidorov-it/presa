@@ -20,7 +20,7 @@ const getLayoutTypeName = (columns: number): string => {
         case 4:
             return '4 столбца';
         default:
-            return 'custom';
+            return 'Своя сетка';
     }
 };
 

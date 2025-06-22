@@ -1302,6 +1302,9 @@ export const usePresentationStore = create<PresentationState>()(
                 const layout = get().getLayout(presentationId, slideId, layoutId);
                 if (!layout) return;
 
+                const beforeState = { ...get() };
+
+
                 // const updatedGridStructure = {
                 //     ...layout.gridStructure,
                 //     columnWidths: getColumnWidths(layout.gridStructure.columns)
@@ -1339,6 +1342,17 @@ export const usePresentationStore = create<PresentationState>()(
                             return presentation;
                         }),
                     };
+
+                    get().recordAction({
+                        type: 'layout',
+                        description: 'Equalize table',
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        before: { presentations: beforeState.presentations },
+                        after: updatedState,
+                    });
+
                     return updatedState;
                 });
 
@@ -2619,7 +2633,8 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
                 if (!currentLayout) return;
 
-                get().addColumn(presentationId, slideId, layoutId, columnIndex + 1);
+                // +2 так как +1 - это индекс следующего элемента, и +1, так как columnIndex начинается с 1
+                get().addColumn(presentationId, slideId, layoutId, columnIndex + 2);
             },
 
             duplicateColumn: (presentationId: string, slideId: string, layoutId: string, cellId: string) => {
@@ -3047,8 +3062,7 @@ export const usePresentationStore = create<PresentationState>()(
                             return {
                                 id: cellId,
                                 row: 0,
-                                column: currentColumnsCount + index,
-                                elements: [],
+                                column: currentColumnsCount + index + 1,
                             };
                         });
 
@@ -3140,6 +3154,8 @@ export const usePresentationStore = create<PresentationState>()(
                         return updatedState;
                     });
                 }
+
+                get().saveChanges(presentationId);
             },
 
             // Undo/Redo operations - delegate to history store

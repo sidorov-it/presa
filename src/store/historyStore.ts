@@ -339,14 +339,17 @@ export const useHistoryStore = create<HistoryState>()(
 
                 set(state => {
                     // When a new action is recorded, future is cleared
-                    const historyEntry: HistoryAction = {
-                        ...action,
-                        changes,
-                        timestamp: Date.now(),
-                    };
+                    const historyEntry: HistoryAction = JSON.parse(
+                        JSON.stringify({
+                            ...action,
+                            changes,
+                            timestamp: Date.now(),
+                        })
+                    );
 
                     const presentationHistory = state.history[presentationId];
-                    const newPast = [...presentationHistory.past, historyEntry];
+                    const pastCopy = JSON.parse(JSON.stringify(presentationHistory.past));
+                    const newPast = [...pastCopy, historyEntry];
 
                     // Limit history length
                     if (newPast.length > MAX_HISTORY_LENGTH) {

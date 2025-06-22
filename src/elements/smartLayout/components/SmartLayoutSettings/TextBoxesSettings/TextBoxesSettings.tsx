@@ -52,6 +52,7 @@ export default function TextBoxesSettings({
                 .run();
         });
     };
+
     return (
         <>
             <SmartLayoutTemplateSelector
