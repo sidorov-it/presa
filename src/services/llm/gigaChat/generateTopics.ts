@@ -1,4 +1,4 @@
-import { GigaChatService } from './gigaChat';
+import { createLLMService } from '@/services/llm';
 
 const generateTopicsFunction = {
     name: 'generate_presentation_topics',
@@ -70,10 +70,10 @@ const titleOptions = {
 
 async function generateTopics(userId: string, description: string, numSlides: number, tone: string) {
     try {
-        const gigaChatService = GigaChatService.createGigaChatService({ userId });
+        const llmService = createLLMService({ userId });
 
         // Generate topics using function calling
-        const topicsResponse = await gigaChatService.generate(
+        const topicsResponse = await llmService.generate(
             getTopicsPrompt(description, numSlides, tone),
             topicsOptions
         );
@@ -93,7 +93,7 @@ async function generateTopics(userId: string, description: string, numSlides: nu
         }
 
         // Generate title using function calling
-        const titleResponse = await gigaChatService.generate(getTitlePrompt(description), titleOptions);
+        const titleResponse = await llmService.generate(getTitlePrompt(description), titleOptions);
 
         let title = description;
         if (titleResponse.function_call?.arguments?.title) {

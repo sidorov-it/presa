@@ -2,7 +2,7 @@ import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { GigaChatService } from '@/services/llm/gigaChat/gigaChat';
+import { createLLMService } from '@/services/llm';
 import { MetadataExtractors, TokenCalculators, withTokenDeduction } from '@/utils/aiTokenMiddleware';
 
 export async function POST(request: NextRequest) {
@@ -52,16 +52,18 @@ export async function POST(request: NextRequest) {
                     return NextResponse.json({ error: 'Count must be between 1 and 5' }, { status: 400 });
                 }
 
-                // Initialize GigaChat service
-                const gigaChatService = GigaChatService.createGigaChatService({
-                    userId: session.user.id,
-                });
+                // Initialize LLM service (provider chosen via env or param)
+                const llmService = createLLMService({ userId: session.user.id });
+
+                if (!llmService.generateImage) {
+                    return NextResponse.json({ error: 'Selected LLM does not support image generation' }, { status: 400 });
+                }
 
                 // Generate images
                 const images = [];
                 for (let i = 0; i < count; i++) {
                     try {
-                        const result = await gigaChatService.generateImage(prompt, {
+                        const result = await llmService.generateImage(prompt, {
                             userId: session.user.id,
                         });
                         images.push({

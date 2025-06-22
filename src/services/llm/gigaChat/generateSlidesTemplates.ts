@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
 
-import { GigaChatService } from './gigaChat';
+import { createLLMService } from '@/services/llm';
 import { LLMRequestContext } from '@/types/gigachat';
 
 // Define the function for template selection
@@ -93,7 +93,7 @@ export default async function generateSlidesTemplates({
     topics: any[];
     options: LLMRequestContext;
 }) {
-    const gigaChatService = GigaChatService.createGigaChatService({ userId: options.userId });
+    const llmService = createLLMService({ userId: options.userId });
 
     // Prepare templates information for LLM
     const templates = Object.values(SlideTemplatesRegistry)
@@ -108,7 +108,7 @@ export default async function generateSlidesTemplates({
 
     try {
         // Get template suggestions from LLM using function calling
-        const templateResponse = await gigaChatService.generate(
+        const templateResponse = await llmService.generate(
             getTemplatesPrompt(title, prompt, topics, templates),
             getTemplatesOptions
         );

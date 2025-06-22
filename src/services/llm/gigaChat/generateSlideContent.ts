@@ -1,5 +1,5 @@
 import { SlideTemplateCore, TemplateElement } from '@/types/templates';
-import { GigaChatService } from './gigaChat';
+import { createLLMService } from '@/services/llm';
 import { ElementType } from '@/types/elements';
 import { TextType } from '@/types';
 import getRandomString from '@/utils/getRandomString';
@@ -276,7 +276,7 @@ export default async function generateSlideContent({
     instructions?: string;
     options: LLMRequestContext;
 }) {
-    const gigaChatService = GigaChatService.createGigaChatService({ userId: options.userId });
+    const llmService = createLLMService({ userId: options.userId });
 
     const { functionSchema, slotMapping } = createGenerateSlideContentFunction(template);
 
@@ -292,7 +292,7 @@ export default async function generateSlideContent({
 
     // получаем ответ от LLM
     // const response = await gigaChatService.generateFromCache(topic);
-    const response = await gigaChatService.generate(prompt, {
+    const response = await llmService.generate(prompt, {
         functions: [functionSchema],
         function_call: { name: 'generate_slide_text' },
     });

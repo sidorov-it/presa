@@ -1,7 +1,7 @@
 import { TemplateElement } from '@/types/templates';
 import { Slide, TextType } from '@/types';
 import createRewriteSlideMapping from '@/utils/createRewriteSlideMapping';
-import { GigaChatService } from './gigaChat';
+import { createLLMService } from '@/services/llm';
 
 export interface SlotContent {
     key: string;
@@ -110,7 +110,7 @@ const createPromptRewriteSlideContent = (slotMapping: Map<string, SlotKeyMapping
 
 export default async function rewriteSlideContent(userId: string, slide: Slide) {
     try {
-        const gigaChatService = GigaChatService.createGigaChatService({ userId });
+        const llmService = createLLMService({ userId });
 
         const { functionSchema, slotMapping } = createRewriteSlideContentFunction(slide);
 
@@ -119,7 +119,7 @@ export default async function rewriteSlideContent(userId: string, slide: Slide) 
 
         // получаем ответ от LLM
         // const response = await gigaChatService.generateFromCache(topic);
-        const response = await gigaChatService.generate(prompt, {
+        const response = await llmService.generate(prompt, {
             functions: [functionSchema],
             function_call: { name: 'rewrite_slide_text' },
         });
