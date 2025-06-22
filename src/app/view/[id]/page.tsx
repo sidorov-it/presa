@@ -41,6 +41,7 @@ export default function PresentationView() {
     const SCROLL_DISTANCE_THRESHOLD = 1000;
     const SCROLL_IDLE_THRESHOLD = 300;
     const PROGRESS_HOLD_DURATION = 3000; // Hold progress for 3 seconds after stopping
+    const SCROLL_EDGE_PAUSE_THRESHOLD = 300;
 
     const [scrollProgress, setScrollProgress] = useState(0);
     const [scrollDirection, setScrollDirection] = useState<'next' | 'prev' | null>(null);
@@ -50,6 +51,8 @@ export default function PresentationView() {
     const accumulatedScrollDistanceRef = useRef(0);
     const idleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const progressHoldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const edgePauseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const edgePauseCompletedRef = useRef(true);
     // const scrollBlockTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const scrollDirectionRef = useRef<'next' | 'prev' | null>(null);
     const slideWrapperRef = useRef<HTMLDivElement>(null);
@@ -67,6 +70,9 @@ export default function PresentationView() {
             if (progressHoldTimeoutRef.current) {
                 clearTimeout(progressHoldTimeoutRef.current);
             }
+            if (edgePauseTimeoutRef.current) {
+                clearTimeout(edgePauseTimeoutRef.current);
+            }
             // if (scrollBlockTimeoutRef.current) {
             //     clearTimeout(scrollBlockTimeoutRef.current);
             // }
@@ -80,6 +86,7 @@ export default function PresentationView() {
             isScrollBlocked.current = true;
             setScrollProgress(0);
             setScrollDirection(null);
+            resetEdgePause();
             // if (scrollBlockTimeoutRef.current) {
             //     clearTimeout(scrollBlockTimeoutRef.current);
             // }
@@ -98,6 +105,7 @@ export default function PresentationView() {
             isScrollBlocked.current = true;
             setScrollProgress(0);
             setScrollDirection(null);
+            resetEdgePause();
             // if (scrollBlockTimeoutRef.current) {
             //     clearTimeout(scrollBlockTimeoutRef.current);
             // }
@@ -139,6 +147,19 @@ export default function PresentationView() {
                 clearTimeout(progressHoldTimeoutRef.current);
                 progressHoldTimeoutRef.current = null;
             }
+            if (edgePauseTimeoutRef.current) {
+                clearTimeout(edgePauseTimeoutRef.current);
+                edgePauseTimeoutRef.current = null;
+            }
+            // do not change edgePauseCompletedRef here; keep previous state
+        };
+
+        const resetEdgePause = () => {
+            if (edgePauseTimeoutRef.current) {
+                clearTimeout(edgePauseTimeoutRef.current);
+                edgePauseTimeoutRef.current = null;
+            }
+            edgePauseCompletedRef.current = false;
         };
 
         const onWheel = (e: WheelEvent) => {
@@ -162,6 +183,17 @@ export default function PresentationView() {
 
             if (!atEdge) {
                 resetScroll();
+                resetEdgePause();
+                return;
+            }
+
+            if (!edgePauseCompletedRef.current) {
+                if (edgePauseTimeoutRef.current) {
+                    clearTimeout(edgePauseTimeoutRef.current);
+                }
+                edgePauseTimeoutRef.current = setTimeout(() => {
+                    edgePauseCompletedRef.current = true;
+                }, SCROLL_EDGE_PAUSE_THRESHOLD);
                 return;
             }
 
@@ -197,6 +229,7 @@ export default function PresentationView() {
                     handlePrevSlide();
                 }
                 resetScroll();
+                resetEdgePause();
                 return;
             }
 
