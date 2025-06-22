@@ -6,13 +6,12 @@ import { Heading } from '@/components/ui/heading';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card/Card';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
-import type { Metadata } from 'next';
 import styles from './page.module.css';
 
-export const metadata: Metadata = {
-    title: 'Настройки',
-    description: 'Управление параметрами учетной записи',
-};
+// export const metadata = {
+//     title: "Settings",
+//     description: "Manage your account settings and preferences"
+// }
 
 const SettingsPage = () => {
     const { data: session, update } = useSession();

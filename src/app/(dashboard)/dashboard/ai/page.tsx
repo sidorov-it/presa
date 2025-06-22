@@ -13,18 +13,12 @@ import {
     Textarea,
     createListCollection,
 } from '@chakra-ui/react';
-import type { Metadata } from 'next';
 // import * as Select from '@chakra-ui/react/components/select';
 import { Portal } from '@chakra-ui/react';
 import { FaPlus, FaTrash } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { generateId } from '@/utils/id';
-
-export const metadata: Metadata = {
-    title: 'Генерация презентации ИИ',
-    description: 'Создайте презентацию автоматически с помощью искусственного интеллекта',
-};
 
 interface SlideTopic {
     id: string;

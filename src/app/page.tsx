@@ -2,16 +2,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import type { Metadata } from 'next';
 // import { usePresentationStore } from '@/store/presentationStore';
 import Editor from '@/components/editor/Editor';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-
-export const metadata: Metadata = {
-    title: 'Главная страница',
-    description: 'Перенаправление на вход или панель управления',
-};
 
 export default function Home() {
     // const { presentations, createPresentation } = usePresentationStore();

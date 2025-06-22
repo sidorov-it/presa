@@ -5,12 +5,6 @@ import { notFound } from 'next/navigation';
 import { createNewTheme } from '@/constants/defaultTheme';
 import themeToCSSVariables from '@/utils/themeCssVariables';
 import { Theme } from '@/types/theme';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Слайд презентации',
-    description: 'Просмотр отдельного слайда презентации',
-};
 
 export default async function SlidePage(props: {
     params: Promise<{ id: string; index: string }>;

@@ -13,13 +13,7 @@ import { usePresentationStore } from '@/store/presentationStore';
 import screenfull from 'screenfull';
 import { FullscreenIcon } from 'lucide-react';
 import { clearAllThemeStyles } from '@/utils/themeUtils';
-import type { Metadata } from 'next';
 import { Theme } from '@/types/theme';
-
-export const metadata: Metadata = {
-    title: 'Просмотр презентации',
-    description: 'Демонстрационный режим выбранной презентации',
-};
 
 export default function PresentationView() {
     const params = useParams();

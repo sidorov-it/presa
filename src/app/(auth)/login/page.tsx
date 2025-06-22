@@ -4,14 +4,8 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import type { Metadata } from 'next';
 
 import styles from './page.module.css';
-
-export const metadata: Metadata = {
-    title: 'Вход в систему',
-    description: 'Авторизация пользователя в сервисе',
-};
 
 export default function LoginPage() {
     const router = useRouter();

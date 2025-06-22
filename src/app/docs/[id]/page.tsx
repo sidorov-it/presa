@@ -38,12 +38,6 @@ import MobileWarningOverlay from '@/components/MobileWarningOverlay/MobileWarnin
 import { clearAllThemeStyles } from '@/utils/themeUtils';
 import { SimplePdfExportButton } from '@/components/export';
 import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Редактор презентации',
-    description: 'Страница редактирования выбранной презентации',
-};
 
 export default function PresentationEditorPage() {
     const params = useParams();

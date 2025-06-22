@@ -6,12 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/Button';
 import { Plus } from 'lucide-react';
 import { useThemeStore } from '@/store/themeStore';
-import type { Metadata } from 'next';
 
-export const metadata: Metadata = {
-    title: 'Темы',
-    description: 'Настройка тем оформления презентаций',
-};
+// export const metadata = {
+//     title: "Themes",
+//     description: "Customize your presentation themes"
+// }
 
 const ThemesPage = () => {
     const [activeTheme, setActiveTheme] = useState<string | null>(null);

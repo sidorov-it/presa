@@ -7,8 +7,8 @@ import { Provider } from '@/components/ui/provider';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-    title: 'Просмотр презентации',
-    description: 'Страницы для просмотра созданных презентаций',
+    title: 'Presentation Viewer',
+    description: 'View presentations created with Presa',
 };
 
 export default function ViewerLayout({

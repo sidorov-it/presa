@@ -8,12 +8,6 @@ import SlidePreview from '../dashboard/components/SlidePreview';
 import { PresentationTemplates, PresentationTemplateKeys } from '@/presentationTemplates';
 import styles from './page.module.css';
 import { useThemeStore } from '@/store/themeStore';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Шаблоны презентаций',
-    description: 'Выбор шаблона для новой презентации',
-};
 import FullPageLoader from '@/components/FullPageLoader/FullPageLoader';
 
 const TEMPLATE_KEYS = Object.keys(PresentationTemplates) as PresentationTemplateKeys[];

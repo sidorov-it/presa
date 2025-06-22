@@ -8,8 +8,8 @@ import SideMenuRenderer from '@/components/editor/Menus/SideMenuRenderer/SideMen
 const inter = Inter({ subsets: ['latin', 'cyrillic'] });
 
 export const metadata: Metadata = {
-    title: 'Presa – создание презентаций с ИИ',
-    description: 'Платформа для генерации и редактирования презентаций с помощью искусственного интеллекта',
+    title: 'Presa - Create Presentations with AI',
+    description: 'Create beautiful presentations with artificial intelligence',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

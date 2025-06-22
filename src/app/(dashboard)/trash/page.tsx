@@ -6,12 +6,6 @@ import { FaTrashRestore, FaTrashAlt, FaRegClock } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { pluralize } from '@/utils/helpers';
 import styles from './page.module.css';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Корзина',
-    description: 'Удаленные презентации и возможность их восстановления',
-};
 
 interface DeletedPresentation {
     id: string;

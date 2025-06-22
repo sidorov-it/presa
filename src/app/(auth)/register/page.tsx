@@ -3,13 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import type { Metadata } from 'next';
 import styles from './page.module.css';
-
-export const metadata: Metadata = {
-    title: 'Регистрация',
-    description: 'Создание новой учетной записи',
-};
 
 export default function RegisterPage() {
     const router = useRouter();

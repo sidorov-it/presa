@@ -7,7 +7,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
 import { useThemeStore } from '@/store/themeStore';
-import type { Metadata } from 'next';
 import SlidePreview from './components/SlidePreview';
 import { FaPlus, FaMagic, FaPencilAlt, FaCopy, FaTrash, FaEye } from 'react-icons/fa';
 import { IPresentation } from '@/types';
@@ -16,11 +15,6 @@ import styles from './page.module.css';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { HiOutlineDotsVertical } from 'react-icons/hi';
-
-export const metadata: Metadata = {
-    title: 'Мои презентации',
-    description: 'Управление и редактирование ваших презентаций',
-};
 
 export default function DashboardPage() {
     const router = useRouter();
