@@ -1,3 +1,4 @@
+import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { hashPassword } from '@/lib/auth';
@@ -48,7 +49,7 @@ export async function POST(req: NextRequest) {
                 text: `Здравствуйте, ${user.name}! Вы успешно зарегистрировались на slydle.ru.`,
             });
         } catch (emailError) {
-            console.error('Failed to send registration email:', emailError);
+            logger.error('Failed to send registration email:', emailError);
         }
 
         // Return success response (without sensitive data)
@@ -64,7 +65,7 @@ export async function POST(req: NextRequest) {
             { status: 201 }
         );
     } catch (error) {
-        console.error('Registration error:', error);
+        logger.error('Registration error:', error);
         return NextResponse.json({ message: 'Внутренняя ошибка сервера' }, { status: 500 });
     }
 }

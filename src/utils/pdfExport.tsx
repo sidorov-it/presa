@@ -1,6 +1,7 @@
 import domtoimage from 'dom-to-image';
 import { jsPDF } from 'jspdf';
 import { IPresentation } from '@/types';
+import logger from '@/utils/logger';
 
 // Function to clear image cache
 const clearImageCache = (element: HTMLElement) => {
@@ -330,7 +331,7 @@ export const exportPresentationToPdf = async (
             pdf.save(filename);
         }
     } catch (error) {
-        console.error('Error exporting PDF:', error);
+        logger.error(`Error exporting PDF: ${String(error)}`);
         throw error;
     }
 };

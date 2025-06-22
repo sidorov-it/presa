@@ -1,3 +1,4 @@
+import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import path from 'path';
@@ -46,7 +47,7 @@ export const POST = async (req: NextRequest) => {
         const fileUrl = `/uploads/${filename}`;
         return NextResponse.json({ url: fileUrl, name: filename });
     } catch (error) {
-        console.error('Error uploading external image:', error);
+        logger.error('Error uploading external image:', error);
         return NextResponse.json({ error: 'Failed to process image' }, { status: 500 });
     }
 };

@@ -1,3 +1,4 @@
+import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
@@ -80,7 +81,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
                     try {
                         await page.waitForSelector('div', { timeout: 5000 });
                     } catch {
-                        console.warn(`No content selector found for slide ${i}, continuing...`);
+                        logger.warn(`No content selector found for slide ${i}, continuing...`);
                     }
 
                     const pdfBuffer = await page.pdf({
@@ -100,7 +101,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
                     const pages = await combinedPdf.copyPages(slidePdf, slidePdf.getPageIndices());
                     pages.forEach(page => combinedPdf.addPage(page));
                 } catch (slideError) {
-                    console.error(`Error processing slide ${i}:`, slideError);
+                    logger.error(`Error processing slide ${i}:`, slideError);
                 }
             }
 
@@ -123,7 +124,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
             }
         }
     } catch (error) {
-        console.error('PDF generation error:', error);
+        logger.error('PDF generation error:', error);
         return NextResponse.json({ error: 'Failed to generate PDF' }, { status: 500 });
     }
 }

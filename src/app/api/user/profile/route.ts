@@ -1,3 +1,4 @@
+import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth/next';
@@ -40,7 +41,7 @@ export async function GET() {
             },
         });
     } catch (error) {
-        console.error('Get profile error:', error);
+        logger.error('Get profile error:', error);
         return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }
@@ -49,7 +50,7 @@ export async function GET() {
 export async function PUT(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
-        console.log('PUT /api/user/profile - Session:', session?.user ? 'Authenticated' : 'Not authenticated');
+        logger.debug('PUT /api/user/profile - Session:', session?.user ? 'Authenticated' : 'Not authenticated');
 
         if (!session?.user) {
             return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
@@ -57,14 +58,14 @@ export async function PUT(req: NextRequest) {
 
         const userId = session.user.id;
         const { name } = await req.json();
-        console.log('PUT /api/user/profile - UserId:', userId, 'New name:', name);
+        logger.debug('PUT /api/user/profile - UserId:', userId, 'New name:', name);
 
         if (!name || typeof name !== 'string') {
             return NextResponse.json({ message: 'Name is required' }, { status: 400 });
         }
 
         // Find user and update
-        console.log('PUT /api/user/profile - Looking up user with ID:', userId);
+        logger.debug('PUT /api/user/profile - Looking up user with ID:', userId);
         const user = await prisma.user.findUnique({
             where: { id: userId },
             select: {
@@ -75,11 +76,11 @@ export async function PUT(req: NextRequest) {
                 role: true,
             },
         });
-        console.log('PUT /api/user/profile - User found by ID:', !!user);
+        logger.debug('PUT /api/user/profile - User found by ID:', !!user);
 
         if (!user) {
             // Try alternative lookup by email as fallback
-            console.log('PUT /api/user/profile - User not found by ID, trying email lookup');
+            logger.debug('PUT /api/user/profile - User not found by ID, trying email lookup');
             const userByEmail = await prisma.user.findUnique({
                 where: { email: session.user.email },
                 select: {
@@ -90,7 +91,7 @@ export async function PUT(req: NextRequest) {
                     role: true,
                 },
             });
-            console.log('PUT /api/user/profile - User found by email:', !!userByEmail);
+            logger.debug('PUT /api/user/profile - User found by email:', !!userByEmail);
 
             if (!userByEmail) {
                 return NextResponse.json({ message: 'User not found' }, { status: 404 });
@@ -110,7 +111,7 @@ export async function PUT(req: NextRequest) {
                     role: true,
                 },
             });
-            console.log('PUT /api/user/profile - User updated by email lookup');
+            logger.debug('PUT /api/user/profile - User updated by email lookup');
 
             return NextResponse.json({
                 message: 'Profile updated successfully',
@@ -138,7 +139,7 @@ export async function PUT(req: NextRequest) {
                 role: true,
             },
         });
-        console.log('PUT /api/user/profile - User updated successfully');
+        logger.debug('PUT /api/user/profile - User updated successfully');
 
         return NextResponse.json({
             message: 'Profile updated successfully',
@@ -151,7 +152,7 @@ export async function PUT(req: NextRequest) {
             },
         });
     } catch (error) {
-        console.error('Update profile error:', error);
+        logger.error('Update profile error:', error);
         return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }

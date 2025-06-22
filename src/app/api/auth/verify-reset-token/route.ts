@@ -1,3 +1,4 @@
+import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest) {
         // Token is valid
         return NextResponse.json({ message: 'Токен действителен' }, { status: 200 });
     } catch (error) {
-        console.error('Verify token error:', error);
+        logger.error('Verify token error:', error);
         return NextResponse.json({ message: 'Внутренняя ошибка сервера' }, { status: 500 });
     }
 }

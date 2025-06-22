@@ -1,3 +1,4 @@
+import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
@@ -66,7 +67,7 @@ const handleRequest = async (request: NextRequest, props: { params: Promise<{ id
         if (!fs.existsSync(debugDir)) {
             fs.mkdirSync(debugDir, { recursive: true });
         }
-        console.log(`Debug PDFs will be saved to: ${debugDir}`);
+        logger.debug(`Debug PDFs will be saved to: ${debugDir}`);
 
         // Launch Puppeteer browser
         const browser = await puppeteer.launch({
@@ -163,7 +164,7 @@ const handleRequest = async (request: NextRequest, props: { params: Promise<{ id
                     }
                 }
 
-                console.log(`Slide ${i}: ${slideWidth}x${slideHeight}`);
+                logger.debug(`Slide ${i}: ${slideWidth}x${slideHeight}`);
 
                 // Generate PDF for this slide with proper dimensions
                 const pdf = await page.pdf({
@@ -184,7 +185,7 @@ const handleRequest = async (request: NextRequest, props: { params: Promise<{ id
                 const pdfDoc = await PDFDocument.load(pdf);
                 const firstPage = pdfDoc.getPage(0);
                 const { width, height } = firstPage.getSize();
-                console.log(`Actual size of the first page: ${width}x${height}`);
+                logger.debug(`Actual size of the first page: ${width}x${height}`);
                 // end debug
 
                 const pdfBuffer = Buffer.from(pdf);
@@ -193,7 +194,7 @@ const handleRequest = async (request: NextRequest, props: { params: Promise<{ id
                 // Save individual slide PDF for debugging
                 const slidePdfPath = path.join(debugDir, `slide-${i}-individual.pdf`);
                 fs.writeFileSync(slidePdfPath, pdfBuffer);
-                console.log(`Saved individual slide ${i} PDF to: ${slidePdfPath}`);
+                logger.debug(`Saved individual slide ${i} PDF to: ${slidePdfPath}`);
 
                 // Also save a screenshot for visual debugging
                 const screenshotPath = path.join(debugDir, `slide-${i}-screenshot.png`) as `${string}.png`;
@@ -201,9 +202,9 @@ const handleRequest = async (request: NextRequest, props: { params: Promise<{ id
                     path: screenshotPath,
                     fullPage: true,
                 });
-                console.log(`Saved slide ${i} screenshot to: ${screenshotPath}`);
+                logger.debug(`Saved slide ${i} screenshot to: ${screenshotPath}`);
             } catch (error) {
-                console.error(`Error generating PDF for slide ${i}:`, error);
+                logger.error(`Error generating PDF for slide ${i}:`, error);
                 // Continue with other slides even if one fails
             }
         }
@@ -228,7 +229,7 @@ const handleRequest = async (request: NextRequest, props: { params: Promise<{ id
         // Save combined PDF for debugging
         const combinedPdfPath = path.join(debugDir, 'combined-final.pdf');
         fs.writeFileSync(combinedPdfPath, new Uint8Array(pdfBytes));
-        console.log(`Saved combined PDF to: ${combinedPdfPath}`);
+        logger.debug(`Saved combined PDF to: ${combinedPdfPath}`);
 
         // Create debug info file
         const debugInfo = {
@@ -243,7 +244,7 @@ const handleRequest = async (request: NextRequest, props: { params: Promise<{ id
         };
         const debugInfoPath = path.join(debugDir, 'debug-info.json');
         fs.writeFileSync(debugInfoPath, JSON.stringify(debugInfo, null, 2));
-        console.log(`Saved debug info to: ${debugInfoPath}`);
+        logger.debug(`Saved debug info to: ${debugInfoPath}`);
 
         const file = new Blob([new Uint8Array(pdfBytes)]);
 
@@ -260,7 +261,7 @@ const handleRequest = async (request: NextRequest, props: { params: Promise<{ id
             },
         });
     } catch (error) {
-        console.error('PDF generation error:', error);
+        logger.error('PDF generation error:', error);
         return NextResponse.json({ error: 'Failed to generate PDF' }, { status: 500 });
     }
 };

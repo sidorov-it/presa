@@ -3,6 +3,7 @@ import { Slide, Layout, GridCell, BaseElement, TextType } from '@/types';
 import { ElementType } from '@/types/elements';
 import getColumnWidths from './getColumnWidths';
 import { generateId } from './id';
+import logger from '@/utils/logger';
 import { getNewElement } from './getNewElement';
 import { generateImage } from '@/services/llm/gigaChat';
 import { getTextContent } from '@/elements/textEditor/defaultContent';
@@ -118,7 +119,7 @@ export const createSlideFromTemplateWithContent = async ({
                             },
                         });
                     } catch (error) {
-                        console.error('Failed to generate image:', error);
+                        logger.error(`Failed to generate image: ${String(error)}`);
                         // Fallback to empty image element
                         newElement = getNewElement({
                             elementTypeId: elementConfig.elementTypeId,
