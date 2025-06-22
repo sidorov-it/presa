@@ -6,7 +6,7 @@ alwaysApply: true
 # Project Overview
 
 ## Introduction
-Presa is a web-based presentation creation tool, similar to gamma.app. It allows users to create slides with AI assistance, edit them manually, and export them in various formats.
+Slydle is a web-based presentation creation tool, similar to gamma.app. It allows users to create slides with AI assistance, edit them manually, and export them in various formats.
 
 ## Project Structure
 - [src/app](mdc:src/app): Next.js app directory with routing configuration

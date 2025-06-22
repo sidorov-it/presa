@@ -8,7 +8,7 @@ import SideMenuRenderer from '@/components/editor/Menus/SideMenuRenderer/SideMen
 const inter = Inter({ subsets: ['latin', 'cyrillic'] });
 
 export const metadata: Metadata = {
-    title: 'Presa – создание презентаций с ИИ',
+    title: 'Slydle – создание презентаций с ИИ',
     description: 'Платформа для генерации и редактирования презентаций с помощью искусственного интеллекта',
 };
 
