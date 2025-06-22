@@ -227,6 +227,7 @@ export const useMenuStore = create<MenuState>()(
                     smartLayoutItemId: menuData.smartLayoutItemId ?? null,
                     isInTable: isInTable ?? false,
                     columnIndex: menuData.columnIndex ?? null,
+                    presentationId: presentationId ?? null,
                 });
 
                 set({
@@ -243,6 +244,7 @@ export const useMenuStore = create<MenuState>()(
                     smartLayoutItemId: menuData.smartLayoutItemId ?? null,
                     isInTable,
                     columnIndex: menuData.columnIndex ?? null,
+                    presentationId: presentationId ?? null,
                 });
             },
 

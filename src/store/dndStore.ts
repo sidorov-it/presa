@@ -2945,6 +2945,14 @@ export const useDndStore = create<{
                             },
                         }));
                     } else if (dropPosition.targetType === 'layout' && dropPosition.targetId) {
+                        if (
+                            state.source.dragElementType === 'table-column' ||
+                            state.source.dragElementType === 'table-row'
+                        ) {
+                            get().resetAllIndicators();
+                            return;
+                        }
+
                         const updatedIndicators = getUpdatedIndicators({
                             layoutIndicator: dropPosition.targetId,
                             layoutPosition: dropPosition.position,

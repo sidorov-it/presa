@@ -269,7 +269,7 @@ const DropIndicator = () => {
             return {
                 targetRect: {
                     left: cellRect.left,
-                    top: cellRect.top,
+                    top: layoutRect?.top || 0,
                     width: cellRect.width,
                     height: layoutRect?.height || 0,
                     right: cellRect.right,
@@ -512,7 +512,16 @@ const DropIndicator = () => {
                 backgroundColor: color,
             };
         } else if (position === 'top') {
-            if (!previousElementRect) {
+            if (type === 'row') {
+                styles = {
+                    ...styles,
+                    left: targetRect.left,
+                    top: targetRect.top - 2,
+                    width: targetRect.width,
+                    height: thickness,
+                    backgroundColor: color,
+                };
+            } else if (!previousElementRect) {
                 styles = {
                     ...styles,
                     left: targetRect.left,
@@ -532,7 +541,16 @@ const DropIndicator = () => {
                 };
             }
         } else if (position === 'bottom') {
-            if (!nextElementRect) {
+            if (type === 'row') {
+                styles = {
+                    ...styles,
+                    left: targetRect.left,
+                    top: targetRect.bottom - 2,
+                    width: targetRect.width,
+                    height: thickness,
+                    backgroundColor: color,
+                };
+            } else if (!nextElementRect) {
                 styles = {
                     ...styles,
                     left: targetRect.left,
