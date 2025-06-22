@@ -6,6 +6,7 @@ import Presentation from '../Presentation';
 import DragDropIndicator from '@/components/DragDropIndicator';
 import SlideMenu from '../SlideMenu/SlideMenu';
 import { useMenuStore } from '@/store/menuStore';
+import { useEditorStore } from '@/store/editorStore';
 import { TipTapRefs } from '@/types';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -105,6 +106,59 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
             setActiveSlideId(slideIds[0]);
         }
     }, [slideIds, activeSlideId]);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key !== 'Delete' && e.key !== 'Backspace') return;
+
+            const {
+                elementId,
+                slideId,
+                layoutId,
+                presentationId: menuPresentationId,
+                isTextEditor,
+                selectedSmartLayoutItemId,
+            } = useMenuStore.getState();
+            const activeEditor = useEditorStore.getState().activeEditor;
+
+            if (
+                activeEditor ||
+                isReadOnly ||
+                !elementId ||
+                !slideId ||
+                !layoutId ||
+                !menuPresentationId ||
+                isTextEditor
+            ) {
+                return;
+            }
+
+            e.preventDefault();
+
+            if (selectedSmartLayoutItemId) {
+                usePresentationStore
+                    .getState()
+                    .removeSmartLayoutItem(
+                        menuPresentationId,
+                        slideId,
+                        layoutId,
+                        elementId,
+                        selectedSmartLayoutItemId
+                    );
+                useMenuStore.getState().closeMenu();
+            } else {
+                usePresentationStore
+                    .getState()
+                    .deleteElement(menuPresentationId, slideId, layoutId, elementId);
+                useMenuStore.getState().closeMenu();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isReadOnly]);
 
     if (!presentationExists) {
         return notFoundUI;
