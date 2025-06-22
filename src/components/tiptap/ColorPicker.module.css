@@ -187,3 +187,17 @@
 .invalidHexInput {
     border-color: #EF4444;
 }
+
+/* When a custom footer is provided, remove bottom padding from the popover */
+.withFooter {
+    padding-bottom: 0;
+}
+
+.customFooter {
+    background-color: #f0f0f0;
+    margin-left: -12px;
+    margin-right: -12px;
+    padding: 8px 12px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
