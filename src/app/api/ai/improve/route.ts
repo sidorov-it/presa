@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import rewriteSlideContent from '@/services/llm/gigaChat/rewriteSlideContent';
 import { withTokenDeduction, TokenCalculators, MetadataExtractors } from '@/utils/aiTokenMiddleware';
+import logger from '@/utils/logger';
 
 // function generateSlotDescription(slide: Slide): string {
 //     return slide.layouts
@@ -77,6 +78,7 @@ interface RewriteRequestBody {
 }
 
 export async function POST(request: NextRequest) {
+    logger.info('POST /api/ai/improve');
     return withTokenDeduction(
         request,
         {

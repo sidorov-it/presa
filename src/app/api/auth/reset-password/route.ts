@@ -1,3 +1,4 @@
+import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { hashPassword } from '@/lib/auth';
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({ message: 'Пароль успешно сброшен' }, { status: 200 });
     } catch (error) {
-        console.error('Reset password error:', error);
+        logger.error('Reset password error:', error);
         return NextResponse.json({ message: 'Внутренняя ошибка сервера' }, { status: 500 });
     }
 }

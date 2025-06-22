@@ -1,3 +1,4 @@
+import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
@@ -68,7 +69,7 @@ export async function POST(request: NextRequest) {
                             id: result.imageId,
                         });
                     } catch (error) {
-                        console.error(`Failed to generate image ${i + 1}:`, error);
+                        logger.error(`Failed to generate image ${i + 1}:`, error);
                         // Continue with other images even if one fails
                     }
                 }
@@ -83,7 +84,7 @@ export async function POST(request: NextRequest) {
                     requested: count,
                 });
             } catch (error) {
-                console.error('Error generating images:', error);
+                logger.error('Error generating images:', error);
                 return NextResponse.json({ error: 'Failed to generate images' }, { status: 500 });
             }
         }

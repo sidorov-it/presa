@@ -1,3 +1,4 @@
+import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
@@ -40,7 +41,7 @@ export async function GET() {
         // Use the utility function to parse the slides JSON in all presentations
         return NextResponse.json(parsePresentations(presentations));
     } catch (error) {
-        console.error('Error fetching presentations:', error);
+        logger.error('Error fetching presentations:', error);
         return NextResponse.json({ error: 'Error fetching presentations' }, { status: 500 });
     }
 }
@@ -116,7 +117,7 @@ export async function POST(request: NextRequest) {
             },
         });
     } catch (error) {
-        console.error('Error creating presentation:', error);
+        logger.error('Error creating presentation:', error);
         return NextResponse.json({ error: 'Error creating presentation' }, { status: 500 });
     }
 }
