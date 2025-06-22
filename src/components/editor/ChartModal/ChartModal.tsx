@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChartElement } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
+import { useHistoryStore } from '@/store/historyStore';
 import { ChartSettings } from '@/elements/chart';
 import Chart from '@/elements/chart';
 import styles from './ChartModal.module.css';
@@ -33,6 +34,16 @@ const ChartModal: React.FC<ChartModalProps> = ({ isOpen, onClose, elementId, pre
             setChartElement(element);
         }
     }, [element]);
+
+    // Start a history transaction when the modal mounts and
+    // commit it when the modal unmounts so all changes made
+    // in the modal are recorded as a single action
+    useEffect(() => {
+        useHistoryStore.getState().beginTransaction(presentationId, 'edit chart');
+        return () => {
+            useHistoryStore.getState().commitTransaction(presentationId);
+        };
+    }, [presentationId]);
 
     useEffect(() => {
         if (isOpen) {
