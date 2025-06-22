@@ -58,15 +58,13 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
             imageSize = { width: '33%' };
         }
 
-        // Update template type and image size
-        updateSlide(presentationId, slideId, {
-            templateType: value as SlideTemplateType,
-            imageSize,
-        });
+        useHistoryStore.getState().beginTransaction(presentationId, 'update slide template');
 
         // Update background if template is imageBackground
         if (value === 'imageBackground' && imageUrl) {
             updateSlide(presentationId, slideId, {
+                templateType: value as SlideTemplateType,
+                imageSize,
                 background: {
                     type: 'image',
                     value: imageUrl,
@@ -75,11 +73,32 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
         } else if (slide?.background?.type === 'image' && value !== 'imageBackground') {
             // Reset background to color if changing from imageBackground to another template
             updateSlide(presentationId, slideId, {
+                templateType: value as SlideTemplateType,
+                imageSize,
                 background: {
                     type: 'color',
                     value: backgroundColor || DEFAULT_BACKGROUND_COLOR,
                 },
             });
+        } else {
+            updateSlide(
+                presentationId,
+                slideId,
+                {
+                    templateType: value as SlideTemplateType,
+                    imageSize,
+                },
+                true
+            );
+        }
+
+        // Determine if the selected template will have a resizable image component rendered
+        const templateNeedsImage =
+            ['imageTop', 'imageLeft', 'imageRight'].includes(value) || (value === 'imageBackground' && !!imageUrl);
+
+        // If no resizable image is expected, we can safely commit the transaction right away
+        if (!templateNeedsImage) {
+            useHistoryStore.getState().commitTransaction(presentationId);
         }
     };
 
@@ -160,30 +179,32 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                 }
 
                 const data = await response.json();
-                updateSlide(presentationId, slideId, { imageUrl: data.url });
 
                 // Update background if template is imageBackground
                 if (templateType === 'imageBackground') {
                     updateSlide(presentationId, slideId, {
+                        imageUrl: data.url,
                         background: {
                             type: 'image',
                             value: data.url,
                         },
                     });
+                } else {
+                    updateSlide(presentationId, slideId, { imageUrl: data.url });
                 }
                 setError('');
             } else {
-                // Local URL, use as is
-                updateSlide(presentationId, slideId, { imageUrl: url });
-
                 // Update background if template is imageBackground
                 if (templateType === 'imageBackground' && url) {
                     updateSlide(presentationId, slideId, {
+                        imageUrl: url,
                         background: {
                             type: 'image',
                             value: url,
                         },
                     });
+                } else {
+                    updateSlide(presentationId, slideId, { imageUrl: url });
                 }
             }
         } catch (error) {
@@ -210,16 +231,18 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                         throw new Error('Не удалось загрузить изображение');
                     }
                     const data = await response.json();
-                    updateSlide(presentationId, slideId, { imageUrl: data.url });
 
                     // Update background if template is imageBackground
                     if (templateType === 'imageBackground') {
                         updateSlide(presentationId, slideId, {
+                            imageUrl: data.url,
                             background: {
                                 type: 'image',
                                 value: data.url,
                             },
                         });
+                    } else {
+                        updateSlide(presentationId, slideId, { imageUrl: data.url });
                     }
                     setError('');
                 })

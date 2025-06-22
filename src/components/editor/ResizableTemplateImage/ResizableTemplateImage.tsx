@@ -6,6 +6,7 @@ import styles from './ResizableTemplateImage.module.css';
 import deepEqual from 'deep-equal';
 import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlaceholder';
 import { useThemeStore } from '@/store/themeStore';
+import { useHistoryStore } from '@/store/historyStore';
 
 const MIN_SIZE = 20;
 const MAX_SIZE = 50;
@@ -78,9 +79,20 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
 
         // Only update if values actually changed
         if (currentSize.width !== storedSize.width || currentSize.height !== storedSize.height) {
-            updateSlide(presentationId, slideId, {
-                imageSize: currentSize,
-            });
+            // Record this auto-resize as part of the existing transaction (started in SlideTemplateSelector)
+            updateSlide(
+                presentationId,
+                slideId,
+                {
+                    imageSize: currentSize,
+                },
+                true // force recording in the current transaction
+            );
+
+            // Defer commit to ensure the action above is fully recorded before closing the transaction
+            setTimeout(() => {
+                useHistoryStore.getState().commitTransaction(presentationId);
+            }, 0);
         }
     }, [currentSize, isResizing, presentationId, slideId, storedSize, updateSlide]);
 

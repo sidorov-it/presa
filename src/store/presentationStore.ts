@@ -62,7 +62,11 @@ export interface PresentationState {
         presentationId: string,
         slideId: string,
         data: Partial<Slide>,
-        forceRecordTransactionAction?: boolean
+        forceRecordTransactionAction?: boolean,
+        isExcludeFromHistory?: {
+            isExcludeFromHistory?: boolean;
+            description?: string;
+        }
     ) => void;
     deleteSlide: (presentationId: string, slideId: string) => void;
     duplicateSlide: (presentationId: string, slideId: string) => string;
@@ -618,7 +622,7 @@ export const usePresentationStore = create<PresentationState>()(
                 return slideId;
             },
 
-            updateSlide: (presentationId, slideId, data, forceRecordTransactionAction) => {
+            updateSlide: (presentationId, slideId, data, forceRecordTransactionAction, isExcludeFromHistory) => {
                 const beforeState = { ...get() };
 
                 const currentPresentation = get().getPresentation(presentationId);
@@ -655,6 +659,8 @@ export const usePresentationStore = create<PresentationState>()(
                             before: { presentations: beforeState.presentations },
                             after: updatedState,
                         });
+                    } else if (isExcludeFromHistory?.isExcludeFromHistory) {
+                        console.log('exclude from history', isExcludeFromHistory.description);
                     } else {
                         get().recordAction({
                             type: 'slide',
