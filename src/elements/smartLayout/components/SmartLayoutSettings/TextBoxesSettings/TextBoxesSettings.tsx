@@ -7,6 +7,7 @@ import { MutableRefObject } from 'react';
 import { MenuItem } from '@/components/editor/SlideMenu/BaseMenu';
 import AlignmentGroup from '@/components/settings/AlignmentGroup/AlignmentGroup';
 import { DeleteIcon } from '@/components/icons';
+import { useHistoryStore } from '@/store/historyStore';
 
 export default function TextBoxesSettings({
     element,
@@ -26,6 +27,10 @@ export default function TextBoxesSettings({
     const updateElement = usePresentationStore(state => state.updateElement);
 
     const handleAlignment = (alignment: 'left' | 'center' | 'right') => {
+        // Start a history transaction so that all subsequent updates are grouped
+        useHistoryStore.getState().beginTransaction(presentationId, 'Change alignment');
+
+        // Update alignment on the smart-layout element itself
         updateElement({
             presentationId,
             slideId,
@@ -36,9 +41,12 @@ export default function TextBoxesSettings({
             },
         });
 
+        // Apply text alignment to every nested text editor and let their updates
+        // be captured inside the running transaction
         element.items?.forEach(item => {
             tiptapRefs.current.editors[`title-${elementId}-${item.id}`]?.editor
                 .chain()
+                .setMeta('transaction', true)
                 .focus()
                 .setTextAlign(alignment)
                 .blur()
@@ -46,11 +54,15 @@ export default function TextBoxesSettings({
 
             tiptapRefs.current.editors[`text-${elementId}-${item.id}`]?.editor
                 .chain()
+                .setMeta('transaction', true)
                 .focus()
                 .setTextAlign(alignment)
                 .blur()
                 .run();
         });
+
+        // Commit the transaction so everything is stored as a single history entry
+        useHistoryStore.getState().commitTransaction(presentationId);
     };
 
     return (
