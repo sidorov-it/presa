@@ -279,8 +279,8 @@ export const ElementContent = ({
 
             const isMultiCellRow = layout.gridStructure.rows[0].cells.length > 1;
 
-            if (layoutIndex === 0 && !isMultiCellRow) {
-                // backspace в первой строке первого слайда -> ничего не делаем
+            if (layoutIndex === 0 && !isMultiCellRow && slide.layouts.length === 1) {
+                // backspace в первой строке единственного лэйаута -> ничего не делаем
                 return;
             }
 
