@@ -319,7 +319,7 @@ const HistoryDebugPopup = () => {
                             {historyItems.length === 0 ? (
                                 <div className={styles.emptyMessage}>No history items</div>
                             ) : (
-                                historyItems.map(renderHistoryItem)
+                                historyItems.reverse().map(renderHistoryItem)
                             )}
                         </div>
                     </div>

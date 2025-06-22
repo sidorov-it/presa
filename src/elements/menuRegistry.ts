@@ -77,6 +77,6 @@ export const menuRegistry: MenuCategory[] = [
     },
 ];
 
-export const TEXT_ELEMENT_TYPES = ['text', 'heading', 'quote', 'bullet-list', 'numbered-list', 'todo-list'];
+export const TEXT_ELEMENT_TYPES = ['text', 'heading', 'quote', 'bullet-list', 'numbered-list', 'todo-list', 'box'];
 
 export const SLIDE_TEMPLATE_TYPES = ['slide-template'];

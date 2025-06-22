@@ -25,7 +25,7 @@ const BackgroundSettingsModal: React.FC<BackgroundSettingsModalProps> = ({
     const initialSettings = usePresentationStore(useShallow(state => state.getBackgroundSettings(presentationId)));
 
     const [backgroundColor, setBackgroundColor] = useState<string>(
-        initialSettings?.backgroundColor || defaultSlideBackground
+        initialSettings?.backgroundColor || defaultSlideBackground || '#ffffff'
     );
     const [backgroundImage, setBackgroundImage] = useState<string>(initialSettings?.backgroundImage || '');
 
