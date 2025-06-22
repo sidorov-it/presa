@@ -2536,7 +2536,13 @@ export const useDndStore = create<{
 
             // Move the row
             const [movedRow] = updatedGridStructure.rows.splice(sourceRowIndex, 1);
-            const insertIndex = tableRowPosition === 'top' ? targetRowIndex : targetRowIndex + 1;
+            let insertIndex = tableRowPosition === 'top' ? targetRowIndex : targetRowIndex + 1;
+
+            // adjust index if removing row shifts the target position
+            if (sourceRowIndex < insertIndex) {
+                insertIndex -= 1;
+            }
+
             updatedGridStructure.rows.splice(insertIndex, 0, movedRow);
 
             // Update row indices
@@ -3066,6 +3072,16 @@ export const useDndStore = create<{
             !isTargetTable
         ) {
             console.log('return');
+            return;
+        }
+
+        // when dragging table rows or columns outside the table cells
+        if (
+            (state.source.dragElementType === 'table-row' || state.source.dragElementType === 'table-column') &&
+            isTargetTable &&
+            !cellNode
+        ) {
+            get().resetAllIndicators();
             return;
         }
 
