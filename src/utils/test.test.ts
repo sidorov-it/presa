@@ -1,7 +1,7 @@
 import {
     createGenerateSlideContentFunction,
     createPromptGenerateSlideContent,
-} from '@/services/llm/gigaChat/generateSlideContent';
+} from '@/services/llm/generateSlideContent';
 import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
 import { createSlideFromTemplateWithContent } from './createSlideFromTemplateWithContent';
 import { Slide } from '@/types';

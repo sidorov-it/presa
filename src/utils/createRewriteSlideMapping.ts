@@ -1,5 +1,5 @@
 import { getElementConfig } from '@/elements/commonRegisrty';
-import { SlotKeyMapping } from '@/services/llm/gigaChat/rewriteSlideContent';
+import { SlotKeyMapping } from '@/services/llm/rewriteSlideContent';
 import { Slide, SmartLayoutElement } from '@/types';
 import { ElementType } from '@/types/elements';
 import { stripHtml } from './stripeHtml';

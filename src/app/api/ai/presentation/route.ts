@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { generateId } from '@/utils/id';
 import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
 import { generateSlidesTemplates } from '@/services/llm/gigaChat';
-import generateSlide from '@/services/llm/gigaChat/generateSlide';
+import generateSlide from '@/services/llm/generateSlide';
 import { withTokenDeduction, TokenCalculators, MetadataExtractors } from '@/utils/aiTokenMiddleware';
 
 export async function POST(request: NextRequest) {

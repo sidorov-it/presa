@@ -105,7 +105,12 @@ export class YaGptService implements LLMService {
 
         const yaResult = responseJson.result || responseJson;
         const firstAlt = yaResult.alternatives?.[0] || {};
-        const message = firstAlt.message || yaResult.message || responseJson.message || responseJson.choices?.[0]?.message || responseJson.choices?.[0];
+        const message =
+            firstAlt.message ||
+            yaResult.message ||
+            responseJson.message ||
+            responseJson.choices?.[0]?.message ||
+            responseJson.choices?.[0];
 
         let elements = [] as LLMResponse['elements'];
         let functionCall: LLMResponse['function_call'];
@@ -219,6 +224,96 @@ export class YaGptService implements LLMService {
         YaGptService.cachedApiKey = createdKey;
         this.apiKey = createdKey;
         return createdKey;
+    }
+
+    async generateImage(
+        prompt: string,
+        options: { presentationId?: string; userId: string }
+    ): Promise<{ imageUrl: string; imageId: string }> {
+        const iamToken = process.env.YAGPT_IAM_TOKEN;
+        if (!iamToken) {
+            throw new Error('YAGPT_IAM_TOKEN is required for image generation');
+        }
+
+        const requestBody = {
+            modelUri: `art://${this.folderId}/yandex-art/latest`,
+            generationOptions: {
+                seed: Math.floor(Math.random() * 10000).toString(),
+            },
+            messages: [
+                {
+                    weight: '1',
+                    text: prompt,
+                },
+            ],
+        };
+
+        // Start async generation
+        const startResp = await fetch('https://llm.api.cloud.yandex.net/foundationModels/v1/imageGenerationAsync', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${iamToken}`,
+            },
+            body: JSON.stringify(requestBody),
+        });
+
+        if (!startResp.ok) {
+            const text = await startResp.text();
+            throw new Error(`Yandex Art start failed: ${startResp.status} - ${text}`);
+        }
+
+        const startData = await startResp.json();
+        const operationId = startData.id;
+        if (!operationId) {
+            throw new Error('No operation id returned from Yandex Art');
+        }
+
+        // Poll operation status (max 30 attempts, 2s interval)
+        let attempts = 0;
+        const maxAttempts = 30;
+        const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+        let imageBase64: string | undefined;
+        while (attempts < maxAttempts) {
+            await delay(2000);
+            attempts += 1;
+
+            const statusResp = await fetch(`https://llm.api.cloud.yandex.net/operations/${operationId}`, {
+                headers: {
+                    Authorization: `Bearer ${iamToken}`,
+                },
+            });
+
+            if (!statusResp.ok) continue;
+            const statusData = await statusResp.json();
+            if (statusData.done) {
+                imageBase64 = statusData.response?.image;
+                break;
+            }
+        }
+
+        if (!imageBase64) {
+            throw new Error('Image generation did not complete in time');
+        }
+
+        // Save image
+        const imageId = operationId;
+        let imageUrl: string;
+        if (typeof window === 'undefined') {
+            const buffer = Buffer.from(imageBase64, 'base64');
+            const path = await import('path');
+            const fs = await import('fs/promises');
+            const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
+            await fs.mkdir(UPLOAD_DIR, { recursive: true });
+            const filePath = path.join(UPLOAD_DIR, `${imageId}.jpg`);
+            await fs.writeFile(filePath, buffer, 'binary');
+            imageUrl = `/uploads/${imageId}.jpg`;
+        } else {
+            imageUrl = `data:image/jpeg;base64,${imageBase64}`;
+        }
+
+        return { imageUrl, imageId };
     }
 }
 

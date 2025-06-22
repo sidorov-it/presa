@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
             calculateTokens: TokenCalculators.generateImage,
             metadata: MetadataExtractors.images,
         },
-        async (req: NextRequest) => {
+        async (session, requestData) => {
             // await new Promise(resolve => setTimeout(resolve, 10000));
             // return NextResponse.json({
             //     images: [
@@ -36,12 +36,12 @@ export async function POST(request: NextRequest) {
 
             try {
                 // Check authentication
-                const session = await getServerSession(authOptions);
+                // const session = await getServerSession(authOptions);
                 if (!session?.user?.id) {
                     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
                 }
 
-                const { prompt, count = 3 } = await req.json();
+                const { prompt, count = 3 } = requestData;
 
                 if (!prompt || typeof prompt !== 'string') {
                     return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
@@ -79,11 +79,11 @@ export async function POST(request: NextRequest) {
                     return NextResponse.json({ error: 'Failed to generate any images' }, { status: 500 });
                 }
 
-                return NextResponse.json({
+                return {
                     images,
                     generated: images.length,
                     requested: count,
-                });
+                };
             } catch (error) {
                 console.error('Error generating images:', error);
                 return NextResponse.json({ error: 'Failed to generate images' }, { status: 500 });

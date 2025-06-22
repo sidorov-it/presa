@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import rewriteSlideContent from '@/services/llm/gigaChat/rewriteSlideContent';
+import rewriteSlideContent from '@/services/llm/rewriteSlideContent';
 import { withTokenDeduction, TokenCalculators, MetadataExtractors } from '@/utils/aiTokenMiddleware';
 
 // function generateSlotDescription(slide: Slide): string {

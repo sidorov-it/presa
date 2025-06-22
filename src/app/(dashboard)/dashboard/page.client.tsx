@@ -16,15 +16,12 @@ import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { HiOutlineDotsVertical } from 'react-icons/hi';
 
-
 export default function DashboardPage() {
     const router = useRouter();
     const { presentations, createPresentation, loadPresentationsList, deletePresentation } = usePresentationStore();
     const { setCurrentTheme, loadThemes, themes } = useThemeStore();
-    const [showAIModal, setShowAIModal] = useState(false);
     const [userPresentations, setUserPresentations] = useState<IPresentation[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [isGenerating, setIsGenerating] = useState(false);
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const [showRenameModal, setShowRenameModal] = useState(false);
     const [presentationToRename, setPresentationToRename] = useState<string | null>(null);
@@ -37,12 +34,6 @@ export default function DashboardPage() {
     const loadDefaultThemes = useThemeStore(state => state.loadDefaultThemes);
 
     const menuRef = useRef<HTMLDivElement>(null);
-
-    // AI form state
-    const [aiPrompt, setAiPrompt] = useState('');
-    const [numSlides, setNumSlides] = useState(5);
-    const [language, setLanguage] = useState('ru');
-    const [aiError, setAiError] = useState('');
 
     type SortOption = 'createdAt' | 'updatedAt' | 'title';
     const [sortBy, setSortBy] = useState<SortOption>('updatedAt');
@@ -99,11 +90,6 @@ export default function DashboardPage() {
     // Handle opening the AI modal
     const handleCreateWithAI = () => {
         router.push('/dashboard/ai');
-    };
-
-    // Handle opening a presentation
-    const handleOpenPresentation = (presentationId: string) => {
-        router.push(`/docs/${presentationId}`);
     };
 
     // Handle opening a presentation in view mode
@@ -231,53 +217,6 @@ export default function DashboardPage() {
         } finally {
             setIsDeleting(false);
         }
-    };
-
-    // Handle submitting the AI form
-    const handleAISubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!aiPrompt.trim()) {
-            setAiError('Пожалуйста, введите запрос');
-            return;
-        }
-
-        try {
-            setIsGenerating(true);
-            setAiError('');
-
-            const response = await fetch('/api/ai', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    prompt: aiPrompt,
-                    numSlides,
-                    language,
-                }),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Не удалось создать презентацию');
-            }
-
-            // Close modal and navigate to the new presentation
-            setShowAIModal(false);
-            router.push(`/docs/${data.presentationId}`);
-        } catch (error) {
-            console.error('Ошибка генерации с ИИ:', error);
-            setAiError(error instanceof Error ? error.message : 'Произошла ошибка');
-        } finally {
-            setIsGenerating(false);
-        }
-    };
-
-    // Fill the example prompt
-    const handleExampleClick = (example: string) => {
-        setAiPrompt(example);
     };
 
     const handleMenuClick = useCallback(
@@ -418,140 +357,6 @@ export default function DashboardPage() {
                             </Link>
                         );
                     })}
-                </div>
-            )}
-
-            {/* AI Modal */}
-            {showAIModal && (
-                <div className={styles.modal}>
-                    <div className={styles.modalContent}>
-                        <div className={styles.modalBody}>
-                            <h2 className={styles.modalTitle}>Создать презентацию с помощью ИИ</h2>
-
-                            <form onSubmit={handleAISubmit}>
-                                <div className={styles.formGroup}>
-                                    <label className={styles.label}>Опишите, о чем должна быть ваша презентация</label>
-                                    <textarea
-                                        value={aiPrompt}
-                                        onChange={e => setAiPrompt(e.target.value)}
-                                        placeholder="Например: Презентация о влиянии искусственного интеллекта на образование"
-                                        className={styles.input}
-                                        rows={4}
-                                    />
-                                </div>
-
-                                <div className={styles.formGroup}>
-                                    <div className={styles.formGroupRow}>
-                                        <div>
-                                            <label className={styles.label}>Количество слайдов</label>
-                                            <select
-                                                value={numSlides}
-                                                onChange={e => setNumSlides(Number(e.target.value))}
-                                                className={styles.select}
-                                            >
-                                                {[3, 5, 7, 10, 15].map(num => (
-                                                    <option key={num} value={num}>
-                                                        {num}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label className={styles.label}>Язык</label>
-                                            <select
-                                                value={language}
-                                                onChange={e => setLanguage(e.target.value)}
-                                                className={styles.select}
-                                            >
-                                                <option value="ru">Русский</option>
-                                                <option value="en">Английский</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div style={{ marginBottom: '1.5rem' }}>
-                                    <p className={styles.label}>Примеры запросов:</p>
-                                    <div className={styles.exampleTags}>
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                handleExampleClick(
-                                                    'Презентация о влиянии искусственного интеллекта на образование'
-                                                )
-                                            }
-                                            className={styles.exampleTag}
-                                        >
-                                            Влияние ИИ на образование
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                handleExampleClick(
-                                                    'Маркетинговая стратегия для нового мобильного приложения'
-                                                )
-                                            }
-                                            className={styles.exampleTag}
-                                        >
-                                            Маркетинговая стратегия
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                handleExampleClick(
-                                                    'Бизнес-план для стартапа в сфере электронной коммерции'
-                                                )
-                                            }
-                                            className={styles.exampleTag}
-                                        >
-                                            Бизнес-план
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {aiError && <div className={styles.error}>{aiError}</div>}
-
-                                <div className={styles.modalFooter}>
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowAIModal(false)}
-                                        className={styles.buttonCancel}
-                                    >
-                                        Отмена
-                                    </button>
-                                    <button type="submit" disabled={isGenerating} className={styles.buttonPrimary}>
-                                        {isGenerating ? (
-                                            <span style={{ display: 'flex', alignItems: 'center' }}>
-                                                <svg
-                                                    className={styles.spinner}
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <circle
-                                                        style={{ opacity: '0.25' }}
-                                                        cx="12"
-                                                        cy="12"
-                                                        r="10"
-                                                        stroke="currentColor"
-                                                        strokeWidth="4"
-                                                    ></circle>
-                                                    <path
-                                                        style={{ opacity: '0.75' }}
-                                                        fill="currentColor"
-                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                                    ></path>
-                                                </svg>
-                                                Генерация...
-                                            </span>
-                                        ) : (
-                                            'Создать'
-                                        )}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
                 </div>
             )}
 

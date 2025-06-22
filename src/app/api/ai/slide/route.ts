@@ -1,10 +1,10 @@
 import { NextRequest } from 'next/server';
 import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
-import generateSlidesTemplates from '@/services/llm/gigaChat/generateSlidesTemplates';
+import generateSlidesTemplates from '@/services/llm/generateSlidesTemplates';
 import { prisma } from '@/lib/prisma';
 import extractTextsFromPresentation from '@/utils/extractTextsFromPresentation';
 import { IPresentation } from '@/types';
-import generateSlide from '@/services/llm/gigaChat/generateSlide';
+import generateSlide from '@/services/llm/generateSlide';
 import { withTokenDeduction, TokenCalculators, MetadataExtractors } from '@/utils/aiTokenMiddleware';
 
 interface RequestBody {

@@ -2,7 +2,8 @@ import { createLLMService } from '@/services/llm';
 
 const generateTopicsFunction = {
     name: 'generate_presentation_topics',
-    description: 'Создает список тем для презентации на основе заданного описания. Выдает список тем и инструкции для каждого слайда',
+    description:
+        'Создает список тем для презентации на основе заданного описания. Выдает список тем и инструкции для каждого слайда',
     parameters: {
         type: 'object',
         properties: {
@@ -44,15 +45,43 @@ const generateTitleFunction = {
     },
 };
 
-const getTopicsPrompt = (description: string, numSlides: number, tone: string) =>
-    `Создайте структуру для презентации о: "${description}"
+const getTopicsPrompt = ({
+    description,
+    numSlides,
+    tone,
+    durationMinutes,
+    goal,
+    audience,
+}: {
+    description: string;
+    numSlides: number;
+    tone: string;
+    durationMinutes?: number;
+    goal?: string;
+    audience?: string;
+}) =>
+    `Ты — Senior Presentation Architect.
 
-Требования:
-- Сгенерируйте ровно ${numSlides} слайдов
-- Стиль/тон должен быть: ${tone}
-- Каждый слайд должен иметь четкую, фокусирующую тему
-- Темы должны логично развиваться
-- Включите конкретные инструкции для каждого слайда, если они необходимы`;
+Используя лучшие практики презентационного дизайна (см. список), создай исчерпывающую структуру презентации.
+
+Входные данные:
+• Тема: ${description}
+${goal ? `• Цель: ${goal}` : ''}
+${audience ? `• Аудитория: ${audience}` : ''}
+• Количество слайдов: ${numSlides}
+• Тон/стиль: ${tone}
+${Number.isInteger(durationMinutes) ? `• Длительность доклада: ${durationMinutes} минут` : ''}
+
+Требования к результату:
+1. Сгенерируй **ровно ${numSlides}** слайдов.
+2. Каждый слайд должен иметь **чёткое, сфокусированное название** и **цель**.
+3. Следуй логической арке “вступление → проблема → решение → результат → CTA”.
+4. Учитывай аудиторию и цель при выборе акцентов и доказательств.
+5. **Формат ответа:** JSON-массив объектов со структурой
+
+Для генерации структуры презентации обязательно вызови фунцию generate_presentation_topics.
+
+`;
 
 const topicsOptions = {
     functions: [generateTopicsFunction],
@@ -68,13 +97,37 @@ const titleOptions = {
     function_call: { name: 'generate_presentation_title' },
 };
 
-async function generateTopics(userId: string, description: string, numSlides: number, tone: string) {
+async function generateTopics(
+    userId: string,
+    {
+        description,
+        numSlides,
+        tone,
+        durationMinutes,
+        goal,
+        audience,
+    }: {
+        description: string;
+        numSlides: number;
+        tone: string;
+        durationMinutes?: number;
+        goal?: string;
+        audience?: string;
+    }
+) {
     try {
         const llmService = createLLMService({ userId });
 
         // Generate topics using function calling
         const topicsResponse = await llmService.generate(
-            getTopicsPrompt(description, numSlides, tone),
+            getTopicsPrompt({
+                description,
+                numSlides,
+                tone,
+                durationMinutes,
+                goal,
+                audience,
+            }),
             topicsOptions
         );
 
