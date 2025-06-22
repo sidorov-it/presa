@@ -34,17 +34,28 @@ const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, cla
     // Handle keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            // Undo: Ctrl+Z or Command+Z
-            if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+            const isModifierPressed = e.ctrlKey || e.metaKey;
+            if (!isModifierPressed) return; // early exit if no Cmd/Ctrl pressed
+
+            // Normalize key to lowercase to avoid issues with Shift producing uppercase letters
+            const key = e.key.toLowerCase();
+
+            // In some keyboard layouts e.key may vary, so fall back to e.code which is layout-independent
+            const isZKey = key === 'z' || e.code === 'KeyZ';
+            const isYKey = key === 'y' || e.code === 'KeyY';
+
+            // Undo: Cmd/Ctrl + Z (without Shift)
+            if (isZKey && !e.shiftKey) {
                 e.preventDefault();
                 handleUndo();
+                return; // early exit so that redo condition is not evaluated in the same cycle
             }
 
-            // Redo: Ctrl+Y or Ctrl+Shift+Z or Command+Shift+Z
-            if (
-                ((e.ctrlKey || e.metaKey) && e.key === 'y') ||
-                ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z')
-            ) {
+            // Redo can be triggered by:
+            //   1. Cmd/Ctrl + Y (common on Windows/Linux)
+            //   2. Cmd/Ctrl + Shift + Z (common on macOS)
+            const isRedoCombination = (isYKey && !e.shiftKey) || (isZKey && e.shiftKey);
+            if (isRedoCombination) {
                 e.preventDefault();
                 handleRedo();
             }
@@ -54,7 +65,7 @@ const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, cla
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [hasUndo, hasRedo, presentationId, handleUndo, handleRedo]);
+    }, [handleUndo, handleRedo]);
 
     return (
         <div className={`${styles.undoRedoControls} ${className}`}>
