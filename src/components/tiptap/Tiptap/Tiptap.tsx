@@ -168,6 +168,8 @@ const Tiptap = ({
                 return;
             }
 
+            const { empty } = editor.state.selection;
+
             if (editor.isEmpty) {
                 const { level, color, bold, italic, underline, strike } = lastStyleRef.current;
 
@@ -183,7 +185,7 @@ const Tiptap = ({
                     applyingStoredMarksRef.current = true;
                     chain.run();
                 }
-            } else {
+            } else if (empty) {
                 lastStyleRef.current = {
                     level: getHeadingLevel(editor),
                     color: editor.getAttributes('textStyle').color || null,
