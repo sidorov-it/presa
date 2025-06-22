@@ -132,7 +132,6 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                     data: tableData,
                     series: series,
                 },
-                isExcludeFromHistory: true,
             });
 
             if (onUpdate) {
