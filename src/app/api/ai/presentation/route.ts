@@ -1,5 +1,5 @@
-import logger from '@/utils/logger';
 /* eslint-disable prettier/prettier */
+import logger from '@/utils/logger';
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateId } from '@/utils/id';
@@ -7,6 +7,7 @@ import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
 import { generateSlidesTemplates } from '@/services/llm/gigaChat';
 import generateSlide from '@/services/llm/generateSlide';
 import { withTokenDeduction, TokenCalculators, MetadataExtractors } from '@/utils/aiTokenMiddleware';
+import extractTextFromElement from '@/utils/extractTextFromElement';
 
 export async function POST(request: NextRequest) {
     return withTokenDeduction(
@@ -43,11 +44,21 @@ export async function POST(request: NextRequest) {
 
                 // Generate slides using AI
                 const slides = [];
+                const extractSlidePlainText = (slide: any) =>
+                    (slide.layouts || [])
+                        .flatMap((layout: any) => layout.elements)
+                        .map((el: any) => extractTextFromElement(el as any))
+                        .join('\n');
+
                 for (let i = 0; i < templateSuggestions.length; i++) {
                     const template = SlideTemplatesRegistry[templateSuggestions[i].templateId];
                     if (!template) {
                         throw new Error(`Template not found: ${templateSuggestions[i].templateId}`);
                     }
+
+                    const previousSlidesContent = slides
+                        .slice(Math.max(0, slides.length - 2))
+                        .map(ps => ({ title: ps.title, content: extractSlidePlainText(ps) }));
 
                     const slide = await generateSlide({
                         topic: title,
@@ -55,6 +66,11 @@ export async function POST(request: NextRequest) {
                         totalSlides: templateSuggestions.length,
                         templateId: template.id,
                         instructions: topics[i]?.instructions || '',
+                        durationMinutes,
+                        goal,
+                        audience,
+                        tone,
+                        previousSlides: previousSlidesContent,
                         options: {
                             userId,
                         },
@@ -67,7 +83,7 @@ export async function POST(request: NextRequest) {
                     data: {
                         title: title || 'AI Generated Presentation',
                         description: prompt?.substring(0, 500) || '',
-                        slides,
+                        slides: slides as any,
                         userId,
                     },
                 });
@@ -79,7 +95,7 @@ export async function POST(request: NextRequest) {
                     },
                 };
             } catch (templateError) {
-                logger.error('Error selecting templates:', templateError);
+                logger.error(`Error selecting templates: ${templateError}`);
 
                 // Fallback to basic slides if template selection fails
                 const slidesData = topics.map((topic: any) => ({

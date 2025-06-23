@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { SlideTemplateCore, TemplateElement } from '@/types/templates';
 import { createLLMService } from '@/services/llm';
 import { ElementType } from '@/types/elements';
@@ -227,26 +228,59 @@ function generateSlotDescription(template: SlideTemplateCore, slotsMapping: Map<
     );
 }
 
-function createPromptGenerateSlideContent(
-    topic: string,
-    slideIndex: number,
-    totalSlides: number,
-    template: SlideTemplateCore,
-    slotsMapping: Map<string, SlotKeyMapping>,
-    instructions?: string
-): string {
+function createPromptGenerateSlideContent({
+    topic,
+    slideIndex,
+    totalSlides,
+    template,
+    slotsMapping,
+    instructions,
+    durationMinutes,
+    goal,
+    audience,
+    tone,
+    previousSlides,
+}: {
+    topic: string;
+    slideIndex: number;
+    totalSlides: number;
+    template: SlideTemplateCore;
+    slotsMapping: Map<string, SlotKeyMapping>;
+    instructions?: string;
+    durationMinutes?: number;
+    goal?: string;
+    audience?: string;
+    tone?: string;
+    previousSlides?: { title?: string; content: string }[];
+}): string {
     const slotsDescription = generateSlotDescription(template, slotsMapping);
 
-    return `Создай структурированный контент для слайда ${slideIndex} из ${totalSlides} о теме: "${topic}"
+    const previousSlidesSection =
+        previousSlides && previousSlides.length > 0
+            ? `Контент предыдущих слайдов:\n${previousSlides
+                .map((s, i) => `  ${i + 1}. ${s.title || ''} ${s.content.substring(0, 500)}`)
+                .join('\n')}`
+            : '';
+
+    return `Ты — Senior Slide Content Architect.
+
+Создай структурированный контент для слайда ${slideIndex} из ${totalSlides} на тему: "${topic}".
+
+${goal ? `Цель презентации: ${goal}\n` : ''}${audience ? `Аудитория: ${audience}\n` : ''}${tone ? `Тон/стиль: ${tone}\n` : ''}${
+    Number.isInteger(durationMinutes) ? `Длительность доклада: ${durationMinutes} минут\n` : ''
+}
+
+${previousSlidesSection}
 
 Структура слайда:
 ${slotsDescription}
 
 Требования:
-1. Создай контент для каждого слота в соответствии с его типом и назначением
-2. Для элементов типа image опиши, какое изображение нужно сгенерировать
-3. Учитывай назначение и правила для каждого слота
-${instructions ? `4. Дополнительные инструкции: ${instructions}` : ''}`;
+1. Сгенерируй контент для КАЖДОГО слота, соблюдая тип и назначение.
+2. Для слотов image опиши, какое изображение нужно сгенерировать.
+3. Соблюдай логическую последовательность и связи с предыдущими слайдами.
+4. Допустимый формат для текстовых полей — Markdown. Разрешённые теги: #, ##, ###, **, *, -, 1. 2. 3., > (quote). Без HTML.
+${instructions ? `5. Дополнительные инструкции: ${instructions}` : ''}`;
 }
 
 // function parseGeneratedContent(content: Array<Array<SlotContent>>): Array<Record<string, string | SmartLayoutContent>> {
@@ -267,6 +301,11 @@ export default async function generateSlideContent({
     totalSlides,
     template,
     instructions,
+    durationMinutes,
+    goal,
+    audience,
+    tone,
+    previousSlides,
     options,
 }: {
     topic: string;
@@ -274,20 +313,30 @@ export default async function generateSlideContent({
     totalSlides: number;
     template: SlideTemplateCore;
     instructions?: string;
+    durationMinutes?: number;
+    goal?: string;
+    audience?: string;
+    tone?: string;
+    previousSlides?: { title: string; content: string }[];
     options: LLMRequestContext;
 }) {
     const llmService = createLLMService({ userId: options.userId });
 
     const { functionSchema, slotMapping } = createGenerateSlideContentFunction(template);
 
-    const prompt = createPromptGenerateSlideContent(
+    const prompt = createPromptGenerateSlideContent({
         topic,
         slideIndex,
         totalSlides,
         template,
-        slotMapping,
-        instructions
-    );
+        slotsMapping: slotMapping,
+        instructions,
+        durationMinutes,
+        goal,
+        audience,
+        tone,
+        previousSlides,
+    });
     console.log(prompt);
 
     // получаем ответ от LLM
