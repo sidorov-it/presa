@@ -1,6 +1,9 @@
 import { LLMResponse, LLMService, YaGptConfig } from '@/types/llm';
 import { RateLimiter } from '../rateLimiter';
 import { LLMHistoryService, LLMRequestData } from '../history/llmHistoryService';
+import { RecordingOptions } from '@/types/llm/recordings';
+import { RecordingService } from '../recordings/recordingService';
+import { replyConfig } from '../gigaChat/replyConfig';
 
 interface YaGPTMessage {
     role: 'system' | 'user' | 'assistant';
@@ -9,9 +12,11 @@ interface YaGPTMessage {
 
 export class YaGptService implements LLMService {
     private static rateLimiter = new RateLimiter(10);
-    private readonly apiKey: string;
+    private apiKey: string;
     private readonly folderId: string;
     private readonly userId: string;
+    private recordingService?: RecordingService;
+    private recordingOptions: RecordingOptions;
     private static cachedApiKey: string | null = null;
 
     constructor(config: YaGptConfig) {
@@ -32,6 +37,12 @@ export class YaGptService implements LLMService {
         }
         this.folderId = process.env.YAGPT_FOLDER_ID;
         this.userId = config.userId;
+
+        // Initialize recording service
+        this.recordingOptions = replyConfig;
+        if (replyConfig.enabled || replyConfig.replayMode) {
+            this.recordingService = new RecordingService(replyConfig.storageKey);
+        }
     }
 
     static createYaGptService(config: YaGptConfig) {
@@ -83,6 +94,16 @@ export class YaGptService implements LLMService {
         } = {}
     ): Promise<LLMResponse> {
         const start = Date.now();
+
+        // ------------------------------------------------------------------
+        //  RecordingService replay mode: return cached response if available
+        // ------------------------------------------------------------------
+        if (this.recordingOptions.replayMode && this.recordingService) {
+            const cachedRecording = await this.recordingService.findRecording(prompt, options);
+            if (cachedRecording && cachedRecording.response.type === 'chat') {
+                return cachedRecording.response.data as LLMResponse;
+            }
+        }
 
         const endpoint = 'https://llm.api.cloud.yandex.net/foundationModels/v1/completion';
 
@@ -213,10 +234,24 @@ export class YaGptService implements LLMService {
             });
         }
 
-        return {
+        const responseData: LLMResponse = {
             elements,
             ...(functionCall ? { function_call: functionCall } : {}),
         };
+
+        // Save recording if enabled
+        if (this.recordingOptions.enabled && this.recordingService) {
+            await this.recordingService.saveRecording({
+                prompt,
+                options,
+                response: {
+                    type: 'chat',
+                    data: responseData,
+                },
+            });
+        }
+
+        return responseData;
     }
 
     /**
@@ -263,10 +298,15 @@ export class YaGptService implements LLMService {
         return createdKey;
     }
 
-    async generateImage(
-        prompt: string,
-        options: { presentationId?: string; userId: string }
-    ): Promise<{ imageUrl: string; imageId: string }> {
+    async generateImage(prompt: string): Promise<{ imageUrl: string; imageId: string }> {
+        // Attempt to return cached image first (replay mode)
+        if (this.recordingOptions.replayMode && this.recordingService) {
+            const cachedRec = await this.recordingService.findRecording(prompt);
+            if (cachedRec && cachedRec.response.type === 'image') {
+                return cachedRec.response.data as { imageUrl: string; imageId: string };
+            }
+        }
+
         const iamToken = process.env.YAGPT_IAM_TOKEN;
         if (!iamToken) {
             throw new Error('YAGPT_IAM_TOKEN is required for image generation');
@@ -350,7 +390,20 @@ export class YaGptService implements LLMService {
             imageUrl = `data:image/jpeg;base64,${imageBase64}`;
         }
 
-        return { imageUrl, imageId };
+        const result = { imageUrl, imageId };
+
+        // Save recording if enabled
+        if (this.recordingOptions.enabled && this.recordingService) {
+            await this.recordingService.saveRecording({
+                prompt,
+                response: {
+                    type: 'image',
+                    data: result,
+                },
+            });
+        }
+
+        return result;
     }
 }
 

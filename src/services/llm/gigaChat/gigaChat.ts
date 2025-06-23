@@ -113,7 +113,7 @@ export class GigaChatService implements LLMService {
                     throw new Error('GigaChat client is not initialized');
                 }
 
-                const messages = [
+                const messages: Message[] = [
                     {
                         role: 'system',
                         content:
