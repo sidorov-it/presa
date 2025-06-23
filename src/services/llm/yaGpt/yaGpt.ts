@@ -74,7 +74,13 @@ export class YaGptService implements LLMService {
 
     async generate(
         prompt: string,
-        options: { presentationId?: string; functions?: any[]; function_call?: any } = {}
+        options: {
+            presentationId?: string;
+            functions?: any[];
+            function_call?: any;
+            requireFunctionCall?: boolean;
+            __attemptCount?: number;
+        } = {}
     ): Promise<LLMResponse> {
         const start = Date.now();
 
@@ -83,7 +89,13 @@ export class YaGptService implements LLMService {
         // Ensure we have an API key ready
         const apiKey = process.env.YAGPT_IAM_TOKEN;
 
-        const body = this.buildRequestBody(prompt, options);
+        const {
+            requireFunctionCall = typeof options.function_call !== 'undefined',
+            __attemptCount = 0,
+            ...chatOptions
+        } = options as any;
+
+        const body = this.buildRequestBody(prompt, chatOptions);
 
         const responseJson = await this.withRateLimit(async () => {
             const res = await fetch(endpoint, {
@@ -175,6 +187,31 @@ export class YaGptService implements LLMService {
         };
 
         await LLMHistoryService.logRequest(logData);
+
+        // Check if function call is required but absent
+        if (requireFunctionCall && !functionCall) {
+            if (__attemptCount >= 2) {
+                throw new Error(
+                    `Required function ${chatOptions.function_call?.name || ''} was not called after 3 attempts`
+                );
+            }
+
+            const functionSpec = (chatOptions.functions || []).find(
+                (f: any) => f.name === chatOptions.function_call?.name
+            );
+
+            const retryPrompt = `Вы не вызвали обязательную функцию «${chatOptions.function_call?.name}». Пожалуйста, вызовите её, используя корректные аргументы.\n\nОписание функции:\n${JSON.stringify(
+                functionSpec || {},
+                null,
+                2
+            )}\n\nИсходный запрос пользователя:\n${prompt}`;
+
+            return this.generate(retryPrompt, {
+                ...chatOptions,
+                requireFunctionCall: true,
+                __attemptCount: __attemptCount + 1,
+            });
+        }
 
         return {
             elements,

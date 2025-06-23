@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
             metadata: MetadataExtractors.presentation,
         },
         async (session, requestData) => {
-            const { title, prompt, topics } = requestData;
+            const { title, prompt, topics, durationMinutes, goal, audience, tone } = requestData;
 
             if (!prompt || !topics || !Array.isArray(topics)) {
                 throw new Error('Invalid request data: prompt and topics are required');
@@ -32,6 +32,10 @@ export async function POST(request: NextRequest) {
                     title,
                     prompt,
                     topics,
+                    durationMinutes,
+                    goal,
+                    audience,
+                    tone,
                     options: {
                         userId,
                     },

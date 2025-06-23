@@ -38,34 +38,55 @@ const selectTemplatesFunction = {
     },
 };
 
-const getTemplatesPrompt = (title: string, prompt: string, topics: any[], templates: any[]) =>
-    `Проанализируйте следующие темы презентации и выберите наиболее подходящий шаблон слайда для каждой темы.
+// Enhanced prompt: includes additional brief fields, sets agent role, lists best practices, and emphasises mandatory function call
+const getTemplatesPrompt = ({
+    title,
+    description,
+    topics,
+    templates,
+    durationMinutes,
+    goal,
+    audience,
+    tone,
+}: {
+    title: string;
+    description: string;
+    topics: any[];
+    templates: any[];
+    durationMinutes?: number;
+    goal?: string;
+    audience?: string;
+    tone?: string;
+}) => `Ты — Senior Slide Template Architect.
 
-Название презентации: "${title}"
-Описание: "${prompt}"
+Твоя задача — **для каждой темы презентации** выбрать наиболее подходящий шаблон слайда из предложенного списка.
+
+Входные данные брифа:
+• Название презентации: "${title}"
+• Описание: "${description}"
+${goal ? `• Цель: ${goal}\n` : ''}${audience ? `• Аудитория: ${audience}\n` : ''}${tone ? `• Тон/стиль: ${tone}\n` : ''}${
+    Number.isInteger(durationMinutes) ? `• Длительность доклада: ${durationMinutes} минут\n` : ''
+}
 
 Доступные шаблоны:
 ${templates
     .map(
-        t => `
-- ${t.name} (${t.id})
-Описание: ${t.description}
-Цель: ${t.purpose.join(', ')}
-Примеры использования: ${t.useCases.join(', ')}
-`
+        t =>
+            `- ${t.name} (${t.id})\n  Описание: ${t.description}\n  Цель: ${t.purpose.join(', ')}\n  Примеры использования: ${t.useCases.join(', ')}`
     )
     .join('\n')}
 
 Темы для анализа:
-${topics
-    .map(
-        (t, i) => `
-${i + 1}. Тема: "${t.title}"
-Инструкции: ${t.instructions || 'Нет конкретных инструкций'}`
-    )
-    .join('\n')}
+${topics.map((t, i) => `${i + 1}. "${t.title}"${t.instructions ? ` — Инструкции: ${t.instructions}` : ''}`).join('\n')}
 
-Для каждой темы выберите наиболее подходящий шаблон на основе типа контента и цели.`;
+Лучшие практики выбора шаблонов:
+1. Поддерживай визуальную иерархию: ключевая мысль должна быть в центре внимания.
+2. Избегай перегрузки текстом — выбирай шаблоны, которые помогают краткости.
+3. Учитывай аудиторию и цель презентации при выборе акцентов.
+4. Используй простые, контрастные композиции и достаточные поля.
+
+**Внимание:** Для возврата результата ты ОБЯЗАН вызвать функцию "select_slide_templates".
+`;
 
 const getTemplatesOptions = {
     functions: [selectTemplatesFunction],
@@ -86,11 +107,19 @@ export default async function generateSlidesTemplates({
     title,
     prompt,
     topics,
+    durationMinutes,
+    goal,
+    audience,
+    tone,
     options,
 }: {
     title: string;
     prompt: string;
     topics: any[];
+    durationMinutes?: number;
+    goal?: string;
+    audience?: string;
+    tone?: string;
     options: LLMRequestContext;
 }) {
     const llmService = createLLMService({ userId: options.userId });
@@ -109,7 +138,16 @@ export default async function generateSlidesTemplates({
     try {
         // Get template suggestions from LLM using function calling
         const templateResponse = await llmService.generate(
-            getTemplatesPrompt(title, prompt, topics, templates),
+            getTemplatesPrompt({
+                title,
+                description: prompt,
+                topics,
+                templates,
+                durationMinutes,
+                goal,
+                audience,
+                tone,
+            }),
             getTemplatesOptions
         );
 
