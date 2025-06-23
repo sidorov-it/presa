@@ -82,6 +82,10 @@ ${surroundingSlides[1]?.text ? `Текст следующего слайда: ${
                 totalSlides: presentation.slides.length,
                 templateId: template.id,
                 instructions,
+                durationMinutes: (presentation as any).durationMinutes,
+                goal: (presentation as any).goal,
+                audience: (presentation as any).audience,
+                tone: (presentation as any).tone,
                 options: {
                     userId: session.user.id,
                     presentationId,

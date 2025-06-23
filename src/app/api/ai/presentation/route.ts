@@ -85,6 +85,10 @@ export async function POST(request: NextRequest) {
                         description: prompt?.substring(0, 500) || '',
                         slides: slides as any,
                         userId,
+                        durationMinutes,
+                        goal,
+                        audience,
+                        tone,
                     },
                 });
 
@@ -141,6 +145,10 @@ export async function POST(request: NextRequest) {
                         description: prompt?.substring(0, 500) || '',
                         userId,
                         slides: slidesData,
+                        durationMinutes,
+                        goal,
+                        audience,
+                        tone,
                     },
                 });
 

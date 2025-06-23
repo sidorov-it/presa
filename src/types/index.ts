@@ -250,6 +250,12 @@ export interface IPresentation {
     createdAt: number;
     updatedAt: number;
     backgroundSettings?: BackgroundSettings;
+
+    // AI generation metadata
+    durationMinutes?: number;
+    goal?: string;
+    audience?: string;
+    tone?: string;
 }
 
 // Definition for registry element configuration
