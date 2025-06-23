@@ -77,8 +77,6 @@ export default function PresentationEditorPage() {
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const [themeTab, setThemeTab] = useState<'user' | 'default'>('user');
     const containerRef = useRef<HTMLDivElement>(null);
-    const [isDownloading, setIsDownloading] = useState(false);
-    const [showDownloadPreview, setShowDownloadPreview] = useState(false);
 
     // Cleanup function to clear theme styles when component unmounts
     useEffect(() => {
@@ -160,7 +158,7 @@ export default function PresentationEditorPage() {
         }
 
         return () => {
-            setCurrentTheme(null);
+            setCurrentTheme(undefined);
         };
     }, [presentation, themes, setCurrentTheme, defaultThemes]);
 
@@ -259,18 +257,6 @@ export default function PresentationEditorPage() {
                     className={styles.container}
                 >
                     <MobileWarningOverlay />
-                    {showDownloadPreview && (
-                        <div className={styles.hiddenExportPreview} aria-hidden="true" id="export-preview">
-                            <ReadOnlyProvider isReadOnly={true}>
-                                <ThemeStylesApplier
-                                    theme={currentTheme || defaultTheme}
-                                    backgroundSettings={presentation.backgroundSettings}
-                                >
-                                    <Editor presentationId={presentation.id} tiptapRefs={tiptapRefs} />
-                                </ThemeStylesApplier>
-                            </ReadOnlyProvider>
-                        </div>
-                    )}
                     <div ref={containerRef} className={colorMode === 'dark' ? 'dark' : ''}>
                         <header className={styles.header}>
                             <div className={styles.headerContent}>

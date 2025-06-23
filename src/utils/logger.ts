@@ -60,10 +60,10 @@ class Logger {
         });
     }
 
-    private write(level: LogLevel, message: string) {
+    private write(level: LogLevel, message: string, args: any[]) {
         if (this.order[level] > this.order[this.level]) return;
         this.rotateIfNeeded();
-        const record = JSON.stringify({ timestamp: new Date().toISOString(), level, message });
+        const record = JSON.stringify({ timestamp: new Date().toISOString(), level, message, args });
         this.stream.write(record + '\n');
         if (process.env.NODE_ENV !== 'production') {
             const fn = level === 'error' ? console.error : console.log;
@@ -71,17 +71,17 @@ class Logger {
         }
     }
 
-    error(msg: string) {
-        this.write('error', msg);
+    error(msg: string, ...args: any[]) {
+        this.write('error', msg, args);
     }
-    warn(msg: string) {
-        this.write('warn', msg);
+    warn(msg: string, ...args: any[]) {
+        this.write('warn', msg, args);
     }
-    info(msg: string) {
-        this.write('info', msg);
+    info(msg: string, ...args: any[]) {
+        this.write('info', msg, args);
     }
-    debug(msg: string) {
-        this.write('debug', msg);
+    debug(msg: string, ...args: any[]) {
+        this.write('debug', msg, args);
     }
 }
 

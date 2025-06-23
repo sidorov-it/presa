@@ -13,7 +13,11 @@ interface RequestBody {
     slideIndex: number;
     prompt: string;
     templateId: string;
-    surroundingSlides: {
+    durationMinutes?: number;
+    goal?: string;
+    audience?: string;
+    tone?: string;
+    surroundingSlides?: {
         title: string;
         content: string;
     }[];
@@ -30,7 +34,16 @@ export async function POST(request: NextRequest) {
             metadata: MetadataExtractors.slide,
         },
         async (session, requestData: RequestBody) => {
-            const { prompt, templateId, slideIndex, presentationId } = requestData;
+            const {
+                prompt,
+                templateId,
+                slideIndex,
+                presentationId,
+                durationMinutes: reqDuration,
+                goal: reqGoal,
+                audience: reqAudience,
+                tone: reqTone,
+            } = requestData;
 
             const presentation = await prisma.presentation.findUnique({
                 where: { id: presentationId },
@@ -42,6 +55,29 @@ export async function POST(request: NextRequest) {
 
             const slideTexts = extractTextsFromPresentation(presentation as unknown as IPresentation);
             const surroundingSlides = slideTexts.slice(Math.max(0, slideIndex - 2), slideIndex + 2);
+
+            // Prepare updated metadata if values differ
+            const updateData: Record<string, any> = {};
+            if (typeof reqDuration === 'number' && reqDuration !== (presentation as any).durationMinutes) {
+                updateData.durationMinutes = reqDuration;
+            }
+            if (typeof reqGoal === 'string' && reqGoal !== (presentation as any).goal) {
+                updateData.goal = reqGoal;
+            }
+            if (typeof reqAudience === 'string' && reqAudience !== (presentation as any).audience) {
+                updateData.audience = reqAudience;
+            }
+            if (typeof reqTone === 'string' && reqTone !== (presentation as any).tone) {
+                updateData.tone = reqTone;
+            }
+
+            if (Object.keys(updateData).length > 0) {
+                await prisma.presentation.update({
+                    where: { id: presentationId },
+                    data: updateData,
+                });
+                Object.assign(presentation, updateData);
+            }
 
             // If templateId is 'auto', we need to select the best template using LLM
             let finalTemplateId = templateId;

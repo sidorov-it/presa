@@ -24,21 +24,31 @@ const RELEVANT_TEMPLATES_IDS = [
 const RELEVANT_TEMPLATES = [
     { id: 'auto', label: 'Автоматически', icon: '◻' },
     ...Object.entries(SlideTemplatesRegistry)
-        // .filter(([id]) =>
-        //     // Filter for templates that are good for general content
-        //     RELEVANT_TEMPLATES_IDS.includes(id)
-        // )
-        // .slice(0, 4)
+        .filter(([id]) =>
+            // Filter for templates that are good for general content
+            RELEVANT_TEMPLATES_IDS.includes(id)
+        )
+        .slice(0, 4)
         .map(([id, template]) => ({
             id,
             label: template.name,
             icon: template.ui.icon ? '◫' : '•',
         })),
+    // .map(([id, template]) => ({
+    //     id,
+    //     label: template.name,
+    //     icon: template.ui.icon ? '◫' : '•',
+    // })),
 ];
 
 const AISlideGenerator: React.FC<AISlideGeneratorProps> = ({ presentationId, slideId, onClose }) => {
     const [prompt, setPrompt] = useState('');
+    const presentation = usePresentationStore(state => state.getPresentation(presentationId));
     const [selectedTemplate, setSelectedTemplate] = useState('auto');
+    const [durationMinutes, setDurationMinutes] = useState<string | number>(presentation?.durationMinutes ?? '');
+    const [goal, setGoal] = useState<string>(presentation?.goal ?? '');
+    const [audience, setAudience] = useState<string>(presentation?.audience ?? '');
+    const [tone, setTone] = useState<string>(presentation?.tone ?? '');
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -74,7 +84,10 @@ const AISlideGenerator: React.FC<AISlideGeneratorProps> = ({ presentationId, sli
                     slideIndex: slideIndex + 1, // Insert after current slide
                     prompt,
                     templateId: selectedTemplate,
-                    // surroundingSlides,
+                    durationMinutes: durationMinutes === '' ? undefined : Number(durationMinutes),
+                    goal: goal || undefined,
+                    audience: audience || undefined,
+                    tone: tone || undefined,
                 }),
             });
 
@@ -88,6 +101,26 @@ const AISlideGenerator: React.FC<AISlideGeneratorProps> = ({ presentationId, sli
             // Add the generated slide to the presentation
             const addSlide = usePresentationStore.getState().addSlide;
             addSlide(presentationId, slide, slideIndex + 1);
+
+            // Update presentation metadata locally if changed
+            const updatePresentation = usePresentationStore.getState().updatePresentation;
+            const metadataChanges: Partial<any> = {};
+            if (durationMinutes !== '' && durationMinutes !== presentation?.durationMinutes) {
+                metadataChanges.durationMinutes = Number(durationMinutes);
+            }
+            if (goal && goal !== presentation?.goal) {
+                metadataChanges.goal = goal;
+            }
+            if (audience && audience !== presentation?.audience) {
+                metadataChanges.audience = audience;
+            }
+            if (tone && tone !== presentation?.tone) {
+                metadataChanges.tone = tone;
+            }
+
+            if (Object.keys(metadataChanges).length > 0) {
+                updatePresentation(presentationId, metadataChanges);
+            }
 
             toast.success('Слайд создан');
             onClose();
@@ -110,15 +143,59 @@ const AISlideGenerator: React.FC<AISlideGeneratorProps> = ({ presentationId, sli
 
             <form onSubmit={handleSubmit} className={styles.form}>
                 <div className={styles.inputGroup}>
-                    <input
-                        type="text"
+                    <textarea
                         value={prompt}
                         onChange={e => setPrompt(e.target.value)}
                         placeholder="Опишите, что вы хотите создать"
                         className={styles.input}
                         disabled={isLoading}
+                        rows={4}
                     />
                     <div className={styles.credits}>395 credits</div>
+                </div>
+
+                <div className={styles.inputGroup}>
+                    <input
+                        type="number"
+                        value={durationMinutes}
+                        onChange={e => setDurationMinutes(e.target.value)}
+                        placeholder="Длительность доклада (мин)"
+                        className={styles.input}
+                        disabled={isLoading}
+                    />
+                </div>
+
+                <div className={styles.inputGroup}>
+                    <input
+                        type="text"
+                        value={goal}
+                        onChange={e => setGoal(e.target.value)}
+                        placeholder="Цель презентации"
+                        className={styles.input}
+                        disabled={isLoading}
+                    />
+                </div>
+
+                <div className={styles.inputGroup}>
+                    <input
+                        type="text"
+                        value={audience}
+                        onChange={e => setAudience(e.target.value)}
+                        placeholder="Аудитория"
+                        className={styles.input}
+                        disabled={isLoading}
+                    />
+                </div>
+
+                <div className={styles.inputGroup}>
+                    <input
+                        type="text"
+                        value={tone}
+                        onChange={e => setTone(e.target.value)}
+                        placeholder="Тон / стиль"
+                        className={styles.input}
+                        disabled={isLoading}
+                    />
                 </div>
 
                 <div className={styles.templateSection}>
