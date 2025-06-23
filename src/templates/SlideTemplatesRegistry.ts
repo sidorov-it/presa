@@ -140,7 +140,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         row: 0,
                         column: 0,
                         props: {
-                            textType: TextType.HEADING4,
+                            textType: TextType.DEFAULT,
                             content: 'Текст слайда',
                         },
 
@@ -206,10 +206,10 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING1,
-                            content: 'Заголовок слайда',
+                            content: 'Заголовок слайда (символ ## в markdown)',
                         },
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
+                            purpose: 'Основной Заголовок слайда (символ ## в markdown)',
                             contextRules: ['Четкий, информативный заголовок'],
                         },
                     },
@@ -285,10 +285,10 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING1,
-                            content: 'Заголовок слайда',
+                            content: 'Заголовок слайда (символ ## в markdown)',
                         },
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
+                            purpose: 'Основной Заголовок слайда (символ ## в markdown)',
                             contextRules: ['Четкий, информативный заголовок'],
                         },
                     },
@@ -386,10 +386,10 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING1,
-                            content: 'Заголовок слайда',
+                            content: 'Заголовок слайда (символ ## в markdown)',
                         },
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
+                            purpose: 'Основной Заголовок слайда (символ ## в markdown)',
                             contextRules: ['Четкий, информативный заголовок'],
                         },
                     },
@@ -407,7 +407,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING4,
-                            content: 'Заголовок 1',
+                            content: 'Заголовок 1 (символ ####)',
                         },
                         llmHints: {
                             purpose: 'Заголовок первой колонки',
@@ -435,7 +435,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 1,
                         props: {
                             textType: TextType.HEADING4,
-                            content: 'Заголовок 2',
+                            content: 'Заголовок 2 (символ ####)',
                         },
                         llmHints: {
                             purpose: 'Заголовок второй колонки',
@@ -487,10 +487,10 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING1,
-                            content: 'Заголовок слайда',
+                            content: 'Заголовок слайда (символ ## в markdown)',
                         },
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
+                            purpose: 'Основной Заголовок слайда (символ ## в markdown)',
                             contextRules: ['Четкий, информативный заголовок'],
                         },
                     },
@@ -508,7 +508,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING4,
-                            content: 'Заголовок 1',
+                            content: 'Заголовок 1 (символ ####)',
                         },
                         llmHints: {
                             purpose: 'Заголовок первой колонки',
@@ -536,7 +536,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 1,
                         props: {
                             textType: TextType.HEADING4,
-                            content: 'Заголовок 2',
+                            content: 'Заголовок 2 (символ ####)',
                         },
                         llmHints: {
                             purpose: 'Заголовок второй колонки',
@@ -564,7 +564,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 2,
                         props: {
                             textType: TextType.HEADING4,
-                            content: 'Заголовок 3',
+                            content: 'Заголовок 3 (символ ####)',
                         },
                         llmHints: {
                             purpose: 'Заголовок третьей колонки',
@@ -616,10 +616,10 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING1,
-                            content: 'Заголовок слайда',
+                            content: 'Заголовок слайда (символ ## в markdown)',
                         },
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
+                            purpose: 'Основной Заголовок слайда (символ ## в markdown)',
                             contextRules: ['Четкий, информативный заголовок'],
                         },
                     },
@@ -717,10 +717,10 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING2,
-                            content: 'Заголовок слайда',
+                            content: 'Заголовок слайда (символ ## в markdown)',
                         },
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
+                            purpose: 'Основной Заголовок слайда (символ ## в markdown)',
                             contextRules: ['Четкий, информативный заголовок'],
                         },
                     },
@@ -787,11 +787,11 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING2,
-                            content: 'Заголовок слайда',
+                            content: 'Заголовок слайда (символ ## в markdown)',
                         },
 
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
+                            purpose: 'Основной Заголовок слайда (символ ## в markdown)',
                             contextRules: ['Четкий, информативный заголовок'],
                         },
                     },
@@ -875,7 +875,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING2,
-                            content: 'Акцентный текст',
+                            content: 'Акцентный текст (символ ##)',
                             style: {
                                 fontSize: '2.5rem',
                                 fontWeight: 'bold',
@@ -950,7 +950,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING2,
-                            content: 'Акцентный текст',
+                            content: 'Акцентный текст (символ ##)',
                             style: {
                                 fontSize: '2.5rem',
                                 fontWeight: 'bold',
@@ -995,7 +995,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING2,
-                            content: 'Заголовок слайда',
+                            content: 'Заголовок слайда (символ ## в markdown)',
                             style: {
                                 fontSize: '3rem',
                                 fontWeight: 'bold',
@@ -1070,7 +1070,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING3,
-                            content: 'Акцентный текст',
+                            content: 'Акцентный текст (символ ###)',
                             style: {
                                 fontSize: '2rem',
                                 fontWeight: 'bold',
@@ -1115,7 +1115,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING3,
-                            content: 'Акцентный текст',
+                            content: 'Акцентный текст (символ ###)',
                             style: {
                                 fontSize: '2rem',
                                 fontWeight: 'bold',
@@ -1175,7 +1175,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING2,
-                            content: 'Акцентный текст',
+                            content: 'Акцентный текст (символ ##)',
                             style: {
                                 fontSize: '3.5rem',
                                 fontWeight: 'bold',
@@ -1240,11 +1240,11 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING2,
-                            content: 'Заголовок слайда',
+                            content: 'Заголовок слайда (символ ## в markdown)',
                         },
 
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
+                            purpose: 'Основной Заголовок слайда (символ ## в markdown)',
                             contextRules: ['Четкий, информативный заголовок'],
                         },
                     },
@@ -1282,7 +1282,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING3,
-                            content: 'Заголовок левой колонки',
+                            content: 'Заголовок левой колонки (символ ###)',
                         },
 
                         llmHints: {
@@ -1331,7 +1331,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 1,
                         props: {
                             textType: TextType.HEADING3,
-                            content: 'Заголовок правой колонки',
+                            content: 'Заголовок правой колонки (символ ###)',
                         },
 
                         llmHints: {
@@ -1385,11 +1385,11 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING2,
-                            content: 'Заголовок слайда',
+                            content: 'Заголовок слайда (символ ## в markdown)',
                         },
 
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
+                            purpose: 'Основной Заголовок слайда (символ ## в markdown)',
                             contextRules: ['Четкий, информативный заголовок'],
                         },
                     },
@@ -1427,7 +1427,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING3,
-                            content: 'Заголовок левой колонки',
+                            content: 'Заголовок левой колонки (символ ###)',
                         },
 
                         llmHints: {
@@ -1476,7 +1476,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 1,
                         props: {
                             textType: TextType.HEADING3,
-                            content: 'Заголовок правой колонки',
+                            content: 'Заголовок правой колонки (символ ###)',
                         },
 
                         llmHints: {
@@ -1525,7 +1525,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 2,
                         props: {
                             textType: TextType.HEADING3,
-                            content: 'Заголовок правой колонки',
+                            content: 'Заголовок правой колонки (символ ###)',
                         },
 
                         llmHints: {
@@ -1579,11 +1579,11 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING2,
-                            content: 'Заголовок слайда',
+                            content: 'Заголовок слайда (символ ## в markdown)',
                         },
 
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
+                            purpose: 'Основной Заголовок слайда (символ ## в markdown)',
                             contextRules: ['Четкий, информативный заголовок'],
                         },
                     },
@@ -1705,11 +1705,11 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING2,
-                            content: 'Заголовок слайда',
+                            content: 'Заголовок слайда (символ ## в markdown)',
                         },
 
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
+                            purpose: 'Основной Заголовок слайда (символ ## в markdown)',
                             contextRules: ['Четкий, информативный заголовок'],
                         },
                     },
@@ -1816,7 +1816,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING2,
-                            content: 'Заголовок диаграммы',
+                            content: 'Заголовок диаграммы (символ ##)',
                         },
 
                         llmHints: {
@@ -1923,7 +1923,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING2,
-                            content: 'Заголовок диаграммы',
+                            content: 'Заголовок диаграммы (символ ##)',
                         },
 
                         llmHints: {
@@ -2032,7 +2032,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING2,
-                            content: 'Заголовок диаграммы',
+                            content: 'Заголовок диаграммы (символ ##)',
                         },
 
                         llmHints: {
@@ -2141,7 +2141,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING2,
-                            content: 'Заголовок диаграммы',
+                            content: 'Заголовок диаграммы (символ ##)',
                         },
 
                         llmHints: {
@@ -2248,7 +2248,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 0,
                         props: {
                             textType: TextType.HEADING2,
-                            content: 'Заголовок таблицы',
+                            content: 'Заголовок таблицы (символ ##)',
                         },
 
                         llmHints: {

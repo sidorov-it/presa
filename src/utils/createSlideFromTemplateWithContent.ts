@@ -8,6 +8,7 @@ import { getNewElement } from './getNewElement';
 import { generateImage } from '@/services/llm/gigaChat';
 import { getTextContent } from '@/elements/textEditor/defaultContent';
 import { LLMRequestContext, SlotKeyMapping } from '@/types/gigachat';
+import { getNewEditorElementFromMarkdown } from './getNewEditorElementFromMarkdown';
 
 // const generateImage = () => {};
 /**
@@ -220,14 +221,7 @@ export const createSlideFromTemplateWithContent = async ({
                 } else {
                     // Handle regular text element
                     // const content = elementContent[mapping.items?.[0]?.key] || '';
-                    newElement = getNewElement({
-                        elementTypeId: elementConfig.elementTypeId,
-                        props: {
-                            ...elementConfig.props,
-                            content: elementContent || elementConfig.props?.content || '',
-                            textType: elementConfig.props?.textType || 'text',
-                        },
-                    });
+                    newElement = getNewEditorElementFromMarkdown(elementContent || elementConfig.props?.content || '');
                 }
 
                 // const elementConfig = element;

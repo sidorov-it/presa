@@ -15,7 +15,7 @@ class Logger {
 
     constructor(
         private logDir: string = 'logs',
-        private level: LogLevel = 'info'
+        private level: LogLevel = 'debug'
     ) {
         this.currentDate = this.formatDate(new Date());
         if (!fs.existsSync(this.logDir)) {

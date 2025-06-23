@@ -32,7 +32,7 @@ const EXAMPLES = [
     'Бизнес-план для стартапа в сфере электронной коммерции',
 ];
 
-const TONE_OPTIONS = [
+export const TONE_OPTIONS = [
     { value: 'professional', label: 'Профессиональный' },
     { value: 'casual', label: 'Повседневный' },
     { value: 'academic', label: 'Академический' },
@@ -148,6 +148,10 @@ const AiPresentationPage = () => {
                         title: topic.title,
                         instructions: topic.instructions,
                     })),
+                    durationMinutes,
+                    goal,
+                    audience,
+                    tone,
                 }),
             });
 
@@ -267,7 +271,7 @@ const AiPresentationPage = () => {
                                     width="100%"
                                 >
                                     <Select.HiddenSelect />
-                                    <Select.Label>Tone of Voice / Стилистика</Select.Label>
+                                    <Select.Label>Стилистика</Select.Label>
                                     <Select.Control>
                                         <Select.Trigger>
                                             <Select.ValueText placeholder="Выберите стиль" />

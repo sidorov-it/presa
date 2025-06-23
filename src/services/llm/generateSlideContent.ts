@@ -5,6 +5,7 @@ import { ElementType } from '@/types/elements';
 import { TextType } from '@/types';
 import getRandomString from '@/utils/getRandomString';
 import { LLMRequestContext, SlotKeyMapping } from '@/types/gigachat';
+import logger from '@/utils/logger';
 
 function generateUniqueSlotKeys(template: SlideTemplateCore): Map<string, SlotKeyMapping> {
     const mapping = new Map<string, SlotKeyMapping>();
@@ -75,9 +76,7 @@ function generateUniqueSlotKeys(template: SlideTemplateCore): Map<string, SlotKe
                         llmHints: element.llmHints,
                         textType: element.props?.textType,
                     });
-                } else if (!element.slot) {
-                    return;
-                } else {
+                } else if (element.slot) {
                     let uniqueKey = element.slot;
                     if (usedSlots.has(element.slot)) {
                         uniqueKey = `${element.slot}-${layoutIndex}-${elementIndex}-${element.column}`;
@@ -280,7 +279,11 @@ ${slotsDescription}
 2. Для слотов image опиши, какое изображение нужно сгенерировать.
 3. Соблюдай логическую последовательность и связи с предыдущими слайдами.
 4. Допустимый формат для текстовых полей — Markdown. Разрешённые теги: #, ##, ###, **, *, -, 1. 2. 3., > (quote). Без HTML.
-${instructions ? `5. Дополнительные инструкции: ${instructions}` : ''}`;
+5. Независимо от количества строк (даже для одного слова или заголовка) ВСЕГДА возвращай текст в Markdown-формате.
+6. Для заголовков используй теги #, ##, ###.
+7. Для списков используй теги -, 1. 2. 3.
+8. Для цитат используй теги >
+${instructions ? `9. Дополнительные инструкции: ${instructions}` : ''}`;
 }
 
 // function parseGeneratedContent(content: Array<Array<SlotContent>>): Array<Record<string, string | SmartLayoutContent>> {
@@ -337,7 +340,7 @@ export default async function generateSlideContent({
         tone,
         previousSlides,
     });
-    console.log(prompt);
+    logger.debug('LLM prompt (generateSlideContent):', prompt);
 
     // получаем ответ от LLM
     // const response = await gigaChatService.generateFromCache(topic);
@@ -345,6 +348,8 @@ export default async function generateSlideContent({
         functions: [functionSchema],
         function_call: { name: 'generate_slide_text' },
     });
+
+    logger.debug('LLM response (generateSlideContent):', JSON.stringify(response));
 
     return {
         functionArgs: response.function_call?.arguments,

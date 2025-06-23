@@ -4,6 +4,7 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { toast } from 'sonner';
 import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
 import { Slide } from '@/types';
+import { TONE_OPTIONS } from '@/app/(dashboard)/dashboard/ai/page.client';
 // import extractTextsFromPresentation from '@/utils/extractTextsFromPresentation';
 
 interface AISlideGeneratorProps {
@@ -188,14 +189,26 @@ const AISlideGenerator: React.FC<AISlideGeneratorProps> = ({ presentationId, sli
                 </div>
 
                 <div className={styles.inputGroup}>
-                    <input
+                    <select
+                        value={tone}
+                        onChange={e => setTone(e.target.value)}
+                        className={styles.input}
+                        disabled={isLoading}
+                    >
+                        {TONE_OPTIONS.map(option => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+                    {/* <input
                         type="text"
                         value={tone}
                         onChange={e => setTone(e.target.value)}
                         placeholder="Тон / стиль"
                         className={styles.input}
                         disabled={isLoading}
-                    />
+                    /> */}
                 </div>
 
                 <div className={styles.templateSection}>

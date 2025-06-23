@@ -7,6 +7,10 @@ const generateTopicsFunction = {
     parameters: {
         type: 'object',
         properties: {
+            presentationTitle: {
+                type: 'string',
+                description: 'Короткий и увлекательный заголовок для презентации',
+            },
             topics: {
                 type: 'array',
                 description: 'Список тем для презентации',
@@ -27,21 +31,6 @@ const generateTopicsFunction = {
             },
         },
         required: ['topics'],
-    },
-};
-
-const generateTitleFunction = {
-    name: 'generate_presentation_title',
-    description: 'Создайте короткий и увлекательный заголовок для презентации',
-    parameters: {
-        type: 'object',
-        properties: {
-            title: {
-                type: 'string',
-                description: 'Короткий и увлекательный заголовок для презентации',
-            },
-        },
-        required: ['title'],
     },
 };
 
@@ -86,15 +75,6 @@ ${Number.isInteger(durationMinutes) ? `• Длительность доклад
 const topicsOptions = {
     functions: [generateTopicsFunction],
     function_call: { name: 'generate_presentation_topics' },
-};
-
-const getTitlePrompt = (description: string) =>
-    `Создайте короткий и увлекательный заголовок для презентации о: "${description}"
-Он должен быть профессиональным и не более 60 символов.`;
-
-const titleOptions = {
-    functions: [generateTitleFunction],
-    function_call: { name: 'generate_presentation_title' },
 };
 
 async function generateTopics(
@@ -145,13 +125,7 @@ async function generateTopics(
             });
         }
 
-        // Generate title using function calling
-        const titleResponse = await llmService.generate(getTitlePrompt(description), titleOptions);
-
-        let title = description;
-        if (titleResponse.function_call?.arguments?.title) {
-            title = titleResponse.function_call.arguments.title;
-        }
+        const title = topicsResponse.function_call?.arguments?.presentationTitle;
 
         return {
             title,
