@@ -1,3 +1,4 @@
+import logger from '@/utils/logger';
 /* eslint-disable prettier/prettier */
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
@@ -74,7 +75,7 @@ export async function POST(request: NextRequest) {
                     },
                 };
             } catch (templateError) {
-                console.error('Error selecting templates:', templateError);
+                logger.error('Error selecting templates:', templateError);
 
                 // Fallback to basic slides if template selection fails
                 const slidesData = topics.map((topic: any) => ({

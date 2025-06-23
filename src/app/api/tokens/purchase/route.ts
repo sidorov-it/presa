@@ -1,3 +1,4 @@
+import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
             tokensAdded: selectedPackage.tokens,
         });
     } catch (error) {
-        console.error('Error processing token purchase:', error);
+        logger.error('Error processing token purchase:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

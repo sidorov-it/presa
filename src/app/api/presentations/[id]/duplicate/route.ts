@@ -1,3 +1,4 @@
+import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
@@ -69,7 +70,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
             presentation: newPresentation,
         });
     } catch (error) {
-        console.error('Duplicate presentation error:', error);
+        logger.error('Duplicate presentation error:', error);
         return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }

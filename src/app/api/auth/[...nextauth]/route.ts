@@ -2,6 +2,7 @@ import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { prisma } from '@/lib/prisma';
 import { comparePassword } from '@/lib/auth';
+import logger from '@/utils/logger';
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -18,17 +19,21 @@ export const authOptions: NextAuthOptions = {
                     return null;
                 }
 
+                logger.info(`Login attempt for ${credentials.email}`);
+
                 const user = await prisma.user.findUnique({
                     where: { email: credentials.email },
                 });
 
                 if (!user) {
+                    logger.warn(`User not found: ${credentials.email}`);
                     return null;
                 }
 
                 const isPasswordMatch = await comparePassword(credentials.password, user.password);
 
                 if (!isPasswordMatch) {
+                    logger.warn(`Invalid password for ${credentials.email}`);
                     return null;
                 }
 
