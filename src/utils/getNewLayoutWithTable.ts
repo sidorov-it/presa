@@ -25,7 +25,10 @@ export const getNewLayoutWithTable = (columnsCount = 2, rowsCount = 2): Layout =
             };
             cells.push(cell);
 
-            const cellElement = getNewEditorElement(cellId);
+            const cellElement: EditorElement = {
+                ...getNewEditorElement(),
+                cellId,
+            };
             elements.push(cellElement);
         }
 

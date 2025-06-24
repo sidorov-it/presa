@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
         const { title } = await request.json();
 
         const cellId = generateId();
-        const newElement = getNewEditorElement(cellId);
+        const newElement = getNewEditorElement();
 
         const slideId = generateId();
         const layoutId = generateId();

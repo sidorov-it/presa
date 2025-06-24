@@ -1027,7 +1027,10 @@ export const useDndStore = create<{
             updatedTargetElements.splice(targetIndex, 0, updatedElement);
 
             if (elementsInSourceCell.length === 0) {
-                const editor = getNewEditorElement(draggedElement.cellId);
+                const editor = {
+                    ...getNewEditorElement(),
+                    cellId: draggedElement.cellId,
+                };
 
                 updatedTargetElements.push(editor);
             }
@@ -1060,7 +1063,10 @@ export const useDndStore = create<{
                     DragDropTransactionHelper.deleteLayout(presentationId, sourceSlide.id, sourceLayout.id);
                 }
             } else if (elementsInSourceCell.length === 0 && sourceLayout.gridStructure.columns > 1) {
-                const editor = getNewEditorElement(draggedElement.cellId);
+                const editor = {
+                    ...getNewEditorElement(),
+                    cellId: draggedElement.cellId,
+                };
 
                 updatedSourceElements.push(editor);
                 DragDropTransactionHelper.updateLayout(presentationId, sourceSlide.id, sourceLayout.id, {
@@ -1111,7 +1117,10 @@ export const useDndStore = create<{
 
         const updatedSourceLayoutElements = sourceLayout.elements.filter(e => e.cellId !== draggedCell.id);
 
-        const editor = getNewEditorElement(draggedCell.id);
+        const editor = {
+            ...getNewEditorElement(),
+            cellId: draggedCell.id,
+        };
 
         updatedSourceLayoutElements.push(editor);
 
@@ -1151,7 +1160,10 @@ export const useDndStore = create<{
                 ? [...updatedSourceElements, ...updatedLayoutElements]
                 : [...updatedLayoutElements, ...updatedSourceElements];
 
-        const editor = getNewEditorElement(draggedCell.id);
+        const editor = {
+            ...getNewEditorElement(),
+            cellId: draggedCell.id,
+        };
 
         updatedElements.push(editor);
 
@@ -1576,7 +1588,10 @@ export const useDndStore = create<{
                             // обновляем elements in target layout
                             const updatedSourceElements = sourceLayout.elements.filter(e => e.id !== draggedElement.id);
 
-                            const editor = getNewEditorElement(draggedElement.cellId);
+                            const editor = {
+                                ...getNewEditorElement(),
+                                cellId: draggedElement.cellId,
+                            };
 
                             updatedSourceElements.push(editor);
 
@@ -1943,7 +1958,10 @@ export const useDndStore = create<{
 
         const elementsInCell = updatedElements.filter(e => e.cellId === sourceElement.cellId);
         if (elementsInCell.length === 0) {
-            const editor = getNewEditorElement(sourceElement.cellId);
+            const editor = {
+                ...getNewEditorElement(),
+                cellId: sourceElement.cellId,
+            };
 
             updatedElements.push(editor);
         }
@@ -2094,7 +2112,10 @@ export const useDndStore = create<{
 
         const elementsInSourceCell = updatedSourceElements.filter(e => e.cellId === sourceElement.cellId);
         if (elementsInSourceCell.length === 0) {
-            const editor = getNewEditorElement(sourceElement.cellId);
+            const editor = {
+                ...getNewEditorElement(),
+                cellId: sourceElement.cellId,
+            };
 
             updatedSourceElements.push(editor);
         }
@@ -2443,7 +2464,10 @@ export const useDndStore = create<{
                     updatedTargetGridStructure.rows.push(newRow);
 
                     newRow.cells.forEach(cell => {
-                        newEditors.push(getNewEditorElement(cell.id));
+                        newEditors.push({
+                            ...getNewEditorElement(),
+                            cellId: cell.id,
+                        });
                     });
                 }
             }
@@ -2467,7 +2491,10 @@ export const useDndStore = create<{
 
                 // в перетаскиваемом столбце меньше строк, чем в targetLayout
                 if (!movedElementsInfo[index]) {
-                    const newEditor = getNewEditorElement(newCellId);
+                    const newEditor = {
+                        ...getNewEditorElement(),
+                        cellId: newCellId,
+                    };
                     updatedTargetElements.push(newEditor);
                 } else {
                     movedElementsInfo[index].elements.map(element => {
@@ -2578,7 +2605,12 @@ export const useDndStore = create<{
                         column: row.cells.length + index,
                     }));
 
-                    const newEditors = newCells.map(cell => getNewEditorElement(cell.id));
+                    const newEditors = newCells.map(cell => {
+                        return {
+                            ...getNewEditorElement(),
+                            cellId: cell.id,
+                        };
+                    });
 
                     row.cells = [...row.cells, ...newCells];
                     targetLayout.elements = [...targetLayout.elements, ...newEditors];
@@ -2599,7 +2631,12 @@ export const useDndStore = create<{
 
                 movedRow.cells = newCells;
 
-                const newEditors = newCells.map((cell: GridCell) => getNewEditorElement(cell.id));
+                const newEditors = newCells.map((cell: GridCell) => {
+                    return {
+                        ...getNewEditorElement(),
+                        cellId: cell.id,
+                    };
+                });
 
                 targetLayout.elements = [...targetLayout.elements, ...newEditors];
             }

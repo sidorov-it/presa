@@ -102,10 +102,10 @@ export const ElementContent = ({
 
                 const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures(defaultGridType);
 
-                const newElement = getNewEditorElement(
-                    defaultLayoutGridStructure.rows[0].cells[0].id,
-                    contentAfterCursor
-                );
+                const newElement = {
+                    ...getNewEditorElement(contentAfterCursor),
+                    cellId: defaultLayoutGridStructure.rows[0].cells[0].id,
+                };
 
                 const firstNewEditorId = newElement.id;
                 const newLayout: Layout = {
@@ -161,7 +161,10 @@ export const ElementContent = ({
 
                 const newElementIndex = layout.elements.findIndex(e => e.id === elementId);
 
-                const newElement = getNewEditorElement(cell.id, contentAfterCursor);
+                const newElement = {
+                    ...getNewEditorElement(contentAfterCursor),
+                    cellId: cell.id,
+                };
 
                 const updatedElements = [...layout.elements];
                 updatedElements.splice(newElementIndex + 1, 0, newElement);

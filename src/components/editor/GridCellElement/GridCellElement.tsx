@@ -548,7 +548,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     return;
                 }
             }
-            const newElement = getNewEditorElement(cell.id, '', { tempEditor: true });
+            const newElement = getNewEditorElement('', { tempEditor: true });
 
             // If no text editor found, create a temporary one
             const layout = usePresentationStore.getState().getLayout(presentationId, slideId, layoutId);

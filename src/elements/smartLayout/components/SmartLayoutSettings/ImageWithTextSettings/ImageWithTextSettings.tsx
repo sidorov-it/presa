@@ -89,7 +89,10 @@ export default function ImageWithTextSettings({
 
             const cellId = defaultLayoutGridStructure.rows[0].cells[0].id;
 
-            const newElement = getNewEditorElement(cellId, '');
+            const newElement = {
+                ...getNewEditorElement(),
+                cellId,
+            };
 
             const newLayout: Layout = {
                 id: newLayoutId,
@@ -104,7 +107,11 @@ export default function ImageWithTextSettings({
             // usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
         } else if (layout?.elements && layout.elements.length > 1) {
             // удаляем элемент. на его место ставим новый редактор
-            const newElement = getNewEditorElement(element.cellId, '');
+            const newElement = {
+                ...getNewEditorElement(),
+                cellId: element.cellId,
+            };
+
             const updatedElements = [...layout.elements, newElement].filter(element => element.id !== elementId);
 
             usePresentationStore

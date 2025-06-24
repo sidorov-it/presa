@@ -565,7 +565,12 @@ export const usePresentationStore = create<PresentationState>()(
                 // Create editor elements for each cell
                 const elements: EditorElement[] = defaultLayoutGridStructure.rows
                     .map(row => {
-                        return row.cells.map(cell => getNewEditorElement(cell.id));
+                        return row.cells.map(cell => {
+                            return {
+                                ...getNewEditorElement(),
+                                cellId: cell.id,
+                            };
+                        });
                     })
                     .flat();
 
@@ -1007,7 +1012,14 @@ export const usePresentationStore = create<PresentationState>()(
 
                     // Создаем элементы для каждой ячейки сетки
                     const elements: EditorElement[] = gridStructure.rows
-                        .map(row => row.cells.map(cell => getNewEditorElement(cell.id)))
+                        .map(row =>
+                            row.cells.map(cell => {
+                                return {
+                                    ...getNewEditorElement(),
+                                    cellId: cell.id,
+                                };
+                            })
+                        )
                         .flat();
 
                     newLayout = {
@@ -1503,7 +1515,10 @@ export const usePresentationStore = create<PresentationState>()(
 
                         const newColumnId = generateId();
 
-                        const newElement = getNewEditorElement(newColumnId);
+                        const newElement = {
+                            ...getNewEditorElement(),
+                            cellId: newColumnId,
+                        };
                         updatedElements = [...updatedElements, newElement];
 
                         const newColumn: GridCell = {
@@ -1777,9 +1792,8 @@ export const usePresentationStore = create<PresentationState>()(
 
                 // Создаем новые элементы для каждой ячейки
                 const newElements: Element[] = newCells.map(cell => {
-                    const newEditor = getNewEditorElement(cell.id);
                     return {
-                        ...newEditor,
+                        ...getNewEditorElement(),
                         cellId: cell.id,
                     } as Element;
                 });
@@ -2015,7 +2029,10 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentElement = currentLayout.elements.find(element => element.id === elementId);
                 if (!currentElement) return;
 
-                const newElement = getNewEditorElement(currentElement.cellId);
+                const newElement = {
+                    ...getNewEditorElement(),
+                    cellId: currentElement.cellId,
+                };
 
                 set(state => {
                     let updatedState;
@@ -2238,7 +2255,10 @@ export const usePresentationStore = create<PresentationState>()(
 
                         if (isEmptyCell) {
                             updatedLayouts = slide!.layouts.filter(layout => layout.id !== layoutId);
-                            const newElement = getNewEditorElement(cellId);
+                            const newElement = {
+                                ...getNewEditorElement(),
+                                cellId,
+                            };
 
                             filteredElements.push(newElement);
 
@@ -2363,7 +2383,10 @@ export const usePresentationStore = create<PresentationState>()(
                         }),
                     };
 
-                    const newElement = getNewEditorElement(newColumnId);
+                    const newElement = {
+                        ...getNewEditorElement(),
+                        cellId: newColumnId,
+                    };
                     const updatedElements = [...currentLayout.elements, newElement];
 
                     set(state => {
@@ -2427,8 +2450,14 @@ export const usePresentationStore = create<PresentationState>()(
                         row: 0,
                         column: 3,
                     };
-                    const newLeftElement = getNewEditorElement(newLeftCellId);
-                    const newRightElement = getNewEditorElement(newRightCellId);
+                    const newLeftElement = {
+                        ...getNewEditorElement(),
+                        cellId: newLeftCellId,
+                    };
+                    const newRightElement = {
+                        ...getNewEditorElement(),
+                        cellId: newRightCellId,
+                    };
                     // обновляем gridStructure.
                     const columnWidths = getColumnWidths(currentLayout.gridStructure.columns + 2, {
                         columnIndex: 1,
@@ -2565,7 +2594,10 @@ export const usePresentationStore = create<PresentationState>()(
                     );
                     updatedElements = [...currentLayout.elements, ...updatedNewElements];
                 } else {
-                    const newElement = getNewEditorElement(newColumnId);
+                    const newElement = {
+                        ...getNewEditorElement(),
+                        cellId: newColumnId,
+                    };
                     updatedElements = [...currentLayout.elements, newElement];
                 }
 
@@ -3056,7 +3088,10 @@ export const usePresentationStore = create<PresentationState>()(
                         .map((_, index) => {
                             const cellId = generateId();
 
-                            const newEditor = getNewEditorElement(cellId);
+                            const newEditor = {
+                                ...getNewEditorElement(),
+                                cellId,
+                            };
                             newElements.push(newEditor as BaseElement);
 
                             return {
@@ -3536,7 +3571,10 @@ export const usePresentationStore = create<PresentationState>()(
 
                 const beforeState = { ...get() };
 
-                const newElement = getNewEditorElement(cellId);
+                const newElement: EditorElement = {
+                    ...getNewEditorElement(),
+                    cellId,
+                };
                 const elementsInCell = layout.elements.filter(e => e.cellId === cellId);
                 const insertIndex = insertAtStart ? 0 : elementsInCell.length;
 

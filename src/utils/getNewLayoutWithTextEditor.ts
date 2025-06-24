@@ -1,5 +1,5 @@
 import getColumnWidths from '@/utils/getColumnWidths';
-import { Layout } from '@/types';
+import { EditorElement, Layout } from '@/types';
 import { generateId } from './id';
 import { getNewEditorElement } from '@/utils/getNewEditorElement';
 
@@ -8,7 +8,10 @@ export default function getNewLayoutWithTextEditor(
 ): Layout {
     const cellId = generateId();
 
-    const newTextEditorElement = getNewEditorElement(cellId, '', options);
+    const newTextEditorElement: EditorElement = {
+        ...getNewEditorElement('', options),
+        cellId,
+    };
 
     const newLayout: Layout = {
         id: generateId(),

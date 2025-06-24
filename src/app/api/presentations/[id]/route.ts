@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
                     id: generateId(),
                     elements: [
                         {
-                            ...getNewEditorElement(generateId()),
+                            ...getNewEditorElement(),
                             cellId: generateId(),
                         },
                     ],
