@@ -7,7 +7,7 @@ export default function extractTextsFromPresentation(presentation: IPresentation
             slideId: slide.id,
             text: slide.layouts
                 .flatMap(layout => layout.elements)
-                .map(element => extractTextFromElement(element as unknown as Element))
+                .map(element => `${extractTextFromElement(element as unknown as Element)}\n`)
                 .join('\n'),
         }))
         .filter((slideText: SlideText) => slideText.text.length > 0);

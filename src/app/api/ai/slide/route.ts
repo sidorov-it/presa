@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
-import generateSlidesTemplates from '@/services/llm/generateSlidesTemplates';
+import generateSlideTemplate from '@/services/llm/generateSlideTemplate';
 import { prisma } from '@/lib/prisma';
 import extractTextsFromPresentation from '@/utils/extractTextsFromPresentation';
 import { IPresentation } from '@/types';
@@ -83,19 +83,21 @@ export async function POST(request: NextRequest) {
             let finalTemplateId = templateId;
 
             if (templateId === 'auto') {
-                // Generate template suggestions based on the prompt and surrounding slides
-                const templateSuggestions = await generateSlidesTemplates({
-                    title: surroundingSlides[0]?.text || '',
+                // Select the best template for a single slide using the dedicated LLM helper
+                const { templateId: suggestedTemplateId } = await generateSlideTemplate({
                     prompt,
-                    topics: surroundingSlides.map(slide => ({ title: slide.text })),
+                    surroundingSlides: surroundingSlides.map(s => ({ content: s.text })),
+                    durationMinutes: (presentation as any).durationMinutes,
+                    goal: (presentation as any).goal,
+                    audience: (presentation as any).audience,
+                    tone: (presentation as any).tone,
                     options: {
                         userId: session.user.id,
                         presentationId,
                     },
                 });
 
-                // Use the first suggested template or fallback to a default one
-                finalTemplateId = templateSuggestions[0]?.templateId || 'title-bullets';
+                finalTemplateId = suggestedTemplateId || 'title-bullets';
             }
 
             // Validate that the template exists

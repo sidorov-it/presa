@@ -92,16 +92,6 @@ const getTemplatesOptions = {
     function_call: { name: 'select_slide_templates' },
 };
 
-const excludedTemplate = [
-    'three-row-table',
-    'accent-top',
-    'accent-left',
-    'accent-right',
-    'accent-right-fit',
-    'accent-left-fit',
-    'accent-background',
-];
-
 export default async function generateSlidesTemplates({
     title,
     prompt,
@@ -125,7 +115,7 @@ export default async function generateSlidesTemplates({
 
     // Prepare templates information for LLM
     const templates = Object.values(SlideTemplatesRegistry)
-        .filter(template => !excludedTemplate.includes(template.id))
+        .filter(template => !template.disabled)
         .map(template => ({
             id: template.id,
             name: template.name,

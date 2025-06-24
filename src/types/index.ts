@@ -39,7 +39,10 @@ export type LayoutType =
     | 'pie-chart'
     | 'donut-chart'
     | 'three-row-table'
-    | 'table';
+    | 'table'
+    | 'welcome-slide'
+    | 'final-slide-contacts'
+    | 'final-slide-contacts-qr';
 
 // Интерфейс для ячейки сетки
 export interface GridCell {

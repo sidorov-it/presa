@@ -142,6 +142,7 @@ function createGenerateSlideContentFunction(template: SlideTemplateCore) {
                 entryProperties[item.key] = {
                     type: item.type,
                     description: item.description,
+                    contextRules: item.contextRules,
                 };
             });
 
@@ -210,6 +211,7 @@ function generateSlotDescription(template: SlideTemplateCore, slotsMapping: Map<
                                         return `    Слот "${item.key}":
         - Тип: ${item.type}
         - Назначение: ${item.description}
+        ${slot.llmHints?.items?.[item.originalKey]?.contextRules ? '- Правила:\n' + slot.llmHints?.items?.[item.originalKey]?.contextRules.map(rule => `  * ${rule}`).join('\n') : ''}
         `;
                                     })
                                     .join('\n\n');
@@ -261,7 +263,7 @@ function createPromptGenerateSlideContent({
                 .join('\n')}`
             : '';
 
-    return `Создай структурированный контент для слайда ${slideIndex} из ${totalSlides} на тему: "${topic}".
+    return `Создай структурированный контент для слайда ${slideIndex + 1} из ${totalSlides}.\n Инструкция пользователя по требуемому слайду: "${topic}".
 
 ${goal ? `Цель презентации: ${goal}\n` : ''}${audience ? `Аудитория: ${audience}\n` : ''}${tone ? `Тон/стиль: ${tone}\n` : ''}${
     Number.isInteger(durationMinutes) ? `Длительность доклада: ${durationMinutes} минут\n` : ''
@@ -276,11 +278,11 @@ ${slotsDescription}
 1. Сгенерируй контент для КАЖДОГО слота, соблюдая тип и назначение.
 2. Для слотов image опиши, какое изображение нужно сгенерировать.
 3. Соблюдай логическую последовательность и связи с предыдущими слайдами.
-4. Допустимый формат для текстовых полей — Markdown. Разрешённые теги: #, ##, ###, **, *, -, 1. 2. 3., > (quote). Без HTML.
+4. Формат для текстовых полей — Markdown. Без HTML. Если в правилах указаны сиволы markdown, используй их.
 5. Независимо от количества строк (даже для одного слова или заголовка) ВСЕГДА возвращай текст в Markdown-формате.
-6. Для заголовков используй теги #, ##, ###.
-7. Для списков используй теги -, 1. 2. 3.
-8. Для цитат используй теги >
+6. Для заголовков используй символы #, ##, ###.
+7. Для списков используй символы -, 1. 2. 3.
+8. Для цитат используй символы >
 ${instructions ? `9. Дополнительные инструкции: ${instructions}` : ''}`;
 }
 
@@ -354,3 +356,6 @@ export default async function generateSlideContent({
         slotMapping,
     };
 }
+
+// Explicit exports for testing purposes
+export { createGenerateSlideContentFunction, createPromptGenerateSlideContent };
