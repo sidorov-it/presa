@@ -11,7 +11,6 @@ import { useRouter } from 'next/navigation';
 import { Tabs as ChakraTabs } from '@chakra-ui/react';
 import { useThemeStore } from '@/store/themeStore';
 
-
 export default function ThemesPage() {
     const { themes, defaultThemes, loadThemes, loadDefaultThemes, addTheme, deleteTheme } = useThemeStore();
     const router = useRouter();

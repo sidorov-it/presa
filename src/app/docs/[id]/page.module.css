@@ -97,7 +97,7 @@
 .headerRight {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.5rem;
 }
 
 .themeButton {
@@ -178,11 +178,11 @@
 .userInfo {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
     cursor: pointer;
-    padding: 0.375rem 0.75rem;
+    padding: 0.375rem;
     border-radius: var(--radius-md);
-    transition: all 150ms ease;
+    transition: background-color 150ms ease;
 }
 
 /* .userInfo:hover {
@@ -190,8 +190,9 @@
 } */
 
 .userIcon {
-    width: 1rem;
-    height: 1rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--color-text-light);
 }
 
 .userName {
@@ -323,24 +324,24 @@
     margin-right: 0.5rem;
 }
 
-/* .userMenu {
+.userMenu {
     width: 15rem;
     padding: 0.5rem;
-    background-color: var(--chakra-colors-neutral-background-default);
-    border: 1px solid var(--chakra-colors-neutral-border-subtle);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-} */
+}
 
 .userMenuHeader {
     padding: 0.75rem 0;
-    border-bottom: 1px solid var(--chakra-colors-neutral-border-subtle);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .userMenuEmail {
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--chakra-colors-neutral-text-default);
+    color: var(--color-text);
     margin-bottom: 0.5rem;
 }
 
@@ -349,7 +350,7 @@
     align-items: center;
     gap: 0.375rem;
     font-size: 0.75rem;
-    color: var(--chakra-colors-neutral-text-subtle);
+    color: var(--color-text-light);
     text-decoration: none;
     padding: 0.25rem 0.5rem;
     border-radius: var(--radius-sm);
@@ -357,17 +358,8 @@
 }
 
 .userMenuCredits:hover {
-    background-color: var(--chakra-colors-neutral-surface-subtle);
-    color: var(--chakra-colors-neutral-text-default);
-}
-
-.userMenuCredits:hover {
-    background-color: #0915fc2b;
-}
-
-/* Dark theme styles for theme popover */
-:global(.dark) .userMenuCredits:hover {
     background-color: var(--color-background);
+    color: var(--color-text);
 }
 
 .creditsIcon {
@@ -377,7 +369,7 @@
 
 .userMenuDivider {
     height: 1px;
-    background-color: var(--chakra-colors-neutral-border-subtle);
+    background-color: var(--color-border);
     margin: 0.5rem 0;
 }
 
@@ -393,7 +385,7 @@
     padding: 0.5rem 0;
     border-radius: var(--radius-sm);
     font-size: 0.875rem;
-    color: var(--chakra-colors-neutral-text-default);
+    color: var(--color-text);
     transition: background-color 150ms;
     cursor: pointer;
     border: none;
@@ -405,7 +397,7 @@
 } */
 
 .userMenuAction:hover {
-    background-color: #0915fc2b;
+    background-color: var(--color-background);
 }
 
 /* Dark theme styles for theme popover */
@@ -441,7 +433,7 @@
 }
 
 .userMenuSignOut:hover {
-    background-color: #fef2f2;
+    background-color: var(--color-background);
 }
 
 .signOutIcon {
@@ -516,4 +508,10 @@
     background-color: var(--color-background);
     border-color: var(--color-border);
     color: var(--color-text-light);
+}
+
+.headerDivider {
+    width: 1px;
+    align-self: stretch;
+    background-color: var(--color-border);
 }

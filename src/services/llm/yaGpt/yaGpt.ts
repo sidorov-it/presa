@@ -11,6 +11,15 @@ interface YaGPTMessage {
     text: string;
 }
 
+// -----------------------------------------------------------------------------
+//  Pricing constants (in RUB)
+//  - Text generation: 0.20 ₽ per 1 000 tokens (synchronous mode)
+//  - Image generation (Yandex ART): 2.20 ₽ per request
+// -----------------------------------------------------------------------------
+
+const COST_PER_1K_TOKENS = 0.2; // ₽
+const IMAGE_GENERATION_COST = 2.2; // ₽
+
 export class YaGptService implements LLMService {
     private static rateLimiter = new RateLimiter(10);
     private apiKey: string;
@@ -190,6 +199,8 @@ export class YaGptService implements LLMService {
         const inputTokens: number = responseJson.usage?.prompt_tokens ?? 0;
         const outputTokens: number = responseJson.usage?.completion_tokens ?? 0;
 
+        const cost = this.calculateCost(totalTokens);
+
         const logData: LLMRequestData = {
             userId: this.userId,
             presentationId: options.presentationId,
@@ -200,7 +211,7 @@ export class YaGptService implements LLMService {
             totalTokens,
             duration,
             cached: false,
-            cost: 0, // cost calculation for YaGPT not implemented
+            cost,
             success: true,
             errorMessage: undefined,
             metadata: {
@@ -256,6 +267,13 @@ export class YaGptService implements LLMService {
     }
 
     /**
+     * Calculate request cost for text generation based on total tokens.
+     */
+    private calculateCost(tokens: number): number {
+        return (tokens / 1000) * COST_PER_1K_TOKENS;
+    }
+
+    /**
      * Returns API key, creating it once per application lifetime if necessary.
      */
     private async obtainApiKey(): Promise<string> {
@@ -299,11 +317,19 @@ export class YaGptService implements LLMService {
         return createdKey;
     }
 
-    async generateImage(prompt: string): Promise<{ imageUrl: string; imageId: string }> {
+    async generateImage(
+        prompt: string,
+        options: { presentationId?: string; userId: string }
+    ): Promise<{ imageUrl: string; imageId: string }> {
+        const startTime = Date.now();
+
+        let cached = false;
+
         // Attempt to return cached image first (replay mode)
         if (this.recordingOptions.replayMode && this.recordingService) {
             const cachedRec = await this.recordingService.findRecording(prompt);
             if (cachedRec && cachedRec.response.type === 'image') {
+                cached = true;
                 return cachedRec.response.data as { imageUrl: string; imageId: string };
             }
         }
@@ -392,6 +418,34 @@ export class YaGptService implements LLMService {
         }
 
         const result = { imageUrl, imageId };
+
+        // ------------------------------------------------------------------
+        //  Logging (only for non-cached requests)
+        // ------------------------------------------------------------------
+
+        if (!cached) {
+            const duration = Date.now() - startTime;
+
+            const logMessage: LLMRequestData = {
+                userId: this.userId,
+                presentationId: options.presentationId,
+                requestType: 'generate_image',
+                prompt,
+                inputTokens: 0,
+                outputTokens: 0,
+                totalTokens: 0,
+                duration,
+                cached: false,
+                cost: IMAGE_GENERATION_COST,
+                success: true,
+                errorMessage: undefined,
+                metadata: {
+                    provider: 'yagpt',
+                },
+            };
+
+            await LLMHistoryService.logRequest(logMessage);
+        }
 
         // Save recording if enabled
         if (this.recordingOptions.enabled && this.recordingService) {

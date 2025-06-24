@@ -30,7 +30,6 @@ import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
 import { Tooltip } from '@/components/ui/tooltip';
-import ThemeToggle from '@/components/ui/ThemeToggle';
 import Logo from '@/components/icons/Logo/Logo';
 import MobileWarningOverlay from '@/components/MobileWarningOverlay/MobileWarningOverlay';
 import { clearAllThemeStyles } from '@/utils/themeUtils';
@@ -412,6 +411,8 @@ export default function PresentationEditorPage() {
                                         }
                                     />
 
+                                    <div className={styles.headerDivider} />
+
                                     <Tooltip content="Просмотр">
                                         <button
                                             onClick={handleViewPresentation}
@@ -426,6 +427,8 @@ export default function PresentationEditorPage() {
                                         presentationId={presentation.id}
                                         presentationTitle={presentation.title}
                                     />
+
+                                    <div className={styles.headerDivider} />
                                     {/* <Tooltip content="Скачать">
                                         <button
                                             onClick={handleDownloadPresentation}
@@ -436,8 +439,6 @@ export default function PresentationEditorPage() {
                                             <FaDownload className={styles.downloadIcon} aria-hidden="true" />
                                         </button>
                                     </Tooltip> */}
-
-                                    <ThemeToggle />
 
                                     <button
                                         type="button"
@@ -465,9 +466,7 @@ export default function PresentationEditorPage() {
                                                 onKeyDown={e => e.key === 'Enter' && setIsUserMenuOpen(!isUserMenuOpen)}
                                             >
                                                 <FaUser className={styles.userIcon} />
-                                                {session?.user?.name && (
-                                                    <span className={styles.userName}>{session.user.name}</span>
-                                                )}
+                                                {/* Username removed for compact header */}
                                             </div>
                                         }
                                         content={
