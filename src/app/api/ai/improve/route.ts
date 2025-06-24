@@ -110,7 +110,11 @@ export async function POST(request: NextRequest) {
             }
 
             const currentSlide = presentation.slides[slideIndex];
-            const content = await rewriteSlideContent(session.user.id, currentSlide);
+            const content = await rewriteSlideContent(
+                session.user.id,
+                currentSlide,
+                comment
+            );
 
             return { content };
         }

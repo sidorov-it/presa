@@ -110,7 +110,10 @@ ${slot.llmHints?.contextRules.map(r => `  * ${r}`).join('\n')}` : ''}`;
         .join('\n\n');
 };
 
-const createPromptRewriteSlideContent = (slotMapping: Map<string, SlotKeyMapping>) => {
+const createPromptRewriteSlideContent = (
+    slotMapping: Map<string, SlotKeyMapping>,
+    instructions?: string
+) => {
     const slotsDescription = generateSlotDescription(slotMapping);
     const currentContent = Array.from(slotMapping.entries())
         .map(([key, value]) => `${key}: ${value.content}`)
@@ -132,16 +135,21 @@ ${currentContent}
    • Заголовки: #, ##, ###
    • Списки: -, 1. 2. 3.
    • Цитаты: >
-5. Для списков сохраните количество пунктов.`;
+5. Для списков сохраните количество пунктов.
+${instructions ? `Дополнительные инструкции: ${instructions}` : ''}`;
 };
 
-export default async function rewriteSlideContent(userId: string, slide: Slide) {
+export default async function rewriteSlideContent(
+    userId: string,
+    slide: Slide,
+    instructions?: string
+) {
     try {
         const llmService = createLLMService({ userId });
 
         const { functionSchema, slotMapping } = createRewriteSlideContentFunction(slide);
 
-        const prompt = createPromptRewriteSlideContent(slotMapping!);
+        const prompt = createPromptRewriteSlideContent(slotMapping!, instructions);
         console.log(prompt);
 
         // получаем ответ от LLM
