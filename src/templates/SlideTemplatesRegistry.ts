@@ -2349,4 +2349,344 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
             useCases: ['Сравнительный анализ', 'Матрица данных', 'Структурированная информация'],
         },
     },
+
+    'welcome-slide': {
+        id: 'welcome-slide',
+        name: 'Приветственный слайд с темой',
+        layouts: [
+            {
+                layout: 'welcome-slide',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'main_title',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.HEADING1,
+                            content: 'Название презентации (символ #)',
+                            style: {
+                                fontSize: '3.5rem',
+                                fontWeight: 'bold',
+                                textAlign: 'center',
+                                marginBottom: '2rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Главный заголовок презентации',
+                            contextRules: [
+                                'Краткий, но информативный заголовок',
+                                'Должен отражать основную тему презентации',
+                                'Использовать привлекающие внимание формулировки',
+                            ],
+                        },
+                    },
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'subtitle',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.HEADING3,
+                            content: 'Подзаголовок или описание темы (символ ###)',
+                            style: {
+                                fontSize: '1.8rem',
+                                textAlign: 'center',
+                                opacity: 0.8,
+                                marginBottom: '3rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Дополнительное описание или контекст',
+                            contextRules: [
+                                'Расширяет и поясняет основной заголовок',
+                                'Может содержать краткое описание содержания',
+                                'Устанавливает контекст для аудитории',
+                            ],
+                        },
+                    },
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'presenter_info',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.DEFAULT,
+                            content: 'Имя докладчика • Дата • Организация',
+                            style: {
+                                fontSize: '1.2rem',
+                                textAlign: 'center',
+                                opacity: 0.7,
+                                marginTop: 'auto',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Информация о докладчике и мероприятии',
+                            contextRules: [
+                                'Включает имя докладчика',
+                                'Может содержать дату и место',
+                                'Указывает организацию или контекст',
+                            ],
+                        },
+                    },
+                ],
+            },
+        ],
+        ui: {
+            category: 'intro-templates',
+            label: 'Приветственный слайд',
+            icon: FaRegAddressCard,
+            description: 'Шаблон для начала презентации с темой',
+        },
+        llm: {
+            description: 'Шаблон для создания приветственного слайда с основной темой презентации',
+            purpose: ['introduction', 'presentation-start', 'theme-announcement'],
+            useCases: ['Начало презентации', 'Представление темы', 'Вводная информация'],
+        },
+    },
+
+    'final-slide-contacts': {
+        id: 'final-slide-contacts',
+        name: 'Заключительный слайд с контактами',
+        layouts: [
+            {
+                layout: 'final-slide-contacts',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'thank_you',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.HEADING1,
+                            content: 'Спасибо за внимание! (символ #)',
+                            style: {
+                                fontSize: '3rem',
+                                fontWeight: 'bold',
+                                textAlign: 'center',
+                                marginBottom: '3rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Благодарность аудитории',
+                            contextRules: [
+                                'Вежливое завершение презентации',
+                                'Может включать призыв к действию',
+                                'Создает позитивное впечатление',
+                            ],
+                        },
+                    },
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'contact_info',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.DEFAULT,
+                            content: '📧 email@example.com\n📱 +7 (999) 123-45-67\n🌐 www.example.com',
+                            style: {
+                                fontSize: '1.5rem',
+                                textAlign: 'center',
+                                lineHeight: '2rem',
+                                marginBottom: '2rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Контактная информация для связи',
+                            contextRules: [
+                                'Включает основные способы связи',
+                                'Использует эмодзи для визуального разделения',
+                                'Информация должна быть актуальной',
+                            ],
+                        },
+                    },
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'additional_info',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.DEFAULT,
+                            content: 'Дополнительная информация или призыв к действию',
+                            style: {
+                                fontSize: '1.2rem',
+                                textAlign: 'center',
+                                opacity: 0.8,
+                                fontStyle: 'italic',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Дополнительная информация или призыв к действию',
+                            contextRules: [
+                                'Может содержать призыв к действию',
+                                'Дополнительная информация о проекте',
+                                'Ссылки на ресурсы или материалы',
+                            ],
+                        },
+                    },
+                ],
+            },
+        ],
+        ui: {
+            category: 'final-templates',
+            label: 'Заключительный слайд',
+            icon: FaRegAddressCard,
+            description: 'Шаблон для завершения презентации с контактами',
+        },
+        llm: {
+            description: 'Шаблон для создания заключительного слайда с контактной информацией',
+            purpose: ['conclusion', 'contact-information', 'presentation-end'],
+            useCases: ['Завершение презентации', 'Предоставление контактов', 'Призыв к действию'],
+        },
+    },
+
+    'final-slide-contacts-qr': {
+        id: 'final-slide-contacts-qr',
+        name: 'Заключительный слайд с контактами и QR-кодом',
+        layouts: [
+            {
+                layout: 'final-slide-contacts-qr',
+                columnsCount: 2,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'thank_you',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.HEADING1,
+                            content: 'Спасибо за внимание! (символ #)',
+                            style: {
+                                fontSize: '2.5rem',
+                                fontWeight: 'bold',
+                                textAlign: 'left',
+                                marginBottom: '2rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Благодарность аудитории',
+                            contextRules: [
+                                'Вежливое завершение презентации',
+                                'Может включать призыв к действию',
+                                'Создает позитивное впечатление',
+                            ],
+                        },
+                    },
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'contact_info',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.DEFAULT,
+                            content: '📧 email@example.com\n📱 +7 (999) 123-45-67\n🌐 www.example.com',
+                            style: {
+                                fontSize: '1.3rem',
+                                textAlign: 'left',
+                                lineHeight: '1.8rem',
+                                marginBottom: '2rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Контактная информация для связи',
+                            contextRules: [
+                                'Включает основные способы связи',
+                                'Использует эмодзи для визуального разделения',
+                                'Информация должна быть актуальной',
+                            ],
+                        },
+                    },
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'additional_info',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.DEFAULT,
+                            content: 'Дополнительная информация или призыв к действию',
+                            style: {
+                                fontSize: '1rem',
+                                textAlign: 'left',
+                                opacity: 0.8,
+                                fontStyle: 'italic',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Дополнительная информация или призыв к действию',
+                            contextRules: [
+                                'Может содержать призыв к действию',
+                                'Дополнительная информация о проекте',
+                                'Ссылки на ресурсы или материалы',
+                            ],
+                        },
+                    },
+                    {
+                        elementTypeId: ElementType.IMAGE,
+                        slot: 'qr_code',
+                        row: 0,
+                        column: 1,
+                        props: {
+                            src: '',
+                            alt: 'QR-код для связи',
+                            alignment: 'center',
+                            width: '200px',
+                            style: {
+                                border: '2px solid var(--border-color)',
+                                borderRadius: '8px',
+                                padding: '1rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'QR-код для быстрого доступа к контактам или ресурсам',
+                            contextRules: [
+                                'QR-код должен вести на актуальную ссылку',
+                                'Может содержать контактную информацию',
+                                'Должен быть четким и читаемым',
+                            ],
+                        },
+                    },
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'qr_description',
+                        row: 0,
+                        column: 1,
+                        props: {
+                            textType: TextType.DEFAULT,
+                            content: 'Отсканируйте QR-код для связи',
+                            style: {
+                                fontSize: '1rem',
+                                textAlign: 'center',
+                                opacity: 0.7,
+                                marginTop: '1rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Пояснение к QR-коду',
+                            contextRules: [
+                                'Краткое объяснение назначения QR-кода',
+                                'Призыв к действию',
+                                'Должно быть понятно и привлекательно',
+                            ],
+                        },
+                    },
+                ],
+            },
+        ],
+        ui: {
+            category: 'final-templates',
+            label: 'Заключительный слайд с QR',
+            icon: FaRegAddressCard,
+            description: 'Шаблон для завершения презентации с контактами и QR-кодом',
+        },
+        llm: {
+            description: 'Шаблон для создания заключительного слайда с контактной информацией и QR-кодом',
+            purpose: ['conclusion', 'contact-information', 'qr-code', 'presentation-end'],
+            useCases: ['Завершение презентации', 'Предоставление контактов', 'Быстрый доступ к ресурсам'],
+        },
+    },
 };

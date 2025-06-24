@@ -12,6 +12,7 @@ import { LLMHistoryService, LLMRequestData } from '../history/llmHistoryService'
 
 import { replyConfig } from './replyConfig';
 import { LLMRequestContext } from '@/types/gigachat';
+import { SYSTEM_PROMPT } from '@/prompts';
 
 interface Message {
     role: string;
@@ -67,8 +68,7 @@ export class GigaChatService implements LLMService {
         this.messages = [
             {
                 role: 'system',
-                content:
-                    'Ты профессиональный создатель презентаций. Твоя задача - генерировать контент для слайдов презентации. Предоставляй контент в четком, структурированном формате, который можно легко анализировать.',
+                content: SYSTEM_PROMPT,
             },
         ];
     }

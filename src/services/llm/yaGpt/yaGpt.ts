@@ -4,6 +4,7 @@ import { LLMHistoryService, LLMRequestData } from '../history/llmHistoryService'
 import { RecordingOptions } from '@/types/llm/recordings';
 import { RecordingService } from '../recordings/recordingService';
 import { replyConfig } from '../gigaChat/replyConfig';
+import { SYSTEM_PROMPT } from '@/prompts';
 
 interface YaGPTMessage {
     role: 'system' | 'user' | 'assistant';
@@ -60,7 +61,7 @@ export class YaGptService implements LLMService {
         const messages: YaGPTMessage[] = [
             {
                 role: 'system',
-                text: 'Ты профессиональный создатель презентаций. Твоя задача — генерировать контент для слайдов презентации. Предоставляй контент в четком, структурированном формате, который можно легко анализировать.',
+                text: SYSTEM_PROMPT,
             },
             { role: 'user', text: prompt },
         ];

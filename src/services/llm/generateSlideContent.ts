@@ -261,9 +261,7 @@ function createPromptGenerateSlideContent({
                 .join('\n')}`
             : '';
 
-    return `Ты — Senior Slide Content Architect.
-
-Создай структурированный контент для слайда ${slideIndex} из ${totalSlides} на тему: "${topic}".
+    return `Создай структурированный контент для слайда ${slideIndex} из ${totalSlides} на тему: "${topic}".
 
 ${goal ? `Цель презентации: ${goal}\n` : ''}${audience ? `Аудитория: ${audience}\n` : ''}${tone ? `Тон/стиль: ${tone}\n` : ''}${
     Number.isInteger(durationMinutes) ? `Длительность доклада: ${durationMinutes} минут\n` : ''
