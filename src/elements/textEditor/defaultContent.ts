@@ -29,7 +29,11 @@ export const getTextContent = (textType: TextType, text: string | string[]) => {
         case TextType.HEADING4:
             return `<span class="heading-text heading-4">${text}</span>`;
         case TextType.QUOTE:
-            return text;
+            // Wrap quote content into blockquote tag and ensure string result
+            if (Array.isArray(text)) {
+                return `<blockquote>${text.join('\n')}</blockquote>`;
+            }
+            return `<blockquote>${text}</blockquote>`;
         case TextType.BULLET_LIST:
             if (Array.isArray(text)) {
                 return `<ul>
@@ -59,44 +63,37 @@ export const getTextContent = (textType: TextType, text: string | string[]) => {
 </ul>`;
 
         default:
-            // Enhance default text handling to support AI-generated Markdown-style headings (e.g. **Heading**) and line breaks.
+            // Basic conversion: keep paragraphs and support **Heading** style for simple AI-generated text.
             if (typeof text === 'string') {
                 const convertAiTextToHtml = (raw: string): string => {
-                    // Normalize line endings and split into logical lines
-                    const lines = raw
-                        .replace(/\r\n/g, "\n")
-                        .split("\n")
-                        .map(l => l.trim());
+                    const lines = raw.replace(/\r\n/g, '\n').split('\n');
 
                     const htmlParts: string[] = [];
 
                     for (const line of lines) {
-                        if (!line) {
-                            // Empty line – acts as paragraph separator; add an explicit line break
+                        const trimmed = line.trim();
+
+                        if (!trimmed) {
                             htmlParts.push('<br />');
                             continue;
                         }
 
-                        // Detect Markdown-style heading wrapped with ** **
-                        const headingMatch = line.match(/^\*\*(.+?)\*\*$/);
+                        const headingMatch = trimmed.match(/^\*\*(.+?)\*\*$/);
                         if (headingMatch) {
-                            const headingText = headingMatch[1].trim();
-                            htmlParts.push(`<span class="heading-text heading-1">${headingText}</span>`);
-                            continue;
+                            htmlParts.push(`<span class="heading-text heading-1">${headingMatch[1].trim()}</span>`);
+                        } else {
+                            htmlParts.push(`<p>${trimmed}</p>`);
                         }
-
-                        // Regular paragraph line
-                        htmlParts.push(`<p>${line}</p>`);
                     }
 
-                    // Join and remove possible consecutive <br />
                     return htmlParts.join('\n');
                 };
 
-                return convertAiTextToHtml(text as string);
+                return convertAiTextToHtml(text);
             }
+
             // Fallback to simple paragraph handling
-            return `<p>${text}</p>`;
+            return `<p>${Array.isArray(text) ? text.join(' ') : text}</p>`;
     }
 };
 

@@ -12,6 +12,7 @@ import { LLMHistoryService, LLMRequestData } from '../history/llmHistoryService'
 
 import { replyConfig } from './replyConfig';
 import { LLMRequestContext } from '@/types/gigachat';
+import { SYSTEM_PROMPT } from '@/prompts';
 
 interface Message {
     role: string;
@@ -67,8 +68,7 @@ export class GigaChatService implements LLMService {
         this.messages = [
             {
                 role: 'system',
-                content:
-                    'Ты профессиональный создатель презентаций. Твоя задача - генерировать контент для слайдов презентации. Предоставляй контент в четком, структурированном формате, который можно легко анализировать.',
+                content: SYSTEM_PROMPT,
             },
         ];
     }
@@ -84,7 +84,13 @@ export class GigaChatService implements LLMService {
 
     async generate(
         prompt: string,
-        options: { presentationId?: string; functions?: any[]; function_call?: any } = {}
+        options: {
+            presentationId?: string;
+            functions?: any[];
+            function_call?: any;
+            requireFunctionCall?: boolean;
+            __attemptCount?: number;
+        } = {}
     ): Promise<LLMResponse> {
         const startTime = performance.now();
         let cached = false;
@@ -107,7 +113,7 @@ export class GigaChatService implements LLMService {
                     throw new Error('GigaChat client is not initialized');
                 }
 
-                const messages = [
+                const messages: Message[] = [
                     {
                         role: 'system',
                         content:
@@ -119,15 +125,49 @@ export class GigaChatService implements LLMService {
                     },
                 ];
 
+                const {
+                    requireFunctionCall = typeof options.function_call !== 'undefined',
+                    __attemptCount = 0,
+                    ...chatOptions
+                } = options as any;
+
                 const apiResponse = await this.withRateLimit(async () => {
                     await this.client.updateToken();
                     return this.client.chat({
                         messages: messages,
-                        ...options,
+                        ...chatOptions,
                     });
                 });
 
                 const parsedResponse = this.parseResponse(apiResponse);
+
+                // ------------------------------------------------------------------
+                //  Require function call retry logic
+                // ------------------------------------------------------------------
+                if (requireFunctionCall && !parsedResponse.function_call) {
+                    if (__attemptCount >= 2) {
+                        // Exceeded retry limit (attempts are zero-indexed internally)
+                        throw new Error(
+                            `Required function ${chatOptions.function_call?.name || ''} was not called after 3 attempts`
+                        );
+                    }
+
+                    const functionSpec = (chatOptions.functions || []).find(
+                        (f: any) => f.name === chatOptions.function_call?.name
+                    );
+
+                    const retryPrompt = `Вы не вызвали обязательную функцию «${chatOptions.function_call?.name}». Пожалуйста, вызовите её, используя корректные аргументы.\n\nОписание функции:\n${JSON.stringify(
+                        functionSpec || {},
+                        null,
+                        2
+                    )}\n\nИсходный запрос пользователя:\n${prompt}`;
+
+                    return await this.generate(retryPrompt, {
+                        ...chatOptions,
+                        requireFunctionCall: true,
+                        __attemptCount: __attemptCount + 1,
+                    });
+                }
 
                 // Save recording if enabled
                 if (this.recordingOptions.enabled && this.recordingService) {

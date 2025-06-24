@@ -1,63 +1,53 @@
 import { TextType } from '@/types';
 import { ElementType } from '@/types/elements';
 import { SlideTemplateCore } from '@/types/templates';
-import {
-    FaSquare,
-    FaImage,
-    FaRegAddressCard,
-    FaColumns,
-    FaList,
-    FaHighlighter,
-    FaThLarge,
-    FaChartBar,
-    FaTable,
-} from 'react-icons/fa';
+import { FaImage, FaRegAddressCard, FaColumns, FaList, FaHighlighter, FaThLarge, FaChartBar } from 'react-icons/fa';
 import { MdViewColumn } from 'react-icons/md';
 
 // Единый реестр шаблонов
 export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
-    blank: {
-        id: 'blank',
-        name: 'Пустой слайд',
-        layouts: [
-            {
-                layout: 'blank',
-                columnsCount: 1,
-                rowsCount: 1,
-                elements: [
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'content',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.DEFAULT,
-                            content: '',
-                        },
+    // blank: {
+    //     id: 'blank',
+    //     name: 'Пустой слайд',
+    //     layouts: [
+    //         {
+    //             layout: 'blank',
+    //             columnsCount: 1,
+    //             rowsCount: 1,
+    //             elements: [
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'content',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.DEFAULT,
+    //                         content: '',
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Свободное размещение контента',
-                            contextRules: [
-                                'Возможность добавления любого типа контента',
-                                'Гибкая структура без предопределенного форматирования',
-                            ],
-                        },
-                    },
-                ],
-            },
-        ],
-        ui: {
-            category: 'basic-templates',
-            label: 'Пустой слайд',
-            icon: FaSquare,
-            description: 'Пустой слайд для свободного размещения контента',
-        },
-        llm: {
-            description: 'Базовый шаблон без предопределенной структуры',
-            purpose: ['custom-content', 'flexible-layout'],
-            useCases: ['Произвольный контент', 'Креативное оформление', 'Специальные макеты'],
-        },
-    },
+    //                     llmHints: {
+    //                         purpose: 'Свободное размещение контента',
+    //                         contextRules: [
+    //                             'Возможность добавления любого типа контента',
+    //                             'Гибкая структура без предопределенного форматирования',
+    //                         ],
+    //                     },
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     ui: {
+    //         category: 'basic-templates',
+    //         label: 'Пустой слайд',
+    //         icon: FaSquare,
+    //         description: 'Пустой слайд для свободного размещения контента',
+    //     },
+    //     llm: {
+    //         description: 'Базовый шаблон без предопределенной структуры',
+    //         purpose: ['custom-content', 'flexible-layout'],
+    //         useCases: ['Произвольный контент', 'Креативное оформление', 'Специальные макеты'],
+    //     },
+    // },
     'image-text': {
         id: 'image-text',
         name: 'Изображение и текст',
@@ -140,7 +130,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         row: 0,
                         column: 0,
                         props: {
-                            textType: TextType.HEADING4,
+                            textType: TextType.DEFAULT,
                             content: 'Текст слайда',
                         },
 
@@ -209,8 +199,8 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                             content: 'Заголовок слайда',
                         },
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
-                            contextRules: ['Четкий, информативный заголовок'],
+                            purpose: 'Основной Заголовок слайда',
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
                         },
                     },
                 ],
@@ -234,6 +224,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                             contextRules: [
                                 'Содержимое должно быть сбалансировано с правой колонкой',
                                 'Использовать параллельные структуры в обеих колонках',
+                                'Символ ### для заголовков в markdown и без дополнительных символов для текста',
                             ],
                         },
                     },
@@ -247,10 +238,11 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                             content: 'Колонка 2',
                         },
                         llmHints: {
-                            purpose: 'Второй пункт сравнения или вторая часть информации',
+                            purpose: 'Второй пункт сравнения или вторая часть информации ',
                             contextRules: [
                                 'Поддерживать логическую связь с левой колонкой',
                                 'Сохранять баланс объема контента',
+                                'Символ ### для заголовков в markdown и без дополнительных символов для текста',
                             ],
                         },
                     },
@@ -288,8 +280,8 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                             content: 'Заголовок слайда',
                         },
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
-                            contextRules: ['Четкий, информативный заголовок'],
+                            purpose: 'Основной Заголовок слайда',
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
                         },
                     },
                 ],
@@ -313,6 +305,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                             contextRules: [
                                 'Поддерживать единую структуру во всех колонках',
                                 'Использовать краткие, четкие формулировки',
+                                'Символ ### для заголовков в markdown и без дополнительных символов для текста',
                             ],
                         },
                     },
@@ -330,6 +323,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                             contextRules: [
                                 'Сохранять логическую связь с другими колонками',
                                 'Поддерживать единый стиль изложения',
+                                'Символ ### для заголовков в markdown и без дополнительных символов для текста',
                             ],
                         },
                     },
@@ -347,6 +341,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                             contextRules: [
                                 'Завершать логическую последовательность',
                                 'Сохранять баланс с другими колонками',
+                                'Символ ### для заголовков в markdown и без дополнительных символов для текста',
                             ],
                         },
                     },
@@ -389,8 +384,8 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                             content: 'Заголовок слайда',
                         },
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
-                            contextRules: ['Четкий, информативный заголовок'],
+                            purpose: 'Основной Заголовок слайда',
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
                         },
                     },
                 ],
@@ -411,7 +406,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         },
                         llmHints: {
                             purpose: 'Заголовок первой колонки',
-                            contextRules: ['Краткий, информативный заголовок'],
+                            contextRules: ['Краткий, информативный заголовок', 'Символ ### для заголовков в markdown'],
                         },
                     },
                     {
@@ -439,7 +434,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         },
                         llmHints: {
                             purpose: 'Заголовок второй колонки',
-                            contextRules: ['Краткий, информативный заголовок'],
+                            contextRules: ['Краткий, информативный заголовок', 'Символ ### для заголовков в markdown'],
                         },
                     },
                     {
@@ -490,8 +485,8 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                             content: 'Заголовок слайда',
                         },
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
-                            contextRules: ['Четкий, информативный заголовок'],
+                            purpose: 'Основной Заголовок слайда',
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
                         },
                     },
                 ],
@@ -512,7 +507,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         },
                         llmHints: {
                             purpose: 'Заголовок первой колонки',
-                            contextRules: ['Краткий, информативный заголовок'],
+                            contextRules: ['Краткий, информативный заголовок', 'Символ ### для заголовков в markdown'],
                         },
                     },
                     {
@@ -540,7 +535,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         },
                         llmHints: {
                             purpose: 'Заголовок второй колонки',
-                            contextRules: ['Краткий, информативный заголовок'],
+                            contextRules: ['Краткий, информативный заголовок', 'Символ ### для заголовков в markdown'],
                         },
                     },
                     {
@@ -568,7 +563,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         },
                         llmHints: {
                             purpose: 'Заголовок третьей колонки',
-                            contextRules: ['Краткий, информативный заголовок'],
+                            contextRules: ['Краткий, информативный заголовок', 'Символ ### для заголовков в markdown'],
                         },
                     },
                     {
@@ -619,8 +614,8 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                             content: 'Заголовок слайда',
                         },
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
-                            contextRules: ['Четкий, информативный заголовок'],
+                            purpose: 'Основной Заголовок слайда',
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
                         },
                     },
                 ],
@@ -641,7 +636,11 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         },
                         llmHints: {
                             purpose: 'Первый элемент из четырех',
-                            contextRules: ['Краткость', 'Единый формат с другими колонками'],
+                            contextRules: [
+                                'Краткость',
+                                'Единый формат с другими колонками',
+                                'Символ ### для заголовков в markdown и без дополнительных символов для текста',
+                            ],
                         },
                     },
                     {
@@ -655,7 +654,11 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         },
                         llmHints: {
                             purpose: 'Второй элемент из четырех',
-                            contextRules: ['Краткость', 'Единый формат с другими колонками'],
+                            contextRules: [
+                                'Краткость',
+                                'Единый формат с другими колонками',
+                                'Символ ### для заголовков в markdown и без дополнительных символов для текста',
+                            ],
                         },
                     },
                     {
@@ -669,7 +672,11 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         },
                         llmHints: {
                             purpose: 'Третий элемент из четырех',
-                            contextRules: ['Краткость', 'Единый формат с другими колонками'],
+                            contextRules: [
+                                'Краткость',
+                                'Единый формат с другими колонками',
+                                'Символ ### для заголовков в markdown и без дополнительных символов для текста',
+                            ],
                         },
                     },
                     {
@@ -683,7 +690,11 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         },
                         llmHints: {
                             purpose: 'Четвертый элемент из четырех',
-                            contextRules: ['Краткость', 'Единый формат с другими колонками'],
+                            contextRules: [
+                                'Краткость',
+                                'Единый формат с другими колонками',
+                                'Символ ### для заголовков в markdown и без дополнительных символов для текста',
+                            ],
                         },
                     },
                 ],
@@ -720,8 +731,8 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                             content: 'Заголовок слайда',
                         },
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
-                            contextRules: ['Четкий, информативный заголовок'],
+                            purpose: 'Основной Заголовок слайда',
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
                         },
                     },
                 ],
@@ -747,11 +758,12 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                                 'Краткие, четкие формулировки',
                                 'Логическая последовательность',
                                 'Единообразное форматирование',
+                                'Символ тире (-) для элемента списка в markdown',
                             ],
                             examples: [
-                                `<bullet>Пункт 1</bullet>
-                                <bullet>Пункт 2</bullet>
-                                <bullet>Пункт 3</bullet>`,
+                                `- Пункт 1
+                                - Пункт 2
+                                - Пункт 3`,
                             ],
                         },
                     },
@@ -791,8 +803,8 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         },
 
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
-                            contextRules: ['Четкий, информативный заголовок'],
+                            purpose: 'Основной Заголовок слайда',
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
                         },
                     },
                 ],
@@ -818,6 +830,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                                 'Краткие, четкие формулировки',
                                 'Связь с изображением',
                                 'Единообразное форматирование',
+                                'Символ - для элемента списка в markdown',
                             ],
                         },
                     },
@@ -859,9 +872,12 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
             ],
         },
     },
+
+    // FIXME акцент - не то, как тут используется
     'accent-left': {
         id: 'accent-left',
         name: 'Акцент слева',
+        disabled: true,
         layouts: [
             {
                 layout: 'accent-left',
@@ -885,7 +901,11 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
 
                         llmHints: {
                             purpose: 'Акцентный текст или заголовок',
-                            contextRules: ['Краткая, запоминающаяся фраза', 'Ключевое сообщение или цифра'],
+                            contextRules: [
+                                'Краткая, запоминающаяся фраза',
+                                'Ключевое сообщение или цифра',
+                                'Символ ## для заголовков в markdown',
+                            ],
                         },
                     },
                     {
@@ -919,9 +939,11 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
         },
     },
 
+    // FIXME акцент - не то, как тут используется
     'accent-right': {
         id: 'accent-right',
         name: 'Акцент справа',
+        disabled: true,
         layouts: [
             {
                 layout: 'accent-right',
@@ -979,9 +1001,11 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
         },
     },
 
+    // FIXME акцент - не то, как тут используется
     'accent-top': {
         id: 'accent-top',
         name: 'Акцент сверху',
+        disabled: true,
         layouts: [
             {
                 layout: 'accent-top',
@@ -1039,9 +1063,11 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
         },
     },
 
+    // FIXME акцент - не то, как тут используется
     'accent-right-fit': {
         id: 'accent-right-fit',
         name: 'Акцент справа (компактный)',
+        disabled: true,
         layouts: [
             {
                 layout: 'accent-right-fit',
@@ -1099,9 +1125,11 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
         },
     },
 
+    // FIXME акцент - не то, как тут используется
     'accent-left-fit': {
         id: 'accent-left-fit',
         name: 'Акцент слева (компактный)',
+        disabled: true,
         layouts: [
             {
                 layout: 'accent-left-fit',
@@ -1159,9 +1187,11 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
         },
     },
 
+    // FIXME акцент - не то, как тут используется
     'accent-background': {
         id: 'accent-background',
         name: 'Акцент на фоне',
+        disabled: true,
         layouts: [
             {
                 layout: 'accent-background',
@@ -1244,8 +1274,8 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         },
 
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
-                            contextRules: ['Четкий, информативный заголовок'],
+                            purpose: 'Основной Заголовок слайда',
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
                         },
                     },
                 ],
@@ -1287,7 +1317,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
 
                         llmHints: {
                             purpose: 'Заголовок левой колонки',
-                            contextRules: ['Четкий, информативный заголовок'],
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ### для заголовков в markdown'],
                         },
                     },
                     {
@@ -1300,7 +1330,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                             content: 'Колонка 1',
                         },
                         llmHints: {
-                            purpose: 'Второй элемент из четырех',
+                            purpose: 'Текст левой колонки',
                             contextRules: ['Краткость', 'Единый формат с другими колонками'],
                         },
                     },
@@ -1335,8 +1365,8 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         },
 
                         llmHints: {
-                            purpose: 'Заголовок левой колонки',
-                            contextRules: ['Четкий, информативный заголовок'],
+                            purpose: 'Заголовок правой колонки',
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ### для заголовков в markdown'],
                         },
                     },
                     {
@@ -1349,7 +1379,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                             content: 'Колонка 2',
                         },
                         llmHints: {
-                            purpose: 'Второй элемент из четырех',
+                            purpose: 'Текст правой колонки',
                             contextRules: ['Краткость', 'Единый формат с другими колонками'],
                         },
                     },
@@ -1389,8 +1419,8 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         },
 
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
-                            contextRules: ['Четкий, информативный заголовок'],
+                            purpose: 'Основной Заголовок слайда',
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
                         },
                     },
                 ],
@@ -1432,7 +1462,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
 
                         llmHints: {
                             purpose: 'Заголовок левой колонки',
-                            contextRules: ['Четкий, информативный заголовок'],
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ### для заголовков в markdown'],
                         },
                     },
                     {
@@ -1445,7 +1475,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                             content: 'Колонка 1',
                         },
                         llmHints: {
-                            purpose: 'Второй элемент из четырех',
+                            purpose: 'Текст левой колонки',
                             contextRules: ['Краткость', 'Единый формат с другими колонками'],
                         },
                     },
@@ -1476,12 +1506,12 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         column: 1,
                         props: {
                             textType: TextType.HEADING3,
-                            content: 'Заголовок правой колонки',
+                            content: 'Заголовок центральной колонки',
                         },
 
                         llmHints: {
-                            purpose: 'Заголовок левой колонки',
-                            contextRules: ['Четкий, информативный заголовок'],
+                            purpose: 'Заголовок центральной колонки',
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ### для заголовков в markdown'],
                         },
                     },
                     {
@@ -1494,8 +1524,12 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                             content: 'Колонка 2',
                         },
                         llmHints: {
-                            purpose: 'Второй элемент из четырех',
-                            contextRules: ['Краткость', 'Единый формат с другими колонками'],
+                            purpose: 'Текст центральной колонки',
+                            contextRules: [
+                                'Краткость',
+                                'Единый формат с другими колонками',
+                                'Символ ### для заголовков в markdown',
+                            ],
                         },
                     },
 
@@ -1529,8 +1563,8 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         },
 
                         llmHints: {
-                            purpose: 'Заголовок левой колонки',
-                            contextRules: ['Четкий, информативный заголовок'],
+                            purpose: 'Заголовок правой колонки',
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ### для заголовков в markdown'],
                         },
                     },
                     {
@@ -1543,7 +1577,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                             content: 'Колонка 3',
                         },
                         llmHints: {
-                            purpose: 'Второй элемент из четырех',
+                            purpose: 'Текст правой колонки',
                             contextRules: ['Краткость', 'Единый формат с другими колонками'],
                         },
                     },
@@ -1583,8 +1617,8 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         },
 
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
-                            contextRules: ['Четкий, информативный заголовок'],
+                            purpose: 'Основной Заголовок слайда',
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
                         },
                     },
                 ],
@@ -1661,10 +1695,13 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                                 title: {
                                     type: 'string',
                                     description: 'Заголовок изображения',
+                                    contextRules: ['Текст без символов для markdown'],
+
                                 },
                                 text: {
                                     type: 'string',
                                     description: 'Описание изображения',
+                                    contextRules: ['Текст без символов для markdown'],
                                 },
                                 imageUrl: {
                                     type: 'string',
@@ -1709,8 +1746,8 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                         },
 
                         llmHints: {
-                            purpose: 'Основной заголовок слайда',
-                            contextRules: ['Четкий, информативный заголовок'],
+                            purpose: 'Основной Заголовок слайда',
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
                         },
                     },
                 ],
@@ -1772,10 +1809,12 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                                 title: {
                                     type: 'string',
                                     description: 'Заголовок изображения',
+                                    contextRules: ['Текст без символов для markdown'],
                                 },
                                 text: {
                                     type: 'string',
                                     description: 'Описание изображения',
+                                    contextRules: ['Текст без символов для markdown'],
                                 },
                                 imageUrl: {
                                     type: 'string',
@@ -1821,7 +1860,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
 
                         llmHints: {
                             purpose: 'Заголовок диаграммы',
-                            contextRules: ['Четкий, информативный заголовок'],
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
                         },
                     },
                 ],
@@ -1928,7 +1967,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
 
                         llmHints: {
                             purpose: 'Заголовок диаграммы',
-                            contextRules: ['Четкий, информативный заголовок'],
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
                         },
                     },
                 ],
@@ -2037,7 +2076,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
 
                         llmHints: {
                             purpose: 'Заголовок диаграммы',
-                            contextRules: ['Четкий, информативный заголовок'],
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
                         },
                     },
                 ],
@@ -2146,7 +2185,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
 
                         llmHints: {
                             purpose: 'Заголовок диаграммы',
-                            contextRules: ['Четкий, информативный заголовок'],
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
                         },
                     },
                 ],
@@ -2232,105 +2271,219 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
         },
     },
 
-    'three-row-table': {
-        id: 'three-row-table',
-        name: 'Таблица 3x3',
+    // 'three-row-table': {
+    //     id: 'three-row-table',
+    //     name: 'Таблица 3x3',
+    //     layouts: [
+    //         {
+    //             layout: 'three-row-table',
+    //             columnsCount: 1,
+    //             rowsCount: 1,
+    //             elements: [
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'title',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.HEADING2,
+    //                         content: 'Заголовок таблицы',
+    //                     },
+
+    //                     llmHints: {
+    //                         purpose: 'Заголовок таблицы (символ ## в markdown)',
+    //                         contextRules: ['Четкий, информативный заголовок'],
+    //                     },
+    //                 },
+    //             ],
+    //         },
+    //         {
+    //             layout: 'three-row-table',
+    //             columnsCount: 1,
+    //             rowsCount: 1,
+    //             elements: [
+    //                 {
+    //                     elementTypeId: ElementType.TABLE,
+    //                     elementVariant: 'table',
+    //                     row: 0,
+    //                     column: 0,
+    //                     slot: 'content',
+    //                     props: {
+    //                         headers: ['Колонка 1', 'Колонка 2', 'Колонка 3'],
+    //                         rows: [
+    //                             ['Ячейка 1,1', 'Ячейка 1,2', 'Ячейка 1,3'],
+    //                             ['Ячейка 2,1', 'Ячейка 2,2', 'Ячейка 2,3'],
+    //                             ['Ячейка 3,1', 'Ячейка 3,2', 'Ячейка 3,3'],
+    //                         ],
+    //                         style: {
+    //                             headerBackground: 'var(--primary-color)',
+    //                             headerTextColor: 'white',
+    //                             borderColor: 'var(--border-color)',
+    //                             alternateRowBackground: true,
+    //                         },
+    //                     },
+
+    //                     llmHints: {
+    //                         purpose: 'Структурированное представление данных в таблице',
+    //                         contextRules: [
+    //                             'Заголовки колонок должны быть информативными',
+    //                             'Данные должны быть логически организованы',
+    //                             'Содержимое ячеек должно быть кратким',
+    //                         ],
+    //                         items: {
+    //                             title: {
+    //                                 type: 'string',
+    //                                 description: 'Заголовок изображения',
+    //                             },
+    //                             text: {
+    //                                 type: 'string',
+    //                                 description: 'Описание изображения',
+    //                             },
+    //                             imageUrl: {
+    //                                 type: 'string',
+    //                                 description:
+    //                                     'Инструкция для генерации изображения, связанного с текстами в данном блоке',
+    //                             },
+    //                         },
+    //                     },
+    //                 },
+    //             ],
+    //         },
+    //         {
+    //             layout: 'three-row-table',
+    //             columnsCount: 1,
+    //             rowsCount: 1,
+    //             elements: [
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'description',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.DEFAULT,
+    //                         content: 'Описание данных и ключевые выводы',
+    //                     },
+
+    //                     llmHints: {
+    //                         purpose: 'Пояснение к таблице',
+    //                         contextRules: [
+    //                             'Объяснение представленных данных',
+    //                             'Выделение важных закономерностей',
+    //                             'Формулировка выводов',
+    //                         ],
+    //                     },
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     ui: {
+    //         category: 'table-templates',
+    //         label: 'Таблица 3x3',
+    //         icon: FaTable,
+    //         description: 'Шаблон с таблицей 3x3',
+    //     },
+    //     llm: {
+    //         description: 'Шаблон для структурированного представления данных в таблице 3x3',
+    //         purpose: ['data-organization', 'comparison', 'structured-info'],
+    //         useCases: ['Сравнительный анализ', 'Матрица данных', 'Структурированная информация'],
+    //     },
+    // },
+
+    'welcome-slide': {
+        id: 'welcome-slide',
+        name: 'Приветственный слайд с темой',
         layouts: [
             {
-                layout: 'three-row-table',
+                layout: 'welcome-slide',
                 columnsCount: 1,
                 rowsCount: 1,
                 elements: [
                     {
                         elementTypeId: ElementType.TEXT,
-                        slot: 'title',
+                        slot: 'main_title',
                         row: 0,
                         column: 0,
                         props: {
-                            textType: TextType.HEADING2,
-                            content: 'Заголовок таблицы',
-                        },
-
-                        llmHints: {
-                            purpose: 'Заголовок таблицы',
-                            contextRules: ['Четкий, информативный заголовок'],
-                        },
-                    },
-                ],
-            },
-            {
-                layout: 'three-row-table',
-                columnsCount: 1,
-                rowsCount: 1,
-                elements: [
-                    {
-                        elementTypeId: ElementType.TABLE,
-                        elementVariant: 'table',
-                        row: 0,
-                        column: 0,
-                        slot: 'content',
-                        props: {
-                            headers: ['Колонка 1', 'Колонка 2', 'Колонка 3'],
-                            rows: [
-                                ['Ячейка 1,1', 'Ячейка 1,2', 'Ячейка 1,3'],
-                                ['Ячейка 2,1', 'Ячейка 2,2', 'Ячейка 2,3'],
-                                ['Ячейка 3,1', 'Ячейка 3,2', 'Ячейка 3,3'],
-                            ],
+                            textType: TextType.HEADING1,
+                            content: 'Название презентации',
                             style: {
-                                headerBackground: 'var(--primary-color)',
-                                headerTextColor: 'white',
-                                borderColor: 'var(--border-color)',
-                                alternateRowBackground: true,
+                                fontSize: '3.5rem',
+                                fontWeight: 'bold',
+                                textAlign: 'center',
+                                marginBottom: '2rem',
                             },
                         },
-
                         llmHints: {
-                            purpose: 'Структурированное представление данных в таблице',
+                            purpose: 'Главный заголовок презентации',
                             contextRules: [
-                                'Заголовки колонок должны быть информативными',
-                                'Данные должны быть логически организованы',
-                                'Содержимое ячеек должно быть кратким',
+                                'Краткий, но информативный заголовок',
+                                'Должен отражать основную тему презентации',
+                                'Использовать привлекающие внимание формулировки',
+                                'Символ # в markdown',
                             ],
-                            items: {
-                                title: {
-                                    type: 'string',
-                                    description: 'Заголовок изображения',
-                                },
-                                text: {
-                                    type: 'string',
-                                    description: 'Описание изображения',
-                                },
-                                imageUrl: {
-                                    type: 'string',
-                                    description:
-                                        'Инструкция для генерации изображения, связанного с текстами в данном блоке',
-                                },
-                            },
                         },
                     },
                 ],
             },
             {
-                layout: 'three-row-table',
+                layout: 'welcome-slide',
                 columnsCount: 1,
                 rowsCount: 1,
                 elements: [
                     {
                         elementTypeId: ElementType.TEXT,
-                        slot: 'description',
+                        slot: 'subtitle',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.HEADING3,
+                            content: 'Подзаголовок или описание темы',
+                            style: {
+                                fontSize: '1.8rem',
+                                textAlign: 'center',
+                                opacity: 0.8,
+                                marginBottom: '3rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Дополнительное описание или контекст',
+                            contextRules: [
+                                'Расширяет и поясняет основной заголовок',
+                                'Может содержать краткое описание содержания',
+                                'Устанавливает контекст для аудитории',
+                                'Символ ### в markdown для заголовков и без дополнительных символов для текста',
+                            ],
+                        },
+                    },
+                ],
+            },
+            {
+                layout: 'welcome-slide',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'presenter_info',
                         row: 0,
                         column: 0,
                         props: {
                             textType: TextType.DEFAULT,
-                            content: 'Описание данных и ключевые выводы',
+                            content: 'Имя докладчика • Дата • Организация',
+                            style: {
+                                fontSize: '1.2rem',
+                                textAlign: 'center',
+                                opacity: 0.7,
+                                marginTop: 'auto',
+                            },
                         },
-
                         llmHints: {
-                            purpose: 'Пояснение к таблице',
+                            purpose: 'Информация о докладчике и мероприятии',
                             contextRules: [
-                                'Объяснение представленных данных',
-                                'Выделение важных закономерностей',
-                                'Формулировка выводов',
+                                'Включает имя докладчика',
+                                'Может содержать дату и место',
+                                'Указывает организацию или контекст',
+                                'Символ ### в markdown для заголовков и без дополнительных символов для текста',
                             ],
                         },
                     },
@@ -2338,15 +2491,285 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
             },
         ],
         ui: {
-            category: 'table-templates',
-            label: 'Таблица 3x3',
-            icon: FaTable,
-            description: 'Шаблон с таблицей 3x3',
+            category: 'intro-templates',
+            label: 'Приветственный слайд',
+            icon: FaRegAddressCard,
+            description: 'Шаблон для начала презентации с темой',
         },
         llm: {
-            description: 'Шаблон для структурированного представления данных в таблице 3x3',
-            purpose: ['data-organization', 'comparison', 'structured-info'],
-            useCases: ['Сравнительный анализ', 'Матрица данных', 'Структурированная информация'],
+            description: 'Шаблон для создания приветственного слайда с основной темой презентации',
+            purpose: ['introduction', 'presentation-start', 'theme-announcement'],
+            useCases: ['Начало презентации', 'Представление темы', 'Вводная информация'],
+        },
+    },
+
+    'final-slide-contacts': {
+        id: 'final-slide-contacts',
+        name: 'Заключительный слайд с контактами',
+        layouts: [
+            {
+                layout: 'final-slide-contacts',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'thank_you',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.HEADING1,
+                            content: 'Спасибо за внимание!',
+                            style: {
+                                fontSize: '3rem',
+                                fontWeight: 'bold',
+                                textAlign: 'center',
+                                marginBottom: '3rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Благодарность аудитории',
+                            contextRules: [
+                                'Вежливое завершение презентации',
+                                'Может включать призыв к действию',
+                                'Создает позитивное впечатление',
+                                'Символ # в markdown',
+                            ],
+                        },
+                    },
+                ],
+            },
+            {
+                layout: 'final-slide-contacts',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'contact_info',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.DEFAULT,
+                            content: '📧 email@example.com\n📱 +7 (999) 123-45-67\n🌐 www.example.com',
+                            style: {
+                                fontSize: '1.5rem',
+                                textAlign: 'center',
+                                lineHeight: '2rem',
+                                marginBottom: '2rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Контактная информация для связи',
+                            contextRules: [
+                                'Включает основные способы связи',
+                                'Использует эмодзи для визуального разделения',
+                                'Информация должна быть актуальной',
+                                'Символ ### в markdown для заголовков и без дополнительных символов для текста',
+                            ],
+                        },
+                    },
+                ],
+            },
+            {
+                layout: 'final-slide-contacts',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'additional_info',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.DEFAULT,
+                            content: 'Дополнительная информация или призыв к действию',
+                            style: {
+                                fontSize: '1.2rem',
+                                textAlign: 'center',
+                                opacity: 0.8,
+                                fontStyle: 'italic',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Дополнительная информация или призыв к действию',
+                            contextRules: [
+                                'Может содержать призыв к действию',
+                                'Дополнительная информация о проекте',
+                                'Ссылки на ресурсы или материалы',
+                            ],
+                        },
+                    },
+                ],
+            },
+        ],
+        ui: {
+            category: 'final-templates',
+            label: 'Заключительный слайд',
+            icon: FaRegAddressCard,
+            description: 'Шаблон для завершения презентации с контактами',
+        },
+        llm: {
+            description: 'Шаблон для создания заключительного слайда с контактной информацией',
+            purpose: ['conclusion', 'contact-information', 'presentation-end'],
+            useCases: ['Завершение презентации', 'Предоставление контактов', 'Призыв к действию'],
+        },
+    },
+
+    'final-slide-contacts-qr': {
+        id: 'final-slide-contacts-qr',
+        name: 'Заключительный слайд с контактами и QR-кодом',
+        layouts: [
+            {
+                layout: 'final-slide-contacts-qr',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'thank_you',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.HEADING1,
+                            content: 'Спасибо за внимание!',
+                            style: {
+                                fontSize: '2.5rem',
+                                fontWeight: 'bold',
+                                textAlign: 'left',
+                                marginBottom: '2rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Благодарность аудитории',
+                            contextRules: [
+                                'Вежливое завершение презентации',
+                                'Может включать призыв к действию',
+                                'Создает позитивное впечатление',
+                                'Символ # в markdown',
+                            ],
+                        },
+                    },
+                ],
+            },
+
+            {
+                layout: 'final-slide-contacts-qr',
+                columnsCount: 2,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'contact_info',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.DEFAULT,
+                            content: '📧 email@example.com\n📱 +7 (999) 123-45-67\n🌐 www.example.com',
+                            style: {
+                                fontSize: '1.3rem',
+                                textAlign: 'left',
+                                lineHeight: '1.8rem',
+                                marginBottom: '2rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Контактная информация для связи',
+                            contextRules: [
+                                'Включает основные способы связи',
+                                'Использует эмодзи для визуального разделения',
+                                'Информация должна быть актуальной',
+                                'Символ ### в markdown для заголовков и без дополнительных символов для текста',
+                            ],
+                        },
+                    },
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'additional_info',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.DEFAULT,
+                            content: 'Дополнительная информация или призыв к действию',
+                            style: {
+                                fontSize: '1rem',
+                                textAlign: 'left',
+                                opacity: 0.8,
+                                fontStyle: 'italic',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Дополнительная информация или призыв к действию',
+                            contextRules: [
+                                'Может содержать призыв к действию',
+                                'Дополнительная информация о проекте',
+                                'Ссылки на ресурсы или материалы',
+                                'Символ ### в markdown для заголовков и без дополнительных символов для текста',
+                            ],
+                        },
+                    },
+                    {
+                        elementTypeId: ElementType.IMAGE,
+                        slot: 'qr_code',
+                        row: 0,
+                        column: 1,
+                        props: {
+                            src: '',
+                            alt: 'QR-код для связи',
+                            alignment: 'center',
+                            width: '200px',
+                            style: {
+                                border: '2px solid var(--border-color)',
+                                borderRadius: '8px',
+                                padding: '1rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'QR-код для быстрого доступа к контактам или ресурсам',
+                            contextRules: [
+                                'QR-код должен вести на актуальную ссылку',
+                                'Может содержать контактную информацию',
+                                'Должен быть четким и читаемым',
+                            ],
+                        },
+                    },
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'qr_description',
+                        row: 0,
+                        column: 1,
+                        props: {
+                            textType: TextType.DEFAULT,
+                            content: 'Отсканируйте QR-код для связи',
+                            style: {
+                                fontSize: '1rem',
+                                textAlign: 'center',
+                                opacity: 0.7,
+                                marginTop: '1rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Пояснение к QR-коду',
+                            contextRules: [
+                                'Краткое объяснение назначения QR-кода',
+                                'Призыв к действию',
+                                'Должно быть понятно и привлекательно',
+                            ],
+                        },
+                    },
+                ],
+            },
+        ],
+        ui: {
+            category: 'final-templates',
+            label: 'Заключительный слайд с QR',
+            icon: FaRegAddressCard,
+            description: 'Шаблон для завершения презентации с контактами и QR-кодом',
+        },
+        llm: {
+            description: 'Шаблон для создания заключительного слайда с контактной информацией и QR-кодом',
+            purpose: ['conclusion', 'contact-information', 'qr-code', 'presentation-end'],
+            useCases: ['Завершение презентации', 'Предоставление контактов', 'Быстрый доступ к ресурсам'],
         },
     },
 };

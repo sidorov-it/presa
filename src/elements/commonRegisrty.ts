@@ -22,7 +22,6 @@ import { MenuElementType, ImageElement, EditorElement, TipTapRefs, SmartLayoutEl
 
 import { BubbleMenus } from '@/components/editor/Menus/menusComponents';
 import { MutableRefObject } from 'react';
-import getHeadingLevel from '@/utils/getHeadingLevel';
 
 interface ElementRegistryElement {
     elementTypeId: ElementType;
@@ -896,14 +895,10 @@ export const fillSlots = ({
         case ElementType.BOX: {
             const editorRef = tiptapRefs.current.editors[content[0].elementId];
             if (editorRef) {
-                const headingLevel = getHeadingLevel(editorRef.editor);
-
                 editorRef.editor
                     .chain()
                     .focus(null, { scrollIntoView: false })
                     .setContent(content[0].content)
-                    .selectAll()
-                    .setFontSize(headingLevel)
                     .blur()
                     .run();
 
@@ -931,28 +926,20 @@ export const fillSlots = ({
                     let updatedText = '';
 
                     if (titleEditor) {
-                        const titleHeadingLevel = getHeadingLevel(titleEditor.editor);
-
                         titleEditor?.editor
                             .chain()
                             .focus(null, { scrollIntoView: false })
                             .setContent(titleValue || '')
-                            .selectAll()
-                            .setFontSize(titleHeadingLevel)
                             .blur()
                             .run();
 
                         updatedTitle = titleEditor.editor.getHTML();
                     }
                     if (textEditor) {
-                        const textHeadingLevel = getHeadingLevel(textEditor.editor);
-
                         textEditor.editor
                             .chain()
                             .focus(null, { scrollIntoView: false })
                             .setContent(textValue || '')
-                            .selectAll()
-                            .setFontSize(textHeadingLevel)
                             .blur()
                             .run();
 

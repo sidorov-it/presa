@@ -1,6 +1,6 @@
-import { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import rewriteSlideContent from '@/services/llm/gigaChat/rewriteSlideContent';
+import rewriteSlideContent from '@/services/llm/rewriteSlideContent';
 import { withTokenDeduction, TokenCalculators, MetadataExtractors } from '@/utils/aiTokenMiddleware';
 import logger from '@/utils/logger';
 
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
             const currentSlide = presentation.slides[slideIndex];
             const content = await rewriteSlideContent(session.user.id, currentSlide);
 
-            return content;
+            return { content };
         }
     );
 }

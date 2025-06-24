@@ -13,7 +13,18 @@ export interface SlideElement {
 }
 
 export interface LLMService {
-    generate(prompt: string, options?: { functions?: any[]; function_call?: any; presentationId?: string }): Promise<LLMResponse>;
+    generate(
+        prompt: string,
+        options?: {
+            functions?: any[];
+            function_call?: any;
+            presentationId?: string;
+            /** If true, the LLM **must** invoke the specified function. */
+            requireFunctionCall?: boolean;
+            /** Internal counter to prevent infinite retries when the function is not invoked by the LLM. */
+            __attemptCount?: number;
+        }
+    ): Promise<LLMResponse>;
     // Optional image generation capability. Not all providers implement this method.
     generateImage?(
         prompt: string,

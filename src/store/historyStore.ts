@@ -122,10 +122,12 @@ const revertDiffs = (state: any, diffs: deepDiff.Diff<any, any>[]) => {
     return newState;
 };
 
-const findTextElements = (state: any) => {
+const findTextElements = (state: any, presentationId: string) => {
     const textElements: { id: string; content: any }[] = [];
 
     state.presentations.forEach((presentation: any) => {
+        if (presentation.id !== presentationId) return;
+
         presentation.slides.forEach((slide: any) => {
             slide.layouts.forEach((layout: any) => {
                 layout.elements.forEach((element: any) => {
@@ -402,7 +404,7 @@ export const useHistoryStore = create<HistoryState>()(
                     // Get the current state
                     const currentState = { presentations: presentationStore.presentations };
 
-                    const textElements = findTextElements(lastAction.before);
+                    const textElements = findTextElements(lastAction.before, presentationId);
 
                     const contentMap = new Map(textElements.map(el => [el.id, el.content]));
 

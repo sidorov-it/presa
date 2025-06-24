@@ -1,9 +1,11 @@
+/* eslint-disable prettier/prettier */
 import { SlideTemplateCore, TemplateElement } from '@/types/templates';
 import { createLLMService } from '@/services/llm';
 import { ElementType } from '@/types/elements';
 import { TextType } from '@/types';
 import getRandomString from '@/utils/getRandomString';
 import { LLMRequestContext, SlotKeyMapping } from '@/types/gigachat';
+import logger from '@/utils/logger';
 
 function generateUniqueSlotKeys(template: SlideTemplateCore): Map<string, SlotKeyMapping> {
     const mapping = new Map<string, SlotKeyMapping>();
@@ -74,9 +76,7 @@ function generateUniqueSlotKeys(template: SlideTemplateCore): Map<string, SlotKe
                         llmHints: element.llmHints,
                         textType: element.props?.textType,
                     });
-                } else if (!element.slot) {
-                    return;
-                } else {
+                } else if (element.slot) {
                     let uniqueKey = element.slot;
                     if (usedSlots.has(element.slot)) {
                         uniqueKey = `${element.slot}-${layoutIndex}-${elementIndex}-${element.column}`;
@@ -142,6 +142,7 @@ function createGenerateSlideContentFunction(template: SlideTemplateCore) {
                 entryProperties[item.key] = {
                     type: item.type,
                     description: item.description,
+                    contextRules: item.contextRules,
                 };
             });
 
@@ -210,6 +211,7 @@ function generateSlotDescription(template: SlideTemplateCore, slotsMapping: Map<
                                         return `    Слот "${item.key}":
         - Тип: ${item.type}
         - Назначение: ${item.description}
+        ${slot.llmHints?.items?.[item.originalKey]?.contextRules ? '- Правила:\n' + slot.llmHints?.items?.[item.originalKey]?.contextRules.map(rule => `  * ${rule}`).join('\n') : ''}
         `;
                                     })
                                     .join('\n\n');
@@ -227,26 +229,61 @@ function generateSlotDescription(template: SlideTemplateCore, slotsMapping: Map<
     );
 }
 
-function createPromptGenerateSlideContent(
-    topic: string,
-    slideIndex: number,
-    totalSlides: number,
-    template: SlideTemplateCore,
-    slotsMapping: Map<string, SlotKeyMapping>,
-    instructions?: string
-): string {
+function createPromptGenerateSlideContent({
+    topic,
+    slideIndex,
+    totalSlides,
+    template,
+    slotsMapping,
+    instructions,
+    durationMinutes,
+    goal,
+    audience,
+    tone,
+    previousSlides,
+}: {
+    topic: string;
+    slideIndex: number;
+    totalSlides: number;
+    template: SlideTemplateCore;
+    slotsMapping: Map<string, SlotKeyMapping>;
+    instructions?: string;
+    durationMinutes?: number;
+    goal?: string;
+    audience?: string;
+    tone?: string;
+    previousSlides?: { title?: string; content: string }[];
+}): string {
     const slotsDescription = generateSlotDescription(template, slotsMapping);
 
-    return `Создай структурированный контент для слайда ${slideIndex} из ${totalSlides} о теме: "${topic}"
+    const previousSlidesSection =
+        previousSlides && previousSlides.length > 0
+            ? `Контент предыдущих слайдов:\n${previousSlides
+                .map((s, i) => `  ${i + 1}. ${s.title || ''} ${s.content.substring(0, 500)}`)
+                .join('\n')}`
+            : '';
+
+    return `Создай структурированный контент для слайда ${slideIndex + 1} из ${totalSlides}.\n Инструкция пользователя по требуемому слайду: "${topic}".
+
+${goal ? `Цель презентации: ${goal}\n` : ''}${audience ? `Аудитория: ${audience}\n` : ''}${tone ? `Тон/стиль: ${tone}\n` : ''}${
+    Number.isInteger(durationMinutes) ? `Длительность доклада: ${durationMinutes} минут\n` : ''
+}
+
+${previousSlidesSection}
 
 Структура слайда:
 ${slotsDescription}
 
 Требования:
-1. Создай контент для каждого слота в соответствии с его типом и назначением
-2. Для элементов типа image опиши, какое изображение нужно сгенерировать
-3. Учитывай назначение и правила для каждого слота
-${instructions ? `4. Дополнительные инструкции: ${instructions}` : ''}`;
+1. Сгенерируй контент для КАЖДОГО слота, соблюдая тип и назначение.
+2. Для слотов image опиши, какое изображение нужно сгенерировать.
+3. Соблюдай логическую последовательность и связи с предыдущими слайдами.
+4. Формат для текстовых полей — Markdown. Без HTML. Если в правилах указаны сиволы markdown, используй их.
+5. Независимо от количества строк (даже для одного слова или заголовка) ВСЕГДА возвращай текст в Markdown-формате.
+6. Для заголовков используй символы #, ##, ###.
+7. Для списков используй символы -, 1. 2. 3.
+8. Для цитат используй символы >
+${instructions ? `9. Дополнительные инструкции: ${instructions}` : ''}`;
 }
 
 // function parseGeneratedContent(content: Array<Array<SlotContent>>): Array<Record<string, string | SmartLayoutContent>> {
@@ -267,6 +304,11 @@ export default async function generateSlideContent({
     totalSlides,
     template,
     instructions,
+    durationMinutes,
+    goal,
+    audience,
+    tone,
+    previousSlides,
     options,
 }: {
     topic: string;
@@ -274,21 +316,31 @@ export default async function generateSlideContent({
     totalSlides: number;
     template: SlideTemplateCore;
     instructions?: string;
+    durationMinutes?: number;
+    goal?: string;
+    audience?: string;
+    tone?: string;
+    previousSlides?: { title: string; content: string }[];
     options: LLMRequestContext;
 }) {
     const llmService = createLLMService({ userId: options.userId });
 
     const { functionSchema, slotMapping } = createGenerateSlideContentFunction(template);
 
-    const prompt = createPromptGenerateSlideContent(
+    const prompt = createPromptGenerateSlideContent({
         topic,
         slideIndex,
         totalSlides,
         template,
-        slotMapping,
-        instructions
-    );
-    console.log(prompt);
+        slotsMapping: slotMapping,
+        instructions,
+        durationMinutes,
+        goal,
+        audience,
+        tone,
+        previousSlides,
+    });
+    logger.debug('LLM prompt (generateSlideContent):', prompt);
 
     // получаем ответ от LLM
     // const response = await gigaChatService.generateFromCache(topic);
@@ -297,8 +349,13 @@ export default async function generateSlideContent({
         function_call: { name: 'generate_slide_text' },
     });
 
+    logger.debug('LLM response (generateSlideContent):', JSON.stringify(response));
+
     return {
         functionArgs: response.function_call?.arguments,
         slotMapping,
     };
 }
+
+// Explicit exports for testing purposes
+export { createGenerateSlideContentFunction, createPromptGenerateSlideContent };

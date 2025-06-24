@@ -20,7 +20,6 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { generateId } from '@/utils/id';
 
-
 interface SlideTopic {
     id: string;
     title: string;
@@ -33,7 +32,7 @@ const EXAMPLES = [
     'Бизнес-план для стартапа в сфере электронной коммерции',
 ];
 
-const TONE_OPTIONS = [
+export const TONE_OPTIONS = [
     { value: 'professional', label: 'Профессиональный' },
     { value: 'casual', label: 'Повседневный' },
     { value: 'academic', label: 'Академический' },
@@ -54,6 +53,10 @@ const AiPresentationPage = () => {
     const [numSlides, setNumSlides] = useState(5);
     const [tone, setTone] = useState('professional');
 
+    const [durationMinutes, setDurationMinutes] = useState(0);
+    const [goal, setGoal] = useState('');
+    const [audience, setAudience] = useState('');
+
     // Topics state
     const [presentationTitle, setPresentationTitle] = useState('');
     const [presentationDescription, setPresentationDescription] = useState('');
@@ -73,7 +76,7 @@ const AiPresentationPage = () => {
             const res = await fetch('/api/ai/topics', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ description, numSlides, tone }),
+                body: JSON.stringify({ description, numSlides, tone, durationMinutes, goal, audience }),
             });
             if (!res.ok) throw new Error('Ошибка генерации тем слайдов');
             const data = await res.json();
@@ -145,6 +148,10 @@ const AiPresentationPage = () => {
                         title: topic.title,
                         instructions: topic.instructions,
                     })),
+                    durationMinutes,
+                    goal,
+                    audience,
+                    tone,
                 }),
             });
 
@@ -264,7 +271,7 @@ const AiPresentationPage = () => {
                                     width="100%"
                                 >
                                     <Select.HiddenSelect />
-                                    <Select.Label>Tone of Voice / Стилистика</Select.Label>
+                                    <Select.Label>Стилистика</Select.Label>
                                     <Select.Control>
                                         <Select.Trigger>
                                             <Select.ValueText placeholder="Выберите стиль" />
@@ -286,6 +293,47 @@ const AiPresentationPage = () => {
                                         </Select.Positioner>
                                     </Portal>
                                 </Select.Root>
+                            </Box>
+                        </Flex>
+
+                        <Flex gap="16px" flexDirection="column" alignItems="flex-start">
+                            <Box width="100%">
+                                <Text fontSize="sm" as="label" display="block" marginBottom="8px">
+                                    Длительность презентации
+                                </Text>
+                                <Input
+                                    value={durationMinutes}
+                                    onChange={e => setDurationMinutes(Number(e.target.value))}
+                                    placeholder="Сколько времени будет длиться презентация"
+                                    aria-label="Длительность презентации"
+                                    type="number"
+                                    tabIndex={0}
+                                />
+                            </Box>
+                            <Box width="100%">
+                                <Text fontSize="sm" as="label" display="block" marginBottom="8px">
+                                    Цель презентации
+                                </Text>
+
+                                <Textarea
+                                    value={goal}
+                                    onChange={e => setGoal(e.target.value)}
+                                    placeholder="Какой цели должна служить презентация"
+                                    aria-label="Цель презентации"
+                                    tabIndex={0}
+                                />
+                            </Box>
+                            <Box width="100%">
+                                <Text fontSize={'sm'} as="label" display="block" marginBottom="8px">
+                                    Аудитория презентации
+                                </Text>
+                                <Textarea
+                                    value={audience}
+                                    onChange={e => setAudience(e.target.value)}
+                                    placeholder="Для какой аудитории создается презентация"
+                                    aria-label="Аудитория презентации"
+                                    tabIndex={0}
+                                />
                             </Box>
                         </Flex>
                         {error && <Text color="red.500">{error}</Text>}

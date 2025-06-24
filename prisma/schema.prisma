@@ -108,6 +108,10 @@ model Presentation {
   id                 String              @id @default(auto()) @map("_id") @db.ObjectId
   title              String
   description        String?
+  durationMinutes    Int?
+  goal               String?
+  audience           String?
+  tone               String?
   slides             Json
   themeId            String?             @db.ObjectId
   userId             String              @db.ObjectId

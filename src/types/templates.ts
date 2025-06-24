@@ -48,6 +48,7 @@ export interface TemplateElement {
             {
                 type: 'string';
                 description: string;
+                contextRules?: string[];
             }
         >;
     };
@@ -57,6 +58,7 @@ export interface TemplateElement {
 export interface SlideTemplateCore {
     id: string;
     name: string;
+    disabled?: boolean;
     layouts: Array<{
         layout: LayoutType;
         columnsCount: number;

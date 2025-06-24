@@ -1,5 +1,5 @@
 import { Slide } from '@/types';
-import rewriteSlideContent from '@/services/llm/gigaChat/rewriteSlideContent';
+import rewriteSlideContent from '@/services/llm/rewriteSlideContent';
 
 describe('Rewrite slide', () => {
     test('rewriteSlideContent', async () => {

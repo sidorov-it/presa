@@ -28,38 +28,35 @@ export interface SlotKeyMapping {
     content: string;
 }
 
-function createRewriteSlideContentFunction(slide: Slide) {
-    const slotMapping = createRewriteSlideMapping(slide);
+interface RewriteSlotItem { key: string; type?: string; description?: string; contextRules?: string[]; originalKey?: string; }
 
-    // const slotMapping = generateUniqueSlotKeys(template);
+function createRewriteSlideContentFunction(slide: Slide) {
+    const slotMapping = createRewriteSlideMapping(slide)!;
 
     const properties: any = {};
 
-    for (const entry of slotMapping.entries()) {
-        const [key, value] = entry;
-        if (value.items) {
-            const entryProperties = {};
+    for (const [key, value] of slotMapping.entries()) {
+        if (value.items && value.items.length > 0) {
+            const entryProperties: any = {};
             const required: string[] = [];
 
-            // TODO
-            value.items.forEach(item => {
+            (value.items as RewriteSlotItem[]).forEach(item => {
                 required.push(item.key);
 
                 entryProperties[item.key] = {
-                    type: item.type,
+                    type: item.type ?? 'string',
                     description: item.description,
+                    contextRules: item.contextRules,
                 };
             });
 
             properties[key] = {
                 type: 'object',
                 description: value.llmHints?.purpose,
-                // contextRules: value.llmHints?.contextRules,
                 properties: entryProperties,
                 required,
             };
-        } else if ([TextType.BULLET_LIST, TextType.NUMERED_LIST, TextType.TODO_LIST].includes(value.textType)) {
-            // только для списков
+        } else if (value.textType && [TextType.BULLET_LIST, TextType.NUMERED_LIST, TextType.TODO_LIST].includes(value.textType)) {
             properties[key] = {
                 type: 'array',
                 description: value.llmHints?.purpose,
@@ -90,22 +87,52 @@ function createRewriteSlideContentFunction(slide: Slide) {
     };
 }
 
-const createPromptRewriteSlideContent = (slotMapping: Map<string, SlotKeyMapping>) => {
-    return `Перепиши текста слайда с учетом контекста.
-    Ниже сами текста. Сначала идет id элемента, затем текст.
+const generateSlotDescription = (slotMapping: Map<string, SlotKeyMapping>): string => {
+    return Array.from(slotMapping.values())
+        .map(slot => {
+            if (slot.items && slot.items.length > 0) {
+                return slot.items
+                    .map(item => {
+                        return `Слот "${item.key}":
+  - Тип: ${item.type}
+  - Назначение: ${item.description || 'Не указано'}
+  ${item.contextRules ? `  - Правила:
+${item.contextRules.map(r => `    * ${r}`).join('\n')}` : ''}`;
+                    })
+                    .join('\n');
+            }
 
-    ${Array.from(slotMapping.entries())
+            return `Слот "${slot.uniqueKey}":
+  - Назначение: ${slot.llmHints?.purpose || 'Не указано'}
+  ${slot.llmHints?.contextRules ? `- Правила:
+${slot.llmHints?.contextRules.map(r => `  * ${r}`).join('\n')}` : ''}`;
+        })
+        .join('\n\n');
+};
+
+const createPromptRewriteSlideContent = (slotMapping: Map<string, SlotKeyMapping>) => {
+    const slotsDescription = generateSlotDescription(slotMapping);
+    const currentContent = Array.from(slotMapping.entries())
         .map(([key, value]) => `${key}: ${value.content}`)
-        .join('\n')}
-    
+        .join('\n');
+
+    return `Перепиши контент слайда, соблюдая структуру и приблизительную длину текстов. Формат для ВСЕХ текстовых полей — Markdown (без HTML).
+
+Описание слотов:
+${slotsDescription}
+
+Текущий контент слотов:
+${currentContent}
+
 Требования:
-1. Создай контент для каждого слота в соответствии с его типом и назначением
-2. Учитывай назначение и правила для каждого слота
-3. Не меняй структуру слайда
-4. Не меняй порядок элементов
-5. Не меняй количество элементов
-6. Придерживайся той же длины текста, что и в исходном тексте
-`;
+1. Перепиши контент для КАЖДОГО слота, учитывая тип, назначение и правила.
+2. Не изменяй структуру, порядок и количество слотов.
+3. Сохрани приблизительную длину оригинального текста (±20%).
+4. Соблюдай Markdown-форматирование:
+   • Заголовки: #, ##, ###
+   • Списки: -, 1. 2. 3.
+   • Цитаты: >
+5. Для списков сохраните количество пунктов.`;
 };
 
 export default async function rewriteSlideContent(userId: string, slide: Slide) {

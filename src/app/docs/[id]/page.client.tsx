@@ -29,8 +29,6 @@ import { useColorMode } from '@/components/ui/color-mode';
 import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
-import { exportPresentationToPdf } from '@/utils/pdfExport';
-import { toast } from 'sonner';
 import { Tooltip } from '@/components/ui/tooltip';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import Logo from '@/components/icons/Logo/Logo';
@@ -38,7 +36,6 @@ import MobileWarningOverlay from '@/components/MobileWarningOverlay/MobileWarnin
 import { clearAllThemeStyles } from '@/utils/themeUtils';
 import { SimplePdfExportButton } from '@/components/export';
 import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
-
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -80,8 +77,6 @@ export default function PresentationEditorPage() {
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const [themeTab, setThemeTab] = useState<'user' | 'default'>('user');
     const containerRef = useRef<HTMLDivElement>(null);
-    const [isDownloading, setIsDownloading] = useState(false);
-    const [showDownloadPreview, setShowDownloadPreview] = useState(false);
 
     // Cleanup function to clear theme styles when component unmounts
     useEffect(() => {
@@ -163,7 +158,7 @@ export default function PresentationEditorPage() {
         }
 
         return () => {
-            setCurrentTheme(null);
+            setCurrentTheme(undefined);
         };
     }, [presentation, themes, setCurrentTheme, defaultThemes]);
 
@@ -206,34 +201,6 @@ export default function PresentationEditorPage() {
             window.open(`/view/${presentation.id}`, '_blank');
         }
     }, [presentation]);
-
-    const handleDownloadPresentation = useCallback(async () => {
-        if (!presentation || isDownloading) return;
-
-        setIsDownloading(true);
-        setShowDownloadPreview(true);
-
-        const exportPromise = (async () => {
-            // Wait for preview to render
-            await new Promise(res => setTimeout(res, 100));
-            await exportPresentationToPdf(presentation, `${presentation.title || 'presentation'}.pdf`);
-        })();
-
-        toast.promise(exportPromise, {
-            loading: 'Подготавливаем PDF для скачивания. Пожалуйста, не закрывайте эту страницу.',
-            success: () => {
-                setIsDownloading(false);
-                setShowDownloadPreview(false);
-                return 'Презентация успешно экспортирована в PDF';
-            },
-            error: err => {
-                console.error('Error exporting presentation to PDF:', err);
-                setIsDownloading(false);
-                setShowDownloadPreview(false);
-                return 'Произошла ошибка при экспорте. Попробуйте позже.';
-            },
-        });
-    }, [presentation, isDownloading]);
 
     const handleOpenBgModal = useCallback(() => {
         setIsBgModalOpen(true);
@@ -290,18 +257,6 @@ export default function PresentationEditorPage() {
                     className={styles.container}
                 >
                     <MobileWarningOverlay />
-                    {showDownloadPreview && (
-                        <div className={styles.hiddenExportPreview} aria-hidden="true" id="export-preview">
-                            <ReadOnlyProvider isReadOnly={true}>
-                                <ThemeStylesApplier
-                                    theme={currentTheme || defaultTheme}
-                                    backgroundSettings={presentation.backgroundSettings}
-                                >
-                                    <Editor presentationId={presentation.id} tiptapRefs={tiptapRefs} />
-                                </ThemeStylesApplier>
-                            </ReadOnlyProvider>
-                        </div>
-                    )}
                     <div ref={containerRef} className={colorMode === 'dark' ? 'dark' : ''}>
                         <header className={styles.header}>
                             <div className={styles.headerContent}>

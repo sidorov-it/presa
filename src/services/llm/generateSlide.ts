@@ -9,6 +9,11 @@ export default async function generateSlide({
     totalSlides,
     templateId,
     instructions,
+    durationMinutes,
+    goal,
+    audience,
+    tone,
+    previousSlides,
     options,
 }: {
     topic: string;
@@ -16,6 +21,11 @@ export default async function generateSlide({
     totalSlides: number;
     templateId: string;
     instructions: string;
+    durationMinutes?: number;
+    goal?: string;
+    audience?: string;
+    tone?: string;
+    previousSlides?: { title?: string; content: string }[];
     options: LLMRequestContext;
 }) {
     const template = SlideTemplatesRegistry[templateId];
@@ -26,6 +36,11 @@ export default async function generateSlide({
         totalSlides,
         template,
         instructions,
+        durationMinutes,
+        goal,
+        audience,
+        tone,
+        previousSlides,
         options,
     });
 

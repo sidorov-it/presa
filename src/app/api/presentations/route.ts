@@ -32,6 +32,10 @@ export async function GET() {
                 createdAt: true,
                 updatedAt: true,
                 slides: true,
+                durationMinutes: true,
+                goal: true,
+                audience: true,
+                tone: true,
             },
             orderBy: {
                 updatedAt: 'desc',

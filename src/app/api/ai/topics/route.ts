@@ -14,13 +14,20 @@ export async function POST(request: NextRequest) {
             metadata: MetadataExtractors.topics,
         },
         async (session, requestData) => {
-            const { description, numSlides, tone } = requestData;
+            const { description, numSlides, tone, durationMinutes, goal, audience } = requestData;
 
             if (!description) {
                 throw new Error('Description is required');
             }
 
-            const { title, topics } = await generateTopics(session.user.id, description, numSlides, tone);
+            const { title, topics } = await generateTopics(session.user.id, {
+                description,
+                numSlides,
+                tone,
+                durationMinutes,
+                goal,
+                audience,
+            });
 
             return {
                 title,

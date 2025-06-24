@@ -39,7 +39,10 @@ export type LayoutType =
     | 'pie-chart'
     | 'donut-chart'
     | 'three-row-table'
-    | 'table';
+    | 'table'
+    | 'welcome-slide'
+    | 'final-slide-contacts'
+    | 'final-slide-contacts-qr';
 
 // Интерфейс для ячейки сетки
 export interface GridCell {
@@ -250,6 +253,12 @@ export interface IPresentation {
     createdAt: number;
     updatedAt: number;
     backgroundSettings?: BackgroundSettings;
+
+    // AI generation metadata
+    durationMinutes?: number;
+    goal?: string;
+    audience?: string;
+    tone?: string;
 }
 
 // Definition for registry element configuration
