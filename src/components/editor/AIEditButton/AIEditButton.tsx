@@ -4,6 +4,7 @@ import { TipTapRefs } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
 import { toast } from 'sonner';
 import { BsMagic } from 'react-icons/bs';
+import { markdownToHtml } from '@/utils/markdownToHtml';
 // import extractTextFromElement from '@/utils/extractTextFromElement';
 
 interface AIEditButtonProps {
@@ -99,7 +100,7 @@ const AIEditButton: React.FC<AIEditButtonProps> = ({
             const data = await response.json();
 
             console.log('Improved text:', data);
-            const updatedContent = Object.entries(data).map(entry => {
+            const updatedContent = Object.entries(data.content).map(entry => {
                 const [key, value] = entry;
                 const indexDash = key.indexOf('-');
                 let elementId;
@@ -110,14 +111,17 @@ const AIEditButton: React.FC<AIEditButtonProps> = ({
                 }
                 const slotId = key.slice(indexDash + 1);
 
+                // Преобразуем Markdown -> HTML для TipTap
+                const markdown = Array.isArray(value) ? (value as string[]).join('\n') : (value as string);
+                const htmlContent = markdownToHtml(markdown);
+
                 return {
                     slotId,
                     elementId,
-                    content: value,
+                    content: htmlContent,
                 };
             });
             // Обновляем текст в слайде
-            // TODO: Implement text update logic
             usePresentationStore.getState().updateSlideContent(presentationId, slideId, updatedContent, tiptapRefs);
 
             toast.success('Текст успешно улучшен');
