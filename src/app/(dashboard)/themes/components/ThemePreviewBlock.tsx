@@ -30,7 +30,6 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
     useEffect(() => {
         if (menuButtonRef.current) {
             const rect = menuButtonRef.current.getBoundingClientRect();
-            console.log(rect);
 
             let right;
             let left;
