@@ -47,9 +47,19 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
         };
     }, [isHeadingMenuOpen]);
 
+    // const handleHeadingChange = useCallback(
+    //     (level: number) => {
+    //         editor.chain().focus(null, { scrollIntoView: false }).selectAll().setFontSize(level).blur().run();
+    //         setIsHeadingMenuOpen(false);
+    //     },
+    //     [editor]
+    // );
+
+
     const handleHeadingChange = useCallback(
         (level: number) => {
-            editor.chain().focus(null, { scrollIntoView: false }).selectAll().setFontSize(level).blur().run();
+            // Применяем размер только к текущему выделению
+            editor.chain().focus(null, { scrollIntoView: false }).setFontSize(level).blur().run();
             setIsHeadingMenuOpen(false);
         },
         [editor]
