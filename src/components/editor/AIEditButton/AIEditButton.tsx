@@ -63,10 +63,9 @@ const AIEditButton: React.FC<AIEditButtonProps> = ({
         setIsOpen(prev => !prev);
     }, []);
 
-    const handleImproveWriting = async () => {
+    const handleAiAction = async (url: string, successMessage: string, errorMessage: string) => {
         try {
             setIsLoading(true);
-            // Получаем текущий текст слайда
             const slide = usePresentationStore.getState().getSlide(presentationId, slideId);
             if (!slide) return;
 
@@ -81,25 +80,24 @@ const AIEditButton: React.FC<AIEditButtonProps> = ({
             //     return;
             // }
 
-            const response = await fetch('/api/ai/improve', {
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    // text: slideText,
                     slideId,
                     presentationId,
                 }),
             });
 
             if (!response.ok) {
-                throw new Error('Failed to improve text');
+                throw new Error('Request failed');
             }
 
             const data = await response.json();
 
-            console.log('Improved text:', data);
+            console.log('AI edit result:', data);
             const updatedContent = Object.entries(data.content).map(entry => {
                 const [key, value] = entry;
                 const indexDash = key.indexOf('-');
@@ -124,15 +122,26 @@ const AIEditButton: React.FC<AIEditButtonProps> = ({
             // Обновляем текст в слайде
             usePresentationStore.getState().updateSlideContent(presentationId, slideId, updatedContent, tiptapRefs);
 
-            toast.success('Текст успешно улучшен');
+            toast.success(successMessage);
             setIsOpen(false);
         } catch (error) {
-            console.error('Error improving text:', error);
-            toast.error('Не удалось улучшить текст');
+            console.error('AI action error:', error);
+            toast.error(errorMessage);
         } finally {
             setIsLoading(false);
         }
     };
+
+    const handleImproveWriting = () =>
+        handleAiAction('/api/ai/improve', 'Текст успешно улучшен', 'Не удалось улучшить текст');
+    const handleSpellCheck = () =>
+        handleAiAction('/api/ai/spell', 'Орфография исправлена', 'Не удалось исправить орфографию');
+    const handleTranslate = () => handleAiAction('/api/ai/translate', 'Текст переведен', 'Не удалось перевести текст');
+    const handleExpand = () => handleAiAction('/api/ai/expand', 'Текст расширен', 'Не удалось расширить текст');
+    const handleShorten = () => handleAiAction('/api/ai/shorten', 'Текст сокращен', 'Не удалось сократить текст');
+    const handleSimplify = () => handleAiAction('/api/ai/simplify', 'Текст упрощен', 'Не удалось упростить текст');
+    const handleAddDetails = () =>
+        handleAiAction('/api/ai/add-details', 'Добавлены подробности', 'Не удалось добавить подробности');
 
     const buttonStyle: React.CSSProperties = {
         border: '1px solid #666',
@@ -171,24 +180,24 @@ const AIEditButton: React.FC<AIEditButtonProps> = ({
                         <button className={styles.aiOption} onClick={handleImproveWriting} disabled={isLoading}>
                             <span>Улучшить текст</span>
                         </button>
-                        <button className={styles.aiOption}>
+                        <button className={styles.aiOption} onClick={handleSpellCheck} disabled={isLoading}>
                             <span>Исправить орфографию</span>
                         </button>
-                        <button className={styles.aiOption}>
+                        {/* <button className={styles.aiOption} onClick={handleTranslate} disabled={isLoading}>
                             <span>Перевести</span>
-                        </button>
-                        <button className={styles.aiOption}>
+                        </button> */}
+                        <button className={styles.aiOption} onClick={handleExpand} disabled={isLoading}>
                             <span>Сделать длиннее</span>
                         </button>
-                        <button className={styles.aiOption}>
+                        <button className={styles.aiOption} onClick={handleShorten} disabled={isLoading}>
                             <span>Сделать короче</span>
                         </button>
-                        <button className={styles.aiOption}>
+                        <button className={styles.aiOption} onClick={handleSimplify} disabled={isLoading}>
                             <span>Упростить язык</span>
                         </button>
-                        <button className={styles.aiOption}>
+                        {/* <button className={styles.aiOption} onClick={handleAddDetails} disabled={isLoading}>
                             <span>Добавить подробностей</span>
-                        </button>
+                        </button> */}
                     </div>
                 </div>
             )}
