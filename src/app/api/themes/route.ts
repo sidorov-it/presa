@@ -1,26 +1,57 @@
 import logger from '@/utils/logger';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 export async function GET(request: Request) {
     try {
-        const url = new URL(request.url);
-        const isDefaultParam = url.searchParams.get('default');
-
-        const where: any = { isActive: true };
-        if (isDefaultParam !== null) {
-            where.isDefault = isDefaultParam === 'true';
-        } else {
-            where.isDefault = false;
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.email) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const themes = await prisma.theme.findMany({
-            where,
-            orderBy: {
-                createdAt: 'desc',
-            },
-        });
-        return NextResponse.json(themes);
+        const url = new URL(request.url);
+        const onlyDefaultParam = url.searchParams.get('default');
+
+        // If only default themes are requested
+        if (onlyDefaultParam === 'true') {
+            const defaultThemes = await prisma.theme.findMany({
+                where: {
+                    isDefault: true,
+                    isActive: true,
+                },
+                orderBy: {
+                    createdAt: 'desc',
+                },
+            });
+            return NextResponse.json(defaultThemes);
+        }
+
+        // Get both user's themes and default themes
+        const [userThemes, defaultThemes] = await Promise.all([
+            prisma.theme.findMany({
+                where: {
+                    userId: session.user.id,
+                    isActive: true,
+                },
+                orderBy: {
+                    createdAt: 'desc',
+                },
+            }),
+            prisma.theme.findMany({
+                where: {
+                    isDefault: true,
+                    isActive: true,
+                },
+                orderBy: {
+                    createdAt: 'desc',
+                },
+            })
+        ]);
+
+        // Combine and return both sets of themes
+        return NextResponse.json([...userThemes, ...defaultThemes]);
     } catch (error) {
         logger.error('Failed to fetch themes:', error);
         return NextResponse.json({ error: 'Failed to fetch themes' }, { status: 500 });
@@ -29,7 +60,17 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.email) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const theme = await request.json();
+
+        // Prevent regular users from creating default themes
+        if (theme.isDefault && session.user.role !== 'admin') {
+            return NextResponse.json({ error: 'Unauthorized to create default themes' }, { status: 403 });
+        }
 
         // Create a new theme
         const createdTheme = await prisma.theme.create({
@@ -47,6 +88,7 @@ export async function POST(request: Request) {
                 isDefault: theme.isDefault ?? false,
                 isActive: theme.isActive ?? true,
                 logo: null,
+                userId: session.user.id, // Associate theme with user
             },
         });
 

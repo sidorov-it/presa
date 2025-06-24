@@ -98,6 +98,7 @@ model User {
 
   // Relationships
   presentations     Presentation[]
+  themes            Theme[]
   llmRequests       LLMRequestHistory[]
   tokens            UserTokens?
   tokenPurchases    TokenPurchase[]
@@ -195,6 +196,8 @@ model Theme {
   design      ThemeDesign
   isDefault   Boolean         @default(false)
   isActive    Boolean         @default(true)
+  userId      String?         @db.ObjectId
+  user        User?          @relation(fields: [userId], references: [id])
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 }
