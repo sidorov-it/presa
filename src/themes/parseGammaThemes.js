@@ -30,6 +30,20 @@ async function parseTheme(name) {
         .querySelector('[data-testid="custom-theme-primary-color-picker"]')
         .querySelector('input').value;
 
+    const additionalColors = document.evaluate(
+        "//label[contains(., 'Secondary accent colors')]",
+        document,
+        null,
+        XPathResult.ANY_TYPE,
+        null
+    );
+    const additionalColorsBlock = additionalColors.iterateNext();
+
+    if (additionalColorsBlock) {
+        const additionalColorsInputs = additionalColorsBlock.parentNode.querySelectorAll('input');
+        theme.secondaryColors = Array.from(additionalColorsInputs).map(el => el.value);
+    }
+
     // Heading color
     theme.headingColor = document
         .querySelector('[data-testid="custom-theme-heading-color-picker"]')
@@ -46,9 +60,15 @@ async function parseTheme(name) {
         .querySelector('input').value;
 
     // Page background color
-    theme.pageBackground = document
-        .querySelector('[data-testid="media-drawer-menu-button"]')
-        .parentNode.querySelector('input').value;
+    const pageBackgroundBlock = document.querySelector('[data-testid="media-drawer-menu-button"]').parentNode;
+
+    if (pageBackgroundBlock.querySelector('input')) {
+        theme.pageBackground = pageBackgroundBlock.querySelector('input');
+    } else if (document.querySelector('[data-testid="media-drawer-menu-button"]').parentNode.querySelector('img')) {
+        theme.pageBackgroundImage = document
+            .querySelector('[data-testid="media-drawer-menu-button"]')
+            .parentNode.querySelector('img').src;
+    }
 
     // "дизайн"
     // eslint-disable-next-line no-undef
@@ -137,6 +157,12 @@ async function parseTheme(name) {
 
     theme.blockFillType = blockFillTypeMap[blockFillTypeIndex];
 
+    if (theme.blockFillType === 'custom') {
+        theme.blockFillCustomColors = Array.from(groupsBlocks[0].querySelectorAll('input'))
+            .map(input => input.value)
+            .filter(Boolean);
+    }
+
     const blockFill = Array.from(groupsBlocks[1].querySelectorAll('button'));
     theme.blockFill = blockFillMap[getActiveButtonIndex(blockFill)];
 
@@ -185,7 +211,6 @@ async function main() {
 
         await timeout(100);
     }
-
     console.log(themes);
 }
 
