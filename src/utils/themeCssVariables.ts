@@ -7,10 +7,7 @@ import { getBorderColorForBackground } from './themeUtils';
 /**
  * Convert theme settings to a style object with CSS variables.
  */
-export function themeToCSSVariables(
-    theme: Theme,
-    backgroundSettings?: BackgroundSettings
-): React.CSSProperties {
+export function themeToCSSVariables(theme: Theme, backgroundSettings?: BackgroundSettings): React.CSSProperties {
     const style: Record<string, string> = {};
     const set = (prop: string, value: string | number | undefined) => {
         if (value === undefined) return;
@@ -72,10 +69,7 @@ export function themeToCSSVariables(
     // Body typography
     set('--presentation-body-line-height', theme.typography.bodyLineHeight);
     set('--presentation-body-letter-spacing', `${theme.typography.bodyLetterSpacing}px`);
-    set(
-        '--presentation-body-capitalization',
-        theme.typography.bodyCapitalization === 'none' ? 'none' : 'uppercase'
-    );
+    set('--presentation-body-capitalization', theme.typography.bodyCapitalization === 'none' ? 'none' : 'uppercase');
 
     // Slide design
     set('--presentation-slide-border-radius', theme.design.slide.borderRadius);

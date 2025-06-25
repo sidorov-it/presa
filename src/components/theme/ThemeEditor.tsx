@@ -8,6 +8,7 @@ import styles from './ThemeEditor.module.css';
 import { BiSolidColorFill } from 'react-icons/bi';
 import { FaFont } from 'react-icons/fa';
 import { MdOutlineDesignServices } from 'react-icons/md';
+import FontLoader from './components/Fonts/FontLoader';
 
 interface ThemeEditorProps {
     theme: Theme;
@@ -191,6 +192,7 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
 
     return (
         <div style={{ width: '100%' }}>
+            <FontLoader theme={theme} />
             <ChakraTabs.Root
                 variant={'plain'}
                 size={'md'}

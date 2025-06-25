@@ -1,9 +1,11 @@
 'use client';
 
+import React from 'react';
 import { useColorMode } from '@/components/ui/color-mode';
 import { BackgroundSettings } from '@/types';
 import { Theme } from '@/types/theme';
 import { useThemeApplication } from '@/hooks/useThemeApplication';
+import FontLoader from '@/components/theme/components/Fonts/FontLoader';
 
 interface ThemeStylesApplierProps {
     theme: Theme | null;
@@ -28,6 +30,7 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
 
     return (
         <div ref={containerRef} className={className}>
+            <FontLoader theme={theme} />
             {children}
         </div>
     );
