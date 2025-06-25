@@ -138,18 +138,10 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
             if (selectedSmartLayoutItemId) {
                 usePresentationStore
                     .getState()
-                    .removeSmartLayoutItem(
-                        menuPresentationId,
-                        slideId,
-                        layoutId,
-                        elementId,
-                        selectedSmartLayoutItemId
-                    );
+                    .removeSmartLayoutItem(menuPresentationId, slideId, layoutId, elementId, selectedSmartLayoutItemId);
                 useMenuStore.getState().closeMenu();
             } else {
-                usePresentationStore
-                    .getState()
-                    .deleteElement(menuPresentationId, slideId, layoutId, elementId);
+                usePresentationStore.getState().deleteElement(menuPresentationId, slideId, layoutId, elementId);
                 useMenuStore.getState().closeMenu();
             }
         };

@@ -30,7 +30,6 @@ export default function PresentationView() {
 
     const themes = useThemeStore(state => state.themes);
     const loadThemes = useThemeStore(state => state.loadThemes);
-    const loadDefaultThemes = useThemeStore(state => state.loadDefaultThemes);
     const currentTheme = useThemeStore(state => state.currentTheme) as Theme;
     const setCurrentTheme = useThemeStore(state => state.setCurrentTheme);
     const defaultThemes = useThemeStore(state => state.defaultThemes);
@@ -258,7 +257,9 @@ export default function PresentationView() {
     useEffect(() => {
         if (!presentation) return;
 
-        const savedTheme = themes.find(theme => theme.id === presentation.themeId);
+        const savedTheme =
+            themes.find(theme => theme.id === presentation.themeId) ||
+            defaultThemes.find(theme => theme.id === presentation.themeId);
         if (savedTheme) {
             setCurrentTheme(savedTheme);
         } else {
@@ -276,12 +277,6 @@ export default function PresentationView() {
             console.error('Failed to load themes:', error);
         });
     }, [loadThemes]);
-
-    useEffect(() => {
-        loadDefaultThemes().catch(error => {
-            console.error('Failed to load themes:', error);
-        });
-    }, [loadDefaultThemes]);
 
     const loadingUI = useMemo(
         () => (

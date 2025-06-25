@@ -7,8 +7,10 @@ import tinycolor from 'tinycolor2';
  * @returns {string} - Новый HEX-цвет
  */
 export default function getHoverColor(hex: string, diffPercent = 10) {
-    const color = tinycolor(hex);
+    const preparedColor = hex.split(' ')[0];
+    const color = tinycolor(preparedColor);
     if (!color.isValid()) {
+        console.error('Неверный цвет', hex);
         throw new Error('Неверный цвет');
     }
 

@@ -18,7 +18,7 @@ const TemplatesPage = () => {
     const router = useRouter();
     const { createPresentation, updatePresentation } = usePresentationStore();
     const defaultThemes = useThemeStore(state => state.defaultThemes);
-    const loadDefaultThemes = useThemeStore(state => state.loadDefaultThemes);
+    const loadThemes = useThemeStore(state => state.loadThemes);
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -41,10 +41,10 @@ const TemplatesPage = () => {
     };
 
     useEffect(() => {
-        loadDefaultThemes().catch(err => {
+        loadThemes().catch(err => {
             console.error('Failed to load themes:', err);
         });
-    }, [loadDefaultThemes]);
+    }, [loadThemes]);
 
     return (
         <div className={styles.container}>

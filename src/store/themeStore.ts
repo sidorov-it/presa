@@ -13,7 +13,6 @@ interface ThemeState {
     updateTheme: (theme: Theme) => Promise<void>;
     deleteTheme: (themeId: string) => Promise<void>;
     loadThemes: () => Promise<void>;
-    loadDefaultThemes: () => Promise<void>;
     loadTheme: (themeId: string) => Promise<Theme | null>;
     getDefaultTheme: () => Theme;
 }
@@ -119,22 +118,11 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
             if (!response.ok) {
                 throw new Error('Failed to load themes');
             }
-            const themes = await response.json();
-            set({ themes });
-        } catch (error) {
-            console.error('Failed to load themes:', error);
-            throw error;
-        }
-    },
-
-    loadDefaultThemes: async () => {
-        try {
-            const response = await fetch('/api/themes?default=true');
-            if (!response.ok) {
-                throw new Error('Failed to load themes');
-            }
-            const themes = await response.json();
-            set({ defaultThemes: themes });
+            const themes: Theme[] = await response.json();
+            set({
+                themes: themes.filter(t => !t.isDefault),
+                defaultThemes: themes.filter(t => t.isDefault),
+            });
         } catch (error) {
             console.error('Failed to load themes:', error);
             throw error;

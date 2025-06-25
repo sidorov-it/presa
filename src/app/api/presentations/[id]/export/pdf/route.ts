@@ -19,7 +19,7 @@ const handleRequest = async (request: NextRequest, props: { params: Promise<{ id
         const params = await props.params;
         // Check authentication
         const session = await getServerSession(authOptions);
-        if (!session?.user?.email) {
+        if (!session?.user?.id) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 

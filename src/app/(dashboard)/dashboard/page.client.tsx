@@ -31,18 +31,12 @@ export default function DashboardPage() {
     const [isDeleting, setIsDeleting] = useState(false);
 
     const defaultThemes = useThemeStore(state => state.defaultThemes);
-    const loadDefaultThemes = useThemeStore(state => state.loadDefaultThemes);
 
     const menuRef = useRef<HTMLDivElement>(null);
 
     type SortOption = 'createdAt' | 'updatedAt' | 'title';
     const [sortBy, setSortBy] = useState<SortOption>('updatedAt');
 
-    useEffect(() => {
-        loadDefaultThemes().catch(err => {
-            console.error('Failed to load themes:', err);
-        });
-    }, [loadDefaultThemes]);
 
     // Load themes for previews
     useEffect(() => {
