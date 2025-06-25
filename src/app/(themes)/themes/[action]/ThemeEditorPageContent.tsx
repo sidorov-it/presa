@@ -20,7 +20,7 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
     const params = use(props.params);
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { addTheme, updateTheme, loadTheme, themes, defaultThemes, loadDefaultThemes } = useThemeStore();
+    const { addTheme, updateTheme, loadTheme, themes, defaultThemes, loadThemes } = useThemeStore();
 
     const isNewTheme = params.action === 'new';
     const existingTheme = !isNewTheme ? themes.find(t => t.id === params.action) : undefined;
@@ -51,10 +51,10 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
     const [isLoading, setIsLoading] = useState(params.action !== 'new' && !existingTheme);
 
     useEffect(() => {
-        loadDefaultThemes().catch(err => {
+        loadThemes().catch(err => {
             console.error('Failed to load themes:', err);
         });
-    }, [loadDefaultThemes]);
+    }, [loadThemes]);
 
     useEffect(() => {
         if (params.action === 'new') {

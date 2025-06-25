@@ -30,7 +30,6 @@ export default function PresentationView() {
 
     const themes = useThemeStore(state => state.themes);
     const loadThemes = useThemeStore(state => state.loadThemes);
-    const loadDefaultThemes = useThemeStore(state => state.loadDefaultThemes);
     const currentTheme = useThemeStore(state => state.currentTheme) as Theme;
     const setCurrentTheme = useThemeStore(state => state.setCurrentTheme);
     const defaultThemes = useThemeStore(state => state.defaultThemes);
@@ -277,11 +276,6 @@ export default function PresentationView() {
         });
     }, [loadThemes]);
 
-    useEffect(() => {
-        loadDefaultThemes().catch(error => {
-            console.error('Failed to load themes:', error);
-        });
-    }, [loadDefaultThemes]);
 
     const loadingUI = useMemo(
         () => (

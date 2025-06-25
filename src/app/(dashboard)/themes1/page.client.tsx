@@ -11,7 +11,7 @@ import { useThemeStore } from '@/store/themeStore';
 const ThemesPage = () => {
     const [activeTheme, setActiveTheme] = useState<string | null>(null);
     const defaultThemes = useThemeStore(state => state.defaultThemes);
-    const loadDefaultThemes = useThemeStore(state => state.loadDefaultThemes);
+    const loadThemes = useThemeStore(state => state.loadThemes);
 
     const handleThemeSelect = (themeId: string) => {
         setActiveTheme(themeId);
@@ -23,10 +23,10 @@ const ThemesPage = () => {
     };
 
     useEffect(() => {
-        loadDefaultThemes().catch(err => {
+        loadThemes().catch(err => {
             console.error('Failed to load themes:', err);
         });
-    }, [loadDefaultThemes]);
+    }, [loadThemes]);
 
     return (
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">

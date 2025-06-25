@@ -58,7 +58,6 @@ export default function PresentationEditorPage() {
     const themes = useThemeStore(state => state.themes);
     const defaultThemes = useThemeStore(state => state.defaultThemes);
     const loadThemes = useThemeStore(state => state.loadThemes);
-    const loadDefaultThemes = useThemeStore(state => state.loadDefaultThemes);
     const currentTheme = useThemeStore(state => state.currentTheme);
     const setCurrentTheme = useThemeStore(state => state.setCurrentTheme);
     const defaultTheme = useThemeStore(state => state.defaultThemes[0]);
@@ -166,10 +165,7 @@ export default function PresentationEditorPage() {
         loadThemes().catch(error => {
             console.error('Failed to load themes:', error);
         });
-        loadDefaultThemes().catch(error => {
-            console.error('Failed to load themes:', error);
-        });
-    }, [loadThemes, loadDefaultThemes]);
+    }, [loadThemes]);
 
     const handleThemeChange = useCallback(
         (theme: Theme) => {

@@ -13,7 +13,7 @@ import { useThemeStore } from '@/store/themeStore';
 import { getRequiredFontsFromTheme, loadFonts, unloadAllFonts } from '@/utils/fontLoader';
 
 export default function ThemesPage() {
-    const { themes, defaultThemes, loadThemes, loadDefaultThemes, addTheme, deleteTheme } = useThemeStore();
+    const { themes, defaultThemes, loadThemes, addTheme, deleteTheme } = useThemeStore();
     const router = useRouter();
     const [tabIndex, setTabIndex] = useState(0);
 
@@ -22,10 +22,7 @@ export default function ThemesPage() {
             console.error('Failed to load themes:', error);
             toast.error('Failed to load themes');
         });
-        loadDefaultThemes().catch(error => {
-            console.error('Failed to load themes:', error);
-        });
-    }, [loadThemes, loadDefaultThemes]);
+    }, [loadThemes]);
 
     useEffect(() => {
         const allThemes = [...themes, ...defaultThemes];
