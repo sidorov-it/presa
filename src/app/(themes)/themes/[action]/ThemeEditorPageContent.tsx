@@ -15,6 +15,7 @@ import { generateId } from '@/utils/id';
 import styles from './page.module.css';
 import { createNewTheme } from '@/constants/defaultTheme';
 import FullPageLoader from '@/components/FullPageLoader/FullPageLoader';
+import NotFoundPage from '@/components/NotFoundPage/NotFoundPage';
 
 const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) => {
     const params = use(props.params);
@@ -49,6 +50,7 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
     });
 
     const [isLoading, setIsLoading] = useState(params.action !== 'new' && !existingTheme);
+    const [notFound, setNotFound] = useState(false);
 
     useEffect(() => {
         loadThemes().catch(err => {
@@ -71,7 +73,12 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
             .then((theme: Theme | null) => {
                 if (theme) {
                     setTheme(theme);
+                } else {
+                    setNotFound(true);
                 }
+            })
+            .catch(() => {
+                setNotFound(true);
             })
             .finally(() => {
                 const elapsed = Date.now() - start;
@@ -110,6 +117,10 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
 
     if (!theme && ((isNewTheme && defaultThemes.length === 0) || (!isNewTheme && !theme))) {
         return <FullPageLoader />;
+    }
+
+    if (notFound) {
+        return <NotFoundPage />;
     }
 
     return (
