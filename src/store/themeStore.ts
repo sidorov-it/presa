@@ -120,7 +120,7 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
             }
             const themes: Theme[] = await response.json();
             set({
-                themes,
+                themes: themes.filter(t => !t.isDefault),
                 defaultThemes: themes.filter(t => t.isDefault),
             });
         } catch (error) {

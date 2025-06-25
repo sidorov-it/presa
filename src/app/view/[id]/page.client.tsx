@@ -257,7 +257,9 @@ export default function PresentationView() {
     useEffect(() => {
         if (!presentation) return;
 
-        const savedTheme = themes.find(theme => theme.id === presentation.themeId);
+        const savedTheme =
+            themes.find(theme => theme.id === presentation.themeId) ||
+            defaultThemes.find(theme => theme.id === presentation.themeId);
         if (savedTheme) {
             setCurrentTheme(savedTheme);
         } else {
@@ -275,7 +277,6 @@ export default function PresentationView() {
             console.error('Failed to load themes:', error);
         });
     }, [loadThemes]);
-
 
     const loadingUI = useMemo(
         () => (

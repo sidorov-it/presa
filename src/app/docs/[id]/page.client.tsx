@@ -36,6 +36,34 @@ import { clearAllThemeStyles } from '@/utils/themeUtils';
 import { SimplePdfExportButton } from '@/components/export';
 import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
 
+const ThemeVariant = ({
+    theme,
+    currentTheme,
+    handleThemeChange,
+}: {
+    theme: Theme;
+    currentTheme?: Theme | null;
+    handleThemeChange: (theme: Theme) => void;
+}) => {
+    return (
+        <div
+            className={cn(styles.themeOption, currentTheme?.id === theme.id && styles.themeOptionSelected)}
+            onClick={() => handleThemeChange(theme)}
+            role="button"
+            aria-label={`Select theme ${theme.name}`}
+            onKeyDown={e => e.key === 'Enter' && handleThemeChange(theme)}
+        >
+            <div
+                className={styles.themeColorPreview}
+                style={{
+                    backgroundColor: theme.colors.primaryAccent,
+                }}
+            />
+            <span>{theme.name}</span>
+        </div>
+    );
+};
+
 export default function PresentationEditorPage() {
     const params = useParams();
     const { id } = params;
@@ -150,7 +178,9 @@ export default function PresentationEditorPage() {
             return;
         }
 
-        const savedTheme = themes.find(theme => theme.id === presentation.themeId);
+        const savedTheme =
+            themes.find(theme => theme.id === presentation.themeId) ||
+            defaultThemes.find(theme => theme.id === presentation.themeId);
         if (savedTheme) {
             setCurrentTheme(savedTheme);
         }
@@ -240,6 +270,84 @@ export default function PresentationEditorPage() {
         []
     );
 
+    const renderTabs = useMemo(() => {
+        return (
+            <>
+                <div className={styles.themeTabs}>
+                    <div
+                        className={cn(styles.themeTab, themeTab === 'user' && styles.themeTabActive)}
+                        onClick={() => setThemeTab('user')}
+                    >
+                        Мои
+                    </div>
+                    <div
+                        className={cn(styles.themeTab, themeTab === 'default' && styles.themeTabActive)}
+                        onClick={() => setThemeTab('default')}
+                    >
+                        Стандартные
+                    </div>
+                </div>
+                <div className={styles.themeGrid}>
+                    {themeTab === 'user' ? (
+                        <>
+                            {themes.length > 0 ? (
+                                themes.map(theme => (
+                                    <ThemeVariant
+                                        key={theme.id}
+                                        theme={theme}
+                                        currentTheme={currentTheme}
+                                        handleThemeChange={handleThemeChange}
+                                    />
+                                    // <div
+                                    //     key={theme.id}
+                                    //     className={cn(
+                                    //         styles.themeOption,
+                                    //         currentTheme?.id === theme.id && styles.themeOptionSelected
+                                    //     )}
+                                    //     onClick={() => handleThemeChange(theme)}
+                                    //     role="button"
+                                    //     aria-label={`Select theme ${theme.name}`}
+                                    //     onKeyDown={e => e.key === 'Enter' && handleThemeChange(theme)}
+                                    // >
+                                    //     <div
+                                    //         className={styles.themeColorPreview}
+                                    //         style={{
+                                    //             backgroundColor: theme.colors.primaryAccent,
+                                    //         }}
+                                    //     />
+                                    //     <span>{theme.name}</span>
+                                    // </div>
+                                ))
+                            ) : (
+                                <div className={styles.noThemesText}>Нет доступных пользовательских тем</div>
+                            )}
+                            <div className={styles.themeManageLink}>
+                                <Link href="/themes" className={styles.themeManageLinkText}>
+                                    Управление темами
+                                </Link>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            {defaultThemes.length > 0 ? (
+                                defaultThemes.map(theme => (
+                                    <ThemeVariant
+                                        key={theme.id}
+                                        theme={theme}
+                                        currentTheme={currentTheme}
+                                        handleThemeChange={handleThemeChange}
+                                    />
+                                ))
+                            ) : (
+                                <div className={styles.noThemesText}>Нет доступных тем</div>
+                            )}
+                        </>
+                    )}
+                </div>
+            </>
+        );
+    }, [themeTab, themes, defaultThemes, currentTheme, handleThemeChange]);
+
     if (isLoading) return loadingUI;
     if (notFound || !presentation) return notFoundUI;
 
@@ -302,107 +410,19 @@ export default function PresentationEditorPage() {
                                                     <span>Стандартная тема</span>
                                                     <span className={styles.defaultLabel}>По умолчанию</span>
                                                 </div>
-                                                <div className={styles.themeTabs}>
-                                                    <div
-                                                        className={cn(
-                                                            styles.themeTab,
-                                                            themeTab === 'user' && styles.themeTabActive
-                                                        )}
-                                                        onClick={() => setThemeTab('user')}
-                                                    >
-                                                        Мои
-                                                    </div>
-                                                    <div
-                                                        className={cn(
-                                                            styles.themeTab,
-                                                            themeTab === 'default' && styles.themeTabActive
-                                                        )}
-                                                        onClick={() => setThemeTab('default')}
-                                                    >
-                                                        Стандартные
-                                                    </div>
-                                                </div>
-                                                <div className={styles.themeGrid}>
-                                                    {themeTab === 'user' ? (
-                                                        <>
-                                                            {themes.length > 0 ? (
-                                                                themes.map(theme => (
-                                                                    <div
-                                                                        key={theme.id}
-                                                                        className={cn(
-                                                                            styles.themeOption,
-                                                                            currentTheme?.id === theme.id &&
-                                                                                styles.themeOptionSelected
-                                                                        )}
-                                                                        onClick={() => handleThemeChange(theme)}
-                                                                        role="button"
-                                                                        aria-label={`Select theme ${theme.name}`}
-                                                                        onKeyDown={e =>
-                                                                            e.key === 'Enter' &&
-                                                                            handleThemeChange(theme)
-                                                                        }
-                                                                    >
-                                                                        <div
-                                                                            className={styles.themeColorPreview}
-                                                                            style={{
-                                                                                backgroundColor:
-                                                                                    theme.colors.primaryAccent,
-                                                                            }}
-                                                                        />
-                                                                        <span>{theme.name}</span>
-                                                                    </div>
-                                                                ))
-                                                            ) : (
-                                                                <div className={styles.noThemesText}>
-                                                                    Нет доступных пользовательских тем
-                                                                </div>
-                                                            )}
-                                                            <div className={styles.themeManageLink}>
-                                                                <Link
-                                                                    href="/themes"
-                                                                    className={styles.themeManageLinkText}
-                                                                >
-                                                                    Управление темами
-                                                                </Link>
-                                                            </div>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            {defaultThemes.length > 0 ? (
-                                                                defaultThemes.map(theme => (
-                                                                    <div
-                                                                        key={theme.id}
-                                                                        className={cn(
-                                                                            styles.themeOption,
-                                                                            currentTheme?.id === theme.id &&
-                                                                                styles.themeOptionSelected
-                                                                        )}
-                                                                        onClick={() => handleThemeChange(theme)}
-                                                                        role="button"
-                                                                        aria-label={`Select theme ${theme.name}`}
-                                                                        onKeyDown={e =>
-                                                                            e.key === 'Enter' &&
-                                                                            handleThemeChange(theme)
-                                                                        }
-                                                                    >
-                                                                        <div
-                                                                            className={styles.themeColorPreview}
-                                                                            style={{
-                                                                                backgroundColor:
-                                                                                    theme.colors.primaryAccent,
-                                                                            }}
-                                                                        />
-                                                                        <span>{theme.name}</span>
-                                                                    </div>
-                                                                ))
-                                                            ) : (
-                                                                <div className={styles.noThemesText}>
-                                                                    Нет доступных тем
-                                                                </div>
-                                                            )}
-                                                        </>
-                                                    )}
-                                                </div>
+                                                {themes.length > 0 && renderTabs}
+                                                {themes.length === 0 && (
+                                                    <>
+                                                        {defaultThemes.map(theme => (
+                                                            <ThemeVariant
+                                                                key={theme.id}
+                                                                theme={theme}
+                                                                currentTheme={currentTheme}
+                                                                handleThemeChange={handleThemeChange}
+                                                            />
+                                                        ))}
+                                                    </>
+                                                )}
                                             </div>
                                         }
                                     />
