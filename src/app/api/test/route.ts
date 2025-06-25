@@ -7,8 +7,21 @@ import https from 'https';
 import { v4 as uuidv4 } from 'uuid';
 import { IncomingMessage } from 'http';
 import themes from './themes.json';
+import { FONT_URLS } from '@/utils/fontLoader';
 
 const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
+
+// Helper function to get a random font from available fonts
+function getRandomFont(): string {
+    const availableFonts = Object.keys(FONT_URLS);
+    return availableFonts[Math.floor(Math.random() * availableFonts.length)];
+}
+
+// Helper function to get a valid font, or substitute with a random one if not available
+function getValidFont(requestedFont: string): string {
+    const normalizedFont = requestedFont.charAt(0).toUpperCase() + requestedFont.slice(1).toLowerCase();
+    return FONT_URLS[normalizedFont] ? normalizedFont : getRandomFont();
+}
 
 // Helper function to get first color from gradient
 function getFirstColor(colorString: string): string {
@@ -77,13 +90,13 @@ async function transformTheme(basicTheme: any) {
             },
         },
         typography: {
-            headingFont: 'inter',
+            headingFont: getValidFont(basicTheme.headingFont || 'Inter'),
             headingWeight: 400,
             headingColor: getFirstColor(basicTheme.headingColor),
             headingLineHeight: 1.25,
             headingLetterSpacing: 0,
             headingCapitalization: 'none',
-            bodyFont: 'inter',
+            bodyFont: getValidFont(basicTheme.bodyFont || 'Inter'),
             bodyWeight: 400,
             bodyColor: getFirstColor(basicTheme.bodyColor),
             bodyLineHeight: 1.25,

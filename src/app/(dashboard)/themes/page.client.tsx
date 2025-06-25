@@ -10,6 +10,7 @@ import ThemePreviewBlock from './components/ThemePreviewBlock';
 import { useRouter } from 'next/navigation';
 import { Tabs as ChakraTabs } from '@chakra-ui/react';
 import { useThemeStore } from '@/store/themeStore';
+import { getRequiredFontsFromTheme, loadFonts, unloadAllFonts } from '@/utils/fontLoader';
 
 export default function ThemesPage() {
     const { themes, defaultThemes, loadThemes, loadDefaultThemes, addTheme, deleteTheme } = useThemeStore();
@@ -25,6 +26,22 @@ export default function ThemesPage() {
             console.error('Failed to load themes:', error);
         });
     }, [loadThemes, loadDefaultThemes]);
+
+    useEffect(() => {
+        const allThemes = [...themes, ...defaultThemes];
+        const uniqueFontUrls = new Set<string>();
+        
+        allThemes.forEach(theme => {
+            const fontUrls = getRequiredFontsFromTheme(theme);
+            fontUrls.forEach(url => uniqueFontUrls.add(url));
+        });
+
+        loadFonts(Array.from(uniqueFontUrls));
+
+        return () => {
+            unloadAllFonts();
+        };
+    }, [themes, defaultThemes]);
 
     const handleDuplicate = async (themeId: string) => {
         const theme = themes.find(theme => theme.id === themeId);

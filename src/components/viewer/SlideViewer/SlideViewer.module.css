@@ -16,7 +16,7 @@
     width: 100%;
     max-width: 100%;
     min-height: 100vh;
-    overflow: auto;
+    /* overflow: auto; */
 }
 
 /* PDF Export specific styles */

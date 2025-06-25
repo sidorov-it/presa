@@ -8,6 +8,8 @@ interface FontLoaderProps {
 
 export default function FontLoader({ theme }: FontLoaderProps) {
     useEffect(() => {
+        if (!theme) return;
+
         // Get required font URLs from theme
         const fontUrls = getRequiredFontsFromTheme(theme);
 
@@ -18,7 +20,7 @@ export default function FontLoader({ theme }: FontLoaderProps) {
         return () => {
             unloadAllFonts();
         };
-    }, [theme.typography.headingFont, theme.typography.bodyFont]);
+    }, [theme, theme?.typography?.headingFont, theme?.typography?.bodyFont]);
 
     return null;
 }
