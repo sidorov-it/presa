@@ -7,10 +7,7 @@ import { getBorderColorForBackground } from './themeUtils';
 /**
  * Convert theme settings to a style object with CSS variables.
  */
-export function themeToCSSVariables(
-    theme: Theme,
-    backgroundSettings?: BackgroundSettings
-): React.CSSProperties {
+export function themeToCSSVariables(theme: Theme, backgroundSettings?: BackgroundSettings): React.CSSProperties {
     const style: Record<string, string> = {};
     const set = (prop: string, value: string | number | undefined) => {
         if (value === undefined) return;
@@ -72,10 +69,7 @@ export function themeToCSSVariables(
     // Body typography
     set('--presentation-body-line-height', theme.typography.bodyLineHeight);
     set('--presentation-body-letter-spacing', `${theme.typography.bodyLetterSpacing}px`);
-    set(
-        '--presentation-body-capitalization',
-        theme.typography.bodyCapitalization === 'none' ? 'none' : 'uppercase'
-    );
+    set('--presentation-body-capitalization', theme.typography.bodyCapitalization === 'none' ? 'none' : 'uppercase');
 
     // Slide design
     set('--presentation-slide-border-radius', theme.design.slide.borderRadius);
@@ -86,7 +80,13 @@ export function themeToCSSVariables(
         sm: '0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)',
         md: 'rgba(0, 0, 0, 0.4) 4px 4px 0px 0px',
     };
-    set('--presentation-slide-shadow', shadowMap[theme.design.slide.shadow]);
+    if (theme.design.slide.shadow) {
+        if (theme.design.slide.borderColor) {
+            set('--presentation-slide-shadow', `${theme.design.slide.borderColor} 4px 4px 0px 0px`);
+        } else {
+            set('--presentation-slide-shadow', shadowMap[theme.design.slide.shadow]);
+        }
+    }
 
     const borderWidthMap: Record<string, string> = {
         none: '0px',

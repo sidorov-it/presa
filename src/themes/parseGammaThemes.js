@@ -20,6 +20,41 @@ const blockFillMap = ['fill', 'semi', 'none'];
 
 const themes = [];
 
+async function parseFonts(theme) {
+    // eslint-disable-next-line no-undef
+    document.querySelector('[data-testid="theme-config-tab-fonts"]').click();
+
+    await new Promise(resolve => setTimeout(() => resolve(), 200));
+
+    const fonts = document.querySelectorAll('.chakra-tabs__tab-panels')[1];
+
+    const [headingGroup, , bodyGroup] = fonts.querySelectorAll('[role="group"]');
+
+    theme.headingFont = headingGroup.querySelector('[data-testid="custom-theme-heading-font-picker"]').textContent;
+
+    const buttons = headingGroup.querySelectorAll('button');
+    const headingFontWeightButton = buttons[1];
+    theme.headingFontWeight = headingFontWeightButton.textContent;
+
+    const headingFontColor = document
+        .querySelector('[data-testid="custom-theme-heading-color-picker"]')
+        .querySelector('input').value;
+    theme.headingFontColor = headingFontColor;
+
+    // ================================ //
+
+    theme.bodyFont = bodyGroup.querySelector('[data-testid="custom-theme-body-font-picker"]').textContent;
+
+    const buttonsBody = bodyGroup.querySelectorAll('button');
+    const bodyFontWeightButton = buttonsBody[1];
+    theme.bodyFontWeight = bodyFontWeightButton.textContent;
+
+    const bodyFontColor = document
+        .querySelector('[data-testid="custom-theme-body-color-picker"]')
+        .querySelector('input').value;
+    theme.bodyFontColor = bodyFontColor;
+}
+
 async function parseTheme(name) {
     const theme = {
         name: name,
@@ -29,6 +64,20 @@ async function parseTheme(name) {
     theme.primaryAccent = document
         .querySelector('[data-testid="custom-theme-primary-color-picker"]')
         .querySelector('input').value;
+
+    const additionalColors = document.evaluate(
+        "//label[contains(., 'Secondary accent colors')]",
+        document,
+        null,
+        XPathResult.ANY_TYPE,
+        null
+    );
+    const additionalColorsBlock = additionalColors.iterateNext();
+
+    if (additionalColorsBlock) {
+        const additionalColorsInputs = additionalColorsBlock.parentNode.querySelectorAll('input');
+        theme.secondaryColors = Array.from(additionalColorsInputs).map(el => el.value);
+    }
 
     // Heading color
     theme.headingColor = document
@@ -46,9 +95,17 @@ async function parseTheme(name) {
         .querySelector('input').value;
 
     // Page background color
-    theme.pageBackground = document
-        .querySelector('[data-testid="media-drawer-menu-button"]')
-        .parentNode.querySelector('input').value;
+    const pageBackgroundBlock = document.querySelector('[data-testid="media-drawer-menu-button"]').parentNode;
+
+    if (pageBackgroundBlock.querySelector('input')) {
+        theme.pageBackground = pageBackgroundBlock.querySelector('input');
+    } else if (document.querySelector('[data-testid="media-drawer-menu-button"]').parentNode.querySelector('img')) {
+        theme.pageBackgroundImage = document
+            .querySelector('[data-testid="media-drawer-menu-button"]')
+            .parentNode.querySelector('img').src;
+    }
+
+    await parseFonts(theme);
 
     // "дизайн"
     // eslint-disable-next-line no-undef
@@ -137,6 +194,12 @@ async function parseTheme(name) {
 
     theme.blockFillType = blockFillTypeMap[blockFillTypeIndex];
 
+    if (theme.blockFillType === 'custom') {
+        theme.blockFillCustomColors = Array.from(groupsBlocks[0].querySelectorAll('input'))
+            .map(input => input.value)
+            .filter(Boolean);
+    }
+
     const blockFill = Array.from(groupsBlocks[1].querySelectorAll('button'));
     theme.blockFill = blockFillMap[getActiveButtonIndex(blockFill)];
 
@@ -185,7 +248,6 @@ async function main() {
 
         await timeout(100);
     }
-
     console.log(themes);
 }
 

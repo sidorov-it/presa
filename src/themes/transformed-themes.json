@@ -1,0 +1,5390 @@
+[
+  {
+    "name": "Pearl",
+    "description": "Theme imported from Gamma: Pearl",
+    "colors": {
+      "primaryAccent": "#1B1B27",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "color",
+        "color": "#ECECF3",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#1B1B27",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#3C3939",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "thin",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.8,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#1B1B27",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#1B1B27",
+        "buttonShape": "default",
+        "linkColor": "#1B1B27"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Vortex",
+    "description": "Theme imported from Gamma: Vortex",
+    "colors": {
+      "primaryAccent": "#F2F2F3",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#050505",
+      "pageBackground": {
+        "type": "color",
+        "color": "#19191A",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#F2F2F3",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#E5E0DF",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "sm",
+        "borderWidth": "thin",
+        "borderColor": "#565151",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#F2F2F3",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#F2F2F3",
+        "buttonShape": "default",
+        "linkColor": "#F2F2F3"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Chisel",
+    "description": "Theme imported from Gamma: Chisel",
+    "colors": {
+      "primaryAccent": "#3E2513",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "color",
+        "color": "#F7F3F0",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#201B18",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#504C49",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#3E2513",
+        "backgroundBlockFillType": "semi",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#F3E3D8"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#3E2513",
+        "buttonShape": "default",
+        "linkColor": "#3E2513"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Stardust",
+    "description": "Theme imported from Gamma: Stardust",
+    "colors": {
+      "primaryAccent": "#FC8337",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#030303",
+      "pageBackground": {
+        "type": "color",
+        "color": "gradient black",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FFFFFF",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#E5E0DF",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "12px",
+        "shadow": "none",
+        "borderWidth": "medium",
+        "borderColor": "#4E4E4E",
+        "opacity": 0.5,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#FC8337",
+        "backgroundBlockFillType": "none",
+        "borderWidth": "medium",
+        "blockFillColorsType": "custom",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#FC8337",
+        "buttonShape": "default",
+        "linkColor": "#FC8337"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Seafoam",
+    "description": "Theme imported from Gamma: Seafoam",
+    "colors": {
+      "primaryAccent": "#26A688",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "color",
+        "color": "#D6F5EE",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#333F70",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#333F70",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "sm",
+        "borderWidth": "thin",
+        "borderColor": "#E5E0DF",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#26A688",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#DDF8F2",
+          "#B4EEE0",
+          "#192248"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#26A688",
+        "buttonShape": "default",
+        "linkColor": "#26A688"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Nebulae",
+    "description": "Theme imported from Gamma: Nebulae",
+    "colors": {
+      "primaryAccent": "#B380FF",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#07070C",
+      "pageBackground": {
+        "type": "image",
+        "color": "#FFFFFF",
+        "imageUrl": "/uploads/3c20fb1e-97a7-4b0a-9827-e2bb62008c30.png"
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#B380FF",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#E0D6DE",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#B380FF 10%, #7AF0FF 90%",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#7AF0FF",
+          "#120336",
+          "#0D0326"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#B380FF 10%, #7AF0FF 90%",
+        "buttonShape": "default",
+        "linkColor": "#B380FF 10%, #7AF0FF 90%"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:16.732Z",
+    "updatedAt": "2025-06-25T03:17:16.732Z"
+  },
+  {
+    "name": "Creme",
+    "description": "Theme imported from Gamma: Creme",
+    "colors": {
+      "primaryAccent": "#D3C5B6",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#F9F6F0",
+      "pageBackground": {
+        "type": "color",
+        "color": "#DDCFBB",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#484237",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#B2A599",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#D3C5B6",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#F2EBDF",
+          "#DECEBB"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#D3C5B6",
+        "buttonShape": "default",
+        "linkColor": "#D3C5B6"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Lux",
+    "description": "Theme imported from Gamma: Lux",
+    "colors": {
+      "primaryAccent": "#EF9C82",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#123332",
+      "pageBackground": {
+        "type": "color",
+        "color": "#1C4241",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FFD9BE",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#F9EEE7",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#EF9C82",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#1D4241"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#EF9C82",
+        "buttonShape": "default",
+        "linkColor": "#EF9C82"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Consultant",
+    "description": "Theme imported from Gamma: Consultant",
+    "colors": {
+      "primaryAccent": "#2150FE",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "color",
+        "color": "#F0F0F1",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#152D47",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#4C4C4D",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#2150FE",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#04318F"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#2150FE",
+        "buttonShape": "default",
+        "linkColor": "#2150FE"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Marine",
+    "description": "Theme imported from Gamma: Marine",
+    "colors": {
+      "primaryAccent": "#8C98CA",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#080E26",
+      "pageBackground": {
+        "type": "color",
+        "color": "#A8AFCC",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FFFFFF",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#EBECEF",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "sm",
+        "borderWidth": "thin",
+        "borderColor": "#565151",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#8C98CA",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#8C98CA",
+        "buttonShape": "default",
+        "linkColor": "#8C98CA"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Elysia",
+    "description": "Theme imported from Gamma: Elysia",
+    "colors": {
+      "primaryAccent": "#3371A5",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FAF5EB",
+      "pageBackground": {
+        "type": "image",
+        "color": "#FFFFFF",
+        "imageUrl": "/uploads/728dbaf3-4cf3-4dd7-b047-406270539d5f.png"
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#051D3A",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#2B3541",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#3371A5",
+        "backgroundBlockFillType": "none",
+        "borderWidth": "thin",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#E282B7",
+          "#FAF1E6",
+          "#FCF9F3"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#3371A5",
+        "buttonShape": "default",
+        "linkColor": "#3371A5"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:16.955Z",
+    "updatedAt": "2025-06-25T03:17:16.955Z"
+  },
+  {
+    "name": "Prism",
+    "description": "Theme imported from Gamma: Prism",
+    "colors": {
+      "primaryAccent": "#BE49DF",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "color",
+        "color": "#FFFFFF",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#000000",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#272525",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "thin",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.8,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#BE49DF",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#BE49DF",
+        "buttonShape": "default",
+        "linkColor": "#BE49DF"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Night Sky",
+    "description": "Theme imported from Gamma: Night Sky",
+    "colors": {
+      "primaryAccent": "#5A6ED8",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#000018",
+      "pageBackground": {
+        "type": "image",
+        "color": "#FFFFFF",
+        "imageUrl": "/uploads/ebfcc76d-5ea3-43c5-a2a7-5d66ca27da3b.png"
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FFFFFF",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#CFD0D8",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "thin",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.8,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#5A6ED8",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#243799",
+          "#000024",
+          "#000030"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#5A6ED8",
+        "buttonShape": "default",
+        "linkColor": "#5A6ED8"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:16.212Z",
+    "updatedAt": "2025-06-25T03:17:16.212Z"
+  },
+  {
+    "name": "Commons",
+    "description": "Theme imported from Gamma: Commons",
+    "colors": {
+      "primaryAccent": "#1C9770",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "color",
+        "color": "#F5F5F5",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#030303",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#464646",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#1C9770",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#93CB52",
+          "#7AD180",
+          "#7AD1C3"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#1C9770",
+        "buttonShape": "default",
+        "linkColor": "#1C9770"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Bonan Hale",
+    "description": "Theme imported from Gamma: Bonan Hale",
+    "colors": {
+      "primaryAccent": "#F5F547",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#1F1F1F",
+      "pageBackground": {
+        "type": "color",
+        "color": "#000000",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FEFEFE",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#BFBFBF",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#F5F547",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#242424"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#F5F547",
+        "buttonShape": "default",
+        "linkColor": "#F5F547"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Gamma",
+    "description": "Theme imported from Gamma: Gamma",
+    "colors": {
+      "primaryAccent": "#6237C8",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FDFAF7",
+      "pageBackground": {
+        "type": "color",
+        "color": "#FFFFFF",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#591CE6",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#272525",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "sm",
+        "borderWidth": "thin",
+        "borderColor": "#E5E0DF",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#6237C8",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#6237C8",
+        "buttonShape": "default",
+        "linkColor": "#6237C8"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Gamma Dark",
+    "description": "Theme imported from Gamma: Gamma Dark",
+    "colors": {
+      "primaryAccent": "#9A81DF",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#0C0524",
+      "pageBackground": {
+        "type": "image",
+        "color": "#FFFFFF",
+        "imageUrl": "/uploads/edbf01e4-4e73-4043-8a71-3394dee4f198.png"
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#A680FF",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#E0D6DE",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "thin",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.8,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#9A81DF 10%, #7456C8 90%",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#D783D8",
+          "#FF90A5",
+          "#FFB071",
+          "#14083A"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#9A81DF 10%, #7456C8 90%",
+        "buttonShape": "default",
+        "linkColor": "#9A81DF 10%, #7456C8 90%"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.883Z",
+    "updatedAt": "2025-06-25T03:17:15.883Z"
+  },
+  {
+    "name": "Dialogue",
+    "description": "Theme imported from Gamma: Dialogue",
+    "colors": {
+      "primaryAccent": "#E04F00",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "color",
+        "color": "#FAFAFA",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#020202",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#383838",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#E04F00",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#E04F00",
+        "buttonShape": "default",
+        "linkColor": "#E04F00"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Founder",
+    "description": "Theme imported from Gamma: Founder",
+    "colors": {
+      "primaryAccent": "#AC9EF5",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#2D3133",
+      "pageBackground": {
+        "type": "color",
+        "color": "#111213",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#F7F7F8",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#D6D9D7",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#AC9EF5",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#AC9EF5",
+        "buttonShape": "default",
+        "linkColor": "#AC9EF5"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Lavender",
+    "description": "Theme imported from Gamma: Lavender",
+    "colors": {
+      "primaryAccent": "#5955EB",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FBFAFF",
+      "pageBackground": {
+        "type": "color",
+        "color": "#F4F0FF",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#5955EB",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#49495A",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#5955EB 10%, #2622B2 90%",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#E7E0FF",
+          "#F7F5FF"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#5955EB 10%, #2622B2 90%",
+        "buttonShape": "default",
+        "linkColor": "#5955EB 10%, #2622B2 90%"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Indigo",
+    "description": "Theme imported from Gamma: Indigo",
+    "colors": {
+      "primaryAccent": "#8061FF",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#0C0A33",
+      "pageBackground": {
+        "type": "color",
+        "color": "#150D48",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FFFFFF",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#D9E1FF",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#8061FF",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#8061FF",
+        "buttonShape": "default",
+        "linkColor": "#8061FF"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Howlite",
+    "description": "Theme imported from Gamma: Howlite",
+    "colors": {
+      "primaryAccent": "#2D2E34",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "color",
+        "color": "#EDEDED",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#000000",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#3D3838",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#2D2E34",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#F2F2F2"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#2D2E34",
+        "buttonShape": "default",
+        "linkColor": "#2D2E34"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Onyx",
+    "description": "Theme imported from Gamma: Onyx",
+    "colors": {
+      "primaryAccent": "#FFFFFF",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#111213",
+      "pageBackground": {
+        "type": "color",
+        "color": "#181A1B",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FFFFFF",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#E2E6E9",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#FFFFFF",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#1D1F22"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#FFFFFF",
+        "buttonShape": "default",
+        "linkColor": "#FFFFFF"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Atmosphere",
+    "description": "Theme imported from Gamma: Atmosphere",
+    "colors": {
+      "primaryAccent": "#AF41F0",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "color",
+        "color": "#FFFFFF",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FF75D3",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#272525",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "thin",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.8,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#AF41F0 10%, #FF75D3 90%",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#AF41F0 10%, #FF75D3 90%",
+        "buttonShape": "default",
+        "linkColor": "#AF41F0 10%, #FF75D3 90%"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Blueberry ",
+    "description": "Theme imported from Gamma: Blueberry ",
+    "colors": {
+      "primaryAccent": "#FA2F5C",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#100C35",
+      "pageBackground": {
+        "type": "color",
+        "color": "#271C4E",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FFFFFF",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#D9E1FF",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#FA2F5C 10%, #FF7161 90%",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#1B1744",
+          "#261C4E"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#FA2F5C 10%, #FF7161 90%",
+        "buttonShape": "default",
+        "linkColor": "#FA2F5C 10%, #FF7161 90%"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Kraft ",
+    "description": "Theme imported from Gamma: Kraft ",
+    "colors": {
+      "primaryAccent": "#282824",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#EFECE6",
+      "pageBackground": {
+        "type": "color",
+        "color": "#DDD6CC",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#282824",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#4A4A45",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#282824",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#E8E4DD",
+          "#DED8CD"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#282824",
+        "buttonShape": "default",
+        "linkColor": "#282824"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Mystique ",
+    "description": "Theme imported from Gamma: Mystique ",
+    "colors": {
+      "primaryAccent": "#FF6BD8",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#0F0F10",
+      "pageBackground": {
+        "type": "color",
+        "color": "#18181B",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FBF3FA",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#E0D6DE",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#FF6BD8",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#211E24",
+          "#201E25"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#FF6BD8",
+        "buttonShape": "default",
+        "linkColor": "#FF6BD8"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Petrol",
+    "description": "Theme imported from Gamma: Petrol",
+    "colors": {
+      "primaryAccent": "#325F7B",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFCF5",
+      "pageBackground": {
+        "type": "color",
+        "color": "#50738C",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#124E73",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#2B4150",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#325F7B",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#51738C",
+          "#F6F0E4"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#325F7B",
+        "buttonShape": "default",
+        "linkColor": "#325F7B"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Blues",
+    "description": "Theme imported from Gamma: Blues",
+    "colors": {
+      "primaryAccent": "#609DFF",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#09151A",
+      "pageBackground": {
+        "type": "color",
+        "color": "black gradient",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#F5F0F0",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#E2E6E9",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "thin",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.8,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#609DFF",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#041938",
+          "#013180"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#609DFF",
+        "buttonShape": "default",
+        "linkColor": "#609DFF"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Peach",
+    "description": "Theme imported from Gamma: Peach",
+    "colors": {
+      "primaryAccent": "#FFAD94",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "image",
+        "color": "#FFFFFF",
+        "imageUrl": "/uploads/06716c80-aa37-4e36-857a-0bfbf3e890d6.png"
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#403C4E",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#403C4E",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "sm",
+        "borderWidth": "thin",
+        "borderColor": "#E5E0DF",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#FFAD94",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#FFD1CC",
+          "#FFDBC8",
+          "#FFEDBF",
+          "#FFF9B9"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#FFAD94",
+        "buttonShape": "default",
+        "linkColor": "#FFAD94"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:16.511Z",
+    "updatedAt": "2025-06-25T03:17:16.511Z"
+  },
+  {
+    "name": "Incandescent",
+    "description": "Theme imported from Gamma: Incandescent",
+    "colors": {
+      "primaryAccent": "#FF6680",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#241631",
+      "pageBackground": {
+        "type": "color",
+        "color": "#110C17",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FF726D",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#DAD1E6",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#FF6680 5%, #FF4DA9 45%, #CD42D7 85%",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#FF6680 5%, #FF4DA9 45%, #CD42D7 85%",
+        "buttonShape": "default",
+        "linkColor": "#FF6680 5%, #FF4DA9 45%, #CD42D7 85%"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Oatmeal",
+    "description": "Theme imported from Gamma: Oatmeal",
+    "colors": {
+      "primaryAccent": "#E5E5E0",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "color",
+        "color": "white gradient",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#312F2B",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#272525",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "thin",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.8,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#E5E5E0",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#D3C1B6",
+          "#BAB6AA"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#E5E5E0",
+        "buttonShape": "default",
+        "linkColor": "#E5E5E0"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Sanguine",
+    "description": "Theme imported from Gamma: Sanguine",
+    "colors": {
+      "primaryAccent": "#C91313",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#0A0A0A",
+      "pageBackground": {
+        "type": "color",
+        "color": "red gradient",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FAEBEB",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#FFE5E5",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "thin",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.8,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#C91313",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#510C04",
+          "#740B0A"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#C91313",
+        "buttonShape": "default",
+        "linkColor": "#C91313"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Sage",
+    "description": "Theme imported from Gamma: Sage",
+    "colors": {
+      "primaryAccent": "#437066",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "color",
+        "color": "#EBF4F3",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#272D45",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#2C3249",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "sm",
+        "borderWidth": "thin",
+        "borderColor": "#E5E0DF",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#437066",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#437066",
+        "buttonShape": "default",
+        "linkColor": "#437066"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Verdigris",
+    "description": "Theme imported from Gamma: Verdigris",
+    "colors": {
+      "primaryAccent": "#0A988B",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#112836",
+      "pageBackground": {
+        "type": "image",
+        "color": "#FFFFFF",
+        "imageUrl": "/uploads/5af00758-1b38-4e6a-9460-4268ab8c2ff4.png"
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FFFFFF",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#CAD6DE",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#0A988B",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#1C3645",
+          "#061722"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#0A988B",
+        "buttonShape": "default",
+        "linkColor": "#0A988B"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:16.315Z",
+    "updatedAt": "2025-06-25T03:17:16.315Z"
+  },
+  {
+    "name": "Ash",
+    "description": "Theme imported from Gamma: Ash",
+    "colors": {
+      "primaryAccent": "#1D1D1B",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FCFCFC",
+      "pageBackground": {
+        "type": "color",
+        "color": "#EFEFEF",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#1D1D1B",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#61615C",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#1D1D1B",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#EFEFEF"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#1D1D1B",
+        "buttonShape": "default",
+        "linkColor": "#1D1D1B"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Coal",
+    "description": "Theme imported from Gamma: Coal",
+    "colors": {
+      "primaryAccent": "#E1E1DF",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#1D1D1B",
+      "pageBackground": {
+        "type": "color",
+        "color": "#0D0D0C",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#EDEDE8",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#C9C9C0",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#E1E1DF",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#1F1F1E",
+          "#1A1A1A"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#E1E1DF",
+        "buttonShape": "default",
+        "linkColor": "#E1E1DF"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Flamingo",
+    "description": "Theme imported from Gamma: Flamingo",
+    "colors": {
+      "primaryAccent": "#F5A3A3",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFAFA",
+      "pageBackground": {
+        "type": "image",
+        "color": "#FFFFFF",
+        "imageUrl": "/uploads/0a90131a-8ddc-4cea-8d0a-7cfce0055047.png"
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#1F1E1E",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#3B3535",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#F5A3A3",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#F5A3A3",
+        "buttonShape": "default",
+        "linkColor": "#F5A3A3"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:17.006Z",
+    "updatedAt": "2025-06-25T03:17:17.006Z"
+  },
+  {
+    "name": "Canaveral",
+    "description": "Theme imported from Gamma: Canaveral",
+    "colors": {
+      "primaryAccent": "#F65F62",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#191718",
+      "pageBackground": {
+        "type": "image",
+        "color": "#FFFFFF",
+        "imageUrl": "/uploads/4c39587b-73b8-4932-93f7-40b6e4711fb6.png"
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FFFFFF",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#E5E0DF",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "sm",
+        "borderWidth": "thin",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.8,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#F65F62",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#F65F62",
+        "buttonShape": "default",
+        "linkColor": "#F65F62"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.966Z",
+    "updatedAt": "2025-06-25T03:17:15.966Z"
+  },
+  {
+    "name": "Oasis",
+    "description": "Theme imported from Gamma: Oasis",
+    "colors": {
+      "primaryAccent": "#D2600F",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFF8F0",
+      "pageBackground": {
+        "type": "color",
+        "color": "#AABCB6",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#2C3F42",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#2B2E3C",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "sm",
+        "borderWidth": "thin",
+        "borderColor": "#E5E0DF",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#D2600F",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#C3CDC1",
+          "#FBE2D1"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#D2600F",
+        "buttonShape": "default",
+        "linkColor": "#D2600F"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Fluo",
+    "description": "Theme imported from Gamma: Fluo",
+    "colors": {
+      "primaryAccent": "#DCFF50",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#212121",
+      "pageBackground": {
+        "type": "color",
+        "color": "#010303",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FFFFFF",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#E5E0DF",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#DCFF50",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#141414"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#DCFF50",
+        "buttonShape": "default",
+        "linkColor": "#DCFF50"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Finesse",
+    "description": "Theme imported from Gamma: Finesse",
+    "colors": {
+      "primaryAccent": "#38512F",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FEF5E7",
+      "pageBackground": {
+        "type": "color",
+        "color": "#F2E4CF",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#38512F",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#3A3630",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#38512F",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#38512F",
+        "buttonShape": "default",
+        "linkColor": "#38512F"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Electric",
+    "description": "Theme imported from Gamma: Electric",
+    "colors": {
+      "primaryAccent": "#6EB9FC",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#252833",
+      "pageBackground": {
+        "type": "color",
+        "color": "#181A24",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#6EB9FC",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#D6E5EF",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#6EB9FC 5%, #F888D2 45%, #FD957D 85%",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#6EB9FC 5%, #F888D2 45%, #FD957D 85%",
+        "buttonShape": "default",
+        "linkColor": "#6EB9FC 5%, #F888D2 45%, #FD957D 85%"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Soft Cloud",
+    "description": "Theme imported from Gamma: Soft Cloud",
+    "colors": {
+      "primaryAccent": "#396AF1",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#EEEFF5",
+      "pageBackground": {
+        "type": "image",
+        "color": "#FFFFFF",
+        "imageUrl": "/uploads/965d4f2d-51ed-4669-b366-2fa959ca61d0.svg"
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#396AF1",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#272525",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "12px",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#396AF1 10%, #A665F6 90%",
+        "backgroundBlockFillType": "none",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": []
+      },
+      "buttons": {
+        "buttonColor": "#396AF1 10%, #A665F6 90%",
+        "buttonShape": "default",
+        "linkColor": "#396AF1 10%, #A665F6 90%"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.914Z",
+    "updatedAt": "2025-06-25T03:17:15.914Z"
+  },
+  {
+    "name": "Zephyr",
+    "description": "Theme imported from Gamma: Zephyr",
+    "colors": {
+      "primaryAccent": "#4296CD",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "image",
+        "color": "#FFFFFF",
+        "imageUrl": "/uploads/5689ce24-bc0e-458a-908a-801dba3e3c33.png"
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#2E3C4E",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#384653",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "20px",
+        "shadow": "md",
+        "borderWidth": "medium",
+        "borderColor": "#75BAE6",
+        "opacity": 1,
+        "imageShape": "round"
+      },
+      "blocks": {
+        "backgroundColor": "#4296CD 0%, #A7DDFF 100%",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#2589C9",
+          "#063E5F",
+          "#1E2C3B",
+          "#E5F6FF",
+          "#F4FBFF"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#4296CD 0%, #A7DDFF 100%",
+        "buttonShape": "default",
+        "linkColor": "#4296CD 0%, #A7DDFF 100%"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:16.149Z",
+    "updatedAt": "2025-06-25T03:17:16.149Z"
+  },
+  {
+    "name": "Soft Coal",
+    "description": "Theme imported from Gamma: Soft Coal",
+    "colors": {
+      "primaryAccent": "#60A9FF",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#282C32",
+      "pageBackground": {
+        "type": "color",
+        "color": "#282C32",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#60A9FF",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#EEEFF5",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "12px",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#60A9FF 10%, #D187FF 90%",
+        "backgroundBlockFillType": "none",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": []
+      },
+      "buttons": {
+        "buttonColor": "#60A9FF 10%, #D187FF 90%",
+        "buttonShape": "default",
+        "linkColor": "#60A9FF 10%, #D187FF 90%"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.212Z",
+    "updatedAt": "2025-06-25T03:17:15.212Z"
+  },
+  {
+    "name": "Chimney Smoke",
+    "description": "Theme imported from Gamma: Chimney Smoke",
+    "colors": {
+      "primaryAccent": "#5B5F72",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "image",
+        "color": "#FFFFFF",
+        "imageUrl": "/uploads/4dad7db0-8750-4c72-972a-c0854f76d0f6.png"
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#5B5F72",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#777C92",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "thin",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.8,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#5B5F72 10%, #45495E 90%",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#F4F4F5",
+          "#E2E3E9"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#5B5F72 10%, #45495E 90%",
+        "buttonShape": "default",
+        "linkColor": "#5B5F72 10%, #45495E 90%"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:16.611Z",
+    "updatedAt": "2025-06-25T03:17:16.611Z"
+  },
+  {
+    "name": "Chimney Dust",
+    "description": "Theme imported from Gamma: Chimney Dust",
+    "colors": {
+      "primaryAccent": "#E4E4E7",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#2A2A2D",
+      "pageBackground": {
+        "type": "color",
+        "color": "#FFFFFF",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FFFFFF",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#CFD0D8",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "thin",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.8,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#E4E4E7 10%, #C5C5C9 90%",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#141415",
+          "#3D3D42",
+          "#515257"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#E4E4E7 10%, #C5C5C9 90%",
+        "buttonShape": "default",
+        "linkColor": "#E4E4E7 10%, #C5C5C9 90%"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.326Z",
+    "updatedAt": "2025-06-25T03:17:15.326Z"
+  },
+  {
+    "name": "Icebreaker",
+    "description": "Theme imported from Gamma: Icebreaker",
+    "colors": {
+      "primaryAccent": "#476FD6",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FBFCFE",
+      "pageBackground": {
+        "type": "color",
+        "color": "#EDF1F8",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#476FD6",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#15213F",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#476FD6 10%, #1C3F99 90%",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#476FD6 10%, #1C3F99 90%",
+        "buttonShape": "default",
+        "linkColor": "#476FD6 10%, #1C3F99 90%"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Blue Steel",
+    "description": "Theme imported from Gamma: Blue Steel",
+    "colors": {
+      "primaryAccent": "#599CE8",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#202733",
+      "pageBackground": {
+        "type": "color",
+        "color": "#171B21",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#60A9FF",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#D6E5EF",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#599CE8 10%, #73B3F3 90%",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#599CE8 10%, #73B3F3 90%",
+        "buttonShape": "default",
+        "linkColor": "#599CE8 10%, #73B3F3 90%"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Daydream",
+    "description": "Theme imported from Gamma: Daydream",
+    "colors": {
+      "primaryAccent": "#2D4DF2",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#F3F3FF",
+      "pageBackground": {
+        "type": "image",
+        "color": "#FFFFFF",
+        "imageUrl": "/uploads/a9af5507-1c4b-45fe-b45d-9db0ac849c59.png"
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#00002E",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#00002E",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "20px",
+        "shadow": "none",
+        "borderWidth": "thick",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.5,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#2D4DF2",
+        "backgroundBlockFillType": "none",
+        "borderWidth": "medium",
+        "blockFillColorsType": "custom",
+        "blockBackgroundCustomColors": [
+          "#018CE1",
+          "#DA33BF"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#2D4DF2",
+        "buttonShape": "default",
+        "linkColor": "#2D4DF2"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:16.689Z",
+    "updatedAt": "2025-06-25T03:17:16.689Z"
+  },
+  {
+    "name": "Orbit",
+    "description": "Theme imported from Gamma: Orbit",
+    "colors": {
+      "primaryAccent": "#F2B42D",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#00002E",
+      "pageBackground": {
+        "type": "image",
+        "color": "#FFFFFF",
+        "imageUrl": "/uploads/5e9c8e0f-be81-43d2-8bc8-74802718a961.png"
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FFFFFF",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#FFFFFF",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "20px",
+        "shadow": "none",
+        "borderWidth": "thick",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.5,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#F2B42D",
+        "backgroundBlockFillType": "none",
+        "borderWidth": "medium",
+        "blockFillColorsType": "custom",
+        "blockBackgroundCustomColors": [
+          "#D7425E",
+          "#DD785E",
+          "#48A8E2",
+          "#59ABA9"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#F2B42D",
+        "buttonShape": "default",
+        "linkColor": "#F2B42D"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.871Z",
+    "updatedAt": "2025-06-25T03:17:15.871Z"
+  },
+  {
+    "name": "Dune",
+    "description": "Theme imported from Gamma: Dune",
+    "colors": {
+      "primaryAccent": "#B88E23",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFDFA",
+      "pageBackground": {
+        "type": "color",
+        "color": "soft",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#5C4E3D",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#454240",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "sm",
+        "borderWidth": "thin",
+        "borderColor": "#E5E0DF",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#B88E23",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#B88E23",
+        "buttonShape": "default",
+        "linkColor": "#B88E23"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Mocha",
+    "description": "Theme imported from Gamma: Mocha",
+    "colors": {
+      "primaryAccent": "#C49F8C",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#464342",
+      "pageBackground": {
+        "type": "color",
+        "color": "#302D2C",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#EBCCBB",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#C9C2C0",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#C49F8C",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#C49F8C",
+        "buttonShape": "default",
+        "linkColor": "#C49F8C"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Serene",
+    "description": "Theme imported from Gamma: Serene",
+    "colors": {
+      "primaryAccent": "#1A2D7A",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFAFA",
+      "pageBackground": {
+        "type": "color",
+        "color": "#E7EEF9",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#1F1E1E",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#3B3535",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "sm",
+        "borderWidth": "thin",
+        "borderColor": "#E5E0DF",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#1A2D7A",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#D3DCF6",
+          "#E7EEF9"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#1A2D7A",
+        "buttonShape": "default",
+        "linkColor": "#1A2D7A"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Cornflower",
+    "description": "Theme imported from Gamma: Cornflower",
+    "colors": {
+      "primaryAccent": "#1B54DA",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#F9F9FF",
+      "pageBackground": {
+        "type": "color",
+        "color": "#5C73E6",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#1B1B27",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#404155",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "sm",
+        "borderWidth": "thin",
+        "borderColor": "#E5E0DF",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#1B54DA",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#D2DDF8"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#1B54DA",
+        "buttonShape": "default",
+        "linkColor": "#1B54DA"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Vanilla",
+    "description": "Theme imported from Gamma: Vanilla",
+    "colors": {
+      "primaryAccent": "#224435",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFDE6",
+      "pageBackground": {
+        "type": "color",
+        "color": "#F9F4BE",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#233939",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#3B4E4E",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "sm",
+        "borderWidth": "thin",
+        "borderColor": "#E5E0DF",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#224435",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#F9F4BE",
+          "#FFFDE6",
+          "#233939",
+          "#DDEEE6"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#224435",
+        "buttonShape": "default",
+        "linkColor": "#224435"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Alien",
+    "description": "Theme imported from Gamma: Alien",
+    "colors": {
+      "primaryAccent": "#A9F00F",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#152025",
+      "pageBackground": {
+        "type": "image",
+        "color": "#FFFFFF",
+        "imageUrl": "/uploads/513509da-89ee-424f-af6d-cbc55cd70172.png"
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#F0F4F1",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#D7E5D8",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "thin",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.8,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#A9F00F",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#547808",
+          "#81B61C",
+          "#111A23"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#A9F00F",
+        "buttonShape": "default",
+        "linkColor": "#A9F00F"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:16.211Z",
+    "updatedAt": "2025-06-25T03:17:16.211Z"
+  },
+  {
+    "name": "Breeze",
+    "description": "Theme imported from Gamma: Breeze",
+    "colors": {
+      "primaryAccent": "#84C1FA",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "color",
+        "color": "#DEEEFF",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#091C53",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#1E3063",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "12px",
+        "shadow": "md",
+        "borderWidth": "thin",
+        "borderColor": "#BBD9F5",
+        "opacity": 1,
+        "imageShape": "wiggle"
+      },
+      "blocks": {
+        "backgroundColor": "#84C1FA",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#000E21",
+          "#CDDAFA",
+          "#E8EEFC",
+          "#F578DE",
+          "#921653",
+          "#FF5000",
+          "#0540AD",
+          "#1A561C"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#84C1FA",
+        "buttonShape": "default",
+        "linkColor": "#84C1FA"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Aurora",
+    "description": "Theme imported from Gamma: Aurora",
+    "colors": {
+      "primaryAccent": "#581CA0",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#0D0A2C",
+      "pageBackground": {
+        "type": "image",
+        "color": "#FFFFFF",
+        "imageUrl": "/uploads/47ae5fd1-1b0a-441f-a317-dfad0bddbb74.png"
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#F2F0F4",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#DCD7E5",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "thin",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.8,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#581CA0 10%, #371C9C 90%",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#581CA0 10%, #371C9C 90%",
+        "buttonShape": "default",
+        "linkColor": "#581CA0 10%, #371C9C 90%"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:16.386Z",
+    "updatedAt": "2025-06-25T03:17:16.386Z"
+  },
+  {
+    "name": "Velvet Tides",
+    "description": "Theme imported from Gamma: Velvet Tides",
+    "colors": {
+      "primaryAccent": "#A95B95",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#0B0C23",
+      "pageBackground": {
+        "type": "color",
+        "color": "dark gradient",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#C6BFEE",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#DAD8E9",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "thin",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.8,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#A95B95",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#A95B95",
+        "buttonShape": "default",
+        "linkColor": "#A95B95"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Tranquil",
+    "description": "Theme imported from Gamma: Tranquil",
+    "colors": {
+      "primaryAccent": "#007EBD",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "color",
+        "color": "#FFFFFF",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#000000",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#272525",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "thin",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.8,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#007EBD",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#007EBD",
+        "buttonShape": "default",
+        "linkColor": "#007EBD"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Borealis",
+    "description": "Theme imported from Gamma: Borealis",
+    "colors": {
+      "primaryAccent": "#16FFBB",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#0A081B",
+      "pageBackground": {
+        "type": "image",
+        "color": "#FFFFFF",
+        "imageUrl": "/uploads/9bea4bb7-0d11-4f84-a7d6-d79916388ba1.jpg"
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#F0FCFF",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#E0E4E6",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "20px",
+        "shadow": "none",
+        "borderWidth": "thick",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.5,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#16FFBB",
+        "backgroundBlockFillType": "none",
+        "borderWidth": "medium",
+        "blockFillColorsType": "custom",
+        "blockBackgroundCustomColors": [
+          "#29DDDA",
+          "#37A7E7",
+          "#091231"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#16FFBB",
+        "buttonShape": "default",
+        "linkColor": "#16FFBB"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.965Z",
+    "updatedAt": "2025-06-25T03:17:15.965Z"
+  },
+  {
+    "name": "Terracotta",
+    "description": "Theme imported from Gamma: Terracotta",
+    "colors": {
+      "primaryAccent": "#835E54",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFCFA",
+      "pageBackground": {
+        "type": "color",
+        "color": "#F7EDE9",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#443728",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#443728",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "sm",
+        "borderWidth": "thin",
+        "borderColor": "#E5E0DF",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#835E54",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#C9907C",
+          "#B3BDB5"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#835E54",
+        "buttonShape": "default",
+        "linkColor": "#835E54"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Bubble Gum",
+    "description": "Theme imported from Gamma: Bubble Gum",
+    "colors": {
+      "primaryAccent": "#FA95AE",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#1F1F1F",
+      "pageBackground": {
+        "type": "color",
+        "color": "#121212",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FA95AF",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#E0D6DE",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#FA95AE",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#121212"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#FA95AE",
+        "buttonShape": "default",
+        "linkColor": "#FA95AE"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Snowball",
+    "description": "Theme imported from Gamma: Snowball",
+    "colors": {
+      "primaryAccent": "#4967E9",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#F9F9FF",
+      "pageBackground": {
+        "type": "image",
+        "color": "#FFFFFF",
+        "imageUrl": "/uploads/42b046e6-12b2-4e8c-848d-dcbc14c310d7.jpg"
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#1B1B27",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#404155",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "thin",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.8,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#4967E9",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#4967E9",
+        "buttonShape": "default",
+        "linkColor": "#4967E9"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:16.313Z",
+    "updatedAt": "2025-06-25T03:17:16.313Z"
+  },
+  {
+    "name": "Piano",
+    "description": "Theme imported from Gamma: Piano",
+    "colors": {
+      "primaryAccent": "#101014",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#F3F3F7",
+      "pageBackground": {
+        "type": "color",
+        "color": "#0C0C0E",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#101014",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#39393C",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#101014",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#101014",
+        "buttonShape": "default",
+        "linkColor": "#101014"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Atacama",
+    "description": "Theme imported from Gamma: Atacama",
+    "colors": {
+      "primaryAccent": "#F20374",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#252222",
+      "pageBackground": {
+        "type": "color",
+        "color": "#FFFFFF",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FFFFFF",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#E5E0DF",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "sm",
+        "borderWidth": "thin",
+        "borderColor": "#2B2828",
+        "opacity": 0.8,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#F20374",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#F20374",
+        "buttonShape": "default",
+        "linkColor": "#F20374"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Wireframe",
+    "description": "Theme imported from Gamma: Wireframe",
+    "colors": {
+      "primaryAccent": "#CCCCCC",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#F7F7F7",
+      "pageBackground": {
+        "type": "color",
+        "color": "#D9D9D9",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#383838",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#383838",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "sm",
+        "borderWidth": "thin",
+        "borderColor": "#E5E0DF",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#CCCCCC",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#FFFFFF",
+          "#E6E6E6"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#CCCCCC",
+        "buttonShape": "default",
+        "linkColor": "#CCCCCC"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Aurum",
+    "description": "Theme imported from Gamma: Aurum",
+    "colors": {
+      "primaryAccent": "#D2AC47",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#1B1C1D",
+      "pageBackground": {
+        "type": "image",
+        "color": "#FFFFFF",
+        "imageUrl": "/uploads/36dd5188-711a-4b13-9db1-69e0c83cc5c1.png"
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#AE8625",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#CFCBBF",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#D2AC47 5%, #F7EF8A 45%, #AE8625 85%",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#F4E883",
+          "#0D0D09"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#D2AC47 5%, #F7EF8A 45%, #AE8625 85%",
+        "buttonShape": "default",
+        "linkColor": "#D2AC47 5%, #F7EF8A 45%, #AE8625 85%"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:16.779Z",
+    "updatedAt": "2025-06-25T03:17:16.779Z"
+  },
+  {
+    "name": "Bee Happy",
+    "description": "Theme imported from Gamma: Bee Happy",
+    "colors": {
+      "primaryAccent": "#FFE14D",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#27272B",
+      "pageBackground": {
+        "type": "color",
+        "color": "#1B1B1E",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FFE14D",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#D7D4CC",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "20px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#FFE14D",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#FFE14D",
+        "buttonShape": "default",
+        "linkColor": "#FFE14D"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Chocolate",
+    "description": "Theme imported from Gamma: Chocolate",
+    "colors": {
+      "primaryAccent": "#E2C2B3",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#403234",
+      "pageBackground": {
+        "type": "color",
+        "color": "#E2C2B3",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FFF8F5",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#D3C9C5",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#E2C2B3",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#403234",
+          "#5F5153",
+          "#997B7F"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#E2C2B3",
+        "buttonShape": "default",
+        "linkColor": "#E2C2B3"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Cigar",
+    "description": "Theme imported from Gamma: Cigar",
+    "colors": {
+      "primaryAccent": "#84482D",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#212326",
+      "pageBackground": {
+        "type": "color",
+        "color": "#13171B",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#F2D4BA",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#BDA189",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#84482D",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#1C1D1F",
+          "#50352B",
+          "#BE6841",
+          "#B57152"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#84482D",
+        "buttonShape": "default",
+        "linkColor": "#84482D"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Cornfield",
+    "description": "Theme imported from Gamma: Cornfield",
+    "colors": {
+      "primaryAccent": "#626C3B",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#F6EBD4",
+      "pageBackground": {
+        "type": "color",
+        "color": "#F1C064",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#403011",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#403011",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "20px",
+        "shadow": "sm",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "round"
+      },
+      "blocks": {
+        "backgroundColor": "#626C3B",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "custom",
+        "blockBackgroundCustomColors": [
+          "#83792E",
+          "#E8AF3B",
+          "#CC914D",
+          "#8D6348",
+          "#EFE0C2"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#626C3B",
+        "buttonShape": "default",
+        "linkColor": "#626C3B"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Daktilo",
+    "description": "Theme imported from Gamma: Daktilo",
+    "colors": {
+      "primaryAccent": "#151617",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#F8ECE4",
+      "pageBackground": {
+        "type": "color",
+        "color": "#F8ECE4",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#151617",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#151617",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "md",
+        "borderWidth": "thin",
+        "borderColor": "#151617",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#151617",
+        "backgroundBlockFillType": "none",
+        "borderWidth": "thin",
+        "blockFillColorsType": "custom",
+        "blockBackgroundCustomColors": [
+          "#F2DED0",
+          "#BAB6AA"
+        ],
+        "shadow": "md"
+      },
+      "buttons": {
+        "buttonColor": "#151617",
+        "buttonShape": "default",
+        "linkColor": "#151617"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Dawn",
+    "description": "Theme imported from Gamma: Dawn",
+    "colors": {
+      "primaryAccent": "#FDC4C4",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#242429",
+      "pageBackground": {
+        "type": "color",
+        "color": "#181719",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#F7F7F8",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#C7CDD6",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#FDC4C4",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#C8C7FF"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#FDC4C4",
+        "buttonShape": "default",
+        "linkColor": "#FDC4C4"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Editoria",
+    "description": "Theme imported from Gamma: Editoria",
+    "colors": {
+      "primaryAccent": "#1E1E1A",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#E8E8E3",
+      "pageBackground": {
+        "type": "color",
+        "color": "#0C0D0F",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#0C0D0F",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#55575A",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#1E1E1A",
+        "backgroundBlockFillType": "semi",
+        "borderWidth": "none",
+        "blockFillColorsType": "custom",
+        "blockBackgroundCustomColors": [
+          "#DBDCD4",
+          "#E8E8E3",
+          "#F8F8F7"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#1E1E1A",
+        "buttonShape": "default",
+        "linkColor": "#1E1E1A"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Flax",
+    "description": "Theme imported from Gamma: Flax",
+    "colors": {
+      "primaryAccent": "#28282F",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#F9F8F5",
+      "pageBackground": {
+        "type": "color",
+        "color": "#E6E2DB",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#161613",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#161613",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#28282F",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#28282F",
+        "buttonShape": "default",
+        "linkColor": "#28282F"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Gleam",
+    "description": "Theme imported from Gamma: Gleam",
+    "colors": {
+      "primaryAccent": "#373B48",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "color",
+        "color": "white light",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#373B48",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#52586B",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "thin",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.8,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#373B48",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#D4D6DD",
+          "#E2E4E9",
+          "#F1F1F4",
+          "#484E5F",
+          "#5C6378",
+          "#707891"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#373B48",
+        "buttonShape": "default",
+        "linkColor": "#373B48"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Gold Leaf",
+    "description": "Theme imported from Gamma: Gold Leaf",
+    "colors": {
+      "primaryAccent": "#DA9B49",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "image",
+        "color": "#FFFFFF",
+        "imageUrl": "/uploads/1faf344f-7f8b-4a93-bfc0-bab37a68222b.png"
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#2C2926",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#2C2926",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "thin",
+        "borderColor": "#DFB679",
+        "opacity": 0.8,
+        "imageShape": "round"
+      },
+      "blocks": {
+        "backgroundColor": "#DA9B49 0%, #F3E38A 99%",
+        "backgroundBlockFillType": "none",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#DFAB58",
+          "#EBCC75",
+          "#FDF4DB"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#DA9B49 0%, #F3E38A 99%",
+        "buttonShape": "default",
+        "linkColor": "#DA9B49 0%, #F3E38A 99%"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:16.592Z",
+    "updatedAt": "2025-06-25T03:17:16.592Z"
+  },
+  {
+    "name": "Iris",
+    "description": "Theme imported from Gamma: Iris",
+    "colors": {
+      "primaryAccent": "#5E4CE6",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FAFAFA",
+      "pageBackground": {
+        "type": "image",
+        "color": "#FFFFFF",
+        "imageUrl": "/uploads/92473e92-3e6d-47ff-9a2d-5919b427143b.jpeg"
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#231971",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#2A2742",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "thin",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.8,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#5E4CE6",
+        "backgroundBlockFillType": "semi",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#5E4CE6",
+        "buttonShape": "default",
+        "linkColor": "#5E4CE6"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:16.245Z",
+    "updatedAt": "2025-06-25T03:17:16.245Z"
+  },
+  {
+    "name": "Keepsake",
+    "description": "Theme imported from Gamma: Keepsake",
+    "colors": {
+      "primaryAccent": "#C7E0E7",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FAF9F5",
+      "pageBackground": {
+        "type": "color",
+        "color": "#C7E0E7",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#2E3C4E",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#384653",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "diagonal"
+      },
+      "blocks": {
+        "backgroundColor": "#C7E0E7 0%, #64B8CE 99%",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#C3643D",
+          "#E9CFC9",
+          "#C7E0E7",
+          "#64B8CE"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#C7E0E7 0%, #64B8CE 99%",
+        "buttonShape": "default",
+        "linkColor": "#C7E0E7 0%, #64B8CE 99%"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Leimoon",
+    "description": "Theme imported from Gamma: Leimoon",
+    "colors": {
+      "primaryAccent": "#FF7047",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "color",
+        "color": "#FFF0ED",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#0C0D0F",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#55575A",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "12px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#FF7047",
+        "backgroundBlockFillType": "none",
+        "borderWidth": "thin",
+        "blockFillColorsType": "custom",
+        "blockBackgroundCustomColors": [
+          "#FFF0ED",
+          "#FFA647",
+          "#FFCE47",
+          "#FF9B7E"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#FF7047",
+        "buttonShape": "default",
+        "linkColor": "#FF7047"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Linen",
+    "description": "Theme imported from Gamma: Linen",
+    "colors": {
+      "primaryAccent": "#9C9283",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FDFBF7",
+      "pageBackground": {
+        "type": "color",
+        "color": "#E6DED2",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#3A3A3A",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#4C4C4C",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "md",
+        "borderWidth": "medium",
+        "borderColor": "#CDC4B8",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#9C9283",
+        "backgroundBlockFillType": "semi",
+        "borderWidth": "thin",
+        "blockFillColorsType": "custom",
+        "blockBackgroundCustomColors": [
+          "#3A3A3A",
+          "#6F7F71",
+          "#A8B8A2",
+          "#D9CFC1",
+          "#E6DED2",
+          "#F2EDE4",
+          "#FDFBF7",
+          "#FAFAF7"
+        ],
+        "shadow": "md"
+      },
+      "buttons": {
+        "buttonColor": "#9C9283",
+        "buttonShape": "default",
+        "linkColor": "#9C9283"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Malibu",
+    "description": "Theme imported from Gamma: Malibu",
+    "colors": {
+      "primaryAccent": "#E851B2",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "color",
+        "color": "pink gradient",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#371A2D",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#432338",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "thin",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.8,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#E851B2",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#FFE1F7",
+          "#FFB6B3",
+          "#FF80BA"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#E851B2",
+        "buttonShape": "default",
+        "linkColor": "#E851B2"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Moss & Mist",
+    "description": "Theme imported from Gamma: Moss & Mist",
+    "colors": {
+      "primaryAccent": "#9FA582",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#1C1D1F",
+      "pageBackground": {
+        "type": "color",
+        "color": "#0B1012",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#E1E5CD",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#C2C4B5",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "round"
+      },
+      "blocks": {
+        "backgroundColor": "#9FA582",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#1F2D1B",
+          "#2D2F28",
+          "#404238",
+          "#6B6E5E"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#9FA582",
+        "buttonShape": "default",
+        "linkColor": "#9FA582"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Plant Shop",
+    "description": "Theme imported from Gamma: Plant Shop",
+    "colors": {
+      "primaryAccent": "#1B5F39",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FCFBF8",
+      "pageBackground": {
+        "type": "color",
+        "color": "#F1F2DE",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#233E32",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#2C2821",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#1B5F39",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#FAF9F4"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#1B5F39",
+        "buttonShape": "default",
+        "linkColor": "#1B5F39"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Rush",
+    "description": "Theme imported from Gamma: Rush",
+    "colors": {
+      "primaryAccent": "#DA1B2E",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "color",
+        "color": "red gradient",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#1F1E1E",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#3B3535",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "sm",
+        "borderWidth": "thin",
+        "borderColor": "#E5E0DF",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#DA1B2E",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#790C1C",
+          "#F9D2D6",
+          "#FFF6F7"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#DA1B2E",
+        "buttonShape": "default",
+        "linkColor": "#DA1B2E"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Shadow",
+    "description": "Theme imported from Gamma: Shadow",
+    "colors": {
+      "primaryAccent": "#FFFFFF",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#181616",
+      "pageBackground": {
+        "type": "color",
+        "color": "gray gradient",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#DDDDDD",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#8F8F8F",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "none",
+        "borderWidth": "thin",
+        "borderColor": "#E6E6E6",
+        "opacity": 0.8,
+        "imageShape": "fade"
+      },
+      "blocks": {
+        "backgroundColor": "#FFFFFF",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [
+          "#424242",
+          "#8F8F8F"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#FFFFFF",
+        "buttonShape": "default",
+        "linkColor": "#FFFFFF"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Slate",
+    "description": "Theme imported from Gamma: Slate",
+    "colors": {
+      "primaryAccent": "#FFBC8F",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#292C32",
+      "pageBackground": {
+        "type": "color",
+        "color": "#22242A",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#F3F3F2",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#D4D4D1",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#FFBC8F",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#1F1F1E",
+          "#1A1A1A"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#FFBC8F",
+        "buttonShape": "default",
+        "linkColor": "#FFBC8F"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Sprout",
+    "description": "Theme imported from Gamma: Sprout",
+    "colors": {
+      "primaryAccent": "#006747",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#E5F9F2",
+      "pageBackground": {
+        "type": "color",
+        "color": "light green",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#006747",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#4B4A4A",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "12px",
+        "shadow": "sm",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 0.8,
+        "imageShape": "round"
+      },
+      "blocks": {
+        "backgroundColor": "#006747",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#E5F9F2",
+          "#335E23",
+          "#8CAB18"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#006747",
+        "buttonShape": "default",
+        "linkColor": "#006747"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Wine",
+    "description": "Theme imported from Gamma: Wine",
+    "colors": {
+      "primaryAccent": "#FFB393",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#5C2438",
+      "pageBackground": {
+        "type": "color",
+        "color": "#421424",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FFB393",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#F4CAB8",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "4px",
+        "shadow": "none",
+        "borderWidth": "none",
+        "borderColor": "",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#FFB393",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "none",
+        "blockFillColorsType": "subtle",
+        "blockBackgroundCustomColors": [
+          "#421424"
+        ],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#FFB393",
+        "buttonShape": "default",
+        "linkColor": "#FFB393"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Basic Light",
+    "description": "Theme imported from Gamma: Basic Light",
+    "colors": {
+      "primaryAccent": "#4950BC",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#FFFFFF",
+      "pageBackground": {
+        "type": "color",
+        "color": "#FFFFFF",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#000000",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#272525",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "sm",
+        "borderWidth": "thin",
+        "borderColor": "#E5E0DF",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#4950BC",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#4950BC",
+        "buttonShape": "default",
+        "linkColor": "#4950BC"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  },
+  {
+    "name": "Basic Dark",
+    "description": "Theme imported from Gamma: Basic Dark",
+    "colors": {
+      "primaryAccent": "#2B0AFF",
+      "primaryAccentTextColor": "#FFFFFF",
+      "slideBackground": "#272525",
+      "pageBackground": {
+        "type": "color",
+        "color": "#FFFFFF",
+        "imageUrl": ""
+      }
+    },
+    "typography": {
+      "headingFont": "inter",
+      "headingWeight": 400,
+      "headingColor": "#FFFFFF",
+      "headingLineHeight": 1.25,
+      "headingLetterSpacing": 0,
+      "headingCapitalization": "none",
+      "bodyFont": "inter",
+      "bodyWeight": 400,
+      "bodyColor": "#E5E0DF",
+      "bodyLineHeight": 1.25,
+      "bodyLetterSpacing": 0,
+      "bodyCapitalization": "none"
+    },
+    "design": {
+      "slide": {
+        "borderRadius": "8px",
+        "shadow": "sm",
+        "borderWidth": "thin",
+        "borderColor": "#565151",
+        "opacity": 1,
+        "imageShape": "default"
+      },
+      "blocks": {
+        "backgroundColor": "#2B0AFF",
+        "backgroundBlockFillType": "fill",
+        "borderWidth": "thin",
+        "blockFillColorsType": "primary",
+        "blockBackgroundCustomColors": [],
+        "shadow": "none"
+      },
+      "buttons": {
+        "buttonColor": "#2B0AFF",
+        "buttonShape": "default",
+        "linkColor": "#2B0AFF"
+      }
+    },
+    "isDefault": false,
+    "isActive": true,
+    "createdAt": "2025-06-25T03:17:15.213Z",
+    "updatedAt": "2025-06-25T03:17:15.213Z"
+  }
+]

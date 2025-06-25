@@ -22,9 +22,7 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
     onClickDelete,
 }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-
     const menuButtonRef = useRef<HTMLButtonElement>(null);
-
     const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | null>(null);
 
     useEffect(() => {

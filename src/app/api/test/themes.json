@@ -2,10 +2,24 @@
     {
         "name": "Pearl",
         "primaryAccent": "#1B1B27",
+        "secondaryColors": [],
         "headingColor": "#1B1B27",
         "bodyColor": "#3C3939",
         "cardColor": "#FFFFFF",
-        "pageBackground": "#ECECF3",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#ECECF3",
+                "controlled": true
+            },
+            "value": "#ECECF3",
+            "_valueTracker": {}
+        },
+        "headingFont": "Raleway",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#1B1B27",
+        "bodyFont": "Roboto",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#3C3939",
         "roundness": "8px",
         "shadow": "none",
         "cardBorder": "thin",
@@ -20,10 +34,24 @@
     {
         "name": "Vortex",
         "primaryAccent": "#F2F2F3",
+        "secondaryColors": [],
         "headingColor": "#F2F2F3",
         "bodyColor": "#E5E0DF",
         "cardColor": "#050505",
-        "pageBackground": "#19191A",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#19191A",
+                "controlled": true
+            },
+            "value": "#19191A",
+            "_valueTracker": {}
+        },
+        "headingFont": "Poppins",
+        "headingFontWeight": "Light",
+        "headingFontColor": "#F2F2F3",
+        "bodyFont": "Roboto",
+        "bodyFontWeight": "Light",
+        "bodyFontColor": "#E5E0DF",
         "roundness": "8px",
         "shadow": "sm",
         "cardBorder": "thin",
@@ -38,10 +66,26 @@
     {
         "name": "Chisel",
         "primaryAccent": "#3E2513",
+        "secondaryColors": [
+            "#F3E3D8"
+        ],
         "headingColor": "#201B18",
         "bodyColor": "#504C49",
         "cardColor": "#FFFFFF",
-        "pageBackground": "#F7F3F0",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#F7F3F0",
+                "controlled": true
+            },
+            "value": "#F7F3F0",
+            "_valueTracker": {}
+        },
+        "headingFont": "Platypi",
+        "headingFontWeight": "Medium",
+        "headingFontColor": "#201B18",
+        "bodyFont": "Source Serif Pro",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#504C49",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -55,10 +99,24 @@
     {
         "name": "Stardust",
         "primaryAccent": "#FC8337",
+        "secondaryColors": [],
         "headingColor": "#FFFFFF",
         "bodyColor": "#E5E0DF",
         "cardColor": "#030303",
-        "pageBackground": "gradient black",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "",
+                "controlled": true
+            },
+            "value": "gradient black",
+            "_valueTracker": {}
+        },
+        "headingFont": "Saira",
+        "headingFontWeight": "Medium",
+        "headingFontColor": "#FFFFFF",
+        "bodyFont": "Roboto",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#E5E0DF",
         "roundness": "12px",
         "shadow": "none",
         "cardBorder": "medium",
@@ -66,6 +124,9 @@
         "cardTransparency": 0.5,
         "imageShape": "default",
         "blockFillType": "custom",
+        "blockFillCustomColors": [
+            "#FC8337"
+        ],
         "blockFill": "none",
         "blockBorder": "medium",
         "blockShadow": "none"
@@ -73,10 +134,28 @@
     {
         "name": "Seafoam",
         "primaryAccent": "#26A688",
+        "secondaryColors": [
+            "#DDF8F2",
+            "#B4EEE0",
+            "#192248"
+        ],
         "headingColor": "#333F70",
         "bodyColor": "#333F70",
         "cardColor": "#FFFFFF",
-        "pageBackground": "#D6F5EE",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#D6F5EE",
+                "controlled": true
+            },
+            "value": "#D6F5EE",
+            "_valueTracker": {}
+        },
+        "headingFont": "Unbounded",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#333F70",
+        "bodyFont": "Open Sans",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#333F70",
         "roundness": "8px",
         "shadow": "sm",
         "cardBorder": "thin",
@@ -89,12 +168,57 @@
         "blockShadow": "none"
     },
     {
+        "name": "Nebulae",
+        "primaryAccent": "#B380FF 10%, #7AF0FF 90%",
+        "secondaryColors": [
+            "#7AF0FF",
+            "#120336",
+            "#0D0326"
+        ],
+        "headingColor": "#B380FF 10%, #7AF0FF 90%",
+        "bodyColor": "#E0D6DE",
+        "cardColor": "#07070C",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn.gamma.app/zc87vhr30n8uf3n/850811559c97448ea65b44195bbd69b2/original/blue-purpos.png",
+        "headingFont": "Sora",
+        "headingFontWeight": "Medium",
+        "headingFontColor": "#B380FF 10%, #7AF0FF 90%",
+        "bodyFont": "Noto Sans TC",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#E0D6DE",
+        "roundness": "4px",
+        "shadow": "none",
+        "cardBorder": "none",
+        "cardTransparency": 1,
+        "imageShape": "default",
+        "blockFillType": "subtle",
+        "blockFill": "fill",
+        "blockBorder": "none",
+        "blockShadow": "none"
+    },
+    {
         "name": "Creme",
         "primaryAccent": "#D3C5B6",
+        "secondaryColors": [
+            "#F2EBDF",
+            "#DECEBB"
+        ],
         "headingColor": "#484237",
         "bodyColor": "#B2A599",
         "cardColor": "#F9F6F0",
-        "pageBackground": "#DDCFBB",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#DDCFBB",
+                "controlled": true
+            },
+            "value": "#DDCFBB",
+            "_valueTracker": {}
+        },
+        "headingFont": "Gelasio",
+        "headingFontWeight": "Semi Bold",
+        "headingFontColor": "#484237",
+        "bodyFont": "Gelasio",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#B2A599",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -108,10 +232,26 @@
     {
         "name": "Lux",
         "primaryAccent": "#EF9C82",
+        "secondaryColors": [
+            "#1D4241"
+        ],
         "headingColor": "#FFD9BE",
         "bodyColor": "#F9EEE7",
         "cardColor": "#123332",
-        "pageBackground": "#1C4241",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#1C4241",
+                "controlled": true
+            },
+            "value": "#1C4241",
+            "_valueTracker": {}
+        },
+        "headingFont": "Quattrocento",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#FFD9BE",
+        "bodyFont": "Quattrocento",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#F9EEE7",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -125,10 +265,26 @@
     {
         "name": "Consultant",
         "primaryAccent": "#2150FE",
+        "secondaryColors": [
+            "#04318F"
+        ],
         "headingColor": "#152D47",
         "bodyColor": "#4C4C4D",
         "cardColor": "#FFFFFF",
-        "pageBackground": "#F0F0F1",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#F0F0F1",
+                "controlled": true
+            },
+            "value": "#F0F0F1",
+            "_valueTracker": {}
+        },
+        "headingFont": "Crimson Pro",
+        "headingFontWeight": "Semi Bold",
+        "headingFontColor": "#152D47",
+        "bodyFont": "Heebo",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#4C4C4D",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -142,10 +298,24 @@
     {
         "name": "Marine",
         "primaryAccent": "#8C98CA",
+        "secondaryColors": [],
         "headingColor": "#FFFFFF",
         "bodyColor": "#EBECEF",
         "cardColor": "#080E26",
-        "pageBackground": "#A8AFCC",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#A8AFCC",
+                "controlled": true
+            },
+            "value": "#A8AFCC",
+            "_valueTracker": {}
+        },
+        "headingFont": "Fraunces",
+        "headingFontWeight": "Medium",
+        "headingFontColor": "#FFFFFF",
+        "bodyFont": "Epilogue",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#EBECEF",
         "roundness": "8px",
         "shadow": "sm",
         "cardBorder": "thin",
@@ -158,12 +328,83 @@
         "blockShadow": "none"
     },
     {
+        "name": "Elysia",
+        "primaryAccent": "#3371A5",
+        "secondaryColors": [
+            "#E282B7",
+            "#FAF1E6",
+            "#FCF9F3"
+        ],
+        "headingColor": "#051D3A",
+        "bodyColor": "#2B3541",
+        "cardColor": "#FAF5EB",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn.gamma.app/gdwwhyewwldwc8z/c409d8d83980455ea5105c60248a4601/original/Abstract-Gradient-Art.png",
+        "headingFont": "Funnel Display",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#051D3A",
+        "bodyFont": "Funnel Sans",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#2B3541",
+        "roundness": "8px",
+        "shadow": "none",
+        "cardBorder": "none",
+        "cardTransparency": 1,
+        "imageShape": "default",
+        "blockFillType": "subtle",
+        "blockFill": "none",
+        "blockBorder": "thin",
+        "blockShadow": "none"
+    },
+    {
         "name": "Prism",
         "primaryAccent": "#BE49DF",
+        "secondaryColors": [],
         "headingColor": "#000000",
         "bodyColor": "#272525",
         "cardColor": "#FFFFFF",
-        "pageBackground": "",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "",
+                "controlled": true
+            },
+            "value": "",
+            "_valueTracker": {}
+        },
+        "headingFont": "Source Serif Pro",
+        "headingFontWeight": "Semi Bold",
+        "headingFontColor": "#000000",
+        "bodyFont": "Source Sans Pro",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#272525",
+        "roundness": "8px",
+        "shadow": "none",
+        "cardBorder": "thin",
+        "cardBorderColor": "#E6E6E6",
+        "cardTransparency": 0.8,
+        "imageShape": "default",
+        "blockFillType": "primary",
+        "blockFill": "fill",
+        "blockBorder": "thin",
+        "blockShadow": "none"
+    },
+    {
+        "name": "Night Sky",
+        "primaryAccent": "#5A6ED8",
+        "secondaryColors": [
+            "#243799",
+            "#000024",
+            "#000030"
+        ],
+        "headingColor": "#FFFFFF",
+        "bodyColor": "#CFD0D8",
+        "cardColor": "#000018",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn.gamma.app/zc87vhr30n8uf3n/753fe4f09ed74e5cb8978c5dff4859f7/original/navy-bg-copy.png",
+        "headingFont": "Roboto",
+        "headingFontWeight": "Medium",
+        "headingFontColor": "#FFFFFF",
+        "bodyFont": "Roboto",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#CFD0D8",
         "roundness": "8px",
         "shadow": "none",
         "cardBorder": "thin",
@@ -178,10 +419,28 @@
     {
         "name": "Commons",
         "primaryAccent": "#1C9770",
+        "secondaryColors": [
+            "#93CB52",
+            "#7AD180",
+            "#7AD1C3"
+        ],
         "headingColor": "#030303",
         "bodyColor": "#464646",
         "cardColor": "#FFFFFF",
-        "pageBackground": "#F5F5F5",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#F5F5F5",
+                "controlled": true
+            },
+            "value": "#F5F5F5",
+            "_valueTracker": {}
+        },
+        "headingFont": "DM Sans",
+        "headingFontWeight": "Semi Bold",
+        "headingFontColor": "#030303",
+        "bodyFont": "Inter",
+        "bodyFontWeight": "Medium",
+        "bodyFontColor": "#464646",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -195,10 +454,26 @@
     {
         "name": "Bonan Hale",
         "primaryAccent": "#F5F547",
+        "secondaryColors": [
+            "#242424"
+        ],
         "headingColor": "#FEFEFE",
         "bodyColor": "#BFBFBF",
         "cardColor": "#1F1F1F",
-        "pageBackground": "#000000",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#000000",
+                "controlled": true
+            },
+            "value": "#000000",
+            "_valueTracker": {}
+        },
+        "headingFont": "Instrument Sans",
+        "headingFontWeight": "Medium",
+        "headingFontColor": "#FEFEFE",
+        "bodyFont": "Open Sans",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#BFBFBF",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -210,12 +485,80 @@
         "blockShadow": "none"
     },
     {
+        "name": "Gamma",
+        "primaryAccent": "#6237C8",
+        "secondaryColors": [],
+        "headingColor": "#591CE6 5%, #F9598D 45%, #FB8B61 85%",
+        "bodyColor": "#272525",
+        "cardColor": "#FDFAF7",
+        "headingFont": "Petrona",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#591CE6 5%, #F9598D 45%, #FB8B61 85%",
+        "bodyFont": "Inter",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#272525",
+        "roundness": "8px",
+        "shadow": "sm",
+        "cardBorder": "thin",
+        "cardBorderColor": "#E5E0DF",
+        "cardTransparency": 1,
+        "imageShape": "default",
+        "blockFillType": "primary",
+        "blockFill": "fill",
+        "blockBorder": "thin",
+        "blockShadow": "none"
+    },
+    {
+        "name": "Gamma Dark",
+        "primaryAccent": "#9A81DF 10%, #7456C8 90%",
+        "secondaryColors": [
+            "#D783D8",
+            "#FF90A5",
+            "#FFB071",
+            "#14083A"
+        ],
+        "headingColor": "#A680FF 5%, #FF85B8 45%, #FFB070 85%",
+        "bodyColor": "#E0D6DE",
+        "cardColor": "#0C0524",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn.gamma.app/zc87vhr30n8uf3n/aee87fc032764df3933f120b651bdfc3/original/Purple-bfg.png",
+        "headingFont": "Petrona",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#A680FF 5%, #FF85B8 45%, #FFB070 85%",
+        "bodyFont": "Inter",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#E0D6DE",
+        "roundness": "8px",
+        "shadow": "none",
+        "cardBorder": "thin",
+        "cardBorderColor": "#E6E6E6",
+        "cardTransparency": 0.8,
+        "imageShape": "default",
+        "blockFillType": "primary",
+        "blockFill": "fill",
+        "blockBorder": "thin",
+        "blockShadow": "none"
+    },
+    {
         "name": "Dialogue",
         "primaryAccent": "#E04F00",
+        "secondaryColors": [],
         "headingColor": "#020202",
         "bodyColor": "#383838",
         "cardColor": "#FFFFFF",
-        "pageBackground": "#FAFAFA",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#FAFAFA",
+                "controlled": true
+            },
+            "value": "#FAFAFA",
+            "_valueTracker": {}
+        },
+        "headingFont": "PT Serif",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#020202",
+        "bodyFont": "DM Sans",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#383838",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -229,10 +572,24 @@
     {
         "name": "Founder",
         "primaryAccent": "#AC9EF5",
+        "secondaryColors": [],
         "headingColor": "#F7F7F8",
         "bodyColor": "#D6D9D7",
         "cardColor": "#2D3133",
-        "pageBackground": "#111213",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#111213",
+                "controlled": true
+            },
+            "value": "#111213",
+            "_valueTracker": {}
+        },
+        "headingFont": "DM Sans",
+        "headingFontWeight": "Medium",
+        "headingFontColor": "#F7F7F8",
+        "bodyFont": "Inter",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#D6D9D7",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -246,10 +603,27 @@
     {
         "name": "Lavender",
         "primaryAccent": "#5955EB 10%, #2622B2 90%",
+        "secondaryColors": [
+            "#E7E0FF",
+            "#F7F5FF"
+        ],
         "headingColor": "#5955EB 10%, #2622B2 90%",
         "bodyColor": "#49495A",
         "cardColor": "#FBFAFF",
-        "pageBackground": "#F4F0FF",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#F4F0FF",
+                "controlled": true
+            },
+            "value": "#F4F0FF",
+            "_valueTracker": {}
+        },
+        "headingFont": "Libre Baskerville",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#5955EB 10%, #2622B2 90%",
+        "bodyFont": "Open Sans",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#49495A",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -263,10 +637,24 @@
     {
         "name": "Indigo",
         "primaryAccent": "#8061FF",
+        "secondaryColors": [],
         "headingColor": "#FFFFFF",
         "bodyColor": "#D9E1FF",
         "cardColor": "#0C0A33",
-        "pageBackground": "#150D48",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#150D48",
+                "controlled": true
+            },
+            "value": "#150D48",
+            "_valueTracker": {}
+        },
+        "headingFont": "Syne",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#FFFFFF",
+        "bodyFont": "Arimo",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#D9E1FF",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -280,10 +668,26 @@
     {
         "name": "Howlite",
         "primaryAccent": "#2D2E34",
+        "secondaryColors": [
+            "#F2F2F2"
+        ],
         "headingColor": "#000000",
         "bodyColor": "#3D3838",
         "cardColor": "#FFFFFF",
-        "pageBackground": "#EDEDED",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#EDEDED",
+                "controlled": true
+            },
+            "value": "#EDEDED",
+            "_valueTracker": {}
+        },
+        "headingFont": "Montserrat",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#000000",
+        "bodyFont": "Source Sans Pro",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#3D3838",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -297,10 +701,26 @@
     {
         "name": "Onyx",
         "primaryAccent": "#FFFFFF",
+        "secondaryColors": [
+            "#1D1F22"
+        ],
         "headingColor": "#FFFFFF",
         "bodyColor": "#E2E6E9",
         "cardColor": "#111213",
-        "pageBackground": "#181A1B",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#181A1B",
+                "controlled": true
+            },
+            "value": "#181A1B",
+            "_valueTracker": {}
+        },
+        "headingFont": "Montserrat",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#FFFFFF",
+        "bodyFont": "Source Sans Pro",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#E2E6E9",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -314,10 +734,24 @@
     {
         "name": "Atmosphere",
         "primaryAccent": "#AF41F0 10%, #FF75D3 90%",
+        "secondaryColors": [],
         "headingColor": "#FF75D3 10%, #AF41F0 90%",
         "bodyColor": "#272525",
         "cardColor": "#FFFFFF",
-        "pageBackground": "",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "",
+                "controlled": true
+            },
+            "value": "",
+            "_valueTracker": {}
+        },
+        "headingFont": "Source Serif Pro",
+        "headingFontWeight": "Semi Bold",
+        "headingFontColor": "#FF75D3 10%, #AF41F0 90%",
+        "bodyFont": "Source Sans Pro",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#272525",
         "roundness": "8px",
         "shadow": "none",
         "cardBorder": "thin",
@@ -332,10 +766,27 @@
     {
         "name": "Blueberry ",
         "primaryAccent": "#FA2F5C 10%, #FF7161 90%",
+        "secondaryColors": [
+            "#1B1744",
+            "#261C4E"
+        ],
         "headingColor": "#FFFFFF",
         "bodyColor": "#D9E1FF",
         "cardColor": "#100C35",
-        "pageBackground": "#271C4E",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#271C4E",
+                "controlled": true
+            },
+            "value": "#271C4E",
+            "_valueTracker": {}
+        },
+        "headingFont": "Kanit",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#FFFFFF",
+        "bodyFont": "Martel Sans",
+        "bodyFontWeight": "Light",
+        "bodyFontColor": "#D9E1FF",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -349,10 +800,27 @@
     {
         "name": "Kraft ",
         "primaryAccent": "#282824",
+        "secondaryColors": [
+            "#E8E4DD",
+            "#DED8CD"
+        ],
         "headingColor": "#282824",
         "bodyColor": "#4A4A45",
         "cardColor": "#EFECE6",
-        "pageBackground": "#DDD6CC",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#DDD6CC",
+                "controlled": true
+            },
+            "value": "#DDD6CC",
+            "_valueTracker": {}
+        },
+        "headingFont": "Lato",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#282824",
+        "bodyFont": "Lato",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#4A4A45",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -366,10 +834,27 @@
     {
         "name": "Mystique ",
         "primaryAccent": "#FF6BD8",
+        "secondaryColors": [
+            "#211E24",
+            "#201E25"
+        ],
         "headingColor": "#FBF3FA",
         "bodyColor": "#E0D6DE",
         "cardColor": "#0F0F10",
-        "pageBackground": "#18181B",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#18181B",
+                "controlled": true
+            },
+            "value": "#18181B",
+            "_valueTracker": {}
+        },
+        "headingFont": "Fira Mono",
+        "headingFontWeight": "Medium",
+        "headingFontColor": "#FBF3FA",
+        "bodyFont": "Fira Sans",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#E0D6DE",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -383,10 +868,27 @@
     {
         "name": "Petrol",
         "primaryAccent": "#325F7B",
+        "secondaryColors": [
+            "#51738C",
+            "#F6F0E4"
+        ],
         "headingColor": "#124E73",
         "bodyColor": "#2B4150",
         "cardColor": "#FFFCF5",
-        "pageBackground": "#50738C",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#50738C",
+                "controlled": true
+            },
+            "value": "#50738C",
+            "_valueTracker": {}
+        },
+        "headingFont": "MuseoModerno",
+        "headingFontWeight": "Medium",
+        "headingFontColor": "#124E73",
+        "bodyFont": "Source Sans Pro",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#2B4150",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -400,10 +902,27 @@
     {
         "name": "Blues",
         "primaryAccent": "#609DFF",
+        "secondaryColors": [
+            "#041938",
+            "#013180"
+        ],
         "headingColor": "#F5F0F0",
         "bodyColor": "#E2E6E9",
         "cardColor": "#09151A",
-        "pageBackground": "black gradient",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "",
+                "controlled": true
+            },
+            "value": "black gradient",
+            "_valueTracker": {}
+        },
+        "headingFont": "Merriweather",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#F5F0F0",
+        "bodyFont": "Merriweather",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#E2E6E9",
         "roundness": "8px",
         "shadow": "none",
         "cardBorder": "thin",
@@ -416,12 +935,56 @@
         "blockShadow": "none"
     },
     {
+        "name": "Peach",
+        "primaryAccent": "#FFAD94",
+        "secondaryColors": [
+            "#FFD1CC",
+            "#FFDBC8",
+            "#FFEDBF",
+            "#FFF9B9"
+        ],
+        "headingColor": "#403C4E",
+        "bodyColor": "#403C4E",
+        "cardColor": "#FFFFFF",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn.gamma.app/zc87vhr30n8uf3n/d4fac9260e974099ad0c298a28642c46/original/Tropics---background.png",
+        "headingFont": "Merriweather",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#403C4E",
+        "bodyFont": "Open Sans",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#403C4E",
+        "roundness": "8px",
+        "shadow": "sm",
+        "cardBorder": "thin",
+        "cardBorderColor": "#E5E0DF",
+        "cardTransparency": 1,
+        "imageShape": "default",
+        "blockFillType": "primary",
+        "blockFill": "fill",
+        "blockBorder": "thin",
+        "blockShadow": "none"
+    },
+    {
         "name": "Incandescent",
         "primaryAccent": "#FF6680 5%, #FF4DA9 45%, #CD42D7 85%",
+        "secondaryColors": [],
         "headingColor": "#FF726D 5%, #FF4DA9 45%, #CD42D7 85%",
         "bodyColor": "#DAD1E6",
         "cardColor": "#241631",
-        "pageBackground": "#110C17",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#110C17",
+                "controlled": true
+            },
+            "value": "#110C17",
+            "_valueTracker": {}
+        },
+        "headingFont": "Inconsolata",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#FF726D 5%, #FF4DA9 45%, #CD42D7 85%",
+        "bodyFont": "Fira Sans",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#DAD1E6",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -435,10 +998,27 @@
     {
         "name": "Oatmeal",
         "primaryAccent": "#E5E5E0",
+        "secondaryColors": [
+            "#D3C1B6",
+            "#BAB6AA"
+        ],
         "headingColor": "#312F2B",
         "bodyColor": "#272525",
         "cardColor": "#FFFFFF",
-        "pageBackground": "white gradient",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "",
+                "controlled": true
+            },
+            "value": "white gradient",
+            "_valueTracker": {}
+        },
+        "headingFont": "Gelasio",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#312F2B",
+        "bodyFont": "Lato",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#272525",
         "roundness": "8px",
         "shadow": "none",
         "cardBorder": "thin",
@@ -453,10 +1033,27 @@
     {
         "name": "Sanguine",
         "primaryAccent": "#C91313",
+        "secondaryColors": [
+            "#510C04",
+            "#740B0A"
+        ],
         "headingColor": "#FAEBEB",
         "bodyColor": "#FFE5E5",
         "cardColor": "#0A0A0A",
-        "pageBackground": "red gradient",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "",
+                "controlled": true
+            },
+            "value": "red gradient",
+            "_valueTracker": {}
+        },
+        "headingFont": "Dela Gothic One",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#FAEBEB",
+        "bodyFont": "DM Sans",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#FFE5E5",
         "roundness": "8px",
         "shadow": "none",
         "cardBorder": "thin",
@@ -471,10 +1068,24 @@
     {
         "name": "Sage",
         "primaryAccent": "#437066",
+        "secondaryColors": [],
         "headingColor": "#272D45",
         "bodyColor": "#2C3249",
         "cardColor": "#FFFFFF",
-        "pageBackground": "#EBF4F3",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#EBF4F3",
+                "controlled": true
+            },
+            "value": "#EBF4F3",
+            "_valueTracker": {}
+        },
+        "headingFont": "Kanit",
+        "headingFontWeight": "Light",
+        "headingFontColor": "#272D45",
+        "bodyFont": "Martel Sans",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#2C3249",
         "roundness": "8px",
         "shadow": "sm",
         "cardBorder": "thin",
@@ -487,12 +1098,55 @@
         "blockShadow": "none"
     },
     {
+        "name": "Verdigris",
+        "primaryAccent": "#0A988B",
+        "secondaryColors": [
+            "#1C3645",
+            "#061722"
+        ],
+        "headingColor": "#FFFFFF",
+        "bodyColor": "#CAD6DE",
+        "cardColor": "#112836",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn.gamma.app/zc87vhr30n8uf3n/d0f51a018ec24c81b90f74069c16bfb7/original/Frame-59718.png",
+        "headingFont": "Unbounded",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#FFFFFF",
+        "bodyFont": "Cabin",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#CAD6DE",
+        "roundness": "4px",
+        "shadow": "none",
+        "cardBorder": "none",
+        "cardTransparency": 1,
+        "imageShape": "default",
+        "blockFillType": "subtle",
+        "blockFill": "fill",
+        "blockBorder": "none",
+        "blockShadow": "none"
+    },
+    {
         "name": "Ash",
         "primaryAccent": "#1D1D1B",
+        "secondaryColors": [
+            "#EFEFEF"
+        ],
         "headingColor": "#1D1D1B",
         "bodyColor": "#61615C",
         "cardColor": "#FCFCFC",
-        "pageBackground": "#EFEFEF",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#EFEFEF",
+                "controlled": true
+            },
+            "value": "#EFEFEF",
+            "_valueTracker": {}
+        },
+        "headingFont": "Tomorrow",
+        "headingFontWeight": "Semi Bold",
+        "headingFontColor": "#1D1D1B",
+        "bodyFont": "Tomorrow",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#61615C",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -506,10 +1160,27 @@
     {
         "name": "Coal",
         "primaryAccent": "#E1E1DF",
+        "secondaryColors": [
+            "#1F1F1E",
+            "#1A1A1A"
+        ],
         "headingColor": "#EDEDE8",
         "bodyColor": "#C9C9C0",
         "cardColor": "#1D1D1B",
-        "pageBackground": "#0D0D0C",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#0D0D0C",
+                "controlled": true
+            },
+            "value": "#0D0D0C",
+            "_valueTracker": {}
+        },
+        "headingFont": "Tomorrow",
+        "headingFontWeight": "Semi Bold",
+        "headingFontColor": "#EDEDE8",
+        "bodyFont": "Tomorrow",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#C9C9C0",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -521,12 +1192,78 @@
         "blockShadow": "none"
     },
     {
+        "name": "Flamingo",
+        "primaryAccent": "#F5A3A3",
+        "secondaryColors": [],
+        "headingColor": "#1F1E1E",
+        "bodyColor": "#3B3535",
+        "cardColor": "#FFFAFA",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn-staging.gamma.app/QWjS6fBfpt/7c4bcd24cd8940788fd9fb155d789d7f/original/mesh-noise-gradient.png",
+        "headingFont": "Red Hat Text",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#1F1E1E",
+        "bodyFont": "Roboto",
+        "bodyFontWeight": "Light",
+        "bodyFontColor": "#3B3535",
+        "roundness": "4px",
+        "shadow": "none",
+        "cardBorder": "none",
+        "cardTransparency": 1,
+        "imageShape": "default",
+        "blockFillType": "subtle",
+        "blockFill": "fill",
+        "blockBorder": "none",
+        "blockShadow": "none"
+    },
+    {
+        "name": "Canaveral",
+        "primaryAccent": "#F65F62",
+        "secondaryColors": [],
+        "headingColor": "#FFFFFF",
+        "bodyColor": "#E5E0DF",
+        "cardColor": "#191718",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn.gamma.app/theme_images/canaveral-background.5dbf8d8ea7288ff1d7f1055cead80d9f.png",
+        "headingFont": "Barlow",
+        "headingFontWeight": "Medium",
+        "headingFontColor": "#FFFFFF",
+        "bodyFont": "Barlow",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#E5E0DF",
+        "roundness": "8px",
+        "shadow": "sm",
+        "cardBorder": "thin",
+        "cardBorderColor": "#E6E6E6",
+        "cardTransparency": 0.8,
+        "imageShape": "default",
+        "blockFillType": "primary",
+        "blockFill": "fill",
+        "blockBorder": "thin",
+        "blockShadow": "none"
+    },
+    {
         "name": "Oasis",
         "primaryAccent": "#D2600F",
+        "secondaryColors": [
+            "#C3CDC1",
+            "#FBE2D1"
+        ],
         "headingColor": "#2C3F42",
         "bodyColor": "#2B2E3C",
         "cardColor": "#FFF8F0",
-        "pageBackground": "#AABCB6",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#AABCB6",
+                "controlled": true
+            },
+            "value": "#AABCB6",
+            "_valueTracker": {}
+        },
+        "headingFont": "Bitter",
+        "headingFontWeight": "Medium",
+        "headingFontColor": "#2C3F42",
+        "bodyFont": "Open Sans",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#2B2E3C",
         "roundness": "8px",
         "shadow": "sm",
         "cardBorder": "thin",
@@ -541,10 +1278,26 @@
     {
         "name": "Fluo",
         "primaryAccent": "#DCFF50",
+        "secondaryColors": [
+            "#141414"
+        ],
         "headingColor": "#FFFFFF",
         "bodyColor": "#E5E0DF",
         "cardColor": "#212121",
-        "pageBackground": "#010303",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#010303",
+                "controlled": true
+            },
+            "value": "#010303",
+            "_valueTracker": {}
+        },
+        "headingFont": "Roboto Mono",
+        "headingFontWeight": "Medium",
+        "headingFontColor": "#FFFFFF",
+        "bodyFont": "Roboto",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#E5E0DF",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -558,10 +1311,24 @@
     {
         "name": "Finesse",
         "primaryAccent": "#38512F",
+        "secondaryColors": [],
         "headingColor": "#38512F",
         "bodyColor": "#3A3630",
         "cardColor": "#FEF5E7",
-        "pageBackground": "#F2E4CF",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#F2E4CF",
+                "controlled": true
+            },
+            "value": "#F2E4CF",
+            "_valueTracker": {}
+        },
+        "headingFont": "Lora",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#38512F",
+        "bodyFont": "Source Sans Pro",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#3A3630",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -575,10 +1342,24 @@
     {
         "name": "Electric",
         "primaryAccent": "#6EB9FC 5%, #F888D2 45%, #FD957D 85%",
+        "secondaryColors": [],
         "headingColor": "#6EB9FC 5%, #F888D2 45%, #FD957D 85%",
         "bodyColor": "#D6E5EF",
         "cardColor": "#252833",
-        "pageBackground": "#181A24",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#181A24",
+                "controlled": true
+            },
+            "value": "#181A24",
+            "_valueTracker": {}
+        },
+        "headingFont": "Lora",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#6EB9FC 5%, #F888D2 45%, #FD957D 85%",
+        "bodyFont": "Source Sans Pro",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#D6E5EF",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -590,12 +1371,19 @@
         "blockShadow": "none"
     },
     {
-        "name": "Soft Coal",
-        "primaryAccent": "#60A9FF 10%, #D187FF 90%",
-        "headingColor": "#60A9FF 10%, #D187FF 90%",
-        "bodyColor": "#EEEFF5",
-        "cardColor": "#282C32",
-        "pageBackground": "#282C32",
+        "name": "Soft Cloud",
+        "primaryAccent": "#396AF1 10%, #A665F6 90%",
+        "secondaryColors": [],
+        "headingColor": "#396AF1 10%, #A665F6 90%",
+        "bodyColor": "#272525",
+        "cardColor": "#EEEFF5",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn.gamma.app/theme_images/soft-background.adac2b12b3164d91b64117595332aa4f.svg",
+        "headingFont": "Barlow",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#396AF1 10%, #A665F6 90%",
+        "bodyFont": "Montserrat",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#272525",
         "roundness": "12px",
         "cardBorder": "none",
         "cardTransparency": 1,
@@ -605,12 +1393,143 @@
         "blockBorder": "none"
     },
     {
+        "name": "Zephyr",
+        "primaryAccent": "#4296CD 0%, #A7DDFF 100%",
+        "secondaryColors": [
+            "#2589C9",
+            "#063E5F",
+            "#1E2C3B",
+            "#E5F6FF",
+            "#F4FBFF"
+        ],
+        "headingColor": "#2E3C4E",
+        "bodyColor": "#384653",
+        "cardColor": "#FFFFFF",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn.gamma.app/zc87vhr30n8uf3n/10ed29f32ee94e4b92352e1f62cd92d1/original/bg-blue.png",
+        "headingFont": "Barlow",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#2E3C4E",
+        "bodyFont": "Montserrat",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#384653",
+        "roundness": "20px",
+        "shadow": "md",
+        "cardBorder": "medium",
+        "cardBorderColor": "#75BAE6",
+        "cardTransparency": 1,
+        "imageShape": "round",
+        "blockFillType": "primary",
+        "blockFill": "fill",
+        "blockBorder": "thin",
+        "blockShadow": "none"
+    },
+    {
+        "name": "Soft Coal",
+        "primaryAccent": "#60A9FF 10%, #D187FF 90%",
+        "secondaryColors": [],
+        "headingColor": "#60A9FF 10%, #D187FF 90%",
+        "bodyColor": "#EEEFF5",
+        "cardColor": "#282C32",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#282C32",
+                "controlled": true
+            },
+            "value": "#282C32",
+            "_valueTracker": {}
+        },
+        "headingFont": "Barlow",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#60A9FF 10%, #D187FF 90%",
+        "bodyFont": "Montserrat",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#EEEFF5",
+        "roundness": "12px",
+        "cardBorder": "none",
+        "cardTransparency": 1,
+        "imageShape": "default",
+        "blockFillType": "subtle",
+        "blockFill": "none",
+        "blockBorder": "none"
+    },
+    {
+        "name": "Chimney Smoke",
+        "primaryAccent": "#5B5F72 10%, #45495E 90%",
+        "secondaryColors": [
+            "#F4F4F5",
+            "#E2E3E9"
+        ],
+        "headingColor": "#5B5F72 10%, #45495E 90%",
+        "bodyColor": "#777C92",
+        "cardColor": "#FFFFFF",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn.gamma.app/zc87vhr30n8uf3n/928d7dc29162464485314bf32e225943/original/bg-light-gray.png",
+        "headingFont": "Instrument Sans",
+        "headingFontWeight": "Semi Bold",
+        "headingFontColor": "#5B5F72 10%, #45495E 90%",
+        "bodyFont": "Instrument Sans",
+        "bodyFontWeight": "Medium",
+        "bodyFontColor": "#777C92",
+        "roundness": "8px",
+        "shadow": "none",
+        "cardBorder": "thin",
+        "cardBorderColor": "#E6E6E6",
+        "cardTransparency": 0.8,
+        "imageShape": "default",
+        "blockFillType": "primary",
+        "blockFill": "fill",
+        "blockBorder": "thin",
+        "blockShadow": "none"
+    },
+    {
+        "name": "Chimney Dust",
+        "primaryAccent": "#E4E4E7 10%, #C5C5C9 90%",
+        "secondaryColors": [
+            "#141415",
+            "#3D3D42",
+            "#515257"
+        ],
+        "headingColor": "#FFFFFF 10%, #96989C 90%",
+        "bodyColor": "#CFD0D8",
+        "cardColor": "#2A2A2D",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn.gamma.app/zc87vhr30n8uf3n/23e33c1791b042ada908a31f840e8951/original/bg-gray.png",
+        "headingFont": "Instrument Sans",
+        "headingFontWeight": "Semi Bold",
+        "headingFontColor": "#FFFFFF 10%, #96989C 90%",
+        "bodyFont": "Instrument Sans",
+        "bodyFontWeight": "Medium",
+        "bodyFontColor": "#CFD0D8",
+        "roundness": "8px",
+        "shadow": "none",
+        "cardBorder": "thin",
+        "cardBorderColor": "#E6E6E6",
+        "cardTransparency": 0.8,
+        "imageShape": "default",
+        "blockFillType": "primary",
+        "blockFill": "fill",
+        "blockBorder": "thin",
+        "blockShadow": "none"
+    },
+    {
         "name": "Icebreaker",
         "primaryAccent": "#476FD6 10%, #1C3F99 90%",
+        "secondaryColors": [],
         "headingColor": "#476FD6 10%, #1C3F99 90%",
         "bodyColor": "#15213F",
         "cardColor": "#FBFCFE",
-        "pageBackground": "#EDF1F8",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#EDF1F8",
+                "controlled": true
+            },
+            "value": "#EDF1F8",
+            "_valueTracker": {}
+        },
+        "headingFont": "Roboto Slab",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#476FD6 10%, #1C3F99 90%",
+        "bodyFont": "Roboto",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#15213F",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -624,10 +1543,24 @@
     {
         "name": "Blue Steel",
         "primaryAccent": "#599CE8 10%, #73B3F3 90%",
+        "secondaryColors": [],
         "headingColor": "#60A9FF 10%, #8CC9FF 90%",
         "bodyColor": "#D6E5EF",
         "cardColor": "#202733",
-        "pageBackground": "#171B21",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#171B21",
+                "controlled": true
+            },
+            "value": "#171B21",
+            "_valueTracker": {}
+        },
+        "headingFont": "Roboto Slab",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#60A9FF 10%, #8CC9FF 90%",
+        "bodyFont": "Roboto",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#D6E5EF",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -639,12 +1572,96 @@
         "blockShadow": "none"
     },
     {
+        "name": "Daydream",
+        "primaryAccent": "#2D4DF2",
+        "secondaryColors": [
+            "#018CE1",
+            "#DA33BF"
+        ],
+        "headingColor": "#00002E",
+        "bodyColor": "#00002E",
+        "cardColor": "#F3F3FF",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn.gamma.app/theme_images/daydream-background.7fcbd301bfcea3f5878fcd6e8d22502a.png",
+        "headingFont": "Nunito",
+        "headingFontWeight": "Semi Bold",
+        "headingFontColor": "#00002E",
+        "bodyFont": "PT Sans",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#00002E",
+        "roundness": "20px",
+        "shadow": "none",
+        "cardBorder": "thick",
+        "cardBorderColor": "#E6E6E6",
+        "cardTransparency": 0.5,
+        "imageShape": "default",
+        "blockFillType": "custom",
+        "blockFillCustomColors": [
+            "#2D4DF2",
+            "#018CE1",
+            "#DA33BF"
+        ],
+        "blockFill": "none",
+        "blockBorder": "medium",
+        "blockShadow": "none"
+    },
+    {
+        "name": "Orbit",
+        "primaryAccent": "#F2B42D",
+        "secondaryColors": [
+            "#D7425E",
+            "#DD785E",
+            "#48A8E2",
+            "#59ABA9"
+        ],
+        "headingColor": "#FFFFFF",
+        "bodyColor": "#FFFFFF",
+        "cardColor": "#00002E",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn.gamma.app/theme_images/orbit-background.f55cf66e62f5fb7b8c1e878071281aa3.png",
+        "headingFont": "Nunito",
+        "headingFontWeight": "Semi Bold",
+        "headingFontColor": "#FFFFFF",
+        "bodyFont": "PT Sans",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#FFFFFF",
+        "roundness": "20px",
+        "shadow": "none",
+        "cardBorder": "thick",
+        "cardBorderColor": "#E6E6E6",
+        "cardTransparency": 0.5,
+        "imageShape": "default",
+        "blockFillType": "custom",
+        "blockFillCustomColors": [
+            "#F2B42D",
+            "#D7425E",
+            "#DD785E",
+            "#48A8E2",
+            "#59ABA9"
+        ],
+        "blockFill": "none",
+        "blockBorder": "medium",
+        "blockShadow": "none"
+    },
+    {
         "name": "Dune",
         "primaryAccent": "#B88E23",
+        "secondaryColors": [],
         "headingColor": "#5C4E3D",
         "bodyColor": "#454240",
         "cardColor": "#FFFDFA",
-        "pageBackground": "soft",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "",
+                "controlled": true
+            },
+            "value": "soft",
+            "_valueTracker": {}
+        },
+        "headingFont": "Libre Baskerville",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#5C4E3D",
+        "bodyFont": "DM Sans",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#454240",
         "roundness": "8px",
         "shadow": "sm",
         "cardBorder": "thin",
@@ -659,10 +1676,24 @@
     {
         "name": "Mocha",
         "primaryAccent": "#C49F8C",
+        "secondaryColors": [],
         "headingColor": "#EBCCBB 10%, #C49F8C 90%",
         "bodyColor": "#C9C2C0",
         "cardColor": "#464342",
-        "pageBackground": "#302D2C",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#302D2C",
+                "controlled": true
+            },
+            "value": "#302D2C",
+            "_valueTracker": {}
+        },
+        "headingFont": "Gelasio",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#EBCCBB 10%, #C49F8C 90%",
+        "bodyFont": "Gelasio",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#C9C2C0",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -676,10 +1707,27 @@
     {
         "name": "Serene",
         "primaryAccent": "#1A2D7A",
+        "secondaryColors": [
+            "#D3DCF6",
+            "#E7EEF9"
+        ],
         "headingColor": "#1F1E1E",
         "bodyColor": "#3B3535",
         "cardColor": "#FFFAFA",
-        "pageBackground": "#E7EEF9",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#E7EEF9",
+                "controlled": true
+            },
+            "value": "#E7EEF9",
+            "_valueTracker": {}
+        },
+        "headingFont": "Alexandria",
+        "headingFontWeight": "Semi Bold",
+        "headingFontColor": "#1F1E1E",
+        "bodyFont": "Sora",
+        "bodyFontWeight": "Light",
+        "bodyFontColor": "#3B3535",
         "roundness": "8px",
         "shadow": "sm",
         "cardBorder": "thin",
@@ -694,10 +1742,26 @@
     {
         "name": "Cornflower",
         "primaryAccent": "#1B54DA",
+        "secondaryColors": [
+            "#D2DDF8"
+        ],
         "headingColor": "#1B1B27",
         "bodyColor": "#404155",
         "cardColor": "#F9F9FF",
-        "pageBackground": "#5C73E6",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#5C73E6",
+                "controlled": true
+            },
+            "value": "#5C73E6",
+            "_valueTracker": {}
+        },
+        "headingFont": "Alexandria",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#1B1B27",
+        "bodyFont": "Nobile",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#404155",
         "roundness": "8px",
         "shadow": "sm",
         "cardBorder": "thin",
@@ -712,10 +1776,29 @@
     {
         "name": "Vanilla",
         "primaryAccent": "#224435",
+        "secondaryColors": [
+            "#F9F4BE",
+            "#FFFDE6",
+            "#233939",
+            "#DDEEE6"
+        ],
         "headingColor": "#233939",
         "bodyColor": "#3B4E4E",
         "cardColor": "#FFFDE6",
-        "pageBackground": "#F9F4BE",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#F9F4BE",
+                "controlled": true
+            },
+            "value": "#F9F4BE",
+            "_valueTracker": {}
+        },
+        "headingFont": "Syne",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#233939",
+        "bodyFont": "Overpass",
+        "bodyFontWeight": "Light",
+        "bodyFontColor": "#3B4E4E",
         "roundness": "8px",
         "shadow": "sm",
         "cardBorder": "thin",
@@ -728,12 +1811,64 @@
         "blockShadow": "none"
     },
     {
+        "name": "Alien",
+        "primaryAccent": "#A9F00F",
+        "secondaryColors": [
+            "#547808",
+            "#81B61C",
+            "#111A23"
+        ],
+        "headingColor": "#F0F4F1",
+        "bodyColor": "#D7E5D8",
+        "cardColor": "#152025",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn.gamma.app/zc87vhr30n8uf3n/f98b42d8e16844b0a93c848818d04ee3/original/no-star-3.png",
+        "headingFont": "Syne",
+        "headingFontWeight": "Extra Bold",
+        "headingFontColor": "#F0F4F1",
+        "bodyFont": "Syne",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#D7E5D8",
+        "roundness": "8px",
+        "shadow": "none",
+        "cardBorder": "thin",
+        "cardBorderColor": "#E6E6E6",
+        "cardTransparency": 0.8,
+        "imageShape": "default",
+        "blockFillType": "primary",
+        "blockFill": "fill",
+        "blockBorder": "thin",
+        "blockShadow": "none"
+    },
+    {
         "name": "Breeze",
         "primaryAccent": "#84C1FA",
+        "secondaryColors": [
+            "#000E21",
+            "#CDDAFA",
+            "#E8EEFC",
+            "#F578DE",
+            "#921653",
+            "#FF5000",
+            "#0540AD",
+            "#1A561C"
+        ],
         "headingColor": "#091C53",
         "bodyColor": "#1E3063",
         "cardColor": "#FFFFFF",
-        "pageBackground": "#DEEEFF",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#DEEEFF",
+                "controlled": true
+            },
+            "value": "#DEEEFF",
+            "_valueTracker": {}
+        },
+        "headingFont": "Instrument Sans",
+        "headingFontWeight": "Semi Bold",
+        "headingFontColor": "#091C53",
+        "bodyFont": "Instrument Sans",
+        "bodyFontWeight": "Medium",
+        "bodyFontColor": "#1E3063",
         "roundness": "12px",
         "shadow": "md",
         "cardBorder": "thin",
@@ -746,12 +1881,51 @@
         "blockShadow": "none"
     },
     {
+        "name": "Aurora",
+        "primaryAccent": "#581CA0 10%, #371C9C 90%",
+        "secondaryColors": [],
+        "headingColor": "#F2F0F4",
+        "bodyColor": "#DCD7E5",
+        "cardColor": "#0D0A2C",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn.gamma.app/theme_images/aurora-background.77ca5e0ff46d050807e8d907d1b774f8.png",
+        "headingFont": "Montserrat",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#F2F0F4",
+        "bodyFont": "Heebo",
+        "bodyFontWeight": "Light",
+        "bodyFontColor": "#DCD7E5",
+        "roundness": "8px",
+        "shadow": "none",
+        "cardBorder": "thin",
+        "cardBorderColor": "#E6E6E6",
+        "cardTransparency": 0.8,
+        "imageShape": "default",
+        "blockFillType": "primary",
+        "blockFill": "fill",
+        "blockBorder": "thin",
+        "blockShadow": "none"
+    },
+    {
         "name": "Velvet Tides",
         "primaryAccent": "#A95B95",
+        "secondaryColors": [],
         "headingColor": "#C6BFEE",
         "bodyColor": "#DAD8E9",
         "cardColor": "#0B0C23",
-        "pageBackground": "dark gradient",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "",
+                "controlled": true
+            },
+            "value": "dark gradient",
+            "_valueTracker": {}
+        },
+        "headingFont": "Prompt",
+        "headingFontWeight": "Medium",
+        "headingFontColor": "#C6BFEE",
+        "bodyFont": "Mukta",
+        "bodyFontWeight": "Light",
+        "bodyFontColor": "#DAD8E9",
         "roundness": "8px",
         "shadow": "none",
         "cardBorder": "thin",
@@ -766,10 +1940,24 @@
     {
         "name": "Tranquil",
         "primaryAccent": "#007EBD",
+        "secondaryColors": [],
         "headingColor": "#000000",
         "bodyColor": "#272525",
         "cardColor": "#FFFFFF",
-        "pageBackground": "",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "",
+                "controlled": true
+            },
+            "value": "",
+            "_valueTracker": {}
+        },
+        "headingFont": "Petrona",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#000000",
+        "bodyFont": "Inter",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#272525",
         "roundness": "8px",
         "shadow": "none",
         "cardBorder": "thin",
@@ -782,12 +1970,64 @@
         "blockShadow": "none"
     },
     {
+        "name": "Borealis",
+        "primaryAccent": "#16FFBB",
+        "secondaryColors": [
+            "#29DDDA",
+            "#37A7E7",
+            "#091231"
+        ],
+        "headingColor": "#F0FCFF",
+        "bodyColor": "#E0E4E6",
+        "cardColor": "#0A081B",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn.gamma.app/theme_images/standard/348ee66ae9594e87a504c5013f2fa936/original/borealis.jpg",
+        "headingFont": "Spline Sans",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#F0FCFF",
+        "bodyFont": "Barlow",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#E0E4E6",
+        "roundness": "20px",
+        "shadow": "none",
+        "cardBorder": "thick",
+        "cardBorderColor": "#E6E6E6",
+        "cardTransparency": 0.5,
+        "imageShape": "default",
+        "blockFillType": "custom",
+        "blockFillCustomColors": [
+            "#16FFBB",
+            "#29DDDA",
+            "#37A7E7",
+            "#091231"
+        ],
+        "blockFill": "none",
+        "blockBorder": "medium",
+        "blockShadow": "none"
+    },
+    {
         "name": "Terracotta",
         "primaryAccent": "#835E54",
+        "secondaryColors": [
+            "#C9907C",
+            "#B3BDB5"
+        ],
         "headingColor": "#443728",
         "bodyColor": "#443728",
         "cardColor": "#FFFCFA",
-        "pageBackground": "#F7EDE9",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#F7EDE9",
+                "controlled": true
+            },
+            "value": "#F7EDE9",
+            "_valueTracker": {}
+        },
+        "headingFont": "Crimson Pro",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#443728",
+        "bodyFont": "Open Sans",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#443728",
         "roundness": "8px",
         "shadow": "sm",
         "cardBorder": "thin",
@@ -802,10 +2042,26 @@
     {
         "name": "Bubble Gum",
         "primaryAccent": "#FA95AE",
+        "secondaryColors": [
+            "#121212"
+        ],
         "headingColor": "#FA95AF",
         "bodyColor": "#E0D6DE",
         "cardColor": "#1F1F1F",
-        "pageBackground": "#121212",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#121212",
+                "controlled": true
+            },
+            "value": "#121212",
+            "_valueTracker": {}
+        },
+        "headingFont": "Anton",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#FA95AF",
+        "bodyFont": "Fira Sans",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#E0D6DE",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -817,12 +2073,51 @@
         "blockShadow": "none"
     },
     {
+        "name": "Snowball",
+        "primaryAccent": "#4967E9",
+        "secondaryColors": [],
+        "headingColor": "#1B1B27",
+        "bodyColor": "#404155",
+        "cardColor": "#F9F9FF",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn.gamma.app/theme_images/snowball-bg-xskdx82l.jpg",
+        "headingFont": "Corben",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#1B1B27",
+        "bodyFont": "Nobile",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#404155",
+        "roundness": "8px",
+        "shadow": "none",
+        "cardBorder": "thin",
+        "cardBorderColor": "#E6E6E6",
+        "cardTransparency": 0.8,
+        "imageShape": "default",
+        "blockFillType": "primary",
+        "blockFill": "fill",
+        "blockBorder": "thin",
+        "blockShadow": "none"
+    },
+    {
         "name": "Piano",
         "primaryAccent": "#101014",
+        "secondaryColors": [],
         "headingColor": "#101014",
         "bodyColor": "#39393C",
         "cardColor": "#F3F3F7",
-        "pageBackground": "#0C0C0E",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#0C0C0E",
+                "controlled": true
+            },
+            "value": "#0C0C0E",
+            "_valueTracker": {}
+        },
+        "headingFont": "Playfair Display",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#101014",
+        "bodyFont": "Open Sans",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#39393C",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -836,10 +2131,24 @@
     {
         "name": "Atacama",
         "primaryAccent": "#F20374",
+        "secondaryColors": [],
         "headingColor": "#FFFFFF",
         "bodyColor": "#E5E0DF",
         "cardColor": "#252222",
-        "pageBackground": "",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "",
+                "controlled": true
+            },
+            "value": "",
+            "_valueTracker": {}
+        },
+        "headingFont": "Overpass",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#FFFFFF",
+        "bodyFont": "Overpass",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#E5E0DF",
         "roundness": "8px",
         "shadow": "sm",
         "cardBorder": "thin",
@@ -854,10 +2163,27 @@
     {
         "name": "Wireframe",
         "primaryAccent": "#CCCCCC",
+        "secondaryColors": [
+            "#FFFFFF",
+            "#E6E6E6"
+        ],
         "headingColor": "#383838",
         "bodyColor": "#383838",
         "cardColor": "#F7F7F7",
-        "pageBackground": "#D9D9D9",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#D9D9D9",
+                "controlled": true
+            },
+            "value": "#D9D9D9",
+            "_valueTracker": {}
+        },
+        "headingFont": "Patrick Hand",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#383838",
+        "bodyFont": "Patrick Hand",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#383838",
         "roundness": "8px",
         "shadow": "sm",
         "cardBorder": "thin",
@@ -870,12 +2196,53 @@
         "blockShadow": "none"
     },
     {
+        "name": "Aurum",
+        "primaryAccent": "#D2AC47 5%, #F7EF8A 45%, #AE8625 85%",
+        "secondaryColors": [
+            "#F4E883",
+            "#0D0D09"
+        ],
+        "headingColor": "#AE8625 5%, #F7EF8A 45%, #D2AC47 85%",
+        "bodyColor": "#CFCBBF",
+        "cardColor": "#1B1C1D",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn.gamma.app/zc87vhr30n8uf3n/f2d27220c12f419c8e9c0ebfb73e3b36/original/NY-bg-10-up.png",
+        "headingFont": "Prata",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#AE8625 5%, #F7EF8A 45%, #D2AC47 85%",
+        "bodyFont": "Raleway",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#CFCBBF",
+        "roundness": "4px",
+        "shadow": "none",
+        "cardBorder": "none",
+        "cardTransparency": 1,
+        "imageShape": "default",
+        "blockFillType": "subtle",
+        "blockFill": "fill",
+        "blockBorder": "none",
+        "blockShadow": "none"
+    },
+    {
         "name": "Bee Happy",
         "primaryAccent": "#FFE14D",
+        "secondaryColors": [],
         "headingColor": "#FFE14D",
         "bodyColor": "#D7D4CC",
         "cardColor": "#27272B",
-        "pageBackground": "#1B1B1E",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#1B1B1E",
+                "controlled": true
+            },
+            "value": "#1B1B1E",
+            "_valueTracker": {}
+        },
+        "headingFont": "Comfortaa",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#FFE14D",
+        "bodyFont": "Raleway",
+        "bodyFontWeight": "Medium",
+        "bodyFontColor": "#D7D4CC",
         "roundness": "20px",
         "shadow": "none",
         "cardBorder": "none",
@@ -889,10 +2256,28 @@
     {
         "name": "Chocolate",
         "primaryAccent": "#E2C2B3",
+        "secondaryColors": [
+            "#403234",
+            "#5F5153",
+            "#997B7F"
+        ],
         "headingColor": "#FFF8F5",
         "bodyColor": "#D3C9C5",
         "cardColor": "#403234",
-        "pageBackground": "#E2C2B3",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#E2C2B3",
+                "controlled": true
+            },
+            "value": "#E2C2B3",
+            "_valueTracker": {}
+        },
+        "headingFont": "Noto Serif HK",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#FFF8F5",
+        "bodyFont": "Noto Serif HK",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#D3C9C5",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -906,10 +2291,29 @@
     {
         "name": "Cigar",
         "primaryAccent": "#84482D",
+        "secondaryColors": [
+            "#1C1D1F",
+            "#50352B",
+            "#BE6841",
+            "#B57152"
+        ],
         "headingColor": "#F2D4BA",
         "bodyColor": "#BDA189",
         "cardColor": "#212326",
-        "pageBackground": "#13171B",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#13171B",
+                "controlled": true
+            },
+            "value": "#13171B",
+            "_valueTracker": {}
+        },
+        "headingFont": "Prata",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#F2D4BA",
+        "bodyFont": "Manrope",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#BDA189",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -923,16 +2327,42 @@
     {
         "name": "Cornfield",
         "primaryAccent": "#626C3B",
+        "secondaryColors": [
+            "#83792E",
+            "#E8AF3B",
+            "#CC914D",
+            "#8D6348",
+            "#EFE0C2"
+        ],
         "headingColor": "#403011",
         "bodyColor": "#403011",
         "cardColor": "#F6EBD4",
-        "pageBackground": "#F1C064",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#F1C064",
+                "controlled": true
+            },
+            "value": "#F1C064",
+            "_valueTracker": {}
+        },
+        "headingFont": "Brygada 1918",
+        "headingFontWeight": "Semi Bold",
+        "headingFontColor": "#403011",
+        "bodyFont": "Brygada 1918",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#403011",
         "roundness": "20px",
         "shadow": "sm",
         "cardBorder": "none",
         "cardTransparency": 1,
         "imageShape": "round",
         "blockFillType": "custom",
+        "blockFillCustomColors": [
+            "#626C3B",
+            "#83792E",
+            "#E8AF3B",
+            "#CC914D"
+        ],
         "blockFill": "fill",
         "blockBorder": "thin",
         "blockShadow": "none"
@@ -940,10 +2370,27 @@
     {
         "name": "Daktilo",
         "primaryAccent": "#151617",
+        "secondaryColors": [
+            "#F2DED0",
+            "#BAB6AA"
+        ],
         "headingColor": "#151617",
         "bodyColor": "#151617",
         "cardColor": "#F8ECE4",
-        "pageBackground": "#F8ECE4",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#F8ECE4",
+                "controlled": true
+            },
+            "value": "#F8ECE4",
+            "_valueTracker": {}
+        },
+        "headingFont": "Montserrat",
+        "headingFontWeight": "Black",
+        "headingFontColor": "#151617",
+        "bodyFont": "Inconsolata",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#151617",
         "roundness": "4px",
         "shadow": "md",
         "cardBorder": "thin",
@@ -951,6 +2398,9 @@
         "cardTransparency": 1,
         "imageShape": "default",
         "blockFillType": "custom",
+        "blockFillCustomColors": [
+            "#151617"
+        ],
         "blockFill": "none",
         "blockBorder": "thin",
         "blockShadow": "md"
@@ -958,10 +2408,26 @@
     {
         "name": "Dawn",
         "primaryAccent": "#FDC4C4",
+        "secondaryColors": [
+            "#C8C7FF"
+        ],
         "headingColor": "#F7F7F8 5%, #F5D7F9 45%, #C8C7FF 84%",
         "bodyColor": "#C7CDD6",
         "cardColor": "#242429",
-        "pageBackground": "#181719",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#181719",
+                "controlled": true
+            },
+            "value": "#181719",
+            "_valueTracker": {}
+        },
+        "headingFont": "Instrument Sans",
+        "headingFontWeight": "Medium",
+        "headingFontColor": "#F7F7F8 5%, #F5D7F9 45%, #C8C7FF 84%",
+        "bodyFont": "Inter",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#C7CDD6",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -975,16 +2441,37 @@
     {
         "name": "Editoria",
         "primaryAccent": "#1E1E1A",
+        "secondaryColors": [
+            "#DBDCD4",
+            "#E8E8E3",
+            "#F8F8F7"
+        ],
         "headingColor": "#0C0D0F",
         "bodyColor": "#55575A",
         "cardColor": "#E8E8E3",
-        "pageBackground": "#0C0D0F",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#0C0D0F",
+                "controlled": true
+            },
+            "value": "#0C0D0F",
+            "_valueTracker": {}
+        },
+        "headingFont": "Hubot Sans",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#0C0D0F",
+        "bodyFont": "Roboto Condensed",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#55575A",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
         "cardTransparency": 1,
         "imageShape": "default",
         "blockFillType": "custom",
+        "blockFillCustomColors": [
+            "#C8CAC1"
+        ],
         "blockFill": "semi",
         "blockBorder": "none",
         "blockShadow": "none"
@@ -992,10 +2479,24 @@
     {
         "name": "Flax",
         "primaryAccent": "#28282F",
+        "secondaryColors": [],
         "headingColor": "#161613",
         "bodyColor": "#161613",
         "cardColor": "#F9F8F5",
-        "pageBackground": "#E6E2DB",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#E6E2DB",
+                "controlled": true
+            },
+            "value": "#E6E2DB",
+            "_valueTracker": {}
+        },
+        "headingFont": "DM Sans",
+        "headingFontWeight": "Medium",
+        "headingFontColor": "#161613",
+        "bodyFont": "Inter",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#161613",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -1009,10 +2510,31 @@
     {
         "name": "Gleam",
         "primaryAccent": "#373B48",
+        "secondaryColors": [
+            "#D4D6DD",
+            "#E2E4E9",
+            "#F1F1F4",
+            "#484E5F",
+            "#5C6378",
+            "#707891"
+        ],
         "headingColor": "#373B48",
         "bodyColor": "#52586B",
         "cardColor": "#FFFFFF",
-        "pageBackground": "white light",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "",
+                "controlled": true
+            },
+            "value": "white light",
+            "_valueTracker": {}
+        },
+        "headingFont": "Mona Sans",
+        "headingFontWeight": "Semi Bold",
+        "headingFontColor": "#373B48",
+        "bodyFont": "Funnel Sans",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#52586B",
         "roundness": "8px",
         "shadow": "none",
         "cardBorder": "thin",
@@ -1025,12 +2547,85 @@
         "blockShadow": "none"
     },
     {
+        "name": "Gold Leaf",
+        "primaryAccent": "#DA9B49 0%, #F3E38A 99%",
+        "secondaryColors": [
+            "#DFAB58",
+            "#EBCC75",
+            "#FDF4DB"
+        ],
+        "headingColor": "#2C2926",
+        "bodyColor": "#2C2926",
+        "cardColor": "#FFFFFF",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn.gamma.app/zc87vhr30n8uf3n/8e42af552dd64357a8f7b416c1162eb9/original/malloops_A_pattern_of_white_and_gold_liquid_swirls_on_an_all-wh_cd39af0e-78fa-4e88-ad40-d7cc51f267c4.png",
+        "headingFont": "Bricolage Grotesque",
+        "headingFontWeight": "Semi Bold",
+        "headingFontColor": "#2C2926",
+        "bodyFont": "Inter",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#2C2926",
+        "roundness": "8px",
+        "shadow": "none",
+        "cardBorder": "thin",
+        "cardBorderColor": "#DFB679",
+        "cardTransparency": 0.8,
+        "imageShape": "round",
+        "blockFillType": "primary",
+        "blockFill": "none",
+        "blockBorder": "thin",
+        "blockShadow": "none"
+    },
+    {
+        "name": "Iris",
+        "primaryAccent": "#5E4CE6",
+        "secondaryColors": [],
+        "headingColor": "#231971",
+        "bodyColor": "#2A2742",
+        "cardColor": "#FAFAFA",
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:500/https://cdn.gamma.app/theme_images/standard/4ed03aaa0f72423d9daf5d2c7feaa61b/original/photo-1635776063328-153b13e3c245.jpeg",
+        "headingFont": "Outfit",
+        "headingFontWeight": "Extra Bold",
+        "headingFontColor": "#231971",
+        "bodyFont": "Arimo",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#2A2742",
+        "roundness": "8px",
+        "shadow": "none",
+        "cardBorder": "thin",
+        "cardBorderColor": "#E6E6E6",
+        "cardTransparency": 0.8,
+        "imageShape": "default",
+        "blockFillType": "primary",
+        "blockFill": "semi",
+        "blockBorder": "thin",
+        "blockShadow": "none"
+    },
+    {
         "name": "Keepsake",
         "primaryAccent": "#C7E0E7 0%, #64B8CE 99%",
+        "secondaryColors": [
+            "#C3643D",
+            "#E9CFC9",
+            "#C7E0E7",
+            "#64B8CE"
+        ],
         "headingColor": "#2E3C4E",
         "bodyColor": "#384653",
         "cardColor": "#FAF9F5",
-        "pageBackground": "#C7E0E7",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#C7E0E7",
+                "controlled": true
+            },
+            "value": "#C7E0E7",
+            "_valueTracker": {}
+        },
+        "headingFont": "Host Grotesk",
+        "headingFontWeight": "Medium",
+        "headingFontColor": "#2E3C4E",
+        "bodyFont": "Roboto",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#384653",
         "roundness": "8px",
         "shadow": "none",
         "cardBorder": "none",
@@ -1044,16 +2639,38 @@
     {
         "name": "Leimoon",
         "primaryAccent": "#FF7047",
+        "secondaryColors": [
+            "#FFF0ED",
+            "#FFA647",
+            "#FFCE47",
+            "#FF9B7E"
+        ],
         "headingColor": "#0C0D0F",
         "bodyColor": "#55575A",
         "cardColor": "#FFFFFF",
-        "pageBackground": "#FFF0ED",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#FFF0ED",
+                "controlled": true
+            },
+            "value": "#FFF0ED",
+            "_valueTracker": {}
+        },
+        "headingFont": "Inter",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#0C0D0F",
+        "bodyFont": "Manrope",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#55575A",
         "roundness": "12px",
         "shadow": "none",
         "cardBorder": "none",
         "cardTransparency": 1,
         "imageShape": "default",
         "blockFillType": "custom",
+        "blockFillCustomColors": [
+            "#FF7047"
+        ],
         "blockFill": "none",
         "blockBorder": "thin",
         "blockShadow": "none"
@@ -1061,10 +2678,33 @@
     {
         "name": "Linen",
         "primaryAccent": "#9C9283",
+        "secondaryColors": [
+            "#3A3A3A",
+            "#6F7F71",
+            "#A8B8A2",
+            "#D9CFC1",
+            "#E6DED2",
+            "#F2EDE4",
+            "#FDFBF7",
+            "#FAFAF7"
+        ],
         "headingColor": "#3A3A3A",
         "bodyColor": "#4C4C4C",
         "cardColor": "#FDFBF7",
-        "pageBackground": "#E6DED2",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#E6DED2",
+                "controlled": true
+            },
+            "value": "#E6DED2",
+            "_valueTracker": {}
+        },
+        "headingFont": "Noto Serif",
+        "headingFontWeight": "Medium",
+        "headingFontColor": "#3A3A3A",
+        "bodyFont": "Noto Serif",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#4C4C4C",
         "roundness": "8px",
         "shadow": "md",
         "cardBorder": "medium",
@@ -1072,6 +2712,9 @@
         "cardTransparency": 1,
         "imageShape": "default",
         "blockFillType": "custom",
+        "blockFillCustomColors": [
+            "#E6DED2"
+        ],
         "blockFill": "semi",
         "blockBorder": "thin",
         "blockShadow": "md"
@@ -1079,10 +2722,28 @@
     {
         "name": "Malibu",
         "primaryAccent": "#E851B2",
+        "secondaryColors": [
+            "#FFE1F7",
+            "#FFB6B3",
+            "#FF80BA"
+        ],
         "headingColor": "#371A2D",
         "bodyColor": "#432338",
         "cardColor": "#FFFFFF",
-        "pageBackground": "pink gradient",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "",
+                "controlled": true
+            },
+            "value": "pink gradient",
+            "_valueTracker": {}
+        },
+        "headingFont": "Noto Serif HK",
+        "headingFontWeight": "Semi Bold",
+        "headingFontColor": "#371A2D",
+        "bodyFont": "Source Sans Pro",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#432338",
         "roundness": "8px",
         "shadow": "none",
         "cardBorder": "thin",
@@ -1097,10 +2758,29 @@
     {
         "name": "Moss & Mist",
         "primaryAccent": "#9FA582",
+        "secondaryColors": [
+            "#1F2D1B",
+            "#2D2F28",
+            "#404238",
+            "#6B6E5E"
+        ],
         "headingColor": "#E1E5CD",
         "bodyColor": "#C2C4B5",
         "cardColor": "#1C1D1F",
-        "pageBackground": "#0B1012",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#0B1012",
+                "controlled": true
+            },
+            "value": "#0B1012",
+            "_valueTracker": {}
+        },
+        "headingFont": "Outfit",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#E1E5CD",
+        "bodyFont": "Bitter",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#C2C4B5",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -1114,10 +2794,26 @@
     {
         "name": "Plant Shop",
         "primaryAccent": "#1B5F39",
+        "secondaryColors": [
+            "#FAF9F4"
+        ],
         "headingColor": "#233E32",
         "bodyColor": "#2C2821",
         "cardColor": "#FCFBF8",
-        "pageBackground": "#F1F2DE",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#F1F2DE",
+                "controlled": true
+            },
+            "value": "#F1F2DE",
+            "_valueTracker": {}
+        },
+        "headingFont": "Alice",
+        "headingFontWeight": "Regular",
+        "headingFontColor": "#233E32",
+        "bodyFont": "Lora",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#2C2821",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -1131,10 +2827,28 @@
     {
         "name": "Rush",
         "primaryAccent": "#DA1B2E",
+        "secondaryColors": [
+            "#790C1C",
+            "#F9D2D6",
+            "#FFF6F7"
+        ],
         "headingColor": "#1F1E1E",
         "bodyColor": "#3B3535",
         "cardColor": "#FFFFFF",
-        "pageBackground": "red gradient",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "",
+                "controlled": true
+            },
+            "value": "red gradient",
+            "_valueTracker": {}
+        },
+        "headingFont": "Sora",
+        "headingFontWeight": "Semi Bold",
+        "headingFontColor": "#1F1E1E",
+        "bodyFont": "Sora",
+        "bodyFontWeight": "Light",
+        "bodyFontColor": "#3B3535",
         "roundness": "8px",
         "shadow": "sm",
         "cardBorder": "thin",
@@ -1149,10 +2863,27 @@
     {
         "name": "Shadow",
         "primaryAccent": "#FFFFFF",
+        "secondaryColors": [
+            "#424242",
+            "#8F8F8F"
+        ],
         "headingColor": "#DDDDDD",
         "bodyColor": "#8F8F8F",
         "cardColor": "#181616",
-        "pageBackground": "gray gradient",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "",
+                "controlled": true
+            },
+            "value": "gray gradient",
+            "_valueTracker": {}
+        },
+        "headingFont": "Mona Sans",
+        "headingFontWeight": "Semi Bold",
+        "headingFontColor": "#DDDDDD",
+        "bodyFont": "Funnel Sans",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#8F8F8F",
         "roundness": "8px",
         "shadow": "none",
         "cardBorder": "thin",
@@ -1167,10 +2898,27 @@
     {
         "name": "Slate",
         "primaryAccent": "#FFBC8F",
+        "secondaryColors": [
+            "#1F1F1E",
+            "#1A1A1A"
+        ],
         "headingColor": "#F3F3F2",
         "bodyColor": "#D4D4D1",
         "cardColor": "#292C32",
-        "pageBackground": "#22242A",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#22242A",
+                "controlled": true
+            },
+            "value": "#22242A",
+            "_valueTracker": {}
+        },
+        "headingFont": "IBM Plex Sans",
+        "headingFontWeight": "Medium",
+        "headingFontColor": "#F3F3F2",
+        "bodyFont": "Roboto",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#D4D4D1",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -1184,10 +2932,28 @@
     {
         "name": "Sprout",
         "primaryAccent": "#006747",
+        "secondaryColors": [
+            "#E5F9F2",
+            "#335E23",
+            "#8CAB18"
+        ],
         "headingColor": "#006747",
         "bodyColor": "#4B4A4A",
         "cardColor": "#E5F9F2",
-        "pageBackground": "light green",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "",
+                "controlled": true
+            },
+            "value": "light green",
+            "_valueTracker": {}
+        },
+        "headingFont": "Noto Serif SC",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#006747",
+        "bodyFont": "Geist",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#4B4A4A",
         "roundness": "12px",
         "shadow": "sm",
         "cardBorder": "none",
@@ -1201,10 +2967,26 @@
     {
         "name": "Wine",
         "primaryAccent": "#FFB393",
+        "secondaryColors": [
+            "#421424"
+        ],
         "headingColor": "#FFB393",
         "bodyColor": "#F4CAB8",
         "cardColor": "#5C2438",
-        "pageBackground": "#421424",
+        "pageBackground": {
+            "_wrapperState": {
+                "initialValue": "#421424",
+                "controlled": true
+            },
+            "value": "#421424",
+            "_valueTracker": {}
+        },
+        "headingFont": "Brygada 1918",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#FFB393",
+        "bodyFont": "Montserrat",
+        "bodyFontWeight": "Medium",
+        "bodyFontColor": "#F4CAB8",
         "roundness": "4px",
         "shadow": "none",
         "cardBorder": "none",
@@ -1213,6 +2995,54 @@
         "blockFillType": "subtle",
         "blockFill": "fill",
         "blockBorder": "none",
+        "blockShadow": "none"
+    },
+    {
+        "name": "Basic Light",
+        "primaryAccent": "#4950BC",
+        "secondaryColors": [],
+        "headingColor": "#000000",
+        "bodyColor": "#272525",
+        "cardColor": "#FFFFFF",
+        "headingFont": "Inter (Gamma default)",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#000000",
+        "bodyFont": "Inter (Gamma default)",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#272525",
+        "roundness": "8px",
+        "shadow": "sm",
+        "cardBorder": "thin",
+        "cardBorderColor": "#E5E0DF",
+        "cardTransparency": 1,
+        "imageShape": "default",
+        "blockFillType": "primary",
+        "blockFill": "fill",
+        "blockBorder": "thin",
+        "blockShadow": "none"
+    },
+    {
+        "name": "Basic Dark",
+        "primaryAccent": "#2B0AFF",
+        "secondaryColors": [],
+        "headingColor": "#FFFFFF",
+        "bodyColor": "#E5E0DF",
+        "cardColor": "#272525",
+        "headingFont": "Inter (Gamma default)",
+        "headingFontWeight": "Bold",
+        "headingFontColor": "#FFFFFF",
+        "bodyFont": "Inter (Gamma default)",
+        "bodyFontWeight": "Regular",
+        "bodyFontColor": "#E5E0DF",
+        "roundness": "8px",
+        "shadow": "sm",
+        "cardBorder": "thin",
+        "cardBorderColor": "#565151",
+        "cardTransparency": 1,
+        "imageShape": "default",
+        "blockFillType": "primary",
+        "blockFill": "fill",
+        "blockBorder": "thin",
         "blockShadow": "none"
     }
 ]

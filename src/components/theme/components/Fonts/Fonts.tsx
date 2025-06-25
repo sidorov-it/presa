@@ -5,19 +5,7 @@ import { Accordion } from '@chakra-ui/react';
 import { CiLineHeight } from 'react-icons/ci';
 import { CgSpaceBetween } from 'react-icons/cg';
 import { FONT_WEIGHTS } from '@/consts';
-
-const FONT_OPTIONS = [
-    { value: 'inter', label: 'Inter' },
-    { value: 'roboto', label: 'Roboto' },
-    { value: 'open sans', label: 'Open Sans' },
-    { value: 'raleway', label: 'Raleway' },
-    { value: 'poppins', label: 'Poppins' },
-    { value: 'montserrat', label: 'Montserrat' },
-    { value: 'pt sans', label: 'PT Sans' },
-    { value: 'lato', label: 'Lato' },
-    { value: 'source sans pro', label: 'Source Sans Pro' },
-    { value: 'nunito', label: 'Nunito' },
-];
+import { FONT_OPTIONS } from '@/utils/fontLoader';
 
 import { Label } from '../../../ui/Label';
 import { Select } from '../../../ui/Select';
@@ -83,7 +71,6 @@ export default function Fonts({
                                                 min={1}
                                                 max={2}
                                                 leftElement={<CiLineHeight />}
-                                                // containerClassName="pl-[2px]"
                                                 onChange={e =>
                                                     handleTypographyChange({
                                                         headingLineHeight: parseFloat(e.target.value),
@@ -96,7 +83,6 @@ export default function Fonts({
                                             <Input
                                                 type="number"
                                                 variant="filled"
-                                                // containerClassName="pr-[2px]"
                                                 value={theme.typography.headingLetterSpacing}
                                                 step={1}
                                                 min={-10}
@@ -163,7 +149,6 @@ export default function Fonts({
                                                 min={1}
                                                 max={2}
                                                 leftElement={<CiLineHeight />}
-                                                // containerClassName="pl-[2px]"
                                                 onChange={e =>
                                                     handleTypographyChange({
                                                         bodyLineHeight: parseFloat(e.target.value),
@@ -176,7 +161,6 @@ export default function Fonts({
                                             <Input
                                                 type="number"
                                                 variant="filled"
-                                                // containerClassName="pr-[2px]"
                                                 value={theme.typography.bodyLetterSpacing}
                                                 step={1}
                                                 min={-10}

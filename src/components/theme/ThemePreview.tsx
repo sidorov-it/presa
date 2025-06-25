@@ -65,7 +65,7 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
                     elements: [
                         {
                             id: 'r7gtjywbt0i',
-                            content: '<p><span class="heading-text heading-1">This is a theme preview</span></p>',
+                            content: '<p><span class="heading-text heading-1">Это предпросмотр темы</span></p>',
                             cellId: 'iy8fln',
                             elementTypeId: ElementType.TEXT,
                         } as EditorElement,

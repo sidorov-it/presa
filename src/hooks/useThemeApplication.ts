@@ -108,12 +108,27 @@ const applyThemeStyles = (
     if (shadow === 'none') {
         container.style.setProperty('--presentation-slide-shadow', 'none');
     } else if (shadow === 'sm') {
-        container.style.setProperty(
-            '--presentation-slide-shadow',
-            '0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)'
-        );
+        const boxShadowColor = theme.design.slide.borderColor;
+
+        if (boxShadowColor) {
+            container.style.setProperty(
+                '--presentation-slide-shadow',
+                `0 10px 15px -3px ${boxShadowColor},0 4px 6px -2px ${boxShadowColor}`
+            );
+        } else {
+            container.style.setProperty(
+                '--presentation-slide-shadow',
+                '0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+            );
+        }
     } else if (shadow === 'md') {
-        container.style.setProperty('--presentation-slide-shadow', 'rgba(0, 0, 0, 0.4) 4px 4px 0px 0px');
+        const boxShadowColor = theme.design.slide.borderColor;
+
+        if (boxShadowColor) {
+            container.style.setProperty('--presentation-slide-shadow', `${boxShadowColor} 4px 4px 0px 0px`);
+        } else {
+            container.style.setProperty('--presentation-slide-shadow', 'rgba(0, 0, 0, 0.4) 4px 4px 0px 0px');
+        }
     }
 
     // Border width
