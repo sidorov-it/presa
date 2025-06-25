@@ -25,6 +25,7 @@ import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
 import ThemeDebugButton from '@/components/debug/ThemeDebugButton';
 import HistoryDebugPopup from '@/components/ui/HistoryDebugPopup';
 import DragDropDebugInfo from '@/components/DragDropDebugInfo';
+import NotFoundPage from '@/components/NotFoundPage/NotFoundPage';
 import { useColorMode } from '@/components/ui/color-mode';
 import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 import { useTokens } from '@/hooks/useTokens';
@@ -258,18 +259,6 @@ export default function PresentationEditorPage() {
         []
     );
 
-    const notFoundUI = useMemo(
-        () => (
-            <div className={styles.notFoundContainer}>
-                <h1 className={styles.notFoundTitle}>Presentation Not Found</h1>
-                <p className={styles.notFoundText}>
-                    The presentation you're looking for doesn't exist or you don't have access to it.
-                </p>
-            </div>
-        ),
-        []
-    );
-
     const renderTabs = useMemo(() => {
         return (
             <>
@@ -349,7 +338,7 @@ export default function PresentationEditorPage() {
     }, [themeTab, themes, defaultThemes, currentTheme, handleThemeChange]);
 
     if (isLoading) return loadingUI;
-    if (notFound || !presentation) return notFoundUI;
+    if (notFound || !presentation) return <NotFoundPage />;
 
     return (
         <>
@@ -472,7 +461,6 @@ export default function PresentationEditorPage() {
                                         isOpen={isUserMenuOpen}
                                         onOpen={() => setIsUserMenuOpen(true)}
                                         onClose={() => setIsUserMenuOpen(false)}
-                                        portalContainer={containerRef.current}
                                         trigger={
                                             <div
                                                 className={styles.userInfo}

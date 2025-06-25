@@ -14,6 +14,7 @@ import screenfull from 'screenfull';
 import { FullscreenIcon } from 'lucide-react';
 import { clearAllThemeStyles } from '@/utils/themeUtils';
 import { Theme } from '@/types/theme';
+import NotFoundPage from '@/components/NotFoundPage/NotFoundPage';
 
 export default function PresentationView() {
     const params = useParams();
@@ -287,17 +288,6 @@ export default function PresentationView() {
         []
     );
 
-    const notFoundUI = useMemo(
-        () => (
-            <div className={styles.notFoundContainer}>
-                <h1 className={styles.notFoundTitle}>Presentation Not Found</h1>
-                <p className={styles.notFoundText}>
-                    The presentation you're looking for doesn't exist or you don't have access to it.
-                </p>
-            </div>
-        ),
-        []
-    );
 
     const handleFullscreen = () => {
         screenfull.request();
@@ -321,7 +311,7 @@ export default function PresentationView() {
     }, [currentSlide]);
 
     if (isLoading) return loadingUI;
-    if (notFound || !presentation) return notFoundUI;
+    if (notFound || !presentation) return <NotFoundPage />;
 
     return (
         <ReadOnlyProvider isReadOnly={true}>
