@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 import { pluralize } from '@/utils/helpers';
 import styles from './page.module.css';
 
-
 interface DeletedPresentation {
     id: string;
     title: string;

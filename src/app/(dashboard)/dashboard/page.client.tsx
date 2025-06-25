@@ -37,7 +37,6 @@ export default function DashboardPage() {
     type SortOption = 'createdAt' | 'updatedAt' | 'title';
     const [sortBy, setSortBy] = useState<SortOption>('updatedAt');
 
-
     // Load themes for previews
     useEffect(() => {
         loadThemes().catch(err => {

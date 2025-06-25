@@ -1696,7 +1696,6 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                                     type: 'string',
                                     description: 'Заголовок изображения',
                                     contextRules: ['Текст без символов для markdown'],
-
                                 },
                                 text: {
                                     type: 'string',

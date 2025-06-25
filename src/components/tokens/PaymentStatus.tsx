@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useYooKassaPayment } from '@/hooks/useYooKassaPayment';
 import { Button } from '@/components/ui/Button';
 
@@ -15,7 +15,7 @@ export const PaymentStatus: React.FC<PaymentStatusProps> = ({ purchaseId, onSucc
     const [status, setStatus] = useState<any>(null);
     const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
 
-    const checkStatus = async () => {
+    const checkStatus = useCallback(async () => {
         try {
             const statusData = await checkPaymentStatus(purchaseId);
             setStatus(statusData);
@@ -44,7 +44,7 @@ export const PaymentStatus: React.FC<PaymentStatusProps> = ({ purchaseId, onSucc
                 onError(err instanceof Error ? err.message : 'Ошибка проверки статуса');
             }
         }
-    };
+    }, [purchaseId, checkPaymentStatus, onSuccess, onError, pollingInterval]);
 
     useEffect(() => {
         // Сразу проверяем статус
@@ -60,7 +60,7 @@ export const PaymentStatus: React.FC<PaymentStatusProps> = ({ purchaseId, onSucc
                 clearInterval(interval);
             }
         };
-    }, [purchaseId]);
+    }, [checkStatus]);
 
     if (loading && !status) {
         return (

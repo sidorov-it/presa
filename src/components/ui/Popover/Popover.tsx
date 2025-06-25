@@ -11,10 +11,9 @@ interface PopoverProps {
     onOpen?: () => void;
     onClose?: () => void;
     className?: string;
-    portalContainer?: HTMLElement | null;
 }
 
-export const Popover = ({ trigger, content, isOpen, onOpen, onClose, className, portalContainer }: PopoverProps) => {
+export const Popover = ({ trigger, content, isOpen, onOpen, onClose, className }: PopoverProps) => {
     const { colorMode } = useColorMode();
     return (
         <ChakraPopover.Root open={isOpen} onOpenChange={e => (e.open ? onOpen?.() : onClose?.())}>

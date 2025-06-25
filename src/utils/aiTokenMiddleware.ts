@@ -35,6 +35,7 @@ export async function withTokenDeduction<T>(
         try {
             requestData = await request.json();
         } catch (parseError) {
+            logger.error(`Error parsing request data: ${String(parseError)}`);
             return NextResponse.json({ error: 'Invalid JSON data' }, { status: 400 });
         }
 
@@ -112,37 +113,37 @@ export const TokenCalculators = {
     },
 
     /**
-     * Calculate tokens for single slide generation
+     * Fixed token cost for single slide generation
      */
-    generateSingleSlide: (requestData: any): number => {
+    generateSingleSlide: (_requestData: any): number => {
         return getTokenCostForOperation('GENERATE_SLIDE');
     },
 
     /**
-     * Calculate tokens for text generation (topics, etc.)
+     * Fixed token cost for text generation
      */
-    generateText: (requestData: any): number => {
+    generateText: (_requestData: any): number => {
         return getTokenCostForOperation('GENERATE_TEXT');
     },
 
     /**
-     * Calculate tokens for content improvement
+     * Fixed token cost for content improvement
      */
-    improveContent: (requestData: any): number => {
+    improveContent: (_requestData: any): number => {
         return getTokenCostForOperation('GENERATE_TEXT');
     },
 
     /**
-     * Calculate tokens for image generation
+     * Fixed token cost for image generation
      */
-    generateImage: (requestData: any): number => {
+    generateImage: (_requestData: any): number => {
         return getTokenCostForOperation('GENERATE_IMAGE');
     },
 
     /**
-     * Calculate tokens for theme generation
+     * Fixed token cost for theme generation
      */
-    generateTheme: (requestData: any): number => {
+    generateTheme: (_requestData: any): number => {
         return getTokenCostForOperation('GENERATE_THEME');
     },
 };

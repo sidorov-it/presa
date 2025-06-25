@@ -9,7 +9,10 @@ jest.mock('@/lib/prisma', () => ({
     prisma: {},
 }));
 
-import { createGenerateSlideContentFunction, createPromptGenerateSlideContent } from '@/services/llm/generateSlideContent';
+import {
+    createGenerateSlideContentFunction,
+    createPromptGenerateSlideContent,
+} from '@/services/llm/generateSlideContent';
 import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
 
 /**
@@ -61,4 +64,4 @@ describe('createPromptGenerateSlideContent', () => {
             });
         });
     });
-}); 
+});

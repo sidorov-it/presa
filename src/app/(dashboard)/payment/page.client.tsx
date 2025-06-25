@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/Button';
 import { Check } from 'lucide-react';
 import styles from './page.module.css';
 
-
 // Sample plan data
 const PLANS = [
     {

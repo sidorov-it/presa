@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import fs from 'fs/promises';
 import fsSync from 'fs';
@@ -131,7 +131,7 @@ async function transformTheme(basicTheme: any) {
     };
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
     try {
         // Transform each theme
         const transformedThemes = await Promise.all(themes.map(transformTheme));

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { TemplateElement } from '@/types/templates';
 import { Slide, TextType } from '@/types';
 import createRewriteSlideMapping from '@/utils/createRewriteSlideMapping';
@@ -28,7 +29,13 @@ export interface SlotKeyMapping {
     content: string;
 }
 
-interface RewriteSlotItem { key: string; type?: string; description?: string; contextRules?: string[]; originalKey?: string; }
+interface RewriteSlotItem {
+    key: string;
+    type?: string;
+    description?: string;
+    contextRules?: string[];
+    originalKey?: string;
+}
 
 function createRewriteSlideContentFunction(slide: Slide) {
     const slotMapping = createRewriteSlideMapping(slide)!;
@@ -40,7 +47,7 @@ function createRewriteSlideContentFunction(slide: Slide) {
             const entryProperties: any = {};
             const required: string[] = [];
 
-            (value.items as RewriteSlotItem[]).forEach(item => {
+            (value.items as unknown as RewriteSlotItem[]).forEach(item => {
                 required.push(item.key);
 
                 entryProperties[item.key] = {
@@ -56,7 +63,10 @@ function createRewriteSlideContentFunction(slide: Slide) {
                 properties: entryProperties,
                 required,
             };
-        } else if (value.textType && [TextType.BULLET_LIST, TextType.NUMERED_LIST, TextType.TODO_LIST].includes(value.textType)) {
+        } else if (
+            value.textType &&
+            [TextType.BULLET_LIST, TextType.NUMERED_LIST, TextType.TODO_LIST].includes(value.textType)
+        ) {
             properties[key] = {
                 type: 'array',
                 description: value.llmHints?.purpose,
@@ -96,24 +106,29 @@ const generateSlotDescription = (slotMapping: Map<string, SlotKeyMapping>): stri
                         return `Слот "${item.key}":
   - Тип: ${item.type}
   - Назначение: ${item.description || 'Не указано'}
-  ${item.contextRules ? `  - Правила:
-${item.contextRules.map(r => `    * ${r}`).join('\n')}` : ''}`;
+  ${
+    item.contextRules
+        ? `  - Правила:
+${item.contextRules.map(r => `    * ${r}`).join('\n')}`
+        : ''
+}`;
                     })
                     .join('\n');
             }
 
             return `Слот "${slot.uniqueKey}":
   - Назначение: ${slot.llmHints?.purpose || 'Не указано'}
-  ${slot.llmHints?.contextRules ? `- Правила:
-${slot.llmHints?.contextRules.map(r => `  * ${r}`).join('\n')}` : ''}`;
+  ${
+    slot.llmHints?.contextRules
+        ? `- Правила:
+${slot.llmHints?.contextRules.map(r => `  * ${r}`).join('\n')}`
+        : ''
+}`;
         })
         .join('\n\n');
 };
 
-const createPromptRewriteSlideContent = (
-    slotMapping: Map<string, SlotKeyMapping>,
-    instructions?: string
-) => {
+const createPromptRewriteSlideContent = (slotMapping: Map<string, SlotKeyMapping>, instructions?: string) => {
     const slotsDescription = generateSlotDescription(slotMapping);
     const currentContent = Array.from(slotMapping.entries())
         .map(([key, value]) => `${key}: ${value.content}`)
@@ -139,11 +154,7 @@ ${currentContent}
 ${instructions ? `Дополнительные инструкции: ${instructions}` : ''}`;
 };
 
-export default async function rewriteSlideContent(
-    userId: string,
-    slide: Slide,
-    instructions?: string
-) {
+export default async function rewriteSlideContent(userId: string, slide: Slide, instructions?: string) {
     try {
         const llmService = createLLMService({ userId });
 

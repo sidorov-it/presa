@@ -27,7 +27,7 @@ export default function ThemesPage() {
     useEffect(() => {
         const allThemes = [...themes, ...defaultThemes];
         const uniqueFontUrls = new Set<string>();
-        
+
         allThemes.forEach(theme => {
             const fontUrls = getRequiredFontsFromTheme(theme);
             fontUrls.forEach(url => uniqueFontUrls.add(url));

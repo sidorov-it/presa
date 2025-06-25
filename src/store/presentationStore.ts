@@ -1316,7 +1316,6 @@ export const usePresentationStore = create<PresentationState>()(
 
                 const beforeState = { ...get() };
 
-
                 // const updatedGridStructure = {
                 //     ...layout.gridStructure,
                 //     columnWidths: getColumnWidths(layout.gridStructure.columns)
@@ -3286,8 +3285,8 @@ export const usePresentationStore = create<PresentationState>()(
                                             ...layout,
                                             elements: layout.elements.map(element => {
                                                 if (element.id === elementId && 'items' in element) {
-                                                    const updatedItems = (element as SmartLayoutElement).items.map(item =>
-                                                        item.id === itemId ? { ...item, imageUrl: '' } : item
+                                                    const updatedItems = (element as SmartLayoutElement).items.map(
+                                                        item => (item.id === itemId ? { ...item, imageUrl: '' } : item)
                                                     );
 
                                                     return { ...element, items: updatedItems } as SmartLayoutElement;
@@ -3439,8 +3438,6 @@ export const usePresentationStore = create<PresentationState>()(
             },
 
             setSlideLayouts: (presentationId: string, slideId: string, layouts: Layout[], title?: string) => {
-                const beforeState = { ...get() };
-
                 const presentation = get().getPresentation(presentationId);
                 if (!presentation) return;
 

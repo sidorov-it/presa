@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/Button';
 import { Plus } from 'lucide-react';
 import { useThemeStore } from '@/store/themeStore';
 
-
 const ThemesPage = () => {
     const [activeTheme, setActiveTheme] = useState<string | null>(null);
     const defaultThemes = useThemeStore(state => state.defaultThemes);

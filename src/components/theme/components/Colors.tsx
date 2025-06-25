@@ -142,7 +142,7 @@ export default function Colors({
             },
         });
         setImageError('');
-    }, [theme.colors.pageBackground]);
+    }, [onColorsChange, theme.colors.pageBackground]);
 
     const handlePrimaryAccentChange = useCallback(
         (color: string) => {

@@ -44,11 +44,11 @@ const PdfExportButton: React.FC<PdfExportButtonProps> = ({
             const link = document.createElement('a');
             link.href = url;
             link.download = `${presentationTitle}.pdf`;
-            
+
             // Trigger download
             document.body.appendChild(link);
             link.click();
-            
+
             // Clean up
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
@@ -60,7 +60,6 @@ const PdfExportButton: React.FC<PdfExportButtonProps> = ({
                 duration: 3000,
                 isClosable: true,
             });
-
         } catch (error) {
             console.error('PDF export error:', error);
             toast({
@@ -76,12 +75,7 @@ const PdfExportButton: React.FC<PdfExportButtonProps> = ({
     };
 
     return (
-        <Button
-            onClick={handleExportToPdf}
-            disabled={isExporting}
-            className={className}
-            type="button"
-        >
+        <Button onClick={handleExportToPdf} disabled={isExporting} className={className} type="button">
             {isExporting ? 'Exporting...' : 'Export PDF'}
         </Button>
     );

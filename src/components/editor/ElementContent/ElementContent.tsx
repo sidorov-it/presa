@@ -548,6 +548,7 @@ export const ElementContent = ({
             layoutId,
             isReadOnly,
             hasMultipleCells,
+            slideBackground,
         ]
     );
 

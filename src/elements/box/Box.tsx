@@ -14,14 +14,7 @@ interface BoxProps {
     dragHandleRef?: RefObject<HTMLDivElement>;
 }
 
-export default function Box({
-    elementId,
-    presentationId,
-    slideId,
-    layoutId,
-    tiptapRefs,
-    dragHandleRef,
-}: BoxProps) {
+export default function Box({ elementId, presentationId, slideId, layoutId, tiptapRefs, dragHandleRef }: BoxProps) {
     const element = usePresentationStore(
         useShallow(state => state.getElement(presentationId, slideId, layoutId, elementId) as BoxElement)
     );

@@ -136,12 +136,12 @@ const AIEditButton: React.FC<AIEditButtonProps> = ({
         handleAiAction('/api/ai/improve', 'Текст успешно улучшен', 'Не удалось улучшить текст');
     const handleSpellCheck = () =>
         handleAiAction('/api/ai/spell', 'Орфография исправлена', 'Не удалось исправить орфографию');
-    const handleTranslate = () => handleAiAction('/api/ai/translate', 'Текст переведен', 'Не удалось перевести текст');
+    // const handleTranslate = () => handleAiAction('/api/ai/translate', 'Текст переведен', 'Не удалось перевести текст');
     const handleExpand = () => handleAiAction('/api/ai/expand', 'Текст расширен', 'Не удалось расширить текст');
     const handleShorten = () => handleAiAction('/api/ai/shorten', 'Текст сокращен', 'Не удалось сократить текст');
     const handleSimplify = () => handleAiAction('/api/ai/simplify', 'Текст упрощен', 'Не удалось упростить текст');
-    const handleAddDetails = () =>
-        handleAiAction('/api/ai/add-details', 'Добавлены подробности', 'Не удалось добавить подробности');
+    // const handleAddDetails = () =>
+    //     handleAiAction('/api/ai/add-details', 'Добавлены подробности', 'Не удалось добавить подробности');
 
     const buttonStyle: React.CSSProperties = {
         border: '1px solid #666',

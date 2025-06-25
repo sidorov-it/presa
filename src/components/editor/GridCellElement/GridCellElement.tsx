@@ -505,7 +505,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             for (let i = 0; i < elementPositions.length; i++) {
                 const pos = elementPositions[i];
                 if (pos.bottom > clickY) {
-                    console.log('set nextElement', pos);
                     nextElement = pos;
                     prevElement = elementPositions[i - 1] || null;
                     break;
@@ -515,8 +514,6 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 }
             }
 
-            console.log('prevElement', prevElement);
-            console.log('nextElement', nextElement);
             // Check if either of the adjacent elements is a text editor
             const prevIsEditor = prevElement?.element?.elementTypeId === ElementType.TEXT;
             const nextIsEditor = nextElement?.element?.elementTypeId === ElementType.TEXT;
@@ -548,7 +545,10 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                     return;
                 }
             }
-            const newElement = getNewEditorElement('', { tempEditor: true });
+            const newElement = {
+                ...getNewEditorElement('', { tempEditor: true }),
+                cellId: cell.id,
+            };
 
             // If no text editor found, create a temporary one
             const layout = usePresentationStore.getState().getLayout(presentationId, slideId, layoutId);

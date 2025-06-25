@@ -1,7 +1,5 @@
 import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { createLLMService } from '@/services/llm';
 import { MetadataExtractors, TokenCalculators, withTokenDeduction } from '@/utils/aiTokenMiddleware';
 
@@ -56,7 +54,10 @@ export async function POST(request: NextRequest) {
                 const llmService = createLLMService({ userId: session.user.id });
 
                 if (!llmService.generateImage) {
-                    return NextResponse.json({ error: 'Selected LLM does not support image generation' }, { status: 400 });
+                    return NextResponse.json(
+                        { error: 'Selected LLM does not support image generation' },
+                        { status: 400 }
+                    );
                 }
 
                 // Generate images

@@ -87,7 +87,7 @@ const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ presentationId, slideId, lay
                 backgroundColor: defaultBackgroundColor,
             },
         });
-    }, []);
+    }, [elementConfig, presentationId, slideId, layoutId, elementId, updateElement]);
 
     const handleBackgroundColorChange = (color: string) => {
         updateElement({

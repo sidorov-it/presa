@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 'use client';
-import React, { useRef } from 'react';
+import React from 'react';
 import { ImageElement } from '@/types';
 import { default as NextImage } from 'next/image';
 

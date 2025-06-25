@@ -39,4 +39,4 @@ describe('markdownToHtml', () => {
         const html = markdownToHtml(md);
         expect(html).toContain('<blockquote>A famous quote</blockquote>');
     });
-}); 
+});

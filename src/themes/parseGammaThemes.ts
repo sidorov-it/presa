@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const fs = require('fs/promises');
 const fsSync = require('fs');
 const path = require('path');
 const https = require('https');
 const { v4: uuidv4 } = require('uuid');
-const { IncomingMessage } = require('http');
+import { IncomingMessage } from 'http';
 
 // Since we can't import types in CommonJS, we'll define them inline
 type ThemeDesignShadow = 'none' | 'sm' | 'md';
@@ -113,25 +114,27 @@ async function downloadImage(url: string): Promise<string> {
     await fs.mkdir(UPLOAD_DIR, { recursive: true });
 
     return new Promise((resolve, reject) => {
-        https.get(url, (response: typeof IncomingMessage) => {
-            if (response.statusCode !== 200) {
-                reject(new Error(`Failed to download image: ${response.statusCode}`));
-                return;
-            }
+        https
+            .get(url, (response: typeof IncomingMessage) => {
+                if (response.statusCode !== 200) {
+                    reject(new Error(`Failed to download image: ${response.statusCode}`));
+                    return;
+                }
 
-            const fileStream = fsSync.createWriteStream(filePath);
-            response.pipe(fileStream);
+                const fileStream = fsSync.createWriteStream(filePath);
+                response.pipe(fileStream);
 
-            fileStream.on('finish', () => {
-                resolve(`/uploads/${filename}`);
-            });
+                fileStream.on('finish', () => {
+                    resolve(`/uploads/${filename}`);
+                });
 
-            fileStream.on('error', (error: Error) => {
+                fileStream.on('error', (error: Error) => {
+                    reject(error);
+                });
+            })
+            .on('error', (error: Error) => {
                 reject(error);
             });
-        }).on('error', (error: Error) => {
-            reject(error);
-        });
     });
 }
 
@@ -224,4 +227,4 @@ async function main() {
     }
 }
 
-main(); 
+main();

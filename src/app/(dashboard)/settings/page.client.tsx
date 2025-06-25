@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
 import styles from './page.module.css';
 
-
 const SettingsPage = () => {
     const { data: session, update } = useSession();
     const [name, setName] = useState('');

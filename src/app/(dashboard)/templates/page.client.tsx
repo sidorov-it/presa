@@ -9,7 +9,6 @@ import { PresentationTemplates, PresentationTemplateKeys } from '@/presentationT
 import styles from './page.module.css';
 import { useThemeStore } from '@/store/themeStore';
 
-
 import FullPageLoader from '@/components/FullPageLoader/FullPageLoader';
 
 const TEMPLATE_KEYS = Object.keys(PresentationTemplates) as PresentationTemplateKeys[];

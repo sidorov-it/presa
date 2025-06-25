@@ -55,7 +55,6 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
     //     [editor]
     // );
 
-
     const handleHeadingChange = useCallback(
         (level: number) => {
             // Применяем размер только к текущему выделению
