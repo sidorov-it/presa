@@ -98,18 +98,35 @@ export const getBlockColors = (
     const slideColor = tinycolor(slideBgColor);
     const isDarkTheme = slideColor.isDark();
 
+    // If custom background color is provided, recalculate colors based on it
+    if (options?.blockBgColor) {
+        const customBgColor = tinycolor(options.blockBgColor);
+        const isCustomBgDark = customBgColor.isDark();
+
+        // Calculate text color based on background darkness
+        const textColor = isCustomBgDark ? 'white' : 'black';
+
+        // If icon color is provided, use it, otherwise generate based on background
+        let iconColor: string;
+        if (options.iconColor) {
+            iconColor = options.iconColor;
+        } else {
+            // Get color scheme from block type
+            const colorScheme = BLOCK_TYPE_TO_COLOR_SCHEME[blockType] || 'gray';
+            const colorKey = colorScheme as keyof typeof ICON_COLORS.light;
+            iconColor = isCustomBgDark ? ICON_COLORS.dark[colorKey]?.hex : ICON_COLORS.light[colorKey]?.hex;
+        }
+
+        return {
+            blockBgColor: options.blockBgColor,
+            iconColor: iconColor || '#7A7A7A', // fallback color
+            textColor: options.textColor || textColor,
+        };
+    }
+
     // Get color scheme from block type or use accent if accentColor is provided
     const colorScheme = options?.accentColor ? 'accent' : BLOCK_TYPE_TO_COLOR_SCHEME[blockType] || 'gray';
     const accentColor = options?.accentColor || '#FFD300'; // Default accent color
-
-    // If custom colors are provided in options, use them directly
-    if (options?.blockBgColor && options?.iconColor) {
-        return {
-            blockBgColor: options.blockBgColor,
-            iconColor: options.iconColor,
-            textColor: options.textColor || (isDarkTheme ? 'white' : 'black'),
-        };
-    }
 
     // 1. Calculate background color
     const baseBackgroundColor = (() => {
