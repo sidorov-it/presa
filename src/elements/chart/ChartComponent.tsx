@@ -112,7 +112,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
             ),
         [slideBackground, theme?.colors.primaryAccent, theme?.colors.slideBackground]
     );
-    const axisColors = useMemo(
+    const { axisLineColor, tickColor } = useMemo(
         () =>
             getChartAxisColors(
                 slideBackground || theme?.colors.slideBackground || '#ffffff',
@@ -454,16 +454,8 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
                     <ResponsiveContainer width="100%" height={chartHeight}>
                         <BarChart data={data}>
                             <CartesianGrid strokeDasharray="3 3" />
-                            {showLabels && (
-                                <XAxis
-                                    dataKey="name"
-                                    stroke={axisColors.axisLineColor}
-                                    tick={{ fill: axisColors.tickColor }}
-                                />
-                            )}
-                            {showLabels && (
-                                <YAxis stroke={axisColors.axisLineColor} tick={{ fill: axisColors.tickColor }} />
-                            )}
+                            {showLabels && <XAxis dataKey="name" stroke={axisLineColor} tick={{ fill: tickColor }} />}
+                            {showLabels && <YAxis stroke={axisLineColor} tick={{ fill: tickColor }} />}
                             {showValues && <Tooltip />}
                             <Legend
                                 layout={legendProps.layout}
@@ -489,18 +481,13 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
                         <BarChart data={data} layout="vertical" margin={{ top: 5, right: 45, bottom: 5, left: 40 }}>
                             <CartesianGrid strokeDasharray="3 3" />
 
-                            <XAxis
-                                type="number"
-                                hide={!showLabels}
-                                stroke={axisColors.axisLineColor}
-                                tick={{ fill: axisColors.tickColor }}
-                            />
+                            <XAxis type="number" hide={!showLabels} stroke={axisLineColor} tick={{ fill: tickColor }} />
                             <YAxis
                                 dataKey="name"
                                 type="category"
                                 hide={!showLabels}
-                                stroke={axisColors.axisLineColor}
-                                tick={{ fill: axisColors.tickColor }}
+                                stroke={axisLineColor}
+                                tick={{ fill: tickColor }}
                             />
 
                             {showValues && <Tooltip />}
@@ -532,16 +519,8 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
                     <ResponsiveContainer width="100%" height={chartHeight}>
                         <LineChart data={[{ name: '' }, ...data, { name: '' }]}>
                             <CartesianGrid strokeDasharray="3 3" />
-                            {showLabels && (
-                                <XAxis
-                                    dataKey="name"
-                                    stroke={axisColors.axisLineColor}
-                                    tick={{ fill: axisColors.tickColor }}
-                                />
-                            )}
-                            {showLabels && (
-                                <YAxis stroke={axisColors.axisLineColor} tick={{ fill: axisColors.tickColor }} />
-                            )}
+                            {showLabels && <XAxis dataKey="name" stroke={axisLineColor} tick={{ fill: tickColor }} />}
+                            {showLabels && <YAxis stroke={axisLineColor} tick={{ fill: tickColor }} />}
                             {showValues && <Tooltip />}
                             <Legend
                                 layout={legendProps.layout}
@@ -654,8 +633,8 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
         showLabels,
         showValues,
         data,
-        axisColors.axisLineColor,
-        axisColors.tickColor,
+        axisLineColor,
+        tickColor,
         chartColors,
     ]);
 

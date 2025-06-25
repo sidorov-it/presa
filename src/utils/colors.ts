@@ -183,17 +183,18 @@ export const getChartColors = (slideBgColor: string, accentColor: string, count 
 
 /**
  * Calculates accessible colors for chart axes based on slide background and accent color.
- * Returns colors for axis lines and tick labels.
+ * Returns colors for axis lines, tick labels and text.
  */
 export const getChartAxisColors = (
     slideBgColor: string,
     accentColor: string
-): { axisLineColor: string; tickColor: string } => {
+): { axisLineColor: string; tickColor: string; textColor: string } => {
     const isDark = tinycolor(slideBgColor).isDark();
     const base = tinycolor(accentColor);
 
     const axisLineColor = isDark ? base.lighten(20).toHexString() : base.darken(20).toHexString();
     const tickColor = isDark ? base.lighten(40).toHexString() : base.darken(40).toHexString();
+    const textColor = isDark ? '#FFFFFF' : '#000000';
 
-    return { axisLineColor, tickColor };
+    return { axisLineColor, tickColor, textColor };
 };
