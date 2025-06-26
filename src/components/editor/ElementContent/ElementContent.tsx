@@ -581,7 +581,7 @@ export const ElementContent = ({
                             dataAttributes={{
                                 'data-element-drag-handle': elementId,
                             }}
-                            ariaLabel="Drag this element"
+                            ariaLabel="Перетащить этот элемент"
                             handleClick={handleClickElementDragHandle(elementId, elementConfig)}
                             handleKeyDown={handleKeyDownElementDragHandle(elementId, elementConfig)}
                             handleDragStart={handleDragStartElementDragHandle(elementId)}

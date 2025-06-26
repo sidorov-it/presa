@@ -25,21 +25,21 @@ const QuoteBubbleMenu: React.FC<BubbleMenuProps> = ({ editor }) => {
             <button
                 onClick={handleToggleQuote}
                 className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('blockquote') ? 'bg-gray-200' : ''}`}
-                aria-label="Quote"
+                aria-label="Цитата"
             >
                 Цитата
             </button>
             <button
                 onClick={handleBold}
                 className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('bold') ? 'bg-gray-200' : ''}`}
-                aria-label="Bold"
+                aria-label="Жирный"
             >
                 Жирный
             </button>
             <button
                 onClick={handleItalic}
                 className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('italic') ? 'bg-gray-200' : ''}`}
-                aria-label="Italic"
+                aria-label="Курсив"
             >
                 Курсив
             </button>

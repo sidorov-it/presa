@@ -266,7 +266,7 @@ const HistoryDebugPopup = () => {
                 onClick={handleToggle}
                 onKeyDown={handleKeyDown}
                 className={styles.toggleButton}
-                aria-label="Toggle history debug popup"
+                aria-label="Показать окно отладки истории"
                 tabIndex={0}
             >
                 <FaHistory />
@@ -298,14 +298,14 @@ const HistoryDebugPopup = () => {
                         <button
                             onClick={() => setActiveTab('past')}
                             className={`${styles.tabButton} ${activeTab === 'past' ? styles.tabButtonActive : styles.tabButtonInactive}`}
-                            aria-label="Show undo history"
+                            aria-label="Показать историю отмен"
                         >
                             Undo Stack
                         </button>
                         <button
                             onClick={() => setActiveTab('future')}
                             className={`${styles.tabButton} ${activeTab === 'future' ? styles.tabButtonActive : styles.tabButtonInactive}`}
-                            aria-label="Show redo history"
+                            aria-label="Показать историю повторов"
                         >
                             Redo Stack
                         </button>

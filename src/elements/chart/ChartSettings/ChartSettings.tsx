@@ -151,7 +151,7 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                         type="button"
                         className={`${styles.button} ${element.elementVariant === 'bar' ? styles.buttonActive : ''}`}
                         onClick={() => handleChangeChartType('bar')}
-                        aria-label="Bar chart"
+                        aria-label="Гистограмма"
                         tabIndex={0}
                     >
                         <FaChartBar className={styles.icon} />
@@ -161,7 +161,7 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                         type="button"
                         className={`${styles.button} ${element.elementVariant === 'column' ? styles.buttonActive : ''}`}
                         onClick={() => handleChangeChartType('column')}
-                        aria-label="Column chart"
+                        aria-label="Столбчатая диаграмма"
                         tabIndex={0}
                     >
                         <FaChartColumn className={styles.icon} />
@@ -171,7 +171,7 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                         type="button"
                         className={`${styles.button} ${element.elementVariant === 'line' ? styles.buttonActive : ''}`}
                         onClick={() => handleChangeChartType('line')}
-                        aria-label="Line chart"
+                        aria-label="Линейная диаграмма"
                         tabIndex={0}
                     >
                         <FaChartLine className={styles.icon} />
@@ -180,7 +180,7 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                         type="button"
                         className={`${styles.button} ${element.elementVariant === 'pie' ? styles.buttonActive : ''}`}
                         onClick={() => handleChangeChartType('pie')}
-                        aria-label="Pie chart"
+                        aria-label="Круговая диаграмма"
                         tabIndex={0}
                     >
                         <FaChartPie className={styles.icon} />
@@ -189,7 +189,7 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
                         type="button"
                         className={`${styles.button} ${element.elementVariant === 'donut' ? styles.buttonActive : ''}`}
                         onClick={() => handleChangeChartType('donut')}
-                        aria-label="Donut chart"
+                        aria-label="Кольцевая диаграмма"
                         tabIndex={0}
                     >
                         <PiChartDonutFill className={styles.icon} />

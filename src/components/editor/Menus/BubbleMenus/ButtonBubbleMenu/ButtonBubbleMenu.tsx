@@ -21,14 +21,14 @@ const ButtonBubbleMenu: React.FC<BubbleMenuProps> = ({ editor }) => {
             <button
                 onClick={handleBold}
                 className={`${styles.buttonBubbleMenuButton} ${editor.isActive('bold') ? styles.activeButton : ''}`}
-                aria-label="Bold"
+                aria-label="Жирный"
             >
                 Жирный
             </button>
             <button
                 onClick={handleItalic}
                 className={`${styles.buttonBubbleMenuButton} ${editor.isActive('italic') ? styles.activeButton : ''}`}
-                aria-label="Italic"
+                aria-label="Курсив"
             >
                 Курсив
             </button>

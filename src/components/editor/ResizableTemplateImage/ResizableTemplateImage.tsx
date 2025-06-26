@@ -401,7 +401,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                 ref={imageRef}
                 className={`${styles.templateImage} ${styles[templateType]} ${imageMaskClass}`}
                 style={imageStyle}
-                aria-label={`Resizable ${templateType} image template`}
+                aria-label={`Изменяемый шаблон изображения ${templateType}`}
                 role="region"
             >
                 {imageUrl && (
@@ -453,7 +453,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                     onKeyDown={e => handleKeyDown(e, 'horizontal')}
                     tabIndex={0}
                     role="slider"
-                    aria-label="Resize image width"
+                    aria-label="Изменить ширину изображения"
                     aria-valuemin={MIN_SIZE}
                     aria-valuemax={MAX_SIZE}
                     aria-valuenow={parseInt(currentSize.width?.toString() || '20')}
@@ -468,7 +468,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                     onKeyDown={e => handleKeyDown(e, 'horizontal')}
                     tabIndex={0}
                     role="slider"
-                    aria-label="Resize image width"
+                    aria-label="Изменить ширину изображения"
                     aria-valuemin={MIN_SIZE}
                     aria-valuemax={MAX_SIZE}
                     aria-valuenow={parseInt(currentSize.width?.toString() || '20')}
@@ -483,7 +483,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                     onKeyDown={e => handleKeyDown(e, 'vertical')}
                     tabIndex={0}
                     role="slider"
-                    aria-label="Resize image height"
+                    aria-label="Изменить высоту изображения"
                     aria-valuemin={50}
                     aria-valuemax={800}
                     aria-valuenow={parseInt(currentSize.height?.toString() || `${DEFAULT_HEIGHT_PX}`)}
@@ -498,7 +498,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                     onKeyDown={e => handleKeyDown(e, 'vertical')}
                     tabIndex={0}
                     role="slider"
-                    aria-label="Resize image height"
+                    aria-label="Изменить высоту изображения"
                     aria-valuemin={50}
                     aria-valuemax={800}
                     aria-valuenow={parseInt(currentSize.height?.toString() || `${DEFAULT_HEIGHT_PX}`)}

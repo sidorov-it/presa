@@ -63,23 +63,23 @@ export default function LayoutMenu({ position, layoutId }: LayoutMenuProps) {
             />
             <MenuItem
                 icon={<AlignTopIcon />}
-                label="Align top"
+                label="Выровнять по верхнему краю"
                 onClick={handleAlignTop}
                 active={commonAlignment === 'top'}
             />
             <MenuItem
                 icon={<AlignCenterIcon />}
-                label="Align center"
+                label="Выровнять по центру"
                 onClick={handleAlignCenter}
                 active={commonAlignment === 'center'}
             />
             <MenuItem
                 icon={<AlignBottomIcon />}
-                label="Align bottom"
+                label="Выровнять по нижнему краю"
                 onClick={handleAlignBottom}
                 active={commonAlignment === 'bottom'}
             />
-            <MenuItem icon={<DeleteIcon />} label="Delete layout" onClick={handleDeleteLayout} color="#f00" />
+            <MenuItem icon={<DeleteIcon />} label="Удалить макет" onClick={handleDeleteLayout} color="#f00" />
         </BaseMenu>
     );
 }

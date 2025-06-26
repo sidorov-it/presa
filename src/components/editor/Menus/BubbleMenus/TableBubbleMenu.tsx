@@ -37,34 +37,34 @@ const TableBubbleMenu: React.FC<BubbleMenuProps> = ({ editor }) => {
             <button
                 onClick={handleAddColumnBefore}
                 className="p-1 hover:bg-gray-100 rounded"
-                aria-label="Add column before"
+                aria-label="Добавить столбец до"
             >
                 Добавить столбец до
             </button>
             <button
                 onClick={handleAddColumnAfter}
                 className="p-1 hover:bg-gray-100 rounded"
-                aria-label="Add column after"
+                aria-label="Добавить столбец после"
             >
                 Добавить столбец после
             </button>
-            <button onClick={handleAddRowBefore} className="p-1 hover:bg-gray-100 rounded" aria-label="Add row before">
+            <button onClick={handleAddRowBefore} className="p-1 hover:bg-gray-100 rounded" aria-label="Добавить строку до">
                 Добавить строку до
             </button>
-            <button onClick={handleAddRowAfter} className="p-1 hover:bg-gray-100 rounded" aria-label="Add row after">
+            <button onClick={handleAddRowAfter} className="p-1 hover:bg-gray-100 rounded" aria-label="Добавить строку после">
                 Добавить строку после
             </button>
             <button
                 onClick={handleDeleteColumn}
                 className="p-1 hover:bg-gray-100 rounded text-red-500"
-                aria-label="Delete column"
+                aria-label="Удалить столбец"
             >
                 Удалить столбец
             </button>
             <button
                 onClick={handleDeleteRow}
                 className="p-1 hover:bg-gray-100 rounded text-red-500"
-                aria-label="Delete row"
+                aria-label="Удалить строку"
             >
                 Удалить строку
             </button>

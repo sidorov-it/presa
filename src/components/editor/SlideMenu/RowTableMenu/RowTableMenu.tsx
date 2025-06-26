@@ -240,18 +240,18 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, presentation
             />
             <ColorPicker onColorChange={handleColorChange} className={bubbleStyles.button} />
 
-            <MenuItem icon={<BiBold />} label="Bold" onClick={handleToggleBold} active={isBoldActive} />
-            <MenuItem icon={<BiItalic />} label="Italic" onClick={handleToggleItalic} active={isItalicActive} />
+            <MenuItem icon={<BiBold />} label="Жирный" onClick={handleToggleBold} active={isBoldActive} />
+            <MenuItem icon={<BiItalic />} label="Курсив" onClick={handleToggleItalic} active={isItalicActive} />
             <MenuItem
                 icon={<BiUnderline />}
-                label="Underline"
+                label="Подчеркнутый"
                 onClick={handleToggleUnderline}
                 active={isUnderlineActive}
             />
-            <MenuItem icon={<BiX />} label="Clear formatting" onClick={handleClearStyles} />
-            <MenuItem icon={<BiArrowToTop />} label="Add row above" onClick={handleAddRowAbove} />
-            <MenuItem icon={<BiArrowToBottom />} label="Add row below" onClick={handleAddRowBelow} />
-            <MenuItem icon={<DeleteIcon />} label="Delete row" onClick={handleDeleteRow} color="#f00" />
+            <MenuItem icon={<BiX />} label="Очистить форматирование" onClick={handleClearStyles} />
+            <MenuItem icon={<BiArrowToTop />} label="Добавить строку выше" onClick={handleAddRowAbove} />
+            <MenuItem icon={<BiArrowToBottom />} label="Добавить строку ниже" onClick={handleAddRowBelow} />
+            <MenuItem icon={<DeleteIcon />} label="Удалить строку" onClick={handleDeleteRow} color="#f00" />
         </>
     );
 };

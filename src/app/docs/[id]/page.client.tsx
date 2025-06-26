@@ -50,7 +50,7 @@ const ThemeVariant = ({
             className={cn(styles.themeOption, currentTheme?.id === theme.id && styles.themeOptionSelected)}
             onClick={() => handleThemeChange(theme)}
             role="button"
-            aria-label={`Select theme ${theme.name}`}
+            aria-label={`Выбрать тему ${theme.name}`}
             onKeyDown={e => e.key === 'Enter' && handleThemeChange(theme)}
         >
             <div
@@ -306,7 +306,7 @@ export default function PresentationEditorPage() {
                                     //     )}
                                     //     onClick={() => handleThemeChange(theme)}
                                     //     role="button"
-                                    //     aria-label={`Select theme ${theme.name}`}
+//     aria-label={`Выбрать тему ${theme.name}`}
                                     //     onKeyDown={e => e.key === 'Enter' && handleThemeChange(theme)}
                                     // >
                                     //     <div
@@ -379,7 +379,7 @@ export default function PresentationEditorPage() {
                                             <div
                                                 className={styles.themeButton}
                                                 role="button"
-                                                aria-label="Open theme selector"
+                                                aria-label="Открыть выбор темы"
                                                 onClick={() => setIsThemePopoverOpen(!isThemePopoverOpen)}
                                                 onKeyDown={e =>
                                                     e.key === 'Enter' && setIsThemePopoverOpen(!isThemePopoverOpen)
@@ -400,7 +400,7 @@ export default function PresentationEditorPage() {
                                                     )}
                                                     onClick={handleSetDefaultTheme}
                                                     role="button"
-                                                    aria-label="Set default theme"
+                                                    aria-label="Установить стандартную тему"
                                                     onKeyDown={e => e.key === 'Enter' && handleSetDefaultTheme()}
                                                 >
                                                     <div
@@ -433,7 +433,7 @@ export default function PresentationEditorPage() {
                                         <button
                                             onClick={handleViewPresentation}
                                             className={styles.viewButton}
-                                            aria-label="View presentation"
+                                            aria-label="Просмотреть презентацию"
                                         >
                                             <FaEye className={styles.viewIcon} aria-hidden="true" />
                                         </button>
@@ -449,7 +449,7 @@ export default function PresentationEditorPage() {
                                         <button
                                             onClick={handleDownloadPresentation}
                                             className={styles.downloadButton}
-                                            aria-label="Download presentation"
+                                            aria-label="Скачать презентацию"
                                             disabled={isDownloading}
                                         >
                                             <FaDownload className={styles.downloadIcon} aria-hidden="true" />
@@ -477,7 +477,7 @@ export default function PresentationEditorPage() {
                                             <div
                                                 className={styles.userInfo}
                                                 role="button"
-                                                aria-label="Open user menu"
+                                                aria-label="Открыть меню пользователя"
                                                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                                                 onKeyDown={e => e.key === 'Enter' && setIsUserMenuOpen(!isUserMenuOpen)}
                                             >

@@ -73,8 +73,8 @@ const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, cla
                 className={styles.undoButton}
                 onClick={handleUndo}
                 disabled={!hasUndo}
-                aria-label="Undo"
-                title="Undo (Ctrl+Z)"
+                aria-label="Отменить"
+                title="Отменить (Ctrl+Z)"
                 tabIndex={0}
             >
                 <div className={styles.icon}>
@@ -108,8 +108,8 @@ const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, cla
                 className={styles.redoButton}
                 onClick={handleRedo}
                 disabled={!hasRedo}
-                aria-label="Redo"
-                title="Redo (Ctrl+Y)"
+                aria-label="Повторить"
+                title="Повторить (Ctrl+Y)"
                 tabIndex={0}
             >
                 <div className={styles.icon}>
