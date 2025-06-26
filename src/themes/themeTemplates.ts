@@ -2,9 +2,35 @@ import { Theme, ThemeData } from '../types/theme';
 import { createNewTheme } from '../constants/defaultTheme';
 import { convertBasicThemeToFull } from '@/utils/themeConverter';
 
-const createTheme = (id: string, data: ThemeData): Omit<Theme, 'id'> => {
-    const theme = createNewTheme({ ...data, name: 'Новая тема' });
-    return theme;
+const createTheme = (data: ThemeData): Omit<Theme, 'id'> => {
+    const base = createNewTheme();
+
+    return {
+        ...base,
+        ...data,
+        colors: {
+            ...base.colors,
+            ...data.colors,
+        },
+        typography: {
+            ...base.typography,
+            ...data.typography,
+        },
+        design: {
+            slide: {
+                ...base.design.slide,
+                ...data.design.slide,
+            },
+            blocks: {
+                ...base.design.blocks,
+                ...data.design.blocks,
+            },
+            buttons: {
+                ...base.design.buttons,
+                ...data.design.buttons,
+            },
+        },
+    };
 };
 
 console.log(
@@ -31,11 +57,12 @@ console.log(
     )
 );
 export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
-    createTheme('atacama', {
+    createTheme({
         name: 'Atacama Desert',
         description: 'Warm desert tones with earthy colors',
         colors: {
             primaryAccent: '#E65100',
+            primaryAccentTextColor: '#FFFFFF',
             slideBackground: '#FFF3E0',
             pageBackground: {
                 type: 'color',
@@ -81,11 +108,12 @@ export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
             },
         },
     }),
-    createTheme('ocean-breeze', {
+    createTheme({
         name: 'Ocean Breeze',
         description: 'Cool blues inspired by the sea',
         colors: {
             primaryAccent: '#0288D1',
+            primaryAccentTextColor: '#FFFFFF',
             slideBackground: '#E1F5FE',
             pageBackground: {
                 type: 'color',
@@ -110,14 +138,14 @@ export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
         design: {
             slide: {
                 borderRadius: '8px',
-                borderColor: '#E65100',
+                borderColor: '#0288D1',
                 shadow: 'sm',
                 borderWidth: 'thin',
                 imageShape: 'round',
                 opacity: 0.9,
             },
             blocks: {
-                backgroundColor: '#E65100',
+                backgroundColor: '#0288D1',
                 backgroundBlockFillType: 'fill',
                 borderWidth: 'thin',
                 shadow: 'sm',
@@ -125,17 +153,18 @@ export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
                 blockBackgroundCustomColors: [],
             },
             buttons: {
-                buttonColor: '#E65100',
+                buttonColor: '#0288D1',
                 buttonShape: 'default',
-                linkColor: '#E65100',
+                linkColor: '#0288D1',
             },
         },
     }),
-    createTheme('forest-whisper', {
+    createTheme({
         name: 'Forest Whisper',
         description: 'Soft greens of a peaceful forest',
         colors: {
             primaryAccent: '#2E7D32',
+            primaryAccentTextColor: '#FFFFFF',
             slideBackground: '#E8F5E9',
             pageBackground: {
                 type: 'color',
@@ -160,14 +189,14 @@ export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
         design: {
             slide: {
                 borderRadius: '8px',
-                borderColor: '#E65100',
+                borderColor: '#2E7D32',
                 shadow: 'sm',
                 borderWidth: 'thin',
                 imageShape: 'round',
                 opacity: 0.9,
             },
             blocks: {
-                backgroundColor: '#E65100',
+                backgroundColor: '#2E7D32',
                 backgroundBlockFillType: 'fill',
                 borderWidth: 'thin',
                 shadow: 'sm',
@@ -175,17 +204,18 @@ export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
                 blockBackgroundCustomColors: [],
             },
             buttons: {
-                buttonColor: '#E65100',
+                buttonColor: '#2E7D32',
                 buttonShape: 'default',
-                linkColor: '#E65100',
+                linkColor: '#2E7D32',
             },
         },
     }),
-    createTheme('sunset-glow', {
+    createTheme({
         name: 'Sunset Glow',
         description: 'Vibrant oranges and reds of sunset',
         colors: {
             primaryAccent: '#D84315',
+            primaryAccentTextColor: '#FFFFFF',
             slideBackground: '#FBE9E7',
             pageBackground: {
                 type: 'color',
@@ -210,14 +240,14 @@ export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
         design: {
             slide: {
                 borderRadius: '8px',
-                borderColor: '#E65100',
+                borderColor: '#D84315',
                 shadow: 'sm',
                 borderWidth: 'thin',
                 imageShape: 'round',
                 opacity: 0.9,
             },
             blocks: {
-                backgroundColor: '#E65100',
+                backgroundColor: '#D84315',
                 backgroundBlockFillType: 'fill',
                 borderWidth: 'thin',
                 shadow: 'sm',
@@ -225,17 +255,18 @@ export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
                 blockBackgroundCustomColors: [],
             },
             buttons: {
-                buttonColor: '#E65100',
+                buttonColor: '#D84315',
                 buttonShape: 'default',
-                linkColor: '#E65100',
+                linkColor: '#D84315',
             },
         },
     }),
-    createTheme('minimal-light', {
+    createTheme({
         name: 'Minimal Light',
         description: 'Clean light theme with blue accents',
         colors: {
             primaryAccent: '#3B82F6',
+            primaryAccentTextColor: '#FFFFFF',
             slideBackground: '#FFFFFF',
             pageBackground: {
                 type: 'color',
@@ -267,7 +298,7 @@ export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
                 opacity: 1,
             },
             blocks: {
-                backgroundColor: '#E65100',
+                backgroundColor: '#3B82F6',
                 backgroundBlockFillType: 'fill',
                 borderWidth: 'thin',
                 shadow: 'sm',
@@ -275,17 +306,18 @@ export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
                 blockBackgroundCustomColors: [],
             },
             buttons: {
-                buttonColor: '#E65100',
+                buttonColor: '#3B82F6',
                 buttonShape: 'default',
-                linkColor: '#E65100',
+                linkColor: '#3B82F6',
             },
         },
     }),
-    createTheme('minimal-dark', {
+    createTheme({
         name: 'Minimal Dark',
         description: 'Dark background with bright blue accents',
         colors: {
             primaryAccent: '#2563EB',
+            primaryAccentTextColor: '#FFFFFF',
             slideBackground: '#1F2937',
             pageBackground: {
                 type: 'color',
@@ -317,7 +349,7 @@ export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
                 opacity: 0.9,
             },
             blocks: {
-                backgroundColor: '#E65100',
+                backgroundColor: '#2563EB',
                 backgroundBlockFillType: 'fill',
                 borderWidth: 'thin',
                 shadow: 'sm',
@@ -325,17 +357,18 @@ export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
                 blockBackgroundCustomColors: [],
             },
             buttons: {
-                buttonColor: '#E65100',
+                buttonColor: '#2563EB',
                 buttonShape: 'default',
-                linkColor: '#E65100',
+                linkColor: '#2563EB',
             },
         },
     }),
-    createTheme('corporate-blue', {
+    createTheme({
         name: 'Corporate Blue',
         description: 'Professional theme with subtle blues',
         colors: {
             primaryAccent: '#1D4ED8',
+            primaryAccentTextColor: '#FFFFFF',
             slideBackground: '#FFFFFF',
             pageBackground: {
                 type: 'color',
@@ -360,14 +393,14 @@ export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
         design: {
             slide: {
                 borderRadius: '8px',
-                borderColor: '#E65100',
+                borderColor: '#1D4ED8',
                 shadow: 'sm',
                 borderWidth: 'thin',
                 imageShape: 'round',
                 opacity: 0.9,
             },
             blocks: {
-                backgroundColor: '#E65100',
+                backgroundColor: '#1D4ED8',
                 backgroundBlockFillType: 'fill',
                 borderWidth: 'thin',
                 shadow: 'sm',
@@ -375,17 +408,18 @@ export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
                 blockBackgroundCustomColors: [],
             },
             buttons: {
-                buttonColor: '#E65100',
+                buttonColor: '#1D4ED8',
                 buttonShape: 'default',
-                linkColor: '#E65100',
+                linkColor: '#1D4ED8',
             },
         },
     }),
-    createTheme('retro-pop', {
+    createTheme({
         name: 'Retro Pop',
         description: 'Bright and playful retro colors',
         colors: {
             primaryAccent: '#E91E63',
+            primaryAccentTextColor: '#FFFFFF',
             slideBackground: '#FCE4EC',
             pageBackground: {
                 type: 'color',
@@ -410,14 +444,14 @@ export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
         design: {
             slide: {
                 borderRadius: '8px',
-                borderColor: '#E65100',
+                borderColor: '#E91E63',
                 shadow: 'sm',
                 borderWidth: 'thin',
                 imageShape: 'round',
                 opacity: 0.9,
             },
             blocks: {
-                backgroundColor: '#E65100',
+                backgroundColor: '#E91E63',
                 backgroundBlockFillType: 'fill',
                 borderWidth: 'thin',
                 shadow: 'sm',
@@ -425,17 +459,18 @@ export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
                 blockBackgroundCustomColors: [],
             },
             buttons: {
-                buttonColor: '#E65100',
+                buttonColor: '#E91E63',
                 buttonShape: 'default',
-                linkColor: '#E65100',
+                linkColor: '#E91E63',
             },
         },
     }),
-    createTheme('neon-night', {
+    createTheme({
         name: 'Neon Night',
         description: 'Dark theme with glowing neon accents',
         colors: {
             primaryAccent: '#00E5FF',
+            primaryAccentTextColor: '#000000',
             slideBackground: '#263238',
             pageBackground: {
                 type: 'color',
@@ -467,7 +502,7 @@ export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
                 opacity: 1,
             },
             blocks: {
-                backgroundColor: '#E65100',
+                backgroundColor: '#00E5FF',
                 backgroundBlockFillType: 'fill',
                 borderWidth: 'thin',
                 shadow: 'sm',
@@ -475,17 +510,18 @@ export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
                 blockBackgroundCustomColors: [],
             },
             buttons: {
-                buttonColor: '#E65100',
+                buttonColor: '#00E5FF',
                 buttonShape: 'default',
-                linkColor: '#E65100',
+                linkColor: '#00E5FF',
             },
         },
     }),
-    createTheme('elegant-purple', {
+    createTheme({
         name: 'Elegant Purple',
         description: 'Refined look with purple accents',
         colors: {
             primaryAccent: '#8E24AA',
+            primaryAccentTextColor: '#FFFFFF',
             slideBackground: '#F3E5F5',
             pageBackground: {
                 type: 'color',
@@ -510,14 +546,14 @@ export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
         design: {
             slide: {
                 borderRadius: '8px',
-                borderColor: '#E65100',
+                borderColor: '#8E24AA',
                 shadow: 'sm',
                 borderWidth: 'thin',
                 imageShape: 'round',
                 opacity: 0.9,
             },
             blocks: {
-                backgroundColor: '#E65100',
+                backgroundColor: '#8E24AA',
                 backgroundBlockFillType: 'fill',
                 borderWidth: 'thin',
                 shadow: 'sm',
@@ -525,9 +561,9 @@ export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
                 blockBackgroundCustomColors: [],
             },
             buttons: {
-                buttonColor: '#E65100',
+                buttonColor: '#8E24AA',
                 buttonShape: 'default',
-                linkColor: '#E65100',
+                linkColor: '#8E24AA',
             },
         },
     }),
