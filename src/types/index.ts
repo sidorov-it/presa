@@ -135,6 +135,7 @@ export interface SmartLayoutElement extends BaseElement {
     align: 'left' | 'center' | 'right';
     imageShape: ImageShape;
     imageSize: number;
+    direction?: 'horizontal' | 'vertical';
 }
 
 // Элемент редактора Tiptap
@@ -311,6 +312,7 @@ export type SmartLayoutType =
     | 'bullets'
     | 'text-boxes'
     | 'images-with-text'
+    | 'steps'
     | 'icon-with-text'
     | 'timeline'
     | 'arrow-flow'

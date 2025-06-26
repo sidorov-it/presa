@@ -2,6 +2,7 @@ import React, { RefObject, useCallback } from 'react';
 import { SmartLayoutElement, TipTapRefs } from '@/types';
 import TextBoxesView from './components/TextBoxes/TextBoxesView';
 import ImagesWithTextView from './components/ImagesWithText/ImagesWithTextView';
+import StepsView from './components/Steps/StepsView';
 
 interface SmartLayoutViewProps {
     element: SmartLayoutElement;
@@ -38,6 +39,17 @@ const SmartLayoutView: React.FC<SmartLayoutViewProps> = ({
             case 'text-boxes':
                 return (
                     <TextBoxesView
+                        element={element}
+                        tiptapRefs={tiptapRefs}
+                        presentationId={presentationId}
+                        slideId={slideId}
+                        layoutId={layoutId}
+                        isFocused={isFocused}
+                    />
+                );
+            case 'steps':
+                return (
+                    <StepsView
                         element={element}
                         tiptapRefs={tiptapRefs}
                         presentationId={presentationId}

@@ -3,6 +3,7 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { SmartLayoutElement, TipTapRefs } from '@/types';
 import ImageWithTextSettings from './ImageWithTextSettings/ImageWithTextSettings';
 import TextBoxesSettings from './TextBoxesSettings/TextBoxesSettings';
+import StepsSettings from './StepsSettings/StepsSettings';
 
 interface SmartLayoutSettingsProps {
     slideId: string;
@@ -37,6 +38,17 @@ const SmartLayoutSettings: React.FC<SmartLayoutSettingsProps> = ({
     } else if (element.elementVariant === 'text-boxes') {
         return (
             <TextBoxesSettings
+                element={element}
+                slideId={slideId}
+                layoutId={layoutId}
+                elementId={elementId}
+                presentationId={presentationId}
+                tiptapRefs={tiptapRefs}
+            />
+        );
+    } else if (element.elementVariant === 'steps') {
+        return (
+            <StepsSettings
                 element={element}
                 slideId={slideId}
                 layoutId={layoutId}

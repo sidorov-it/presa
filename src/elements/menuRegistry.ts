@@ -12,7 +12,7 @@ export const menuRegistry: MenuCategory[] = [
         label: 'Структурные блоки',
         excludeFromTable: true,
         Icon: FaBox,
-        elements: [ElementRegistry.SmartLayoutImagesWithText, ElementRegistry.SmartLayoutTextBlocks],
+        elements: [ElementRegistry.SmartLayoutImagesWithText, ElementRegistry.SmartLayoutTextBlocks, ElementRegistry.SmartLayoutSteps],
     },
     {
         id: 'basic',

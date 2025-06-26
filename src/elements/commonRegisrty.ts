@@ -221,6 +221,40 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
             ],
         },
     },
+    SmartLayoutSteps: {
+        elementTypeId: ElementType.SMART_LAYOUT,
+        Icon: FaListOl,
+        label: 'Шаги',
+        elementVariant: 'steps',
+        props: {
+            items: [
+                {
+                    title: '<p><span class="heading-text heading-3">Шаг 1</span></p>',
+                    text: '<p>Описание</p>',
+                    imageUrl: '',
+                    iconUrl: '',
+                },
+                {
+                    title: '<p><span class="heading-text heading-3">Шаг 2</span></p>',
+                    text: '<p>Описание</p>',
+                    imageUrl: '',
+                    iconUrl: '',
+                },
+                {
+                    title: '<p><span class="heading-text heading-3">Шаг 3</span></p>',
+                    text: '<p>Описание</p>',
+                    imageUrl: '',
+                    iconUrl: '',
+                },
+            ],
+            columnSize: 3,
+            align: 'left',
+            imageShape: 'square',
+            imageSize: 5,
+            direction: 'horizontal',
+        },
+        isArray: true,
+    },
     Text: {
         elementTypeId: ElementType.TEXT,
         hasTextEditor: true,
