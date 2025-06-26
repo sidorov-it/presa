@@ -50,7 +50,7 @@ export default function StepsView({
     }
 
     return (
-        <div className={`${styles.container} ${isFocused ? styles.focused : ''}`}> 
+        <div className={`${styles.container} ${isFocused ? styles.focused : ''}`}>
             {itemsIds?.map((itemId, index) => {
                 const item = element.items?.find(i => i.id === itemId);
                 if (!item) return null;
@@ -61,17 +61,15 @@ export default function StepsView({
                         data-smart-layout-item-id={itemId}
                         style={{
                             width: direction === 'horizontal' ? `calc(${elementWidth} - 1em)` : '100%',
-                            marginLeft:
-                                direction === 'vertical'
-                                    ? `${itemsIds.length - index - 1}rem`
-                                    : undefined,
-                            marginTop:
-                                direction === 'horizontal'
-                                    ? `${itemsIds.length - index - 1}rem`
-                                    : undefined,
                         }}
                     >
-                        <div className={`${styles.textBox} ${align ? styles[align] : ''}`}>
+                        <div
+                            className={`${styles.textBox} ${align ? styles[align] : ''}`}
+                            style={{
+                                paddingLeft: direction === 'vertical' ? `${index * 32}px` : undefined,
+                                paddingTop: direction === 'horizontal' ? `${index * 32}px` : undefined,
+                            }}
+                        >
                             <div className={styles.step} />
                             <Tiptap
                                 isReadOnly={isReadOnly}

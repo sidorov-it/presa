@@ -41,7 +41,9 @@ export default function Steps({
 
     const { columnSize, direction } = usePresentationStore(
         useShallow(state => {
-            const element = state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement & { direction?: 'horizontal' | 'vertical' };
+            const element = state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement & {
+                direction?: 'horizontal' | 'vertical';
+            };
             return { columnSize: element.columnSize, direction: element.direction || 'horizontal' };
         })
     );
@@ -192,7 +194,7 @@ export default function Steps({
     }
 
     return (
-        <div className={`${styles.container} ${isFocused ? styles.focused : ''}`}> 
+        <div className={`${styles.container} ${isFocused ? styles.focused : ''}`}>
             {itemsIds?.map((itemId, index) => (
                 <div
                     key={itemId}
@@ -203,14 +205,6 @@ export default function Steps({
                     data-smart-layout-item-id={itemId}
                     style={{
                         width: direction === 'horizontal' ? `calc(${elementWidth} - 1em)` : '100%',
-                        marginLeft:
-                            direction === 'vertical'
-                                ? `${itemsIds.length - index - 1}rem`
-                                : undefined,
-                        marginTop:
-                            direction === 'horizontal'
-                                ? `${itemsIds.length - index - 1}rem`
-                                : undefined,
                     }}
                 >
                     {dropIndicator && dropIndicator.itemId === itemId && (
@@ -225,37 +219,45 @@ export default function Steps({
                         layoutId={layoutId}
                         elementId={elementId}
                     >
-                        <div className={`${styles.textBox} ${align ? styles[align] : ''}`}>
+                        <div
+                            className={`${styles.textBox} ${align ? styles[align] : ''} ${direction === 'vertical' ? styles.vertical : ''}`}
+                            style={{
+                                paddingLeft: direction === 'vertical' ? `${index * 32}px` : undefined,
+                                paddingTop: direction === 'horizontal' ? `${index * 32}px` : undefined,
+                            }}
+                        >
                             <div className={styles.step} />
-                            <Tiptap
-                                isReadOnly={isReadOnly}
-                                elementId={elementId}
-                                tiptapRefs={tiptapRefs}
-                                id={elementId}
-                                placeholder="Заголовок"
-                                onContentChange={handleContentChange(itemId, 'title')}
-                                presentationId={presentationId}
-                                slideId={slideId}
-                                layoutId={layoutId}
-                                customRefKey={`title-${elementId}-${itemId}`}
-                                isHideSlashMenu={true}
-                            />
-                            <Tiptap
-                                isReadOnly={isReadOnly}
-                                elementId={elementId}
-                                tiptapRefs={tiptapRefs}
-                                id={elementId}
-                                presentationId={presentationId}
-                                slideId={slideId}
-                                layoutId={layoutId}
-                                placeholder="Текст"
-                                onContentChange={handleContentChange(itemId, 'text')}
-                                customRefKey={`text-${elementId}-${itemId}`}
-                                isHideSlashMenu={true}
-                                onEnterPressed={() => {
-                                    return true;
-                                }}
-                            />
+                            <div className={styles.textBoxContent}>
+                                <Tiptap
+                                    isReadOnly={isReadOnly}
+                                    elementId={elementId}
+                                    tiptapRefs={tiptapRefs}
+                                    id={elementId}
+                                    placeholder="Заголовок"
+                                    onContentChange={handleContentChange(itemId, 'title')}
+                                    presentationId={presentationId}
+                                    slideId={slideId}
+                                    layoutId={layoutId}
+                                    customRefKey={`title-${elementId}-${itemId}`}
+                                    isHideSlashMenu={true}
+                                />
+                                <Tiptap
+                                    isReadOnly={isReadOnly}
+                                    elementId={elementId}
+                                    tiptapRefs={tiptapRefs}
+                                    id={elementId}
+                                    presentationId={presentationId}
+                                    slideId={slideId}
+                                    layoutId={layoutId}
+                                    placeholder="Текст"
+                                    onContentChange={handleContentChange(itemId, 'text')}
+                                    customRefKey={`text-${elementId}-${itemId}`}
+                                    isHideSlashMenu={true}
+                                    onEnterPressed={() => {
+                                        return true;
+                                    }}
+                                />
+                            </div>
                             {!isReadOnly && index === itemsIds.length - 1 && (
                                 <div className={styles.addButton} onClick={addItem}>
                                     <HiPlus style={{ width: '1rem', height: '1rem' }} />

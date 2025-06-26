@@ -18,7 +18,32 @@
     transition: box-shadow 0.2s ease;
     border-radius: var(--presentation-slide-border-radius);
     border-width: var(--presentation-block-border-width);
-    overflow: hidden;
+    /* overflow: hidden; */
+}
+
+
+.dropIndicator {
+    position: absolute;
+    background-color: var(--color-primary);
+    z-index: 10;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.dropIndicator.left {
+    left: -5px;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    border-radius: 2px;
+}
+
+.dropIndicator.right {
+    right: -5px;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    border-radius: 2px;
 }
 
 .marker {

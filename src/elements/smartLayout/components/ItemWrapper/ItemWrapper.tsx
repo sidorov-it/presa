@@ -28,7 +28,7 @@ export default function ItemWrapper({
     const isReadOnly = useReadOnly();
 
     const [hovered, setHovered] = useState(false);
-    const isSelected = useMenuStore(state => state.smartLayoutItemId === itemId);
+    const isSelected = useMenuStore(state => state.selectedSmartLayoutItemId === itemId);
     const isMenuOpen = useMenuStore(state => state.isOpen && state.smartLayoutItemId === itemId);
     const itemRef = useRef<HTMLDivElement>(null);
     const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
@@ -74,7 +74,7 @@ export default function ItemWrapper({
 
     return (
         <div
-            className={`${styles.container} ${className} ${isSelected ? styles.selected : ''}`}
+            className={`${styles.container} ${className ? className : ''} ${isSelected ? styles.selected : ''}`}
             ref={itemRef}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}

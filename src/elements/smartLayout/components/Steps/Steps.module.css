@@ -18,22 +18,48 @@
     transition: box-shadow 0.2s ease;
     border-radius: var(--presentation-slide-border-radius);
     border-width: var(--presentation-block-border-width);
-    overflow: hidden;
+    /* overflow: hidden; */
+}
+
+.dropIndicator {
+    position: absolute;
+    background-color: var(--color-primary);
+    z-index: 10;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.dropIndicator.left {
+    left: -5px;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    border-radius: 2px;
+}
+
+.dropIndicator.right {
+    right: -5px;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    border-radius: 2px;
 }
 
 .step {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 0.5rem;
-    background: var(--color-primary);
-    margin-bottom: 0.5rem;
+    width: 100%;
+    height: 18px;
+    border-radius: 8px;
+    background: #fff;
+    border: 2px solid var(--presentation-block-border-color);
+    margin-bottom: 8px;
 }
 
 .textBox {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    padding: 0.5rem;
+    gap: 8px;
+    padding: 0 8px 0;
+    min-height: 110px;
 }
 
 .left {
@@ -46,4 +72,25 @@
 
 .right {
     text-align: right;
+}
+
+.vertical {
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.vertical .step {
+    width: 18px;
+    align-self: stretch;
+    height: auto;
+    margin-bottom: 0;
+    margin-right: 8px;
+}
+
+.textBoxContent {
+    margin-top: 18px;
+    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }

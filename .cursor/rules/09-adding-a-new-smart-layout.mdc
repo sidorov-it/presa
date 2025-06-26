@@ -1,0 +1,149 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+---
+    description: |
+    # How to Add a New SmartLayout Template
+
+    ## 1. Component Structure
+    SmartLayout templates are implemented in the following locations:
+
+    ### Core Components
+    - `src/elements/smartLayout/SmartLayout.tsx` - Main editor component
+    - `src/elements/smartLayout/SmartLayoutView.tsx` - View component for presentations
+    - `src/elements/smartLayout/components/` - Directory for template implementations
+
+    ## 2. Creating New Template Components
+
+    1. Create a new directory in `src/elements/smartLayout/components/` for your template:
+    ```
+    src/elements/smartLayout/components/YourTemplate/
+    ├── YourTemplate.tsx         # Editor component
+    ├── YourTemplateView.tsx     # View component
+    └── types.ts                 # Template-specific types
+    ```
+
+    2. Implement the editor component (`YourTemplate.tsx`):
+    ```typescript
+    interface YourTemplateProps {
+        elementId: string;
+        presentationId: string;
+        slideId: string;
+        layoutId: string;
+        tiptapRefs: RefObject<TipTapRefs>;
+        isFocused: boolean;
+    }
+
+    const YourTemplate: React.FC<YourTemplateProps> = ({...props}) => {
+        // Implementation
+    };
+    ```
+
+    3. Implement the view component (`YourTemplateView.tsx`):
+    ```typescript
+    interface YourTemplateViewProps {
+        element: SmartLayoutElement;
+        presentationId: string;
+        slideId: string;
+        layoutId: string;
+        tiptapRefs: RefObject<TipTapRefs> | null;
+        isFocused: boolean;
+    }
+
+    const YourTemplateView: React.FC<YourTemplateViewProps> = ({...props}) => {
+        // Implementation
+    };
+    ```
+
+    ## 3. Registering the Template
+
+    1. Add your template variant to the SmartLayout type in `src/types/elements.ts`:
+    ```typescript
+    type SmartLayoutVariant = 
+        | 'images-with-text'
+        | 'text-boxes'
+        | 'your-template-variant';
+    ```
+
+    2. Add the template to SmartLayout switch statement in both files:
+    - `src/elements/smartLayout/SmartLayout.tsx`:
+    ```typescript
+    case 'your-template-variant':
+        return (
+            <YourTemplate
+                elementId={elementId}
+                tiptapRefs={tiptapRefs}
+                presentationId={presentationId}
+                slideId={slideId}
+                layoutId={layoutId}
+                isFocused={isFocused}
+            />
+        );
+    ```
+
+    - `src/elements/smartLayout/SmartLayoutView.tsx`:
+    ```typescript
+    case 'your-template-variant':
+        return (
+            <YourTemplateView
+                element={element}
+                tiptapRefs={tiptapRefs}
+                presentationId={presentationId}
+                slideId={slideId}
+                layoutId={layoutId}
+                isFocused={isFocused}
+            />
+        );
+    ```
+
+    ## 4. Adding Template to Slash Menu
+
+    1. Update the slash menu commands in `src/components/editor/SlideMenu/SlashCommands/commands.ts`:
+    ```typescript
+    {
+        title: 'Your Template',
+        description: 'Description of your template',
+        icon: YourTemplateIcon,
+        command: ({ editor }) => {
+            // Implementation
+        }
+    }
+    ```
+
+    ## 5. Adding Template to Right Panel
+
+    1. Update the SmartLayout settings component in `src/elements/smartLayout/components/SmartLayoutSettings/SmartLayoutSettings.tsx`:
+    ```typescript
+    const templateOptions = [
+        { value: 'your-template-variant', label: 'Your Template' },
+        // ... other options
+    ];
+    ```
+
+    ## 6. Template Preview/Live View Integration
+
+    The template will automatically work in preview/live view once you've:
+    1. Implemented the view component (`YourTemplateView.tsx`)
+    2. Registered it in `SmartLayoutView.tsx`
+    3. Properly handled all required props and state management
+
+    ## Best Practices
+
+    1. Follow existing template patterns (like `ImagesWithText` or `TextBoxes`)
+    2. Implement proper TypeScript types for your template
+    3. Handle all required props and state management
+    4. Implement proper error handling
+    5. Follow the project's styling conventions (using TailwindCSS)
+    6. Add accessibility attributes to interactive elements
+
+    ## Testing
+
+    1. Test the template in editor mode
+    2. Test the template in view mode
+    3. Test the template in different screen sizes
+    4. Test all interactive features
+    5. Test error states and edge cases
+alwaysApply: false
+---
