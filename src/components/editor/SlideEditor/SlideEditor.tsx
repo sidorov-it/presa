@@ -20,6 +20,7 @@ import { useReadOnly } from '@/contexts/ReadOnlyContext';
 import getNewLayoutWithTextEditor from '@/utils/getNewLayoutWithTextEditor';
 import AISlideGenerator from '../AISlideGenerator/AISlideGenerator';
 import { BsMagic } from 'react-icons/bs';
+import Portal from '@/components/Portal';
 
 interface SlideEditorProps {
     slideLayoutIds: string[];
@@ -28,6 +29,7 @@ interface SlideEditorProps {
     tiptapRefs: MutableRefObject<TipTapRefs>;
     slideId: string;
     handleSelectSlide: (slideId: string) => void;
+    isLast: boolean;
 }
 
 const SlideEditor: React.FC<SlideEditorProps> = ({
@@ -37,10 +39,13 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     presentationId,
     handleSelectSlide,
     isSelected,
+    isLast,
 }) => {
     const editorRef = useRef<HTMLDivElement>(null);
     const [isHovered, setIsHovered] = useState(false);
     const openMenu = useMenuStore.getState().openMenu;
+
+    const slideRef = useRef<HTMLDivElement>(null);
 
     const isReadOnly = useReadOnly();
 
@@ -409,17 +414,19 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     return (
         <div
-            className={`${styles.slide} ${isDropTarget ? 'active-slide-drop-target' : ''}`}
+            className={`${styles.slide} ${isDropTarget ? 'active-slide-drop-target' : ''} ${isLast ? styles.slideLast : ''}`}
+            ref={slideRef}
+            aria-label={`Slide ${slideId}`}
+            data-slide-dragging={isDragging ? 'true' : undefined}
             onClick={handleSlideWrapperClick}
             onMouseEnter={() => !isReadOnly && setIsHovered(true)}
             onMouseLeave={() => !isReadOnly && setIsHovered(false)}
-            aria-label={`Slide ${slideId}`}
             onKeyDown={e => {
                 if (!isReadOnly && (e.key === 'Enter' || e.key === ' ')) {
                     handleSlideWrapperClick(e as unknown as React.MouseEvent);
                 }
             }}
-            data-slide-dragging={isDragging ? 'true' : undefined}
+            style={getSlideStyle()}
         >
             <div className={`${getSlideClassName()}`} data-slide="true">
                 <div className={`${styles.slideBorder} ${isSelected || isHovered ? styles.slideBorderMenuOpen : ''}`} />
@@ -427,7 +434,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     ref={editorRef}
                     className={`${styles.slideContent}`}
                     data-slide-content="true"
-                    style={getSlideStyle()}
                 >
                     {(isSelected || slideMenuOpen || isHovered) && !isReadOnly && (
                         <>
@@ -499,26 +505,34 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 </div>
 
                 {!isReadOnly && (
-                    <div
-                        className={`${styles.slideDivider} ${isSelected || isHovered ? styles.slideDividerHovered : ''}`}
-                    >
-                        <div className={styles.buttons}>
-                            <button
-                                className={styles.slideDividerButton}
-                                onClick={handleAddSlideAfter}
-                                aria-label="Добавить слайд"
-                            >
-                                +
-                            </button>
-                            <button
-                                className={`${styles.slideDividerButton} ${styles.aiButton}`}
-                                onClick={handleAddSlideWithAI}
-                                aria-label="Создать слайд с помощью ИИ"
-                            >
-                                <BsMagic />
-                            </button>
+                    <Portal>
+                        <div
+                            className={`${styles.slideDivider} ${isSelected || isHovered ? styles.slideDividerHovered : ''}`}
+                            style={{
+                                top:
+                                    (slideRef.current?.getBoundingClientRect().bottom || 0) +
+                                    window.scrollY -
+                                    (isLast ? 58 : 24),
+                            }}
+                        >
+                            <div className={styles.buttons}>
+                                <button
+                                    className={styles.slideDividerButton}
+                                    onClick={handleAddSlideAfter}
+                                    aria-label="Добавить слайд"
+                                >
+                                    +
+                                </button>
+                                <button
+                                    className={`${styles.slideDividerButton} ${styles.aiButton}`}
+                                    onClick={handleAddSlideWithAI}
+                                    aria-label="Создать слайд с помощью ИИ"
+                                >
+                                    <BsMagic />
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    </Portal>
                 )}
 
                 {showAIGenerator && (
@@ -551,6 +565,7 @@ export default memo(SlideEditor, (prevProps, nextProps) => {
         deepEqual(prevProps.slideLayoutIds, nextProps.slideLayoutIds) &&
         prevProps.isSelected === nextProps.isSelected &&
         prevProps.presentationId === nextProps.presentationId &&
-        prevProps.slideId === nextProps.slideId
+        prevProps.slideId === nextProps.slideId &&
+        prevProps.isLast === nextProps.isLast
     );
 });

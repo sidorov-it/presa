@@ -12,7 +12,6 @@ import { TipTapRefs } from '@/types';
 import UndoRedoControls from '@/components/UndoRedoControls/UndoRedoControls';
 import { ThemeIcon } from '@/components/icons';
 import { useThemeStore } from '@/store/themeStore';
-import { Theme } from '@/types/theme';
 import Link from 'next/link';
 import { FaSignOutAlt, FaCog } from 'react-icons/fa';
 import { HiOutlineCreditCard } from 'react-icons/hi2';
@@ -35,36 +34,7 @@ import { clearAllThemeStyles } from '@/utils/themeUtils';
 import { SimplePdfExportButton } from '@/components/export';
 import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
 import { LuEye, LuSettings, LuUser } from 'react-icons/lu';
-
-const ThemeVariant = ({
-    theme,
-    currentTheme,
-    handleThemeChange,
-}: {
-    theme: Theme;
-    currentTheme?: Theme | null;
-    handleThemeChange: (theme: Theme) => void;
-}) => {
-    return (
-        <div
-            className={`${styles.themeOption}${currentTheme?.id === theme.id ? ` ${styles.themeOptionSelected}` : ''}`}
-            onClick={() => handleThemeChange(theme)}
-            role="button"
-            aria-label={`Выбрать тему ${theme.name}`}
-            onKeyDown={e => e.key === 'Enter' && handleThemeChange(theme)}
-        >
-            <div className={styles.themeColorPreview}>
-                <div
-                    className={styles.themeColorSegment1}
-                    style={{ backgroundColor: theme.colors.pageBackground.color }}
-                />
-                <div className={styles.themeColorSegment2} style={{ backgroundColor: theme.colors.slideBackground }} />
-                <div className={styles.themeColorSegment3} style={{ backgroundColor: theme.colors.primaryAccent }} />
-            </div>
-            <span>{theme.name}</span>
-        </div>
-    );
-};
+import Popover from '@/components/ui/Popover';
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -78,7 +48,6 @@ export default function PresentationEditorPage() {
     // Access store values individually to prevent unnecessary re-renders
     const loadPresentation = usePresentationStore(state => state.loadPresentation);
     const checkPresentationExists = usePresentationStore(state => state.checkPresentationExists);
-    const setTheme = usePresentationStore(state => state.setTheme);
     const unsavedChanges = usePresentationStore(state => state.unsavedChanges);
     const savingStatus = usePresentationStore(state => state.savingStatus);
 
@@ -197,17 +166,6 @@ export default function PresentationEditorPage() {
         });
     }, [loadThemes]);
 
-    const handleThemeChange = useCallback(
-        (theme: Theme) => {
-            setCurrentTheme(theme);
-
-            if (presentation) {
-                setTheme(presentation.id, theme.id);
-            }
-        },
-        [presentation, setCurrentTheme, setTheme]
-    );
-
     // Function to navigate to view mode
     const handleViewPresentation = useCallback(() => {
         if (presentation) {
@@ -245,7 +203,6 @@ export default function PresentationEditorPage() {
         ),
         []
     );
-
 
     if (isLoading) return loadingUI;
     if (notFound || !presentation) return <NotFoundPage />;

@@ -21,12 +21,14 @@ const SlideEditorWrapper = memo(
         isSelected,
         onSlideSelect,
         tiptapRefs,
+        isLast,
     }: {
         slideId: string;
         presentationId: string;
         isSelected: boolean;
         onSlideSelect: (slideId: string) => void;
         tiptapRefs: MutableRefObject<TipTapRefs>;
+        isLast: boolean;
     }) => {
         const isReadOnly = useReadOnly();
         const slideLayoutIds = usePresentationStore(
@@ -49,6 +51,7 @@ const SlideEditorWrapper = memo(
                 slideId={slideId}
                 handleSelectSlide={onSlideSelect}
                 isSelected={isSelected && !isReadOnly}
+                isLast={isLast}
             />
         );
     }
@@ -75,7 +78,7 @@ function Presentation({ presentationId, activeSlideId, onSlideSelect, tiptapRefs
                     </Button>
                 </div>
             )}
-            {slideIds.map(slideId => (
+            {slideIds.map((slideId, index) => (
                 <SlideEditorWrapper
                     key={slideId}
                     slideId={slideId}
@@ -83,6 +86,7 @@ function Presentation({ presentationId, activeSlideId, onSlideSelect, tiptapRefs
                     isSelected={activeSlideId === slideId}
                     onSlideSelect={onSlideSelect}
                     tiptapRefs={tiptapRefs}
+                    isLast={index === slideIds.length - 1}
                 />
             ))}
         </div>
