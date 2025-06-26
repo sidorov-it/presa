@@ -3,6 +3,8 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { SmartLayoutElement, TipTapRefs } from '@/types';
 import ImagesWithText from '@/elements/smartLayout/components/ImagesWithText/ImagesWithText';
 import TextBoxes from '@/elements/smartLayout/components/TextBoxes/TextBoxes';
+import Steps from '@/elements/smartLayout/components/Steps/Steps';
+import Timeline from '@/elements/smartLayout/components/Timeline/Timeline';
 
 interface SmartLayoutProps {
     elementId: string;
@@ -42,6 +44,28 @@ const SmartLayout: React.FC<SmartLayoutProps> = ({
             case 'text-boxes':
                 return (
                     <TextBoxes
+                        elementId={elementId}
+                        tiptapRefs={tiptapRefs}
+                        presentationId={presentationId}
+                        slideId={slideId}
+                        layoutId={layoutId}
+                        isFocused={isFocused}
+                    />
+                );
+            case 'steps':
+                return (
+                    <Steps
+                        elementId={elementId}
+                        tiptapRefs={tiptapRefs}
+                        presentationId={presentationId}
+                        slideId={slideId}
+                        layoutId={layoutId}
+                        isFocused={isFocused}
+                    />
+                );
+            case 'timeline':
+                return (
+                    <Timeline
                         elementId={elementId}
                         tiptapRefs={tiptapRefs}
                         presentationId={presentationId}

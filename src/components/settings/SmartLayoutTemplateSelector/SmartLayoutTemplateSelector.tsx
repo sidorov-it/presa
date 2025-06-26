@@ -9,6 +9,14 @@ const LAYOUT_TYPES = [
         id: 'text-boxes',
         label: 'Текстовые блоки',
     },
+    {
+        id: 'steps',
+        label: 'Шаги',
+    },
+    {
+        id: 'timeline',
+        label: 'Хронология',
+    },
 ];
 
 export default function SmartLayoutTemplateSelector({
