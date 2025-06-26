@@ -104,8 +104,8 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
                             borderWidth: getBorderWidth(theme.design.slide.borderWidth),
                             borderColor: theme.design.slide.borderColor,
                             boxShadow: getBoxShadow(theme.design.slide.shadow),
-                            opacity: theme.design.slide.opacity,
-                        }}
+                            '--slide-opacity': theme.design.slide.opacity,
+                        } as React.CSSProperties}
                     >
                         {/* Sample Content */}
                         <div className={styles.slideContent}>

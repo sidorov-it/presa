@@ -1,37 +1,3 @@
-.slideContent {
-    overflow: auto;
-    cursor: default;
-    position: relative;
-    z-index: 1;
-}
-
-.slideContent::before {
-    background-color: var(--presentation-slide-background) !important;
-}
-
-.slideContent :global(.ProseMirror) {
-    cursor: default !important;
-}
-
-.slideWrapper {
-    width: 100%;
-    max-width: 100%;
-    min-height: 100vh;
-    position: relative;
-}
-
-.slideWrapper::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--presentation-slide-background);
-    opacity: var(--presentation-slide-opacity);
-    z-index: 0;
-}
-
 /* PDF Export specific styles */
 .pdfExport {
     width: 100% !important;
@@ -44,7 +10,7 @@
     print-color-adjust: exact !important;
 }
 
-.pdfExport .slideWrapper {
+.pdfExport .slideViewerWrapper {
     min-height: auto !important;
     height: auto !important;
     width: 100% !important;
@@ -55,7 +21,42 @@
     print-color-adjust: exact !important;
 }
 
-.pdfExport .slideContent {
+.slideViewerWrapper {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100vh;
+    position: relative;
+}
+
+.slideViewerWrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--presentation-slide-background);
+    opacity: var(--presentation-slide-opacity);
+    z-index: 0;
+}
+
+
+.slideViewerContent {
+    overflow: auto;
+    cursor: default;
+    position: relative;
+    z-index: 1;
+}
+
+.slideViewerContent::before {
+    background-color: var(--presentation-slide-background) !important;
+}
+
+.slideViewerContent :global(.ProseMirror) {
+    cursor: default !important;
+}
+
+.pdfExport .slideViewerContent {
     min-height: auto !important;
     height: auto !important;
     overflow: visible !important;

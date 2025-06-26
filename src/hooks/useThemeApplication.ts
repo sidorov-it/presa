@@ -105,30 +105,17 @@ const applyThemeStyles = (
 
     // Shadow
     const shadow = theme.design.slide.shadow;
+    const boxShadowColor = theme.design.slide.borderColor || 'rgba(0, 0, 0, 0.1)';
+
     if (shadow === 'none') {
         container.style.setProperty('--presentation-slide-shadow', 'none');
     } else if (shadow === 'sm') {
-        const boxShadowColor = theme.design.slide.borderColor;
-
-        if (boxShadowColor) {
-            container.style.setProperty(
-                '--presentation-slide-shadow',
-                `0 10px 15px -3px ${boxShadowColor},0 4px 6px -2px ${boxShadowColor}`
-            );
-        } else {
-            container.style.setProperty(
-                '--presentation-slide-shadow',
-                '0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)'
-            );
-        }
+        container.style.setProperty(
+            '--presentation-slide-shadow',
+            `0 10px 15px -3px ${boxShadowColor},0 4px 6px -2px ${boxShadowColor}`
+        );
     } else if (shadow === 'md') {
-        const boxShadowColor = theme.design.slide.borderColor;
-
-        if (boxShadowColor) {
-            container.style.setProperty('--presentation-slide-shadow', `${boxShadowColor} 4px 4px 0px 0px`);
-        } else {
-            container.style.setProperty('--presentation-slide-shadow', 'rgba(0, 0, 0, 0.4) 4px 4px 0px 0px');
-        }
+        container.style.setProperty('--presentation-slide-shadow', `${boxShadowColor} 4px 4px 0px 0px`);
     }
 
     // Border width
