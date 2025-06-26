@@ -85,6 +85,12 @@
     border: 2px solid #000;
 }
 
+.slideSelected {
+    border-color: #806cff;
+    border-width: var(--presentation-slide-border-width);
+    border-style: solid;
+}
+
 .slideSelected::after {
     content: '';
     position: absolute;
