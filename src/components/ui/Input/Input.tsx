@@ -1,6 +1,5 @@
 import { forwardRef } from 'react';
 import styles from './Input.module.css';
-import { clsx } from 'clsx';
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     size?: 'xs' | 'sm' | 'md' | 'lg';
@@ -31,19 +30,19 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         },
         ref
     ) => {
-        const inputClasses = clsx(
+        const inputClasses = [
             styles.input,
             styles[size],
             styles[variant],
-            {
-                [styles.invalid]: isInvalid,
-                [styles.disabled]: disabled,
-                [styles.readonly]: readOnly,
-                [styles.hasLeftElement]: leftElement,
-                [styles.hasRightElement]: rightElement,
-            },
-            className
-        );
+            isInvalid ? styles.invalid : '',
+            disabled ? styles.disabled : '',
+            readOnly ? styles.readonly : '',
+            leftElement ? styles.hasLeftElement : '',
+            rightElement ? styles.hasRightElement : '',
+            className || '',
+        ]
+            .filter(Boolean)
+            .join(' ');
 
         return (
             <div className={styles.wrapper}>

@@ -1,36 +1,35 @@
 /* eslint-disable jsx-a11y/heading-has-content */
 import * as React from 'react';
-import { clsx } from 'clsx';
 
 import styles from './Card.module.css';
 
 const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-    <div ref={ref} className={clsx('rounded-xl border bg-card text-card-foreground shadow', className)} {...props} />
+    <div ref={ref} className={`rounded-xl border bg-card text-card-foreground shadow${className ? ` ${className}` : ''}`} {...props} />
 ));
 Card.displayName = 'Card';
 
 const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-    ({ className, ...props }, ref) => <div ref={ref} className={clsx(styles.cardHeader, className)} {...props} />
+    ({ className, ...props }, ref) => <div ref={ref} className={`${styles.cardHeader}${className ? ` ${className}` : ''}`} {...props} />
 );
 CardHeader.displayName = 'CardHeader';
 
 const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(
-    ({ className, ...props }, ref) => <h3 ref={ref} className={clsx(styles.cardTitle, className)} {...props} />
+    ({ className, ...props }, ref) => <h3 ref={ref} className={`${styles.cardTitle}${className ? ` ${className}` : ''}`} {...props} />
 );
 CardTitle.displayName = 'CardTitle';
 
 const CardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
-    ({ className, ...props }, ref) => <p ref={ref} className={clsx(styles.cardDescription, className)} {...props} />
+    ({ className, ...props }, ref) => <p ref={ref} className={`${styles.cardDescription}${className ? ` ${className}` : ''}`} {...props} />
 );
 CardDescription.displayName = 'CardDescription';
 
 const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-    ({ className, ...props }, ref) => <div ref={ref} className={clsx(styles.cardContent, className)} {...props} />
+    ({ className, ...props }, ref) => <div ref={ref} className={`${styles.cardContent}${className ? ` ${className}` : ''}`} {...props} />
 );
 CardContent.displayName = 'CardContent';
 
 const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-    ({ className, ...props }, ref) => <div ref={ref} className={clsx(styles.cardFooter, className)} {...props} />
+    ({ className, ...props }, ref) => <div ref={ref} className={`${styles.cardFooter}${className ? ` ${className}` : ''}`} {...props} />
 );
 CardFooter.displayName = 'CardFooter';
 
