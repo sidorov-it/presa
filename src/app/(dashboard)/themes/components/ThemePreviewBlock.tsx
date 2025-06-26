@@ -183,7 +183,7 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
                         className={styles.menuButton}
                         onClick={handleMenuClick}
                         onKeyDown={handleKeyDown}
-                        aria-label={`Open menu for ${theme.name} theme`}
+                        aria-label={`Открыть меню темы ${theme.name}`}
                         tabIndex={0}
                     >
                         <span className={styles.menuDots}>⋯</span>

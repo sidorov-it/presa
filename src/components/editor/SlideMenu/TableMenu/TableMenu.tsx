@@ -225,19 +225,19 @@ const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, presentationId, posit
             />
             <ColorPicker onColorChange={handleColorChange} className={bubbleStyles.button} />
 
-            <MenuItem icon={<BiBold />} label="Bold" onClick={handleToggleBold} active={isBoldActive} />
-            <MenuItem icon={<BiItalic />} label="Italic" onClick={handleToggleItalic} active={isItalicActive} />
+            <MenuItem icon={<BiBold />} label="Жирный" onClick={handleToggleBold} active={isBoldActive} />
+            <MenuItem icon={<BiItalic />} label="Курсив" onClick={handleToggleItalic} active={isItalicActive} />
             <MenuItem
                 icon={<BiUnderline />}
-                label="Underline"
+                label="Подчеркнутый"
                 onClick={handleToggleUnderline}
                 active={isUnderlineActive}
             />
-            <MenuItem icon={<BiX />} label="Clear formatting" onClick={handleClearStyles} />
+            <MenuItem icon={<BiX />} label="Очистить форматирование" onClick={handleClearStyles} />
 
-            <MenuItem icon={<PiEquals />} label="Equalize" active={false} onClick={handleEqualize} />
+            <MenuItem icon={<PiEquals />} label="Выровнять" active={false} onClick={handleEqualize} />
 
-            <MenuItem icon={<DeleteIcon />} label="Delete" onClick={handleDelete} color="#f00" />
+            <MenuItem icon={<DeleteIcon />} label="Удалить" onClick={handleDelete} color="#f00" />
         </BaseMenu>
     );
 };

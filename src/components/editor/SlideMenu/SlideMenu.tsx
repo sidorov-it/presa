@@ -204,44 +204,44 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
             case 'element':
                 return (
                     <>
-                        <MenuItem icon={<EditIcon />} label="Edit" onClick={editElement} />
-                        <MenuItem icon={<DuplicateIcon />} label="Duplicate" onClick={duplicateElement} />
-                        <MenuItem icon={<DeleteIcon />} label="Delete" onClick={deleteElement} color="#f00" />
+                        <MenuItem icon={<EditIcon />} label="Редактировать" onClick={editElement} />
+                        <MenuItem icon={<DuplicateIcon />} label="Дублировать" onClick={duplicateElement} />
+                        <MenuItem icon={<DeleteIcon />} label="Удалить" onClick={deleteElement} color="#f00" />
                     </>
                 );
             case 'cell':
                 return (
                     <>
-                        <MenuItem icon={<AddColumnLeftIcon />} label="Add cell left" onClick={handleAddCellLeft} />
-                        <MenuItem icon={<AddColumnRightIcon />} label="Add cell right" onClick={handleAddCellRight} />
-                        <MenuItem icon={<DuplicateIcon />} label="Duplicate" onClick={handleDuplicateColumn} />
+                        <MenuItem icon={<AddColumnLeftIcon />} label="Добавить ячейку слева" onClick={handleAddCellLeft} />
+                        <MenuItem icon={<AddColumnRightIcon />} label="Добавить ячейку справа" onClick={handleAddCellRight} />
+                        <MenuItem icon={<DuplicateIcon />} label="Дублировать" onClick={handleDuplicateColumn} />
                         <MenuItem
                             icon={<AlignTopIcon />}
-                            label="Align top"
+                            label="Выровнять по верхнему краю"
                             onClick={handleAlignColumnTop}
                             active={cell?.alignment === 'top'}
                         />
                         <MenuItem
                             icon={<AlignCenterIcon />}
-                            label="Align center"
+                            label="Выровнять по центру"
                             onClick={handleAlignColumnCenter}
                             active={cell?.alignment === 'center'}
                         />
                         <MenuItem
                             icon={<AlignBottomIcon />}
-                            label="Align bottom"
+                            label="Выровнять по нижнему краю"
                             onClick={handleAlignColumnBottom}
                             active={cell?.alignment === 'bottom'}
                         />
-                        <MenuItem icon={<DeleteIcon />} label="Delete cell" onClick={handleDeleteCell} color="#f00" />
+                        <MenuItem icon={<DeleteIcon />} label="Удалить ячейку" onClick={handleDeleteCell} color="#f00" />
                     </>
                 );
             case 'slide':
                 return (
                     <>
-                        <MenuItem icon={<DuplicateIcon />} label="Duplicate" onClick={duplicateSlide} />
-                        {slideIndex > 0 && <MenuItem icon={<MergeIcon />} label="Merge" onClick={handleMergeSlide} />}
-                        <MenuItem icon={<DeleteIcon />} label="Delete" onClick={deleteSlide} color="#f00" />
+                        <MenuItem icon={<DuplicateIcon />} label="Дублировать" onClick={duplicateSlide} />
+                        {slideIndex > 0 && <MenuItem icon={<MergeIcon />} label="Объединить" onClick={handleMergeSlide} />}
+                        <MenuItem icon={<DeleteIcon />} label="Удалить" onClick={deleteSlide} color="#f00" />
                     </>
                 );
             case 'row':

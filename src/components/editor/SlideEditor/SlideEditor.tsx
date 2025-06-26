@@ -435,7 +435,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                                 className={styles.slideDragHandle}
                                 slideId={slideId}
                                 isActive={slideMenuOpen}
-                                ariaLabel="Drag or open slide menu"
+                                ariaLabel="Перетащить или открыть меню слайда"
                                 dataAttributes={{
                                     'data-slide-drag-handle': slideId,
                                 }}

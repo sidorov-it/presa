@@ -91,7 +91,7 @@ export default function ItemWrapper({
                     horizontal={true}
                     slideId={slideId}
                     isActive={isMenuOpen}
-                    ariaLabel="Drag handle"
+                    ariaLabel="Перетащить"
                     handleClick={() => useMenuStore.getState().openMenu({ smartLayoutItemId: itemId })}
                     handleKeyDown={() => {}}
                     handleDragStart={handleItemDragStart}

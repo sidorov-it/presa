@@ -82,8 +82,8 @@ const TemplateButton: React.FC<TemplateButtonProps> = ({
                     }}
                     role="button"
                     tabIndex={0}
-                    aria-label="Template Settings"
-                    title="Template Settings"
+                    aria-label="Настройки шаблона"
+                    title="Настройки шаблона"
                     data-template-button={slideId}
                 >
                     <svg

@@ -350,7 +350,7 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                     <button
                         onClick={() => handleContentAlignmentChange('top')}
                         className={`${styles.button} ${contentAlignment === 'top' ? styles.active : ''}`}
-                        aria-label="Align Top"
+                        aria-label="Выровнять по верхнему краю"
                         title="Вверх"
                     >
                         <MdOutlineVerticalAlignTop size={16} />
@@ -358,7 +358,7 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                     <button
                         onClick={() => handleContentAlignmentChange('center')}
                         className={`${styles.button} ${contentAlignment === 'center' ? styles.active : ''}`}
-                        aria-label="Align Center"
+                        aria-label="Выровнять по центру"
                         title="По центру"
                     >
                         <MdOutlineVerticalAlignCenter size={16} />
@@ -366,7 +366,7 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                     <button
                         onClick={() => handleContentAlignmentChange('bottom')}
                         className={`${styles.button} ${contentAlignment === 'bottom' ? styles.active : ''}`}
-                        aria-label="Align Bottom"
+                        aria-label="Выровнять по нижнему краю"
                         title="Вниз"
                     >
                         <MdOutlineVerticalAlignBottom size={16} />

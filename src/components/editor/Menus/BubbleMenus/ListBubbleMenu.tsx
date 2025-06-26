@@ -33,35 +33,35 @@ const ListBubbleMenu: React.FC<BubbleMenuProps> = ({ editor }) => {
             <button
                 onClick={handleBulletList}
                 className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('bulletList') ? 'bg-gray-200' : ''}`}
-                aria-label="Bullet list"
+                aria-label="Маркированный список"
             >
                 Маркированный
             </button>
             <button
                 onClick={handleOrderedList}
                 className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('orderedList') ? 'bg-gray-200' : ''}`}
-                aria-label="Ordered list"
+                aria-label="Нумерованный список"
             >
                 Нумерованный
             </button>
             <button
                 onClick={handleTaskList}
                 className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('taskList') ? 'bg-gray-200' : ''}`}
-                aria-label="Task list"
+                aria-label="Список задач"
             >
                 Задачи
             </button>
             <button
                 onClick={handleBold}
                 className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('bold') ? 'bg-gray-200' : ''}`}
-                aria-label="Bold"
+                aria-label="Жирный"
             >
                 Жирный
             </button>
             <button
                 onClick={handleItalic}
                 className={`p-1 hover:bg-gray-100 rounded ${editor.isActive('italic') ? 'bg-gray-200' : ''}`}
-                aria-label="Italic"
+                aria-label="Курсив"
             >
                 Курсив
             </button>

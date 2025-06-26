@@ -23,14 +23,14 @@ const DefaultBubbleMenu: React.FC<BubbleMenuProps> = ({ editor }) => {
             <button
                 onClick={handleBold}
                 className={`${styles.defaultBubbleMenuButton} ${editor.isActive('bold') ? styles.activeButton : ''}`}
-                aria-label="Bold"
+                aria-label="Жирный"
             >
                 Жирный
             </button>
             <button
                 onClick={handleItalic}
                 className={`${styles.defaultBubbleMenuButton} ${editor.isActive('italic') ? styles.activeButton : ''}`}
-                aria-label="Italic"
+                aria-label="Курсив"
             >
                 Курсив
             </button>

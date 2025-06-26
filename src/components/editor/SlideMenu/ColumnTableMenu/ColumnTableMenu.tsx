@@ -232,18 +232,18 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({ tableColumnIndex, pre
                 editors={tableColumnElements.map(element => tiptapRefs.current.editors[element.id]?.editor)}
                 className={bubbleStyles.button}
             /> */}
-            <MenuItem icon={<BiBold />} label="Bold" onClick={handleToggleBold} active={isBoldActive} />
-            <MenuItem icon={<BiItalic />} label="Italic" onClick={handleToggleItalic} active={isItalicActive} />
+            <MenuItem icon={<BiBold />} label="Жирный" onClick={handleToggleBold} active={isBoldActive} />
+            <MenuItem icon={<BiItalic />} label="Курсив" onClick={handleToggleItalic} active={isItalicActive} />
             <MenuItem
                 icon={<BiUnderline />}
-                label="Underline"
+                label="Подчеркнутый"
                 onClick={handleToggleUnderline}
                 active={isUnderlineActive}
             />
-            <MenuItem icon={<BiX />} label="Clear formatting" onClick={handleClearStyles} />
-            <MenuItem icon={<BiArrowToLeft />} label="Add column left" onClick={handleAddColumnLeft} />
-            <MenuItem icon={<BiArrowToRight />} label="Add column right" onClick={handleAddColumnRight} />
-            <MenuItem icon={<DeleteIcon />} label="Delete column" onClick={handleDeleteColumn} color="#f00" />
+            <MenuItem icon={<BiX />} label="Очистить форматирование" onClick={handleClearStyles} />
+            <MenuItem icon={<BiArrowToLeft />} label="Добавить столбец слева" onClick={handleAddColumnLeft} />
+            <MenuItem icon={<BiArrowToRight />} label="Добавить столбец справа" onClick={handleAddColumnRight} />
+            <MenuItem icon={<DeleteIcon />} label="Удалить столбец" onClick={handleDeleteColumn} color="#f00" />
         </>
     );
 };

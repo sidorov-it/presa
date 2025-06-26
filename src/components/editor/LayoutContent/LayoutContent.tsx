@@ -381,7 +381,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 data-layout-id={layout.id}
                 data-is-single-element-layout={isSingleElementSingleCellLayout ? 'true' : 'false'}
                 role="region"
-                aria-label={`Layout ${layout.id}`}
+                aria-label={`Макет ${layout.id}`}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
                 onClickCapture={handleLayoutClick}
@@ -393,7 +393,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                         className={styles.layoutDragHandle}
                         slideId={slideId}
                         isActive={isSelected && !isTableContentSelected}
-                        ariaLabel="Drag this layout"
+                        ariaLabel="Перетащить этот макет"
                         dataAttributes={{
                             'data-layout-drag-handle': layout.id,
                         }}
