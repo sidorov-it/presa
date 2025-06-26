@@ -2,7 +2,7 @@ import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/themes/light.css';
 import styles from './InfoIcon.module.css';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 
 interface InfoIconProps {
     tooltip: string;

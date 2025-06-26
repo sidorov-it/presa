@@ -14,7 +14,7 @@ import { ThemeIcon } from '@/components/icons';
 import { Popover } from '@/components/ui/Popover/Popover';
 import { useThemeStore } from '@/store/themeStore';
 import { Theme } from '@/types/theme';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import Link from 'next/link';
 import { FaEye, FaUser, FaSignOutAlt, FaCog } from 'react-icons/fa';
 import { HiOutlineCreditCard } from 'react-icons/hi2';

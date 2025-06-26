@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Popover as ChakraPopover, Portal, PopoverBody } from '@chakra-ui/react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import { useColorMode } from '../color-mode';
 import styles from './styles.module.css';
 

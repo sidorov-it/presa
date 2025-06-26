@@ -3,7 +3,7 @@
 import React, { CSSProperties, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useMenuStore } from '@/store/menuStore';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import styles from './BaseMenu.module.css';
 
 export interface BaseMenuProps {
