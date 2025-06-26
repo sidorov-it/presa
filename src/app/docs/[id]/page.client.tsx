@@ -11,9 +11,7 @@ import Editor from '@/components/editor/Editor/Editor';
 import { TipTapRefs } from '@/types';
 import UndoRedoControls from '@/components/UndoRedoControls/UndoRedoControls';
 import { ThemeIcon } from '@/components/icons';
-import { Popover } from '@/components/ui/Popover/Popover';
 import { useThemeStore } from '@/store/themeStore';
-import { Theme } from '@/types/theme';
 import Link from 'next/link';
 import { FaSignOutAlt, FaCog } from 'react-icons/fa';
 import { HiOutlineCreditCard } from 'react-icons/hi2';
@@ -25,6 +23,7 @@ import HistoryDebugPopup from '@/components/ui/HistoryDebugPopup';
 import DragDropDebugInfo from '@/components/DragDropDebugInfo';
 import NotFoundPage from '@/components/NotFoundPage/NotFoundPage';
 import { useColorMode } from '@/components/ui/color-mode';
+import { useMenuStore } from '@/store/menuStore';
 import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
@@ -35,36 +34,7 @@ import { clearAllThemeStyles } from '@/utils/themeUtils';
 import { SimplePdfExportButton } from '@/components/export';
 import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
 import { LuEye, LuSettings, LuUser } from 'react-icons/lu';
-
-const ThemeVariant = ({
-    theme,
-    currentTheme,
-    handleThemeChange,
-}: {
-    theme: Theme;
-    currentTheme?: Theme | null;
-    handleThemeChange: (theme: Theme) => void;
-}) => {
-    return (
-        <div
-            className={`${styles.themeOption}${currentTheme?.id === theme.id ? ` ${styles.themeOptionSelected}` : ''}`}
-            onClick={() => handleThemeChange(theme)}
-            role="button"
-            aria-label={`Выбрать тему ${theme.name}`}
-            onKeyDown={e => e.key === 'Enter' && handleThemeChange(theme)}
-        >
-            <div className={styles.themeColorPreview}>
-                <div
-                    className={styles.themeColorSegment1}
-                    style={{ backgroundColor: theme.colors.pageBackground.color }}
-                />
-                <div className={styles.themeColorSegment2} style={{ backgroundColor: theme.colors.slideBackground }} />
-                <div className={styles.themeColorSegment3} style={{ backgroundColor: theme.colors.primaryAccent }} />
-            </div>
-            <span>{theme.name}</span>
-        </div>
-    );
-};
+import Popover from '@/components/ui/Popover';
 
 export default function PresentationEditorPage() {
     const params = useParams();
@@ -78,7 +48,6 @@ export default function PresentationEditorPage() {
     // Access store values individually to prevent unnecessary re-renders
     const loadPresentation = usePresentationStore(state => state.loadPresentation);
     const checkPresentationExists = usePresentationStore(state => state.checkPresentationExists);
-    const setTheme = usePresentationStore(state => state.setTheme);
     const unsavedChanges = usePresentationStore(state => state.unsavedChanges);
     const savingStatus = usePresentationStore(state => state.savingStatus);
 
@@ -101,9 +70,7 @@ export default function PresentationEditorPage() {
 
     const [isLoading, setIsLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
-    const [isThemePopoverOpen, setIsThemePopoverOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-    const [themeTab, setThemeTab] = useState<'user' | 'default'>('user');
     const containerRef = useRef<HTMLDivElement>(null);
 
     // Cleanup function to clear theme styles when component unmounts
@@ -199,29 +166,6 @@ export default function PresentationEditorPage() {
         });
     }, [loadThemes]);
 
-    const handleThemeChange = useCallback(
-        (theme: Theme) => {
-            setCurrentTheme(theme);
-
-            if (presentation) {
-                setTheme(presentation.id, theme.id);
-            }
-
-            setIsThemePopoverOpen(false);
-        },
-        [presentation, setCurrentTheme, setTheme]
-    );
-
-    const handleSetDefaultTheme = useCallback(() => {
-        setCurrentTheme(defaultTheme);
-
-        if (presentation) {
-            setTheme(presentation.id, null);
-        }
-
-        setIsThemePopoverOpen(false);
-    }, [presentation, defaultTheme, setCurrentTheme, setTheme]);
-
     // Function to navigate to view mode
     const handleViewPresentation = useCallback(() => {
         if (presentation) {
@@ -260,65 +204,6 @@ export default function PresentationEditorPage() {
         []
     );
 
-    const RenderTabs = useMemo(() => {
-        return (
-            <>
-                <div className={styles.themeTabs}>
-                    <div
-                        className={`${styles.themeTab}${themeTab === 'user' ? ` ${styles.themeTabActive}` : ''}`}
-                        onClick={() => setThemeTab('user')}
-                    >
-                        Мои
-                    </div>
-                    <div
-                        className={`${styles.themeTab}${themeTab === 'default' ? ` ${styles.themeTabActive}` : ''}`}
-                        onClick={() => setThemeTab('default')}
-                    >
-                        Стандартные
-                    </div>
-                </div>
-                <div className={styles.themeGrid}>
-                    {themeTab === 'user' ? (
-                        <>
-                            {themes.length > 0 ? (
-                                themes.map(theme => (
-                                    <ThemeVariant
-                                        key={theme.id}
-                                        theme={theme}
-                                        currentTheme={currentTheme}
-                                        handleThemeChange={handleThemeChange}
-                                    />
-                                ))
-                            ) : (
-                                <div className={styles.noThemesText}>Нет доступных пользовательских тем</div>
-                            )}
-                            <div className={styles.themeManageLink}>
-                                <Link href="/themes" className={styles.themeManageLinkText}>
-                                    Управление темами
-                                </Link>
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            {defaultThemes.length > 0 ? (
-                                defaultThemes.map(theme => (
-                                    <ThemeVariant
-                                        key={theme.id}
-                                        theme={theme}
-                                        currentTheme={currentTheme}
-                                        handleThemeChange={handleThemeChange}
-                                    />
-                                ))
-                            ) : (
-                                <div className={styles.noThemesText}>Нет доступных тем</div>
-                            )}
-                        </>
-                    )}
-                </div>
-            </>
-        );
-    }, [themeTab, themes, defaultThemes, currentTheme, handleThemeChange]);
-
     if (isLoading) return loadingUI;
     if (notFound || !presentation) return <NotFoundPage />;
 
@@ -341,44 +226,26 @@ export default function PresentationEditorPage() {
                                 </div>
 
                                 <div className={styles.headerRight}>
-                                    <Popover
-                                        isOpen={isThemePopoverOpen}
-                                        onOpen={() => setIsThemePopoverOpen(true)}
-                                        onClose={() => setIsThemePopoverOpen(false)}
-                                        trigger={
-                                            <div
-                                                className={styles.themeButton}
-                                                role="button"
-                                                aria-label="Открыть выбор темы"
-                                                onClick={() => setIsThemePopoverOpen(!isThemePopoverOpen)}
-                                                onKeyDown={e =>
-                                                    e.key === 'Enter' && setIsThemePopoverOpen(!isThemePopoverOpen)
-                                                }
-                                            >
-                                                <ThemeIcon />
-                                                <span>Тема</span>
-                                            </div>
+                                    <div
+                                        className={styles.themeButton}
+                                        role="button"
+                                        aria-label="Открыть выбор темы"
+                                        onClick={() =>
+                                            useMenuStore
+                                                .getState()
+                                                .openSideMenu('theme-select', { presentationId: presentation.id })
                                         }
-                                        content={
-                                            <div className={styles.themePopover}>
-                                                <h2 className={styles.popoverTitle}>Выберите тему</h2>
-
-                                                {themes.length > 0 && RenderTabs}
-                                                {themes.length === 0 && (
-                                                    <>
-                                                        {defaultThemes.map(theme => (
-                                                            <ThemeVariant
-                                                                key={theme.id}
-                                                                theme={theme}
-                                                                currentTheme={currentTheme}
-                                                                handleThemeChange={handleThemeChange}
-                                                            />
-                                                        ))}
-                                                    </>
-                                                )}
-                                            </div>
-                                        }
-                                    />
+                                        onKeyDown={e => {
+                                            if (e.key === 'Enter') {
+                                                useMenuStore
+                                                    .getState()
+                                                    .openSideMenu('theme-select', { presentationId: presentation.id });
+                                            }
+                                        }}
+                                    >
+                                        <ThemeIcon />
+                                        <span>Тема</span>
+                                    </div>
 
                                     <Tooltip content="Просмотр">
                                         <button

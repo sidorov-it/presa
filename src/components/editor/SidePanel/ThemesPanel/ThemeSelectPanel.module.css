@@ -1,0 +1,28 @@
+.container {
+    padding: 1rem;
+    position: relative;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--color-text);
+}
+
+.closeButton {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.tabs {
+    margin-bottom: 1rem;
+}
+
+.themesGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-start;
+}
