@@ -119,7 +119,7 @@ export default function CardsDesign({
             </div>
 
             <div>
-                <Label>Цвет границы</Label>
+                <Label>Цвет границы/тени</Label>
 
                 <div style={{ display: 'flex', marginTop: '0.5rem' }}>
                     <ColorPicker

@@ -12,7 +12,7 @@
 }
 
 .slideWrapper {
-    border: none;
+    /* border: none; */
     width: 100%;
     max-width: 100%;
     min-height: 100vh;
@@ -34,7 +34,7 @@
 .pdfExport .slideWrapper {
     min-height: auto !important;
     height: auto !important;
-    overflow: visible !important;
+    /* overflow: visible !important; */
     width: 100% !important;
     max-width: none !important;
     margin: 0 !important;

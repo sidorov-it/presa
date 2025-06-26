@@ -13,9 +13,9 @@ import { Label } from '@/components/ui/Label';
 import { generateId } from '@/utils/id';
 
 import styles from './page.module.css';
-import { createNewTheme } from '@/constants/defaultTheme';
 import FullPageLoader from '@/components/FullPageLoader/FullPageLoader';
 import NotFoundPage from '@/components/NotFoundPage/NotFoundPage';
+import createNewTheme from '@/utils/theme/createNewTheme';
 
 const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) => {
     const params = use(props.params);

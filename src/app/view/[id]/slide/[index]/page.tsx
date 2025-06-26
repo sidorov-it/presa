@@ -2,10 +2,10 @@ import { prisma } from '@/lib/prisma';
 import { SlideViewer } from '@/components/viewer';
 import ViewerProvider from '@/components/viewer/ViewerProvider';
 import { notFound } from 'next/navigation';
-import { createNewTheme } from '@/constants/defaultTheme';
 import themeToCSSVariables from '@/utils/themeCssVariables';
 import { Theme } from '@/types/theme';
 import type { Metadata } from 'next';
+import createNewTheme from '@/utils/theme/createNewTheme';
 
 export const metadata: Metadata = {
     title: 'Слайд презентации',

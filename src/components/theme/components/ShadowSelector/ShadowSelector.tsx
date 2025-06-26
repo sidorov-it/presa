@@ -17,7 +17,7 @@ export default function ShadowSelector({
                 [
                     { value: 'none', shadow: 'none' },
                     { value: 'sm', shadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' },
-                    { value: 'md', shadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' },
+                    { value: 'md', shadow: '8px 8px 0px 0px rgb(0 0 0 / 0.1)' },
                 ].map(option => (
                     <button
                         key={option.value}

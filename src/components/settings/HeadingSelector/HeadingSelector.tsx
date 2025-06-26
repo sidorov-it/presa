@@ -1,5 +1,5 @@
 import { BiChevronDown } from 'react-icons/bi';
-import { HEADING_LEVELS } from '@/consts';
+import { HEADING_LEVELS } from '@/constants/consts';
 import styles from './HeadingSelector.module.css';
 
 export default function HeadingSelector({

@@ -18,8 +18,8 @@ import {
     FONT_SIZE_HEADING_3,
     FONT_SIZE_HEADING_1,
     FONT_SIZE_HEADING_2,
-} from '@/consts';
-import { FONT_SIZE_SMALL_TEXT } from '@/consts';
+} from '@/constants/consts';
+import { FONT_SIZE_SMALL_TEXT } from '@/constants/consts';
 import { Extension } from '@tiptap/core';
 
 export type FontSizeOptions = {

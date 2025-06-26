@@ -1,5 +1,5 @@
 import { Theme, ThemeData } from '../types/theme';
-import { createNewTheme } from '../constants/defaultTheme';
+import createNewTheme from '@/utils/theme/createNewTheme';
 import { convertBasicThemeToFull } from '@/utils/themeConverter';
 
 const createTheme = (data: ThemeData): Omit<Theme, 'id'> => {

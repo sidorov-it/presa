@@ -15,7 +15,7 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { EditorElement } from '@/types';
 import { MenuItem } from '@/types/templates';
 import getHeadingLevel from '@/utils/getHeadingLevel';
-import { NORMAL_TEXT_LEVEL } from '@/consts';
+import { NORMAL_TEXT_LEVEL } from '@/constants/consts';
 import getExtensions from './getExtensions';
 
 // Определяем типы пропсов

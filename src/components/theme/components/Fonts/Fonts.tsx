@@ -4,7 +4,7 @@ import { Span } from '@chakra-ui/react';
 import { Accordion } from '@chakra-ui/react';
 import { CiLineHeight } from 'react-icons/ci';
 import { CgSpaceBetween } from 'react-icons/cg';
-import { FONT_WEIGHTS } from '@/consts';
+import { FONT_WEIGHTS } from '@/constants/consts';
 import { FONT_OPTIONS } from '@/utils/fontLoader';
 
 import { Label } from '../../../ui/Label';
