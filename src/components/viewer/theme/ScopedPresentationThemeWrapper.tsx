@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Theme } from '@/types/theme';
-import ScopedThemeStylesApplier from './ScopedThemeStylesApplier';
+import ScopedThemeStylesApplier from './ScopedThemeStylesApplier/ScopedThemeStylesApplier';
 
 interface ScopedPresentationThemeWrapperProps {
     theme: Theme | null;

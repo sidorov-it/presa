@@ -6,6 +6,7 @@ interface ThemeState {
     themes: Theme[];
     defaultThemes: Theme[];
     currentTheme: Theme | null;
+    allThemes: Theme[];
     setCurrentTheme: (theme: Theme | undefined) => void;
     getCurrentThemeImageShape: () => ThemeDesignImageShape | null | undefined;
     getCurrentThemeSlideBackground: () => string | null | undefined;
@@ -21,6 +22,7 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
     themes: [],
     defaultThemes: [],
     currentTheme: null,
+    allThemes: [],
 
     setCurrentTheme: theme => {
         set({ currentTheme: theme });
@@ -122,6 +124,7 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
             set({
                 themes: themes.filter(t => !t.isDefault),
                 defaultThemes: themes.filter(t => t.isDefault),
+                allThemes: themes,
             });
         } catch (error) {
             console.error('Failed to load themes:', error);

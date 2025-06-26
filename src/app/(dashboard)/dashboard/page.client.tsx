@@ -19,7 +19,7 @@ import { HiOutlineDotsVertical } from 'react-icons/hi';
 export default function DashboardPage() {
     const router = useRouter();
     const { presentations, createPresentation, loadPresentationsList, deletePresentation } = usePresentationStore();
-    const { setCurrentTheme, loadThemes, themes } = useThemeStore();
+    const { setCurrentTheme, loadThemes, defaultThemes, allThemes } = useThemeStore();
     const [userPresentations, setUserPresentations] = useState<IPresentation[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
@@ -30,14 +30,11 @@ export default function DashboardPage() {
     const [presentationToDelete, setPresentationToDelete] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const defaultThemes = useThemeStore(state => state.defaultThemes);
-
     const menuRef = useRef<HTMLDivElement>(null);
 
     type SortOption = 'createdAt' | 'updatedAt' | 'title';
     const [sortBy, setSortBy] = useState<SortOption>('updatedAt');
 
-    // Load themes for previews
     useEffect(() => {
         loadThemes().catch(err => {
             console.error('Failed to load themes:', err);
@@ -284,7 +281,7 @@ export default function DashboardPage() {
             {!isLoading && userPresentations.length > 0 && (
                 <div className={styles.presentationsGrid}>
                     {userPresentations.map(presentation => {
-                        const theme = themes.find(t => t.id === presentation.themeId) || defaultTheme;
+                        const theme = allThemes.find(t => t.id === presentation.themeId) || defaultTheme;
 
                         return (
                             <Link

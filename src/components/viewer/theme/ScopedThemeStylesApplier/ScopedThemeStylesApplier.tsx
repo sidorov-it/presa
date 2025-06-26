@@ -6,6 +6,8 @@ import { useThemeStore } from '@/store/themeStore';
 import { useThemeApplication } from '@/hooks/useThemeApplication';
 import ThemeDebugButton from '@/components/debug/ThemeDebugButton';
 
+import styles from './ScopedThemeStylesApplier.module.css';
+
 interface ScopedThemeStylesApplierProps {
     theme: Theme | null;
     children: React.ReactNode;
@@ -27,7 +29,7 @@ const ScopedThemeStylesApplier = forwardRef<HTMLDivElement, ScopedThemeStylesApp
         });
 
         return (
-            <div ref={finalRef} className={`scoped-theme-container ${className}`}>
+            <div ref={finalRef} className={`scoped-theme-container ${styles.container} ${className}`}>
                 {children}
 
                 {process.env.NODE_ENV === 'development' && <ThemeDebugButton />}

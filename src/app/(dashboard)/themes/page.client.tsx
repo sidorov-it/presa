@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/Button';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import styles from './page.module.css';
 import ThemePreviewBlock from './components/ThemePreviewBlock';
@@ -13,7 +13,7 @@ import { useThemeStore } from '@/store/themeStore';
 import { getRequiredFontsFromTheme, loadFonts, unloadAllFonts } from '@/utils/fontLoader';
 
 export default function ThemesPage() {
-    const { themes, defaultThemes, loadThemes, addTheme, deleteTheme } = useThemeStore();
+    const { themes, allThemes, defaultThemes, loadThemes, addTheme, deleteTheme } = useThemeStore();
     const router = useRouter();
     const [tabIndex, setTabIndex] = useState(0);
 
@@ -25,7 +25,6 @@ export default function ThemesPage() {
     }, [loadThemes]);
 
     useEffect(() => {
-        const allThemes = [...themes, ...defaultThemes];
         const uniqueFontUrls = new Set<string>();
 
         allThemes.forEach(theme => {
@@ -38,27 +37,33 @@ export default function ThemesPage() {
         return () => {
             unloadAllFonts();
         };
-    }, [themes, defaultThemes]);
+    }, [allThemes]);
 
-    const handleDuplicate = async (themeId: string) => {
-        const theme = themes.find(theme => theme.id === themeId);
-        if (theme) {
-            await addTheme(theme);
-            toast.success('Тема скопирована');
-        }
-    };
-
-    const handleDelete = async (themeId: string) => {
-        if (window.confirm('Are you sure you want to delete this theme?')) {
-            try {
-                await deleteTheme(themeId);
-                toast.success('Theme deleted successfully');
-            } catch (error) {
-                console.error('Failed to delete theme:', error);
-                toast.error('Failed to delete theme');
+    const handleDuplicate = useCallback(
+        async (themeId: string) => {
+            const theme = allThemes.find(theme => theme.id === themeId);
+            if (theme) {
+                await addTheme(theme);
+                toast.success('Тема скопирована');
             }
-        }
-    };
+        },
+        [allThemes, addTheme]
+    );
+
+    const handleDelete = useCallback(
+        async (themeId: string) => {
+            if (window.confirm('Are you sure you want to delete this theme?')) {
+                try {
+                    await deleteTheme(themeId);
+                    toast.success('Theme deleted successfully');
+                } catch (error) {
+                    console.error('Failed to delete theme:', error);
+                    toast.error('Failed to delete theme');
+                }
+            }
+        },
+        [deleteTheme]
+    );
 
     return (
         <div className={styles.container}>
