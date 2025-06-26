@@ -14,7 +14,6 @@ import { ThemeIcon } from '@/components/icons';
 import { Popover } from '@/components/ui/Popover/Popover';
 import { useThemeStore } from '@/store/themeStore';
 import { Theme } from '@/types/theme';
-import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { FaEye, FaUser, FaSignOutAlt, FaCog } from 'react-icons/fa';
 import { HiOutlineCreditCard } from 'react-icons/hi2';
@@ -48,7 +47,7 @@ const ThemeVariant = ({
 }) => {
     return (
         <div
-            className={cn(styles.themeOption, currentTheme?.id === theme.id && styles.themeOptionSelected)}
+            className={`${styles.themeOption}${currentTheme?.id === theme.id ? ` ${styles.themeOptionSelected}` : ''}`}
             onClick={() => handleThemeChange(theme)}
             role="button"
             aria-label={`Выбрать тему ${theme.name}`}
@@ -264,13 +263,13 @@ export default function PresentationEditorPage() {
             <>
                 <div className={styles.themeTabs}>
                     <div
-                        className={cn(styles.themeTab, themeTab === 'user' && styles.themeTabActive)}
+                        className={`${styles.themeTab}${themeTab === 'user' ? ` ${styles.themeTabActive}` : ''}`}
                         onClick={() => setThemeTab('user')}
                     >
                         Мои
                     </div>
                     <div
-                        className={cn(styles.themeTab, themeTab === 'default' && styles.themeTabActive)}
+                        className={`${styles.themeTab}${themeTab === 'default' ? ` ${styles.themeTabActive}` : ''}`}
                         onClick={() => setThemeTab('default')}
                     >
                         Стандартные
@@ -287,25 +286,6 @@ export default function PresentationEditorPage() {
                                         currentTheme={currentTheme}
                                         handleThemeChange={handleThemeChange}
                                     />
-                                    // <div
-                                    //     key={theme.id}
-                                    //     className={cn(
-                                    //         styles.themeOption,
-                                    //         currentTheme?.id === theme.id && styles.themeOptionSelected
-                                    //     )}
-                                    //     onClick={() => handleThemeChange(theme)}
-                                    //     role="button"
-//     aria-label={`Выбрать тему ${theme.name}`}
-                                    //     onKeyDown={e => e.key === 'Enter' && handleThemeChange(theme)}
-                                    // >
-                                    //     <div
-                                    //         className={styles.themeColorPreview}
-                                    //         style={{
-                                    //             backgroundColor: theme.colors.primaryAccent,
-                                    //         }}
-                                    //     />
-                                    //     <span>{theme.name}</span>
-                                    // </div>
                                 ))
                             ) : (
                                 <div className={styles.noThemesText}>Нет доступных пользовательских тем</div>
@@ -382,11 +362,7 @@ export default function PresentationEditorPage() {
                                             <div className={styles.themePopover}>
                                                 <h3 className={styles.popoverTitle}>Выберите тему</h3>
                                                 <div
-                                                    className={cn(
-                                                        styles.defaultThemeOption,
-                                                        (!currentTheme || currentTheme.name === 'Default Theme') &&
-                                                            styles.themeOptionSelected
-                                                    )}
+                                                    className={`${styles.defaultThemeOption}${(!currentTheme || currentTheme.name === 'Default Theme') ? ` ${styles.themeOptionSelected}` : ''}`}
                                                     onClick={handleSetDefaultTheme}
                                                     role="button"
                                                     aria-label="Установить стандартную тему"

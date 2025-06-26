@@ -16,7 +16,6 @@ import {
     FaBars,
     FaTimes,
 } from 'react-icons/fa';
-import { clsx } from 'clsx';
 import Logo from '@/components/icons/Logo/Logo';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -81,7 +80,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
 
             {/* Sidebar */}
-            <div className={clsx(styles.sidebar, sidebarOpen && styles.sidebarOpen)}>
+            <div className={`${styles.sidebar}${sidebarOpen ? ` ${styles.sidebarOpen}` : ''}`}>
                 <div className={styles.logo}>
                     <div className={styles.logoText}>
                         <Logo />
@@ -105,7 +104,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             <Link
                                 key={item.path}
                                 href={item.path}
-                                className={clsx(styles.menuItem, isActive && styles.menuItemActive)}
+                                className={`${styles.menuItem}${isActive ? ` ${styles.menuItemActive}` : ''}`}
                             >
                                 <span className={styles.menuIcon}>{item.icon}</span>
                                 <span>{item.label}</span>

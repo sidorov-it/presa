@@ -1,6 +1,5 @@
 import React from 'react';
 import styles from './MenuItem.module.css';
-import { clsx } from 'clsx';
 
 export interface MenuItemProps {
     icon: React.ReactNode;
@@ -31,7 +30,7 @@ export const MenuItem: React.FC<MenuItemProps> = ({
     return (
         <li>
             <button
-                className={clsx(styles.menuItem, active && styles.active, color === '#f00' && styles.danger, className)}
+                className={`${styles.menuItem}${active ? ` ${styles.active}` : ''}${color === '#f00' ? ` ${styles.danger}` : ''}${className ? ` ${className}` : ''}`}
                 onClick={disabled ? undefined : onClick}
                 aria-label={label}
                 tabIndex={disabled ? -1 : 0}
