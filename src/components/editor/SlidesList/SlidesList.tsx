@@ -4,6 +4,9 @@ import React, { useState, useRef, memo, useCallback } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { Slide } from '@/types';
 import { useDndStore } from '@/store/dndStore';
+import { generateId } from '@/utils/id';
+import MoveIcon from '@/components/icons/MoveIcon';
+import { useHandleDragStart } from '@/contexts/DragDropContext';
 
 import styles from './SlidesList.module.css';
 
@@ -15,14 +18,17 @@ const SlideItem = memo(
         isActive,
         isLastSlide,
         onSlideSelect,
+        onContextMenu,
     }: {
         slide: Slide;
         index: number;
         isActive: boolean;
         isLastSlide: boolean;
         onSlideSelect: (slideId: string, scroll: boolean) => void;
+        onContextMenu: (e: React.MouseEvent, slide: Slide) => void;
     }) => {
         // Extract text content from the first element if available
+        const handleDragStart = useHandleDragStart();
         const getSlideTitle = useCallback(() => {
             if (!slide.layouts.length || !slide.layouts[0].elements.length) {
                 return `Слайд ${index + 1}`;
@@ -122,6 +128,7 @@ const SlideItem = memo(
                     ${isBottomIndicator ? styles.bottomIndicator : ''}
                 `}
                 onClick={handleItemClick}
+                onContextMenu={e => onContextMenu(e, slide)}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
@@ -129,15 +136,17 @@ const SlideItem = memo(
                 onKeyDown={handleItemKeyDown}
                 data-slide-id={slide.id}
             >
-                <div className={styles.slide}>
-                    <div className={styles.slideContent}>
-                        <div className={styles.slideTitle}>
-                            <p className={styles.slideTitleText}>{slideTitle}</p>
-                            <div className={styles.slidePreview}>
-                                <span className={styles.slidePreviewText}>Предпросмотр</span>
-                            </div>
-                        </div>
-                    </div>
+                <div
+                    className={styles.slide}
+                    data-slide-drag-handle={slide.id}
+                    draggable
+                    onDragStart={e => handleDragStart(e, { slideId: slide.id, dragElementType: 'slide' })}
+                >
+                    <span className={styles.slideNumber}>{index + 1}</span>
+                    <span className={styles.dragIcon}>
+                        <MoveIcon />
+                    </span>
+                    <span className={styles.slideTitleText}>{slideTitle || 'Untitled'}</span>
                 </div>
             </div>
         );
@@ -154,10 +163,12 @@ interface SlidesListProps {
 
 const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlideId, onSlideSelect }) => {
     const [isCollapsed, setIsCollapsed] = useState(true);
+    const [copiedSlide, setCopiedSlide] = useState<Slide | null>(null);
+    const [contextMenu, setContextMenu] = useState<{ x: number; y: number; slide: Slide } | null>(null);
     const panelRef = useRef<HTMLDivElement>(null);
 
-    const { getPresentation } = usePresentationStore();
-    const slides = getPresentation(presentationId)?.slides || [];
+    const { getPresentation, addEmptySlide, addSlide, deleteSlide, updateSlide } = usePresentationStore();
+    const slides = (getPresentation(presentationId)?.slides || []).filter(s => !s.hidden);
 
     // Set the presentation ID for drag and drop operations
     useDndStore(state => state.setPresentationId(presentationId));
@@ -185,6 +196,47 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
         },
         [handleToggleCollapse]
     );
+
+    const handleContextMenu = useCallback(
+        (e: React.MouseEvent, slide: Slide) => {
+            e.preventDefault();
+            setContextMenu({ x: e.clientX, y: e.clientY, slide });
+        },
+        []
+    );
+
+    const handleCopy = useCallback(() => {
+        if (!contextMenu) return;
+        setCopiedSlide(contextMenu.slide);
+        setContextMenu(null);
+    }, [contextMenu]);
+
+    const handleAddBelow = useCallback(() => {
+        if (!contextMenu) return;
+        const index = slides.findIndex(s => s.id === contextMenu.slide.id);
+        addEmptySlide(presentationId, index + 1);
+        setContextMenu(null);
+    }, [contextMenu, slides, presentationId, addEmptySlide]);
+
+    const handleAddCopiedBelow = useCallback(() => {
+        if (!contextMenu || !copiedSlide) return;
+        const index = slides.findIndex(s => s.id === contextMenu.slide.id);
+        const newSlide = { ...copiedSlide, id: generateId() };
+        addSlide(presentationId, newSlide, index + 1);
+        setContextMenu(null);
+    }, [contextMenu, copiedSlide, slides, presentationId, addSlide]);
+
+    const handleHide = useCallback(() => {
+        if (!contextMenu) return;
+        updateSlide(presentationId, contextMenu.slide.id, { hidden: true });
+        setContextMenu(null);
+    }, [contextMenu, presentationId, updateSlide]);
+
+    const handleDelete = useCallback(() => {
+        if (!contextMenu) return;
+        deleteSlide(presentationId, contextMenu.slide.id);
+        setContextMenu(null);
+    }, [contextMenu, presentationId, deleteSlide]);
 
     // if (slides.length === 0) {
     //     return (
@@ -292,6 +344,9 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
             </div>
 
             <div ref={panelRef} className={styles.leftPanelContent}>
+                <button className={styles.createButton} onClick={() => addEmptySlide(presentationId, slides.length)}>
+                    Создать
+                </button>
                 {slides.length === 0 && (
                     <div className={styles.emptyContainer}>
                         <p className={styles.noSlidesText}>Нет слайдов</p>
@@ -307,12 +362,37 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
                                 isActive={slide.id === activeSlideId}
                                 isLastSlide={index === slides.length - 1}
                                 onSlideSelect={onSlideSelect}
-                                presentationId={presentationId}
+                                onContextMenu={handleContextMenu}
                             />
                         ))}
                     </div>
                 )}
             </div>
+            {contextMenu && (
+                <div
+                    className={styles.contextMenu}
+                    style={{ top: contextMenu.y, left: contextMenu.x }}
+                    onMouseLeave={() => setContextMenu(null)}
+                >
+                    <div className={styles.contextMenuItem} onClick={handleCopy}>
+                        Copy
+                    </div>
+                    <div className={styles.contextMenuItem} onClick={handleAddBelow}>
+                        Add slide below
+                    </div>
+                    {copiedSlide && (
+                        <div className={styles.contextMenuItem} onClick={handleAddCopiedBelow}>
+                            Add copied slide below
+                        </div>
+                    )}
+                    <div className={styles.contextMenuItem} onClick={handleHide}>
+                        Hide
+                    </div>
+                    <div className={styles.contextMenuItem} onClick={handleDelete}>
+                        Delete
+                    </div>
+                </div>
+            )}
         </div>
     );
 });

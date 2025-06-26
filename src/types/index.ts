@@ -237,6 +237,7 @@ export interface Slide {
         height?: string;
     };
     contentAlignment?: 'top' | 'center' | 'bottom';
+    hidden?: boolean;
 }
 
 export interface BackgroundSettings {
