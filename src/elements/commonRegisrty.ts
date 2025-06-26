@@ -11,7 +11,7 @@ import {
     FaChartPie,
 } from 'react-icons/fa';
 import { FaRegChartBar, FaListCheck } from 'react-icons/fa6';
-import { LuHeading1, LuHeading2, LuHeading3, LuHeading4 } from 'react-icons/lu';
+import { LuChartColumn, LuHeading1, LuHeading2, LuHeading3, LuHeading4 } from 'react-icons/lu';
 import { TbChartDonutFilled } from 'react-icons/tb';
 import { IconType } from 'react-icons';
 
@@ -794,7 +794,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         customMenuType: 'chart',
         label: 'Столбчатая диаграмма',
         elementVariant: 'bar',
-        Icon: FaChartBar,
+        Icon: LuChartColumn,
         props: {
             data: [
                 {

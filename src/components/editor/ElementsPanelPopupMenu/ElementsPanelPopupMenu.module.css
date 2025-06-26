@@ -1,0 +1,158 @@
+
+.popupMenu {
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    transform: translateY(-50%);
+    margin-right: 0.25rem;
+    z-index: 110;
+    pointer-events: auto;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.popupMenuContent {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    width: 28rem;
+    max-height: 80vh;
+    overflow-y: auto;
+    background-color: #ffffff;
+    border: 1px solid var(--chakra-colors-chakra-border-color);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+:global(.dark) .popupMenuContent {
+    background-color: #2d2d2d;
+}
+
+.popupMenuBody {
+    margin-top: 0.5rem;
+}
+
+.subCategoriesContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.subCategoryWrapper {
+    margin-bottom: 0.25rem;
+}
+
+
+.subCategoryLabel {
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 600;
+    font-variant-ligatures: normal;
+    font-feature-settings: "liga" 1;
+    -webkit-font-smoothing: antialiased;
+}
+
+.subCategoryElements {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+.popupMenuHeader {
+    display: flex;
+    margin-bottom: 0.75rem;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--chakra-colors-chakra-border-color);
+    padding-bottom: 0.75rem;
+}
+
+.popupMenuHeaderTitle {
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-weight: 600;
+    color: var(--chakra-colors-chakra-text);
+}
+
+.popupMenuHeaderCloseButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--chakra-colors-gray-400);
+    border-radius: 0.375rem;
+    padding: 0.25rem;
+    transition: all 0.2s ease;
+}
+
+.popupMenuHeaderCloseButton:hover {
+    color: var(--chakra-colors-gray-900);
+    background-color: var(--chakra-colors-gray-100);
+}
+
+.popupMenuHeaderCloseButton:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+
+.elementItem {
+    padding: 0.75rem 0.25rem;
+    border-radius: 0.5rem;
+    background-color: #ffffff;
+    color: var(--chakra-colors-chakra-text);
+    border: 1px solid var(--chakra-colors-chakra-border-color);
+    cursor: grab;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    transition: all 0.2s ease-in-out;
+}
+
+:global(.dark) .elementItem {
+    background-color: #4e4e4e;
+}
+
+:global(.dark) .elementItem {
+    background-color: #4e4e4e;
+    border: none;
+}
+
+.elementItem:hover {
+    background-color: var(--chakra-colors-gray-100);
+    /* transform: translateY(-2px); */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+:global(.dark) .elementItem:hover {
+    background-color: var(--chakra-colors-gray-600);
+}
+
+.elementItem:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+}
+
+.elementItemIcon {
+    font-size: 1.25rem;
+    color: var(--chakra-colors-gray-900);
+}
+
+.elementItemLabel {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    text-align: center;
+    color: var(--chakra-colors-chakra-text);
+    font-weight: 500;
+    font-variant-ligatures: normal;
+    font-feature-settings: "liga" 1;
+    -webkit-font-smoothing: antialiased;
+}
+
+:global(.dark) .popupMenuHeaderCloseButton:hover {
+    color: var(--chakra-colors-gray-100);
+    background-color: var(--chakra-colors-gray-700);
+}
+
+:global(.dark) .elementItemIcon {
+    color: var(--chakra-colors-gray-100);
+}

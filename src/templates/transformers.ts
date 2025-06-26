@@ -1,7 +1,7 @@
 import { MenuItem } from '@/types/templates';
 import { SlideTemplateCore } from '@/types/templates';
 import { SlideTemplatesRegistry } from './SlideTemplatesRegistry';
-import { GrTemplate } from 'react-icons/gr';
+import { LuLayoutDashboard } from 'react-icons/lu';
 
 // Трансформеры для разных представлений
 export class TemplateTransformers {
@@ -71,7 +71,7 @@ export class TemplateBuilders {
         return {
             id: 'slide-templates',
             label: 'Шаблоны слайдов',
-            Icon: GrTemplate,
+            Icon: LuLayoutDashboard,
             isSlideTemplate: true,
             subCategories: Array.from(categories.values()),
         };

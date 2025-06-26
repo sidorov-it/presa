@@ -11,8 +11,7 @@ interface AIEditButtonProps {
     presentationId: string;
     slideId: string;
     className?: string;
-    isHovered: boolean;
-    isSelected: boolean;
+    isShowed: boolean;
     tiptapRefs: MutableRefObject<TipTapRefs>;
 }
 
@@ -20,24 +19,13 @@ const AIEditButton: React.FC<AIEditButtonProps> = ({
     presentationId,
     slideId,
     className = '',
-    isHovered,
-    isSelected,
+    isShowed,
     tiptapRefs,
 }) => {
-    const [isVisible, setIsVisible] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const popupRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLDivElement>(null);
-
-    // Show button animation
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setIsVisible(true);
-        }, 10);
-
-        return () => clearTimeout(timer);
-    }, []);
 
     // Handle click outside to close popup
     useEffect(() => {
@@ -143,20 +131,12 @@ const AIEditButton: React.FC<AIEditButtonProps> = ({
     // const handleAddDetails = () =>
     //     handleAiAction('/api/ai/add-details', 'Добавлены подробности', 'Не удалось добавить подробности');
 
-    const buttonStyle: React.CSSProperties = {
-        border: '1px solid #666',
-        backgroundColor: 'white',
-        color: '#333',
-        opacity: isVisible ? 1 : 0,
-    };
-
     return (
         <>
-            {(isHovered || isSelected || isOpen) && (
+            {(isShowed || isOpen) && (
                 <div
                     ref={buttonRef}
-                    className={`${styles.aiButton} ${className}`}
-                    style={buttonStyle}
+                    className={`${styles.aiButton} ${className} ${isOpen ? styles.aiButtonOpen : ''}`}
                     onClick={handleClick}
                     onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
                         if (e.key === 'Enter' || e.key === ' ') {

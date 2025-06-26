@@ -319,3 +319,21 @@
 .pdfExport [data-template-type] .resizeHandleBottom {
     display: none !important;
 }
+
+.slideButtons {
+    position: absolute;
+    top: 0.75rem;
+    left: 2.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+
+    border-color: rgba(0, 0, 0, 0.2);
+    color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 0.125rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 22;
+    display: flex;
+}

@@ -1,7 +1,8 @@
-import { FaFont, FaImage, FaChartBar, FaBox } from 'react-icons/fa';
+
 import { MenuCategory } from '@/types/templates';
 import { TemplateBuilders } from '@/templates/transformers';
 import { ElementRegistry } from './commonRegisrty';
+import { LuBox, LuType, LuImage, LuChartColumn } from 'react-icons/lu'
 
 export const SlideTemplates: MenuCategory = TemplateBuilders.buildMenuRegistry();
 
@@ -11,7 +12,7 @@ export const menuRegistry: MenuCategory[] = [
         id: 'smart-layouts',
         label: 'Структурные блоки',
         excludeFromTable: true,
-        Icon: FaBox,
+        Icon: LuBox,
         elements: [
             ElementRegistry.SmartLayoutImagesWithText,
             ElementRegistry.SmartLayoutTextBlocks,
@@ -22,7 +23,7 @@ export const menuRegistry: MenuCategory[] = [
     {
         id: 'basic',
         label: 'Базовые элементы',
-        Icon: FaFont,
+        Icon: LuType,
         subCategories: [
             {
                 id: 'text',
@@ -66,13 +67,13 @@ export const menuRegistry: MenuCategory[] = [
     {
         id: 'media',
         label: 'Медиа',
-        Icon: FaImage,
+        Icon: LuImage,
         elements: [ElementRegistry.Image],
     },
     {
         id: 'charts',
         label: 'Диаграммы',
-        Icon: FaChartBar,
+        Icon: LuChartColumn,
         elements: [
             ElementRegistry.BarChart,
             ElementRegistry.LineChart,

@@ -450,20 +450,20 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                                     handleDragStart(e, { elementId: null, slideId, dragElementType: 'slide' });
                                 }}
                             />
-                            <TemplateButton
-                                presentationId={presentationId}
-                                slideId={slideId}
-                                isHovered={isHovered}
-                                isSelected={isSelected}
-                                tiptapRefs={tiptapRefs}
-                            />
-                            <AIEditButton
-                                presentationId={presentationId}
-                                slideId={slideId}
-                                isHovered={isHovered}
-                                isSelected={isSelected}
-                                tiptapRefs={tiptapRefs}
-                            />
+                            <div className={styles.slideButtons}>
+                                <TemplateButton
+                                    presentationId={presentationId}
+                                    slideId={slideId}
+                                    isShowed={isHovered || isSelected}
+                                    tiptapRefs={tiptapRefs}
+                                />
+                                <AIEditButton
+                                    presentationId={presentationId}
+                                    slideId={slideId}
+                                    isShowed={isHovered || isSelected}
+                                    tiptapRefs={tiptapRefs}
+                                />
+                            </div>
                         </>
                     )}
 

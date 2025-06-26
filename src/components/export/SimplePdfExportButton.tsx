@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { FaDownload, FaSpinner } from 'react-icons/fa';
+import { LuDownload, LuLoader } from 'react-icons/lu';
 import { Tooltip } from '@/components/ui/tooltip';
 import styles from './SimplePdfExportButton.module.css';
 import { toast } from 'sonner';
@@ -100,9 +100,9 @@ const SimplePdfExportButton: React.FC<SimplePdfExportButtonProps> = ({
                 disabled={isExporting}
             >
                 {isExporting ? (
-                    <FaSpinner aria-hidden="true" className={styles.spinner} />
+                    <LuLoader aria-hidden="true" className={styles.spinner} />
                 ) : (
-                    <FaDownload aria-hidden="true" />
+                    <LuDownload className={styles.downloadIcon} aria-hidden="true" />
                 )}
             </button>
         </Tooltip>

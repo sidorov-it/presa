@@ -3,8 +3,9 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { TipTapRefs } from '@/types';
 import styles from './UndoRedoControls.module.css';
 import { useHistoryStore } from '@/store/historyStore';
-import UndoIcon from './undo.svg';
-import RedoIcon from './redo.svg';
+import { LuRedo2, LuUndo2 } from 'react-icons/lu';
+// import UndoIcon from './undo.svg';
+// import RedoIcon from './redo.svg';
 // import RedoIcon from './redo.svg';
 
 interface UndoRedoControlsProps {
@@ -78,7 +79,7 @@ const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, cla
                 tabIndex={0}
             >
                 <div className={styles.icon}>
-                    <UndoIcon />
+                    <LuUndo2 className={styles.undoIcon} />
                 </div>
                 {/* <svg className={styles.icon} viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -113,7 +114,7 @@ const UndoRedoControls: React.FC<UndoRedoControlsProps> = ({ presentationId, cla
                 tabIndex={0}
             >
                 <div className={styles.icon}>
-                    <RedoIcon />
+                    <LuRedo2 className={styles.redoIcon} />
                 </div>
                 {/* <svg className={styles.icon} viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path

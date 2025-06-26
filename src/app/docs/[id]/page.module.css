@@ -97,48 +97,19 @@
 .headerRight {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 1rem;
 }
 
 .themeButton {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 8px;
     cursor: pointer;
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: 0.375rem 0.75rem;
+    border-radius: 25px;
+    padding: 6px 18px;
     transition: all 150ms ease;
 }
-
-/* .themeButton:hover {
-    background-color: #f3f4f6;
-} */
-
-.iconButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem;
-    border-radius: 9999px;
-    background-color: var(--color-background);
-    color: var(--color-text-light);
-    border: none;
-    transition: all 150ms ease;
-}
-
-.viewButton {
-    composes: iconButton;
-}
-
-.downloadButton {
-    composes: iconButton;
-}
-
-/* .viewButton:hover {
-    background-color: var(--color-primary-dark);
-    color: white;
-} */
 
 .viewButtonText {
     font-size: 0.875rem;
@@ -147,8 +118,8 @@
 }
 
 .settingsButton {
-    margin-left: 0.5rem;
-    padding: 0.5rem;
+    /* margin-left: 0.5rem; */
+    /* padding: 0.5rem; */
     border-radius: 9999px;
     transition: all 150ms ease;
 }
@@ -180,7 +151,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    padding: 0.375rem;
+    /* padding: 0.375rem; */
     border-radius: var(--radius-md);
     transition: background-color 150ms ease;
 }
@@ -222,14 +193,14 @@
 }
 
 .popoverContent {
-    width: 18rem;
-    padding: 0.75rem;
+    width: 270px;
+    padding: 16px;
 }
 
 .popoverTitle {
-    font-size: 0.875rem;
+    font-size: 18px;
     font-weight: 500;
-    margin-top: 0.5rem;
+    margin-bottom: 8px;
 }
 
 .themeGrid {
@@ -241,17 +212,21 @@
     display: flex;
     gap: 0.5rem;
     margin-bottom: 0.5rem;
+    justify-content: space-between;
 }
 
 .themeTab {
     padding: 0.25rem 0.5rem;
     cursor: pointer;
     border-radius: var(--radius-sm);
-    font-size: 0.875rem;
+    font-size: 14px;
+    flex: 1;
+    text-align: center;
 }
 
 .themeTabActive {
-    background-color: var(--color-primary-light, #eff6ff);
+    background-color: rgba(59, 130, 246, 0.9);
+    color: white;
 }
 
 :global(.dark) .themeTabActive {
@@ -275,10 +250,36 @@
 }
 
 .themeColorPreview {
-    width: 1.25rem;
-    height: 1.25rem;
-    border-radius: 9999px;
-    margin-right: 0.5rem;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.themeColorSegment1,
+.themeColorSegment2,
+.themeColorSegment3 {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    clip-path: polygon(50% 50%, 50% 0, 100% 0, 100% 100%, 50% 100%);
+    transform-origin: 50% 50%;
+}
+
+.themeColorSegment1 {
+    transform: rotate(0deg);
+}
+
+.themeColorSegment2 {
+    transform: rotate(120deg);
+}
+
+.themeColorSegment3 {
+    transform: rotate(240deg);
 }
 
 .defaultThemeOption {

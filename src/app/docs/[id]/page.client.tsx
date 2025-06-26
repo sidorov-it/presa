@@ -15,10 +15,9 @@ import { Popover } from '@/components/ui/Popover/Popover';
 import { useThemeStore } from '@/store/themeStore';
 import { Theme } from '@/types/theme';
 import Link from 'next/link';
-import { FaEye, FaUser, FaSignOutAlt, FaCog } from 'react-icons/fa';
+import { FaSignOutAlt, FaCog } from 'react-icons/fa';
 import { HiOutlineCreditCard } from 'react-icons/hi2';
 import BackgroundSettingsModal from '@/components/editor/BackgroundSettingsModal/BackgroundSettingsModal';
-import { HiOutlineCog6Tooth } from 'react-icons/hi2';
 import styles from './page.module.css';
 import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
 import ThemeDebugButton from '@/components/debug/ThemeDebugButton';
@@ -35,6 +34,7 @@ import MobileWarningOverlay from '@/components/MobileWarningOverlay/MobileWarnin
 import { clearAllThemeStyles } from '@/utils/themeUtils';
 import { SimplePdfExportButton } from '@/components/export';
 import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
+import { LuEye, LuSettings, LuUser } from 'react-icons/lu';
 
 const ThemeVariant = ({
     theme,
@@ -53,12 +53,14 @@ const ThemeVariant = ({
             aria-label={`Выбрать тему ${theme.name}`}
             onKeyDown={e => e.key === 'Enter' && handleThemeChange(theme)}
         >
-            <div
-                className={styles.themeColorPreview}
-                style={{
-                    backgroundColor: theme.colors.primaryAccent,
-                }}
-            />
+            <div className={styles.themeColorPreview}>
+                <div
+                    className={styles.themeColorSegment1}
+                    style={{ backgroundColor: theme.colors.pageBackground.color }}
+                />
+                <div className={styles.themeColorSegment2} style={{ backgroundColor: theme.colors.slideBackground }} />
+                <div className={styles.themeColorSegment3} style={{ backgroundColor: theme.colors.primaryAccent }} />
+            </div>
             <span>{theme.name}</span>
         </div>
     );
@@ -258,7 +260,7 @@ export default function PresentationEditorPage() {
         []
     );
 
-    const renderTabs = useMemo(() => {
+    const RenderTabs = useMemo(() => {
         return (
             <>
                 <div className={styles.themeTabs}>
@@ -343,7 +345,6 @@ export default function PresentationEditorPage() {
                                         isOpen={isThemePopoverOpen}
                                         onOpen={() => setIsThemePopoverOpen(true)}
                                         onClose={() => setIsThemePopoverOpen(false)}
-                                        portalContainer={containerRef.current}
                                         trigger={
                                             <div
                                                 className={styles.themeButton}
@@ -360,22 +361,9 @@ export default function PresentationEditorPage() {
                                         }
                                         content={
                                             <div className={styles.themePopover}>
-                                                <h3 className={styles.popoverTitle}>Выберите тему</h3>
-                                                <div
-                                                    className={`${styles.defaultThemeOption}${(!currentTheme || currentTheme.name === 'Default Theme') ? ` ${styles.themeOptionSelected}` : ''}`}
-                                                    onClick={handleSetDefaultTheme}
-                                                    role="button"
-                                                    aria-label="Установить стандартную тему"
-                                                    onKeyDown={e => e.key === 'Enter' && handleSetDefaultTheme()}
-                                                >
-                                                    <div
-                                                        className={styles.themeColorPreview}
-                                                        style={{ backgroundColor: '#3b82f6' }}
-                                                    />
-                                                    <span>Стандартная тема</span>
-                                                    <span className={styles.defaultLabel}>По умолчанию</span>
-                                                </div>
-                                                {themes.length > 0 && renderTabs}
+                                                <h2 className={styles.popoverTitle}>Выберите тему</h2>
+
+                                                {themes.length > 0 && RenderTabs}
                                                 {themes.length === 0 && (
                                                     <>
                                                         {defaultThemes.map(theme => (
@@ -392,15 +380,13 @@ export default function PresentationEditorPage() {
                                         }
                                     />
 
-                                    <div className={styles.headerDivider} />
-
                                     <Tooltip content="Просмотр">
                                         <button
                                             onClick={handleViewPresentation}
                                             className={styles.viewButton}
                                             aria-label="Просмотреть презентацию"
                                         >
-                                            <FaEye className={styles.viewIcon} aria-hidden="true" />
+                                            <LuEye className={styles.viewIcon} aria-hidden="true" />
                                         </button>
                                     </Tooltip>
 
@@ -420,6 +406,9 @@ export default function PresentationEditorPage() {
                                             <FaDownload className={styles.downloadIcon} aria-hidden="true" />
                                         </button>
                                     </Tooltip> */}
+                                    <UndoRedoControls presentationId={presentation.id} tiptapRefs={tiptapRefs} />
+
+                                    <div className={styles.headerDivider} />
 
                                     <button
                                         type="button"
@@ -429,9 +418,10 @@ export default function PresentationEditorPage() {
                                         onClick={handleOpenBgModal}
                                         onKeyDown={handleKeyDownCog}
                                     >
-                                        <HiOutlineCog6Tooth className={styles.settingsIcon} aria-hidden="true" />
+                                        <LuSettings className={styles.settingsIcon} aria-hidden="true" />
                                     </button>
-                                    <UndoRedoControls presentationId={presentation.id} tiptapRefs={tiptapRefs} />
+
+                                    <div className={styles.headerDivider} />
 
                                     <Popover
                                         isOpen={isUserMenuOpen}
@@ -445,7 +435,7 @@ export default function PresentationEditorPage() {
                                                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                                                 onKeyDown={e => e.key === 'Enter' && setIsUserMenuOpen(!isUserMenuOpen)}
                                             >
-                                                <FaUser className={styles.userIcon} />
+                                                <LuUser className={styles.userIcon} />
                                                 {/* Username removed for compact header */}
                                             </div>
                                         }

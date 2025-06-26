@@ -1,4 +1,12 @@
+
+.downloadIcon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--color-text-light);
+}
+
 .spinner {
+    composes: downloadIcon;
     animation: spin 1s linear infinite;
 }
 
