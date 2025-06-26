@@ -1,8 +1,10 @@
 .slideContent {
     overflow: auto;
     cursor: default;
-    /* border: none; */
+    position: relative;
+    z-index: 1;
 }
+
 .slideContent::before {
     background-color: var(--presentation-slide-background) !important;
 }
@@ -12,11 +14,22 @@
 }
 
 .slideWrapper {
-    /* border: none; */
     width: 100%;
     max-width: 100%;
     min-height: 100vh;
-    /* overflow: auto; */
+    position: relative;
+}
+
+.slideWrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--presentation-slide-background);
+    opacity: var(--presentation-slide-opacity);
+    z-index: 0;
 }
 
 /* PDF Export specific styles */
@@ -34,7 +47,6 @@
 .pdfExport .slideWrapper {
     min-height: auto !important;
     height: auto !important;
-    /* overflow: visible !important; */
     width: 100% !important;
     max-width: none !important;
     margin: 0 !important;
@@ -47,11 +59,9 @@
     min-height: auto !important;
     height: auto !important;
     overflow: visible !important;
-    /* border: none !important; */
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     cursor: default !important;
-    /* background-color: var(--presentation-slide-background) !important; */
 }
 
 /* Ensure masks are properly applied in PDF export */
