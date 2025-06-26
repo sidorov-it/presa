@@ -63,3 +63,11 @@ export const HEADING_LEVELS = [
     { label: 'Большой заголовок', level: BIG_HEADING_LEVEL },
     { label: 'Очень большой заголовок', level: VERY_BIG_HEADING_LEVEL },
 ];
+
+export const THEME_CONSTANTS = {
+    SHADOWS: {
+        NONE: 'none',
+        SM: '0 10px 15px -3px {borderColor},0 4px 6px -2px {borderColor}',
+        MD: '8px 8px 0px 0px {borderColor}',
+    },
+};

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { Theme, ThemeDesignImageShape } from '@/types/theme';
-import { createNewTheme } from '@/constants/defaultTheme';
+import createNewTheme from '@/utils/theme/createNewTheme';
 
 interface ThemeState {
     themes: Theme[];

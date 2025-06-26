@@ -52,7 +52,7 @@ export const DEFAULT_THEME: ThemeData = {
     },
 };
 
-export const createNewTheme = (): Omit<Theme, 'id'> => {
+const createNewTheme = (): Omit<Theme, 'id'> => {
     return {
         name: '',
         description: '',
@@ -85,3 +85,5 @@ export const createNewTheme = (): Omit<Theme, 'id'> => {
         updatedAt: new Date(),
     };
 };
+
+export default createNewTheme;

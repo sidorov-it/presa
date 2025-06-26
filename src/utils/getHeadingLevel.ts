@@ -20,7 +20,7 @@ import {
     HEADING_2_LEVEL,
     HEADING_3_LEVEL,
     HEADING_4_LEVEL,
-} from '@/consts';
+} from '@/constants/consts';
 
 export default function getHeadingLevel(editor: Editor) {
     // Определяем текстовые стили для проверки fontSize

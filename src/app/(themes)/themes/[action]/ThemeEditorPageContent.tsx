@@ -13,9 +13,9 @@ import { Label } from '@/components/ui/Label';
 import { generateId } from '@/utils/id';
 
 import styles from './page.module.css';
-import { createNewTheme } from '@/constants/defaultTheme';
 import FullPageLoader from '@/components/FullPageLoader/FullPageLoader';
 import NotFoundPage from '@/components/NotFoundPage/NotFoundPage';
+import createNewTheme from '@/utils/theme/createNewTheme';
 
 const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) => {
     const params = use(props.params);
@@ -26,28 +26,7 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
     const isNewTheme = params.action === 'new';
     const existingTheme = !isNewTheme ? allThemes.find(t => t.id === params.action) : undefined;
 
-    const [theme, setTheme] = useState<Theme | undefined>(() => {
-        if (params.action === 'new') {
-            const templateId = searchParams.get('template');
-            if (templateId) {
-                const tmpl = defaultThemes.find(t => t.id === templateId);
-                if (tmpl) {
-                    return {
-                        ...tmpl,
-                        id: generateId(),
-                        isDefault: false,
-                        isActive: true,
-                        name: '',
-                        createdAt: new Date(),
-                        updatedAt: new Date(),
-                    };
-                }
-            }
-            return createNewTheme();
-        }
-
-        return existingTheme;
-    });
+    const [theme, setTheme] = useState<Theme | undefined>(null);
 
     const [isLoading, setIsLoading] = useState(params.action !== 'new' && !existingTheme);
     const [notFound, setNotFound] = useState(false);
@@ -57,6 +36,39 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
             console.error('Failed to load themes:', err);
         });
     }, [loadThemes]);
+
+    useEffect(() => {
+        if (params.action === 'new' && defaultThemes.length > 0) {
+            const templateId = searchParams.get('template');
+            if (templateId) {
+                const tmpl = defaultThemes.find(t => t.id === templateId);
+                if (tmpl) {
+                    setTheme({
+                        ...tmpl,
+                        id: generateId(),
+                        isDefault: false,
+                        isActive: true,
+                        name: '',
+                        createdAt: new Date(),
+                        updatedAt: new Date(),
+                    });
+                }
+
+                return;
+            }
+            setTheme({
+                ...createNewTheme(),
+                id: generateId(),
+                isDefault: false,
+                isActive: true,
+                name: '',
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+        }
+
+        return existingTheme;
+    }, [defaultThemes, existingTheme, isNewTheme, params.action, searchParams]);
 
     useEffect(() => {
         if (params.action === 'new') {
@@ -115,7 +127,7 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
         }
     };
 
-    if (!theme && ((isNewTheme && defaultThemes.length === 0) || (!isNewTheme && !theme))) {
+    if (!theme) {
         return <FullPageLoader />;
     }
 

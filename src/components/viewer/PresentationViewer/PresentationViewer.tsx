@@ -24,10 +24,14 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
     }
 
     return (
-        <div className={styles.viewerContainer}>
-            <div className={styles.allSlidesContainer}>
+        <div className={styles.presentationViewerContainer}>
+            <div className={styles.presentationViewerAllSlidesContainer}>
                 {slides.map((slide: Slide, index: number) => (
-                    <div key={slide.id} id={`slide-${index + 1}`} className={`${styles.slideWrapper} slideWrapper`}>
+                    <div
+                        key={slide.id}
+                        id={`slide-${index + 1}`}
+                        className={`${styles.presentationViewerSlideWrapper} presentationViewerSlideWrapper`}
+                    >
                         <SlideViewer
                             theme={theme}
                             slide={slide}

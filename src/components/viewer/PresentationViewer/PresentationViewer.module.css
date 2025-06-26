@@ -1,4 +1,4 @@
-.viewerContainer {
+.presentationViewerContainer {
   width: 100%;
   height: 100%;
   display: flex;
@@ -16,7 +16,7 @@
   background-attachment: fixed;
 }
 
-.allSlidesContainer {
+.presentationViewerAllSlidesContainer {
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -25,138 +25,12 @@
   margin: 0 auto;
 }
 
-.slideWrapper {
+.presentationViewerSlideWrapper {
   width: 100%;
   max-width: 100%;
-  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
   border-radius: 0.5rem;
   overflow: hidden;
   background-color: transparent;
   transition: transform 0.2s;
-}
-
-/* .slideWrapper:hover {
-  transform: translateY(-2px);
-} */
-
-.slideWrapper::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  background-color: var(--presentation-slide-background);
-  /* opacity: var(--presentation-slide-opacity); */
-  z-index: -1;
-}
-
-/* Стили для одиночного просмотра (оставлены для совместимости) */
-.slideContainer {
-  flex: 1;
-  width: 100%;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.navigationControls {
-  display: none; /* Скрываем навигацию */
-}
-
-.progressBar {
-  display: none; /* Скрываем прогресс-бар */
-}
-
-.fullscreenButton {
-  display: none; /* Скрываем кнопку полноэкранного режима */
-}
-
-.thumbnailsContainer {
-  display: none; /* Скрываем миниатюры */
-}
-
-.navButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: none;
-  background-color: var(--presentation-primary-accent, #3b82f6);
-  color: white;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 1.2rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.navButton:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.navButton:disabled {
-  background-color: #e2e8f0;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-  opacity: 0.5;
-}
-
-.slideCounter {
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  background-color: rgba(255, 255, 255, 0.8);
-  font-weight: 500;
-  min-width: 80px;
-  text-align: center;
-}
-
-.progressIndicator {
-  height: 100%;
-  background-color: var(--presentation-primary-accent, #3b82f6);
-  transition: width 0.3s ease;
-}
-
-.thumbnailWrapper {
-  flex: 0 0 auto;
-  width: 120px;
-  height: 67.5px;
-  border-radius: 0.25rem;
-  overflow: hidden;
-  border: 2px solid transparent;
-  cursor: pointer;
-  transition: all 0.2s ease;
   position: relative;
 }
-
-.thumbnailWrapper:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.thumbnailActive {
-  border-color: var(--presentation-primary-accent, #3b82f6);
-}
-
-.thumbnail {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.thumbnailNumber {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 0.1rem 0.3rem;
-  font-size: 0.7rem;
-  border-top-left-radius: 0.25rem;
-} 

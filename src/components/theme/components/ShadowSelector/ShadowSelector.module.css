@@ -31,9 +31,11 @@
 }
 
 .shadow-sm {
-    box-shadow: var(--chakra-shadows-lg);
+    box-shadow: 0 10px 15px -3px currentColor, 0 4px 6px -2px currentColor;
+    opacity: 0.1;
 }
 
 .shadow-md {
-    box-shadow: rgba(0, 0, 0, 0.4) 4px 4px 0px 0px;
+    box-shadow: currentColor 4px 4px 0px 0px;
+    opacity: 0.4;
 }

@@ -5,7 +5,7 @@ import {
     ThemeDesignImageShape,
     ThemeDesignShadow,
 } from '../types/theme';
-import { createNewTheme } from '../constants/defaultTheme';
+import createNewTheme from '@/utils/theme/createNewTheme';
 
 interface BasicThemeSettings {
     primaryAccent: string;
