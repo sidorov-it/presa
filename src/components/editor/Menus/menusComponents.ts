@@ -12,6 +12,7 @@ const TableBubbleMenu = dynamic(() => import('./BubbleMenus/TableBubbleMenu'));
 
 // Side Panel Menus
 const ImageEditBox = dynamic(() => import('../SidePanel/ImageEditBox/ImageEditBox'));
+const ThemeSelectPanel = dynamic(() => import('../SidePanel/ThemesPanel/ThemeSelectPanel'));
 
 export const BubbleMenus = {
     'image-bubble': ImageBubbleMenu,
@@ -26,4 +27,5 @@ export const BubbleMenus = {
 
 export const SideMenus = {
     'image-edit': ImageEditBox,
+    'theme-select': ThemeSelectPanel,
 };
