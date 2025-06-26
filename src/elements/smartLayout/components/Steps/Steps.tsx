@@ -203,8 +203,14 @@ export default function Steps({
                     data-smart-layout-item-id={itemId}
                     style={{
                         width: direction === 'horizontal' ? `calc(${elementWidth} - 1em)` : '100%',
-                        marginLeft: direction === 'horizontal' ? `${index}rem` : undefined,
-                        marginTop: direction === 'vertical' ? `${index}rem` : undefined,
+                        marginLeft:
+                            direction === 'vertical'
+                                ? `${itemsIds.length - index - 1}rem`
+                                : undefined,
+                        marginTop:
+                            direction === 'horizontal'
+                                ? `${itemsIds.length - index - 1}rem`
+                                : undefined,
                     }}
                 >
                     {dropIndicator && dropIndicator.itemId === itemId && (
@@ -219,8 +225,8 @@ export default function Steps({
                         layoutId={layoutId}
                         elementId={elementId}
                     >
-                        <div className={`${styles.textBox} ${align ? styles[align] : ''}`}> 
-                            <div className={styles.step}>{index + 1}</div>
+                        <div className={`${styles.textBox} ${align ? styles[align] : ''}`}>
+                            <div className={styles.step} />
                             <Tiptap
                                 isReadOnly={isReadOnly}
                                 elementId={elementId}
