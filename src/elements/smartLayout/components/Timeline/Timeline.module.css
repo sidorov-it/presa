@@ -1,0 +1,104 @@
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+}
+
+.focused {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 0.25em;
+    border-radius: var(--presentation-slide-border-radius);
+}
+
+.itemContainer {
+    position: relative;
+    flex: 1 1 auto;
+    width: calc(25% - 1em);
+    box-sizing: border-box;
+    transition: box-shadow 0.2s ease;
+    border-radius: var(--presentation-slide-border-radius);
+    border-width: var(--presentation-block-border-width);
+    overflow: hidden;
+}
+
+.marker {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: var(--color-primary);
+    margin-bottom: 0.5rem;
+}
+
+.lineHorizontal {
+    position: absolute;
+    top: 0.5rem;
+    left: calc(100% + 0.5rem);
+    height: 2px;
+    width: 1rem;
+    background: var(--color-primary);
+}
+
+.lineVertical {
+    position: absolute;
+    left: 0.5rem;
+    top: calc(100% + 0.5rem);
+    width: 2px;
+    height: 1rem;
+    background: var(--color-primary);
+}
+
+.textBox {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem;
+}
+
+.addButton {
+    position: absolute;
+    opacity: 0;
+    top: 50%;
+    right: 0;
+    transform: translate(calc(50% + 6px), -50%);
+    cursor: pointer;
+    display: inline-flex;
+    appearance: none;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    white-space: nowrap;
+    vertical-align: middle;
+    outline: transparent solid 2px;
+    outline-offset: 2px;
+    line-height: 1.2;
+    font-weight: 600;
+    transition-duration: 200ms;
+    height: 1.5rem;
+    min-width: 1.5rem;
+    font-size: 0.75rem;
+    color: rgba(0, 0, 0, 0.6);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    background: rgba(255, 255, 255, 1);
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.2);
+    padding: 0;
+    border-radius: 9999px;
+}
+
+.focused .itemContainer:last-child .addButton,
+.itemContainer:hover .addButton {
+    opacity: 1;
+}
+
+.left {
+    text-align: left;
+}
+
+.center {
+    text-align: center;
+}
+
+.right {
+    text-align: right;
+}

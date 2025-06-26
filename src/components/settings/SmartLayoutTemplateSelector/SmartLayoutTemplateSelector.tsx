@@ -13,6 +13,10 @@ const LAYOUT_TYPES = [
         id: 'steps',
         label: 'Шаги',
     },
+    {
+        id: 'timeline',
+        label: 'Хронология',
+    },
 ];
 
 export default function SmartLayoutTemplateSelector({

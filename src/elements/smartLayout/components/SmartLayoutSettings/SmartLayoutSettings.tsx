@@ -4,6 +4,7 @@ import { SmartLayoutElement, TipTapRefs } from '@/types';
 import ImageWithTextSettings from './ImageWithTextSettings/ImageWithTextSettings';
 import TextBoxesSettings from './TextBoxesSettings/TextBoxesSettings';
 import StepsSettings from './StepsSettings/StepsSettings';
+import TimelineSettings from './TimelineSettings/TimelineSettings';
 
 interface SmartLayoutSettingsProps {
     slideId: string;
@@ -50,6 +51,17 @@ const SmartLayoutSettings: React.FC<SmartLayoutSettingsProps> = ({
         return (
             <StepsSettings
                 element={element}
+                slideId={slideId}
+                layoutId={layoutId}
+                elementId={elementId}
+                presentationId={presentationId}
+                tiptapRefs={tiptapRefs}
+            />
+        );
+    } else if (element.elementVariant === 'timeline') {
+        return (
+            <TimelineSettings
+                element={element as SmartLayoutElement & { direction?: 'horizontal' | 'vertical' }}
                 slideId={slideId}
                 layoutId={layoutId}
                 elementId={elementId}

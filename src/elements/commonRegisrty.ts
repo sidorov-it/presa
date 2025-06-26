@@ -255,6 +255,40 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         },
         isArray: true,
     },
+    SmartLayoutTimeline: {
+        elementTypeId: ElementType.SMART_LAYOUT,
+        Icon: FaRegChartBar,
+        label: 'Хронология',
+        elementVariant: 'timeline',
+        props: {
+            items: [
+                {
+                    title: '<p><span class="heading-text heading-3">Событие 1</span></p>',
+                    text: '<p>Описание</p>',
+                    imageUrl: '',
+                    iconUrl: '',
+                },
+                {
+                    title: '<p><span class="heading-text heading-3">Событие 2</span></p>',
+                    text: '<p>Описание</p>',
+                    imageUrl: '',
+                    iconUrl: '',
+                },
+                {
+                    title: '<p><span class="heading-text heading-3">Событие 3</span></p>',
+                    text: '<p>Описание</p>',
+                    imageUrl: '',
+                    iconUrl: '',
+                },
+            ],
+            columnSize: 3,
+            align: 'left',
+            imageShape: 'square',
+            imageSize: 5,
+            direction: 'horizontal',
+        },
+        isArray: true,
+    },
     Text: {
         elementTypeId: ElementType.TEXT,
         hasTextEditor: true,
