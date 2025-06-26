@@ -14,7 +14,7 @@ import { ThemeIcon } from '@/components/icons';
 import { Popover } from '@/components/ui/Popover/Popover';
 import { useThemeStore } from '@/store/themeStore';
 import { Theme } from '@/types/theme';
-import { cn } from '@/utils/cn';
+import { clsx } from 'clsx';
 import Link from 'next/link';
 import { FaEye, FaUser, FaSignOutAlt, FaCog } from 'react-icons/fa';
 import { HiOutlineCreditCard } from 'react-icons/hi2';
@@ -48,7 +48,7 @@ const ThemeVariant = ({
 }) => {
     return (
         <div
-            className={cn(styles.themeOption, currentTheme?.id === theme.id && styles.themeOptionSelected)}
+            className={clsx(styles.themeOption, currentTheme?.id === theme.id && styles.themeOptionSelected)}
             onClick={() => handleThemeChange(theme)}
             role="button"
             aria-label={`Выбрать тему ${theme.name}`}
@@ -264,13 +264,13 @@ export default function PresentationEditorPage() {
             <>
                 <div className={styles.themeTabs}>
                     <div
-                        className={cn(styles.themeTab, themeTab === 'user' && styles.themeTabActive)}
+                        className={clsx(styles.themeTab, themeTab === 'user' && styles.themeTabActive)}
                         onClick={() => setThemeTab('user')}
                     >
                         Мои
                     </div>
                     <div
-                        className={cn(styles.themeTab, themeTab === 'default' && styles.themeTabActive)}
+                        className={clsx(styles.themeTab, themeTab === 'default' && styles.themeTabActive)}
                         onClick={() => setThemeTab('default')}
                     >
                         Стандартные
@@ -289,7 +289,7 @@ export default function PresentationEditorPage() {
                                     />
                                     // <div
                                     //     key={theme.id}
-                                    //     className={cn(
+                                    //     className={clsx(
                                     //         styles.themeOption,
                                     //         currentTheme?.id === theme.id && styles.themeOptionSelected
                                     //     )}
@@ -382,7 +382,7 @@ export default function PresentationEditorPage() {
                                             <div className={styles.themePopover}>
                                                 <h3 className={styles.popoverTitle}>Выберите тему</h3>
                                                 <div
-                                                    className={cn(
+                                                    className={clsx(
                                                         styles.defaultThemeOption,
                                                         (!currentTheme || currentTheme.name === 'Default Theme') &&
                                                             styles.themeOptionSelected

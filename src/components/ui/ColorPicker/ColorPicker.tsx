@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { HexColorPicker } from 'react-colorful';
 import { Input } from '@/components/ui/Input/Input';
 import { Popover } from '@/components/ui/Popover/Popover';
-import { cn } from '@/utils/cn';
+import { clsx } from 'clsx';
 import { MdDeleteOutline } from 'react-icons/md';
 
 import styles from './ColorPicker.module.css';
@@ -210,7 +210,7 @@ export const ColorPicker = ({
     );
 
     return (
-        <div className={cn(styles.colorPickerContainer, className)}>
+        <div className={clsx(styles.colorPickerContainer, className)}>
             <Popover
                 trigger={colorButton}
                 content={colorPickerContent}

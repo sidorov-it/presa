@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import styles from './Input.module.css';
-import { cn } from '@/utils/cn';
+import { clsx } from 'clsx';
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     size?: 'xs' | 'sm' | 'md' | 'lg';
@@ -31,7 +31,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         },
         ref
     ) => {
-        const inputClasses = cn(
+        const inputClasses = clsx(
             styles.input,
             styles[size],
             styles[variant],

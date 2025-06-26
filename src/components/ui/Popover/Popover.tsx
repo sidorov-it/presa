@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Popover as ChakraPopover, Portal, PopoverBody } from '@chakra-ui/react';
-import { cn } from '@/utils/cn';
+import { clsx } from 'clsx';
 import { useColorMode } from '../color-mode';
 import styles from './styles.module.css';
 
@@ -20,7 +20,7 @@ export const Popover = ({ trigger, content, isOpen, onOpen, onClose, className }
             <ChakraPopover.Trigger asChild>{trigger}</ChakraPopover.Trigger>
             <Portal>
                 <ChakraPopover.Positioner className={styles.popoverPositioner}>
-                    <ChakraPopover.Content className={cn(styles.popover, className, colorMode === 'dark' && 'dark')}>
+                    <ChakraPopover.Content className={clsx(styles.popover, className, colorMode === 'dark' && 'dark')}>
                         {/* <ChakraPopover.Arrow /> */}
                         <PopoverBody>{content}</PopoverBody>
                     </ChakraPopover.Content>

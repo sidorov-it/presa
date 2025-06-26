@@ -3,7 +3,7 @@
 import React, { CSSProperties, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useMenuStore } from '@/store/menuStore';
-import { cn } from '@/utils/cn';
+import { clsx } from 'clsx';
 import styles from './BaseMenu.module.css';
 
 export interface BaseMenuProps {
@@ -77,7 +77,7 @@ export const BaseMenu: React.FC<BaseMenuProps> = ({ children, isForceOpen, posit
 
     // Render in portal to ensure proper z-index stacking
     return createPortal(
-        <div ref={menuRef} className={cn(styles.layoutMenu, 'light-theme-only', className)} style={menuStyle}>
+        <div ref={menuRef} className={clsx(styles.layoutMenu, 'light-theme-only', className)} style={menuStyle}>
             <ul className={styles.layoutMenuList}>{children}</ul>
         </div>,
         document.body
