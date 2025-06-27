@@ -6,6 +6,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { Button } from '@/components/ui/Button';
 import styles from './Presentation.module.css';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
+import SlidesList from '../SlidesList';
 interface PresentationProps {
     presentationId: string;
     activeSlideId: string | null;
@@ -89,6 +90,8 @@ function Presentation({ presentationId, activeSlideId, onSlideSelect, tiptapRefs
                     isLast={index === slideIds.length - 1}
                 />
             ))}
+
+            <SlidesList presentationId={presentationId} activeSlideId={activeSlideId} onSlideSelect={onSlideSelect} />
         </div>
     );
 }

@@ -5,10 +5,12 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { Slide } from '@/types';
 import { useDndStore } from '@/store/dndStore';
 import { generateId } from '@/utils/id';
-import MoveIcon from '@/components/icons/MoveIcon';
 import { useHandleDragStart } from '@/contexts/DragDropContext';
 
 import styles from './SlidesList.module.css';
+import Portal from '@/components/Portal';
+import { useColorMode } from '@/components/ui/color-mode';
+import { LuGripVertical } from 'react-icons/lu';
 
 // Memoized individual slide component to prevent unnecessary re-renders
 const SlideItem = memo(
@@ -142,10 +144,12 @@ const SlideItem = memo(
                     draggable
                     onDragStart={e => handleDragStart(e, { slideId: slide.id, dragElementType: 'slide' })}
                 >
-                    <span className={styles.slideNumber}>{index + 1}</span>
-                    <span className={styles.dragIcon}>
-                        <MoveIcon />
-                    </span>
+                    <div className={styles.slideNumberContainer}>
+                        <span className={styles.slideNumber}>{index + 1}</span>
+                        <span className={styles.dragIcon}>
+                            <LuGripVertical />
+                        </span>
+                    </div>
                     <span className={styles.slideTitleText}>{slideTitle || 'Untitled'}</span>
                 </div>
             </div>
@@ -167,11 +171,14 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number; slide: Slide } | null>(null);
     const panelRef = useRef<HTMLDivElement>(null);
 
+    const { colorMode } = useColorMode();
+
     const { getPresentation, addEmptySlide, addSlide, deleteSlide, updateSlide } = usePresentationStore();
     const slides = (getPresentation(presentationId)?.slides || []).filter(s => !s.hidden);
 
+    console.log(contextMenu);
     // Set the presentation ID for drag and drop operations
-    useDndStore(state => state.setPresentationId(presentationId));
+    // useDndStore(state => state.setPresentationId(presentationId));
 
     const handleToggleCollapse = useCallback(() => {
         setIsCollapsed(prev => !prev);
@@ -200,7 +207,13 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
     const handleContextMenu = useCallback(
         (e: React.MouseEvent, slide: Slide) => {
             e.preventDefault();
-            setContextMenu({ x: e.clientX, y: e.clientY, slide });
+            setContextMenu({ x: e.clientX, y: e.clientY + window.scrollY, slide });
+
+            document.addEventListener('click', (ev: MouseEvent) => {
+                if (ev.target instanceof HTMLElement && !ev.target.closest('.context-menu')) {
+                    setContextMenu(null);
+                }
+            });
         },
         []
     );
@@ -279,46 +292,6 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
     return (
         <div className={styles.leftPanel}>
             <div className={styles.leftPanelHeader}>
-                <div className={styles.leftPanelHeaderButtons}>
-                    <button className={styles.leftPanelHeaderButton} aria-label="Показать в виде таблицы" tabIndex={0}>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        >
-                            <rect x="3" y="3" width="7" height="7" />
-                            <rect x="14" y="3" width="7" height="7" />
-                            <rect x="14" y="14" width="7" height="7" />
-                            <rect x="3" y="14" width="7" height="7" />
-                        </svg>
-                    </button>
-                    <button className={styles.leftPanelHeaderButton} aria-label="Показать список" tabIndex={0}>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        >
-                            <line x1="8" y1="6" x2="21" y2="6" />
-                            <line x1="8" y1="12" x2="21" y2="12" />
-                            <line x1="8" y1="18" x2="21" y2="18" />
-                            <line x1="3" y1="6" x2="3.01" y2="6" />
-                            <line x1="3" y1="12" x2="3.01" y2="12" />
-                            <line x1="3" y1="18" x2="3.01" y2="18" />
-                        </svg>
-                    </button>
-                </div>
                 <button
                     className={styles.leftPanelHeaderButton}
                     onClick={handleToggleCollapse}
@@ -369,29 +342,31 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
                 )}
             </div>
             {contextMenu && (
-                <div
-                    className={styles.contextMenu}
-                    style={{ top: contextMenu.y, left: contextMenu.x }}
-                    onMouseLeave={() => setContextMenu(null)}
-                >
-                    <div className={styles.contextMenuItem} onClick={handleCopy}>
-                        Copy
-                    </div>
-                    <div className={styles.contextMenuItem} onClick={handleAddBelow}>
-                        Add slide below
-                    </div>
-                    {copiedSlide && (
-                        <div className={styles.contextMenuItem} onClick={handleAddCopiedBelow}>
-                            Add copied slide below
+                <Portal>
+                    <div
+                        className={`${styles.contextMenu} context-menu ${colorMode === 'dark' ? styles.contextMenuDark : styles.contextMenuLight}`}
+                        style={{ top: contextMenu.y - window.scrollY, left: contextMenu.x }}
+                        // onMouseLeave={() => setContextMenu(null)}
+                    >
+                        <div className={styles.contextMenuItem} onClick={handleCopy}>
+                            Копировать
                         </div>
-                    )}
-                    <div className={styles.contextMenuItem} onClick={handleHide}>
-                        Hide
+                        <div className={styles.contextMenuItem} onClick={handleAddBelow}>
+                            Добавить слайд ниже
+                        </div>
+                        {copiedSlide && (
+                            <div className={styles.contextMenuItem} onClick={handleAddCopiedBelow}>
+                                Добавить скопированный слайд ниже
+                            </div>
+                        )}
+                        <div className={styles.contextMenuItem} onClick={handleHide}>
+                            Скрыть
+                        </div>
+                        <div className={styles.contextMenuItem} onClick={handleDelete}>
+                            Удалить
+                        </div>
                     </div>
-                    <div className={styles.contextMenuItem} onClick={handleDelete}>
-                        Delete
-                    </div>
-                </div>
+                </Portal>
             )}
         </div>
     );
