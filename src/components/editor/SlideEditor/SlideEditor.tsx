@@ -19,8 +19,7 @@ import { useDndStore } from '@/store/dndStore';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
 import getNewLayoutWithTextEditor from '@/utils/getNewLayoutWithTextEditor';
 import AISlideGenerator from '../AISlideGenerator/AISlideGenerator';
-import { BsMagic } from 'react-icons/bs';
-import Portal from '@/components/Portal';
+import SlideBottomButtons from '../SlideBottomButtons/SlideBottomButtons';
 
 interface SlideEditorProps {
     slideLayoutIds: string[];
@@ -412,6 +411,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         setShowAIGenerator(true);
     };
 
+
     return (
         <div
             className={`${styles.slide} ${isDropTarget ? 'active-slide-drop-target' : ''} ${isLast ? styles.slideLast : ''}`}
@@ -430,11 +430,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         >
             <div className={`${getSlideClassName()}`} data-slide="true">
                 <div className={`${styles.slideBorder} ${isSelected || isHovered ? styles.slideBorderMenuOpen : ''}`} />
-                <div
-                    ref={editorRef}
-                    className={`${styles.slideContent}`}
-                    data-slide-content="true"
-                >
+                <div ref={editorRef} className={`${styles.slideContent}`} data-slide-content="true">
                     {(isSelected || slideMenuOpen || isHovered) && !isReadOnly && (
                         <>
                             <DragHandler
@@ -505,34 +501,13 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 </div>
 
                 {!isReadOnly && (
-                    <Portal>
-                        <div
-                            className={`${styles.slideDivider} ${isSelected || isHovered ? styles.slideDividerHovered : ''}`}
-                            style={{
-                                top:
-                                    (slideRef.current?.getBoundingClientRect().bottom || 0) +
-                                    window.scrollY -
-                                    (isLast ? 58 : 24),
-                            }}
-                        >
-                            <div className={styles.buttons}>
-                                <button
-                                    className={styles.slideDividerButton}
-                                    onClick={handleAddSlideAfter}
-                                    aria-label="Добавить слайд"
-                                >
-                                    +
-                                </button>
-                                <button
-                                    className={`${styles.slideDividerButton} ${styles.aiButton}`}
-                                    onClick={handleAddSlideWithAI}
-                                    aria-label="Создать слайд с помощью ИИ"
-                                >
-                                    <BsMagic />
-                                </button>
-                            </div>
-                        </div>
-                    </Portal>
+                    <SlideBottomButtons
+                        isShow={isSelected || isHovered}
+                        slideRef={slideRef}
+                        isLast={isLast}
+                        handleAddSlideAfter={handleAddSlideAfter}
+                        handleAddSlideWithAI={handleAddSlideWithAI}
+                    />
                 )}
 
                 {showAIGenerator && (

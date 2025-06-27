@@ -109,61 +109,6 @@
     padding: 0;
 }
 
-.slideDivider {
-    position: absolute;
-    /* bottom: -3rem; */
-    transform: translateY(50%);
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
-    z-index: 10;
-}
-
-.slideDividerHovered {
-    opacity: 1;
-}
-
-.slideDividerButton {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    box-shadow: var(--shadow-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: var(--color-text-light);
-    transition: all 0.2s ease;
-}
-
-.slideDividerButton:hover {
-    background-color: var(--color-primary);
-    border-color: var(--color-primary);
-    color: var(--color-button-text);
-}
-
-.slideDividerButton:focus {
-    outline: none;
-    background-color: var(--color-primary);
-    border-color: var(--color-primary);
-    color: var(--color-button-text);
-}
-
-.slideDividerButton:active {
-    transform: scale(0.95);
-}
-
-.aiButton svg {
-    width: 14px;
-    height: 14px;
-}
-
 .aiGeneratorOverlay {
     position: fixed;
     top: 0;
@@ -178,11 +123,6 @@
     padding: 20px;
 }
 
-.buttons {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-}
 
 .slideDragHandle {
     top: 0.75rem;
