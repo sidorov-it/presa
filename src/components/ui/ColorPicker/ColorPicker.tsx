@@ -115,18 +115,15 @@ export const ColorPicker = ({
         [allowAlpha, inputValue, onChange]
     );
 
-    const handleInputChange = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            const newValue = e.target.value;
-            setInputValue(newValue);
+    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = e.target.value;
+        setInputValue(newValue);
 
-            const parsed = parseColorValue(newValue);
-            if (parsed.isValid) {
-                setAlpha(parsed.alpha);
-            }
-        },
-        []
-    );
+        const parsed = parseColorValue(newValue);
+        if (parsed.isValid) {
+            setAlpha(parsed.alpha);
+        }
+    }, []);
 
     const handleInputBlur = useCallback(() => {
         let newValue = inputValue.trim();
@@ -213,6 +210,7 @@ export const ColorPicker = ({
     return (
         <div className={`${styles.colorPickerContainer}${className ? ` ${className}` : ''}`}>
             <Popover
+                forceColorMode={'light'}
                 trigger={colorButton}
                 content={colorPickerContent}
                 isOpen={isOpen}
