@@ -481,7 +481,7 @@ export const ElementContent = ({
     );
 
     const handleDeletePressed = useCallback(
-        (isEmpty: boolean, textContent: string) => {
+        (isEmpty: boolean, _textContent: string) => {
             const presentation = usePresentationStore.getState().getPresentation(presentationId);
             if (!presentation) return;
 
@@ -493,7 +493,6 @@ export const ElementContent = ({
 
             // Check if this is the last element in the slide
             const isLastElementInSlide = slide.layouts.reduce((total, l) => total + l.elements.length, 0) === 1;
-            
             // If it's empty and the last element, do nothing
             if (isEmpty && isLastElementInSlide) {
                 return;
