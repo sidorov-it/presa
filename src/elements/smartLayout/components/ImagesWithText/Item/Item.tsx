@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/img-redundant-alt */
@@ -14,6 +15,7 @@ import { useAIImageStore } from '@/store/aiImageStore';
 import Image from '@/components/ui/Image/Image';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
 import getImageWidth from '../getImageWidth';
+import ImageWithTextItemMenu from '../ImageWithTextItemMenu/ImageWithTextItemMenu';
 
 type ItemProps = {
     itemId: string;
@@ -72,6 +74,18 @@ export default function Item({
             className={`${styles.item} ${align ? styles[align] : ''} ${isElementFocused ? styles.hovered : ''}`}
             layoutId={layoutId}
             elementId={elementId}
+            renderMenuComponent={menuPosition => {
+                return (
+                    <ImageWithTextItemMenu
+                        presentationId={presentationId}
+                        position={menuPosition || { x: 0, y: 0 }}
+                        itemId={itemId}
+                        slideId={slideId}
+                        layoutId={layoutId}
+                        elementId={elementId}
+                    />
+                );
+            }}
         >
             {/* Show loading state for AI generation */}
             {isGenerating ? (

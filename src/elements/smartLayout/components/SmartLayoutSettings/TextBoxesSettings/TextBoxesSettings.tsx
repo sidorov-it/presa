@@ -8,6 +8,7 @@ import { MenuItem } from '@/components/editor/SlideMenu/BaseMenu';
 import AlignmentGroup from '@/components/settings/AlignmentGroup/AlignmentGroup';
 import { DeleteIcon } from '@/components/icons';
 import { useHistoryStore } from '@/store/historyStore';
+import { ColorPicker } from '@/components/tiptap/ColorPicker';
 
 export default function TextBoxesSettings({
     element,
@@ -65,6 +66,49 @@ export default function TextBoxesSettings({
         useHistoryStore.getState().commitTransaction(presentationId);
     };
 
+    const handleBackgroundColorChange = (color: string) => {
+        updateElement({
+            presentationId,
+            slideId,
+            layoutId,
+            elementId,
+            data: {
+                backgroundColor: color,
+            },
+        });
+    };
+
+    const handleTextColorChange = (color: string) => {
+        updateElement({
+            presentationId,
+            slideId,
+            layoutId,
+            elementId,
+            data: {
+                textColor: color,
+            },
+        });
+
+        // Apply text color to all text editors
+        element.items?.forEach(item => {
+            tiptapRefs.current.editors[`title-${elementId}-${item.id}`]?.editor
+                .chain()
+                .setMeta('transaction', true)
+                .focus()
+                .setColor(color)
+                .blur()
+                .run();
+
+            tiptapRefs.current.editors[`text-${elementId}-${item.id}`]?.editor
+                .chain()
+                .setMeta('transaction', true)
+                .focus()
+                .setColor(color)
+                .blur()
+                .run();
+        });
+    };
+
     return (
         <>
             <SmartLayoutTemplateSelector
@@ -98,6 +142,18 @@ export default function TextBoxesSettings({
             />
 
             <AlignmentGroup element={element} handleChange={handleAlignment} />
+
+            <ColorPicker
+                initialColor={element.backgroundColor || '#ffffff'}
+                onColorChange={handleBackgroundColorChange}
+                mode="icon"
+            />
+
+            <ColorPicker
+                initialColor={element.textColor || '#000000'}
+                onColorChange={handleTextColorChange}
+                mode="icon"
+            />
 
             <MenuItem
                 icon={<DeleteIcon />}

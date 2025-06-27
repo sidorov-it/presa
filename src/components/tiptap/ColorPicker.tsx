@@ -116,7 +116,7 @@ export const ColorPicker = ({
                     className={`${className || ''} ${styles.colorButton}`}
                     aria-label="Выбрать цвет текста"
                     aria-expanded={isOpen}
-                    style={{ color: currentColor }}
+                    style={{ color: '#000000' }}
                 >
                     <BiPalette size={16} />
                     <span className={styles.colorIndicator} style={{ backgroundColor: currentColor }}></span>

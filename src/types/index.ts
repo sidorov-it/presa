@@ -136,6 +136,8 @@ export interface SmartLayoutElement extends BaseElement {
     imageShape: ImageShape;
     imageSize: number;
     direction?: 'horizontal' | 'vertical';
+    backgroundColor?: string;
+    textColor?: string;
 }
 
 // Элемент редактора Tiptap
@@ -237,6 +239,7 @@ export interface Slide {
         height?: string;
     };
     contentAlignment?: 'top' | 'center' | 'bottom';
+    hidden?: boolean;
 }
 
 export interface BackgroundSettings {

@@ -220,13 +220,19 @@ export default function Timeline({
                         slideId={slideId}
                         layoutId={layoutId}
                         elementId={elementId}
+                        renderMenuComponent={menuPosition => {
+                            return <div>Menu timeline</div>;
+                        }}
                     >
-                        <div className={`${styles.textBox} ${align ? styles[align] : ''}`}
+                        <div
+                            className={`${styles.textBox} ${align ? styles[align] : ''}`}
                             style={{ position: 'relative' }}
                         >
                             <div className={styles.marker} />
                             {index < itemsIds.length - 1 && (
-                                <div className={direction === 'horizontal' ? styles.lineHorizontal : styles.lineVertical} />
+                                <div
+                                    className={direction === 'horizontal' ? styles.lineHorizontal : styles.lineVertical}
+                                />
                             )}
                             <Tiptap
                                 isReadOnly={isReadOnly}

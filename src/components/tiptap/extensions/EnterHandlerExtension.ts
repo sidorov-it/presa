@@ -4,6 +4,7 @@ import { Extension, JSONContent } from '@tiptap/core';
 export const EnterHandlerExtension = (
     onEnterPressed: (contentBeforeCursor?: JSONContent, contentAfterCursor?: JSONContent) => void,
     onBackspacePressed: (isEmpty: boolean, content: string) => void,
+    onDeletePressed: (isEmpty: boolean, content: string) => void,
     standardEnterBehavior: boolean = false
 ) => {
     return Extension.create({
@@ -67,32 +68,50 @@ export const EnterHandlerExtension = (
                         // If no content after cursor, just create a new empty editor
                         onEnterPressed();
                     }
+
                     return true;
                 },
                 Backspace: ({ editor }) => {
-                    const { state } = editor;
-                    const { selection } = state;
-                    const { empty: emptySelection, $head } = selection;
+                    const isEmpty = editor.isEmpty;
+                    const textContent = editor.getText();
 
-                    // Check if cursor is at start and document is empty
-                    const isAtStart = $head.pos === 1;
-                    const textContent = state.doc.textContent;
-
-                    const isEmpty = state.doc.textContent.trim() === '';
-
-                    if (!emptySelection || !isAtStart) {
-                        return false;
+                    if (isEmpty || textContent.length === 0) {
+                        onBackspacePressed(true, '');
+                        return true;
                     }
 
-                    // if (isAtStart && !isEmpty) {
-                    //     onBackspacePressed(false, true)
-                    // }
-                    // if (emptySelection && isAtStart && isEmpty) {
-                    onBackspacePressed(isEmpty, textContent);
-                    return true;
-                    // }
+                    const { state } = editor;
+                    const { selection } = state;
+                    const { $head } = selection;
 
-                    // return false
+                    // Если курсор в начале документа
+                    if ($head.pos === 0) {
+                        onBackspacePressed(false, editor.getHTML());
+                        return true;
+                    }
+
+                    return false;
+                },
+                Delete: ({ editor }) => {
+                    const isEmpty = editor.isEmpty;
+                    const textContent = editor.getText();
+
+                    if (isEmpty || textContent.length === 0) {
+                        onDeletePressed(true, '');
+                        return true;
+                    }
+
+                    const { state } = editor;
+                    const { selection } = state;
+                    const { $head } = selection;
+
+                    // Если курсор в конце документа
+                    if ($head.pos === state.doc.content.size) {
+                        onDeletePressed(false, editor.getHTML());
+                        return true;
+                    }
+
+                    return false;
                 },
             };
         },

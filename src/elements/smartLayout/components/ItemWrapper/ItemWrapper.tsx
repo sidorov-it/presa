@@ -4,18 +4,17 @@ import { useEffect, useRef, useState } from 'react';
 import DragHandler from '@/components/editor/DragHandler';
 import { useMenuStore } from '@/store/menuStore';
 import styles from './ItemWrapper.module.css';
-import ImageWithTextItemMenu from '../ImagesWithText/ImageWithTextItemMenu/ImageWithTextItemMenu';
 import { useDnd } from '@/contexts/DragDropContext';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 export default function ItemWrapper({
     children,
-    presentationId,
     itemId,
     slideId,
     className,
     layoutId,
     elementId,
+    renderMenuComponent,
 }: {
     children: React.ReactNode;
     presentationId: string;
@@ -24,6 +23,7 @@ export default function ItemWrapper({
     className?: string;
     layoutId: string;
     elementId: string;
+    renderMenuComponent: (menuPosition: { x: number; y: number } | null) => React.ReactNode;
 }) {
     const isReadOnly = useReadOnly();
 
@@ -101,8 +101,9 @@ export default function ItemWrapper({
                     title="Drag to reorder item (items can only be moved within the same smartLayout)"
                 />
             )}
+            {!isReadOnly && isMenuOpen && menuPosition && renderMenuComponent && renderMenuComponent(menuPosition)}
 
-            {!isReadOnly && isMenuOpen && menuPosition && (
+            {/* {!isReadOnly && isMenuOpen && menuPosition && (
                 <ImageWithTextItemMenu
                     presentationId={presentationId}
                     position={menuPosition}
@@ -111,7 +112,7 @@ export default function ItemWrapper({
                     layoutId={layoutId}
                     elementId={elementId}
                 />
-            )}
+            )} */}
             {children}
         </div>
     );

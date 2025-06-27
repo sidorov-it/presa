@@ -1,5 +1,5 @@
 .leftPanel {
-    width: 220px;
+    width: 180px;
     background-color: var(--color-surface);
     border-right: 1px solid var(--color-border);
     display: flex;
@@ -7,15 +7,17 @@
     transition: width 0.2s ease;
     position: relative;
     z-index: 20;
+    position: fixed;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    /* height: 100vh; */
+    overflow-y: auto;
 }
 
 .collapsed {
     width: 0;
     overflow: hidden;
-}
-
-.slide {
-    display: block;
 }
 
 .container {
@@ -27,30 +29,27 @@
 
 /* Individual slide items in the list */
 .slide {
-    padding: 0.5rem;
     display: flex;
-    flex-direction: column;
-    gap: 0.375rem;
+    align-items: flex-start;
+    gap: 0.25rem;
     position: relative;
     cursor: pointer;
     border: 1px solid transparent;
-    margin-bottom: 2px;
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
     border-radius: 6px;
     transition: all 0.2s ease;
     background-color: transparent;
+    justify-content: flex-start;
 }
 
 .slide:hover {
-    background-color: var(--color-background);
-    border-color: var(--color-border);
+    /* background-color: var(--color-background); */
+    /* border-color: var(--color-border); */
 }
 
 .slide.active {
     background-color: var(--color-primary);
     color: var(--color-text);
-    border-color: var(--color-primary);
+    /* border-color: var(--color-primary); */
 }
 
 .slidePreviewContainer {
@@ -102,13 +101,14 @@
 }
 
 .slideTitleText {
+    color: var(--color-text);
     font-size: 0.875rem;
     line-height: 1.25rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 120px;
-    color: inherit;
+    padding: 8px;
 }
 
 .slidePreview {
@@ -127,14 +127,14 @@
 
 .slidePreviewText {
     font-size: 0.75rem;
-    line-height: 1rem; 
-    color: var(--color-text-light); 
+    line-height: 1rem;
+    color: var(--color-text-light);
 }
 
 .noSlides {
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .noSlidesText {
@@ -144,84 +144,88 @@
 }
 
 .collapsedPanel {
-    position: fixed; 
-    left: 0; 
-    top: 50%; 
-    z-index: 40; 
+    position: fixed;
+    left: 0;
+    top: 50%;
+    z-index: 40;
 }
 
 .collapsedPanelButton {
-    padding: 0.375rem; 
+    padding: 0.375rem;
     border-top-right-radius: 0.375rem;
-    border-bottom-right-radius: 0.375rem; 
-    color: var(--color-text-light); 
-    background-color: var(--color-surface); 
+    border-bottom-right-radius: 0.375rem;
+    color: var(--color-text-light);
+    background-color: var(--color-surface);
     border: 1px solid var(--color-border);
     transition-property: all;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 300ms; 
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1); 
+    transition-duration: 300ms;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
 
     &:hover {
-     color: var(--color-primary); 
-     }
+        color: var(--color-text);
+    }
 }
 
 .leftPanelHeader {
-    display: flex; 
-    padding: 0.5rem; 
-    justify-content: space-between; 
-    align-items: center; 
-    border-bottom-width: 1px; 
-    border-color: var(--color-border); 
+    display: flex;
+    padding: 0.5rem;
+    justify-content: flex-end;
+    align-items: center;
+    border-bottom-width: 1px;
+    border-color: var(--color-border);
 }
 
 .leftPanelHeaderButtons {
-    display: flex; 
-    margin-left: 0.25rem; 
-    align-items: center; 
+    display: flex;
+    margin-left: 0.25rem;
+    align-items: center;
 }
 
 .leftPanelHeaderButton {
-    padding: 0.375rem; 
-    border-radius: 0.25rem; 
-    color: var(--color-primary); 
+    padding: 0.375rem;
+    border-radius: 0.25rem;
+    color: var(--color-primary);
     transition: all 0.2s ease;
 
     &:hover {
-        background-color: var(--color-background); 
+        background-color: var(--color-background);
         color: var(--color-primary);
     }
 }
 
 .leftPanelContent {
-    display: flex; 
-    overflow-y: auto; 
-    flex-direction: column; 
-    flex: 1 1 0%; 
-    justify-content: center; 
-    align-items: center; 
+    display: flex;
+    overflow-y: auto;
+    flex-direction: column;
+    flex: 1 1 0%;
+    justify-content: center;
+    align-items: center;
 }
 
 .leftPanelContentSlides {
-    overflow: hidden; 
-    border-radius: 0.375rem; 
-    border-width: 1px; 
-    border-color: var(--color-border); 
-    width: 100%; 
-    background-color: var(--color-surface); 
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1); 
-    max-width: 220px;
+    overflow: hidden;
+    width: 100%;
+    padding: 0 8px;
+    margin-bottom: 8px; 
+    /* background-color: var(--color-surface); */
+    /* box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1); */
+    max-width: 180px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .slideContainer {
-    border-bottom-width: 1px; 
-    border-color: var(--color-border); 
     transition-property: all;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 300ms; 
-    cursor: pointer; 
+    transition-duration: 300ms;
+    cursor: pointer;
     position: relative;
+    border-radius: 0.375rem;
+    border-width: 1px;
+    border-color: var(--color-border);
+
 }
 
 .activeSlide {
@@ -230,11 +234,7 @@
 }
 
 .hoverSlide:hover {
-    background-color: var(--color-background); 
-}
-
-.lastSlide {
-    border-bottom-width: 0px; 
+    background-color: var(--color-background);
 }
 
 /* Slide template drop indicator styles */
@@ -258,4 +258,94 @@
     height: 3px;
     background-color: var(--color-primary);
     z-index: 10;
+}
+
+.slideNumberContainer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    border-right: 1px solid var(--color-border);
+    width: 24px;
+    padding: 8px;
+}
+
+.slideNumber {
+    /* width: 20px;
+    min-width: 20px; */
+    line-height: 20px;
+    font-size: 0.75rem;
+    color: var(--color-text);
+    text-align: left;
+}
+
+.dragIcon {
+    /* width: 20px;
+    min-width: 20px; */
+    height: 20px;
+    text-align: left;
+    line-height: 20px;
+    display: none;
+    color: var(--color-text);
+    cursor: grab;
+}
+
+.slide:hover .slideNumber {
+    display: none;
+}
+
+.slide:hover .dragIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* color: var(--color-text); */
+}
+
+.createButton {
+    margin: 4px;
+    padding: 4px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background: var(--color-surface);
+    cursor: pointer;
+    color: var(--color-text);
+}
+
+.contextMenu {
+    position: fixed;
+    z-index: 1000;
+    min-width: 200px;
+    padding: 8px 0;
+    border-radius: 6px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background: var(--chakra-colors-chakra-body-bg);
+    border: 1px solid var(--chakra-colors-chakra-border-color);
+}
+
+.contextMenuItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    color: var(--chakra-colors-chakra-body-text);
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.contextMenuItem:hover {
+    background-color: var(--chakra-colors-gray-100);
+}
+
+.contextMenuDark .contextMenuItem:hover {
+    background-color: var(--chakra-colors-whiteAlpha-200);
+}
+
+.contextMenuItem svg {
+    width: 16px;
+    height: 16px;
+    color: var(--chakra-colors-gray-500);
+}
+
+.contextMenuDark .contextMenuItem svg {
+    color: var(--chakra-colors-whiteAlpha-700);
 }

@@ -63,9 +63,10 @@ export default function TextBoxesView({
                         data-smart-layout-item-id={itemId}
                         style={{
                             width: `calc(${elementWidth} - 1em)`,
+                            backgroundColor: element.backgroundColor || undefined,
+                            color: element.textColor || undefined,
                         }}
                     >
-                        {/* <div className={`${wrapperStyles.item} ${align ? wrapperStyles[align] : ''}`}> */}
                         <div className={`${styles.textBox} ${align ? styles[align] : ''}`}>
                             <div className={styles.title}>
                                 <Tiptap
@@ -79,7 +80,6 @@ export default function TextBoxesView({
                                     presentationId={presentationId}
                                     slideId={slideId}
                                     layoutId={layoutId}
-                                    // customRefKey={`title-${element.id}-${itemId}`}
                                     isHideSlashMenu={false}
                                 />
                             </div>
@@ -95,7 +95,6 @@ export default function TextBoxesView({
                                     layoutId={layoutId}
                                     placeholder="Текст"
                                     onContentChange={() => {}}
-                                    // customRefKey={`text-${element.id}-${itemId}`}
                                     isHideSlashMenu={false}
                                     onEnterPressed={() => {
                                         return true;
@@ -103,8 +102,6 @@ export default function TextBoxesView({
                                 />
                             </div>
                         </div>
-                        {/* </div> */}
-                        {/* </ItemWrapper> */}
                     </div>
                 );
             })}
