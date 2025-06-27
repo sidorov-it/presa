@@ -39,6 +39,7 @@ interface TiptapProps {
     isHideSlashMenu?: boolean;
     onEnterPressed?: (content?: any) => void;
     onBackspacePressed?: (isEmpty: boolean, textContent: string) => void;
+    onDeletePressed?: (isEmpty: boolean, textContent: string) => void;
     onBlur?: () => void;
     onContentChange?: (content: string, isEnterPress?: boolean, isTransaction?: boolean) => void;
     onAddElement?: (menuItem: MenuItem) => void;
@@ -70,6 +71,7 @@ const Tiptap = ({
     placeholder,
     onEnterPressed = () => {},
     onBackspacePressed = () => {},
+    onDeletePressed = () => {},
     onContentChange = () => {},
     onBlur = () => {},
     onAddElement,
@@ -104,6 +106,7 @@ const Tiptap = ({
         extensions: getExtensions({
             onEnterPressed,
             onBackspacePressed,
+            onDeletePressed,
             placeholder: placeholder || 'Введите текст или / для выбора готового шаблона',
             onAddElement,
             presentationId,

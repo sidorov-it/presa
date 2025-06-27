@@ -278,10 +278,32 @@ export const ElementContent = ({
                 return;
             }
 
-            const layoutIndex = slide.layouts.findIndex(l => l.id === layoutId);
+            // Check if this is the last element in the slide
+            const isLastElementInSlide = slide.layouts.reduce((total, l) => total + l.elements.length, 0) === 1;
+            if (isEmpty && isLastElementInSlide) {
+                // If it's the last element and empty, do nothing
+                return;
+            }
 
+            const layoutIndex = slide.layouts.findIndex(l => l.id === layoutId);
             const isMultiCellRow = layout.gridStructure.rows[0].cells.length > 1;
 
+            // If empty and not the last element, delete the element
+            if (isEmpty) {
+                if (isMultiCellRow) {
+                    // Handle multi-cell row case
+                    const updatedLayout = { ...layout };
+                    const updatedElements = updatedLayout.elements.filter(e => e.id !== elementId);
+                    updatedLayout.elements = updatedElements;
+                    usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
+                } else {
+                    // Handle single-cell row case
+                    usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, elementId);
+                }
+                return;
+            }
+
+            // Rest of the existing logic for non-empty elements
             if (layoutIndex === 0 && !isMultiCellRow && slide.layouts.length === 1) {
                 // backspace в первой строке единственного лэйаута -> ничего не делаем
                 return;
@@ -458,6 +480,34 @@ export const ElementContent = ({
         [presentationId, slideId, layoutId, cellId, elementId, tiptapRefs, isInTable]
     );
 
+    const handleDeletePressed = useCallback(
+        (isEmpty: boolean, textContent: string) => {
+            const presentation = usePresentationStore.getState().getPresentation(presentationId);
+            if (!presentation) return;
+
+            const slide = presentation.slides.find(s => s.id === slideId);
+            if (!slide) return;
+
+            const layout = slide.layouts.find(l => l.id === layoutId);
+            if (!layout) return;
+
+            // Check if this is the last element in the slide
+            const isLastElementInSlide = slide.layouts.reduce((total, l) => total + l.elements.length, 0) === 1;
+            
+            // If it's empty and the last element, do nothing
+            if (isEmpty && isLastElementInSlide) {
+                return;
+            }
+
+            // If it's empty but not the last element, delete it
+            if (isEmpty) {
+                usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, elementId);
+                return;
+            }
+        },
+        [presentationId, slideId, layoutId, elementId]
+    );
+
     const handleBlur = useCallback(() => {
         useEditorStore.getState().setActiveEditor(null);
         useMenuStore.getState().closeMenu();
@@ -476,6 +526,7 @@ export const ElementContent = ({
                         id={elementId}
                         onEnterPressed={handleEnterPressed}
                         onBackspacePressed={handleBackspacePressed}
+                        onDeletePressed={handleDeletePressed}
                         onContentChange={handleEditorContentChange}
                         onBlur={handleBlur}
                         customBubbleMenuTrigger={dragHandleRef}
@@ -539,6 +590,7 @@ export const ElementContent = ({
             tiptapRefs,
             handleEnterPressed,
             handleBackspacePressed,
+            handleDeletePressed,
             handleEditorContentChange,
             handleBlur,
             dragHandleRef,
