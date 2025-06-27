@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import React, { useState, useRef, memo, useCallback } from 'react';
+import React, { useState, useRef, memo, useCallback, useEffect } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { Slide } from '@/types';
 import { useDndStore } from '@/store/dndStore';
@@ -170,6 +170,7 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
     const [copiedSlide, setCopiedSlide] = useState<Slide | null>(null);
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number; slide: Slide } | null>(null);
     const panelRef = useRef<HTMLDivElement>(null);
+    const menuRef = useRef<HTMLDivElement>(null);
 
     const { colorMode } = useColorMode();
 
@@ -206,13 +207,7 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
     const handleContextMenu = useCallback(
         (e: React.MouseEvent, slide: Slide) => {
             e.preventDefault();
-            setContextMenu({ x: e.clientX, y: e.clientY + window.scrollY, slide });
-
-            document.addEventListener('click', (ev: MouseEvent) => {
-                if (ev.target instanceof HTMLElement && !ev.target.closest('.context-menu')) {
-                    setContextMenu(null);
-                }
-            });
+            setContextMenu({ x: e.clientX, y: e.clientY, slide });
         },
         []
     );
@@ -249,6 +244,39 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
         deleteSlide(presentationId, contextMenu.slide.id);
         setContextMenu(null);
     }, [contextMenu, presentationId, deleteSlide]);
+
+    useEffect(() => {
+        if (!contextMenu) return;
+
+        const handleClickOutside = (ev: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(ev.target as Node)) {
+                setContextMenu(null);
+            }
+        };
+
+        const updatePosition = () => {
+            setContextMenu(prev => {
+                if (!prev || !menuRef.current) return prev;
+                const menuHeight = menuRef.current.offsetHeight;
+                const viewportHeight = window.innerHeight;
+                const spaceBelow = viewportHeight - prev.y;
+                const newY = spaceBelow < menuHeight + 10 ? Math.max(10, prev.y - menuHeight) : prev.y;
+                if (newY === prev.y) return prev;
+                return { ...prev, y: newY };
+            });
+        };
+
+        updatePosition();
+        window.addEventListener('resize', updatePosition);
+        window.addEventListener('scroll', updatePosition);
+        document.addEventListener('click', handleClickOutside);
+
+        return () => {
+            window.removeEventListener('resize', updatePosition);
+            window.removeEventListener('scroll', updatePosition);
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [contextMenu]);
 
     // if (slides.length === 0) {
     //     return (
@@ -343,8 +371,9 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
             {contextMenu && (
                 <Portal>
                     <div
+                        ref={menuRef}
                         className={`${styles.contextMenu} context-menu ${colorMode === 'dark' ? styles.contextMenuDark : styles.contextMenuLight}`}
-                        style={{ top: contextMenu.y - window.scrollY, left: contextMenu.x }}
+                        style={{ top: contextMenu.y, left: contextMenu.x }}
                     >
                         <div className={styles.contextMenuItem} onClick={handleCopy}>
                             <LuCopy />
