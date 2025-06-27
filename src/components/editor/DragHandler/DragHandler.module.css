@@ -4,32 +4,24 @@
     width: 16px;
     height: 25px;
     display: flex;
-    -webkit-box-align: center;
     align-items: center;
-    -webkit-box-pack: center;
     justify-content: center;
     font-weight: 900;
     font-family: Inter, sans-serif;
     border-width: 1px;
     border-style: solid;
-    border-image: initial;
-    border-color: rgba(0, 0, 0, 0.2);
-    color: rgba(0, 0, 0, 0.6);
-    background-color: rgba(255, 255, 255, 0.9);
+    border-color: var(--color-border);
+    color: var(--color-text-light);
+    background-color: var(--color-surface);
     border-radius: 0.125rem;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm);
     font-size: 16px;
     cursor: pointer;
     z-index: 22;
-    transition: opacity 0.2s ease-in-out, border-color 0.2s ease-in-out, background 0.2s ease-in-out;
-}
-
-/* Темная тема */
-[data-theme="dark"] .dragHandle {
-    border-color: rgba(255, 255, 255, 0.2);
-    color: rgba(255, 255, 255, 0.8);
-    background-color: rgba(0, 0, 0, 0.8);
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    transition:
+        opacity 0.2s ease-in-out,
+        border-color 0.2s ease-in-out,
+        background 0.2s ease-in-out;
 }
 
 .visible {
@@ -37,17 +29,10 @@
 }
 
 .active {
-    background: rgba(59, 130, 246, 0.9);
+    background: var(--color-primary);
     backdrop-filter: blur(8px);
-    color: white;
-    border-color: rgba(59, 130, 246, 1);
-}
-
-/* Активное состояние в темной теме */
-[data-theme="dark"] .active {
-    background: rgba(59, 130, 246, 0.8);
-    color: white;
-    border-color: rgba(59, 130, 246, 1);
+    color: var(--color-button-text);
+    border-color: var(--color-primary);
 }
 
 .horizontal {

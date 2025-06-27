@@ -7,8 +7,8 @@
 
 .templateDropdownButton {
     padding: 8px 10px;
-    background-color: white;
-    border: 1px solid #e2e8f0;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
@@ -19,7 +19,7 @@
 }
 
 .templateDropdownButton:hover {
-    background-color: #f8fafc;
+    background-color: var(--color-surface);
 }
 
 .templateDropdownMenu {
@@ -27,13 +27,13 @@
     top: 100%;
     left: 0;
     width: 230px;
-    background-color: white;
+    background-color: var(--color-surface);
     border-radius: 4px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-lg);
     z-index: 10;
     margin-top: 4px;
     padding: 8px 0;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--color-border);
 }
 
 .templateOption {
