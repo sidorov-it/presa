@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import React, { useState, useRef, memo, useCallback } from 'react';
+import React, { useState, useRef, memo, useCallback, useEffect } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { Slide } from '@/types';
 import { useDndStore } from '@/store/dndStore';
@@ -29,6 +29,7 @@ const SlideItem = memo(
         onSlideSelect: (slideId: string, scroll: boolean) => void;
         onContextMenu: (e: React.MouseEvent, slide: Slide) => void;
     }) => {
+        const { colorMode } = useColorMode();
         // Extract text content from the first element if available
         const handleDragStart = useHandleDragStart();
         const getSlideTitle = useCallback(() => {
@@ -124,7 +125,7 @@ const SlideItem = memo(
             <div
                 className={`
                     ${styles.slideContainer}
-                    ${isActive ? styles.activeSlide : styles.hoverSlide}
+                    ${styles.hoverSlide}
                     ${isLastSlide ? styles.lastSlide : ''}
                     ${isTopIndicator ? styles.topIndicator : ''}
                     ${isBottomIndicator ? styles.bottomIndicator : ''}
@@ -170,6 +171,7 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
     const [copiedSlide, setCopiedSlide] = useState<Slide | null>(null);
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number; slide: Slide } | null>(null);
     const panelRef = useRef<HTMLDivElement>(null);
+    const menuRef = useRef<HTMLDivElement>(null);
 
     const { colorMode } = useColorMode();
 
@@ -206,13 +208,7 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
     const handleContextMenu = useCallback(
         (e: React.MouseEvent, slide: Slide) => {
             e.preventDefault();
-            setContextMenu({ x: e.clientX, y: e.clientY + window.scrollY, slide });
-
-            document.addEventListener('click', (ev: MouseEvent) => {
-                if (ev.target instanceof HTMLElement && !ev.target.closest('.context-menu')) {
-                    setContextMenu(null);
-                }
-            });
+            setContextMenu({ x: e.clientX, y: e.clientY, slide });
         },
         []
     );
@@ -249,6 +245,39 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
         deleteSlide(presentationId, contextMenu.slide.id);
         setContextMenu(null);
     }, [contextMenu, presentationId, deleteSlide]);
+
+    useEffect(() => {
+        if (!contextMenu) return;
+
+        const handleClickOutside = (ev: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(ev.target as Node)) {
+                setContextMenu(null);
+            }
+        };
+
+        const updatePosition = () => {
+            setContextMenu(prev => {
+                if (!prev || !menuRef.current) return prev;
+                const menuHeight = menuRef.current.offsetHeight;
+                const viewportHeight = window.innerHeight;
+                const spaceBelow = viewportHeight - prev.y;
+                const newY = spaceBelow < menuHeight + 10 ? Math.max(10, prev.y - menuHeight) : prev.y;
+                if (newY === prev.y) return prev;
+                return { ...prev, y: newY };
+            });
+        };
+
+        updatePosition();
+        window.addEventListener('resize', updatePosition);
+        window.addEventListener('scroll', updatePosition);
+        document.addEventListener('click', handleClickOutside);
+
+        return () => {
+            window.removeEventListener('resize', updatePosition);
+            window.removeEventListener('scroll', updatePosition);
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [contextMenu]);
 
     // if (slides.length === 0) {
     //     return (
@@ -290,18 +319,24 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
     // Expanded view with the list of slides
     return (
         <div className={styles.leftPanel}>
-            <div className={styles.leftPanelHeader}>
+            <Portal>
                 <button
-                    className={styles.leftPanelHeaderButton}
+                    className={`${styles.expandedPanelCollapseButton} ${colorMode === 'light' ? styles.expandedPanelCollapseButtonLight : ''}`}
                     onClick={handleToggleCollapse}
                     aria-label="Свернуть панель слайдов"
                     tabIndex={0}
                     onKeyDown={handleCollapseKeyDown}
+                    style={{
+                        position: 'fixed',
+                        left: '180px', // Width of the panel
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                    }}
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
+                        width="12"
+                        height="12"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -309,15 +344,14 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
                         strokeLinecap="round"
                         strokeLinejoin="round"
                     >
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
+                        <polyline points="15 18 9 12 15 6" />
                     </svg>
                 </button>
-            </div>
+            </Portal>
 
             <div ref={panelRef} className={styles.leftPanelContent}>
                 <button className={styles.createButton} onClick={() => addEmptySlide(presentationId, slides.length)}>
-                    Создать
+                    + Добавить
                 </button>
                 {slides.length === 0 && (
                     <div className={styles.emptyContainer}>
@@ -343,8 +377,9 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
             {contextMenu && (
                 <Portal>
                     <div
+                        ref={menuRef}
                         className={`${styles.contextMenu} context-menu ${colorMode === 'dark' ? styles.contextMenuDark : styles.contextMenuLight}`}
-                        style={{ top: contextMenu.y - window.scrollY, left: contextMenu.x }}
+                        style={{ top: contextMenu.y, left: contextMenu.x }}
                     >
                         <div className={styles.contextMenuItem} onClick={handleCopy}>
                             <LuCopy />
