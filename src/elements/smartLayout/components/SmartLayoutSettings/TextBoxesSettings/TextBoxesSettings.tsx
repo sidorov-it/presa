@@ -143,18 +143,6 @@ export default function TextBoxesSettings({
 
             <AlignmentGroup element={element} handleChange={handleAlignment} />
 
-            <ColorPicker
-                initialColor={element.backgroundColor || '#ffffff'}
-                onColorChange={handleBackgroundColorChange}
-                mode="icon"
-            />
-
-            <ColorPicker
-                initialColor={element.textColor || '#000000'}
-                onColorChange={handleTextColorChange}
-                mode="icon"
-            />
-
             <MenuItem
                 icon={<DeleteIcon />}
                 label="Удалить элемент"
