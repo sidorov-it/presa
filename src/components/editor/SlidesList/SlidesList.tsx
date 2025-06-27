@@ -166,7 +166,7 @@ interface SlidesListProps {
 }
 
 const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlideId, onSlideSelect }) => {
-    const [isCollapsed, setIsCollapsed] = useState(true);
+    const [isCollapsed, setIsCollapsed] = useState(false);
     const [copiedSlide, setCopiedSlide] = useState<Slide | null>(null);
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number; slide: Slide } | null>(null);
     const panelRef = useRef<HTMLDivElement>(null);
@@ -176,7 +176,6 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
     const { getPresentation, addEmptySlide, addSlide, deleteSlide, updateSlide } = usePresentationStore();
     const slides = (getPresentation(presentationId)?.slides || []).filter(s => !s.hidden);
 
-    console.log(contextMenu);
     // Set the presentation ID for drag and drop operations
     // useDndStore(state => state.setPresentationId(presentationId));
 
