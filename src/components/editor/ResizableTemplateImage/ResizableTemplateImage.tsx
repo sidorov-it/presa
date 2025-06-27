@@ -63,12 +63,21 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     const [isResizing, setIsResizing] = useState(false);
     const [currentSize, setCurrentSize] = useState(storedSize);
 
+
     // Refs for resize handling
     const startPosRef = useRef({ x: 0, y: 0 });
     const resizeDirectionRef = useRef<'horizontal' | 'vertical' | null>(null);
     const animationFrameIdRef = useRef<number | null>(null);
     const currentSizeRef = useRef(storedSize);
     const templateTypeRef = useRef(templateType);
+
+    // Sync local size state with the stored size when it changes (e.g. after undo/redo)
+    useEffect(() => {
+        if (!isResizing) {
+            setCurrentSize(storedSize);
+            currentSizeRef.current = storedSize;
+        }
+    }, [storedSize, isResizing]);
 
     // Ref for the image element
     const imageRef = useRef<HTMLDivElement>(null);
