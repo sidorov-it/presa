@@ -6,7 +6,7 @@ import { Slide } from '@/types';
 import { useDndStore } from '@/store/dndStore';
 import { generateId } from '@/utils/id';
 import { useHandleDragStart } from '@/contexts/DragDropContext';
-import { LuGripVertical, LuCopy, LuPlus, LuEyeOff, LuTrash2, LuPaste } from 'react-icons/lu';
+import { LuGripVertical, LuCopy, LuPlus, LuEyeOff, LuTrash2, LuClipboardPaste } from 'react-icons/lu';
 
 import styles from './SlidesList.module.css';
 import Portal from '@/components/Portal';
@@ -357,7 +357,7 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
                         </div>
                         {copiedSlide && (
                             <div className={styles.contextMenuItem} onClick={handleAddCopiedBelow}>
-                                <LuPaste />
+                                <LuClipboardPaste />
                                 Добавить скопированный слайд ниже
                             </div>
                         )}
