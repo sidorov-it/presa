@@ -30,11 +30,13 @@ const alphaToHex = (alpha: number): string => {
 };
 
 const parseColorValue = (value: string) => {
-    if (!value || !value.startsWith('#')) {
+    if (!value) {
         return { baseColor: '#000000', alpha: 1, isValid: false };
     }
 
-    const match = value.match(/^#([0-9A-Fa-f]{6})([0-9A-Fa-f]{2})?$/);
+    const colorWithHash = value.startsWith('#') ? value : `#${value}`;
+
+    const match = colorWithHash.match(/^#([0-9A-Fa-f]{6})([0-9A-Fa-f]{2})?$/);
     if (match) {
         return {
             baseColor: `#${match[1]}`,
@@ -44,7 +46,7 @@ const parseColorValue = (value: string) => {
     }
 
     // Handle 3-digit hex colors
-    const shortMatch = value.match(/^#([0-9A-Fa-f]{3})$/);
+    const shortMatch = colorWithHash.match(/^#([0-9A-Fa-f]{3})$/);
     if (shortMatch) {
         const expanded = shortMatch[1]
             .split('')
@@ -76,20 +78,12 @@ export const ColorPicker = ({
     const [inputValue, setInputValue] = useState(value);
     const [alpha, setAlpha] = useState(parsedValue.alpha);
 
-    // Update local state only when external value changes significantly
+    // Sync local state when external value changes
     useEffect(() => {
-        const currentParsed = parseColorValue(inputValue);
-        const newParsed = parseColorValue(value);
-
-        // Only update if the values are significantly different to prevent infinite loops
-        const colorChanged = currentParsed.baseColor.toLowerCase() !== newParsed.baseColor.toLowerCase();
-        const alphaChanged = allowAlpha && Math.abs(currentParsed.alpha - newParsed.alpha) > 0.01;
-
-        if (colorChanged || alphaChanged || !currentParsed.isValid) {
-            setInputValue(value);
-            setAlpha(newParsed.alpha);
-        }
-    }, [value, allowAlpha, inputValue]);
+        const parsed = parseColorValue(value);
+        setInputValue(value);
+        setAlpha(parsed.alpha);
+    }, [value]);
 
     const handleColorChange = useCallback(
         (newColor: string) => {
@@ -129,19 +123,27 @@ export const ColorPicker = ({
             const parsed = parseColorValue(newValue);
             if (parsed.isValid) {
                 setAlpha(parsed.alpha);
-                onChange(newValue);
             }
         },
-        [onChange]
+        []
     );
 
     const handleInputBlur = useCallback(() => {
-        const parsed = parseColorValue(inputValue);
-        if (!parsed.isValid) {
+        let newValue = inputValue.trim();
+        if (!newValue.startsWith('#')) {
+            newValue = `#${newValue}`;
+        }
+
+        const parsed = parseColorValue(newValue);
+        if (parsed.isValid) {
+            setInputValue(newValue);
+            setAlpha(parsed.alpha);
+            onChange(newValue);
+        } else {
             setInputValue(value);
             setAlpha(parseColorValue(value).alpha);
         }
-    }, [inputValue, value]);
+    }, [inputValue, value, onChange]);
 
     const colorButton = useMemo(
         () => (
@@ -215,10 +217,7 @@ export const ColorPicker = ({
                 content={colorPickerContent}
                 isOpen={isOpen}
                 onOpen={() => setIsOpen(true)}
-                onClose={() => {
-                    console.log('close');
-                    setIsOpen(false);
-                }}
+                onClose={() => setIsOpen(false)}
             />
             <div style={{ position: 'relative', flex: '1 1 0%' }}>
                 <Input
