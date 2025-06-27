@@ -19,14 +19,16 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
     primaryAccentColor,
     theme,
 }) => {
-    if (!slides || slides.length === 0) {
+    const visibleSlides = slides.filter(slide => !slide.hidden);
+
+    if (!visibleSlides || visibleSlides.length === 0) {
         return <div>No slides to display</div>;
     }
 
     return (
         <div className={styles.presentationViewerContainer}>
             <div className={styles.presentationViewerAllSlidesContainer}>
-                {slides.map((slide: Slide, index: number) => (
+                {visibleSlides.map((slide: Slide, index: number) => (
                     <div
                         key={slide.id}
                         id={`slide-${index + 1}`}

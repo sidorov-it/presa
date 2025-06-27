@@ -129,6 +129,7 @@ const SlideItem = memo(
                     ${isLastSlide ? styles.lastSlide : ''}
                     ${isTopIndicator ? styles.topIndicator : ''}
                     ${isBottomIndicator ? styles.bottomIndicator : ''}
+                    ${slide.hidden ? styles.hiddenSlide : ''}
                 `}
                 onClick={handleItemClick}
                 onContextMenu={e => onContextMenu(e, slide)}
@@ -139,6 +140,11 @@ const SlideItem = memo(
                 onKeyDown={handleItemKeyDown}
                 data-slide-id={slide.id}
             >
+                {slide.hidden && (
+                    <div className={styles.hiddenIndicator}>
+                        <LuEyeOff />
+                    </div>
+                )}
                 <div
                     className={styles.slide}
                     data-slide-drag-handle={slide.id}
@@ -176,7 +182,7 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
     const { colorMode } = useColorMode();
 
     const { getPresentation, addEmptySlide, addSlide, deleteSlide, updateSlide } = usePresentationStore();
-    const slides = (getPresentation(presentationId)?.slides || []).filter(s => !s.hidden);
+    const slides = getPresentation(presentationId)?.slides || [];
 
     // Set the presentation ID for drag and drop operations
     // useDndStore(state => state.setPresentationId(presentationId));
@@ -234,9 +240,9 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
         setContextMenu(null);
     }, [contextMenu, copiedSlide, slides, presentationId, addSlide]);
 
-    const handleHide = useCallback(() => {
+    const handleToggleHidden = useCallback(() => {
         if (!contextMenu) return;
-        updateSlide(presentationId, contextMenu.slide.id, { hidden: true });
+        updateSlide(presentationId, contextMenu.slide.id, { hidden: !contextMenu.slide.hidden });
         setContextMenu(null);
     }, [contextMenu, presentationId, updateSlide]);
 
@@ -395,9 +401,9 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
                                 Добавить скопированный слайд ниже
                             </div>
                         )}
-                        <div className={styles.contextMenuItem} onClick={handleHide}>
+                        <div className={styles.contextMenuItem} onClick={handleToggleHidden}>
                             <LuEyeOff />
-                            Скрыть
+                            {contextMenu.slide.hidden ? 'Показать' : 'Скрыть'}
                         </div>
                         <div className={styles.contextMenuItem} onClick={handleDelete}>
                             <LuTrash2 />

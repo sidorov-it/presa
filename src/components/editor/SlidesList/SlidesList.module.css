@@ -390,3 +390,15 @@
 .contextMenuDark .contextMenuItem svg {
     color: var(--chakra-colors-whiteAlpha-700);
 }
+
+.hiddenSlide {
+    opacity: 0.5;
+}
+
+.hiddenIndicator {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: var(--color-text-light);
+    pointer-events: none;
+}
