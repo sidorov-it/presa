@@ -1,13 +1,13 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { RefObject, useCallback, useState } from 'react';
+import { RefObject, useCallback, useMemo, useState } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { SmartLayoutElement, SmartLayoutItem, TipTapRefs } from '@/types';
-import { useShallow } from 'zustand/react/shallow';
 import { generateId } from '@/utils/id';
 import { HiPlus } from 'react-icons/hi2';
 import Tiptap from '@/components/tiptap/Tiptap/Tiptap';
 import ItemWrapper from '../ItemWrapper/ItemWrapper';
+import TextBoxesMenu from './TextBoxesMenu';
 
 import styles from './TextBoxes.module.css';
 import { useDndStore } from '@/store/dndStore';
@@ -50,37 +50,29 @@ export default function TextBoxes({
 
     const [dropIndicator, setDropIndicator] = useState<{ itemId: string; position: 'left' | 'right' } | null>(null);
 
-    const columnSize = usePresentationStore(
-        useShallow(state => {
-            const element = state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement;
-
-            let columnSize = element.columnSize;
-            const items = element.items || [];
-
-            if (items.length === 1) {
-                columnSize = 4;
-            } else if (items.length === 2 && columnSize > 2) {
-                columnSize = 3;
-            } else if (items.length === 3 && columnSize > 3) {
-                columnSize = 2;
-            }
-            return columnSize;
-        })
+    const element = usePresentationStore(
+        state => state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement
     );
 
-    const align = usePresentationStore(
-        useShallow(state => {
-            const element = state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement;
-            return element.align || 'left';
-        })
-    );
+    const columnSize = useMemo(() => {
+        if (!element) return 1;
 
-    const itemsIds = usePresentationStore(
-        useShallow(state => {
-            const element = state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement;
-            return element.items?.map(item => item.id) || [];
-        })
-    );
+        let columnSize = (element as SmartLayoutElement).columnSize;
+        const items = (element as SmartLayoutElement).items || [];
+
+        if (items.length === 1) {
+            columnSize = 4;
+        } else if (items.length === 2 && columnSize > 2) {
+            columnSize = 3;
+        } else if (items.length === 3 && columnSize > 3) {
+            columnSize = 2;
+        }
+        return columnSize;
+    }, [element]);
+
+    const itemsIds = useMemo(() => {
+        return element?.items?.map(item => item.id) || [];
+    }, [element]);
 
     const handleContentChange = useCallback(
         (itemId: string, key: string) => (content: string) => {
@@ -238,13 +230,13 @@ export default function TextBoxes({
                 <div
                     key={itemId}
                     className={styles.itemContainer}
-                    onDragOver={e => handleDragOver(e, itemId)}
-                    onDragLeave={handleDragLeave}
-                    onDrop={e => handleDrop(e, itemId)}
                     data-smart-layout-item-id={itemId}
                     style={{
                         width: `calc(${elementWidth} - 1em)`,
                     }}
+                    onDragOver={e => handleDragOver(e, itemId)}
+                    onDragLeave={handleDragLeave}
+                    onDrop={e => handleDrop(e, itemId)}
                 >
                     {dropIndicator && dropIndicator.itemId === itemId && (
                         <div
@@ -259,8 +251,26 @@ export default function TextBoxes({
                         slideId={slideId}
                         layoutId={layoutId}
                         elementId={elementId}
+                        renderMenuComponent={menuPosition => {
+                            return menuPosition ? (
+                                <TextBoxesMenu
+                                    presentationId={presentationId}
+                                    position={menuPosition}
+                                    itemId={itemId}
+                                    slideId={slideId}
+                                    layoutId={layoutId}
+                                    elementId={elementId}
+                                />
+                            ) : null;
+                        }}
                     >
-                        <div className={`${styles.textBox} ${align ? styles[align] : ''}`}>
+                        <div
+                            className={`${styles.textBox} ${element?.align ? styles[element.align] : ''}`}
+                            style={{
+                                backgroundColor: element.items?.find(item => item.id === itemId)?.backgroundColor || undefined,
+                                color: element.items?.find(item => item.id === itemId)?.textColor || undefined,
+                            }}
+                        >
                             <div className={styles.title}>
                                 <Tiptap
                                     isReadOnly={isReadOnly}
