@@ -63,6 +63,18 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     const [isResizing, setIsResizing] = useState(false);
     const [currentSize, setCurrentSize] = useState(storedSize);
 
+    // Sync local size state with the value from the store. This ensures that
+    // undo/redo operations correctly update the displayed dimensions.
+    useEffect(() => {
+        if (
+            !isResizing &&
+            (currentSize.width !== storedSize.width ||
+                currentSize.height !== storedSize.height)
+        ) {
+            setCurrentSize(storedSize);
+        }
+    }, [storedSize.height, storedSize.width, isResizing]);
+
     // Refs for resize handling
     const startPosRef = useRef({ x: 0, y: 0 });
     const resizeDirectionRef = useRef<'horizontal' | 'vertical' | null>(null);
