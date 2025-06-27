@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import React, { useState, useCallback, useRef, useEffect, memo, useMemo } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useLayoutEffect, memo, useMemo } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import styles from './ResizableTemplateImage.module.css';
 import deepEqual from 'deep-equal';
@@ -72,7 +72,8 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     const templateTypeRef = useRef(templateType);
 
     // Sync local size state with the stored size when it changes (e.g. after undo/redo)
-    useEffect(() => {
+    // Use layout effect so the update happens before other effects to avoid an update loop
+    useLayoutEffect(() => {
         if (!isResizing) {
             setCurrentSize(storedSize);
             currentSizeRef.current = storedSize;
