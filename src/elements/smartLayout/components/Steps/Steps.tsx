@@ -218,6 +218,10 @@ export default function Steps({
                         slideId={slideId}
                         layoutId={layoutId}
                         elementId={elementId}
+                        renderMenuComponent={menuPosition => {
+                            return <div>Menu steps</div>;
+                            // return <StepsItemMenu />;
+                        }}
                     >
                         <div
                             className={`${styles.textBox} ${align ? styles[align] : ''} ${direction === 'vertical' ? styles.vertical : ''}`}
