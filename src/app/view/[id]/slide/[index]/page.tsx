@@ -36,7 +36,8 @@ export default async function SlidePage(props: {
             ? JSON.parse(presentation.slides as unknown as string)
             : (presentation.slides as any);
 
-    const slide = slides[slideIndex];
+    const visibleSlides = slides.filter((s: any) => !s.hidden);
+    const slide = visibleSlides[slideIndex];
 
     if (!slide) {
         notFound();

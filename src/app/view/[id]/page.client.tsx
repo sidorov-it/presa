@@ -37,6 +37,8 @@ export default function PresentationView() {
 
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
+    const visibleSlides = useMemo(() => presentation?.slides.filter(s => !s.hidden) || [], [presentation]);
+
     // Distance the user must scroll before changing slide
     const SCROLL_DISTANCE_THRESHOLD = 1000;
     const SCROLL_IDLE_THRESHOLD = 300;
@@ -74,7 +76,7 @@ export default function PresentationView() {
     }, []);
 
     const handleNextSlide = useCallback(() => {
-        if (presentation && currentSlideIndex < presentation.slides.length - 1) {
+        if (presentation && currentSlideIndex < visibleSlides.length - 1) {
             setCurrentSlideIndex(currentSlideIndex + 1);
             // Block scroll and hide progress bar after slide change
             isScrollBlocked.current = true;
@@ -146,7 +148,7 @@ export default function PresentationView() {
             const dir: 'next' | 'prev' = e.deltaY > 0 ? 'next' : 'prev';
 
             // Check if we're at the boundaries where scrolling is not possible
-            const isLastSlide = currentSlideIndex >= presentation.slides.length - 1;
+            const isLastSlide = currentSlideIndex >= visibleSlides.length - 1;
             const isFirstSlide = currentSlideIndex <= 0;
 
             if ((dir === 'next' && isLastSlide) || (dir === 'prev' && isFirstSlide)) {
@@ -294,7 +296,7 @@ export default function PresentationView() {
         setIsFullscreen(true);
     };
 
-    const currentSlide = presentation?.slides[currentSlideIndex];
+    const currentSlide = visibleSlides[currentSlideIndex];
     const pageStyle = useMemo(() => {
         const style: React.CSSProperties = {};
         if (currentSlide?.templateType === 'imageBackground' && currentSlide?.imageUrl) {
@@ -312,6 +314,7 @@ export default function PresentationView() {
 
     if (isLoading) return loadingUI;
     if (notFound || !presentation) return <NotFoundPage />;
+    if (visibleSlides.length === 0) return <div className={styles.loadingContainer}>Нет видимых слайдов</div>;
 
     return (
         <ReadOnlyProvider isReadOnly={true}>
@@ -329,7 +332,7 @@ export default function PresentationView() {
                             >
                                 <SlideViewer
                                     theme={currentTheme}
-                                    slide={presentation.slides[currentSlideIndex]}
+                                    slide={visibleSlides[currentSlideIndex]}
                                     fullPage={true}
                                     primaryAccentColor={currentTheme?.colors.primaryAccent || '#000000'}
                                     wrapperRef={slideWrapperRef}
@@ -337,7 +340,7 @@ export default function PresentationView() {
                             </motion.div>
                         </AnimatePresence>
                         <div className={styles.progressBar}>
-                            {presentation.slides.map((_, index) => {
+                            {visibleSlides.map((_, index) => {
                                 let progressBlockClass = styles.progressBlock;
                                 if (index < currentSlideIndex) {
                                     progressBlockClass += ` ${styles.progressBlockPast}`;

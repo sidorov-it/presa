@@ -47,8 +47,9 @@ const handleRequest = async (request: NextRequest, props: { params: Promise<{ id
 
         // Parse slides from JSON
         const slides = typeof presentation.slides === 'string' ? JSON.parse(presentation.slides) : presentation.slides;
+        const visibleSlides = slides.filter((s: any) => !s.hidden);
 
-        if (!slides || slides.length === 0) {
+        if (!visibleSlides || visibleSlides.length === 0) {
             return NextResponse.json({ error: 'No slides found' }, { status: 400 });
         }
 
@@ -100,7 +101,10 @@ const handleRequest = async (request: NextRequest, props: { params: Promise<{ id
         const pdfPages: Buffer[] = [];
 
         // Determine which slides to process
-        const slidesToProcess = slideIndex !== null ? [slideIndex] : Array.from({ length: slides.length }, (_, i) => i);
+        const slidesToProcess =
+            slideIndex !== null
+                ? [slideIndex]
+                : visibleSlides.map((_, i) => i);
 
         for (const i of slidesToProcess) {
             const slideUrl = `${baseUrl}/view/${presentationId}/slide/${i}?pdf=true`;
@@ -235,7 +239,7 @@ const handleRequest = async (request: NextRequest, props: { params: Promise<{ id
         const debugInfo = {
             presentationId,
             presentationTitle: presentation.title,
-            totalSlides: slides.length,
+            totalSlides: visibleSlides.length,
             requestedSlideIndex: slideIndex,
             processedSlides: slidesToProcess,
             generatedPages: pdfPages.length,
