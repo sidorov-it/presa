@@ -6,11 +6,11 @@ import { Slide } from '@/types';
 import { useDndStore } from '@/store/dndStore';
 import { generateId } from '@/utils/id';
 import { useHandleDragStart } from '@/contexts/DragDropContext';
+import { LuGripVertical, LuCopy, LuPlus, LuEyeOff, LuTrash2, LuPaste } from 'react-icons/lu';
 
 import styles from './SlidesList.module.css';
 import Portal from '@/components/Portal';
 import { useColorMode } from '@/components/ui/color-mode';
-import { LuGripVertical } from 'react-icons/lu';
 
 // Memoized individual slide component to prevent unnecessary re-renders
 const SlideItem = memo(
@@ -346,23 +346,27 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
                     <div
                         className={`${styles.contextMenu} context-menu ${colorMode === 'dark' ? styles.contextMenuDark : styles.contextMenuLight}`}
                         style={{ top: contextMenu.y - window.scrollY, left: contextMenu.x }}
-                        // onMouseLeave={() => setContextMenu(null)}
                     >
                         <div className={styles.contextMenuItem} onClick={handleCopy}>
+                            <LuCopy />
                             Копировать
                         </div>
                         <div className={styles.contextMenuItem} onClick={handleAddBelow}>
+                            <LuPlus />
                             Добавить слайд ниже
                         </div>
                         {copiedSlide && (
                             <div className={styles.contextMenuItem} onClick={handleAddCopiedBelow}>
+                                <LuPaste />
                                 Добавить скопированный слайд ниже
                             </div>
                         )}
                         <div className={styles.contextMenuItem} onClick={handleHide}>
+                            <LuEyeOff />
                             Скрыть
                         </div>
                         <div className={styles.contextMenuItem} onClick={handleDelete}>
+                            <LuTrash2 />
                             Удалить
                         </div>
                     </div>

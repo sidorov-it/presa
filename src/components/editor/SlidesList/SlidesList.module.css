@@ -312,24 +312,40 @@
 
 .contextMenu {
     position: fixed;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
-    z-index: 50;
+    z-index: 1000;
+    min-width: 200px;
+    padding: 8px 0;
+    border-radius: 6px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background: var(--chakra-colors-chakra-body-bg);
+    border: 1px solid var(--chakra-colors-chakra-border-color);
 }
 
 .contextMenuItem {
-    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
     cursor: pointer;
-    color: var(--color-text);
+    color: var(--chakra-colors-chakra-body-text);
+    font-size: 14px;
+    transition: background-color 0.2s;
 }
 
-/* .contextMenuItem:hover {
-    background: var(--color-background);
-} */
+.contextMenuItem:hover {
+    background-color: var(--chakra-colors-gray-100);
+}
 
-:global(.dark) .contextMenu {
-    background-color: var(--color-surface);
-    border-color: var(--color-border);
-    color: var(--color-text);
+.contextMenuDark .contextMenuItem:hover {
+    background-color: var(--chakra-colors-whiteAlpha-200);
+}
+
+.contextMenuItem svg {
+    width: 16px;
+    height: 16px;
+    color: var(--chakra-colors-gray-500);
+}
+
+.contextMenuDark .contextMenuItem svg {
+    color: var(--chakra-colors-whiteAlpha-700);
 }
