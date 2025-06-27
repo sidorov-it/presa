@@ -51,6 +51,7 @@ interface GetExtensionsProps {
     standardEnterBehavior?: boolean;
     isHideSlashMenu?: boolean;
     onEnterPressed: (contentBeforeCursor?: string, contentAfterCursor?: string) => void;
+    onDeletePressed: (isEmpty: boolean, textContent: string) => void;
     onBackspacePressed: (isEmpty: boolean, textContent: string) => void;
     onAddElement?: (menuItem: MenuItem) => void;
 }
@@ -65,6 +66,7 @@ const getExtensions = ({
     standardEnterBehavior,
     isHideSlashMenu,
     onEnterPressed,
+    onDeletePressed,
     onBackspacePressed,
     onAddElement,
 }: GetExtensionsProps) => [
@@ -235,16 +237,33 @@ const getExtensions = ({
             if (!contentBeforeCursor && !contentAfterCursor) return;
             const htmlBeforeCursor = generateHTML(
                 contentBeforeCursor!,
-                getExtensions({ onEnterPressed, onBackspacePressed, placeholder, onAddElement, isHideSlashMenu })
+                getExtensions({
+                    onEnterPressed,
+                    onBackspacePressed,
+                    onDeletePressed,
+                    placeholder,
+                    onAddElement,
+                    isHideSlashMenu,
+                })
             );
             const htmlAfterCursor = generateHTML(
                 contentAfterCursor!,
-                getExtensions({ onEnterPressed, onBackspacePressed, placeholder, onAddElement, isHideSlashMenu })
+                getExtensions({
+                    onEnterPressed,
+                    onBackspacePressed,
+                    onDeletePressed,
+                    placeholder,
+                    onAddElement,
+                    isHideSlashMenu,
+                })
             );
             onEnterPressed(htmlBeforeCursor, htmlAfterCursor);
         },
         (isEmpty, textContent) => {
             onBackspacePressed(isEmpty, textContent);
+        },
+        (isEmpty, textContent) => {
+            onDeletePressed(isEmpty, textContent);
         },
         standardEnterBehavior
     ),
