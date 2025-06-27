@@ -461,7 +461,7 @@ export const useHistoryStore = create<HistoryState>()(
                     // Get the current state
                     const currentState = { presentations: presentationStore.presentations };
 
-                    const textElements = findTextElements(nextAction.after);
+                    const textElements = findTextElements(nextAction.after, presentationId);
 
                     const contentMap = new Map(textElements.map(el => [el.id, el.content]));
 

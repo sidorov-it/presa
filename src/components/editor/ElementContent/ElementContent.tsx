@@ -333,6 +333,7 @@ export const ElementContent = ({
                     updateSlide(presentationId, previousSlide.id, {
                         layouts: previousSlideLayouts,
                     });
+                    useHistoryStore.getState().commitTransaction(presentationId);
                 } else {
                     const updatedLayouts = [...slide.layouts];
                     updatedLayouts.splice(layoutIndex, 1);
