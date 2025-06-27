@@ -61,6 +61,38 @@ const defaultData = [
     { name: 'Q4', value: 500 },
 ];
 
+const getDataBoundaries = (
+    data: any[],
+    series?: { key: string }[]
+): { min: number; max: number } => {
+    const values: number[] = [];
+
+    data.forEach(item => {
+        if (series && series.length > 0) {
+            series.forEach(s => {
+                const val = Number(item[s.key]);
+                if (!Number.isNaN(val)) {
+                    values.push(val);
+                }
+            });
+        } else if (item.value !== undefined) {
+            const val = Number(item.value);
+            if (!Number.isNaN(val)) {
+                values.push(val);
+            }
+        }
+    });
+
+    if (values.length === 0) {
+        return { min: 0, max: 0 };
+    }
+
+    return {
+        min: Math.min(...values),
+        max: Math.max(...values),
+    };
+};
+
 // Types for resize direction
 type ResizeDirection = 'top' | 'right' | 'bottom' | 'left' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
@@ -120,6 +152,13 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
             ),
         [slideBackground, theme?.colors.primaryAccent, theme?.colors.slideBackground]
     );
+
+    const { min: yAxisMin, max: yAxisMax } = useMemo(() => {
+        const { min, max } = getDataBoundaries(data, element.series);
+        const range = max - min;
+        const padding = range === 0 ? Math.abs(max || 1) * 0.05 : range * 0.05;
+        return { min: min - padding, max: max + padding };
+    }, [data, element.series]);
 
     // Initialize component with element data
     useEffect(() => {
@@ -520,7 +559,13 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
                         <LineChart data={[{ name: '' }, ...data, { name: '' }]}>
                             <CartesianGrid strokeDasharray="3 3" />
                             {showLabels && <XAxis dataKey="name" stroke={axisLineColor} tick={{ fill: tickColor }} />}
-                            {showLabels && <YAxis stroke={axisLineColor} tick={{ fill: tickColor }} />}
+                            {showLabels && (
+                                <YAxis
+                                    domain={[yAxisMin, yAxisMax]}
+                                    stroke={axisLineColor}
+                                    tick={{ fill: tickColor }}
+                                />
+                            )}
                             {showValues && <Tooltip />}
                             <Legend
                                 layout={legendProps.layout}
