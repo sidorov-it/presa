@@ -4,8 +4,8 @@ import React, { useState, useRef, memo, useCallback, useEffect } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { Slide } from '@/types';
 import { useDndStore } from '@/store/dndStore';
+import { useSlideDndStore } from '@/store/slideDndStore';
 import { generateId } from '@/utils/id';
-import { useHandleDragStart } from '@/contexts/DragDropContext';
 import { LuGripVertical, LuCopy, LuPlus, LuEyeOff, LuTrash2, LuClipboardPaste } from 'react-icons/lu';
 
 import styles from './SlidesList.module.css';
@@ -31,7 +31,12 @@ const SlideItem = memo(
     }) => {
         const { colorMode } = useColorMode();
         // Extract text content from the first element if available
-        const handleDragStart = useHandleDragStart();
+        const startSlideDrag = useSlideDndStore(state => state.startDrag);
+        const slideDragState = useSlideDndStore(state => state.dragState);
+        const slideDndState = useSlideDndStore(state => state);
+        const setSlideIndicators = useSlideDndStore(state => state.setIndicators);
+        const completeSlideDrop = useSlideDndStore(state => state.completeDrop);
+        const resetSlideDnd = useSlideDndStore(state => state.reset);
         const getSlideTitle = useCallback(() => {
             if (!slide.layouts.length || !slide.layouts[0].elements.length) {
                 return `Слайд ${index + 1}`;
@@ -62,64 +67,87 @@ const SlideItem = memo(
             [slide.id, onSlideSelect]
         );
 
-        // Add drag and drop handlers for slide templates
+        // Handlers for adding slide templates from the menu
         const setDndIndicators = useDndStore(state => state.setIndicators);
         const dndState = useDndStore(state => state.state);
         const isSlideTemplate = dndState.dragState === 'dragElement' && dndState.newElement.isSlideTemplate;
 
+        const isReordering = slideDragState === 'dragging';
+
         const handleDragOver = useCallback(
             (e: React.DragEvent<HTMLDivElement>) => {
-                if (!isSlideTemplate) return;
+                if (isSlideTemplate) {
+                    e.preventDefault();
+                    e.stopPropagation();
 
-                e.preventDefault();
-                e.stopPropagation();
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const mouseY = e.clientY;
+                    const slideMiddle = rect.top + rect.height / 2;
+                    const position = mouseY < slideMiddle ? 'top' : 'bottom';
 
-                // Calculate drop position (top/bottom) based on mouse position
-                const rect = e.currentTarget.getBoundingClientRect();
-                const mouseY = e.clientY;
-                const slideMiddle = rect.top + rect.height / 2;
-                const position = mouseY < slideMiddle ? 'top' : 'bottom';
+                    setDndIndicators({
+                        slideIndicator: slide.id,
+                        slidePosition: position,
+                    });
 
-                // Set slide indicators for the DnD store
-                setDndIndicators({
-                    slideIndicator: slide.id,
-                    slidePosition: position,
-                });
+                    e.dataTransfer.dropEffect = 'copy';
+                } else if (isReordering) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const mouseY = e.clientY;
+                    const slideMiddle = rect.top + rect.height / 2;
+                    const position = mouseY < slideMiddle ? 'top' : 'bottom';
 
-                // Update cursor to show valid drop target
-                e.dataTransfer.dropEffect = 'copy';
+                    setSlideIndicators({
+                        slideIndicator: slide.id,
+                        slidePosition: position,
+                    });
+                    e.dataTransfer.dropEffect = 'move';
+                }
             },
-            [isSlideTemplate, setDndIndicators, slide.id]
+            [isSlideTemplate, isReordering, setDndIndicators, setSlideIndicators, slide.id]
         );
 
         const handleDragLeave = useCallback(() => {
-            if (!isSlideTemplate) return;
-
-            // Clear indicators when leaving the drop area
-            setDndIndicators({
-                slideIndicator: null,
-                slidePosition: null,
-            });
-        }, [isSlideTemplate, setDndIndicators]);
+            if (isSlideTemplate) {
+                setDndIndicators({
+                    slideIndicator: null,
+                    slidePosition: null,
+                });
+            }
+            if (isReordering) {
+                setSlideIndicators({ slideIndicator: null, slidePosition: null });
+            }
+        }, [isSlideTemplate, isReordering, setDndIndicators, setSlideIndicators]);
 
         const handleDrop = useCallback(
             (e: React.DragEvent<HTMLDivElement>) => {
-                if (!isSlideTemplate) return;
-
-                e.preventDefault();
-                e.stopPropagation();
-
-                // Complete the drop operation
-                useDndStore.getState().completeDrop();
+                if (isSlideTemplate) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    useDndStore.getState().completeDrop();
+                } else if (isReordering) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    completeSlideDrop();
+                }
             },
-            [isSlideTemplate]
+            [isSlideTemplate, isReordering, completeSlideDrop]
         );
 
         // Highlight indicator based on drag position
         const isTopIndicator =
-            dndState.indicators.slideIndicator === slide.id && dndState.indicators.slidePosition === 'top';
+            (dndState.indicators.slideIndicator === slide.id && dndState.indicators.slidePosition === 'top') ||
+            (slideDragState === 'dragging' &&
+                slideDndState.indicators.slideIndicator === slide.id &&
+                slideDndState.indicators.slidePosition === 'top');
+
         const isBottomIndicator =
-            dndState.indicators.slideIndicator === slide.id && dndState.indicators.slidePosition === 'bottom';
+            (dndState.indicators.slideIndicator === slide.id && dndState.indicators.slidePosition === 'bottom') ||
+            (slideDragState === 'dragging' &&
+                slideDndState.indicators.slideIndicator === slide.id &&
+                slideDndState.indicators.slidePosition === 'bottom');
 
         return (
             <div
@@ -149,7 +177,12 @@ const SlideItem = memo(
                     className={styles.slide}
                     data-slide-drag-handle={slide.id}
                     draggable
-                    onDragStart={e => handleDragStart(e, { slideId: slide.id, dragElementType: 'slide' })}
+                    onDragStart={e => {
+                        startSlideDrag(slide.id);
+                        e.dataTransfer.effectAllowed = 'move';
+                        e.dataTransfer.setData('text/plain', slide.id);
+                    }}
+                    onDragEnd={resetSlideDnd}
                 >
                     <div className={styles.slideNumberContainer}>
                         <span className={styles.slideNumber}>{index + 1}</span>
@@ -184,8 +217,10 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
     const { getPresentation, addEmptySlide, addSlide, deleteSlide, updateSlide } = usePresentationStore();
     const slides = getPresentation(presentationId)?.slides || [];
 
-    // Set the presentation ID for drag and drop operations
-    // useDndStore(state => state.setPresentationId(presentationId));
+    const setSlidePresentationId = useSlideDndStore(state => state.setPresentationId);
+    useEffect(() => {
+        setSlidePresentationId(presentationId);
+    }, [presentationId, setSlidePresentationId]);
 
     const handleToggleCollapse = useCallback(() => {
         setIsCollapsed(prev => !prev);
