@@ -32,7 +32,6 @@ const SlideItem = memo(
         // Extract text content from the first element if available
         const startSlideDrag = useSlideDndStore(state => state.startDrag);
         const slideDragState = useSlideDndStore(state => state.dragState);
-        const slideDndState = useSlideDndStore(state => state);
         const setSlideIndicators = useSlideDndStore(state => state.setIndicators);
         const completeSlideDrop = useSlideDndStore(state => state.completeDrop);
         const resetSlideDnd = useSlideDndStore(state => state.reset);

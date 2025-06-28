@@ -28,27 +28,14 @@ const ElementsPanelPopupMenu: React.FC<PElementsPanelPopupMenuProps> = ({
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>, element: MenuItem) => {
         e.stopPropagation();
 
-        // Check if this is a slide template
-        const categoryData = menuRegistry.find(cat => cat.id === category);
-        const isSlideTemplate = categoryData?.isSlideTemplate || SLIDE_TEMPLATE_TYPES.includes(element.elementTypeId);
-
-        if (isSlideTemplate) {
-            // Start drag with special handling for slide templates
-            useDndStore.getState().startNewElementDrag({
-                ...element,
-                isSlideTemplate: true,
-            });
-        } else {
-            // Normal element drag
-            useDndStore.getState().startNewElementDrag(element);
-        }
+        // Start drag with appropriate data
+        useDndStore.getState().startNewElementDrag(element);
     };
 
     // Функция для добавления элемента при клике
     const handleElementClick = (element: MenuItem) => {
         // Check if this is a slide template
-        const categoryData = menuRegistry.find(cat => cat.id === category);
-        const isSlideTemplate = categoryData?.isSlideTemplate || SLIDE_TEMPLATE_TYPES.includes(element.elementTypeId);
+        const isSlideTemplate = !!element.templateConfig;
 
         const isTable = element.elementTypeId.startsWith('table');
 

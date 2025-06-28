@@ -112,7 +112,6 @@ export type DndAction =
               props: any;
               elementTypeId: string;
               elementVariant: string;
-              isSlideTemplate?: boolean;
           };
       }
     | { type: 'SET_MOUSE_POSITION'; payload: MousePosition }
