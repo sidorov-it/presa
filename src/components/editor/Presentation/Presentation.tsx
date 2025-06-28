@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import styles from './Presentation.module.css';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
 import SlidesList from '../SlidesList';
+import SlideDropIndicator from '@/components/SlideDropIndicator';
 interface PresentationProps {
     presentationId: string;
     activeSlideId: string | null;
@@ -92,6 +93,7 @@ function Presentation({ presentationId, activeSlideId, onSlideSelect, tiptapRefs
             ))}
 
             <SlidesList presentationId={presentationId} activeSlideId={activeSlideId} onSlideSelect={onSlideSelect} />
+            <SlideDropIndicator />
         </div>
     );
 }

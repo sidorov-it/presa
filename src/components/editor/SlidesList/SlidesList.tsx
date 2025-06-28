@@ -3,7 +3,6 @@
 import React, { useState, useRef, memo, useCallback, useEffect } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { Slide } from '@/types';
-import { useDndStore } from '@/store/dndStore';
 import { useSlideDndStore } from '@/store/slideDndStore';
 import { generateId } from '@/utils/id';
 import { LuGripVertical, LuCopy, LuPlus, LuEyeOff, LuTrash2, LuClipboardPaste } from 'react-icons/lu';
@@ -67,31 +66,11 @@ const SlideItem = memo(
             [slide.id, onSlideSelect]
         );
 
-        // Handlers for adding slide templates from the menu
-        const setDndIndicators = useDndStore(state => state.setIndicators);
-        const dndState = useDndStore(state => state.state);
-        const isSlideTemplate = dndState.dragState === 'dragElement' && dndState.newElement.isSlideTemplate;
-
         const isReordering = slideDragState === 'dragging';
 
         const handleDragOver = useCallback(
             (e: React.DragEvent<HTMLDivElement>) => {
-                if (isSlideTemplate) {
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const mouseY = e.clientY;
-                    const slideMiddle = rect.top + rect.height / 2;
-                    const position = mouseY < slideMiddle ? 'top' : 'bottom';
-
-                    setDndIndicators({
-                        slideIndicator: slide.id,
-                        slidePosition: position,
-                    });
-
-                    e.dataTransfer.dropEffect = 'copy';
-                } else if (isReordering) {
+                if (isReordering) {
                     e.preventDefault();
                     e.stopPropagation();
                     const rect = e.currentTarget.getBoundingClientRect();
@@ -106,48 +85,26 @@ const SlideItem = memo(
                     e.dataTransfer.dropEffect = 'move';
                 }
             },
-            [isSlideTemplate, isReordering, setDndIndicators, setSlideIndicators, slide.id]
+            [isReordering, setSlideIndicators, slide.id]
         );
 
         const handleDragLeave = useCallback(() => {
-            if (isSlideTemplate) {
-                setDndIndicators({
-                    slideIndicator: null,
-                    slidePosition: null,
-                });
-            }
             if (isReordering) {
                 setSlideIndicators({ slideIndicator: null, slidePosition: null });
             }
-        }, [isSlideTemplate, isReordering, setDndIndicators, setSlideIndicators]);
+        }, [isReordering, setSlideIndicators]);
 
         const handleDrop = useCallback(
             (e: React.DragEvent<HTMLDivElement>) => {
-                if (isSlideTemplate) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    useDndStore.getState().completeDrop();
-                } else if (isReordering) {
+                if (isReordering) {
                     e.preventDefault();
                     e.stopPropagation();
                     completeSlideDrop();
                 }
             },
-            [isSlideTemplate, isReordering, completeSlideDrop]
+            [isReordering, completeSlideDrop]
         );
 
-        // Highlight indicator based on drag position
-        const isTopIndicator =
-            (dndState.indicators.slideIndicator === slide.id && dndState.indicators.slidePosition === 'top') ||
-            (slideDragState === 'dragging' &&
-                slideDndState.indicators.slideIndicator === slide.id &&
-                slideDndState.indicators.slidePosition === 'top');
-
-        const isBottomIndicator =
-            (dndState.indicators.slideIndicator === slide.id && dndState.indicators.slidePosition === 'bottom') ||
-            (slideDragState === 'dragging' &&
-                slideDndState.indicators.slideIndicator === slide.id &&
-                slideDndState.indicators.slidePosition === 'bottom');
 
         return (
             <div
@@ -155,8 +112,6 @@ const SlideItem = memo(
                     ${styles.slideContainer}
                     ${styles.hoverSlide}
                     ${isLastSlide ? styles.lastSlide : ''}
-                    ${isTopIndicator ? styles.topIndicator : ''}
-                    ${isBottomIndicator ? styles.bottomIndicator : ''}
                     ${slide.hidden ? styles.hiddenSlide : ''}
                 `}
                 onClick={handleItemClick}
