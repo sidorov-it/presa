@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useColorMode } from '@/components/ui/color-mode';
+import { ColorMode, useColorMode } from '@/components/ui/color-mode';
 import { BackgroundSettings } from '@/types';
 import { Theme } from '@/types/theme';
 import { useThemeApplication } from '@/hooks/useThemeApplication';
@@ -12,6 +12,7 @@ interface ThemeStylesApplierProps {
     backgroundSettings?: BackgroundSettings;
     children: React.ReactNode;
     className?: string;
+    colorMode?: ColorMode;
 }
 
 const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
@@ -20,12 +21,13 @@ const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
     children,
     className = '',
 }) => {
-    const { setColorMode } = useColorMode();
+    const { colorMode, setColorMode } = useColorMode();
 
     const { containerRef } = useThemeApplication({
         theme,
         backgroundSettings,
         setColorMode,
+        colorMode,
     });
 
     return (

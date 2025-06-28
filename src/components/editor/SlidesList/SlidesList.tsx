@@ -3,9 +3,8 @@
 import React, { useState, useRef, memo, useCallback, useEffect } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { Slide } from '@/types';
-import { useDndStore } from '@/store/dndStore';
+import { useSlideDndStore } from '@/store/slideDndStore';
 import { generateId } from '@/utils/id';
-import { useHandleDragStart } from '@/contexts/DragDropContext';
 import { LuGripVertical, LuCopy, LuPlus, LuEyeOff, LuTrash2, LuClipboardPaste } from 'react-icons/lu';
 
 import styles from './SlidesList.module.css';
@@ -17,7 +16,7 @@ const SlideItem = memo(
     ({
         slide,
         index,
-        isActive,
+        // isActive,
         isLastSlide,
         onSlideSelect,
         onContextMenu,
@@ -29,9 +28,13 @@ const SlideItem = memo(
         onSlideSelect: (slideId: string, scroll: boolean) => void;
         onContextMenu: (e: React.MouseEvent, slide: Slide) => void;
     }) => {
-        const { colorMode } = useColorMode();
+        // const { colorMode } = useColorMode();
         // Extract text content from the first element if available
-        const handleDragStart = useHandleDragStart();
+        const startSlideDrag = useSlideDndStore(state => state.startDrag);
+        const slideDragState = useSlideDndStore(state => state.dragState);
+        const setSlideIndicators = useSlideDndStore(state => state.setIndicators);
+        const completeSlideDrop = useSlideDndStore(state => state.completeDrop);
+        const resetSlideDnd = useSlideDndStore(state => state.reset);
         const getSlideTitle = useCallback(() => {
             if (!slide.layouts.length || !slide.layouts[0].elements.length) {
                 return `Слайд ${index + 1}`;
@@ -62,64 +65,45 @@ const SlideItem = memo(
             [slide.id, onSlideSelect]
         );
 
-        // Add drag and drop handlers for slide templates
-        const setDndIndicators = useDndStore(state => state.setIndicators);
-        const dndState = useDndStore(state => state.state);
-        const isSlideTemplate = dndState.dragState === 'dragElement' && dndState.newElement.isSlideTemplate;
+        const isReordering = slideDragState === 'dragging';
 
         const handleDragOver = useCallback(
             (e: React.DragEvent<HTMLDivElement>) => {
-                if (!isSlideTemplate) return;
+                if (isReordering) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const mouseY = e.clientY;
+                    const slideMiddle = rect.top + rect.height / 2;
+                    const position = mouseY < slideMiddle ? 'top' : 'bottom';
 
-                e.preventDefault();
-                e.stopPropagation();
-
-                // Calculate drop position (top/bottom) based on mouse position
-                const rect = e.currentTarget.getBoundingClientRect();
-                const mouseY = e.clientY;
-                const slideMiddle = rect.top + rect.height / 2;
-                const position = mouseY < slideMiddle ? 'top' : 'bottom';
-
-                // Set slide indicators for the DnD store
-                setDndIndicators({
-                    slideIndicator: slide.id,
-                    slidePosition: position,
-                });
-
-                // Update cursor to show valid drop target
-                e.dataTransfer.dropEffect = 'copy';
+                    setSlideIndicators({
+                        slideIndicator: slide.id,
+                        slidePosition: position,
+                    });
+                    e.dataTransfer.dropEffect = 'move';
+                }
             },
-            [isSlideTemplate, setDndIndicators, slide.id]
+            [isReordering, setSlideIndicators, slide.id]
         );
 
         const handleDragLeave = useCallback(() => {
-            if (!isSlideTemplate) return;
-
-            // Clear indicators when leaving the drop area
-            setDndIndicators({
-                slideIndicator: null,
-                slidePosition: null,
-            });
-        }, [isSlideTemplate, setDndIndicators]);
+            if (isReordering) {
+                setSlideIndicators({ slideIndicator: null, slidePosition: null });
+            }
+        }, [isReordering, setSlideIndicators]);
 
         const handleDrop = useCallback(
             (e: React.DragEvent<HTMLDivElement>) => {
-                if (!isSlideTemplate) return;
-
-                e.preventDefault();
-                e.stopPropagation();
-
-                // Complete the drop operation
-                useDndStore.getState().completeDrop();
+                if (isReordering) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    completeSlideDrop();
+                }
             },
-            [isSlideTemplate]
+            [isReordering, completeSlideDrop]
         );
 
-        // Highlight indicator based on drag position
-        const isTopIndicator =
-            dndState.indicators.slideIndicator === slide.id && dndState.indicators.slidePosition === 'top';
-        const isBottomIndicator =
-            dndState.indicators.slideIndicator === slide.id && dndState.indicators.slidePosition === 'bottom';
 
         return (
             <div
@@ -127,8 +111,6 @@ const SlideItem = memo(
                     ${styles.slideContainer}
                     ${styles.hoverSlide}
                     ${isLastSlide ? styles.lastSlide : ''}
-                    ${isTopIndicator ? styles.topIndicator : ''}
-                    ${isBottomIndicator ? styles.bottomIndicator : ''}
                     ${slide.hidden ? styles.hiddenSlide : ''}
                 `}
                 onClick={handleItemClick}
@@ -149,7 +131,12 @@ const SlideItem = memo(
                     className={styles.slide}
                     data-slide-drag-handle={slide.id}
                     draggable
-                    onDragStart={e => handleDragStart(e, { slideId: slide.id, dragElementType: 'slide' })}
+                    onDragStart={e => {
+                        startSlideDrag(slide.id);
+                        e.dataTransfer.effectAllowed = 'move';
+                        e.dataTransfer.setData('text/plain', slide.id);
+                    }}
+                    onDragEnd={resetSlideDnd}
                 >
                     <div className={styles.slideNumberContainer}>
                         <span className={styles.slideNumber}>{index + 1}</span>
@@ -181,11 +168,14 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
 
     const { colorMode } = useColorMode();
 
-    const { getPresentation, addEmptySlide, addSlide, deleteSlide, updateSlide } = usePresentationStore();
-    const slides = getPresentation(presentationId)?.slides || [];
+    // const { addEmptySlide, addSlide, deleteSlide, updateSlide } = usePresentationStore();
+    const slides = usePresentationStore(state => state.getPresentation(presentationId)?.slides || []);
+    // const slides = getPresentation(presentationId)?.slides || [];
 
-    // Set the presentation ID for drag and drop operations
-    // useDndStore(state => state.setPresentationId(presentationId));
+    const setSlidePresentationId = useSlideDndStore(state => state.setPresentationId);
+    useEffect(() => {
+        setSlidePresentationId(presentationId);
+    }, [presentationId, setSlidePresentationId]);
 
     const handleToggleCollapse = useCallback(() => {
         setIsCollapsed(prev => !prev);
@@ -228,29 +218,29 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
     const handleAddBelow = useCallback(() => {
         if (!contextMenu) return;
         const index = slides.findIndex(s => s.id === contextMenu.slide.id);
-        addEmptySlide(presentationId, index + 1);
+        usePresentationStore.getState().addEmptySlide(presentationId, index + 1);
         setContextMenu(null);
-    }, [contextMenu, slides, presentationId, addEmptySlide]);
+    }, [contextMenu, slides, presentationId]);
 
     const handleAddCopiedBelow = useCallback(() => {
         if (!contextMenu || !copiedSlide) return;
         const index = slides.findIndex(s => s.id === contextMenu.slide.id);
         const newSlide = { ...copiedSlide, id: generateId() };
-        addSlide(presentationId, newSlide, index + 1);
+        usePresentationStore.getState().addSlide(presentationId, newSlide, index + 1);
         setContextMenu(null);
-    }, [contextMenu, copiedSlide, slides, presentationId, addSlide]);
+    }, [contextMenu, copiedSlide, slides, presentationId]);
 
     const handleToggleHidden = useCallback(() => {
         if (!contextMenu) return;
-        updateSlide(presentationId, contextMenu.slide.id, { hidden: !contextMenu.slide.hidden });
+        usePresentationStore.getState().updateSlide(presentationId, contextMenu.slide.id, { hidden: !contextMenu.slide.hidden });
         setContextMenu(null);
-    }, [contextMenu, presentationId, updateSlide]);
+    }, [contextMenu, presentationId]);
 
     const handleDelete = useCallback(() => {
         if (!contextMenu) return;
-        deleteSlide(presentationId, contextMenu.slide.id);
+        usePresentationStore.getState().deleteSlide(presentationId, contextMenu.slide.id);
         setContextMenu(null);
-    }, [contextMenu, presentationId, deleteSlide]);
+    }, [contextMenu, presentationId]);
 
     useEffect(() => {
         if (!contextMenu) return;
@@ -356,7 +346,7 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
             </Portal>
 
             <div ref={panelRef} className={styles.leftPanelContent}>
-                <button className={styles.createButton} onClick={() => addEmptySlide(presentationId, slides.length)}>
+                <button className={styles.createButton} onClick={() => usePresentationStore.getState().addEmptySlide(presentationId, slides.length)}>
                     + Добавить
                 </button>
                 {slides.length === 0 && (

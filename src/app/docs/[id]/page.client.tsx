@@ -3,7 +3,7 @@
 /* eslint-disable jsx-a11y/interactive-supports-focus */
 'use client';
 
-import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef, MutableRefObject } from 'react';
 import { useParams } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
 import { useSession, signOut } from 'next-auth/react';
@@ -36,25 +36,175 @@ import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
 import { LuEye, LuSettings, LuUser } from 'react-icons/lu';
 import Popover from '@/components/ui/Popover';
 
-export default function PresentationEditorPage() {
-    const params = useParams();
-    const { id } = params;
-    const { data: session, status } = useSession();
-    const [isBgModalOpen, setIsBgModalOpen] = useState(false);
-
+const Header = ({
+    presentationId,
+    tiptapRefs,
+    handleViewPresentation,
+    handleOpenBgModal,
+    handleKeyDownCog,
+}: {
+    presentationId: string;
+    tiptapRefs: MutableRefObject<TipTapRefs>;
+    handleViewPresentation: () => void;
+    handleOpenBgModal: () => void;
+    handleKeyDownCog: (e: React.KeyboardEvent<HTMLButtonElement>) => void;
+}) => {
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const { data: session } = useSession();
     // Token management
     const { balance: tokenBalance, loading: tokensLoading } = useTokens();
+
+    const handleSignOut = useCallback(() => {
+        signOut({ callbackUrl: '/' });
+    }, []);
+
+    return (
+        <header className={styles.header}>
+            <div className={styles.headerContent}>
+                <div className={styles.headerLeft}>
+                    <Link href="/dashboard" className={styles.logo}>
+                        <Logo size="md" />
+                    </Link>
+                </div>
+
+                <div className={styles.headerRight}>
+                    <div
+                        className={styles.themeButton}
+                        role="button"
+                        aria-label="Открыть выбор темы"
+                        onClick={() => useMenuStore.getState().openSideMenu('theme-select', { presentationId })}
+                        onKeyDown={e => {
+                            if (e.key === 'Enter') {
+                                useMenuStore.getState().openSideMenu('theme-select', { presentationId });
+                            }
+                        }}
+                    >
+                        <ThemeIcon />
+                        <span>Тема</span>
+                    </div>
+
+                    <Tooltip content="Просмотр">
+                        <button
+                            onClick={handleViewPresentation}
+                            className={styles.viewButton}
+                            aria-label="Просмотреть презентацию"
+                        >
+                            <LuEye className={styles.viewIcon} aria-hidden="true" />
+                        </button>
+                    </Tooltip>
+
+                    <SimplePdfExportButton presentationId={presentationId} presentationTitle={''} />
+
+                    <div className={styles.headerDivider} />
+                    <UndoRedoControls presentationId={presentationId} tiptapRefs={tiptapRefs} />
+
+                    <div className={styles.headerDivider} />
+
+                    <button
+                        type="button"
+                        className={styles.settingsButton}
+                        aria-label="Настроить фон презентации"
+                        tabIndex={0}
+                        onClick={handleOpenBgModal}
+                        onKeyDown={handleKeyDownCog}
+                    >
+                        <LuSettings className={styles.settingsIcon} aria-hidden="true" />
+                    </button>
+
+                    <div className={styles.headerDivider} />
+
+                    <Popover
+                        isOpen={isUserMenuOpen}
+                        onOpen={() => setIsUserMenuOpen(true)}
+                        onClose={() => setIsUserMenuOpen(false)}
+                        trigger={
+                            <div
+                                className={styles.userInfo}
+                                role="button"
+                                aria-label="Открыть меню пользователя"
+                                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                                onKeyDown={e => e.key === 'Enter' && setIsUserMenuOpen(!isUserMenuOpen)}
+                            >
+                                <LuUser className={styles.userIcon} />
+                                {/* Username removed for compact header */}
+                            </div>
+                        }
+                        content={
+                            <div className={styles.userMenu}>
+                                <div className={styles.userMenuHeader}>
+                                    <div className={styles.userMenuEmail}>
+                                        {session?.user?.email || 'user@example.com'}
+                                    </div>
+                                    <Link href="/tokens" className={styles.userMenuCredits}>
+                                        <HiOutlineCreditCard className={styles.creditsIcon} />
+                                        <span>{tokensLoading ? '...' : formatTokenAmount(tokenBalance)} токенов</span>
+                                    </Link>
+                                </div>
+
+                                {/* <div className={styles.userMenuDivider} /> */}
+
+                                <div className={styles.userMenuActions}>
+                                    <Link href="/settings" className={styles.userMenuAction}>
+                                        <FaCog className={styles.actionIcon} />
+                                        <span>Настройки</span>
+                                    </Link>
+
+                                    <button
+                                        onClick={handleSignOut}
+                                        className={styles.userMenuSignOut}
+                                        aria-label="Выйти"
+                                    >
+                                        <FaSignOutAlt className={styles.signOutIcon} />
+                                        <span>Выйти</span>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    />
+                </div>
+            </div>
+        </header>
+    );
+};
+
+const SavingStatusAlert = () => {
+    const unsavedChanges = usePresentationStore(state => state.unsavedChanges);
+    const savingStatus = usePresentationStore(state => state.savingStatus);
+
+    // Warn user about unsaved changes when leaving the page
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (unsavedChanges || savingStatus === 'saving') {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [unsavedChanges, savingStatus]);
+
+    return null;
+};
+
+export default function PresentationEditorPage() {
+    const params = useParams();
+    const id = params.id as string;
+    const [isBgModalOpen, setIsBgModalOpen] = useState(false);
+    const { status } = useSession();
 
     // Access store values individually to prevent unnecessary re-renders
     const loadPresentation = usePresentationStore(state => state.loadPresentation);
     const checkPresentationExists = usePresentationStore(state => state.checkPresentationExists);
-    const unsavedChanges = usePresentationStore(state => state.unsavedChanges);
-    const savingStatus = usePresentationStore(state => state.savingStatus);
+    const clearCurrentPresentationMeta = usePresentationStore(state => state.clearCurrentPresentationMeta);
 
     // Get presentation from store instead of local state
-    const presentation = usePresentationStore(state => state.getPresentation(id as string));
+    const presentationMeta = usePresentationStore(state => state.currentPresentationMeta);
+    // const presentation = usePresentationStore(state => state.getPresentation(id as string));
 
-    const themes = useThemeStore(state => state.themes);
+    const allThemes = useThemeStore(state => state.allThemes);
     const defaultThemes = useThemeStore(state => state.defaultThemes);
     const loadThemes = useThemeStore(state => state.loadThemes);
     const currentTheme = useThemeStore(state => state.currentTheme);
@@ -70,13 +220,13 @@ export default function PresentationEditorPage() {
 
     const [isLoading, setIsLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
-    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
     // Cleanup function to clear theme styles when component unmounts
     useEffect(() => {
         return () => {
             clearAllThemeStyles();
+            clearCurrentPresentationMeta();
         };
     }, []);
 
@@ -95,22 +245,7 @@ export default function PresentationEditorPage() {
         return () => {
             ChangeTiptapRefsEvent.removeEventListener(handleChangeTiptapRefs);
         };
-    }, [presentation]);
-
-    // Warn user about unsaved changes when leaving the page
-    useEffect(() => {
-        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-            if (unsavedChanges || savingStatus === 'saving') {
-                e.preventDefault();
-                e.returnValue = '';
-            }
-        };
-
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        };
-    }, [unsavedChanges, savingStatus]);
+    }, []);
 
     // Load presentation data only once when component mounts or ID changes
     useEffect(() => {
@@ -120,6 +255,14 @@ export default function PresentationEditorPage() {
             try {
                 // Check if presentation already exists in store
                 if (checkPresentationExists(id as string)) {
+                    const presentation = usePresentationStore.getState().getPresentation(id as string);
+
+                    usePresentationStore.getState().setCurrentPresentationMeta({
+                        id: id,
+                        title: presentation!.title,
+                        themeId: presentation!.themeId || null,
+                        backgroundSettings: presentation!.backgroundSettings,
+                    });
                     setIsLoading(false);
                     return;
                 }
@@ -142,14 +285,14 @@ export default function PresentationEditorPage() {
 
     // Apply theme when presentation is loaded or themes change
     useEffect(() => {
-        if (!presentation || !presentation.themeId) {
+        if (!presentationMeta || !presentationMeta.themeId) {
             setCurrentTheme(defaultThemes[0]);
             return;
         }
 
         const savedTheme =
-            themes.find(theme => theme.id === presentation.themeId) ||
-            defaultThemes.find(theme => theme.id === presentation.themeId);
+            allThemes.find(theme => theme.id === presentationMeta.themeId) ||
+            defaultThemes.find(theme => theme.id === presentationMeta.themeId);
         if (savedTheme) {
             setCurrentTheme(savedTheme);
         }
@@ -157,7 +300,7 @@ export default function PresentationEditorPage() {
         return () => {
             setCurrentTheme(undefined);
         };
-    }, [presentation, themes, setCurrentTheme, defaultThemes]);
+    }, [allThemes, setCurrentTheme, defaultThemes, presentationMeta]);
 
     // Load themes separately
     useEffect(() => {
@@ -168,10 +311,8 @@ export default function PresentationEditorPage() {
 
     // Function to navigate to view mode
     const handleViewPresentation = useCallback(() => {
-        if (presentation) {
-            window.open(`/view/${presentation.id}`, '_blank');
-        }
-    }, [presentation]);
+        window.open(`/view/${id}`, '_blank');
+    }, [id]);
 
     const handleOpenBgModal = useCallback(() => {
         setIsBgModalOpen(true);
@@ -190,10 +331,6 @@ export default function PresentationEditorPage() {
         }
     }, []);
 
-    const handleSignOut = useCallback(() => {
-        signOut({ callbackUrl: '/' });
-    }, []);
-
     // Memoize the loading and not found UI to prevent re-renders
     const loadingUI = useMemo(
         () => (
@@ -205,153 +342,34 @@ export default function PresentationEditorPage() {
     );
 
     if (isLoading) return loadingUI;
-    if (notFound || !presentation) return <NotFoundPage />;
+    if (notFound) return <NotFoundPage />;
 
     return (
         <>
             <ReadOnlyProvider isReadOnly={false}>
+                <SavingStatusAlert />
                 <ThemeStylesApplier
                     theme={currentTheme || defaultTheme}
-                    backgroundSettings={presentation.backgroundSettings}
+                    backgroundSettings={{}}
                     className={styles.container}
                 >
                     <MobileWarningOverlay />
                     <div ref={containerRef} className={colorMode === 'dark' ? 'dark' : ''}>
-                        <header className={styles.header}>
-                            <div className={styles.headerContent}>
-                                <div className={styles.headerLeft}>
-                                    <Link href="/dashboard" className={styles.logo}>
-                                        <Logo size="md" />
-                                    </Link>
-                                </div>
-
-                                <div className={styles.headerRight}>
-                                    <div
-                                        className={styles.themeButton}
-                                        role="button"
-                                        aria-label="Открыть выбор темы"
-                                        onClick={() =>
-                                            useMenuStore
-                                                .getState()
-                                                .openSideMenu('theme-select', { presentationId: presentation.id })
-                                        }
-                                        onKeyDown={e => {
-                                            if (e.key === 'Enter') {
-                                                useMenuStore
-                                                    .getState()
-                                                    .openSideMenu('theme-select', { presentationId: presentation.id });
-                                            }
-                                        }}
-                                    >
-                                        <ThemeIcon />
-                                        <span>Тема</span>
-                                    </div>
-
-                                    <Tooltip content="Просмотр">
-                                        <button
-                                            onClick={handleViewPresentation}
-                                            className={styles.viewButton}
-                                            aria-label="Просмотреть презентацию"
-                                        >
-                                            <LuEye className={styles.viewIcon} aria-hidden="true" />
-                                        </button>
-                                    </Tooltip>
-
-                                    <SimplePdfExportButton
-                                        presentationId={presentation.id}
-                                        presentationTitle={presentation.title}
-                                    />
-
-                                    <div className={styles.headerDivider} />
-                                    {/* <Tooltip content="Скачать">
-                                        <button
-                                            onClick={handleDownloadPresentation}
-                                            className={styles.downloadButton}
-                                            aria-label="Скачать презентацию"
-                                            disabled={isDownloading}
-                                        >
-                                            <FaDownload className={styles.downloadIcon} aria-hidden="true" />
-                                        </button>
-                                    </Tooltip> */}
-                                    <UndoRedoControls presentationId={presentation.id} tiptapRefs={tiptapRefs} />
-
-                                    <div className={styles.headerDivider} />
-
-                                    <button
-                                        type="button"
-                                        className={styles.settingsButton}
-                                        aria-label="Настроить фон презентации"
-                                        tabIndex={0}
-                                        onClick={handleOpenBgModal}
-                                        onKeyDown={handleKeyDownCog}
-                                    >
-                                        <LuSettings className={styles.settingsIcon} aria-hidden="true" />
-                                    </button>
-
-                                    <div className={styles.headerDivider} />
-
-                                    <Popover
-                                        isOpen={isUserMenuOpen}
-                                        onOpen={() => setIsUserMenuOpen(true)}
-                                        onClose={() => setIsUserMenuOpen(false)}
-                                        trigger={
-                                            <div
-                                                className={styles.userInfo}
-                                                role="button"
-                                                aria-label="Открыть меню пользователя"
-                                                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                                                onKeyDown={e => e.key === 'Enter' && setIsUserMenuOpen(!isUserMenuOpen)}
-                                            >
-                                                <LuUser className={styles.userIcon} />
-                                                {/* Username removed for compact header */}
-                                            </div>
-                                        }
-                                        content={
-                                            <div className={styles.userMenu}>
-                                                <div className={styles.userMenuHeader}>
-                                                    <div className={styles.userMenuEmail}>
-                                                        {session?.user?.email || 'user@example.com'}
-                                                    </div>
-                                                    <Link href="/tokens" className={styles.userMenuCredits}>
-                                                        <HiOutlineCreditCard className={styles.creditsIcon} />
-                                                        <span>
-                                                            {tokensLoading ? '...' : formatTokenAmount(tokenBalance)}{' '}
-                                                            токенов
-                                                        </span>
-                                                    </Link>
-                                                </div>
-
-                                                {/* <div className={styles.userMenuDivider} /> */}
-
-                                                <div className={styles.userMenuActions}>
-                                                    <Link href="/settings" className={styles.userMenuAction}>
-                                                        <FaCog className={styles.actionIcon} />
-                                                        <span>Настройки</span>
-                                                    </Link>
-
-                                                    <button
-                                                        onClick={handleSignOut}
-                                                        className={styles.userMenuSignOut}
-                                                        aria-label="Выйти"
-                                                    >
-                                                        <FaSignOutAlt className={styles.signOutIcon} />
-                                                        <span>Выйти</span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        }
-                                    />
-                                </div>
-                            </div>
-                        </header>
+                        <Header
+                            presentationId={id}
+                            tiptapRefs={tiptapRefs}
+                            handleViewPresentation={handleViewPresentation}
+                            handleOpenBgModal={handleOpenBgModal}
+                            handleKeyDownCog={handleKeyDownCog}
+                        />
                         <main className={styles.main}>
-                            <Editor presentationId={presentation.id} tiptapRefs={tiptapRefs} />
+                            <Editor presentationId={id} tiptapRefs={tiptapRefs} />
 
                             <BackgroundSettingsModal
                                 defaultSlideBackground={currentTheme?.colors.slideBackground}
                                 isOpen={isBgModalOpen}
                                 onClose={handleCloseBgModal}
-                                presentationId={presentation.id}
+                                presentationId={id}
                             />
 
                             {process.env.NODE_ENV === 'development' && (

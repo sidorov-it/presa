@@ -7,15 +7,17 @@ import { useThemeApplication } from '@/hooks/useThemeApplication';
 import ThemeDebugButton from '@/components/debug/ThemeDebugButton';
 
 import styles from './ScopedThemeStylesApplier.module.css';
+import { ColorMode } from '@/components/ui/color-mode';
 
 interface ScopedThemeStylesApplierProps {
     theme: Theme | null;
     children: React.ReactNode;
     className?: string;
+    colorMode?: ColorMode;
 }
 
 const ScopedThemeStylesApplier = forwardRef<HTMLDivElement, ScopedThemeStylesApplierProps>(
-    ({ theme, children, className = '' }, ref) => {
+    ({ theme, children, colorMode, className = '' }, ref) => {
         const defaultThemes = useThemeStore(state => state.defaultThemes);
         const internalRef = useRef<HTMLDivElement>(null);
 
@@ -26,6 +28,7 @@ const ScopedThemeStylesApplier = forwardRef<HTMLDivElement, ScopedThemeStylesApp
             theme,
             defaultThemes,
             externalRef: finalRef,
+            colorMode,
         });
 
         return (

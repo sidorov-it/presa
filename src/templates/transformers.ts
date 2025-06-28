@@ -72,7 +72,6 @@ export class TemplateBuilders {
             id: 'slide-templates',
             label: 'Шаблоны слайдов',
             Icon: LuLayoutDashboard,
-            isSlideTemplate: true,
             subCategories: Array.from(categories.values()),
         };
     }

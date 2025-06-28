@@ -90,7 +90,6 @@ export interface MenuCategory {
     subCategories?: MenuSubCategory[];
     elements?: MenuItem[];
     excludeFromTable?: boolean;
-    isSlideTemplate?: boolean;
 }
 
 export interface MenuSubCategory {
@@ -106,6 +105,5 @@ export interface MenuItem {
     Icon?: IconType;
     props?: Record<string, any>;
     elementVariant?: string;
-    isSlideTemplate?: boolean;
     templateConfig?: SlideTemplateConfig;
 }

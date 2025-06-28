@@ -60,7 +60,7 @@ export const ElementContent = ({
     const isReadOnly = useReadOnly();
 
     const elementTypeId = usePresentationStore(
-        state => state.getElement(presentationId, slideId, layoutId, elementId)!.elementTypeId
+        useShallow(state => state.getElement(presentationId, slideId, layoutId, elementId)!.elementTypeId)
     );
 
     const isCurrentEditorActive = useEditorStore(state => state.getActiveEditorId() === elementId);
@@ -223,7 +223,7 @@ export const ElementContent = ({
 
     // Handler for adding new elements via slash command
     const handleAddElement = useCallback(
-        (elementId: string) => (menuItem: MenuItem) => {
+        (elementId: string, menuItem: MenuItem) => {
             if (menuItem.elementTypeId.startsWith('table')) {
                 const tableLayout = getNewLayoutWithTable(menuItem.props?.columns || 2, menuItem.props?.rows || 2);
                 if (tableLayout) {
@@ -258,6 +258,11 @@ export const ElementContent = ({
             }
         },
         [presentationId, slideId, layoutId, cellId, elementConfig?.hasTextEditor, tiptapRefs]
+    );
+
+    const memoizedOnAddElement = useMemo(
+        () => (menuItem: MenuItem) => handleAddElement(elementId, menuItem),
+        [handleAddElement, elementId]
     );
 
     const handleBackspacePressed = useCallback(
@@ -530,7 +535,7 @@ export const ElementContent = ({
                         onContentChange={handleEditorContentChange}
                         onBlur={handleBlur}
                         customBubbleMenuTrigger={dragHandleRef}
-                        onAddElement={handleAddElement(elementId)}
+                        onAddElement={memoizedOnAddElement}
                         presentationId={presentationId}
                         slideId={slideId}
                         layoutId={layoutId}
@@ -594,7 +599,7 @@ export const ElementContent = ({
             handleEditorContentChange,
             handleBlur,
             dragHandleRef,
-            handleAddElement,
+            memoizedOnAddElement,
             presentationId,
             slideId,
             layoutId,
