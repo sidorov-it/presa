@@ -12,11 +12,12 @@ interface SimplePdfExportButtonProps {
 
 const SimplePdfExportButton: React.FC<SimplePdfExportButtonProps> = ({
     presentationId,
-    presentationTitle = 'presentation',
+    // presentationTitle = 'presentation',
 }) => {
     const [isExporting, setIsExporting] = useState(false);
 
-    const exportPresentationToPdf = useCallback(async (presentationId: string, presentationTitle: string) => {
+    const exportPresentationToPdf = useCallback(async (presentationId: string) => {
+        const presentationTitle = 'presentation';
         return new Promise((resolve, reject) => {
             try {
                 fetch(`/api/presentations/${presentationId}/export/pdf`, {
@@ -69,7 +70,7 @@ const SimplePdfExportButton: React.FC<SimplePdfExportButtonProps> = ({
         setIsExporting(true);
 
         try {
-            const exportPromise = exportPresentationToPdf(presentationId, presentationTitle);
+            const exportPromise = exportPresentationToPdf(presentationId);
 
             toast.promise(exportPromise, {
                 loading: 'Подготавливаем PDF для скачивания. Пожалуйста, не закрывайте эту страницу.',

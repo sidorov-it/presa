@@ -15,7 +15,7 @@ import {
     BiAlignJustify,
     BiX,
 } from 'react-icons/bi';
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, memo } from 'react';
 import { EditorView } from '@tiptap/pm/view';
 import { EditorState } from '@tiptap/pm/state';
 import HeadingSelector from '../settings/HeadingSelector/HeadingSelector';
@@ -268,3 +268,7 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
         </BubbleMenu>
     );
 }
+
+// export default memo(CommonBubbleMenu, (prevProps, nextProps) => {
+//     return prevProps.editor === nextProps.editor;
+// });

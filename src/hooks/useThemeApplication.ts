@@ -4,21 +4,30 @@ import getContrastTextColor from '@/utils/getContrastTextColor';
 import getHoverColor from '@/utils/getHoverColor';
 import { BackgroundSettings } from '@/types';
 import { getBorderColorForBackground } from '@/utils/themeUtils';
+import { ColorMode } from '@/components/ui/color-mode';
 
 interface UseThemeApplicationOptions {
     theme: Theme | null;
     backgroundSettings?: BackgroundSettings;
     setColorMode?: (mode: 'light' | 'dark') => void;
+    colorMode?: ColorMode;
     defaultThemes?: Theme[];
     externalRef?: React.RefObject<HTMLDivElement>;
 }
 
-const applyThemeStyles = (
-    container: HTMLDivElement,
-    theme: Theme,
-    backgroundSettings?: BackgroundSettings,
-    setColorMode?: (mode: 'light' | 'dark') => void
-) => {
+const applyThemeStyles = ({
+    container,
+    theme,
+    colorMode,
+    backgroundSettings,
+    setColorMode,
+}: {
+    container: HTMLDivElement;
+    theme: Theme;
+    colorMode?: 'light' | 'dark';
+    backgroundSettings?: BackgroundSettings;
+    setColorMode?: (mode: 'light' | 'dark') => void;
+}) => {
     // Base colors
     container.style.setProperty('--presentation-primary-accent', theme.colors.primaryAccent);
     container.style.setProperty('--presentation-accent-blocks-color', theme.colors.primaryAccent);
@@ -287,7 +296,11 @@ const applyThemeStyles = (
             return false;
         })(theme.colors.slideBackground);
 
-        setColorMode(isDarkMode ? 'dark' : 'light');
+        if (isDarkMode && colorMode !== 'dark') {
+            setColorMode('dark');
+        } else if (!isDarkMode && colorMode === 'dark') {
+            setColorMode('light');
+        }
     }
 };
 
@@ -314,7 +327,7 @@ const validateTheme = (theme: Theme): boolean => {
 };
 
 export const useThemeApplication = (options: UseThemeApplicationOptions) => {
-    const { theme, backgroundSettings, setColorMode, defaultThemes, externalRef } = options;
+    const { theme, backgroundSettings, setColorMode, defaultThemes, externalRef, colorMode } = options;
     const appliedThemeRef = useRef<string | null>(null);
     const internalRef = useRef<HTMLDivElement>(null);
 
@@ -344,13 +357,13 @@ export const useThemeApplication = (options: UseThemeApplicationOptions) => {
             }
 
             try {
-                applyThemeStyles(container, activeTheme, backgroundSettings, setColorMode);
+                applyThemeStyles({ container, theme: activeTheme, backgroundSettings, setColorMode, colorMode });
                 appliedThemeRef.current = themeId;
             } catch (error) {
                 console.error('Error applying theme', error);
             }
         },
-        [theme, backgroundSettings, setColorMode, defaultThemes]
+        [theme, backgroundSettings, setColorMode, defaultThemes, colorMode]
     );
 
     useEffect(() => {
@@ -360,8 +373,12 @@ export const useThemeApplication = (options: UseThemeApplicationOptions) => {
         }
 
         applyTheme(container);
+    }, [applyTheme, containerRef]);
 
+    useEffect(() => {
         return () => {
+            const container = containerRef.current;
+
             if (container) {
                 container.removeAttribute('style');
             }
@@ -370,7 +387,7 @@ export const useThemeApplication = (options: UseThemeApplicationOptions) => {
             }
             appliedThemeRef.current = null;
         };
-    }, [applyTheme, setColorMode, containerRef]);
+    }, [containerRef, setColorMode]);
 
     return { containerRef: internalRef, applyTheme };
 };

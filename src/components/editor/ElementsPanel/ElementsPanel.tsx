@@ -73,28 +73,26 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ presentationId, slideId }
         if (!activeCategory) return;
         if (dragState !== 'dragging' || !dragFromPanel) return;
 
-        const unsubscribe = useDndStore.subscribe(
-            state => state.state.indicators,
-            indicators => {
-                const hasIndicator =
-                    indicators.elementIndicator ||
-                    indicators.layoutIndicator ||
-                    indicators.slideIndicator ||
-                    indicators.cellIndicator ||
-                    indicators.tableColumnIndicator ||
-                    indicators.tableRowIndicator;
+        const unsubscribe = useDndStore.subscribe((state, prevState) => {
+            const indicators = state.state.indicators;
+            const hasIndicator =
+                indicators.elementIndicator ||
+                indicators.layoutIndicator ||
+                indicators.slideIndicator ||
+                indicators.cellIndicator ||
+                indicators.tableColumnIndicator ||
+                indicators.tableRowIndicator;
 
-                if (hasIndicator) {
-                    const elapsed = dragStartTime ? Date.now() - dragStartTime : 0;
-                    const delay = Math.max(1000 - elapsed, 0);
-                    if (closeTimeoutRef.current)
-                        clearTimeout(closeTimeoutRef.current);
-                    closeTimeoutRef.current = setTimeout(() => {
-                        setActiveCategory(null);
-                    }, delay);
-                }
+            if (hasIndicator) {
+                const elapsed = dragStartTime ? Date.now() - dragStartTime : 0;
+                const delay = Math.max(1000 - elapsed, 0);
+                if (closeTimeoutRef.current)
+                    clearTimeout(closeTimeoutRef.current);
+                closeTimeoutRef.current = setTimeout(() => {
+                    setActiveCategory(null);
+                }, delay);
             }
-        );
+        });
 
         return () => unsubscribe();
     }, [dragState, activeCategory, dragFromPanel, dragStartTime]);

@@ -16,7 +16,7 @@ const SlideItem = memo(
     ({
         slide,
         index,
-        isActive,
+        // isActive,
         isLastSlide,
         onSlideSelect,
         onContextMenu,
@@ -28,7 +28,7 @@ const SlideItem = memo(
         onSlideSelect: (slideId: string, scroll: boolean) => void;
         onContextMenu: (e: React.MouseEvent, slide: Slide) => void;
     }) => {
-        const { colorMode } = useColorMode();
+        // const { colorMode } = useColorMode();
         // Extract text content from the first element if available
         const startSlideDrag = useSlideDndStore(state => state.startDrag);
         const slideDragState = useSlideDndStore(state => state.dragState);
@@ -168,8 +168,9 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
 
     const { colorMode } = useColorMode();
 
-    const { getPresentation, addEmptySlide, addSlide, deleteSlide, updateSlide } = usePresentationStore();
-    const slides = getPresentation(presentationId)?.slides || [];
+    // const { addEmptySlide, addSlide, deleteSlide, updateSlide } = usePresentationStore();
+    const slides = usePresentationStore(state => state.getPresentation(presentationId)?.slides || []);
+    // const slides = getPresentation(presentationId)?.slides || [];
 
     const setSlidePresentationId = useSlideDndStore(state => state.setPresentationId);
     useEffect(() => {
@@ -217,29 +218,29 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
     const handleAddBelow = useCallback(() => {
         if (!contextMenu) return;
         const index = slides.findIndex(s => s.id === contextMenu.slide.id);
-        addEmptySlide(presentationId, index + 1);
+        usePresentationStore.getState().addEmptySlide(presentationId, index + 1);
         setContextMenu(null);
-    }, [contextMenu, slides, presentationId, addEmptySlide]);
+    }, [contextMenu, slides, presentationId]);
 
     const handleAddCopiedBelow = useCallback(() => {
         if (!contextMenu || !copiedSlide) return;
         const index = slides.findIndex(s => s.id === contextMenu.slide.id);
         const newSlide = { ...copiedSlide, id: generateId() };
-        addSlide(presentationId, newSlide, index + 1);
+        usePresentationStore.getState().addSlide(presentationId, newSlide, index + 1);
         setContextMenu(null);
-    }, [contextMenu, copiedSlide, slides, presentationId, addSlide]);
+    }, [contextMenu, copiedSlide, slides, presentationId]);
 
     const handleToggleHidden = useCallback(() => {
         if (!contextMenu) return;
-        updateSlide(presentationId, contextMenu.slide.id, { hidden: !contextMenu.slide.hidden });
+        usePresentationStore.getState().updateSlide(presentationId, contextMenu.slide.id, { hidden: !contextMenu.slide.hidden });
         setContextMenu(null);
-    }, [contextMenu, presentationId, updateSlide]);
+    }, [contextMenu, presentationId]);
 
     const handleDelete = useCallback(() => {
         if (!contextMenu) return;
-        deleteSlide(presentationId, contextMenu.slide.id);
+        usePresentationStore.getState().deleteSlide(presentationId, contextMenu.slide.id);
         setContextMenu(null);
-    }, [contextMenu, presentationId, deleteSlide]);
+    }, [contextMenu, presentationId]);
 
     useEffect(() => {
         if (!contextMenu) return;
@@ -345,7 +346,7 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
             </Portal>
 
             <div ref={panelRef} className={styles.leftPanelContent}>
-                <button className={styles.createButton} onClick={() => addEmptySlide(presentationId, slides.length)}>
+                <button className={styles.createButton} onClick={() => usePresentationStore.getState().addEmptySlide(presentationId, slides.length)}>
                     + Добавить
                 </button>
                 {slides.length === 0 && (

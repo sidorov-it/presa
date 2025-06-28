@@ -28,15 +28,23 @@ import { fillSlots } from '@/elements/commonRegisrty';
 import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
 import { ElementType } from '@/types/elements';
 
+export interface PresentationMeta {
+    id: string;
+    title: string;
+    themeId: string | null;
+    backgroundSettings?: BackgroundSettings;
+}
+
 export interface PresentationState {
     presentations: IPresentation[];
+    currentPresentationMeta: PresentationMeta | null;
     isLoading: boolean;
     isSaving: boolean;
     savingStatus: 'idle' | 'saving' | 'saved' | 'error';
     unsavedChanges: boolean;
     error: string | null;
     version: number;
-    incrementVersion: () => void;
+    // incrementVersion: () => void;
 
     recordAction: (
         action: Omit<HistoryAction, 'timestamp' | 'transactionId' | 'changes'> & { before: any; after: any }
@@ -46,6 +54,7 @@ export interface PresentationState {
     createPresentation: (title: string) => Promise<string>;
     loadPresentation: (id: string) => Promise<IPresentation | null>;
     loadPresentationsList: () => Promise<void>;
+    setCurrentPresentationMeta: (meta: PresentationMeta) => void;
     updatePresentation: (id: string, data: Partial<IPresentation>) => void;
     deletePresentation: (id: string) => void;
     getPresentation: (id?: string) => IPresentation | undefined;
@@ -310,6 +319,8 @@ export interface PresentationState {
         content: GeneratedContent[],
         tiptapRefs: MutableRefObject<TipTapRefs>
     ) => void;
+
+    clearCurrentPresentationMeta: () => void;
 }
 
 const getTiptapRefsIds = (elements: BaseElement[]) => {
@@ -332,6 +343,7 @@ export const usePresentationStore = create<PresentationState>()(
     devtools(
         (set, get) => ({
             presentations: [],
+            currentPresentationMeta: null,
             isLoading: false,
             isSaving: false,
             savingStatus: 'idle',
@@ -339,9 +351,9 @@ export const usePresentationStore = create<PresentationState>()(
             error: null,
             version: 1,
 
-            incrementVersion: () => {
-                set(state => ({ version: state.version + 1, unsavedChanges: true }));
-            },
+            // incrementVersion: () => {
+            //     set(state => ({ version: state.version + 1, unsavedChanges: true }));
+            // },
 
             saveChanges: debounce(async (id: string) => {
                 const presentation = get().getPresentation(id);
@@ -383,7 +395,7 @@ export const usePresentationStore = create<PresentationState>()(
                     // Record action normally
                     historyStore.recordAction({ ...action });
                 }
-                get().incrementVersion();
+                // get().incrementVersion();
             },
 
             createPresentation: async (title: string) => {
@@ -445,6 +457,10 @@ export const usePresentationStore = create<PresentationState>()(
                 }
             },
 
+            setCurrentPresentationMeta: (meta: PresentationMeta) => {
+                set({ currentPresentationMeta: meta });
+            },
+
             loadPresentation: async (id: string) => {
                 try {
                     set({ isLoading: true });
@@ -458,6 +474,12 @@ export const usePresentationStore = create<PresentationState>()(
 
                     set(state => ({
                         presentations: [...state.presentations.filter(p => p.id !== id), presentation],
+                        currentPresentationMeta: {
+                            id: presentation.id,
+                            title: presentation.title,
+                            themeId: presentation.themeId,
+                            backgroundSettings: presentation.backgroundSettings,
+                        },
                     }));
 
                     // Инициализируем историю для загруженной презентации
@@ -481,11 +503,22 @@ export const usePresentationStore = create<PresentationState>()(
                 const beforeState = { ...get() };
 
                 set(state => {
+                    const updatedPresentations = state.presentations.map(presentation =>
+                        presentation.id === id ? { ...presentation, ...data, updatedAt: Date.now() } : presentation
+                    );
+
+                    let updatedMeta = state.currentPresentationMeta;
+                    const metaKeys = ['title', 'themeId', 'backgroundSettings'];
+                    const isMetaUpdated = Object.keys(data).some(key => metaKeys.includes(key));
+
+                    if (state.currentPresentationMeta?.id === id && isMetaUpdated) {
+                        updatedMeta = { ...state.currentPresentationMeta, ...(data as any) };
+                    }
                     const updatedState = {
-                        presentations: state.presentations.map(presentation =>
-                            presentation.id === id ? { ...presentation, ...data, updatedAt: Date.now() } : presentation
-                        ),
+                        presentations: updatedPresentations,
+                        currentPresentationMeta: updatedMeta,
                     };
+
                     get().recordAction({
                         type: 'presentation',
                         description: 'Update presentation details',
@@ -2149,54 +2182,64 @@ export const usePresentationStore = create<PresentationState>()(
             }) => {
                 const beforeStatePresentations = JSON.parse(JSON.stringify(get().presentations));
 
-                const currentPresentation = get().getPresentation(presentationId);
-                if (!currentPresentation) return;
+                set(state => {
+                    const newPresentations = state.presentations.map(presentation => {
+                        if (presentation.id !== presentationId) {
+                            return presentation;
+                        }
 
-                const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
-                if (!currentSlide) return;
+                        // Ensure the element exists before creating new object references
+                        const slideExists = presentation.slides.some(s => s.id === slideId);
+                        const layoutExists =
+                            slideExists &&
+                            presentation.slides.find(s => s.id === slideId)!.layouts.some(l => l.id === layoutId);
+                        const elementExists =
+                            layoutExists &&
+                            presentation.slides
+                                .find(s => s.id === slideId)!
+                                .layouts.find(l => l.id === layoutId)!
+                                .elements.some(e => e.id === elementId);
 
-                const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
-                if (!currentLayout) return;
+                        if (!elementExists) {
+                            return presentation;
+                        }
 
-                const currentElement = currentLayout.elements.find(element => element.id === elementId);
-                if (!currentElement) return;
+                        return {
+                            ...presentation,
+                            updatedAt: Date.now(),
+                            slides: presentation.slides.map(slide => {
+                                if (slide.id !== slideId) {
+                                    return slide;
+                                }
+                                return {
+                                    ...slide,
+                                    layouts: slide.layouts.map(layout => {
+                                        if (layout.id !== layoutId) {
+                                            return layout;
+                                        }
+                                        return {
+                                            ...layout,
+                                            elements: layout.elements.map(element => {
+                                                if (element.id !== elementId) {
+                                                    return element;
+                                                }
+                                                return {
+                                                    ...element,
+                                                    ...data,
+                                                };
+                                            }),
+                                        };
+                                    }),
+                                };
+                            }),
+                        };
+                    });
 
-                // Directly modify the element in the current state to prevent unnecessary re-renders
-                // Find the presentation, slide, layout, and element by index for direct updates
-                const presentations = get().presentations;
-                const presentationIndex = presentations.findIndex(p => p.id === presentationId);
-                if (presentationIndex === -1) return;
+                    return { presentations: newPresentations };
+                });
 
-                const slides = presentations[presentationIndex].slides;
-                const slideIndex = slides.findIndex(s => s.id === slideId);
-                if (slideIndex === -1) return;
-
-                const layouts = slides[slideIndex].layouts;
-                const layoutIndex = layouts.findIndex(l => l.id === layoutId);
-                if (layoutIndex === -1) return;
-
-                const elements = layouts[layoutIndex].elements;
-                const elementIndex = elements.findIndex(e => e.id === elementId);
-                if (elementIndex === -1) return;
-
-                // Create a copy of the current state for history
-                const newState = { ...get() };
-
-                // Directly update the element while keeping reference identity of other objects
-                newState.presentations[presentationIndex].slides[slideIndex].layouts[layoutIndex].elements[
-                    elementIndex
-                ] = {
-                    ...elements[elementIndex],
-                    ...data,
-                };
-
-                // Update the timestamp to trigger auto-save
-                newState.presentations[presentationIndex].updatedAt = Date.now();
-
-                // Set the new state
-                set(newState);
-
-                // Запись действия в историю
+                // Record action for history
+                const afterStatePresentations = get().presentations;
                 if (createHistoryEntry && !isExcludeFromHistory) {
                     useHistoryStore.getState().recordTransactionAction({
                         type: 'element',
@@ -2207,7 +2250,7 @@ export const usePresentationStore = create<PresentationState>()(
                         elementId,
                         isTextElement,
                         before: { presentations: beforeStatePresentations },
-                        after: { presentations: get().presentations },
+                        after: { presentations: afterStatePresentations },
                     });
                 } else if (!isExcludeFromHistory) {
                     get().recordAction({
@@ -2219,7 +2262,7 @@ export const usePresentationStore = create<PresentationState>()(
                         elementId,
                         isTextElement,
                         before: { presentations: beforeStatePresentations },
-                        after: { presentations: newState.presentations },
+                        after: { presentations: afterStatePresentations },
                     });
                 }
                 get().saveChanges(presentationId);
@@ -2969,7 +3012,7 @@ export const usePresentationStore = create<PresentationState>()(
                 });
 
                 // Increment version to ensure UI updates
-                get().incrementVersion();
+                // get().incrementVersion();
             },
 
             changeTemplate: (presentationId: string, slideId: string, layoutId: string, template: LayoutType) => {
@@ -3405,7 +3448,7 @@ export const usePresentationStore = create<PresentationState>()(
             setTheme: (presentationId, themeId) => {
                 const beforeState = { ...get() };
 
-                let updatedState: { presentations: IPresentation[] } = { presentations: [] };
+                let updatedState;
 
                 set(state => {
                     updatedState = {
@@ -3414,6 +3457,10 @@ export const usePresentationStore = create<PresentationState>()(
                                 ? { ...presentation, themeId, updatedAt: Date.now(), backgroundSettings: undefined }
                                 : presentation
                         ),
+                        currentPresentationMeta: {
+                            ...state.currentPresentationMeta!,
+                            themeId,
+                        },
                     };
 
                     return updatedState;
@@ -3747,6 +3794,10 @@ export const usePresentationStore = create<PresentationState>()(
 
                 //     return updatedState;
                 // });
+            },
+
+            clearCurrentPresentationMeta: () => {
+                set({ currentPresentationMeta: null });
             },
         }),
         {
