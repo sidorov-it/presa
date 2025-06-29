@@ -195,6 +195,21 @@ const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, presentationId, posit
         useMenuStore.getState().deleteLayout();
     }, []);
 
+    const handleColorReset = useCallback(() => {
+        useHistoryStore.getState().beginTransaction(presentationId, 'Reset color');
+        tableElements.forEach(element => {
+            tiptapRefs.current.editors[element.id]?.editor
+                .chain()
+                .setMeta('transaction', true)
+                .focus(null, { scrollIntoView: false })
+                .selectAll()
+                .unsetColor()
+                .blur()
+                .run();
+        });
+        useHistoryStore.getState().commitTransaction(presentationId);
+    }, [tableElements, tiptapRefs, presentationId]);
+
     const handleColorChange = useCallback(
         (color: string) => {
             useHistoryStore.getState().beginTransaction(presentationId, 'Change color');
@@ -223,7 +238,12 @@ const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, presentationId, posit
                 handleHeadingChange={handleHeadingChange}
                 // lightThemeStyle={lightThemeStyle}
             />
-            <ColorPicker onColorChange={handleColorChange} className={bubbleStyles.button} />
+            <ColorPicker
+                onColorChange={handleColorChange}
+                className={bubbleStyles.button}
+                isShowResetColor={true}
+                onColorReset={handleColorReset}
+            />
 
             <MenuItem icon={<BiBold />} label="Жирный" onClick={handleToggleBold} active={isBoldActive} />
             <MenuItem icon={<BiItalic />} label="Курсив" onClick={handleToggleItalic} active={isItalicActive} />

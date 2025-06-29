@@ -176,6 +176,22 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({ tableColumnIndex, pre
         }
     }, [tableColumnIndex]);
 
+    const handleColorReset = useCallback(() => {
+        useHistoryStore.getState().beginTransaction(presentationId, 'Reset color');
+
+        tableColumnElements.forEach(element => {
+            tiptapRefs.current.editors[element.id]?.editor
+                .chain()
+                .setMeta('transaction', true)
+                .focus(null, { scrollIntoView: false })
+                .selectAll()
+                .unsetColor()
+                .blur()
+                .run();
+        });
+        useHistoryStore.getState().commitTransaction(presentationId);
+    }, [tableColumnElements, tiptapRefs, presentationId]);
+
     const handleColorChange = useCallback(
         (color: string) => {
             useHistoryStore.getState().beginTransaction(presentationId, 'Change font size');
@@ -226,7 +242,12 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({ tableColumnIndex, pre
                 handleHeadingChange={handleHeadingChange}
                 // lightThemeStyle={lightThemeStyle}
             />
-            <ColorPicker onColorChange={handleColorChange} className={bubbleStyles.button} />
+            <ColorPicker
+                onColorChange={handleColorChange}
+                className={bubbleStyles.button}
+                isShowResetColor={true}
+                onColorReset={handleColorReset}
+            />
 
             {/* <ColorPicker
                 editors={tableColumnElements.map(element => tiptapRefs.current.editors[element.id]?.editor)}

@@ -335,7 +335,7 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                         className={styles.colorPicker}
                         value={textColor}
                         allowAlpha={true}
-                        onChange={color => handleTextColorChange(color)}
+                        onChange={handleTextColorChange}
                     />
                 </div>
             </div>

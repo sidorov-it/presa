@@ -203,6 +203,22 @@
     margin-left: -12px;
     margin-right: -12px;
     padding: 8px 12px;
+    margin-top: 8px;
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
+}
+
+
+.resetColorButton {
+    padding: 6px 8px !important;
+    color: #333 !important;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    color: #333 !important;
 }

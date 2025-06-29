@@ -210,6 +210,22 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, presentation
         }
     }, [tableRowIndex]);
 
+    const handleColorReset = useCallback(() => {
+        useHistoryStore.getState().beginTransaction(presentationId, 'Reset color');
+
+        tableRowElements.forEach(element => {
+            tiptapRefs.current.editors[element.id]?.editor
+                .chain()
+                .setMeta('transaction', true)
+                .focus(null, { scrollIntoView: false })
+                .selectAll()
+                .unsetColor()
+                .blur()
+                .run();
+        });
+        useHistoryStore.getState().commitTransaction(presentationId);
+    }, [tableRowElements, tiptapRefs, presentationId]);
+
     const handleColorChange = useCallback(
         (color: string) => {
             useHistoryStore.getState().beginTransaction(presentationId, 'Change color');
@@ -238,7 +254,12 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, presentation
                 handleHeadingChange={handleHeadingChange}
                 // lightThemeStyle={lightThemeStyle}
             />
-            <ColorPicker onColorChange={handleColorChange} className={bubbleStyles.button} />
+            <ColorPicker
+                onColorChange={handleColorChange}
+                className={bubbleStyles.button}
+                isShowResetColor={true}
+                onColorReset={handleColorReset}
+            />
 
             <MenuItem icon={<BiBold />} label="Жирный" onClick={handleToggleBold} active={isBoldActive} />
             <MenuItem icon={<BiItalic />} label="Курсив" onClick={handleToggleItalic} active={isItalicActive} />

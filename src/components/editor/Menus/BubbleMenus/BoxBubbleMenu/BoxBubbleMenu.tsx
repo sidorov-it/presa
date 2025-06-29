@@ -74,7 +74,7 @@ const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ presentationId, slideId, lay
         }
     };
 
-    const handleResetColor = useCallback(() => {
+    const handleColorReset = useCallback(() => {
         const defaultBackgroundColor = elementConfig?.props?.backgroundColor;
 
         updateElement({
@@ -115,12 +115,8 @@ const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ presentationId, slideId, lay
                 onColorChange={handleBackgroundColorChange}
                 mode="icon"
                 className={styles.button}
-                customFooter={
-                    <button onClick={handleResetColor} className={styles.resetColorButton} aria-label="Удалить блок">
-                        <RiResetLeftFill />
-                        Сбросить цвет
-                    </button>
-                }
+                isShowResetColor={true}
+                onColorReset={handleColorReset}
             />
 
             <button onClick={handleDelete} className={styles.deleteButton} aria-label="Удалить блок">

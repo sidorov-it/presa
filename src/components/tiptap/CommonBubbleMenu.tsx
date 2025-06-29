@@ -110,6 +110,10 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
         []
     );
 
+    const handleColorReset = useCallback(() => {
+        editor.commands.unsetColor();
+    }, [editor]);
+
     const handleColorChange = useCallback(
         (color: string) => {
             editor.commands.setColor(color);
@@ -160,7 +164,11 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
                     headingLevels={HEADING_LEVELS}
                 />
 
-                <ColorPicker onColorChange={handleColorChange} />
+                <ColorPicker
+                    onColorChange={handleColorChange}
+                    isShowResetColor={true}
+                    onColorReset={handleColorReset}
+                />
 
                 <button
                     onClick={() => {

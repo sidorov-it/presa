@@ -41,6 +41,31 @@ export default function TextBoxesMenu({
             .addSmartLayoutItem(presentationId, slideId, layoutId, elementId, itemId, 'right');
     };
 
+    const handleColorReset = useCallback(() => {
+        const element = usePresentationStore
+            .getState()
+            .getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement;
+
+        if (!element) return;
+
+        const updatedItems = element.items?.map(item => {
+            if (item.id === itemId) {
+                delete item.backgroundColor;
+            }
+            return item;
+        });
+
+        usePresentationStore.getState().updateElement({
+            presentationId,
+            slideId,
+            layoutId,
+            elementId,
+            data: {
+                items: updatedItems,
+            },
+        });
+    }, [presentationId, slideId, layoutId, elementId, itemId]);
+
     const handleColorChange = useCallback(
         (color: string) => {
             const element = usePresentationStore
@@ -84,6 +109,8 @@ export default function TextBoxesMenu({
                 mode="icon"
                 onColorChange={handleColorChange}
                 initialColor={currentItem?.backgroundColor || '#ffffff'}
+                isShowResetColor={true}
+                onColorReset={handleColorReset}
             />
             <MenuItem icon={<DeleteIcon />} label="Удалить элемент" onClick={handleRemoveItem} />
         </BaseMenu>
