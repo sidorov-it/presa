@@ -8,6 +8,7 @@ import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlacehol
 import { useThemeStore } from '@/store/themeStore';
 import { useHistoryStore } from '@/store/historyStore';
 
+import { convertImageSizeToRatio, applyImageSizeFromRatio } from '@/utils/slideProportions';
 const MIN_SIZE = 20;
 const MAX_SIZE = 50;
 const DEFAULT_HEIGHT_PX = 200;
@@ -237,7 +238,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
             {
                 imageSize: currentSizeRef.current,
             },
-            true, // force recording in the current transaction
+            true // force recording in the current transaction
         );
 
         useHistoryStore.getState().commitTransaction(presentationId);
@@ -267,7 +268,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
             document.addEventListener('mousemove', handleResizeMove);
             document.addEventListener('mouseup', handleResizeEnd);
         },
-        [handleResizeMove, handleResizeEnd, presentationId],
+        [handleResizeMove, handleResizeEnd, presentationId]
     );
 
     // Handle keyboard resize
@@ -312,7 +313,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                 imageSize: newSize,
             });
         },
-        [presentationId, slideId, templateType, updateSlide],
+        [presentationId, slideId, templateType, updateSlide]
     );
 
     // Handle keyboard navigation

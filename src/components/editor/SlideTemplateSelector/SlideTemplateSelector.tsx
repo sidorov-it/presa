@@ -9,6 +9,7 @@ import { FiLoader } from 'react-icons/fi';
 import { useThemeStore } from '@/store/themeStore';
 import { useShallow } from 'zustand/react/shallow';
 
+import { getDefaultImageRatio, DEFAULT_ASPECT_RATIO } from '@/utils/slideProportions';
 type SlideTemplateType = (typeof SLIDE_TEMPLATES)[number]['value'];
 type ContentAlignment = 'top' | 'center' | 'bottom';
 
@@ -53,9 +54,17 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
         // Set default image size based on template type
         let imageSize;
         if (value === 'imageTop') {
-            imageSize = { height: `${DEFAULT_HEIGHT_PX}px` };
+            const defaultRatio = getDefaultImageRatio(value);
+            imageSize = {
+                height: '33%',
+                ...defaultRatio,
+            };
         } else if (value === 'imageLeft' || value === 'imageRight') {
-            imageSize = { width: '33%' };
+            const defaultRatio = getDefaultImageRatio(value);
+            imageSize = {
+                width: '33%',
+                ...defaultRatio,
+            };
         }
 
         useHistoryStore.getState().beginTransaction(presentationId, 'update slide template');
@@ -88,7 +97,7 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                     templateType: value as SlideTemplateType,
                     imageSize,
                 },
-                true,
+                true
             );
         }
 

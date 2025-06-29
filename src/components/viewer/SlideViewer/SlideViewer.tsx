@@ -6,6 +6,7 @@ import { Layout, Slide } from '@/types';
 import LayoutViewer from '../LayoutViewer/LayoutViewer';
 import ViewerTemplateImageWithPlaceholder from '../ViewerTemplateImageWithPlaceholder';
 
+import { applyImageSizeFromRatio } from '@/utils/slideProportions';
 import styles from '../../editor/SlideEditor/SlideEditor.module.css';
 import localStyles from './SlideViewer.module.css';
 import { Theme } from '@/types/theme';
@@ -110,7 +111,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                     top: 0,
                     left: 0,
                     right: 0,
-                    height: '33%',
+                    height: slide.imageSize?.heightRatio ? `${slide.imageSize.heightRatio * 100}%` : '33%',
                     zIndex: 1,
                 };
             case 'imageLeft':
@@ -120,7 +121,9 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                     top: 0,
                     left: 0,
                     bottom: 0,
-                    width: slide.imageSize?.width || '33%',
+                    width: slide.imageSize?.widthRatio
+                        ? `${slide.imageSize.widthRatio * 100}%`
+                        : slide.imageSize?.width || '33%',
                     zIndex: 1,
                 };
             case 'imageRight':
@@ -130,7 +133,9 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                     top: 0,
                     right: 0,
                     bottom: 0,
-                    width: slide.imageSize?.width || '33%',
+                    width: slide.imageSize?.widthRatio
+                        ? `${slide.imageSize.widthRatio * 100}%`
+                        : slide.imageSize?.width || '33%',
                     zIndex: 1,
                 };
             case 'imageBackground':
@@ -180,8 +185,12 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         // Additional styles for image templates
         if (slide.templateType) {
             // Get stored image size or use default values
-            const imageWidth = slide.imageSize?.width || '33%';
-            const imageHeight = slide.imageSize?.height || '33%';
+            const imageWidth = slide.imageSize?.widthRatio
+                ? `${slide.imageSize.widthRatio * 100}%`
+                : slide.imageSize?.width || '33%';
+            const imageHeight = slide.imageSize?.heightRatio
+                ? `${slide.imageSize.heightRatio * 100}%`
+                : slide.imageSize?.height || '33%';
             const remainingWidth = `${100 - parseFloat(imageWidth)}%`;
             const remainingHeight = `${100 - parseFloat(imageHeight)}%`;
 
@@ -275,10 +284,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
 
     return (
         <div className={slideClassName} style={outerStyle}>
-            <div
-                className={`${styles.slideWrapper} ${localStyles.slideWrapper}`}
-                style={slideWrapperStyle}
-            >
+            <div className={`${styles.slideWrapper} ${localStyles.slideWrapper}`} style={slideWrapperStyle}>
                 <div
                     ref={wrapperRef}
                     className={`${styles.slideContent} ${localStyles.slideContent}`}
