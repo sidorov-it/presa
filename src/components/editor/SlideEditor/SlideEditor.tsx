@@ -285,7 +285,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     left: 0,
                     right: 0,
                     height: '33%',
-                    maxHeight: '200px',
+                    // maxHeight: '200px',
+                    minHeight: '100px',
                     zIndex: 1,
                 };
             case 'imageLeft':

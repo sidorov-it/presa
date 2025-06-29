@@ -63,6 +63,12 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     const [isResizing, setIsResizing] = useState(false);
     const [currentSize, setCurrentSize] = useState(storedSize);
 
+    useEffect(() => {
+        if (!isResizing) {
+            setCurrentSize(storedSize);
+        }
+    }, [storedSize, isResizing]);
+
     // Refs for resize handling
     const startPosRef = useRef({ x: 0, y: 0 });
     const resizeDirectionRef = useRef<'horizontal' | 'vertical' | null>(null);
@@ -78,23 +84,14 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
         if (isResizing) return; // Don't update while actively resizing
 
         // Only update if values actually changed
-        if (currentSize.width !== storedSize.width || currentSize.height !== storedSize.height) {
-            // Record this auto-resize as part of the existing transaction (started in SlideTemplateSelector)
-            updateSlide(
-                presentationId,
-                slideId,
-                {
-                    imageSize: currentSize,
-                },
-                true // force recording in the current transaction
-            );
-
-            // Defer commit to ensure the action above is fully recorded before closing the transaction
-            setTimeout(() => {
-                useHistoryStore.getState().commitTransaction(presentationId);
-            }, 0);
+        if (
+            slide?.imageSize &&
+            (currentSize.width !== slide.imageSize.width || currentSize.height !== slide.imageSize.height)
+        ) {
+            // This case might handle updates from external changes,
+            // but for resize operations, we handle history explicitly.
         }
-    }, [currentSize, isResizing, presentationId, slideId, storedSize, updateSlide]);
+    }, [currentSize, isResizing, presentationId, slideId, slide, updateSlide]);
 
     // Update refs when their corresponding state changes
     useEffect(() => {
@@ -234,19 +231,32 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
             animationFrameIdRef.current = null;
         }
 
+        updateSlide(
+            presentationId,
+            slideId,
+            {
+                imageSize: currentSizeRef.current,
+            },
+            true, // force recording in the current transaction
+        );
+
+        useHistoryStore.getState().commitTransaction(presentationId);
+
         resizeDirectionRef.current = null;
         setIsResizing(false);
 
         // Remove global event listeners
         document.removeEventListener('mousemove', handleResizeMove);
         document.removeEventListener('mouseup', handleResizeEnd);
-    }, [handleResizeMove]);
+    }, [handleResizeMove, presentationId, slideId, updateSlide]);
 
     // Handle resize start - must be defined after handleResizeMove and handleResizeEnd
     const handleResizeStart = useCallback(
         (e: React.MouseEvent, direction: 'horizontal' | 'vertical') => {
             e.preventDefault();
             e.stopPropagation();
+
+            useHistoryStore.getState().beginTransaction(presentationId, 'Resize Image');
 
             const initialPos = { x: e.clientX, y: e.clientY };
             startPosRef.current = initialPos;
@@ -257,7 +267,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
             document.addEventListener('mousemove', handleResizeMove);
             document.addEventListener('mouseup', handleResizeEnd);
         },
-        [handleResizeMove, handleResizeEnd]
+        [handleResizeMove, handleResizeEnd, presentationId],
     );
 
     // Handle keyboard resize
@@ -271,36 +281,38 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
             const parentRect = imageRef.current.parentElement?.getBoundingClientRect();
             if (!parentRect) return;
 
+            const newSize = { ...currentSizeRef.current };
+
             if (direction === 'horizontal') {
                 const step = e.shiftKey ? 5 : 2; // Larger step with shift key
-                const currentWidth = parseFloat(currentSize.width || '20%');
-                const newWidth =
+                const currentWidth = parseFloat(currentSizeRef.current.width || '20%');
+                const newWidthValue =
                     action === 'increase'
-                        ? `${Math.min(MAX_SIZE, currentWidth + step)}%`
-                        : `${Math.max(MIN_SIZE, currentWidth - step)}%`;
-
-                setCurrentSize({ width: newWidth });
+                        ? Math.min(MAX_SIZE, currentWidth + step)
+                        : Math.max(MIN_SIZE, currentWidth - step);
+                newSize.width = `${newWidthValue}%`;
             } else {
                 // For vertical resizing (height), use pixels for top/bottom images
                 if (templateType === 'imageTop') {
                     const step = e.shiftKey ? 20 : 10; // Larger step with shift key
-                    const currentHeightString = currentSize.height || `${DEFAULT_HEIGHT_PX}px`;
+                    const currentHeightString = currentSizeRef.current.height || `${DEFAULT_HEIGHT_PX}px`;
                     const currentHeight = parseFloat(currentHeightString);
-                    const newHeight =
+                    const newHeightValue =
                         action === 'increase'
-                            ? `${Math.min(800, currentHeight + step)}px`
-                            : `${Math.max(50, currentHeight - step)}px`;
-
-                    setCurrentSize({ height: newHeight });
+                            ? Math.min(800, currentHeight + step)
+                            : Math.max(50, currentHeight - step);
+                    newSize.height = `${newHeightValue}px`;
                 }
             }
 
-            // Immediately update the slide with the new size
+            setCurrentSize(newSize);
+
+            // Immediately update the slide with the new size and create a history entry
             updateSlide(presentationId, slideId, {
-                imageSize: currentSize,
+                imageSize: newSize,
             });
         },
-        [currentSize, presentationId, slideId, templateType, updateSlide]
+        [presentationId, slideId, templateType, updateSlide],
     );
 
     // Handle keyboard navigation
