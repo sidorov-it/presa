@@ -107,6 +107,7 @@ const ChartModal: React.FC<ChartModalProps> = ({ isOpen, onClose, elementId, pre
                                         slideId={slideId}
                                         layoutId={layoutId}
                                         inSettings={true}
+                                        slideBackground="#ffffff"
                                     />
                                 )}
                             </div>
