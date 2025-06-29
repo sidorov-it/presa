@@ -10,6 +10,18 @@ import { FaChartLine, FaChartPie } from 'react-icons/fa';
 import { PiChartDonutFill } from 'react-icons/pi';
 
 import styles from './ChartSettings.module.css';
+
+const lightThemeVars: React.CSSProperties = {
+    '--color-surface': '#F7FAFC',
+    '--color-border': '#E2E8F0',
+    '--color-text': '#1A202C',
+    '--color-text-light': '#718096',
+    '--color-background': '#FFFFFF',
+    '--color-primary': '#007BFF',
+    '--color-primary-dark': '#0066CC',
+    '--color-button-text': '#fff',
+    '--color-error': '#FF4444',
+};
 interface ChartSettingsProps {
     elementId: string;
     presentationId: string;
@@ -143,7 +155,7 @@ const ChartSettings: React.FC<ChartSettingsProps> = ({ elementId, presentationId
     if (!element) return null;
 
     return (
-        <div className={styles.chartSettings}>
+        <div className={`${styles.chartSettings} light-theme-only`} style={lightThemeVars}>
             <div style={{ marginTop: '0.5rem' }}>
                 <span className={styles.label}>Тип диаграммы</span>
                 <div className={styles.buttons}>
