@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable indent */
 /* eslint-disable no-nested-ternary */
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef, useEffect } from 'react';
 import { Layout, Slide } from '@/types';
 import LayoutViewer from '../LayoutViewer/LayoutViewer';
 import ViewerTemplateImageWithPlaceholder from '../ViewerTemplateImageWithPlaceholder';
@@ -9,6 +9,7 @@ import ViewerTemplateImageWithPlaceholder from '../ViewerTemplateImageWithPlaceh
 import styles from '../../editor/SlideEditor/SlideEditor.module.css';
 import localStyles from './SlideViewer.module.css';
 import { Theme } from '@/types/theme';
+import { getDefaultImageRatio, getSlideAspectRatio } from '@/utils/slideProportions';
 
 interface SlideViewerProps {
     slide: Slide;
@@ -38,6 +39,12 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     wrapperRef,
     theme,
 }) => {
+    // Ref для доступа к DOM-элементу слайда
+    const slideRef = useRef<HTMLDivElement>(null);
+    
+    // Получаем соотношение сторон слайда
+    const aspectRatio = useMemo(() => getSlideAspectRatio(slide), [slide]);
+
     // Get slide background styling
     const getSlideStyle = useCallback(() => {
         // Base style with CSS variables
@@ -104,13 +111,14 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
 
         switch (slide.templateType) {
             case 'imageTop':
+                // Используем сохраненный размер или соотношение по умолчанию
                 return {
                     ...baseStyle,
                     position: 'absolute',
                     top: 0,
                     left: 0,
                     right: 0,
-                    height: slide.imageSize?.heightRatio ? `${slide.imageSize.heightRatio * 100}%` : '33%',
+                    height: slide.imageSize?.height || '33%',
                     zIndex: 1,
                 };
             case 'imageLeft':
@@ -120,9 +128,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                     top: 0,
                     left: 0,
                     bottom: 0,
-                    width: slide.imageSize?.widthRatio
-                        ? `${slide.imageSize.widthRatio * 100}%`
-                        : slide.imageSize?.width || '33%',
+                    width: slide.imageSize?.width || '33%',
                     zIndex: 1,
                 };
             case 'imageRight':
@@ -132,9 +138,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                     top: 0,
                     right: 0,
                     bottom: 0,
-                    width: slide.imageSize?.widthRatio
-                        ? `${slide.imageSize.widthRatio * 100}%`
-                        : slide.imageSize?.width || '33%',
+                    width: slide.imageSize?.width || '33%',
                     zIndex: 1,
                 };
             case 'imageBackground':
@@ -184,14 +188,10 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         // Additional styles for image templates
         if (slide.templateType) {
             // Get stored image size or use default values
-            const imageWidth = slide.imageSize?.widthRatio
-                ? `${slide.imageSize.widthRatio * 100}%`
-                : slide.imageSize?.width || '33%';
-            const imageHeight = slide.imageSize?.heightRatio
-                ? `${slide.imageSize.heightRatio * 100}%`
-                : slide.imageSize?.height || '33%';
+            const imageWidth = slide.imageSize?.width || '33%';
+            const imageHeight = slide.imageSize?.height || '33%';
             const remainingWidth = `${100 - parseFloat(imageWidth)}%`;
-            const remainingHeight = `${100 - parseFloat(imageHeight)}%`;
+            const remainingHeight = `calc(100% - ${imageHeight})`;
 
             switch (slide.templateType) {
                 case 'imageTop':
@@ -231,6 +231,15 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         return baseStyle;
     }, [slide, isPdfExport]);
 
+    // Применяем соотношение сторон к стилю слайда
+    const slideAspectStyle = useMemo(() => {
+        if (!aspectRatio) return {};
+        
+        return {
+            aspectRatio: `${aspectRatio}`,
+        };
+    }, [aspectRatio]);
+
     let height;
     let width;
     let minHeight;
@@ -248,6 +257,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     // Slide wrapper style including theme CSS variables
     const slideWrapperStyle: React.CSSProperties = {
         ...getSlideStyle(),
+        ...slideAspectStyle,
         // Apply border styles from CSS variables
         // borderRadius: fullPage ? 0 : 'var(--presentation-slide-border-radius)',
         // borderWidth: fullPage ? 0 : 'var(--presentation-slide-border-width)',
@@ -282,8 +292,16 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     const outerStyle = fullPage ? { padding: 0, width: '100%', height: '100%' } : undefined;
 
     return (
-        <div className={slideClassName} style={outerStyle}>
-            <div className={`${styles.slideWrapper} ${localStyles.slideWrapper}`} style={slideWrapperStyle}>
+        <div
+            ref={slideRef}
+            className={`${styles.slideEditorContainer} ${localStyles.slideViewerContainer} ${themeClassName}`}
+            style={slideWrapperStyle}
+            data-testid="slide-viewer"
+        >
+            <div
+                className={`${styles.slideWrapper} ${localStyles.slideWrapper}`}
+                style={slideWrapperStyle}
+            >
                 <div
                     ref={wrapperRef}
                     className={`${styles.slideContent} ${localStyles.slideContent}`}

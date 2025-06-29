@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParams } from 'next/navigation';
-import { SlideViewer } from '@/components/viewer';
+import { ProportionalSlideViewer } from '@/components/viewer';
 import styles from './page.module.css';
 import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
 import { useColorMode } from '@/components/ui/color-mode';
@@ -330,7 +330,7 @@ export default function PresentationView() {
                                 exit={{ opacity: 0, y: scrollDirection === 'next' ? -50 : 50 }}
                                 transition={{ duration: 0.3 }}
                             >
-                                <SlideViewer
+                                <ProportionalSlideViewer
                                     theme={currentTheme}
                                     slide={visibleSlides[currentSlideIndex]}
                                     fullPage={true}

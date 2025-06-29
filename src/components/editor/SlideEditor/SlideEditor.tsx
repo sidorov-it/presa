@@ -11,6 +11,7 @@ import DragHandler from '../DragHandler';
 import TemplateButton from '../TemplateButton/TemplateButton';
 import AIEditButton from '../AIEditButton/AIEditButton';
 import ResizableTemplateImage from '../ResizableTemplateImage';
+import SlideContentMeasurer from '../SlideContentMeasurer/SlideContentMeasurer';
 import { useMenuStore } from '@/store/menuStore';
 import deepEqual from 'deep-equal';
 import { useDnd } from '@/contexts/DragDropContext';
@@ -429,6 +430,15 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             }}
             style={getSlideStyle()}
         >
+            {/* Компонент для измерения контента и адаптации высоты изображения */}
+            {templateType === 'imageTop' && (
+                <SlideContentMeasurer
+                    presentationId={presentationId}
+                    slideId={slideId}
+                    templateType={templateType}
+                />
+            )}
+            
             <div className={`${getSlideClassName()}`} data-slide="true">
                 <div className={`${styles.slideBorder} ${isSelected || isHovered ? styles.slideBorderMenuOpen : ''}`} />
                 <div ref={editorRef} className={`${styles.slideContent}`} data-slide-content="true">
