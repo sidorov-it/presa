@@ -2,10 +2,8 @@ import type { Metadata } from 'next';
 import PresentationEditorPage from './page.client';
 import { prisma } from '@/lib/prisma';
 
-export async function generateMetadata(
-    props: { params: { id: string } }
-): Promise<Metadata> {
-    const { id } = props.params;
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+    const { id } = await params;
     const presentation = await prisma.presentation.findUnique({
         where: { id },
         select: { title: true },
