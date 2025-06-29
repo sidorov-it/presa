@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { RefObject, useCallback, useMemo, useState } from 'react';
@@ -6,6 +7,7 @@ import { SmartLayoutElement, SmartLayoutItem, TipTapRefs } from '@/types';
 import { generateId } from '@/utils/id';
 import { HiPlus } from 'react-icons/hi2';
 import Tiptap from '@/components/tiptap/Tiptap/Tiptap';
+import { getContrastingTextColor } from '@/utils/themeUtils';
 import ItemWrapper from '../ItemWrapper/ItemWrapper';
 import TextBoxesMenu from './TextBoxesMenu';
 
@@ -226,93 +228,104 @@ export default function TextBoxes({
 
     return (
         <div className={`${styles.container} ${isFocused ? styles.focused : ''}`}>
-            {itemsIds?.map((itemId, index) => (
-                <div
-                    key={itemId}
-                    className={styles.itemContainer}
-                    data-smart-layout-item-id={itemId}
-                    style={{
-                        width: `calc(${elementWidth} - 1em)`,
-                    }}
-                    onDragOver={e => handleDragOver(e, itemId)}
-                    onDragLeave={handleDragLeave}
-                    onDrop={e => handleDrop(e, itemId)}
-                >
-                    {dropIndicator && dropIndicator.itemId === itemId && (
-                        <div
-                            className={`${styles.dropIndicator} ${
-                                dropIndicator.position === 'left' ? styles.left : styles.right
-                            }`}
-                        />
-                    )}
-                    <ItemWrapper
-                        presentationId={presentationId}
-                        itemId={itemId}
-                        slideId={slideId}
-                        layoutId={layoutId}
-                        elementId={elementId}
-                        renderMenuComponent={menuPosition => {
-                            return menuPosition ? (
-                                <TextBoxesMenu
-                                    presentationId={presentationId}
-                                    position={menuPosition}
-                                    itemId={itemId}
-                                    slideId={slideId}
-                                    layoutId={layoutId}
-                                    elementId={elementId}
-                                />
-                            ) : null;
+            {itemsIds?.map((itemId, index) => {
+                const item = element.items?.find(item => item.id === itemId);
+                const backgroundColor = item?.backgroundColor;
+                const style: React.CSSProperties = {};
+                if (backgroundColor) {
+                    style.backgroundColor = backgroundColor;
+                    const contrastColor = getContrastingTextColor(backgroundColor);
+                    // @ts-ignore
+                    style['--presentation-text-color'] = contrastColor;
+                    // @ts-ignore
+                    style['--presentation-heading-color'] = contrastColor;
+                }
+
+                return (
+                    <div
+                        key={itemId}
+                        className={styles.itemContainer}
+                        data-smart-layout-item-id={itemId}
+                        style={{
+                            width: `calc(${elementWidth} - 1em)`,
                         }}
+                        onDragOver={e => handleDragOver(e, itemId)}
+                        onDragLeave={handleDragLeave}
+                        onDrop={e => handleDrop(e, itemId)}
                     >
-                        <div
-                            className={`${styles.textBox} ${element?.align ? styles[element.align] : ''}`}
-                            style={{
-                                backgroundColor: element.items?.find(item => item.id === itemId)?.backgroundColor || undefined,
-                                color: element.items?.find(item => item.id === itemId)?.textColor || undefined,
+                        {dropIndicator && dropIndicator.itemId === itemId && (
+                            <div
+                                className={`${styles.dropIndicator} ${
+                                    dropIndicator.position === 'left' ? styles.left : styles.right
+                                }`}
+                            />
+                        )}
+                        <ItemWrapper
+                            presentationId={presentationId}
+                            itemId={itemId}
+                            slideId={slideId}
+                            layoutId={layoutId}
+                            elementId={elementId}
+                            renderMenuComponent={menuPosition => {
+                                return menuPosition ? (
+                                    <TextBoxesMenu
+                                        presentationId={presentationId}
+                                        position={menuPosition}
+                                        itemId={itemId}
+                                        slideId={slideId}
+                                        layoutId={layoutId}
+                                        elementId={elementId}
+                                    />
+                                ) : null;
                             }}
                         >
-                            <div className={styles.title}>
-                                <Tiptap
-                                    isReadOnly={isReadOnly}
-                                    elementId={elementId}
-                                    tiptapRefs={tiptapRefs}
-                                    id={elementId}
-                                    placeholder="Заголовок"
-                                    onContentChange={handleContentChange(itemId, 'title')}
-                                    presentationId={presentationId}
-                                    slideId={slideId}
-                                    layoutId={layoutId}
-                                    customRefKey={`title-${elementId}-${itemId}`}
-                                    isHideSlashMenu={true}
-                                />
+                            <div
+                                className={`${styles.textBox} ${element?.align ? styles[element.align] : ''}`}
+                                style={style}
+                            >
+                                <div className={styles.title}>
+                                    <Tiptap
+                                        isReadOnly={isReadOnly}
+                                        elementId={elementId}
+                                        tiptapRefs={tiptapRefs}
+                                        id={elementId}
+                                        placeholder="Заголовок"
+                                        onContentChange={handleContentChange(itemId, 'title')}
+                                        presentationId={presentationId}
+                                        slideId={slideId}
+                                        layoutId={layoutId}
+                                        customRefKey={`title-${elementId}-${itemId}`}
+                                        isHideSlashMenu={true}
+                                    />
+                                </div>
+                                <div className={styles.content}>
+                                    <Tiptap
+                                        isReadOnly={isReadOnly}
+                                        elementId={elementId}
+                                        tiptapRefs={tiptapRefs}
+                                        id={elementId}
+                                        presentationId={presentationId}
+                                        slideId={slideId}
+                                        layoutId={layoutId}
+                                        placeholder="Текст"
+                                        onContentChange={handleContentChange(itemId, 'text')}
+                                        customRefKey={`text-${elementId}-${itemId}`}
+                                        isHideSlashMenu={true}
+                                        onEnterPressed={() => {
+                                            return true;
+                                        }}
+                                    />
+                                </div>
                             </div>
-                            <div className={styles.content}>
-                                <Tiptap
-                                    isReadOnly={isReadOnly}
-                                    elementId={elementId}
-                                    tiptapRefs={tiptapRefs}
-                                    id={elementId}
-                                    presentationId={presentationId}
-                                    slideId={slideId}
-                                    layoutId={layoutId}
-                                    placeholder="Текст"
-                                    onContentChange={handleContentChange(itemId, 'text')}
-                                    customRefKey={`text-${elementId}-${itemId}`}
-                                    isHideSlashMenu={true}
-                                    onEnterPressed={() => {
-                                        return true;
-                                    }}
-                                />
-                            </div>
-                        </div>
-                        {!isReadOnly && index === itemsIds.length - 1 && (
-                            <div className={styles.addButton} onClick={addItem}>
-                                <HiPlus style={{ width: '1rem', height: '1rem' }} />
-                            </div>
-                        )}
-                    </ItemWrapper>
-                </div>
-            ))}
+                            {!isReadOnly && index === itemsIds.length - 1 && (
+                                <div className={styles.addButton} onClick={addItem}>
+                                    <HiPlus style={{ width: '1rem', height: '1rem' }} />
+                                </div>
+                            )}
+                        </ItemWrapper>
+                    </div>
+                );
+            })}
         </div>
     );
 }

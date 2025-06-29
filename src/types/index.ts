@@ -116,6 +116,7 @@ export interface SmartLayoutItem {
     text: string;
     imageUrl?: string;
     iconUrl?: string;
+    backgroundColor?: string;
     stats?: { value: string; label: string };
     metadata?: Record<string, unknown>;
     // AI generation fields for images (isGenerating хранится только на клиенте)

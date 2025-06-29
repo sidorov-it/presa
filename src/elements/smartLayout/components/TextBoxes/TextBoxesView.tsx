@@ -5,6 +5,7 @@ import { SmartLayoutElement, TipTapRefs } from '@/types';
 import Tiptap from '@/components/tiptap/Tiptap/Tiptap';
 
 import styles from './TextBoxes.module.css';
+import { getContrastingTextColor } from '@/utils/themeUtils';
 // import wrapperStyles from '../ItemWrapper/ItemWrapper.module.css';
 
 export default function TextBoxesView({
@@ -56,6 +57,17 @@ export default function TextBoxesView({
                 const item = element.items?.find(item => item.id === itemId);
                 if (!item) return null;
 
+                const backgroundColor = item?.backgroundColor;
+                const style: React.CSSProperties = {};
+                if (backgroundColor) {
+                    style.backgroundColor = backgroundColor;
+                    const contrastColor = getContrastingTextColor(backgroundColor);
+                    // @ts-ignore
+                    style['--presentation-text-color'] = contrastColor;
+                    // @ts-ignore
+                    style['--presentation-heading-color'] = contrastColor;
+                }
+
                 return (
                     <div
                         key={itemId}
@@ -67,7 +79,7 @@ export default function TextBoxesView({
                             color: element.textColor || undefined,
                         }}
                     >
-                        <div className={`${styles.textBox} ${align ? styles[align] : ''}`}>
+                        <div className={`${styles.textBox} ${align ? styles[align] : ''}`} style={style}>
                             <div className={styles.title}>
                                 <Tiptap
                                     isReadOnly={isReadOnly}

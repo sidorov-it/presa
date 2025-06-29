@@ -7,11 +7,9 @@ import {
     FaRegAddressCard,
     FaHeading,
     FaListOl,
-    FaChartBar,
-    FaChartPie,
 } from 'react-icons/fa';
 import { FaRegChartBar, FaListCheck } from 'react-icons/fa6';
-import { LuChartColumn, LuHeading1, LuHeading2, LuHeading3, LuHeading4 } from 'react-icons/lu';
+import { LuChartBar, LuChartColumn, LuChartPie, LuHeading1, LuHeading2, LuHeading3, LuHeading4 } from 'react-icons/lu';
 import { TbChartDonutFilled } from 'react-icons/tb';
 import { IconType } from 'react-icons';
 
@@ -832,7 +830,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         customMenuType: 'chart',
         label: 'Линейная диаграмма',
         elementVariant: 'line',
-        Icon: FaRegChartBar,
+        Icon: LuChartBar,
         props: {
             data: [
                 {
@@ -870,7 +868,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         customMenuType: 'chart',
         label: 'Круговая диаграмма',
         elementVariant: 'pie',
-        Icon: FaChartPie,
+        Icon: LuChartPie,
         props: {
             data: [
                 {
