@@ -102,6 +102,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    --card-width: min(100vw, calc(100vh* 1.7777777777777777));
+    --card-height: calc(var(--card-width) / 1.7777777777777777);
     box-sizing: border-box;
     /* padding-bottom: 3rem; space for navigation buttons */
 }

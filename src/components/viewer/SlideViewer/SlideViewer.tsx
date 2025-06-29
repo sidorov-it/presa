@@ -223,17 +223,17 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         return baseStyle;
     }, [slide, isPdfExport]);
 
-    // let minHeight;
     let height;
+    let width;
+    let minHeight;
 
     if (isPreview) {
-        // minHeight = 'unset';
         height = 'auto';
     } else if (fullPage) {
-        // minHeight = '100vh';
-        height = '100vh';
+        width = 'var(--card-width)';
+        minHeight = 'var(--card-height)';
+        height = 'auto';
     } else if (isPdfExport) {
-        // minHeight = 'auto';
         height = 'auto';
     }
 
@@ -248,11 +248,11 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         // Apply background if not overridden by slide-specific background
         // backgroundColor: fullPage ? 'transparent' : 'var(--presentation-slide-background)',
         // boxShadow: fullPage ? 'none' : 'var(--presentation-slide-shadow)',
-        // width: '100%',
-        // maxWidth: '100%',
-        // boxSizing: 'border-box',
-        minHeight: height,
+        width,
+        maxWidth: width,
+        minHeight: minHeight ?? height,
         height,
+        maxHeight: fullPage ? '100vh' : undefined,
         // Дополнительные стили для PDF экспорта
         ...(isPdfExport && {
             overflow: 'visible',
