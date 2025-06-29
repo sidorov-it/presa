@@ -234,6 +234,7 @@ export interface Slide {
     style?: Style;
     templateType?: (typeof SLIDE_TEMPLATES)[number]['value'];
     imageUrl?: string;
+    textColor?: string;
     imageSize?: {
         width?: string;
         height?: string;

@@ -88,7 +88,7 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                     templateType: value as SlideTemplateType,
                     imageSize,
                 },
-                true
+                true,
             );
         }
 
@@ -96,10 +96,7 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
         const templateNeedsImage =
             ['imageTop', 'imageLeft', 'imageRight'].includes(value) || (value === 'imageBackground' && !!imageUrl);
 
-        // If no resizable image is expected, we can safely commit the transaction right away
-        if (!templateNeedsImage) {
-            useHistoryStore.getState().commitTransaction(presentationId);
-        }
+        useHistoryStore.getState().commitTransaction(presentationId);
     };
 
     const handleBackgroundColorChange = useCallback(
@@ -320,7 +317,7 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                     </label>
                     <div className={styles.templateSelectorBackgroundColorPicker}>
                         <ColorPicker
-                            value={backgroundColor}
+                            value={backgroundColor || DEFAULT_BACKGROUND_COLOR}
                             onChange={color => handleBackgroundColorChange(color)}
                             allowAlpha={true}
                             className={styles.colorPicker}
