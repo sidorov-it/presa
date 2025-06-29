@@ -2,38 +2,28 @@
 'use client';
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useParams } from 'next/navigation';
 import { SlideViewer } from '@/components/viewer';
 import styles from './page.module.css';
 import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
 import { useColorMode } from '@/components/ui/color-mode';
 import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
-import { useThemeStore } from '@/store/themeStore';
-import { usePresentationStore } from '@/store/presentationStore';
 import screenfull from 'screenfull';
 import { FullscreenIcon } from 'lucide-react';
 import { clearAllThemeStyles } from '@/utils/themeUtils';
 import { Theme } from '@/types/theme';
-import NotFoundPage from '@/components/NotFoundPage/NotFoundPage';
+import { IPresentation } from '@/types';
 
-export default function PresentationView() {
-    const params = useParams();
-    const { id } = params;
+interface PresentationViewProps {
+    presentation: IPresentation;
+    theme: Theme;
+}
+
+export default function PresentationView({ presentation, theme }: PresentationViewProps) {
 
     const { colorMode } = useColorMode();
 
     const [isFullscreen, setIsFullscreen] = useState(false);
-    const loadPresentation = usePresentationStore(state => state.loadPresentation);
-    const checkPresentationExists = usePresentationStore(state => state.checkPresentationExists);
-
-    // Get presentation from store instead of local state
-    const presentation = usePresentationStore(state => state.getPresentation(id as string));
-
-    const themes = useThemeStore(state => state.themes);
-    const loadThemes = useThemeStore(state => state.loadThemes);
-    const currentTheme = useThemeStore(state => state.currentTheme) as Theme;
-    const setCurrentTheme = useThemeStore(state => state.setCurrentTheme);
-    const defaultThemes = useThemeStore(state => state.defaultThemes);
+    const currentTheme = theme;
 
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
@@ -225,70 +215,6 @@ export default function PresentationView() {
         };
     }, [presentation, handleNextSlide, handlePrevSlide]);
 
-    const [isLoading, setIsLoading] = useState(true);
-    const [notFound, setNotFound] = useState(false);
-
-    // Load presentation data only once when component mounts or ID changes
-    useEffect(() => {
-        if (!id) return;
-
-        const load = async () => {
-            try {
-                // Check if presentation already exists in store
-                if (checkPresentationExists(id as string)) {
-                    setIsLoading(false);
-                    return;
-                }
-
-                // If not in store, load it
-                const loadedPresentation = await loadPresentation(id as string);
-                if (!loadedPresentation) {
-                    setNotFound(true);
-                }
-            } catch (error) {
-                console.error('Failed to load presentation:', error);
-                setNotFound(true);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        load();
-    }, [id, loadPresentation, checkPresentationExists]);
-
-    // Apply theme when presentation is loaded or themes change
-    useEffect(() => {
-        if (!presentation) return;
-
-        const savedTheme =
-            themes.find(theme => theme.id === presentation.themeId) ||
-            defaultThemes.find(theme => theme.id === presentation.themeId);
-        if (savedTheme) {
-            setCurrentTheme(savedTheme);
-        } else {
-            setCurrentTheme(defaultThemes[0]);
-        }
-
-        return () => {
-            setCurrentTheme(undefined);
-        };
-    }, [presentation, themes, setCurrentTheme, defaultThemes]);
-
-    // Load themes separately
-    useEffect(() => {
-        loadThemes().catch(error => {
-            console.error('Failed to load themes:', error);
-        });
-    }, [loadThemes]);
-
-    const loadingUI = useMemo(
-        () => (
-            <div className={styles.loadingContainer}>
-                <div className={styles.spinner}></div>
-            </div>
-        ),
-        []
-    );
 
 
     const handleFullscreen = () => {
@@ -312,8 +238,6 @@ export default function PresentationView() {
         return style;
     }, [currentSlide]);
 
-    if (isLoading) return loadingUI;
-    if (notFound || !presentation) return <NotFoundPage />;
     if (visibleSlides.length === 0) return <div className={styles.loadingContainer}>Нет видимых слайдов</div>;
 
     return (
