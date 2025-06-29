@@ -223,17 +223,17 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         return baseStyle;
     }, [slide, isPdfExport]);
 
-    // let minHeight;
     let height;
+    let width;
+    let minHeight;
 
     if (isPreview) {
-        // minHeight = 'unset';
         height = 'auto';
     } else if (fullPage) {
-        // minHeight = '100vh';
-        height = '100vh';
+        width = 'var(--card-width)';
+        minHeight = 'var(--card-height)';
+        height = 'auto';
     } else if (isPdfExport) {
-        // minHeight = 'auto';
         height = 'auto';
     }
 
@@ -248,11 +248,11 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         // Apply background if not overridden by slide-specific background
         // backgroundColor: fullPage ? 'transparent' : 'var(--presentation-slide-background)',
         // boxShadow: fullPage ? 'none' : 'var(--presentation-slide-shadow)',
-        // width: '100%',
-        // maxWidth: '100%',
-        // boxSizing: 'border-box',
-        minHeight: height,
+        width,
+        maxWidth: width,
+        minHeight: minHeight ?? height,
         height,
+        ...(fullPage && { overflow: 'visible' }),
         // Дополнительные стили для PDF экспорта
         ...(isPdfExport && {
             overflow: 'visible',
@@ -264,9 +264,9 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     const slideContentStyle: React.CSSProperties = {
         // backgroundColor: fullPage ? 'transparent' : 'var(--presentation-slide-background)',
         borderRadius: fullPage ? 0 : 'var(--presentation-slide-border-radius)',
-        minHeight: fullPage ? '100%' : isPdfExport ? 'auto' : undefined,
-        // height: fullPage ? '100%' : isPdfExport ? 'auto' : undefined,
-        overflow: isPdfExport ? 'visible' : undefined,
+        minHeight: fullPage ? 'var(--card-height)' : isPdfExport ? 'auto' : undefined,
+        height: fullPage ? 'auto' : undefined,
+        overflow: fullPage || isPdfExport ? 'visible' : 'auto',
     };
 
     // Адаптируем класс слайда при экспорте в PDF
@@ -276,11 +276,14 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     return (
         <div className={slideClassName} style={outerStyle}>
             <div
-                ref={wrapperRef}
                 className={`${styles.slideWrapper} ${localStyles.slideWrapper}`}
                 style={slideWrapperStyle}
             >
-                <div className={`${styles.slideContent} ${localStyles.slideContent}`} style={slideContentStyle}>
+                <div
+                    ref={wrapperRef}
+                    className={`${styles.slideContent} ${localStyles.slideContent}`}
+                    style={slideContentStyle}
+                >
                     {/* Template image if needed */}
                     {slide?.templateType &&
                         slide.templateType !== 'imageBackground' &&
