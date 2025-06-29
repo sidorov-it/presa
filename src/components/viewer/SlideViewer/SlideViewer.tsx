@@ -6,7 +6,6 @@ import { Layout, Slide } from '@/types';
 import LayoutViewer from '../LayoutViewer/LayoutViewer';
 import ViewerTemplateImageWithPlaceholder from '../ViewerTemplateImageWithPlaceholder';
 
-import { applyImageSizeFromRatio } from '@/utils/slideProportions';
 import styles from '../../editor/SlideEditor/SlideEditor.module.css';
 import localStyles from './SlideViewer.module.css';
 import { Theme } from '@/types/theme';

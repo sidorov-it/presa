@@ -9,7 +9,7 @@ import { FiLoader } from 'react-icons/fi';
 import { useThemeStore } from '@/store/themeStore';
 import { useShallow } from 'zustand/react/shallow';
 
-import { getDefaultImageRatio, DEFAULT_ASPECT_RATIO } from '@/utils/slideProportions';
+import { getDefaultImageRatio } from '@/utils/slideProportions';
 type SlideTemplateType = (typeof SLIDE_TEMPLATES)[number]['value'];
 type ContentAlignment = 'top' | 'center' | 'bottom';
 
@@ -19,7 +19,6 @@ interface SlideTemplateSelectorProps {
     tiptapRefs: MutableRefObject<TipTapRefs>;
 }
 
-const DEFAULT_HEIGHT_PX = 200;
 const DEFAULT_BACKGROUND_COLOR = '#ffffff';
 const DEFAULT_TEXT_COLOR = '#000000';
 
@@ -100,10 +99,6 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                 true
             );
         }
-
-        // Determine if the selected template will have a resizable image component rendered
-        const templateNeedsImage =
-            ['imageTop', 'imageLeft', 'imageRight'].includes(value) || (value === 'imageBackground' && !!imageUrl);
 
         useHistoryStore.getState().commitTransaction(presentationId);
     };

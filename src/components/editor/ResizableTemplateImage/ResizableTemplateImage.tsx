@@ -8,7 +8,7 @@ import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlacehol
 import { useThemeStore } from '@/store/themeStore';
 import { useHistoryStore } from '@/store/historyStore';
 
-import { convertImageSizeToRatio, applyImageSizeFromRatio } from '@/utils/slideProportions';
+import { convertImageSizeToRatio } from '@/utils/slideProportions';
 const MIN_SIZE = 20;
 const MAX_SIZE = 50;
 const DEFAULT_HEIGHT_PX = 200;
@@ -54,11 +54,40 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     }, [clickOutside]);
 
     const storedSize = useMemo(() => {
-        return (
-            slide?.imageSize ||
-            (slide?.templateType === 'imageTop' ? { height: `${DEFAULT_HEIGHT_PX}px` } : { width: '20%' })
-        );
-    }, [slide?.imageSize, slide?.templateType]);
+        if (slide?.imageSize) {
+            // Если есть сохраненные пропорции, используем их для вычисления размеров
+            if ((slide.imageSize.widthRatio || slide.imageSize.heightRatio) && containerRef.current) {
+                const slideElement = containerRef.current.closest('[data-slide-id]') as HTMLElement;
+                if (slideElement) {
+                    const slideRect = slideElement.getBoundingClientRect();
+                    const result: { width?: string; height?: string } = {};
+
+                    if (templateType === 'imageTop' && slide.imageSize.heightRatio) {
+                        const heightInPixels = slide.imageSize.heightRatio * slideRect.height;
+                        result.height = `${heightInPixels}px`;
+                    } else if (
+                        (templateType === 'imageLeft' || templateType === 'imageRight') &&
+                        slide.imageSize.widthRatio
+                    ) {
+                        const widthInPixels = slide.imageSize.widthRatio * slideRect.width;
+                        result.width = `${widthInPixels}px`;
+                    }
+
+                    // Возвращаем размеры из пропорций, если они есть, иначе сохраненные размеры
+                    return {
+                        width: result.width || slide.imageSize.width,
+                        height: result.height || slide.imageSize.height,
+                    };
+                }
+            }
+
+            // Если пропорций нет или нет контейнера, используем сохраненные размеры
+            return slide.imageSize;
+        }
+
+        // Размеры по умолчанию
+        return slide?.templateType === 'imageTop' ? { height: `${DEFAULT_HEIGHT_PX}px` } : { width: '20%' };
+    }, [slide?.imageSize, slide?.templateType, templateType]);
 
     // State for tracking resize operation
     const [isResizing, setIsResizing] = useState(false);
@@ -232,14 +261,36 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
             animationFrameIdRef.current = null;
         }
 
-        updateSlide(
-            presentationId,
-            slideId,
-            {
-                imageSize: currentSizeRef.current,
-            },
-            true // force recording in the current transaction
-        );
+        // Получаем элемент слайда для расчета пропорций
+        const slideElement = imageRef.current?.closest('[data-slide-id]') as HTMLElement;
+        if (slideElement) {
+            // Конвертируем текущий размер в пропорции
+            const imageRatio = convertImageSizeToRatio(currentSizeRef.current, slideElement, templateTypeRef.current);
+
+            // Сохраняем и размеры, и пропорции
+            const updatedImageSize = {
+                ...currentSizeRef.current,
+                ...imageRatio,
+            };
+
+            updateSlide(
+                presentationId,
+                slideId,
+                {
+                    imageSize: updatedImageSize,
+                },
+                true // force recording in the current transaction
+            );
+        } else {
+            updateSlide(
+                presentationId,
+                slideId,
+                {
+                    imageSize: currentSizeRef.current,
+                },
+                true // force recording in the current transaction
+            );
+        }
 
         useHistoryStore.getState().commitTransaction(presentationId);
 
