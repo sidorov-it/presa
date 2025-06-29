@@ -95,6 +95,9 @@
 
         --card-font-scale: 1;
 
+        /* Base slide width based on 16:9 ratio */
+        --card-width: min(100vw, calc(100vh * 1.7777777777777777));
+
         --card-inner-padding-x: calc(3.5em / var(--card-font-scale, 1));
         --card-inner-padding-y: calc(2.75em / var(--card-font-scale, 1));
         --card-inner-padding: var(--card-inner-padding-y) var(--card-inner-padding-x);

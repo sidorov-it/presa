@@ -230,7 +230,6 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         // minHeight = 'unset';
         height = 'auto';
     } else if (fullPage) {
-        // minHeight = '100vh';
         height = '100vh';
     } else if (isPdfExport) {
         // minHeight = 'auto';
@@ -240,20 +239,13 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     // Slide wrapper style including theme CSS variables
     const slideWrapperStyle: React.CSSProperties = {
         ...getSlideStyle(),
-        // Apply border styles from CSS variables
-        // borderRadius: fullPage ? 0 : 'var(--presentation-slide-border-radius)',
-        // borderWidth: fullPage ? 0 : 'var(--presentation-slide-border-width)',
-        // borderColor: 'var(--presentation-slide-border-color)',
-        // borderStyle: fullPage ? 'none' : 'solid',
-        // Apply background if not overridden by slide-specific background
-        // backgroundColor: fullPage ? 'transparent' : 'var(--presentation-slide-background)',
-        // boxShadow: fullPage ? 'none' : 'var(--presentation-slide-shadow)',
-        // width: '100%',
-        // maxWidth: '100%',
-        // boxSizing: 'border-box',
-        minHeight: height,
-        height,
-        // Дополнительные стили для PDF экспорта
+        minHeight: fullPage
+            ? 'calc(var(--card-width) / 1.7777777777777777)'
+            : height,
+        height: fullPage ? '100vh' : height,
+        width: fullPage ? 'var(--card-width)' : undefined,
+        maxWidth: fullPage ? 'var(--card-width)' : undefined,
+        overflowY: fullPage ? 'auto' : undefined,
         ...(isPdfExport && {
             overflow: 'visible',
             padding: '20px',
@@ -271,7 +263,9 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
 
     // Адаптируем класс слайда при экспорте в PDF
     const slideClassName = `${styles.slide} ${themeClassName} ${isPdfExport ? styles.pdfExport : ''}`;
-    const outerStyle = fullPage ? { padding: 0, width: '100%', height: '100%' } : undefined;
+    const outerStyle = fullPage
+        ? { padding: 0, width: 'var(--card-width)', height: '100%' }
+        : undefined;
 
     return (
         <div className={slideClassName} style={outerStyle}>
