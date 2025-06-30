@@ -264,18 +264,23 @@
     position: relative;
 }
 
-/* Remove the justify-content and padding since we're handling positioning in the component */
+/* Support absolute positioning for both "one side" and "two sides" modes */
+.horizontalOneSide .secondLine,
+.horizontalTwoSides .firstLine,
 .horizontalTwoSides .secondLine {
-    justify-content: flex-start;
     position: relative;
     height: auto;
 }
 
-/* Ensure absolute positioned items in second line don't interfere with each other */
+/* Ensure absolute positioned items don't interfere with each other */
+.horizontalOneSide .secondLine .itemContainer,
+.horizontalTwoSides .firstLine .itemContainer,
 .horizontalTwoSides .secondLine .itemContainer {
     position: static;
 }
 
+.horizontalOneSide .secondLine .itemContainer[style*="position: absolute"],
+.horizontalTwoSides .firstLine .itemContainer[style*="position: absolute"],
 .horizontalTwoSides .secondLine .itemContainer[style*="position: absolute"] {
     position: absolute !important;
 }
