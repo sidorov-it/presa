@@ -65,7 +65,7 @@ export default function TimelineView({
         // Extract odd and even indexed items for two sides layout
         const oddIndexedItems: string[] = [];
         const evenIndexedItems: string[] = [];
-        
+
         itemsIds.forEach((itemId, index) => {
             if (index % 2 === 0) {
                 oddIndexedItems.push(itemId);
@@ -73,30 +73,30 @@ export default function TimelineView({
                 evenIndexedItems.push(itemId);
             }
         });
-        
+
         // Create arrays with nulls to ensure equal width distribution
         const totalSlots = Math.max(oddIndexedItems.length, evenIndexedItems.length);
-        
-        firstLineItems = Array(totalSlots).fill(null).map((_, i) => 
-            i < oddIndexedItems.length ? oddIndexedItems[i] : null
-        );
-        
-        secondLineItems = Array(totalSlots).fill(null).map((_, i) => 
-            i < evenIndexedItems.length ? evenIndexedItems[i] : null
-        );
-        
+
+        firstLineItems = Array(totalSlots)
+            .fill(null)
+            .map((_, i) => (i < oddIndexedItems.length ? oddIndexedItems[i] : null));
+
+        secondLineItems = Array(totalSlots)
+            .fill(null)
+            .map((_, i) => (i < evenIndexedItems.length ? evenIndexedItems[i] : null));
+
         maxItemsCount = totalSlots;
     }
 
-    const renderTimelineItem = (itemId: string | null, index: number) => {
+    const renderTimelineItem = (itemId: string | null, index: number, isSecondLine = false) => {
         if (itemId === null) {
             return (
-                <div 
+                <div
                     key={`empty-${index}`}
                     className={styles.itemContainer}
                     style={{
                         width: direction === 'horizontal' ? `calc(100% / ${maxItemsCount} - 1em)` : '100%',
-                        visibility: 'hidden'
+                        visibility: 'hidden',
                     }}
                 />
             );
@@ -104,20 +104,37 @@ export default function TimelineView({
 
         const item = element.items?.find(i => i.id === itemId);
         if (!item) return null;
-        
+
+        // Calculate the position for the second line items in two sides mode
+        // to align them with their corresponding timeline points
+        const getItemStyle = () => {
+            const baseStyle = {
+                width: direction === 'horizontal' ? `calc(100% / ${maxItemsCount} - 1em)` : '100%',
+            };
+
+            // If this is a second line item in two sides mode, add positioning
+            if (sides === 'two' && isSecondLine && direction === 'horizontal') {
+                const timelinePointPosition = `calc((100% / ${itemsIds.length + 1}) * ${index * 2 + 2})`;
+                return {
+                    ...baseStyle,
+                    position: 'relative' as const,
+                    left: `calc(${timelinePointPosition} - (100% / ${maxItemsCount} - 1em) / 2)`,
+                    marginLeft: 0,
+                    marginRight: 0,
+                };
+            }
+
+            return baseStyle;
+        };
+
         return (
             <div
                 key={itemId}
                 className={styles.itemContainer}
                 data-smart-layout-item-id={itemId}
-                style={{
-                    width: direction === 'horizontal' ? `calc(100% / ${maxItemsCount} - 1em)` : '100%',
-                }}
+                style={getItemStyle()}
             >
-                <div
-                    className={`${styles.textBox} ${align ? styles[align] : ''}`}
-                    style={{ position: 'relative' }}
-                >
+                <div className={`${styles.textBox} ${align ? styles[align] : ''}`} style={{ position: 'relative' }}>
                     {/* Connection line between timeline and content */}
                     {showLines && (
                         <div
@@ -170,44 +187,51 @@ export default function TimelineView({
     };
 
     return (
-        <div className={containerClasses}>
-            <div className={`${styles.flexContainer} ${direction === 'horizontal' ? styles.horizontal : styles.vertical}`}>
+        <div 
+            className={containerClasses}
+            style={{ '--item-count': itemsIds.length } as React.CSSProperties}
+        >
+            <div
+                className={`${styles.flexContainer} ${direction === 'horizontal' ? styles.horizontal : styles.vertical}`}
+            >
                 <div className={styles.firstLine}>
                     {firstLineItems.map((itemId, index) => renderTimelineItem(itemId, index))}
                 </div>
 
                 <div className={styles.timelineLineItems}>
                     <div className={styles.timelineLineItemInvisible}></div>
-                    {Array(maxItemsCount).fill(null).map((_, index) => {
-                        const classNames = [styles.timelineLineItem];
+                    {Array(itemsIds.length)
+                        .fill(null)
+                        .map((_, index) => {
+                            const classNames = [styles.timelineLineItem];
 
-                        if (showLines) {
-                            if (direction === 'horizontal' && sides === 'one') {
-                                classNames.push(styles.horizontalConnectionLine);
-                            } else if (direction === 'vertical' && sides === 'one') {
-                                classNames.push(styles.verticalConnectionLine);
-                            } else if (direction === 'horizontal' && sides === 'two') {
-                                classNames.push(styles.horizontalTwoSidesConnectionLine);
-                            } else if (direction === 'vertical' && sides === 'two') {
-                                classNames.push(styles.verticalTwoSidesConnectionLine);
+                            if (showLines) {
+                                if (direction === 'horizontal' && sides === 'one') {
+                                    classNames.push(styles.horizontalConnectionLine);
+                                } else if (direction === 'vertical' && sides === 'one') {
+                                    classNames.push(styles.verticalConnectionLine);
+                                } else if (direction === 'horizontal' && sides === 'two') {
+                                    classNames.push(styles.horizontalTwoSidesConnectionLine);
+                                } else if (direction === 'vertical' && sides === 'two') {
+                                    classNames.push(styles.verticalTwoSidesConnectionLine);
+                                }
                             }
-                        }
 
-                        return (
-                            <div
-                                key={index}
-                                className={classNames.join(' ')}
-                                style={{
-                                    left: `calc((100% / ${maxItemsCount + 1}) * ${index + 1})`,
-                                }}
-                            />
-                        );
-                    })}
+                            return (
+                                <div
+                                    key={index}
+                                    className={classNames.join(' ')}
+                                    style={{
+                                        left: `calc((100% / ${itemsIds.length + 1}) * ${index + 1})`,
+                                    }}
+                                />
+                            );
+                        })}
                     <div className={styles.timelineLineItemInvisible}></div>
                 </div>
 
                 <div className={styles.secondLine}>
-                    {secondLineItems.map((itemId, index) => renderTimelineItem(itemId, index))}
+                    {secondLineItems.map((itemId, index) => renderTimelineItem(itemId, index, true))}
                 </div>
             </div>
         </div>

@@ -261,4 +261,22 @@
     flex-direction: row;
     gap: 1rem;
     width: 100%;
+    position: relative;
+}
+
+/* Remove the justify-content and padding since we're handling positioning in the component */
+.horizontalTwoSides .secondLine {
+    justify-content: flex-start;
+}
+
+/* Center alignment for two sides layout */
+.horizontalTwoSides .secondLine {
+    justify-content: space-around;
+    padding: 0 calc(100% / (var(--item-count) * 2));
+}
+
+/* Add individual item positioning for two sides layout */
+.horizontalTwoSides .secondLine .itemContainer {
+    margin-left: auto;
+    margin-right: auto;
 }

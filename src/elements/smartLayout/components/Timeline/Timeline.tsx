@@ -33,6 +33,8 @@ const TimelineContent = ({
     showLines,
     index,
     maxItemsCount,
+    sides,
+    isSecondLine,
 }: {
     itemId: string | null;
     direction: 'horizontal' | 'vertical';
@@ -54,6 +56,8 @@ const TimelineContent = ({
     showLines: boolean;
     index: number;
     maxItemsCount: number;
+    sides: 'one' | 'two';
+    isSecondLine?: boolean;
 }) => {
     if (itemId === null) {
         // Return an empty div with the same width as content items to maintain spacing
@@ -62,11 +66,33 @@ const TimelineContent = ({
                 className={styles.itemContainer}
                 style={{
                     width: direction === 'horizontal' ? `calc(100% / ${maxItemsCount} - 1em)` : '100%',
-                    visibility: 'hidden'
+                    visibility: 'hidden',
                 }}
             />
         );
     }
+
+    // Calculate the position for the second line items in two sides mode
+    // to align them with their corresponding timeline points
+    const getItemStyle = () => {
+        const baseStyle = {
+            width: direction === 'horizontal' ? `calc(100% / ${maxItemsCount} - 1em)` : '100%',
+        };
+
+        // If this is a second line item in two sides mode, add positioning
+        if (sides === 'two' && isSecondLine && direction === 'horizontal') {
+            const timelinePointPosition = `calc((100% / ${itemsIds.length + 1}) * ${index * 2 + 2})`;
+            return {
+                ...baseStyle,
+                position: 'relative' as const,
+                left: `calc(${timelinePointPosition} - (100% / ${maxItemsCount} - 1em) / 2)`,
+                marginLeft: 0,
+                marginRight: 0,
+            };
+        }
+
+        return baseStyle;
+    };
 
     return (
         <div
@@ -76,9 +102,7 @@ const TimelineContent = ({
             onDragLeave={handleDragLeave}
             onDrop={e => handleDrop(e, itemId)}
             data-smart-layout-item-id={itemId}
-            style={{
-                width: direction === 'horizontal' ? `calc(100% / ${maxItemsCount} - 1em)` : '100%',
-            }}
+            style={getItemStyle()}
         >
             {dropIndicator && dropIndicator.itemId === itemId && (
                 <div
@@ -331,7 +355,7 @@ export default function Timeline({
         // Extract odd and even indexed items for two sides layout
         const oddIndexedItems: string[] = [];
         const evenIndexedItems: string[] = [];
-        
+
         itemsIds.forEach((itemId, index) => {
             if (index % 2 === 0) {
                 oddIndexedItems.push(itemId);
@@ -339,23 +363,26 @@ export default function Timeline({
                 evenIndexedItems.push(itemId);
             }
         });
-        
+
         // Create arrays with nulls to ensure equal width distribution
         const totalSlots = Math.max(oddIndexedItems.length, evenIndexedItems.length);
-        
-        firstLineItems = Array(totalSlots).fill(null).map((_, i) => 
-            i < oddIndexedItems.length ? oddIndexedItems[i] : null
-        );
-        
-        secondLineItems = Array(totalSlots).fill(null).map((_, i) => 
-            i < evenIndexedItems.length ? evenIndexedItems[i] : null
-        );
-        
+
+        firstLineItems = Array(totalSlots)
+            .fill(null)
+            .map((_, i) => (i < oddIndexedItems.length ? oddIndexedItems[i] : null));
+
+        secondLineItems = Array(totalSlots)
+            .fill(null)
+            .map((_, i) => (i < evenIndexedItems.length ? evenIndexedItems[i] : null));
+
         maxItemsCount = totalSlots;
     }
 
     return (
-        <div className={containerClasses.join(' ')}>
+        <div 
+            className={containerClasses.join(' ')} 
+            style={{ '--item-count': itemsIds.length } as React.CSSProperties}
+        >
             <div
                 className={`${styles.flexContainer} ${direction === 'horizontal' ? styles.horizontal : styles.vertical}`}
             >
@@ -384,6 +411,7 @@ export default function Timeline({
                                 showLines={showLines}
                                 maxItemsCount={maxItemsCount}
                                 index={index}
+                                sides={sides}
                             />
                         );
                     })}
@@ -391,31 +419,33 @@ export default function Timeline({
 
                 <div className={styles.timelineLineItems}>
                     <div className={styles.timelineLineItemInvisible}></div>
-                    {Array(maxItemsCount).fill(null).map((_, index) => {
-                        const classNames = [styles.timelineLineItem];
+                    {Array(itemsIds.length)
+                        .fill(null)
+                        .map((_, index) => {
+                            const classNames = [styles.timelineLineItem];
 
-                        if (showLines) {
-                            if (direction === 'horizontal' && sides === 'one') {
-                                classNames.push(styles.horizontalConnectionLine);
-                            } else if (direction === 'vertical' && sides === 'one') {
-                                classNames.push(styles.verticalConnectionLine);
-                            } else if (direction === 'horizontal' && sides === 'two') {
-                                classNames.push(styles.horizontalTwoSidesConnectionLine);
-                            } else if (direction === 'vertical' && sides === 'two') {
-                                classNames.push(styles.verticalTwoSidesConnectionLine);
+                            if (showLines) {
+                                if (direction === 'horizontal' && sides === 'one') {
+                                    classNames.push(styles.horizontalConnectionLine);
+                                } else if (direction === 'vertical' && sides === 'one') {
+                                    classNames.push(styles.verticalConnectionLine);
+                                } else if (direction === 'horizontal' && sides === 'two') {
+                                    classNames.push(styles.horizontalTwoSidesConnectionLine);
+                                } else if (direction === 'vertical' && sides === 'two') {
+                                    classNames.push(styles.verticalTwoSidesConnectionLine);
+                                }
                             }
-                        }
 
-                        return (
-                            <div
-                                key={index}
-                                className={classNames.join(' ')}
-                                style={{
-                                    left: `calc((100% / ${maxItemsCount + 1}) * ${index + 1})`,
-                                }}
-                            />
-                        );
-                    })}
+                            return (
+                                <div
+                                    key={index}
+                                    className={classNames.join(' ')}
+                                    style={{
+                                        left: `calc((100% / ${itemsIds.length + 1}) * ${index + 1})`,
+                                    }}
+                                />
+                            );
+                        })}
                     <div className={styles.timelineLineItemInvisible}></div>
                 </div>
                 <div className={styles.secondLine}>
@@ -443,6 +473,8 @@ export default function Timeline({
                                 showLines={showLines}
                                 maxItemsCount={maxItemsCount}
                                 index={index}
+                                sides={sides}
+                                isSecondLine={true}
                             />
                         );
                     })}
