@@ -296,6 +296,7 @@ export default function TextBoxes({
                                         layoutId={layoutId}
                                         customRefKey={`title-${elementId}-${itemId}`}
                                         isHideSlashMenu={true}
+                                        standardEnterBehavior={true}
                                     />
                                 </div>
                                 <div className={styles.content}>
@@ -311,9 +312,7 @@ export default function TextBoxes({
                                         onContentChange={handleContentChange(itemId, 'text')}
                                         customRefKey={`text-${elementId}-${itemId}`}
                                         isHideSlashMenu={true}
-                                        onEnterPressed={() => {
-                                            return true;
-                                        }}
+                                        standardEnterBehavior={true}
                                     />
                                 </div>
                             </div>

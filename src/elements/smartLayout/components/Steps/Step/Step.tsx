@@ -66,6 +66,7 @@ export default function Step({
                     layoutId={layoutId}
                     customRefKey={`title-${elementId}-${itemId}`}
                     isHideSlashMenu={true}
+                    standardEnterBehavior={true}
                 />
                 <Tiptap
                     isReadOnly={isReadOnly}
@@ -79,9 +80,7 @@ export default function Step({
                     onContentChange={handleContentChange(itemId, 'text')}
                     customRefKey={`text-${elementId}-${itemId}`}
                     isHideSlashMenu={true}
-                    onEnterPressed={() => {
-                        return true;
-                    }}
+                    standardEnterBehavior={true}
                 />
             </div>
             {!isReadOnly && isLast && (

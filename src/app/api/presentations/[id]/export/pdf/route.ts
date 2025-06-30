@@ -14,7 +14,7 @@ function encodeRFC5987(v: string) {
         .replace(/\*/g, '%2A');
 }
 
-const handleRequest = async (request: NextRequest, props: { params: Promise<{ id: string }> }) => {
+const handleRequest = async (request: NextRequest, props: { params: { id: string } }) => {
     try {
         const params = await props.params;
         // Check authentication
@@ -271,11 +271,11 @@ const handleRequest = async (request: NextRequest, props: { params: Promise<{ id
 };
 
 export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
-    return handleRequest(request, /* @next-codemod-error 'props' is passed as an argument. Any asynchronous properties of 'props' must be awaited when accessed. */
-    props);
+    const params = await props.params;
+    return handleRequest(request, { params });
 }
 
 export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
-    return handleRequest(request, /* @next-codemod-error 'props' is passed as an argument. Any asynchronous properties of 'props' must be awaited when accessed. */
-    props);
+    const params = await props.params;
+    return handleRequest(request, { params });
 }

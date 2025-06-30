@@ -106,10 +106,6 @@ export default function ImagesWithTextView({
                                         layoutId={layoutId}
                                         placeholder="Текст"
                                         onContentChange={() => {}}
-                                        // customRefKey={`text-${element.id}-${item.id}`}
-                                        onEnterPressed={() => {
-                                            return true;
-                                        }}
                                         isHideSlashMenu={false}
                                     />
                                 </div>

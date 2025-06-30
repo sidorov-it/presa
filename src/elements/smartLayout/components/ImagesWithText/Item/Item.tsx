@@ -132,6 +132,7 @@ export default function Item({
                         layoutId={layoutId}
                         customRefKey={`title-${elementId}-${item.id}`}
                         isHideSlashMenu={true}
+                        standardEnterBehavior={true}
                     />
                 </div>
                 <div className={styles.text}>
@@ -147,9 +148,7 @@ export default function Item({
                         placeholder="Текст"
                         onContentChange={handleTextChange}
                         customRefKey={`text-${elementId}-${item.id}`}
-                        onEnterPressed={() => {
-                            return true;
-                        }}
+                        standardEnterBehavior={true}
                         isHideSlashMenu={true}
                     />
                 </div>

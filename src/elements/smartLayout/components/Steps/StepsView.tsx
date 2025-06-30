@@ -82,7 +82,6 @@ export default function StepsView({
                                 presentationId={presentationId}
                                 slideId={slideId}
                                 layoutId={layoutId}
-                                isHideSlashMenu={false}
                             />
                             <Tiptap
                                 isReadOnly={isReadOnly}
@@ -95,10 +94,6 @@ export default function StepsView({
                                 layoutId={layoutId}
                                 placeholder="Текст"
                                 onContentChange={() => {}}
-                                isHideSlashMenu={false}
-                                onEnterPressed={() => {
-                                    return true;
-                                }}
                             />
                         </div>
                     </div>

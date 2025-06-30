@@ -246,51 +246,6 @@ export default function Steps({
                             handleContentChange={handleContentChange}
                             itemId={itemId}
                         />
-                        {/* <div
-                            className={`${styles.textBox} ${align ? styles[align] : ''} ${direction === 'vertical' ? styles.vertical : ''}`}
-                            style={{
-                                paddingLeft: direction === 'vertical' ? `${index * 32}px` : undefined,
-                                paddingTop: direction === 'horizontal' ? `${index * 32}px` : undefined,
-                            }}
-                        >
-                            <div className={styles.step} />
-                            <div className={styles.textBoxContent}>
-                                <Tiptap
-                                    isReadOnly={isReadOnly}
-                                    elementId={elementId}
-                                    tiptapRefs={tiptapRefs}
-                                    id={elementId}
-                                    placeholder="Заголовок"
-                                    onContentChange={handleContentChange(itemId, 'title')}
-                                    presentationId={presentationId}
-                                    slideId={slideId}
-                                    layoutId={layoutId}
-                                    customRefKey={`title-${elementId}-${itemId}`}
-                                    isHideSlashMenu={true}
-                                />
-                                <Tiptap
-                                    isReadOnly={isReadOnly}
-                                    elementId={elementId}
-                                    tiptapRefs={tiptapRefs}
-                                    id={elementId}
-                                    presentationId={presentationId}
-                                    slideId={slideId}
-                                    layoutId={layoutId}
-                                    placeholder="Текст"
-                                    onContentChange={handleContentChange(itemId, 'text')}
-                                    customRefKey={`text-${elementId}-${itemId}`}
-                                    isHideSlashMenu={true}
-                                    onEnterPressed={() => {
-                                        return true;
-                                    }}
-                                />
-                            </div>
-                            {!isReadOnly && index === itemsIds.length - 1 && (
-                                <div className={styles.addButton} onClick={addItem}>
-                                    <HiPlus style={{ width: '1rem', height: '1rem' }} />
-                                </div>
-                            )}
-                        </div> */}
                     </ItemWrapper>
                 </div>
             ))}

@@ -246,6 +246,7 @@ export default function Timeline({
                                 layoutId={layoutId}
                                 customRefKey={`title-${elementId}-${itemId}`}
                                 isHideSlashMenu={true}
+                                standardEnterBehavior={true}
                             />
                             <Tiptap
                                 isReadOnly={isReadOnly}
@@ -259,9 +260,7 @@ export default function Timeline({
                                 onContentChange={handleContentChange(itemId, 'text')}
                                 customRefKey={`text-${elementId}-${itemId}`}
                                 isHideSlashMenu={true}
-                                onEnterPressed={() => {
-                                    return true;
-                                }}
+                                standardEnterBehavior={true}
                             />
                             {!isReadOnly && index === itemsIds.length - 1 && (
                                 <div className={styles.addButton} onClick={addItem}>
