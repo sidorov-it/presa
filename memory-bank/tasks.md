@@ -40,42 +40,37 @@ export interface Slide {
 
 ### 2. Создан файл утилит slideProportions.ts (src/utils/slideProportions.ts)
 Содержит функции для:
-- `convertImageSizeToRatio` - конвертации размеров изображений в пропорции
-- `getDefaultImageRatio` - получения пропорций по умолчанию для разных шаблонов
+- Конвертации размеров изображений в пропорции
+- Применения пропорций к текущим размерам слайда
+- Получения размеров по умолчанию для разных шаблонов
 - Работы с базовыми пропорциями 16:9
 
 ### 3. Обновлен ResizableTemplateImage.tsx
-- Добавлен импорт `convertImageSizeToRatio` из утилит
+- Добавлен импорт утилит для работы с пропорциями
 - Обновлена функция `handleResizeEnd` для сохранения пропорций изображения при изменении размера
-- Обновлен `storedSize` для использования сохраненных пропорций при вычислении размеров
 
 ### 4. Обновлен SlideViewer.tsx
-- В `imageStyle` и `contentStyle` реализована логика использования пропорций:
-  - `slide.imageSize?.widthRatio ? ${slide.imageSize.widthRatio * 100}% : defaultWidth`
-  - `slide.imageSize?.heightRatio ? ${slide.imageSize.heightRatio * 100}% : defaultHeight`
+- Добавлен импорт утилит для работы с пропорциями
+- Обновлена логика `imageStyle` для использования пропорций при вычислении размеров
+- Обновлена логика `contentStyle` для корректного позиционирования контента
 
 ### 5. Обновлен SlideTemplateSelector.tsx
-- Добавлен импорт `getDefaultImageRatio` из утилит
+- Добавлен импорт утилит для работы с пропорциями
 - Обновлена функция `handleTemplateChange` для инициализации пропорций при создании слайда
 
 ## Принцип работы
 
 ### Сохранение пропорций
 При изменении размера изображения в редакторе:
-1. Система находит элемент слайда по селектору `[data-slide-id]`
-2. Вызывает `convertImageSizeToRatio(currentSize, slideElement, templateType)`
-3. Сохраняет как абсолютные размеры, так и вычисленные пропорции
+1. Система находит элемент слайда
+2. Вычисляет пропорции изображения относительно размеров слайда
+3. Сохраняет как абсолютные размеры, так и пропорции
 
 ### Применение пропорций
 При отображении слайда в режиме просмотра:
-1. `SlideViewer` проверяет наличие `slide.imageSize?.widthRatio` или `heightRatio`
-2. Если пропорции есть, вычисляет размеры как `ratio * 100%`
+1. Система проверяет наличие сохраненных пропорций
+2. Если пропорции есть, вычисляет размеры на основе текущих размеров слайда
 3. Если пропорций нет, использует сохраненные абсолютные размеры
-
-### В редакторе (ResizableTemplateImage)
-1. `storedSize` проверяет наличие сохраненных пропорций
-2. Если пропорции есть, пересчитывает размеры на основе текущих размеров слайда
-3. Использует пересчитанные размеры для отображения
 
 ## Базовые пропорции
 - По умолчанию используются пропорции 16:9
@@ -91,9 +86,9 @@ export interface Slide {
 ## Файлы изменений
 - ✅ src/types/index.ts - обновлен интерфейс Slide
 - ✅ src/utils/slideProportions.ts - создан файл утилит
-- ✅ src/components/editor/ResizableTemplateImage/ResizableTemplateImage.tsx - реально использует convertImageSizeToRatio
-- ✅ src/components/viewer/SlideViewer/SlideViewer.tsx - реально использует пропорции в imageStyle и contentStyle
-- ✅ src/components/editor/SlideTemplateSelector/SlideTemplateSelector.tsx - реально использует getDefaultImageRatio
+- ✅ src/components/editor/ResizableTemplateImage/ResizableTemplateImage.tsx - обновлен
+- ✅ src/components/viewer/SlideViewer/SlideViewer.tsx - обновлен
+- ✅ src/components/editor/SlideTemplateSelector/SlideTemplateSelector.tsx - обновлен
 
 ## Тестирование
 Для тестирования системы:
@@ -101,12 +96,6 @@ export interface Slide {
 2. Измените размер изображения в редакторе
 3. Перейдите в режим просмотра (/view)
 4. Убедитесь, что изображение отображается корректно и пропорционально
-
-## Техническая реализация
-- Пропорции сохраняются как числа от 0 до 1 (например, 0.33 = 33%)
-- В SlideViewer пропорции умножаются на 100 для получения процентов
-- В ResizableTemplateImage пропорции умножаются на размеры слайда для получения пикселей
-- Система работает с селектором `[data-slide-id]` для поиска элемента слайда
 
 ## Дальнейшие улучшения
 1. Добавить поддержку динамического расчета пропорций слайда при изменении контента
