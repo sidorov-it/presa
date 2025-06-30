@@ -112,46 +112,42 @@ export default function TimelineView({
                 width: direction === 'horizontal' ? `calc(100% / ${maxItemsCount} - 1em)` : '100%',
             };
 
-            // Position elements to center them under timeline points
+            // Position elements to center them under timeline points using margins instead of absolute positioning
             if (direction === 'horizontal') {
                 if (sides === 'one' && isSecondLine) {
-                    // For "one side" mode, center elements under timeline points
+                    // For "one side" mode, calculate left margin to center under timeline points
                     // Timeline points are at: calc((100% / itemsIds.length) * index + (100% / itemsIds.length) / 2)
-                    const timelinePointPosition = `calc((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2)`;
+                    const elementWidth = `(100% / ${maxItemsCount})`;
+                    const timelinePointPosition = `((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2)`;
+                    const leftMargin = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
+                    
                     return {
                         ...baseStyle,
-                        position: 'absolute' as const,
-                        left: `calc(${timelinePointPosition} - (100% / ${maxItemsCount}) / 2)`,
-                        marginLeft: 0,
+                        marginLeft: index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
                         marginRight: 0,
                     };
                 } else if (sides === 'two' && isSecondLine) {
-                    // For second line items in two sides mode, add positioning
-                    // Second line contains odd-indexed items from the original array (1, 3, 5, ...)
-                    // So for index 0 in second line, it should align with timeline point 2 (item 1)
-                    // For index 1 in second line, it should align with timeline point 4 (item 3), etc.
+                    // For second line items in two sides mode
                     const originalItemIndex = index * 2 + 1; // Convert secondLine index to original item index
-                    
-                    // Use the same positioning logic as timeline points for "two sides"
-                    const timelinePointPosition = `calc((100% / ${itemsIds.length + 1}) * ${originalItemIndex + 1})`;
+                    const elementWidth = `(100% / ${maxItemsCount})`;
+                    const timelinePointPosition = `((100% / ${itemsIds.length + 1}) * ${originalItemIndex + 1})`;
+                    const leftMargin = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
                     
                     return {
                         ...baseStyle,
-                        position: 'absolute' as const,
-                        left: `calc(${timelinePointPosition} - (100% / ${maxItemsCount}) / 2)`,
-                        marginLeft: 0,
+                        marginLeft: index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
                         marginRight: 0,
                     };
                 } else if (sides === 'two' && !isSecondLine) {
-                    // For first line items in two sides mode, also center them under timeline points
+                    // For first line items in two sides mode
                     const originalItemIndex = index * 2; // Convert firstLine index to original item index
-                    const timelinePointPosition = `calc((100% / ${itemsIds.length + 1}) * ${originalItemIndex + 1})`;
+                    const elementWidth = `(100% / ${maxItemsCount})`;
+                    const timelinePointPosition = `((100% / ${itemsIds.length + 1}) * ${originalItemIndex + 1})`;
+                    const leftMargin = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
                     
                     return {
                         ...baseStyle,
-                        position: 'absolute' as const,
-                        left: `calc(${timelinePointPosition} - (100% / ${maxItemsCount}) / 2)`,
-                        marginLeft: 0,
+                        marginLeft: index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
                         marginRight: 0,
                     };
                 }

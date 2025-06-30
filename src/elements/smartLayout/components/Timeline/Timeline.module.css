@@ -259,42 +259,22 @@
 .secondLine {
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+    gap: 0;
     width: 100%;
     position: relative;
 }
 
-/* Support absolute positioning for both "one side" and "two sides" modes */
+/* Remove absolute positioning styles - use normal flex layout with margins */
 .horizontalOneSide .secondLine,
 .horizontalTwoSides .firstLine,
 .horizontalTwoSides .secondLine {
-    position: relative;
-    height: auto;
+    justify-content: flex-start;
 }
 
-/* Ensure absolute positioned items don't interfere with each other */
 .horizontalOneSide .secondLine .itemContainer,
 .horizontalTwoSides .firstLine .itemContainer,
 .horizontalTwoSides .secondLine .itemContainer {
-    position: static;
-}
-
-.horizontalOneSide .secondLine .itemContainer[style*="position: absolute"],
-.horizontalTwoSides .firstLine .itemContainer[style*="position: absolute"],
-.horizontalTwoSides .secondLine .itemContainer[style*="position: absolute"] {
-    position: absolute !important;
-}
-
-/* Center alignment for two sides layout */
-.horizontalTwoSides .secondLine {
-    justify-content: space-around;
-    padding: 0 calc(100% / (var(--item-count) * 2));
-}
-
-/* Add individual item positioning for two sides layout */
-.horizontalTwoSides .secondLine .itemContainer {
-    margin-left: auto;
-    margin-right: auto;
+    flex-shrink: 0;
 }
 
 .itemWrapperAlignBottom {
