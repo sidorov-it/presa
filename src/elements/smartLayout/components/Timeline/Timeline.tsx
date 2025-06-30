@@ -35,6 +35,7 @@ const TimelineContent = ({
     maxItemsCount,
     sides,
     isSecondLine,
+    className,
 }: {
     itemId: string | null;
     direction: 'horizontal' | 'vertical';
@@ -56,13 +57,14 @@ const TimelineContent = ({
     showLines: boolean;
     index: number;
     maxItemsCount: number;
+    className?: string;
     sides: 'one' | 'two';
     isSecondLine?: boolean;
 }) => {
     if (itemId === null) {
         // Return an empty div with the same width as content items to maintain spacing
         return (
-            <div 
+            <div
                 className={styles.itemContainer}
                 style={{
                     width: direction === 'horizontal' ? `calc(100% / ${maxItemsCount} - 1em)` : '100%',
@@ -79,13 +81,15 @@ const TimelineContent = ({
             width: direction === 'horizontal' ? `calc(100% / ${maxItemsCount} - 1em)` : '100%',
         };
 
-        // If this is a second line item in two sides mode, add positioning
+                // If this is a second line item in two sides mode, add positioning
         if (sides === 'two' && isSecondLine && direction === 'horizontal') {
             // For second line items, we need to position them under their corresponding timeline points
             // Second line contains odd-indexed items from the original array (1, 3, 5, ...)
             // So for index 0 in second line, it should align with timeline point 2 (item 1)
             // For index 1 in second line, it should align with timeline point 4 (item 3), etc.
             const originalItemIndex = index * 2 + 1; // Convert secondLine index to original item index
+            
+            // Use the same positioning logic as timeline points for "two sides"
             const timelinePointPosition = `calc((100% / ${itemsIds.length + 1}) * ${originalItemIndex + 1})`;
             
             return {
@@ -117,12 +121,13 @@ const TimelineContent = ({
                 />
             )}
             <ItemWrapper
+                className={className}
                 presentationId={presentationId}
                 itemId={itemId}
                 slideId={slideId}
                 layoutId={layoutId}
                 elementId={elementId}
-                renderMenuComponent={() => {
+                renderMenuComponent={(menuPosition) => {
                     return <div>Menu timeline</div>;
                 }}
             >
@@ -385,10 +390,7 @@ export default function Timeline({
     }
 
     return (
-        <div 
-            className={containerClasses.join(' ')} 
-            style={{ '--item-count': itemsIds.length } as React.CSSProperties}
-        >
+        <div className={containerClasses.join(' ')} style={{ '--item-count': itemsIds.length } as React.CSSProperties}>
             <div
                 className={`${styles.flexContainer} ${direction === 'horizontal' ? styles.horizontal : styles.vertical}`}
             >
@@ -418,6 +420,7 @@ export default function Timeline({
                                 maxItemsCount={maxItemsCount}
                                 index={index}
                                 sides={sides}
+                                className={styles.itemWrapperAlignBottom}
                             />
                         );
                     })}
@@ -442,12 +445,17 @@ export default function Timeline({
                                 }
                             }
 
+                            // Different positioning logic for "one side" vs "two sides"
+                            const timelinePointPosition = sides === 'one' 
+                                ? `calc((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2)` // Center of each block
+                                : `calc((100% / ${itemsIds.length + 1}) * ${index + 1})`; // Equal distances from borders
+
                             return (
                                 <div
                                     key={index}
                                     className={classNames.join(' ')}
                                     style={{
-                                        left: `calc((100% / ${itemsIds.length + 1}) * ${index + 1})`,
+                                        left: timelinePointPosition,
                                     }}
                                 />
                             );
@@ -481,6 +489,7 @@ export default function Timeline({
                                 index={index}
                                 sides={sides}
                                 isSecondLine={true}
+                                className={styles.itemWrapperAlignTop}
                             />
                         );
                     })}

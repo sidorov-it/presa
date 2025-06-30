@@ -119,6 +119,8 @@ export default function TimelineView({
                 // So for index 0 in second line, it should align with timeline point 2 (item 1)
                 // For index 1 in second line, it should align with timeline point 4 (item 3), etc.
                 const originalItemIndex = index * 2 + 1; // Convert secondLine index to original item index
+                
+                // Use the same positioning logic as timeline points for "two sides"
                 const timelinePointPosition = `calc((100% / ${itemsIds.length + 1}) * ${originalItemIndex + 1})`;
                 
                 return {
@@ -223,15 +225,20 @@ export default function TimelineView({
                                 }
                             }
 
-                            return (
-                                <div
-                                    key={index}
-                                    className={classNames.join(' ')}
-                                    style={{
-                                        left: `calc((100% / ${itemsIds.length + 1}) * ${index + 1})`,
-                                    }}
-                                />
-                            );
+                                                    // Different positioning logic for "one side" vs "two sides"
+                        const timelinePointPosition = sides === 'one' 
+                            ? `calc((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2)` // Center of each block
+                            : `calc((100% / ${itemsIds.length + 1}) * ${index + 1})`; // Equal distances from borders
+
+                        return (
+                            <div
+                                key={index}
+                                className={classNames.join(' ')}
+                                style={{
+                                    left: timelinePointPosition,
+                                }}
+                            />
+                        );
                         })}
                     <div className={styles.timelineLineItemInvisible}></div>
                 </div>

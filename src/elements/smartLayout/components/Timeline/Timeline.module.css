@@ -291,3 +291,15 @@
     margin-left: auto;
     margin-right: auto;
 }
+
+.itemWrapperAlignBottom {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.itemWrapperAlignTop {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
