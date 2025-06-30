@@ -53,23 +53,10 @@ export default function ItemWrapper({
             dragElementType: 'smart-layout-item',
         });
 
-        // Set drag image for smoother UX (optional enhancement)
-        if (itemRef.current) {
-            const rect = itemRef.current.getBoundingClientRect();
-            const dragImage = document.createElement('div');
-            dragImage.className = styles.dragImage;
-            dragImage.style.width = `${rect.width}px`;
-            dragImage.style.height = `${rect.height}px`;
-            dragImage.innerText = 'Item';
-            document.body.appendChild(dragImage);
-
-            e.dataTransfer.setDragImage(dragImage, 0, 0);
-
-            // Clean up
-            setTimeout(() => {
-                document.body.removeChild(dragImage);
-            }, 0);
-        }
+        // Create an invisible drag image
+        // const emptyImage = new Image();
+        // emptyImage.src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+        // e.dataTransfer.setDragImage(emptyImage, 0, 0);
     };
 
     return (
