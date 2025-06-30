@@ -267,6 +267,17 @@
 /* Remove the justify-content and padding since we're handling positioning in the component */
 .horizontalTwoSides .secondLine {
     justify-content: flex-start;
+    position: relative;
+    height: auto;
+}
+
+/* Ensure absolute positioned items in second line don't interfere with each other */
+.horizontalTwoSides .secondLine .itemContainer {
+    position: static;
+}
+
+.horizontalTwoSides .secondLine .itemContainer[style*="position: absolute"] {
+    position: absolute !important;
 }
 
 /* Center alignment for two sides layout */

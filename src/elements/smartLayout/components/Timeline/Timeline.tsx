@@ -81,11 +81,17 @@ const TimelineContent = ({
 
         // If this is a second line item in two sides mode, add positioning
         if (sides === 'two' && isSecondLine && direction === 'horizontal') {
-            const timelinePointPosition = `calc((100% / ${itemsIds.length + 1}) * ${index * 2 + 2})`;
+            // For second line items, we need to position them under their corresponding timeline points
+            // Second line contains odd-indexed items from the original array (1, 3, 5, ...)
+            // So for index 0 in second line, it should align with timeline point 2 (item 1)
+            // For index 1 in second line, it should align with timeline point 4 (item 3), etc.
+            const originalItemIndex = index * 2 + 1; // Convert secondLine index to original item index
+            const timelinePointPosition = `calc((100% / ${itemsIds.length + 1}) * ${originalItemIndex + 1})`;
+            
             return {
                 ...baseStyle,
-                position: 'relative' as const,
-                left: `calc(${timelinePointPosition} - (100% / ${maxItemsCount} - 1em) / 2)`,
+                position: 'absolute' as const,
+                left: `calc(${timelinePointPosition} - (100% / ${maxItemsCount}) / 2)`,
                 marginLeft: 0,
                 marginRight: 0,
             };
