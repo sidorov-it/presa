@@ -115,6 +115,9 @@ export function loadFonts(fontUrls: string[]): void {
 
 export function unloadAllFonts(): void {
     document.querySelectorAll('link[href*="fonts.googleapis.com"]').forEach(link => {
+        if ((link as HTMLLinkElement).href === 'https://fonts.googleapis.com/') {
+            return;
+        }
         link.remove();
     });
     loadedFonts.clear();

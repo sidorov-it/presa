@@ -45,7 +45,11 @@ const ThemeSelectPanel: React.FC<ThemeSelectPanelProps> = ({ onCloseMenu, presen
             <div className={styles.closeButton}>
                 <button onClick={() => useMenuStore.getState().closeSideMenu()}>×</button>
             </div>
-            <ChakraTabs.Root value={tabIndex === 0 ? 'my' : 'standard'} onValueChange={e => setTabIndex(e.value === 'my' ? 0 : 1)} className={styles.tabs}>
+            <ChakraTabs.Root
+                value={tabIndex === 0 ? 'my' : 'standard'}
+                onValueChange={e => setTabIndex(e.value === 'my' ? 0 : 1)}
+                className={styles.tabs}
+            >
                 <ChakraTabs.List>
                     <ChakraTabs.Trigger value="my">Мои темы</ChakraTabs.Trigger>
                     <ChakraTabs.Trigger value="standard">Стандартные темы</ChakraTabs.Trigger>
@@ -59,7 +63,12 @@ const ThemeSelectPanel: React.FC<ThemeSelectPanelProps> = ({ onCloseMenu, presen
                     ) : (
                         <div className={styles.themesGrid}>
                             {themes.map(theme => (
-                                <ThemePreviewBlock key={theme.id} theme={theme} isReadOnly={true} onClickEdit={() => handleSelect(theme.id)} />
+                                <ThemePreviewBlock
+                                    key={theme.id}
+                                    theme={theme}
+                                    isReadOnly={true}
+                                    onClick={() => handleSelect(theme.id)}
+                                />
                             ))}
                         </div>
                     )}
@@ -67,7 +76,12 @@ const ThemeSelectPanel: React.FC<ThemeSelectPanelProps> = ({ onCloseMenu, presen
                 <ChakraTabs.Content value="standard">
                     <div className={styles.themesGrid}>
                         {defaultThemes.map(theme => (
-                            <ThemePreviewBlock key={theme.id} theme={theme} isReadOnly={true} onClickEdit={() => handleSelect(theme.id)} />
+                            <ThemePreviewBlock
+                                key={theme.id}
+                                theme={theme}
+                                isReadOnly={true}
+                                onClick={() => handleSelect(theme.id)}
+                            />
                         ))}
                     </div>
                 </ChakraTabs.Content>

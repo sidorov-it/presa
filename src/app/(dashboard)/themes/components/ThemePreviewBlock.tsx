@@ -9,7 +9,7 @@ import { HiOutlineDotsVertical } from 'react-icons/hi';
 interface ThemePreviewProps {
     theme: Theme;
     isReadOnly?: boolean;
-    onClickEdit?: () => void;
+    onClick?: () => void;
     onClickDuplicate?: () => void;
     onClickDelete?: () => void;
 }
@@ -17,7 +17,7 @@ interface ThemePreviewProps {
 const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
     theme,
     isReadOnly = false,
-    onClickEdit,
+    onClick,
     onClickDuplicate,
     onClickDelete,
 }) => {
@@ -77,7 +77,7 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
     };
 
     return (
-        <div className={styles.themeCard} onClick={onClickEdit}>
+        <div className={styles.themeCard} onClick={onClick}>
             <div className={styles.cardContent}>
                 {/* Theme Preview */}
                 <div
@@ -98,14 +98,16 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
                     {/* Sample Slide Card */}
                     <div
                         className={styles.slideCard}
-                        style={{
-                            backgroundColor: theme.colors.slideBackground,
-                            borderRadius: theme.design.slide.borderRadius,
-                            borderWidth: getBorderWidth(theme.design.slide.borderWidth),
-                            borderColor: theme.design.slide.borderColor,
-                            boxShadow: getBoxShadow(theme.design.slide.shadow),
-                            '--slide-opacity': theme.design.slide.opacity,
-                        } as React.CSSProperties}
+                        style={
+                            {
+                                backgroundColor: theme.colors.slideBackground,
+                                borderRadius: theme.design.slide.borderRadius,
+                                borderWidth: getBorderWidth(theme.design.slide.borderWidth),
+                                borderColor: theme.design.slide.borderColor,
+                                boxShadow: getBoxShadow(theme.design.slide.shadow),
+                                '--slide-opacity': theme.design.slide.opacity,
+                            } as React.CSSProperties
+                        }
                     >
                         {/* Sample Content */}
                         <div className={styles.slideContent}>
@@ -159,7 +161,7 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
 
                             {isMenuOpen && (
                                 <div className={styles.menuDropdown} style={menuPosition}>
-                                    <button onClick={onClickEdit} className={styles.menuItem}>
+                                    <button onClick={onClick} className={styles.menuItem}>
                                         <FaEye className={styles.menuIcon} />
                                         Редактировать
                                     </button>

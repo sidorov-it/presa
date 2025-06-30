@@ -3,10 +3,8 @@ import ThemeEditorPageContent from './ThemeEditorPageContent';
 import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 
-export async function generateMetadata(
-    props: { params: { action: string } }
-): Promise<Metadata> {
-    const { action } = props.params;
+export async function generateMetadata(props: { params: Promise<{ action: string }> }): Promise<Metadata> {
+    const { action } = await props.params;
     if (action === 'new') {
         return {
             title: 'Новая тема',
@@ -25,10 +23,12 @@ export async function generateMetadata(
     };
 }
 
-export default function ThemeEditorPage(props: { params: Promise<{ action: string }> }) {
+export default async function ThemeEditorPage(props: { params: Promise<{ action: string }> }) {
+    const params = await props.params;
+
     return (
         <Suspense>
-            <ThemeEditorPageContent params={props.params} />
+            <ThemeEditorPageContent params={params} />
         </Suspense>
     );
 }

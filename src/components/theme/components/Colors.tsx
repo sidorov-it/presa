@@ -155,6 +155,15 @@ export default function Colors({
         [onColorsChange]
     );
 
+    const handleSecondaryAccentChange = useCallback(
+        (secondaryAccents: string[]) => {
+            onColorsChange({
+                secondaryAccents: secondaryAccents,
+            });
+        },
+        [onColorsChange]
+    );
+
     const handleTypographyChange = useCallback(
         (key: keyof ThemeTypography, value: string) => {
             onTypographyChange({
@@ -221,6 +230,45 @@ export default function Colors({
                     <div style={{ marginBottom: '16px' }}>
                         <Label>Основной акцентный цвет</Label>
                         <ColorPicker value={theme.colors?.primaryAccent} onChange={handlePrimaryAccentChange} />
+                    </div>
+
+                    <div>
+                        <Label>Дополнительные цвета (необязательно)</Label>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
+                            {theme.colors.secondaryAccents?.map((color, index) => (
+                                <ColorPicker
+                                    key={index}
+                                    value={color}
+                                    isShowRemoveIcon={true}
+                                    onChange={newColor => {
+                                        const newSecondaryAccents = [...theme.colors.secondaryAccents];
+                                        newSecondaryAccents[index] = newColor;
+                                        handleSecondaryAccentChange(newSecondaryAccents);
+                                    }}
+                                    handleRemove={() => {
+                                        const newSecondaryAccents = [...theme.colors.secondaryAccents];
+                                        newSecondaryAccents.splice(index, 1);
+                                        handleSecondaryAccentChange(newSecondaryAccents);
+                                    }}
+                                />
+                            ))}
+
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                    handleSecondaryAccentChange([...(theme.colors.secondaryAccents || []), '#000000'])
+                                }
+                                style={{
+                                    marginTop: '8px',
+                                    alignSelf: 'flex-start',
+                                    fontSize: '14px',
+                                    padding: '8px 16px',
+                                }}
+                            >
+                                Добавить цвет
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>

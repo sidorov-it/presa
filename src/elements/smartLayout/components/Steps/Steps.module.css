@@ -49,10 +49,102 @@
     width: 100%;
     height: 18px;
     border-radius: 8px;
-    background: #fff;
     border: 2px solid var(--presentation-block-border-color);
     margin-bottom: 8px;
+    position: relative;
+    overflow: hidden;
 }
+
+.step::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--custom-block-background, var(--presentation-block-background));
+}
+
+[style*="--presentation-block-background-custom-type: primary"] .step {
+    border-color: var(--presentation-block-border-color);
+}
+
+/* Применение стилей для primary типа (акцентные цвета) */
+[style*="--presentation-block-background-custom-type: primary"] .step::before {
+    background-color: var(--custom-block-background, var(--presentation-block-background));
+}
+
+/* Применение стилей для custom типа (кастомные цвета) */
+[style*="--presentation-block-background-custom-type: custom"] .step::before {
+    background-color: var(--custom-block-background, var(--presentation-block-background-custom-1, var(--presentation-block-background)));
+}
+
+/* Для 1 цвета - применяется ко всем шагам */
+[style*="--presentation-block-background-custom-count: 1"] .itemContainer:nth-child(n) .step::before {
+    background: var(--custom-block-background, var(--presentation-block-background-custom-1, var(--presentation-block-background)));
+}
+
+/* Для 2 цветов */
+[style*="--presentation-block-background-custom-count: 2"] .itemContainer:nth-child(2n+1) .step::before {
+    background: var(--custom-block-background, var(--presentation-block-background-custom-1, var(--presentation-block-background)));
+}
+
+[style*="--presentation-block-background-custom-count: 2"] .itemContainer:nth-child(2n) .step::before {
+    background: var(--custom-block-background, var(--presentation-block-background-custom-2, var(--presentation-block-background)));
+}
+
+/* Для 3 цветов */
+[style*="--presentation-block-background-custom-count: 3"] .itemContainer:nth-child(3n+1) .step::before {
+    background: var(--custom-block-background, var(--presentation-block-background-custom-1, var(--presentation-block-background)));
+}
+
+[style*="--presentation-block-background-custom-count: 3"] .itemContainer:nth-child(3n+2) .step::before {
+    background: var(--custom-block-background, var(--presentation-block-background-custom-2, var(--presentation-block-background)));
+}
+
+[style*="--presentation-block-background-custom-count: 3"] .itemContainer:nth-child(3n) .step::before {
+    background: var(--custom-block-background, var(--presentation-block-background-custom-3, var(--presentation-block-background)));
+}
+
+/* Для 4 цветов */
+[style*="--presentation-block-background-custom-count: 4"] .itemContainer:nth-child(4n+1) .step::before {
+    background: var(--custom-block-background, var(--presentation-block-background-custom-1, var(--presentation-block-background)));
+}
+
+[style*="--presentation-block-background-custom-count: 4"] .itemContainer:nth-child(4n+2) .step::before {
+    background: var(--custom-block-background, var(--presentation-block-background-custom-2, var(--presentation-block-background)));
+}
+
+[style*="--presentation-block-background-custom-count: 4"] .itemContainer:nth-child(4n+3) .step::before {
+    background: var(--custom-block-background, var(--presentation-block-background-custom-3, var(--presentation-block-background)));
+}
+
+[style*="--presentation-block-background-custom-count: 4"] .itemContainer:nth-child(4n) .step::before {
+    background: var(--custom-block-background, var(--presentation-block-background-custom-4, var(--presentation-block-background)));
+}
+
+/* Для 5 цветов */
+[style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n+1) .step::before {
+    background: var(--custom-block-background, var(--presentation-block-background-custom-1, var(--presentation-block-background)));
+}
+
+[style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n+2) .step::before {
+    background: var(--custom-block-background, var(--presentation-block-background-custom-2, var(--presentation-block-background)));
+}
+
+[style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n+3) .step::before {
+    background: var(--custom-block-background, var(--presentation-block-background-custom-3, var(--presentation-block-background)));
+}
+
+[style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n+4) .step::before {
+    background: var(--custom-block-background, var(--presentation-block-background-custom-4, var(--presentation-block-background)));
+}
+
+[style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n) .step::before {
+    background: var(--custom-block-background, var(--presentation-block-background-custom-5, var(--presentation-block-background)));
+}
+
+
 
 .textBox {
     display: flex;

@@ -23,7 +23,7 @@ export default function ItemWrapper({
     className?: string;
     layoutId: string;
     elementId: string;
-    renderMenuComponent: (menuPosition: { x: number; y: number } | null) => React.ReactNode;
+    renderMenuComponent: (menuPosition: { x: number; y: number }) => React.ReactNode;
 }) {
     const isReadOnly = useReadOnly();
 
@@ -98,7 +98,7 @@ export default function ItemWrapper({
                     dataAttributes={{
                         'data-smart-layout-item-drag-handle': itemId,
                     }}
-                    title="Drag to reorder item (items can only be moved within the same smartLayout)"
+                    title="Перетащите, чтобы переместить элемент"
                 />
             )}
             {!isReadOnly && isMenuOpen && menuPosition && renderMenuComponent && renderMenuComponent(menuPosition)}

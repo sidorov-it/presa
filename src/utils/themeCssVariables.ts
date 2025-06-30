@@ -143,16 +143,39 @@ export function themeToCSSVariables(theme: Theme, backgroundSettings?: Backgroun
 
     set('--presentation-block-border-width', borderWidthMap[theme.design.blocks.borderWidth] || '0px');
 
-    if (theme.design.blocks.blockFillColorsType !== 'custom') {
+    // Set the block fill colors type
+    set('--presentation-block-background-custom-type', theme.design.blocks.blockFillColorsType);
+
+    if (theme.design.blocks.blockFillColorsType === 'primary') {
+        // For primary type, use the primary accent color
         set('--presentation-block-background', theme.colors.primaryAccent);
         set('--presentation-block-border-color', getBorderColorForBackground(theme.colors.primaryAccent));
-        set('--presentation-block-background-custom-type', theme.design.blocks.blockFillColorsType);
+    } else if (theme.design.blocks.blockFillColorsType === 'custom') {
+        // For custom type, use the custom colors
+        if (theme.design.blocks.blockBackgroundCustomColors.length > 0) {
+            theme.design.blocks.blockBackgroundCustomColors.forEach((color, idx) => {
+                set(`--presentation-block-background-custom-${idx + 1}`, color);
+                set(`--presentation-block-border-color-custom-${idx + 1}`, getBorderColorForBackground(color));
+            });
+            // Set the first custom color as default background
+            set('--presentation-block-background', theme.design.blocks.blockBackgroundCustomColors[0]);
+            set(
+                '--presentation-block-border-color',
+                getBorderColorForBackground(theme.design.blocks.blockBackgroundCustomColors[0])
+            );
+            set(
+                '--presentation-block-background-custom-count',
+                String(theme.design.blocks.blockBackgroundCustomColors.length)
+            );
+        } else {
+            // Fallback to primary accent if no custom colors are defined
+            set('--presentation-block-background', theme.colors.primaryAccent);
+            set('--presentation-block-border-color', getBorderColorForBackground(theme.colors.primaryAccent));
+        }
     } else {
-        theme.design.blocks.blockBackgroundCustomColors.forEach((color, idx) => {
-            set(`--presentation-block-background-custom-${idx + 1}`, color);
-            set(`--presentation-block-border-color-custom-${idx + 1}`, getBorderColorForBackground(color));
-        });
-        set('--presentation-block-background-custom-count', theme.design.blocks.blockBackgroundCustomColors.length);
+        // Fallback for any other case
+        set('--presentation-block-background', theme.colors.primaryAccent);
+        set('--presentation-block-border-color', getBorderColorForBackground(theme.colors.primaryAccent));
     }
 
     const blockShadowMap: Record<string, string> = {

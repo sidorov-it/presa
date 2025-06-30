@@ -101,15 +101,18 @@ export default function ThemesPage() {
                     ) : (
                         <div className={styles.themesGrid}>
                             {themes.map(theme => (
-                                <ThemePreviewBlock
-                                    key={theme.id}
-                                    theme={theme}
-                                    onClickEdit={() => {
-                                        router.push(`/themes/${theme.id}`);
-                                    }}
-                                    onClickDuplicate={() => handleDuplicate(theme.id)}
-                                    onClickDelete={() => handleDelete(theme.id)}
-                                />
+                                <Link href={`/themes/${theme.id}`} key={theme.id}>
+                                    <ThemePreviewBlock
+                                        key={theme.id}
+                                        theme={theme}
+                                        url={`/themes/${theme.id}`}
+                                        // onClickEdit={() => {
+                                        //     router.push(`/themes/${theme.id}`);
+                                        // }}
+                                        onClickDuplicate={() => handleDuplicate(theme.id)}
+                                        onClickDelete={() => handleDelete(theme.id)}
+                                    />
+                                </Link>
                             ))}
                         </div>
                     )}
@@ -117,14 +120,9 @@ export default function ThemesPage() {
                 <ChakraTabs.Content value="standard">
                     <div className={styles.themesGrid}>
                         {defaultThemes.map(theme => (
-                            <ThemePreviewBlock
-                                key={theme.id}
-                                theme={theme}
-                                isReadOnly={true}
-                                onClickEdit={() => {
-                                    router.push(`/themes/new?template=${theme.id}`);
-                                }}
-                            />
+                            <Link href={`/themes/new?template=${theme.id}`} key={theme.id}>
+                                <ThemePreviewBlock key={theme.id} theme={theme} isReadOnly={true} />
+                            </Link>
                         ))}
                     </div>
                 </ChakraTabs.Content>

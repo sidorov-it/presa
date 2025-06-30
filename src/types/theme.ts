@@ -2,6 +2,7 @@ export type ThemeColors = {
     // Accent Colors
     primaryAccent: string;
     primaryAccentTextColor: '#000000' | '#FFFFFF';
+    secondaryAccents: string[];
     // Text Colors
     // textColor: string;
 

@@ -5,12 +5,12 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { SmartLayoutElement, SmartLayoutItem, TipTapRefs } from '@/types';
 import { useShallow } from 'zustand/react/shallow';
 import { generateId } from '@/utils/id';
-import { HiPlus } from 'react-icons/hi2';
-import Tiptap from '@/components/tiptap/Tiptap/Tiptap';
 import ItemWrapper from '../ItemWrapper/ItemWrapper';
 import styles from './Steps.module.css';
 import { useDndStore } from '@/store/dndStore';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
+import StepMenu from './StepMenu';
+import Step from './Step/Step';
 
 export default function Steps({
     elementId,
@@ -218,12 +218,35 @@ export default function Steps({
                         slideId={slideId}
                         layoutId={layoutId}
                         elementId={elementId}
-                        renderMenuComponent={menuPosition => {
-                            return <div>Menu steps</div>;
-                            // return <StepsItemMenu />;
+                        renderMenuComponent={(menuPosition: { x: number; y: number }) => {
+                            return (
+                                <StepMenu
+                                    presentationId={presentationId}
+                                    position={menuPosition}
+                                    itemId={itemId}
+                                    slideId={slideId}
+                                    layoutId={layoutId}
+                                    elementId={elementId}
+                                />
+                            );
                         }}
                     >
-                        <div
+                        <Step
+                            align={align}
+                            direction={direction}
+                            index={index}
+                            isReadOnly={isReadOnly}
+                            elementId={elementId}
+                            tiptapRefs={tiptapRefs}
+                            presentationId={presentationId}
+                            slideId={slideId}
+                            layoutId={layoutId}
+                            isLast={index === itemsIds.length - 1}
+                            addItem={addItem}
+                            handleContentChange={handleContentChange}
+                            itemId={itemId}
+                        />
+                        {/* <div
                             className={`${styles.textBox} ${align ? styles[align] : ''} ${direction === 'vertical' ? styles.vertical : ''}`}
                             style={{
                                 paddingLeft: direction === 'vertical' ? `${index * 32}px` : undefined,
@@ -267,7 +290,7 @@ export default function Steps({
                                     <HiPlus style={{ width: '1rem', height: '1rem' }} />
                                 </div>
                             )}
-                        </div>
+                        </div> */}
                     </ItemWrapper>
                 </div>
             ))}

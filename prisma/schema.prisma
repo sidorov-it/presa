@@ -128,6 +128,7 @@ model Presentation {
 type ThemeColors {
   primaryAccent          String
   primaryAccentTextColor String?
+  secondaryAccents       String[]            @default([])
   slideBackground        String
   pageBackground         PageBackground
 }
