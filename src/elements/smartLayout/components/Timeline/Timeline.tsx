@@ -5,12 +5,122 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { SmartLayoutElement, SmartLayoutItem, TipTapRefs } from '@/types';
 import { useShallow } from 'zustand/react/shallow';
 import { generateId } from '@/utils/id';
-import { HiPlus } from 'react-icons/hi2';
-import Tiptap from '@/components/tiptap/Tiptap/Tiptap';
-import ItemWrapper from '../ItemWrapper/ItemWrapper';
 import styles from './Timeline.module.css';
 import { useDndStore } from '@/store/dndStore';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
+import { Tiptap } from '@/components/tiptap/Tiptap';
+import { HiPlus } from 'react-icons/hi';
+import ItemWrapper from '../ItemWrapper/ItemWrapper';
+
+const TimelineContent = ({
+    itemId,
+    direction,
+    itemsIds,
+    dropIndicator,
+    timelineColor,
+    presentationId,
+    slideId,
+    layoutId,
+    elementId,
+    isReadOnly,
+    tiptapRefs,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+    addItem,
+    handleContentChange,
+    align,
+    showLines,
+    index,
+    maxItemsCount,
+}: {
+    itemId: string | null;
+    direction: 'horizontal' | 'vertical';
+    itemsIds: string[];
+    dropIndicator: { itemId: string; position: 'left' | 'right' } | null;
+    timelineColor: string;
+    presentationId: string;
+    slideId: string;
+    layoutId: string;
+    elementId: string;
+    isReadOnly: boolean;
+    tiptapRefs: RefObject<TipTapRefs>;
+    handleDragOver: (e: React.DragEvent<HTMLDivElement>, targetItemId: string) => void;
+    handleDragLeave: () => void;
+    handleDrop: (e: React.DragEvent<HTMLDivElement>, targetItemId: string) => void;
+    addItem: () => void;
+    handleContentChange: (itemId: string, key: string) => (content: string) => void;
+    align: 'left' | 'center' | 'right';
+    showLines: boolean;
+    index: number;
+    maxItemsCount: number;
+}) => {
+    if (itemId === null) {
+        // Return an empty div with the same width as content items to maintain spacing
+        return (
+            <div 
+                className={styles.itemContainer}
+                style={{
+                    width: direction === 'horizontal' ? `calc(100% / ${maxItemsCount} - 1em)` : '100%',
+                    visibility: 'hidden'
+                }}
+            />
+        );
+    }
+
+    return (
+        <div
+            key={itemId}
+            className={styles.itemContainer}
+            onDragOver={e => handleDragOver(e, itemId)}
+            onDragLeave={handleDragLeave}
+            onDrop={e => handleDrop(e, itemId)}
+            data-smart-layout-item-id={itemId}
+            style={{
+                width: direction === 'horizontal' ? `calc(100% / ${maxItemsCount} - 1em)` : '100%',
+            }}
+        >
+            {dropIndicator && dropIndicator.itemId === itemId && (
+                <div
+                    className={`${styles.dropIndicator} ${dropIndicator.position === 'left' ? styles.left : styles.right}`}
+                    style={{ backgroundColor: timelineColor }}
+                />
+            )}
+            <ItemWrapper
+                presentationId={presentationId}
+                itemId={itemId}
+                slideId={slideId}
+                layoutId={layoutId}
+                elementId={elementId}
+                renderMenuComponent={() => {
+                    return <div>Menu timeline</div>;
+                }}
+            >
+                <div className={`${styles.textBox} ${align ? styles[align] : ''}`} style={{ position: 'relative' }}>
+                    <Tiptap
+                        isReadOnly={isReadOnly}
+                        elementId={elementId}
+                        tiptapRefs={tiptapRefs}
+                        id={elementId}
+                        presentationId={presentationId}
+                        slideId={slideId}
+                        layoutId={layoutId}
+                        placeholder="Текст"
+                        onContentChange={handleContentChange(itemId, 'text')}
+                        customRefKey={`text-${elementId}-${itemId}`}
+                        isHideSlashMenu={true}
+                        standardEnterBehavior={true}
+                    />
+                    {!isReadOnly && index === itemsIds.length - 1 && (
+                        <div className={styles.addButton} onClick={addItem}>
+                            <HiPlus style={{ width: '1rem', height: '1rem' }} />
+                        </div>
+                    )}
+                </div>
+            </ItemWrapper>
+        </div>
+    );
+};
 
 export default function Timeline({
     elementId,
@@ -39,12 +149,23 @@ export default function Timeline({
 
     const [dropIndicator, setDropIndicator] = useState<{ itemId: string; position: 'left' | 'right' } | null>(null);
 
-    const { columnSize, direction } = usePresentationStore(
+    const { columnSize, direction, sides, showNumbers, showLines, timelineColor } = usePresentationStore(
         useShallow(state => {
             const element = state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement & {
                 direction?: 'horizontal' | 'vertical';
+                sides?: 'one' | 'two';
+                showNumbers?: boolean;
+                showLines?: boolean;
+                timelineColor?: string;
             };
-            return { columnSize: element.columnSize, direction: element.direction || 'horizontal' };
+            return {
+                columnSize: element.columnSize,
+                direction: element.direction || 'horizontal',
+                sides: element.sides || 'one',
+                showNumbers: element.showNumbers || false,
+                showLines: element.showLines !== false, // Default to true
+                timelineColor: element.timelineColor || '#1e88e5',
+            };
         })
     );
 
@@ -181,96 +302,152 @@ export default function Timeline({
         [isDraggingFromSameLayout, dropIndicator, smartLayoutItemId, presentationId, slideId, layoutId, elementId]
     );
 
-    let elementWidth: string;
+    // Determine container class based on direction and sides
+    const containerClasses: string[] = [styles.container, isFocused ? styles.focused : ''];
 
-    if (columnSize === 4) {
-        elementWidth = `25%`;
-    } else if (columnSize === 3) {
-        elementWidth = '33.33%';
-    } else if (columnSize === 2) {
-        elementWidth = '50%';
+    if (direction === 'horizontal') {
+        if (sides === 'two') {
+            containerClasses.push(styles.horizontalTwoSides);
+        } else {
+            containerClasses.push(styles.horizontalOneSide);
+        }
     } else {
-        elementWidth = '100%';
+        if (sides === 'two') {
+            containerClasses.push(styles.verticalTwoSides);
+        } else {
+            containerClasses.push(styles.verticalOneSide);
+        }
+    }
+
+    let firstLineItems: (string | null)[] = [];
+    let secondLineItems: (string | null)[] = [];
+
+    let maxItemsCount;
+
+    if (sides === 'one') {
+        secondLineItems = itemsIds;
+        maxItemsCount = itemsIds.length;
+    } else {
+        // Extract odd and even indexed items for two sides layout
+        const oddIndexedItems: string[] = [];
+        const evenIndexedItems: string[] = [];
+        
+        itemsIds.forEach((itemId, index) => {
+            if (index % 2 === 0) {
+                oddIndexedItems.push(itemId);
+            } else {
+                evenIndexedItems.push(itemId);
+            }
+        });
+        
+        // Create arrays with nulls to ensure equal width distribution
+        const totalSlots = Math.max(oddIndexedItems.length, evenIndexedItems.length);
+        
+        firstLineItems = Array(totalSlots).fill(null).map((_, i) => 
+            i < oddIndexedItems.length ? oddIndexedItems[i] : null
+        );
+        
+        secondLineItems = Array(totalSlots).fill(null).map((_, i) => 
+            i < evenIndexedItems.length ? evenIndexedItems[i] : null
+        );
+        
+        maxItemsCount = totalSlots;
     }
 
     return (
-        <div className={`${styles.container} ${isFocused ? styles.focused : ''}`}>
-            {itemsIds?.map((itemId, index) => (
-                <div
-                    key={itemId}
-                    className={styles.itemContainer}
-                    onDragOver={e => handleDragOver(e, itemId)}
-                    onDragLeave={handleDragLeave}
-                    onDrop={e => handleDrop(e, itemId)}
-                    data-smart-layout-item-id={itemId}
-                    style={{
-                        width: direction === 'horizontal' ? `calc(${elementWidth} - 1em)` : '100%',
-                        marginLeft: direction === 'horizontal' ? `${index}rem` : undefined,
-                        marginTop: direction === 'vertical' ? `${index}rem` : undefined,
-                    }}
-                >
-                    {dropIndicator && dropIndicator.itemId === itemId && (
-                        <div
-                            className={`${styles.dropIndicator} ${dropIndicator.position === 'left' ? styles.left : styles.right}`}
-                        />
-                    )}
-                    <ItemWrapper
-                        presentationId={presentationId}
-                        itemId={itemId}
-                        slideId={slideId}
-                        layoutId={layoutId}
-                        elementId={elementId}
-                        renderMenuComponent={menuPosition => {
-                            return <div>Menu timeline</div>;
-                        }}
-                    >
-                        <div
-                            className={`${styles.textBox} ${align ? styles[align] : ''}`}
-                            style={{ position: 'relative' }}
-                        >
-                            <div className={styles.marker} />
-                            {index < itemsIds.length - 1 && (
-                                <div
-                                    className={direction === 'horizontal' ? styles.lineHorizontal : styles.lineVertical}
-                                />
-                            )}
-                            <Tiptap
-                                isReadOnly={isReadOnly}
-                                elementId={elementId}
-                                tiptapRefs={tiptapRefs}
-                                id={elementId}
-                                placeholder="Заголовок"
-                                onContentChange={handleContentChange(itemId, 'title')}
+        <div className={containerClasses.join(' ')}>
+            <div
+                className={`${styles.flexContainer} ${direction === 'horizontal' ? styles.horizontal : styles.vertical}`}
+            >
+                <div className={styles.firstLine}>
+                    {firstLineItems.map((itemId, index) => {
+                        return (
+                            <TimelineContent
+                                key={itemId || `first-empty-${index}`}
+                                itemId={itemId}
+                                direction={direction}
+                                itemsIds={itemsIds}
+                                dropIndicator={dropIndicator}
+                                timelineColor={timelineColor}
                                 presentationId={presentationId}
                                 slideId={slideId}
                                 layoutId={layoutId}
-                                customRefKey={`title-${elementId}-${itemId}`}
-                                isHideSlashMenu={true}
-                                standardEnterBehavior={true}
-                            />
-                            <Tiptap
-                                isReadOnly={isReadOnly}
                                 elementId={elementId}
+                                isReadOnly={isReadOnly}
                                 tiptapRefs={tiptapRefs}
-                                id={elementId}
-                                presentationId={presentationId}
-                                slideId={slideId}
-                                layoutId={layoutId}
-                                placeholder="Текст"
-                                onContentChange={handleContentChange(itemId, 'text')}
-                                customRefKey={`text-${elementId}-${itemId}`}
-                                isHideSlashMenu={true}
-                                standardEnterBehavior={true}
+                                handleDragOver={handleDragOver}
+                                handleDragLeave={handleDragLeave}
+                                handleDrop={handleDrop}
+                                addItem={addItem}
+                                handleContentChange={handleContentChange}
+                                align={align}
+                                showLines={showLines}
+                                maxItemsCount={maxItemsCount}
+                                index={index}
                             />
-                            {!isReadOnly && index === itemsIds.length - 1 && (
-                                <div className={styles.addButton} onClick={addItem}>
-                                    <HiPlus style={{ width: '1rem', height: '1rem' }} />
-                                </div>
-                            )}
-                        </div>
-                    </ItemWrapper>
+                        );
+                    })}
                 </div>
-            ))}
+
+                <div className={styles.timelineLineItems}>
+                    <div className={styles.timelineLineItemInvisible}></div>
+                    {Array(maxItemsCount).fill(null).map((_, index) => {
+                        const classNames = [styles.timelineLineItem];
+
+                        if (showLines) {
+                            if (direction === 'horizontal' && sides === 'one') {
+                                classNames.push(styles.horizontalConnectionLine);
+                            } else if (direction === 'vertical' && sides === 'one') {
+                                classNames.push(styles.verticalConnectionLine);
+                            } else if (direction === 'horizontal' && sides === 'two') {
+                                classNames.push(styles.horizontalTwoSidesConnectionLine);
+                            } else if (direction === 'vertical' && sides === 'two') {
+                                classNames.push(styles.verticalTwoSidesConnectionLine);
+                            }
+                        }
+
+                        return (
+                            <div
+                                key={index}
+                                className={classNames.join(' ')}
+                                style={{
+                                    left: `calc((100% / ${maxItemsCount + 1}) * ${index + 1})`,
+                                }}
+                            />
+                        );
+                    })}
+                    <div className={styles.timelineLineItemInvisible}></div>
+                </div>
+                <div className={styles.secondLine}>
+                    {secondLineItems.map((itemId, index) => {
+                        return (
+                            <TimelineContent
+                                key={itemId || `second-empty-${index}`}
+                                itemId={itemId}
+                                direction={direction}
+                                itemsIds={itemsIds}
+                                dropIndicator={dropIndicator}
+                                timelineColor={timelineColor}
+                                presentationId={presentationId}
+                                slideId={slideId}
+                                layoutId={layoutId}
+                                elementId={elementId}
+                                isReadOnly={isReadOnly}
+                                tiptapRefs={tiptapRefs}
+                                handleDragOver={handleDragOver}
+                                handleDragLeave={handleDragLeave}
+                                handleDrop={handleDrop}
+                                addItem={addItem}
+                                handleContentChange={handleContentChange}
+                                align={align}
+                                showLines={showLines}
+                                maxItemsCount={maxItemsCount}
+                                index={index}
+                            />
+                        );
+                    })}
+                </div>
+            </div>
         </div>
     );
 }
