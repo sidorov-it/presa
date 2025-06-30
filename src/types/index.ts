@@ -239,14 +239,9 @@ export interface Slide {
     imageSize?: {
         width?: string;
         height?: string;
-        // Пропорции изображения относительно слайда
-        widthRatio?: number;
-        heightRatio?: number;
     };
     contentAlignment?: 'top' | 'center' | 'bottom';
-    // Пропорции слайда
-    aspectRatio?: number; // Текущие пропорции слайда (ширина/высота)
-    baseAspectRatio?: number; // Базовые пропорции (по умолчанию 16/9)    hidden?: boolean;
+    hidden?: boolean;
 }
 
 export interface BackgroundSettings {
