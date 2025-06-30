@@ -2,7 +2,7 @@ import React from 'react';
 import { IPresentation } from '@/types';
 import { Theme } from '@/types/theme';
 import ScopedThemeStylesApplier from '@/components/viewer/theme/ScopedThemeStylesApplier/ScopedThemeStylesApplier';
-import ProportionalSlideViewer from '@/components/viewer/ProportionalSlideViewer';
+import SlideViewer from '@/components/viewer/SlideViewer/SlideViewer';
 import styles from './SlidePreview.module.css';
 
 interface SlidePreviewProps {
@@ -20,7 +20,7 @@ export default function SlidePreview({ presentation, theme }: SlidePreviewProps)
         <div className={styles.wrapper}>
             <div className={styles.scaled}>
                 <ScopedThemeStylesApplier theme={theme}>
-                    <ProportionalSlideViewer
+                    <SlideViewer
                         theme={theme}
                         slide={firstSlide}
                         showImagePlaceholder={true}

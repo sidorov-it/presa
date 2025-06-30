@@ -1,8 +1,8 @@
 import React from 'react';
 import { Slide } from '@/types';
+import SlideViewer from '../SlideViewer/SlideViewer';
 import styles from './PresentationViewer.module.css';
 import { Theme } from '@/types/theme';
-import ProportionalSlideViewer from '../ProportionalSlideViewer';
 
 interface PresentationViewerProps {
     slides: Slide[];
@@ -34,7 +34,7 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
                         id={`slide-${index + 1}`}
                         className={`${styles.presentationViewerSlideWrapper} presentationViewerSlideWrapper`}
                     >
-                        <ProportionalSlideViewer
+                        <SlideViewer
                             theme={theme}
                             slide={slide}
                             showImagePlaceholder={showImagePlaceholder}

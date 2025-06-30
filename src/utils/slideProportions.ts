@@ -1,15 +1,11 @@
 /**
- * Утилиты для работы с пропорциями слайдов и расчета размеров элементов
+ * Утилиты для работы с пропорциями слайдов
  */
 
 import { Slide } from '@/types';
 
 // Базовые пропорции 16:9
 export const DEFAULT_ASPECT_RATIO = 16 / 9;
-
-// Стандартные размеры слайда в конструкторе (пиксели)
-export const STANDARD_SLIDE_WIDTH = 960; // px
-export const STANDARD_SLIDE_HEIGHT = 540; // px (16:9 ratio)
 
 /**
  * Получить текущие пропорции слайда
@@ -32,16 +28,6 @@ export const calculateSlideAspectRatio = (slideElement: HTMLElement): number => 
     const rect = slideElement.getBoundingClientRect();
     return rect.width / rect.height;
 };
-
-/**
- * Рассчитывает соотношение сторон слайда
- * @param width Ширина слайда
- * @param height Высота слайда
- * @returns Соотношение сторон (width / height)
- */
-export function calculateAspectRatio(width: number, height: number): number {
-    return width / height;
-}
 
 /**
  * Конвертировать размер изображения в пропорцию относительно слайда
@@ -146,55 +132,3 @@ export const getDefaultImageRatio = (templateType: string): { widthRatio?: numbe
             return {};
     }
 };
-
-/**
- * Преобразует абсолютное значение в пикселях в процент от высоты слайда
- * @param pixelValue Значение в пикселях
- * @param slideHeight Текущая высота слайда в пикселях
- * @returns Строка с процентным значением
- */
-export function pixelToHeightPercent(pixelValue: number, slideHeight: number): string {
-    const percent = (pixelValue / slideHeight) * 100;
-    return `${percent.toFixed(2)}%`;
-}
-
-/**
- * Преобразует процент от высоты слайда в пиксели
- * @param percentValue Процентное значение (строка с %)
- * @param slideHeight Текущая высота слайда в пикселях
- * @returns Значение в пикселях
- */
-export function heightPercentToPixel(percentValue: string, slideHeight: number): number {
-    const percent = parseFloat(percentValue);
-    return (percent / 100) * slideHeight;
-}
-
-/**
- * Сохраняет относительное положение при изменении размеров
- * @param originalSize Оригинальный размер элемента (в пикселях или процентах)
- * @param originalContainerSize Оригинальный размер контейнера
- * @param newContainerSize Новый размер контейнера
- * @returns Новый размер элемента с сохранением пропорций
- */
-export function preserveRelativeSize(
-    originalSize: number | string,
-    originalContainerSize: number,
-    newContainerSize: number
-): number {
-    let originalSizeNumber: number;
-
-    // Если размер задан в процентах, преобразуем его в пиксели
-    if (typeof originalSize === 'string' && originalSize.endsWith('%')) {
-        originalSizeNumber = (parseFloat(originalSize) / 100) * originalContainerSize;
-    } else if (typeof originalSize === 'string') {
-        originalSizeNumber = parseFloat(originalSize);
-    } else {
-        originalSizeNumber = originalSize;
-    }
-
-    // Рассчитываем соотношение
-    const ratio = originalSizeNumber / originalContainerSize;
-
-    // Возвращаем новый размер
-    return ratio * newContainerSize;
-}

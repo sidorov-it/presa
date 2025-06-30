@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { ProportionalSlideViewer } from '@/components/viewer';
+import { SlideViewer } from '@/components/viewer';
 import ViewerProvider from '@/components/viewer/ViewerProvider';
 import { notFound } from 'next/navigation';
 import themeToCSSVariables from '@/utils/themeCssVariables';
@@ -97,7 +97,7 @@ export default async function SlidePage(props: {
         <ViewerProvider>
             <div style={themeStyle}>
                 <div style={pageStyle}>
-                    <ProportionalSlideViewer
+                    <SlideViewer
                         theme={finalTheme}
                         slide={slide}
                         primaryAccentColor={finalTheme.colors.primaryAccent}

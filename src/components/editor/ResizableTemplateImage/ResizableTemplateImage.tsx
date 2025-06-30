@@ -7,20 +7,11 @@ import deepEqual from 'deep-equal';
 import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlaceholder';
 import { useThemeStore } from '@/store/themeStore';
 import { useHistoryStore } from '@/store/historyStore';
-import {
-    MIN_IMAGE_HEIGHT_PERCENT,
-    MAX_IMAGE_HEIGHT_PERCENT,
-    MIN_MAX_IMAGE_HEIGHT_PERCENT,
-    calculateBaseHeight,
-    constrainImageHeight,
-    calculateMaxImageHeight,
-    calculateSlideAspectRatio,
-    updateSlideAspectRatio
-} from '@/utils/slideImageProportions';
 
+import { convertImageSizeToRatio } from '@/utils/slideProportions';
 const MIN_SIZE = 20;
 const MAX_SIZE = 50;
-const DEFAULT_HEIGHT_PERCENT = 33;
+const DEFAULT_HEIGHT_PX = 200;
 
 interface ResizableTemplateImageProps {
     presentationId: string;
@@ -63,13 +54,40 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     }, [clickOutside]);
 
     const storedSize = useMemo(() => {
-        return (
-            slide?.imageSize ||
-            (slide?.templateType === 'imageTop'
-                ? { height: `${DEFAULT_HEIGHT_PERCENT}%` }
-                : { width: '20%' })
-        );
-    }, [slide?.imageSize, slide?.templateType]);
+        if (slide?.imageSize) {
+            // Если есть сохраненные пропорции, используем их для вычисления размеров
+            if ((slide.imageSize.widthRatio || slide.imageSize.heightRatio) && containerRef.current) {
+                const slideElement = containerRef.current.closest('[data-slide-id]') as HTMLElement;
+                if (slideElement) {
+                    const slideRect = slideElement.getBoundingClientRect();
+                    const result: { width?: string; height?: string } = {};
+
+                    if (templateType === 'imageTop' && slide.imageSize.heightRatio) {
+                        const heightInPixels = slide.imageSize.heightRatio * slideRect.height;
+                        result.height = `${heightInPixels}px`;
+                    } else if (
+                        (templateType === 'imageLeft' || templateType === 'imageRight') &&
+                        slide.imageSize.widthRatio
+                    ) {
+                        const widthInPixels = slide.imageSize.widthRatio * slideRect.width;
+                        result.width = `${widthInPixels}px`;
+                    }
+
+                    // Возвращаем размеры из пропорций, если они есть, иначе сохраненные размеры
+                    return {
+                        width: result.width || slide.imageSize.width,
+                        height: result.height || slide.imageSize.height,
+                    };
+                }
+            }
+
+            // Если пропорций нет или нет контейнера, используем сохраненные размеры
+            return slide.imageSize;
+        }
+
+        // Размеры по умолчанию
+        return slide?.templateType === 'imageTop' ? { height: `${DEFAULT_HEIGHT_PX}px` } : { width: '20%' };
+    }, [slide?.imageSize, slide?.templateType, templateType]);
 
     // State for tracking resize operation
     const [isResizing, setIsResizing] = useState(false);
@@ -217,33 +235,13 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                 let newHeight;
 
                 if (templateTypeRef.current === 'imageTop') {
-                    // Получаем базовую высоту слайда (16:9)
-                    const baseHeight = calculateBaseHeight(parentRect.width);
-                    
-                    // Получаем текущую высоту контента (если есть)
-                    const contentElement = containerRef.current?.parentElement?.querySelector('.slideContent');
-                    let contentHeight = 0;
-                    
-                    if (contentElement instanceof HTMLElement) {
-                        contentHeight = contentElement.offsetHeight;
-                    }
-                    
-                    // Рассчитываем максимально допустимую высоту изображения
-                    const maxHeightPercent = calculateMaxImageHeight(contentHeight, baseHeight);
-                    
-                    // Получаем текущую высоту в процентах
-                    const currentHeightString = currentSizeRef.current.height || `${DEFAULT_HEIGHT_PERCENT}%`;
-                    const currentHeightPercent = parseFloat(currentHeightString);
-                    
-                    // Рассчитываем новую высоту в пикселях
-                    const currentHeightPixels = (currentHeightPercent / 100) * baseHeight;
-                    const newHeightPixels = currentHeightPixels + deltaY;
-                    
-                    // Преобразуем обратно в проценты от базовой высоты
-                    const newHeightPercent = (newHeightPixels / baseHeight) * 100;
-                    
-                    // Ограничиваем высоту минимальным и максимальным значениями
-                    newHeight = constrainImageHeight(newHeightPercent, maxHeightPercent);
+                    // For top image, use pixels for height
+                    const currentHeightString = currentSizeRef.current.height || `${DEFAULT_HEIGHT_PX}px`;
+                    const baseHeight = parseFloat(currentHeightString);
+                    // If the height is in pixels, add deltaY directly
+                    const newHeightValue = baseHeight + deltaY;
+                    // Enforce a minimum and maximum pixel height
+                    newHeight = `${Math.max(50, Math.min(800, newHeightValue))}px`;
                 }
 
                 if (newHeight) {
@@ -263,25 +261,27 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
             animationFrameIdRef.current = null;
         }
 
-        // Получаем DOM-элемент слайда
-        const slideElement = containerRef.current?.closest('.slideEditorContainer');
-        
-        // Если нашли элемент слайда, обновляем его соотношение сторон
-        if (slideElement instanceof HTMLElement) {
-            const newAspectRatio = calculateSlideAspectRatio(slideElement);
-            
-            // Обновляем слайд с новыми размерами и соотношением сторон
+        // Получаем элемент слайда для расчета пропорций
+        const slideElement = imageRef.current?.closest('[data-slide-id]') as HTMLElement;
+        if (slideElement) {
+            // Конвертируем текущий размер в пропорции
+            const imageRatio = convertImageSizeToRatio(currentSizeRef.current, slideElement, templateTypeRef.current);
+
+            // Сохраняем и размеры, и пропорции
+            const updatedImageSize = {
+                ...currentSizeRef.current,
+                ...imageRatio,
+            };
+
             updateSlide(
                 presentationId,
                 slideId,
                 {
-                    imageSize: currentSizeRef.current,
-                    ...(slide ? updateSlideAspectRatio(slide, newAspectRatio) : { aspectRatio: newAspectRatio }),
+                    imageSize: updatedImageSize,
                 },
                 true // force recording in the current transaction
             );
         } else {
-            // Если не нашли элемент слайда, просто обновляем размер изображения
             updateSlide(
                 presentationId,
                 slideId,
@@ -300,7 +300,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
         // Remove global event listeners
         document.removeEventListener('mousemove', handleResizeMove);
         document.removeEventListener('mouseup', handleResizeEnd);
-    }, [handleResizeMove, presentationId, slideId, updateSlide, slide]);
+    }, [handleResizeMove, presentationId, slideId, updateSlide]);
 
     // Handle resize start - must be defined after handleResizeMove and handleResizeEnd
     const handleResizeStart = useCallback(
@@ -319,7 +319,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
             document.addEventListener('mousemove', handleResizeMove);
             document.addEventListener('mouseup', handleResizeEnd);
         },
-        [handleResizeMove, handleResizeEnd, presentationId],
+        [handleResizeMove, handleResizeEnd, presentationId]
     );
 
     // Handle keyboard resize
@@ -344,36 +344,16 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                         : Math.max(MIN_SIZE, currentWidth - step);
                 newSize.width = `${newWidthValue}%`;
             } else {
-                // For vertical resizing (height)
+                // For vertical resizing (height), use pixels for top/bottom images
                 if (templateType === 'imageTop') {
-                    // Получаем базовую высоту слайда (16:9)
-                    const baseHeight = calculateBaseHeight(parentRect.width);
-                    
-                    // Получаем текущую высоту контента (если есть)
-                    const contentElement = containerRef.current?.parentElement?.querySelector('.slideContent');
-                    let contentHeight = 0;
-                    
-                    if (contentElement instanceof HTMLElement) {
-                        contentHeight = contentElement.offsetHeight;
-                    }
-                    
-                    // Рассчитываем максимально допустимую высоту изображения
-                    const maxHeightPercent = calculateMaxImageHeight(contentHeight, baseHeight);
-                    
-                    // Получаем текущую высоту в процентах
-                    const currentHeightString = currentSize.height || `${DEFAULT_HEIGHT_PERCENT}%`;
-                    const currentHeightPercent = parseFloat(currentHeightString);
-                    
-                    // Шаг изменения (в процентах)
-                    const step = e.shiftKey ? 5 : 2;
-                    
-                    // Рассчитываем новую высоту в процентах
-                    const newHeightPercent = action === 'increase'
-                        ? currentHeightPercent + step
-                        : currentHeightPercent - step;
-                    
-                    // Ограничиваем высоту минимальным и максимальным значениями
-                    newSize.height = constrainImageHeight(newHeightPercent, maxHeightPercent);
+                    const step = e.shiftKey ? 20 : 10; // Larger step with shift key
+                    const currentHeightString = currentSizeRef.current.height || `${DEFAULT_HEIGHT_PX}px`;
+                    const currentHeight = parseFloat(currentHeightString);
+                    const newHeightValue =
+                        action === 'increase'
+                            ? Math.min(800, currentHeight + step)
+                            : Math.max(50, currentHeight - step);
+                    newSize.height = `${newHeightValue}px`;
                 }
             }
 
@@ -384,7 +364,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                 imageSize: newSize,
             });
         },
-        [presentationId, slideId, templateType, updateSlide, currentSize],
+        [presentationId, slideId, templateType, updateSlide]
     );
 
     // Handle keyboard navigation
@@ -570,7 +550,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                     aria-label="Изменить высоту изображения"
                     aria-valuemin={50}
                     aria-valuemax={800}
-                    aria-valuenow={parseInt(currentSize.height?.toString() || `${DEFAULT_HEIGHT_PERCENT}`)}
+                    aria-valuenow={parseInt(currentSize.height?.toString() || `${DEFAULT_HEIGHT_PX}`)}
                     aria-orientation="vertical"
                 />
             )}
@@ -583,9 +563,9 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
                     tabIndex={0}
                     role="slider"
                     aria-label="Изменить высоту изображения"
-                    aria-valuemin={MIN_IMAGE_HEIGHT_PERCENT}
-                    aria-valuemax={MAX_IMAGE_HEIGHT_PERCENT}
-                    aria-valuenow={parseInt(currentSize.height?.toString() || `${DEFAULT_HEIGHT_PERCENT}`)}
+                    aria-valuemin={50}
+                    aria-valuemax={800}
+                    aria-valuenow={parseInt(currentSize.height?.toString() || `${DEFAULT_HEIGHT_PX}`)}
                     aria-orientation="vertical"
                 />
             )}
