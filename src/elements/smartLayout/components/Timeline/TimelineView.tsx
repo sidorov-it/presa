@@ -114,7 +114,7 @@ export default function TimelineView({
 
             // Position elements to center them under timeline points
             if (direction === 'horizontal') {
-                if (sides === 'one' && !isSecondLine) {
+                if (sides === 'one' && isSecondLine) {
                     // For "one side" mode, center elements under timeline points
                     // Timeline points are at: calc((100% / itemsIds.length) * index + (100% / itemsIds.length) / 2)
                     const timelinePointPosition = `calc((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2)`;
