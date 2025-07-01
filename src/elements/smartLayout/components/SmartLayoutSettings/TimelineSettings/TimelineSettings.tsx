@@ -2,6 +2,10 @@
 import SmartLayoutColumnSizeSelector from '@/components/settings/SmartLayoutColumnSizeSelector/SmartLayoutColumnSizeSelector';
 import SmartLayoutTemplateSelector from '@/components/settings/SmartLayoutTemplateSelector/SmartLayoutTemplateSelector';
 import SmartLayoutDirectionSelector from '@/components/settings/SmartLayoutDirectionSelector/SmartLayoutDirectionSelector';
+import TimelineSidesSelector from '@/components/settings/TimelineSidesSelector/TimelineSidesSelector';
+import TimelineNumberingSelector from '@/components/settings/TimelineNumberingSelector/TimelineNumberingSelector';
+import TimelineLinesSelector from '@/components/settings/TimelineLinesSelector/TimelineLinesSelector';
+import TimelineColorSelector from '@/components/settings/TimelineColorSelector/TimelineColorSelector';
 import { usePresentationStore } from '@/store/presentationStore';
 import { SmartLayoutElement, SmartLayoutType, TipTapRefs } from '@/types';
 import { MutableRefObject } from 'react';
@@ -100,6 +104,58 @@ export default function TimelineSettings({
                         layoutId,
                         elementId,
                         data: { direction: value },
+                    });
+                }}
+            />
+
+            <TimelineSidesSelector
+                sides={element.sides || 'one'}
+                setSides={value => {
+                    updateElement({
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        elementId,
+                        data: { sides: value },
+                    });
+                }}
+            />
+
+            <TimelineNumberingSelector
+                showNumbers={element.showNumbers || false}
+                setShowNumbers={value => {
+                    updateElement({
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        elementId,
+                        data: { showNumbers: value },
+                    });
+                }}
+            />
+
+            <TimelineLinesSelector
+                showLines={element.showLines !== false} // Default to true
+                setShowLines={value => {
+                    updateElement({
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        elementId,
+                        data: { showLines: value },
+                    });
+                }}
+            />
+
+            <TimelineColorSelector
+                color={element.timelineColor || '#1e88e5'}
+                setColor={value => {
+                    updateElement({
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        elementId,
+                        data: { timelineColor: value },
                     });
                 }}
             />

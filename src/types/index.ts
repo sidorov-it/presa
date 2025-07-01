@@ -139,6 +139,11 @@ export interface SmartLayoutElement extends BaseElement {
     direction?: 'horizontal' | 'vertical';
     backgroundColor?: string;
     textColor?: string;
+    // Timeline specific settings
+    sides?: 'one' | 'two';
+    showNumbers?: boolean;
+    showLines?: boolean;
+    timelineColor?: string;
 }
 
 // Элемент редактора Tiptap

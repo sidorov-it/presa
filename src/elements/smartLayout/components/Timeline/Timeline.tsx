@@ -96,27 +96,19 @@ const TimelineContent = ({
                     marginRight: 0,
                 };
             } else if (sides === 'two' && isSecondLine) {
-                // For second line items in two sides mode
-                const originalItemIndex = index * 2 + 1; // Convert secondLine index to original item index
-                const elementWidth = `(100% / ${maxItemsCount})`;
-                const timelinePointPosition = `((100% / ${itemsIds.length + 1}) * ${originalItemIndex + 1})`;
-                const leftMargin = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
-
                 return {
                     ...baseStyle,
-                    marginLeft: index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
-                    marginRight: 0,
                 };
             } else if (sides === 'two' && !isSecondLine) {
                 // For first line items in two sides mode
-                const originalItemIndex = index * 2; // Convert firstLine index to original item index
-                const elementWidth = `(100% / ${maxItemsCount})`;
-                const timelinePointPosition = `((100% / ${itemsIds.length + 1}) * ${originalItemIndex + 1})`;
-                const leftMargin = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
+                // const originalItemIndex = index * 2; // Convert firstLine index to original item index
+                // const elementWidth = `(100% / ${maxItemsCount})`;
+                // const timelinePointPosition = `((100% / ${itemsIds.length + 1}) * ${originalItemIndex + 1})`;
+                // const leftMargin = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
 
                 return {
                     ...baseStyle,
-                    marginLeft: index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
+                    // marginLeft: index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
                     marginRight: 0,
                 };
             }
@@ -220,7 +212,7 @@ export default function Timeline({
                 sides: element.sides || 'one',
                 showNumbers: element.showNumbers || false,
                 showLines: element.showLines !== false, // Default to true
-                timelineColor: element.timelineColor || '#1e88e5',
+                timelineColor: element.timelineColor || 'var(--presentation-primary-accent, var(--color-primary, #1e88e5))',
             };
         })
     );
@@ -410,6 +402,21 @@ export default function Timeline({
         maxItemsCount = totalSlots;
     }
 
+    const getSecondLineStyle = () => {
+        const baseStyle = {};
+
+        if (sides === 'two') {
+            if (direction === 'horizontal') {
+                return {
+                    ...baseStyle,
+                    marginLeft: `calc(100% / ${maxItemsCount} / 2)`,
+                };
+            }
+        }
+
+        return baseStyle;
+    };
+
     return (
         <div className={containerClasses.join(' ')} style={{ '--item-count': itemsIds.length } as React.CSSProperties}>
             <div
@@ -447,7 +454,7 @@ export default function Timeline({
                     })}
                 </div>
 
-                <div className={styles.timelineLineItems}>
+                <div className={styles.timelineLineItems} style={{ '--timeline-color': timelineColor } as React.CSSProperties}>
                     <div className={styles.timelineLineItemInvisible}></div>
                     {Array(itemsIds.length)
                         .fill(null)
@@ -484,7 +491,7 @@ export default function Timeline({
                         })}
                     <div className={styles.timelineLineItemInvisible}></div>
                 </div>
-                <div className={styles.secondLine}>
+                <div className={styles.secondLine} style={getSecondLineStyle()}>
                     {secondLineItems.map((itemId, index) => {
                         return (
                             <TimelineContent

@@ -6,7 +6,7 @@
 }
 
 .focused {
-    outline: 2px solid var(--color-primary);
+    outline: 2px solid var(--presentation-primary-accent);
     outline-offset: 0.25em;
     border-radius: var(--presentation-slide-border-radius);
 }
@@ -17,13 +17,13 @@
     box-sizing: border-box;
     transition: box-shadow 0.2s ease;
     border-radius: var(--presentation-slide-border-radius);
-    border-width: var(--presentation-block-border-width);
+    border-width: 1px;
 }
 
 /* Timeline line styles */
 .timelineLine {
     position: absolute;
-    background-color: var(--color-primary);
+    background-color: var(--presentation-primary-accent);
     z-index: 1;
 }
 
@@ -52,7 +52,7 @@
 
 .dropIndicator {
     position: absolute;
-    background-color: var(--color-primary);
+    background-color: var(--presentation-primary-accent);
     z-index: 10;
     pointer-events: none;
     transition: opacity 0.2s ease;
@@ -78,7 +78,7 @@
     width: 1rem;
     height: 1rem;
     border-radius: 50%;
-    background: var(--color-primary);
+    background: var(--presentation-primary-accent);
     margin-bottom: 0.5rem;
     position: relative;
     z-index: 2;
@@ -192,18 +192,20 @@
     bottom: 0;
     gap: 1rem;
     justify-content: space-between;
-    --line-size: 10px;
+    --line-size: 17px;
+    --timeline-color: var(--presentation-primary-accent);
     margin: 16px 0;
-    border-bottom: 1px solid var(--color-primary);
+    border-bottom: 1px solid var(--timeline-color);
     position: relative;
 }
 
 .timelineLineItem {
     width: 20px;
     height: 20px;
-    background-color: red;
+    background-color: var(--timeline-color);
     border-radius: 0.35em;
     position: absolute;
+    top: 10px;
 }
 
 .timelineLineItemInvisible {
@@ -218,7 +220,7 @@
     top: 20px;
     width: 2px;
     height: var(--line-size);
-    background-color: var(--color-primary);
+    background-color: var(--timeline-color);
     display: block;
     margin-left: 9px;
 }
@@ -231,7 +233,7 @@
     top: 20px;
     width: 2px;
     height: var(--line-size);
-    background-color: var(--color-primary);
+    background-color: var(--timeline-color);
     display: block;
     margin-left: 9px;
 }

@@ -37,7 +37,7 @@ export default function TimelineView({
     const sides = element.sides || 'one';
     const showNumbers = element.showNumbers || false;
     const showLines = element.showLines !== false; // Default to true
-    const timelineColor = element.timelineColor || '#1e88e5';
+    const timelineColor = element.timelineColor || 'var(--presentation-primary-accent, var(--color-primary, #1e88e5))';
 
     const itemsIds = element.items?.map(item => item.id) || [];
 
@@ -227,7 +227,7 @@ export default function TimelineView({
                     {firstLineItems.map((itemId, index) => renderTimelineItem(itemId, index))}
                 </div>
 
-                <div className={styles.timelineLineItems}>
+                <div className={styles.timelineLineItems} style={{ '--timeline-color': timelineColor } as React.CSSProperties}>
                     <div className={styles.timelineLineItemInvisible}></div>
                     {Array(itemsIds.length)
                         .fill(null)
