@@ -108,9 +108,8 @@ export default function TimelineView({
         // Calculate the position for the second line items in two sides mode
         // to align them with their corresponding timeline points
         const getItemStyle = () => {
-            const baseStyle = {
-                width: direction === 'horizontal' ? `calc(100% / ${maxItemsCount} - 1em)` : '100%',
-            };
+            const baseStyle =
+                direction === 'horizontal' ? { width: `calc(100% / ${maxItemsCount} - 1em)` } : { width: '100%' };
 
             // Position elements to center them under timeline points using margins instead of absolute positioning
             if (direction === 'horizontal') {
@@ -154,6 +153,11 @@ export default function TimelineView({
                         marginRight: 0,
                     };
                 }
+            } else if (direction === 'vertical') {
+                // For vertical direction, flex layout with justify-content: space-around handles spacing
+                return {
+                    ...baseStyle,
+                };
             }
 
             return baseStyle;
@@ -227,7 +231,10 @@ export default function TimelineView({
                     {firstLineItems.map((itemId, index) => renderTimelineItem(itemId, index))}
                 </div>
 
-                <div className={styles.timelineLineItems} style={{ '--timeline-color': timelineColor } as React.CSSProperties}>
+                <div
+                    className={styles.timelineLineItems}
+                    style={{ '--timeline-color': timelineColor } as React.CSSProperties}
+                >
                     <div className={styles.timelineLineItemInvisible}></div>
                     {Array(itemsIds.length)
                         .fill(null)
@@ -246,21 +253,25 @@ export default function TimelineView({
                                 }
                             }
 
-                            // Different positioning logic for "one side" vs "two sides"
-                            const timelinePointPosition =
-                                sides === 'one'
-                                    ? `calc((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2)` // Center of each block
-                                    : `calc((100% / ${itemsIds.length + 1}) * ${index + 1})`; // Equal distances from borders
+                            // Different positioning logic for "one side" vs "two sides" and direction
+                            let positionStyle;
 
-                            return (
-                                <div
-                                    key={index}
-                                    className={classNames.join(' ')}
-                                    style={{
-                                        left: timelinePointPosition,
-                                    }}
-                                />
-                            );
+                            if (direction === 'horizontal') {
+                                const timelinePointPosition =
+                                    sides === 'one'
+                                        ? `calc((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2)` // Center of each block
+                                        : `calc((100% / ${itemsIds.length + 1}) * ${index + 1})`; // Equal distances from borders
+                                positionStyle = { left: timelinePointPosition };
+                            } else {
+                                // For vertical direction, distribute points evenly along the timeline
+                                const topPosition =
+                                    sides === 'one'
+                                        ? `calc((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2)`
+                                        : `calc((100% / ${itemsIds.length + 1}) * ${index + 1})`;
+                                positionStyle = { top: topPosition };
+                            }
+
+                            return <div key={index} className={classNames.join(' ')} style={positionStyle} />;
                         })}
                     <div className={styles.timelineLineItemInvisible}></div>
                 </div>

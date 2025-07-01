@@ -3,6 +3,22 @@
     flex-wrap: wrap;
     gap: 1em;
     position: relative;
+    width: 100%;
+}
+
+.container.horizontalOneSide,
+.container.horizontalTwoSides {
+    flex-direction: column;
+    height: auto;
+    min-height: auto;
+}
+
+.container.verticalOneSide,
+.container.verticalTwoSides {
+    min-height: 500px;
+    height: auto;
+    flex-direction: column;
+    align-items: stretch;
 }
 
 .focused {
@@ -48,6 +64,12 @@
 
 .verticalOneSide .itemContainer {
     margin-left: 1.5rem;
+}
+
+.verticalOneSide .secondLine .itemContainer,
+.verticalTwoSides .firstLine .itemContainer,
+.verticalTwoSides .secondLine .itemContainer {
+    flex-shrink: 0;
 }
 
 .dropIndicator {
@@ -186,10 +208,6 @@
 .timelineLineItems {
     width: 100%;
     display: flex;
-    top: -10px;
-    left: 0;
-    right: 0;
-    bottom: 0;
     gap: 1rem;
     justify-content: space-between;
     --line-size: 17px;
@@ -197,6 +215,8 @@
     margin: 16px 0;
     border-bottom: 1px solid var(--timeline-color);
     position: relative;
+    height: 20px;
+    flex-shrink: 0;
 }
 
 .timelineLineItem {
@@ -242,19 +262,57 @@
     top: calc(var(--line-size) * -1);
 }
 
+.verticalConnectionLine::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: var(--line-size);
+    height: 2px;
+    background-color: var(--timeline-color);
+    display: block;
+    transform: translateX(100%);
+    /* margin-right: 16px; */
+}
+
+.verticalTwoSidesConnectionLine {}
+
+.verticalTwoSidesConnectionLine::before {
+    content: '';
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    width: var(--line-size);
+    height: 2px;
+    background-color: var(--timeline-color);
+    display: block;
+    transform: translateY(-50%);
+    margin-right: 16px;
+}
+
+.verticalTwoSidesConnectionLine:nth-child(2n)::before {
+    right: auto;
+    left: 100%;
+    margin-right: 0;
+    margin-left: 16px;
+}
+
 .flexContainer {
     display: flex;
-    flex-direction: column;
     width: 100%;
-    height: 100%;
+    min-height: inherit;
 }
 
 .horizontal {
     flex-direction: column;
+    height: auto;
 }
 
 .vertical {
-    flex-direction: column;
+    flex-direction: row;
+    height: 100%;
+    min-height: 500px;
+    align-items: stretch;
 }
 
 .firstLine,
@@ -264,6 +322,48 @@
     gap: 0;
     width: 100%;
     position: relative;
+}
+
+/* Vertical layout adjustments */
+.vertical .firstLine,
+.vertical .secondLine {
+    flex-direction: column;
+    width: auto;
+    height: 100%;
+    justify-content: flex-start;
+    gap: 2rem;
+}
+
+.vertical .timelineLineItems {
+    flex-direction: column;
+    width: 20px;
+    height: 100%;
+    border-bottom: none;
+    margin: 0 16px;
+    position: relative;
+    flex-shrink: 0;
+    align-self: stretch;
+    top: 0;
+}
+
+.vertical .timelineLineItems::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: var(--timeline-color);
+    z-index: 0;
+    transform: translateX(-50%);
+}
+
+.vertical .timelineLineItem {
+    position: absolute;
+    left: 50%;
+    top: auto;
+    transform: translate(-50%, -50%);
+    z-index: 1;
 }
 
 /* Remove absolute positioning styles - use normal flex layout with margins */
@@ -289,4 +389,127 @@
     display: flex;
     align-items: flex-start;
     justify-content: center;
+}
+
+/* Vertical Timeline Specific Styles */
+.verticalTimelineContainer {
+    min-height: 500px;
+    padding: 20px;
+}
+
+.verticalTimelineWrapper {
+    position: relative;
+    display: flex;
+    width: 100%;
+    min-height: 500px;
+}
+
+.verticalTimelineLine {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    transform: translateX(-50%);
+    z-index: 2;
+}
+
+.verticalTimelineMainLine {
+    position: absolute;
+    left: 50%;
+    top: 20px;
+    bottom: 20px;
+    width: 2px;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+.verticalTimelinePoint {
+    position: absolute;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    border: 3px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.verticalTimelineContent {
+    position: relative;
+    width: 100%;
+    padding: 0 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.verticalTimelineItem {
+    position: relative;
+    width: calc(50% - 20px);
+    padding: 20px;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+}
+
+.verticalTimelineItem.leftSide {
+    align-self: flex-start;
+    margin-right: auto;
+}
+
+.verticalTimelineItem.rightSide {
+    align-self: flex-end;
+    margin-left: auto;
+}
+
+/* Connection lines for vertical timeline */
+.verticalTimelineItem .verticalConnectionLine {
+    position: absolute;
+    top: 20px;
+    width: 40px;
+    height: 2px;
+    background-color: var(--timeline-color);
+    z-index: 2;
+}
+
+.verticalTimelineItem.leftSide .verticalConnectionLine.toRight {
+    right: -40px;
+}
+
+.verticalTimelineItem.rightSide .verticalConnectionLine.toLeft {
+    left: -40px;
+}
+
+/* One side vertical timeline */
+.verticalTimelineContainer.verticalOneSide .verticalTimelineContent {
+    padding-left: 80px;
+    padding-right: 20px;
+}
+
+.verticalTimelineContainer.verticalOneSide .verticalTimelineLine {
+    left: 40px;
+}
+
+.verticalTimelineContainer.verticalOneSide .verticalTimelineItem {
+    width: 100%;
+    align-self: stretch;
+}
+
+.verticalTimelineContainer.verticalOneSide .verticalTimelineItem .verticalConnectionLine.toRight {
+    left: -40px;
+    right: auto;
+}
+
+/* Additional styles for proper positioning */
+.toLeft::before,
+.toRight::before {
+    display: none;
+}
+
+.leftSide,
+.rightSide {
+    position: relative;
 }
