@@ -339,7 +339,7 @@ function TimelineHorizontal({
         }
     }, [direction, itemsIds]);
 
-    // Force re-render when direction changes to ensure proper layout
+    // Force re-render when direction or sides changes to ensure proper layout
     useEffect(() => {
         // Small delay to ensure CSS classes are applied
         const timeoutId = setTimeout(() => {
@@ -352,7 +352,7 @@ function TimelineHorizontal({
         }, 50);
 
         return () => clearTimeout(timeoutId);
-    }, [direction]);
+    }, [direction, sides]);
 
     const handleContentChange = useCallback(
         (itemId: string, key: string) => (content: string) => {

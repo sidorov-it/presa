@@ -154,6 +154,7 @@
     flex-direction: column;
     gap: 0.5rem;
     padding: 0.5rem;
+    width: 100%;
 }
 
 .addButton {
@@ -417,8 +418,8 @@
 .verticalTimelineMainLine {
     position: absolute;
     left: 50%;
-    top: 20px;
-    bottom: 20px;
+    top: 0;
+    bottom: 0;
     width: 2px;
     transform: translateX(-50%);
     z-index: 1;
@@ -440,13 +441,11 @@
     position: relative;
     width: 100%;
     padding: 0 60px;
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
+    min-height: 100%;
 }
 
 .verticalTimelineItem {
-    position: relative;
+    position: absolute;
     width: calc(50% - 20px);
     padding: 20px;
     border-radius: 8px;
@@ -456,31 +455,30 @@
 }
 
 .verticalTimelineItem.leftSide {
-    align-self: flex-start;
-    margin-right: auto;
+    left: 0;
 }
 
 .verticalTimelineItem.rightSide {
-    align-self: flex-end;
-    margin-left: auto;
+    right: 0;
 }
 
 /* Connection lines for vertical timeline */
 .verticalTimelineItem .verticalConnectionLine {
     position: absolute;
-    top: 20px;
-    width: 40px;
+    top: 18px; /* Align with timeline points position */
+    width: 18px; /* Reduced width for better alignment */
     height: 2px;
     background-color: var(--timeline-color);
     z-index: 2;
 }
 
 .verticalTimelineItem.leftSide .verticalConnectionLine.toRight {
-    right: -40px;
+    right: -18px; /* Position line to connect to the right (timeline) */
+    left: unset;
 }
 
 .verticalTimelineItem.rightSide .verticalConnectionLine.toLeft {
-    left: -40px;
+    left: -18px; /* Position line to connect to the left (timeline) */
 }
 
 /* One side vertical timeline */
@@ -490,17 +488,19 @@
 }
 
 .verticalTimelineContainer.verticalOneSide .verticalTimelineLine {
-    left: 40px;
+    left: 30px;
 }
 
 .verticalTimelineContainer.verticalOneSide .verticalTimelineItem {
-    width: 100%;
+    width: calc(100% - 60px); /* Reduce width to leave space for timeline and indentation */
+    left: 60px; /* Add left margin to create indentation from timeline */
     align-self: stretch;
 }
 
 .verticalTimelineContainer.verticalOneSide .verticalTimelineItem .verticalConnectionLine.toRight {
-    left: -40px;
+    left: -36px; /* Adjusted to connect properly to timeline from indented position */
     right: auto;
+    width: 36px;
 }
 
 /* Additional styles for proper positioning */
@@ -511,5 +511,5 @@
 
 .leftSide,
 .rightSide {
-    position: relative;
+    position: absolute;
 }

@@ -16,6 +16,7 @@ interface ElementPosition {
     top: number;
     height: number;
     side: 'left' | 'right';
+    minHeight?: number;
 }
 
 const TimelineVerticalContent = ({
@@ -40,6 +41,8 @@ const TimelineVerticalContent = ({
     showLines,
     elementRef,
     isLastItem,
+    position,
+    sides,
 }: {
     itemId: string;
     _itemIndex: number;
@@ -62,7 +65,20 @@ const TimelineVerticalContent = ({
     showLines: boolean;
     elementRef: RefObject<HTMLDivElement>;
     isLastItem: boolean;
+    position?: ElementPosition;
+    sides: 'one' | 'two';
 }) => {
+    // Determine connection line direction based on layout
+    const getConnectionLineClass = () => {
+        if (sides === 'one') {
+            // For one side, all elements connect to the timeline on the left
+            return styles.toRight;
+        } else {
+            // For two sides, left elements connect right, right elements connect left
+            return isOnLeft ? styles.toRight : styles.toLeft;
+        }
+    };
+
     return (
         <div
             className={`${styles.verticalTimelineItem} ${isOnLeft ? styles.leftSide : styles.rightSide}`}
@@ -71,6 +87,10 @@ const TimelineVerticalContent = ({
             onDrop={e => handleDrop(e, itemId)}
             data-smart-layout-item-id={itemId}
             ref={elementRef}
+            style={{
+                top: position ? `${position.top}px` : 0,
+                height: position ? `${position.minHeight}px` : 'auto',
+            }}
         >
             {dropIndicator && dropIndicator.itemId === itemId && (
                 <div
@@ -81,7 +101,7 @@ const TimelineVerticalContent = ({
 
             {showLines && (
                 <div
-                    className={`${styles.verticalConnectionLine} ${isOnLeft ? styles.toRight : styles.toLeft}`}
+                    className={`${styles.verticalConnectionLine} ${getConnectionLineClass()}`}
                     style={{ backgroundColor: timelineColor }}
                 />
             )}
@@ -149,6 +169,7 @@ export default function TimelineVertical({
 
     const [dropIndicator, setDropIndicator] = useState<{ itemId: string; position: 'left' | 'right' } | null>(null);
     const [elementPositions, setElementPositions] = useState<ElementPosition[]>([]);
+    const [forceUpdateCounter, setForceUpdateCounter] = useState(0);
 
     const containerRef = useRef<HTMLDivElement>(null);
     const elementRefs = useRef<{ [key: string]: RefObject<HTMLDivElement> }>({});
@@ -192,6 +213,21 @@ export default function TimelineVertical({
         elementRefs.current = newRefs;
     }, [itemsIds]);
 
+    // Force update positions function
+    const forceUpdatePositions = useCallback(() => {
+        setForceUpdateCounter(prev => prev + 1);
+    }, []);
+
+    // Force recalculation when sides changes (template switch)
+    useEffect(() => {
+        // Add a small delay to ensure the DOM has updated after the sides change
+        const timeoutId = setTimeout(() => {
+            forceUpdatePositions();
+        }, 100);
+
+        return () => clearTimeout(timeoutId);
+    }, [sides, forceUpdatePositions]);
+
     // Calculate element positions for vertical timeline
     useEffect(() => {
         const getSideForIndex = (index: number): 'left' | 'right' => {
@@ -204,57 +240,161 @@ export default function TimelineVertical({
         const updatePositions = () => {
             if (!containerRef.current) return;
 
-            const containerRect = containerRef.current.getBoundingClientRect();
             const positions: ElementPosition[] = [];
-            let cumulativeHeight = 0;
 
-            itemsIds.forEach((itemId, index) => {
-                const elementRef = elementRefs.current[itemId];
-                if (elementRef?.current) {
-                    const elementRect = elementRef.current.getBoundingClientRect();
-                    const relativeTop = elementRect.top - containerRect.top;
-                    const height = elementRect.height;
+            if (sides === 'one') {
+                // For one side, use simple vertical stacking
+                let cumulativeHeight = 0;
+                itemsIds.forEach(itemId => {
+                    const elementRef = elementRefs.current[itemId];
+                    let height = 80; // Default height
 
-                    const side = getSideForIndex(index);
-                    positions.push({
-                        top: Math.max(cumulativeHeight, relativeTop),
-                        height,
-                        side,
-                    });
+                    if (elementRef?.current) {
+                        // Temporarily reset height to auto to get natural content height
+                        const originalHeight = elementRef.current.style.height;
+                        elementRef.current.style.height = 'auto';
 
-                    // For two sides, ensure elements don't overlap vertically
-                    if (sides === 'two') {
-                        cumulativeHeight = Math.max(cumulativeHeight, relativeTop + height + 40); // 40px gap
+                        // Get the natural content height by looking at the textBox inside
+                        const textBox = elementRef.current.querySelector(`.${styles.textBox}`) as HTMLElement;
+                        if (textBox) {
+                            // Force a reflow to ensure accurate height measurement
+                            void elementRef.current.offsetHeight;
+                            height = textBox.offsetHeight + 40; // Add padding/margin
+                        } else {
+                            height = elementRef.current.scrollHeight;
+                        }
+
+                        // Restore original height temporarily (will be overridden by position update)
+                        elementRef.current.style.height = originalHeight;
                     }
-                } else {
-                    const side = getSideForIndex(index);
+
                     positions.push({
                         top: cumulativeHeight,
-                        height: 60, // Default height
-                        side,
+                        height,
+                        side: 'right',
+                        minHeight: height, // For one side, minHeight equals natural height
                     });
-                    cumulativeHeight += 100; // Default spacing
-                }
-            });
+
+                    cumulativeHeight += height + 30; // 30px gap for consistency
+                });
+            } else {
+                // For two sides, implement overlapping logic
+                let leftBottom = 0; // Bottom position of the last left element
+                let rightBottom = 0; // Bottom position of the last right element
+                let lastLeftStart = 0; // Start position of the last left element
+                let lastRightStart = 0; // Start position of the last right element
+
+                itemsIds.forEach((itemId, index) => {
+                    const elementRef = elementRefs.current[itemId];
+                    const side = getSideForIndex(index);
+                    let height = 80; // Default height
+
+                    if (elementRef?.current) {
+                        // Temporarily reset height to auto to get natural content height
+                        const originalHeight = elementRef.current.style.height;
+                        elementRef.current.style.height = 'auto';
+
+                        // Get the natural content height by looking at the textBox inside
+                        const textBox = elementRef.current.querySelector(`.${styles.textBox}`) as HTMLElement;
+                        if (textBox) {
+                            // Force a reflow to ensure accurate height measurement
+                            void elementRef.current.offsetHeight;
+                            height = textBox.offsetHeight + 40; // Add padding/margin
+                        } else {
+                            height = elementRef.current.scrollHeight;
+                        }
+
+                        // Restore original height temporarily (will be overridden by position update)
+                        elementRef.current.style.height = originalHeight;
+                    }
+
+                    let top = 0;
+                    let minHeight = height; // Start with natural content height
+
+                    if (index === 0) {
+                        // First element starts at the top
+                        top = 0;
+                        minHeight = height; // Use natural height for first element
+                    } else {
+                        if (side === 'left') {
+                            // Left element: position below the last left element with small indent
+                            top = leftBottom + 10; // Small indent from previous element on same side
+
+                            // Check if we need to extend for overlap with the opposite (right) element
+                            const currentNaturalBottom = top + height;
+
+                            // If there's a right element and current element's bottom would be less than 30px beyond the right element's bottom
+                            if (rightBottom > 0 && currentNaturalBottom < rightBottom + 30) {
+                                // Extend current element so its bottom is 30px beyond the right element's bottom
+                                minHeight = rightBottom + 48 - top;
+                            } else {
+                                // Element is already tall enough or no opposite element, use natural height
+                                minHeight = height;
+                            }
+
+                            // Update tracking for left side
+                            lastLeftStart = top;
+                        } else {
+                            // Right element: position below the last right element with small indent
+                            top = rightBottom + (index === 1 ? 48 : 10); // Small indent from previous element on same side
+
+                            // Check if we need to extend for overlap with the opposite (left) element
+                            const currentNaturalBottom = top + height;
+
+                            // If there's a left element and current element's bottom would be less than 30px beyond the left element's bottom
+                            if (leftBottom > 0 && currentNaturalBottom < leftBottom + 30) {
+                                // Extend current element so its bottom is 30px beyond the left element's bottom
+                                minHeight = leftBottom + 48 - top;
+                            } else {
+                                // Element is already tall enough or no opposite element, use natural height
+                                minHeight = height;
+                            }
+
+                            // Update tracking for right side
+                            lastRightStart = top;
+                        }
+                    }
+
+                    positions.push({
+                        top,
+                        height,
+                        side,
+                        minHeight,
+                    });
+
+                    // Update the bottom positions using the actual minHeight
+                    if (side === 'left') {
+                        leftBottom = top + minHeight;
+                    } else {
+                        rightBottom = top + minHeight;
+                    }
+                });
+            }
 
             setElementPositions(positions);
         };
 
-        const timeoutId = setTimeout(updatePositions, 200);
+        // Use longer timeout when sides changes to ensure DOM updates are complete
+        const timeoutId = setTimeout(updatePositions, 300);
 
         const resizeObserver = new ResizeObserver(() => {
             setTimeout(updatePositions, 50);
         });
 
-        if (containerRef.current) {
-            resizeObserver.observe(containerRef.current);
-        }
+        // Don't observe the container since children are absolutely positioned
+        // Instead, observe each individual element
+        itemsIds.forEach(itemId => {
+            const elementRef = elementRefs.current[itemId];
+            if (elementRef?.current) {
+                resizeObserver.observe(elementRef.current);
+            }
+        });
 
         return () => {
             clearTimeout(timeoutId);
             resizeObserver.disconnect();
         };
-    }, [itemsIds, sides]);
+    }, [itemsIds, sides, forceUpdateCounter]);
 
     const handleContentChange = useCallback(
         (itemId: string, key: string) => (content: string) => {
@@ -278,8 +418,13 @@ export default function TimelineVertical({
                 createHistoryEntry: true,
                 isTextElement: true,
             });
+
+            // Force update positions after DOM has updated
+            setTimeout(() => {
+                forceUpdatePositions();
+            }, 100);
         },
-        [elementId, presentationId, slideId, layoutId]
+        [elementId, presentationId, slideId, layoutId, forceUpdatePositions]
     );
 
     const addItem = useCallback(() => {
@@ -301,7 +446,11 @@ export default function TimelineVertical({
                 items: [...element.items, newItem],
             },
         });
-    }, [elementId, presentationId, slideId, layoutId]);
+
+        setTimeout(() => {
+            forceUpdatePositions();
+        }, 100);
+    }, [elementId, presentationId, slideId, layoutId, forceUpdatePositions]);
 
     const handleDragOver = useCallback(
         (e: React.DragEvent<HTMLDivElement>, targetItemId: string) => {
@@ -371,8 +520,21 @@ export default function TimelineVertical({
                     items: newItems,
                 },
             });
+
+            setTimeout(() => {
+                forceUpdatePositions();
+            }, 100);
         },
-        [isDraggingFromSameLayout, dropIndicator, smartLayoutItemId, presentationId, slideId, layoutId, elementId]
+        [
+            isDraggingFromSameLayout,
+            dropIndicator,
+            smartLayoutItemId,
+            presentationId,
+            slideId,
+            layoutId,
+            elementId,
+            forceUpdatePositions,
+        ]
     );
 
     const containerClasses = [
@@ -391,7 +553,10 @@ export default function TimelineVertical({
                     style={
                         {
                             '--timeline-color': timelineColor,
-                            height: containerRef.current?.scrollHeight || '100%',
+                            height:
+                                elementPositions.length > 0
+                                    ? `${Math.max(...elementPositions.map(p => p.top + p.height)) + 40}px`
+                                    : '100%',
                         } as React.CSSProperties
                     }
                 >
@@ -405,14 +570,22 @@ export default function TimelineVertical({
                             className={styles.verticalTimelinePoint}
                             style={{
                                 backgroundColor: timelineColor,
-                                top: `${position.top + 10}px`, // Align with element top + small offset
+                                top: `${position.top + 10}px`, // Align with element top + 20px offset to be slightly below top border
                             }}
                         />
                     ))}
                 </div>
 
                 {/* Content items */}
-                <div className={styles.verticalTimelineContent}>
+                <div
+                    className={styles.verticalTimelineContent}
+                    style={{
+                        height:
+                            elementPositions.length > 0
+                                ? `${Math.max(...elementPositions.map(p => p.top + p.height)) + 40}px`
+                                : '100%',
+                    }}
+                >
                     {itemsIds.map((itemId, index) => (
                         <TimelineVerticalContent
                             key={itemId}
@@ -437,6 +610,8 @@ export default function TimelineVertical({
                             showLines={showLines}
                             elementRef={elementRefs.current[itemId]}
                             isLastItem={index === itemsIds.length - 1}
+                            position={elementPositions[index]}
+                            sides={sides}
                         />
                     ))}
                 </div>
