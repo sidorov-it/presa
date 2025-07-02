@@ -3,6 +3,7 @@
 import { RefObject } from 'react';
 import { SmartLayoutElement, TipTapRefs } from '@/types';
 import Tiptap from '@/components/tiptap/Tiptap/Tiptap';
+import { useReadOnly } from '@/contexts/ReadOnlyContext';
 import styles from './Timeline.module.css';
 
 export default function TimelineView({
@@ -11,7 +12,7 @@ export default function TimelineView({
     presentationId,
     slideId,
     layoutId,
-    isFocused,
+    isFocused: _isFocused,
 }: {
     element: SmartLayoutElement & { direction?: 'horizontal' | 'vertical' };
     tiptapRefs: RefObject<TipTapRefs> | null;
@@ -20,7 +21,7 @@ export default function TimelineView({
     layoutId: string;
     isFocused: boolean;
 }) {
-    const isReadOnly = true;
+    const isReadOnly = useReadOnly();
     let columnSize = element.columnSize;
     const items = element.items || [];
 
@@ -41,19 +42,124 @@ export default function TimelineView({
 
     const itemsIds = element.items?.map(item => item.id) || [];
 
-    // Determine container class based on direction and sides
-    const containerClasses = [
-        styles.container,
-        isFocused ? styles.focused : '',
-        direction === 'horizontal'
-            ? sides === 'two'
-                ? styles.horizontalTwoSides
-                : styles.horizontalOneSide
-            : sides === 'two'
-                ? styles.verticalTwoSides
-                : styles.verticalOneSide,
-    ].join(' ');
+    // Determine container class based on direction and sides - fix nested ternary
+    const getContainerClasses = () => {
+        const baseClasses = [styles.container];
 
+        // Don't add focused styles in view mode
+        // if (isFocused) baseClasses.push(styles.focused);
+
+        if (direction === 'horizontal') {
+            baseClasses.push(sides === 'two' ? styles.horizontalTwoSides : styles.horizontalOneSide);
+        } else {
+            // For vertical timeline, use the vertical timeline container
+            baseClasses.push(styles.verticalTimelineContainer);
+            baseClasses.push(sides === 'two' ? styles.verticalTwoSides : styles.verticalOneSide);
+        }
+
+        return baseClasses.join(' ');
+    };
+
+    const containerClasses = getContainerClasses();
+
+    // Vertical timeline rendering
+    if (direction === 'vertical') {
+        return (
+            <div
+                className={containerClasses}
+                style={{ '--item-count': itemsIds.length } as React.CSSProperties}
+                data-read-only={isReadOnly}
+            >
+                <div className={styles.verticalTimelineWrapper}>
+                    {/* Timeline line and points */}
+                    <div
+                        className={styles.verticalTimelineLine}
+                        style={
+                            {
+                                '--timeline-color': timelineColor,
+                            } as React.CSSProperties
+                        }
+                    >
+                        {/* Main timeline line */}
+                        <div className={styles.verticalTimelineMainLine} style={{ backgroundColor: timelineColor }} />
+
+                        {/* Timeline points */}
+                        {itemsIds.map((_, index) => (
+                            <div
+                                key={index}
+                                className={styles.verticalTimelinePoint}
+                                style={{
+                                    backgroundColor: timelineColor,
+                                    top: `${(100 / (itemsIds.length + 1)) * (index + 1)}%`,
+                                }}
+                            >
+                                {showNumbers && (
+                                    <div
+                                        className={styles.markerNumber}
+                                        style={{ color: 'white', fontSize: '0.7rem', fontWeight: 'bold' }}
+                                    >
+                                        {index + 1}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Content items */}
+                    <div className={styles.verticalTimelineContent}>
+                        {itemsIds.map((itemId, index) => {
+                            const item = element.items?.find(i => i.id === itemId);
+                            if (!item) return null;
+
+                            const isOnLeft = sides === 'two' ? index % 2 === 0 : false;
+                            const itemPosition = `${(100 / (itemsIds.length + 1)) * (index + 1)}%`;
+
+                            return (
+                                <div
+                                    key={itemId}
+                                    className={`${styles.verticalTimelineItem} ${
+                                        sides === 'one' || isOnLeft ? styles.leftSide : styles.rightSide
+                                    }`}
+                                    style={{
+                                        top: itemPosition,
+                                        transform: 'translateY(-50%)',
+                                    }}
+                                    data-smart-layout-item-id={itemId}
+                                >
+                                    {/* Connection line */}
+                                    {showLines && (
+                                        <div
+                                            className={`${styles.verticalConnectionLine} ${
+                                                sides === 'one' || isOnLeft ? styles.toRight : styles.toLeft
+                                            }`}
+                                            style={{ backgroundColor: timelineColor }}
+                                        />
+                                    )}
+
+                                    <div className={`${styles.textBox} ${align ? styles[align] : ''}`}>
+                                        <Tiptap
+                                            isReadOnly={isReadOnly}
+                                            defaultContent={item.text}
+                                            elementId={element.id}
+                                            tiptapRefs={tiptapRefs}
+                                            id={element.id}
+                                            presentationId={presentationId}
+                                            slideId={slideId}
+                                            layoutId={layoutId}
+                                            placeholder="Текст"
+                                            onContentChange={() => {}}
+                                        />
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Horizontal timeline rendering (existing logic)
     let firstLineItems: (string | null)[] = [];
     let secondLineItems: (string | null)[] = [];
     let maxItemsCount;
@@ -95,7 +201,7 @@ export default function TimelineView({
                     key={`empty-${index}`}
                     className={styles.itemContainer}
                     style={{
-                        width: direction === 'horizontal' ? `calc(100% / ${maxItemsCount} - 1em)` : '100%',
+                        width: `calc(100% / ${maxItemsCount} - 1em)`,
                         visibility: 'hidden',
                     }}
                 />
@@ -108,55 +214,44 @@ export default function TimelineView({
         // Calculate the position for the second line items in two sides mode
         // to align them with their corresponding timeline points
         const getItemStyle = () => {
-            const baseStyle =
-                direction === 'horizontal' ? { width: `calc(100% / ${maxItemsCount} - 1em)` } : { width: '100%' };
+            const baseStyle = { width: `calc(100% / ${maxItemsCount} - 1em)` };
 
             // Position elements to center them under timeline points using margins instead of absolute positioning
-            if (direction === 'horizontal') {
-                if (sides === 'one' && isSecondLine) {
-                    // For "one side" mode, calculate left margin to center under timeline points
-                    // Timeline points are at: calc((100% / itemsIds.length) * index + (100% / itemsIds.length) / 2)
-                    const elementWidth = `(100% / ${maxItemsCount})`;
-                    const timelinePointPosition = `((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2)`;
-                    const leftMargin = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
+            if (sides === 'one' && isSecondLine) {
+                // For "one side" mode, calculate left margin to center under timeline points
+                // Timeline points are at: calc((100% / itemsIds.length) * index + (100% / itemsIds.length) / 2)
+                const elementWidth = `(100% / ${maxItemsCount})`;
+                const timelinePointPosition = `((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2)`;
+                const leftMargin = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
 
-                    return {
-                        ...baseStyle,
-                        marginLeft:
-                            index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
-                        marginRight: 0,
-                    };
-                } else if (sides === 'two' && isSecondLine) {
-                    // For second line items in two sides mode
-                    const originalItemIndex = index * 2 + 1; // Convert secondLine index to original item index
-                    const elementWidth = `(100% / ${maxItemsCount})`;
-                    const timelinePointPosition = `((100% / ${itemsIds.length + 1}) * ${originalItemIndex + 1})`;
-                    const leftMargin = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
-
-                    return {
-                        ...baseStyle,
-                        marginLeft:
-                            index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
-                        marginRight: 0,
-                    };
-                } else if (sides === 'two' && !isSecondLine) {
-                    // For first line items in two sides mode
-                    const originalItemIndex = index * 2; // Convert firstLine index to original item index
-                    const elementWidth = `(100% / ${maxItemsCount})`;
-                    const timelinePointPosition = `((100% / ${itemsIds.length + 1}) * ${originalItemIndex + 1})`;
-                    const leftMargin = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
-
-                    return {
-                        ...baseStyle,
-                        marginLeft:
-                            index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
-                        marginRight: 0,
-                    };
-                }
-            } else if (direction === 'vertical') {
-                // For vertical direction, flex layout with justify-content: space-around handles spacing
                 return {
                     ...baseStyle,
+                    marginLeft: index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
+                    marginRight: 0,
+                };
+            } else if (sides === 'two' && isSecondLine) {
+                // For second line items in two sides mode
+                const originalItemIndex = index * 2 + 1; // Convert secondLine index to original item index
+                const elementWidth = `(100% / ${maxItemsCount})`;
+                const timelinePointPosition = `((100% / ${itemsIds.length + 1}) * ${originalItemIndex + 1})`;
+                const leftMargin = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
+
+                return {
+                    ...baseStyle,
+                    marginLeft: index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
+                    marginRight: 0,
+                };
+            } else if (sides === 'two' && !isSecondLine) {
+                // For first line items in two sides mode
+                const originalItemIndex = index * 2; // Convert firstLine index to original item index
+                const elementWidth = `(100% / ${maxItemsCount})`;
+                const timelinePointPosition = `((100% / ${itemsIds.length + 1}) * ${originalItemIndex + 1})`;
+                const leftMargin = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
+
+                return {
+                    ...baseStyle,
+                    marginLeft: index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
+                    marginRight: 0,
                 };
             }
 
@@ -174,11 +269,7 @@ export default function TimelineView({
                     {/* Connection line between timeline and content */}
                     {showLines && (
                         <div
-                            className={`${styles.connectionLine} ${
-                                direction === 'horizontal'
-                                    ? styles.horizontalConnectionLine
-                                    : styles.verticalConnectionLine
-                            }`}
+                            className={`${styles.connectionLine} ${styles.horizontalConnectionLine}`}
                             style={{ backgroundColor: timelineColor }}
                         />
                     )}
@@ -187,20 +278,6 @@ export default function TimelineView({
                     <div className={styles.marker} style={{ backgroundColor: timelineColor }}>
                         {showNumbers && <div className={styles.markerNumber}>{index + 1}</div>}
                     </div>
-
-                    <Tiptap
-                        isReadOnly={isReadOnly}
-                        defaultContent={item.title}
-                        elementId={element.id}
-                        tiptapRefs={tiptapRefs}
-                        id={element.id}
-                        placeholder="Заголовок"
-                        onContentChange={() => {}}
-                        presentationId={presentationId}
-                        slideId={slideId}
-                        layoutId={layoutId}
-                        isHideSlashMenu={false}
-                    />
                     <Tiptap
                         isReadOnly={isReadOnly}
                         defaultContent={item.text}
@@ -212,10 +289,6 @@ export default function TimelineView({
                         layoutId={layoutId}
                         placeholder="Текст"
                         onContentChange={() => {}}
-                        isHideSlashMenu={false}
-                        onEnterPressed={() => {
-                            return true;
-                        }}
                     />
                 </div>
             </div>
@@ -223,10 +296,12 @@ export default function TimelineView({
     };
 
     return (
-        <div className={containerClasses} style={{ '--item-count': itemsIds.length } as React.CSSProperties}>
-            <div
-                className={`${styles.flexContainer} ${direction === 'horizontal' ? styles.horizontal : styles.vertical}`}
-            >
+        <div
+            className={containerClasses}
+            style={{ '--item-count': itemsIds.length } as React.CSSProperties}
+            data-read-only={isReadOnly}
+        >
+            <div className={`${styles.flexContainer} ${styles.horizontal}`}>
                 <div className={styles.firstLine}>
                     {firstLineItems.map((itemId, index) => renderTimelineItem(itemId, index))}
                 </div>
@@ -242,34 +317,19 @@ export default function TimelineView({
                             const classNames = [styles.timelineLineItem];
 
                             if (showLines) {
-                                if (direction === 'horizontal' && sides === 'one') {
+                                if (sides === 'one') {
                                     classNames.push(styles.horizontalConnectionLine);
-                                } else if (direction === 'vertical' && sides === 'one') {
-                                    classNames.push(styles.verticalConnectionLine);
-                                } else if (direction === 'horizontal' && sides === 'two') {
+                                } else if (sides === 'two') {
                                     classNames.push(styles.horizontalTwoSidesConnectionLine);
-                                } else if (direction === 'vertical' && sides === 'two') {
-                                    classNames.push(styles.verticalTwoSidesConnectionLine);
                                 }
                             }
 
-                            // Different positioning logic for "one side" vs "two sides" and direction
-                            let positionStyle;
-
-                            if (direction === 'horizontal') {
-                                const timelinePointPosition =
-                                    sides === 'one'
-                                        ? `calc((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2)` // Center of each block
-                                        : `calc((100% / ${itemsIds.length + 1}) * ${index + 1})`; // Equal distances from borders
-                                positionStyle = { left: timelinePointPosition };
-                            } else {
-                                // For vertical direction, distribute points evenly along the timeline
-                                const topPosition =
-                                    sides === 'one'
-                                        ? `calc((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2)`
-                                        : `calc((100% / ${itemsIds.length + 1}) * ${index + 1})`;
-                                positionStyle = { top: topPosition };
-                            }
+                            // Different positioning logic for "one side" vs "two sides"
+                            const timelinePointPosition =
+                                sides === 'one'
+                                    ? `calc((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2)` // Center of each block
+                                    : `calc((100% / ${itemsIds.length + 1}) * ${index + 1})`; // Equal distances from borders
+                            const positionStyle = { left: timelinePointPosition };
 
                             return <div key={index} className={classNames.join(' ')} style={positionStyle} />;
                         })}

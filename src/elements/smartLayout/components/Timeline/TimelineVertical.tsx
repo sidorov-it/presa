@@ -541,6 +541,7 @@ export default function TimelineVertical({
         styles.container,
         styles.verticalTimelineContainer,
         isFocused ? styles.focused : '',
+        isFocused ? 'focused' : '',
         sides === 'two' ? styles.verticalTwoSides : styles.verticalOneSide,
     ].join(' ');
 

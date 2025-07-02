@@ -36,6 +36,29 @@
     border-width: 1px;
 }
 
+/* View mode specific styles - clean presentation without editor borders */
+.container[data-read-only="true"] .itemContainer,
+.container[data-read-only=true] .itemContainer {
+    border: none;
+    box-shadow: none;
+}
+
+.container[data-read-only="true"] .verticalTimelineItem,
+.container[data-read-only=true] .verticalTimelineItem {
+    border: none;
+    box-shadow: none;
+}
+
+.container[data-read-only="true"] .focused,
+.container[data-read-only=true] .focused {
+    outline: none;
+}
+
+.container[data-read-only="true"] .addButton,
+.container[data-read-only=true] .addButton {
+    display: none;
+}
+
 /* Timeline line styles */
 .timelineLine {
     position: absolute;
@@ -58,10 +81,6 @@
 }
 
 /* Item positioning for one side */
-.horizontalOneSide .itemContainer {
-    margin-top: 1.5rem;
-}
-
 .verticalOneSide .itemContainer {
     margin-left: 1.5rem;
 }
@@ -211,22 +230,22 @@
     display: flex;
     gap: 1rem;
     justify-content: space-between;
-    --line-size: 17px;
+    --line-size: 26px;
     --timeline-color: var(--presentation-primary-accent);
-    margin: 16px 0;
+    margin: 35px 0;
     border-bottom: 1px solid var(--timeline-color);
     position: relative;
-    height: 20px;
+    height: 0;
     flex-shrink: 0;
 }
 
 .timelineLineItem {
-    width: 20px;
-    height: 20px;
+    width: 25px;
+    height: 25px;
     background-color: var(--timeline-color);
     border-radius: 0.35em;
     position: absolute;
-    top: 10px;
+    top: -10px;
 }
 
 .timelineLineItemInvisible {
@@ -243,7 +262,7 @@
     height: var(--line-size);
     background-color: var(--timeline-color);
     display: block;
-    margin-left: 9px;
+    margin-left: 12px;
 }
 
 .horizontalTwoSidesConnectionLine {}
@@ -256,7 +275,7 @@
     height: var(--line-size);
     background-color: var(--timeline-color);
     display: block;
-    margin-left: 9px;
+    margin-left: 12px;
 }
 
 .horizontalTwoSidesConnectionLine:nth-child(2n)::before {
