@@ -26,3 +26,18 @@
     gap: 1rem;
     align-items: flex-start;
 }
+
+.noThemes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 1rem;
+}
+
+.clickable {
+    color: var(--color-primary);
+    cursor: pointer;
+    text-decoration: underline;
+}

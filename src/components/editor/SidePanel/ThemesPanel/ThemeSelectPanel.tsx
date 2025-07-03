@@ -49,6 +49,11 @@ const ThemeSelectPanel: React.FC<ThemeSelectPanelProps> = ({ onCloseMenu, presen
         [allThemes, setCurrentTheme, setTheme, presentationId, onCloseMenu]
     );
 
+    const handleCloseMenu = useCallback(() => {
+        useMenuStore.getState().closeSideMenu();
+        onCloseMenu?.();
+    }, []);
+
     return (
         <div className={styles.container}>
             <h3 className={styles.title}>Выберите тему</h3>
@@ -66,9 +71,22 @@ const ThemeSelectPanel: React.FC<ThemeSelectPanelProps> = ({ onCloseMenu, presen
                 </ChakraTabs.List>
                 <ChakraTabs.Content value="my">
                     {themes.length === 0 ? (
-                        <div>
-                            <p>Нет доступных пользовательских тем.</p>
-                            <Link href="/themes">Управление темами</Link>
+                        <div className={styles.noThemes}>
+                            <p>У вас пока нет тем.</p>
+                            <p>
+                                <Link href="/themes" className={styles.clickable} onClick={handleCloseMenu}>
+                                    Создайте тему
+                                </Link>{' '}
+                                или выберите из{' '}
+                                <span
+                                    onClick={() => {
+                                        setTabIndex(1);
+                                    }}
+                                    className={styles.clickable}
+                                >
+                                    стандартных.
+                                </span>
+                            </p>
                         </div>
                     ) : (
                         <div className={styles.themesGrid}>
