@@ -117,7 +117,7 @@ export async function PUT(request: Request, props: { params: Promise<Params> }) 
 
         return NextResponse.json(updatedTheme);
     } catch (error) {
-        logger.error('Failed to update theme:', error);
+        logger.error('Failed to update theme:', error.message);
         return NextResponse.json({ error: 'Failed to update theme' }, { status: 500 });
     }
 }

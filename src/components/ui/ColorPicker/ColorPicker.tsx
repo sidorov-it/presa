@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { HexColorPicker } from 'react-colorful';
 import { Input } from '@/components/ui/Input/Input';
 import { Popover } from '@/components/ui/Popover/Popover';
@@ -15,6 +15,25 @@ interface ColorPickerProps {
     handleRemove?: () => void;
     onChange: (value: string) => void;
 }
+
+// Debounce utility function with cancel support
+const debounce = <T extends (...args: any[]) => void>(func: T, wait: number): T & { cancel: () => void } => {
+    let timeout: NodeJS.Timeout | null = null;
+
+    const debouncedFunction = ((...args: any[]) => {
+        if (timeout) clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+    }) as T & { cancel: () => void };
+
+    debouncedFunction.cancel = () => {
+        if (timeout) {
+            clearTimeout(timeout);
+            timeout = null;
+        }
+    };
+
+    return debouncedFunction;
+};
 
 // Utility functions to prevent rounding errors
 const hexToAlpha = (hex: string): number => {
@@ -78,12 +97,27 @@ export const ColorPicker = ({
     const [inputValue, setInputValue] = useState(value);
     const [alpha, setAlpha] = useState(parsedValue.alpha);
 
+    // Create debounced onChange for external updates
+    const debouncedOnChange = useRef(
+        debounce((color: string) => {
+            onChange(color);
+        }, 16) // ~60fps for smooth updates
+    ).current;
+
     // Sync local state when external value changes
     useEffect(() => {
         const parsed = parseColorValue(value);
         setInputValue(value);
         setAlpha(parsed.alpha);
     }, [value]);
+
+    // Cleanup debounced function on unmount
+    useEffect(() => {
+        return () => {
+            // Cancel any pending debounced calls
+            debouncedOnChange.cancel?.();
+        };
+    }, [debouncedOnChange]);
 
     const handleColorChange = useCallback(
         (newColor: string) => {
@@ -92,10 +126,12 @@ export const ColorPicker = ({
                 const alphaHex = alphaToHex(alpha);
                 finalColor = `${newColor}${alphaHex}`;
             }
+            // Update local state immediately for UI responsiveness
             setInputValue(finalColor);
-            onChange(finalColor);
+            // Debounce external onChange to prevent rapid updates
+            debouncedOnChange(finalColor);
         },
-        [allowAlpha, alpha, onChange]
+        [allowAlpha, alpha, debouncedOnChange]
     );
 
     const handleAlphaChange = useCallback(
@@ -109,10 +145,12 @@ export const ColorPicker = ({
                 finalColor = `${parsed.baseColor}${alphaHex}`;
             }
 
+            // Update local state immediately for UI responsiveness
             setInputValue(finalColor);
-            onChange(finalColor);
+            // Debounce external onChange to prevent rapid updates
+            debouncedOnChange(finalColor);
         },
-        [allowAlpha, inputValue, onChange]
+        [allowAlpha, inputValue, debouncedOnChange]
     );
 
     const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,6 +173,7 @@ export const ColorPicker = ({
         if (parsed.isValid) {
             setInputValue(newValue);
             setAlpha(parsed.alpha);
+            // For manual input, call onChange immediately (not debounced)
             onChange(newValue);
         } else {
             setInputValue(value);

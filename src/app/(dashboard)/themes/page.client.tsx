@@ -7,14 +7,12 @@ import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import styles from './page.module.css';
 import ThemePreviewBlock from './components/ThemePreviewBlock';
-import { useRouter } from 'next/navigation';
 import { Tabs as ChakraTabs } from '@chakra-ui/react';
 import { useThemeStore } from '@/store/themeStore';
 import { getRequiredFontsFromTheme, loadFonts, unloadAllFonts } from '@/utils/fontLoader';
 
 export default function ThemesPage() {
     const { themes, allThemes, defaultThemes, loadThemes, addTheme, deleteTheme } = useThemeStore();
-    const router = useRouter();
     const [tabIndex, setTabIndex] = useState(0);
 
     useEffect(() => {
@@ -105,10 +103,6 @@ export default function ThemesPage() {
                                     <ThemePreviewBlock
                                         key={theme.id}
                                         theme={theme}
-                                        url={`/themes/${theme.id}`}
-                                        // onClickEdit={() => {
-                                        //     router.push(`/themes/${theme.id}`);
-                                        // }}
                                         onClickDuplicate={() => handleDuplicate(theme.id)}
                                         onClickDelete={() => handleDelete(theme.id)}
                                     />

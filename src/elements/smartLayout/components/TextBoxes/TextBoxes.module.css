@@ -18,8 +18,8 @@
     position: relative;
     transition: box-shadow 0.2s ease;
 
-    border-radius: var(--presentation-slide-border-radius);
-    border-width: var(--presentation-block-border-width);
+    /* border-radius: var(--presentation-slide-border-radius);
+    border-width: var(--presentation-block-border-width); */
     z-index: 1;
     /* overflow: hidden; */
 }
@@ -58,18 +58,23 @@
     flex-direction: column;
     gap: 0.75em;
     padding: 1em;
+
+    border-radius: var(--presentation-slide-border-radius);
+    border-width: var(--presentation-block-border-width);
+    z-index: 1;
+
 }
 
 
-[style*="--presentation-block-background-custom-type: primary"] .itemContainer {
+[style*="--presentation-block-background-custom-type: primary"] .textBox {
     border-color: var(--presentation-block-border-color, var(--color-border));
 }
 
-[style*="--presentation-block-background-custom-count: 1"] .itemContainer::before {
+/* [style*="--presentation-block-background-custom-count: 1"] .itemContainer::before {
     background: var(--presentation-block-background-custom-1, var(--presentation-block-background));
-}
+} */
 
-[style*="--presentation-block-background-custom-type: primary"] .itemContainer::before {
+[style*="--presentation-block-background-custom-type: primary"] .textBox::before {
     background-color: var(--presentation-block-background, var(--color-surface));
 }
 
