@@ -2416,8 +2416,18 @@ export const usePresentationStore = create<PresentationState>()(
                         columns: currentLayout.gridStructure.columns + 1,
                         columnWidths,
                         rows: currentLayout.gridStructure.rows.map((row: { id: string; cells: GridCell[] }) => {
-                            const updatedCells = [...row.cells];
+                            const updatedCells = row.cells.map(cell => {
+                                if (options?.direction === 'left') {
+                                    return {
+                                        ...cell,
+                                        column: cell.column + 1,
+                                    };
+                                }
+                                return cell;
+                            });
+
                             updatedCells.splice(newColumnIndex, 0, newColumn);
+                            updatedCells.sort((a, b) => a.column - b.column);
                             return {
                                 ...row,
                                 cells: updatedCells,
