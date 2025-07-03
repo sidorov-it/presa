@@ -34,6 +34,7 @@
     transition: box-shadow 0.2s ease;
     border-radius: var(--presentation-slide-border-radius);
     border-width: 1px;
+    min-height: 90px;
 }
 
 /* View mode specific styles - clean presentation without editor borders */
@@ -471,6 +472,7 @@
     background: transparent;
     box-shadow: none;
     border: none;
+    min-height: 90px;
 }
 
 .verticalTimelineItem.leftSide {

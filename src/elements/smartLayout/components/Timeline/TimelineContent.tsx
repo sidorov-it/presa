@@ -177,7 +177,21 @@ const TimelineContent = ({
                         isReadOnly={isReadOnly}
                         elementId={elementId}
                         tiptapRefs={tiptapRefs}
-                        id={elementId}
+                        id={`${elementId}-title`}
+                        presentationId={presentationId}
+                        slideId={slideId}
+                        layoutId={layoutId}
+                        placeholder="Заголовок"
+                        onContentChange={handleContentChange(itemId, 'title')}
+                        customRefKey={`title-${elementId}-${itemId}`}
+                        isHideSlashMenu={true}
+                        standardEnterBehavior={true}
+                    />
+                    <Tiptap
+                        isReadOnly={isReadOnly}
+                        elementId={elementId}
+                        tiptapRefs={tiptapRefs}
+                        id={`${elementId}-text`}
                         presentationId={presentationId}
                         slideId={slideId}
                         layoutId={layoutId}

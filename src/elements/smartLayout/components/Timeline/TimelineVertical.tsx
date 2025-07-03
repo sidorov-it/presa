@@ -119,7 +119,21 @@ const TimelineVerticalContent = ({
                         isReadOnly={isReadOnly}
                         elementId={elementId}
                         tiptapRefs={tiptapRefs}
-                        id={elementId}
+                        id={`${elementId}-title`}
+                        presentationId={presentationId}
+                        slideId={slideId}
+                        layoutId={layoutId}
+                        placeholder="Заголовок"
+                        onContentChange={handleContentChange(itemId, 'title')}
+                        customRefKey={`title-${elementId}-${itemId}`}
+                        isHideSlashMenu={true}
+                        standardEnterBehavior={true}
+                    />
+                    <Tiptap
+                        isReadOnly={isReadOnly}
+                        elementId={elementId}
+                        tiptapRefs={tiptapRefs}
+                        id={`${elementId}-text`}
                         presentationId={presentationId}
                         slideId={slideId}
                         layoutId={layoutId}
@@ -238,7 +252,7 @@ export default function TimelineVertical({
                 let cumulativeHeight = 0;
                 itemsIds.forEach(itemId => {
                     const elementRef = elementRefs.current[itemId];
-                    let height = 80; // Default height
+                    let height = 90; // Default height matching minimum height
 
                     if (elementRef?.current) {
                         // Temporarily reset height to auto to get natural content height
@@ -278,7 +292,7 @@ export default function TimelineVertical({
                 itemsIds.forEach((itemId, index) => {
                     const elementRef = elementRefs.current[itemId];
                     const side = getSideForIndex(index);
-                    let height = 80; // Default height
+                    let height = 90; // Default height matching minimum height
 
                     if (elementRef?.current) {
                         // Temporarily reset height to auto to get natural content height
@@ -536,6 +550,8 @@ export default function TimelineVertical({
         sides === 'two' ? styles.verticalTwoSides : styles.verticalOneSide,
     ].join(' ');
 
+    const timelineHeight = elementPositions[elementPositions.length - 1].top + elementPositions[elementPositions.length - 1].height;
+
     return (
         <div className={containerClasses} style={{ '--item-count': itemsIds.length } as React.CSSProperties}>
             <div className={styles.verticalTimelineWrapper} ref={containerRef}>
@@ -545,10 +561,7 @@ export default function TimelineVertical({
                     style={
                         {
                             '--timeline-color': timelineColor,
-                            height:
-                                elementPositions.length > 0
-                                    ? `${Math.max(...elementPositions.map(p => p.top + p.height)) + 40}px`
-                                    : '100%',
+                            height: timelineHeight,
                         } as React.CSSProperties
                     }
                 >
