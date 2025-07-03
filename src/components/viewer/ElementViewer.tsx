@@ -19,6 +19,7 @@ interface ElementViewerProps {
     slideBackground?: string;
     primaryAccentColor?: string;
     theme: Theme;
+    isTable?: boolean;
 }
 
 const ElementViewer = ({
@@ -28,6 +29,7 @@ const ElementViewer = ({
     slideBackground,
     primaryAccentColor,
     theme,
+    isTable,
 }: ElementViewerProps) => {
     // Get element-specific styles
     // const getElementStyles = () => {
@@ -212,7 +214,7 @@ const ElementViewer = ({
         <div
             style={{
                 // ...getElementStyles(),
-                margin: '0.9em 0',
+                margin: isTable ? '0.4rem 0 0.3rem' : '0.9em 0',
                 zIndex: 0,
                 transform: element.transform || 'none',
             }}

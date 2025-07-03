@@ -652,7 +652,9 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                         <div
                             onClick={handleClickElement(elementId)}
                             key={elementId}
-                            className={hasMultipleCells ? styles.elementContainer : ''}
+                            className={`${hasMultipleCells ? styles.elementContainer : ''} ${
+                                isTable ? styles.tableElementContainer : ''
+                            }`}
                             data-is-first-element={idx === 0 ? 'true' : 'false'}
                             data-is-last-element={idx === elementsIds.length - 1 ? 'true' : 'false'}
                         >

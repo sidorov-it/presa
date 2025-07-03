@@ -68,7 +68,7 @@ export const BaseMenu: React.FC<BaseMenuProps> = ({ children, isForceOpen, posit
         top: `${menuPosition.top}px`,
         ...baseStyle,
         ...style,
-        zIndex: 9999,
+        zIndex: 220,
     };
 
     if (!isOpen) return null;

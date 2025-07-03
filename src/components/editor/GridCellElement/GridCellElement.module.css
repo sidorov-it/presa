@@ -32,6 +32,10 @@
     align-items: center; */
 }
 
+.gridCellElement .tableElementContainer {
+    margin: 0.4rem 0 0.3rem;
+}
+
 .gridCellElement:hover .elementDragHandle {
     opacity: 1;
 }
