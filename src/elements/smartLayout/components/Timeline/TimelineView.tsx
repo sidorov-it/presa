@@ -3,7 +3,6 @@
 import { RefObject } from 'react';
 import { SmartLayoutElement, TipTapRefs } from '@/types';
 import Tiptap from '@/components/tiptap/Tiptap/Tiptap';
-import { useReadOnly } from '@/contexts/ReadOnlyContext';
 import styles from './Timeline.module.css';
 
 export default function TimelineView({
@@ -21,17 +20,7 @@ export default function TimelineView({
     layoutId: string;
     isFocused: boolean;
 }) {
-    const isReadOnly = useReadOnly();
-    let columnSize = element.columnSize;
-    const items = element.items || [];
-
-    if (items.length === 1) {
-        columnSize = 4;
-    } else if (items.length === 2 && columnSize > 2) {
-        columnSize = 3;
-    } else if (items.length === 3 && columnSize > 3) {
-        columnSize = 2;
-    }
+    const isReadOnly = true;
 
     const direction = element.direction || 'horizontal';
     const align = element.align || 'left';
@@ -64,6 +53,15 @@ export default function TimelineView({
 
     // Vertical timeline rendering
     if (direction === 'vertical') {
+        // Simple positioning logic similar to editor
+        let cumulativeHeight = 10; // Start 10px from top
+        const elementPositions = itemsIds.map(() => {
+            const height = 80; // Default height for consistent spacing
+            const position = { top: cumulativeHeight, height };
+            cumulativeHeight += height + 30; // 30px gap between elements
+            return position;
+        });
+
         return (
             <div
                 className={containerClasses}
@@ -77,6 +75,9 @@ export default function TimelineView({
                         style={
                             {
                                 '--timeline-color': timelineColor,
+                                height: elementPositions.length > 0 
+                                    ? `${Math.max(...elementPositions.map(p => p.top + p.height)) + 40}px`
+                                    : '100%',
                             } as React.CSSProperties
                         }
                     >
@@ -84,13 +85,13 @@ export default function TimelineView({
                         <div className={styles.verticalTimelineMainLine} style={{ backgroundColor: timelineColor }} />
 
                         {/* Timeline points */}
-                        {itemsIds.map((_, index) => (
+                        {elementPositions.map((position, index) => (
                             <div
                                 key={index}
                                 className={styles.verticalTimelinePoint}
                                 style={{
                                     backgroundColor: timelineColor,
-                                    top: `${(100 / (itemsIds.length + 1)) * (index + 1)}%`,
+                                    top: `${position.top + 2}px`, // Match editor positioning
                                 }}
                             >
                                 {showNumbers && (
@@ -106,13 +107,20 @@ export default function TimelineView({
                     </div>
 
                     {/* Content items */}
-                    <div className={styles.verticalTimelineContent}>
+                    <div 
+                        className={styles.verticalTimelineContent}
+                        style={{
+                            height: elementPositions.length > 0 
+                                ? `${Math.max(...elementPositions.map(p => p.top + p.height)) + 40}px`
+                                : '100%',
+                        }}
+                    >
                         {itemsIds.map((itemId, index) => {
                             const item = element.items?.find(i => i.id === itemId);
                             if (!item) return null;
 
                             const isOnLeft = sides === 'two' ? index % 2 === 0 : false;
-                            const itemPosition = `${(100 / (itemsIds.length + 1)) * (index + 1)}%`;
+                            const position = elementPositions[index];
 
                             return (
                                 <div
@@ -121,8 +129,8 @@ export default function TimelineView({
                                         sides === 'one' || isOnLeft ? styles.leftSide : styles.rightSide
                                     }`}
                                     style={{
-                                        top: itemPosition,
-                                        transform: 'translateY(-50%)',
+                                        top: `${position.top}px`,
+                                        height: `${position.height}px`,
                                     }}
                                     data-smart-layout-item-id={itemId}
                                 >

@@ -269,7 +269,7 @@ export default function TimelineVertical({
                     }
 
                     positions.push({
-                        top: cumulativeHeight,
+                        top: cumulativeHeight + 10,
                         height,
                         side: 'right',
                         minHeight: height, // For one side, minHeight equals natural height
@@ -571,7 +571,7 @@ export default function TimelineVertical({
                             className={styles.verticalTimelinePoint}
                             style={{
                                 backgroundColor: timelineColor,
-                                top: `${position.top + 10}px`, // Align with element top + 20px offset to be slightly below top border
+                                top: `${position.top + 2}px`, // Align with element top + 20px offset to be slightly below top border
                             }}
                         />
                     ))}

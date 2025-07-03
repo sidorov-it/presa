@@ -171,8 +171,8 @@
 .textBox {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    padding: 0.5rem;
+    gap: 0;
+    padding: 0 10px;
     width: 100%;
 }
 
@@ -466,11 +466,11 @@
 .verticalTimelineItem {
     position: absolute;
     width: calc(50% - 20px);
-    padding: 20px;
-    border-radius: 8px;
-    background: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e0e0e0;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    border: none;
 }
 
 .verticalTimelineItem.leftSide {
@@ -484,7 +484,7 @@
 /* Connection lines for vertical timeline */
 .verticalTimelineItem .verticalConnectionLine {
     position: absolute;
-    top: 18px; /* Align with timeline points position */
+    top: 0.6em; /* Align with middle of first line of text */
     width: 18px; /* Reduced width for better alignment */
     height: 2px;
     background-color: var(--timeline-color);
@@ -514,6 +514,10 @@
     width: calc(100% - 60px); /* Reduce width to leave space for timeline and indentation */
     left: 60px; /* Add left margin to create indentation from timeline */
     align-self: stretch;
+    padding: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
 }
 
 .verticalTimelineContainer.verticalOneSide .verticalTimelineItem .verticalConnectionLine.toRight {
