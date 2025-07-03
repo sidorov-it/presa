@@ -9,6 +9,7 @@ import { HiOutlineDotsVertical } from 'react-icons/hi';
 interface ThemePreviewProps {
     theme: Theme;
     isReadOnly?: boolean;
+    isSelected?: boolean;
     onClick?: () => void;
     onClickDuplicate?: () => void;
     onClickDelete?: () => void;
@@ -17,6 +18,7 @@ interface ThemePreviewProps {
 const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
     theme,
     isReadOnly = false,
+    isSelected = false,
     onClick,
     onClickDuplicate,
     onClickDelete,
@@ -77,7 +79,7 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
     };
 
     return (
-        <div className={styles.themeCard} onClick={onClick}>
+        <div className={`${styles.themeCard} ${isSelected ? styles.selected : ''}`} onClick={onClick}>
             <div className={styles.cardContent}>
                 {/* Theme Preview */}
                 <div

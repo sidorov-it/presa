@@ -90,7 +90,7 @@
 }
 
 .slideSelected {
-    border-color: #806cff;
+    border-color: var(--color-primary);
     border-width: var(--presentation-slide-border-width);
     border-style: solid;
 }

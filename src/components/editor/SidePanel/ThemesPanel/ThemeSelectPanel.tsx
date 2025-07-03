@@ -15,18 +15,28 @@ interface ThemeSelectPanelProps {
 }
 
 const ThemeSelectPanel: React.FC<ThemeSelectPanelProps> = ({ onCloseMenu, presentationId }) => {
-    const { themes, defaultThemes, loadThemes, setCurrentTheme } = useThemeStore();
+    const { themes, defaultThemes, allThemes, currentTheme, loadThemes, setCurrentTheme } = useThemeStore();
     const setTheme = usePresentationStore(state => state.setTheme);
 
-    const [tabIndex, setTabIndex] = useState(0);
+    const [tabIndex, setTabIndex] = useState(2);
 
     useEffect(() => {
         loadThemes().catch(err => console.error('Failed to load themes:', err));
     }, [loadThemes]);
 
+    useEffect(() => {
+        if (currentTheme?.id) {
+            if (currentTheme.isDefault) {
+                setTabIndex(1);
+            } else {
+                setTabIndex(0);
+            }
+        }
+    }, [currentTheme?.id, currentTheme?.isDefault]);
+
     const handleSelect = useCallback(
         (themeId: string) => {
-            const theme = [...themes, ...defaultThemes].find(t => t.id === themeId);
+            const theme = allThemes.find(t => t.id === themeId);
             if (!theme) return;
 
             setCurrentTheme(theme);
@@ -36,7 +46,7 @@ const ThemeSelectPanel: React.FC<ThemeSelectPanelProps> = ({ onCloseMenu, presen
             useMenuStore.getState().closeSideMenu();
             onCloseMenu?.();
         },
-        [themes, defaultThemes, setCurrentTheme, setTheme, presentationId, onCloseMenu]
+        [allThemes, setCurrentTheme, setTheme, presentationId, onCloseMenu]
     );
 
     return (
@@ -67,6 +77,7 @@ const ThemeSelectPanel: React.FC<ThemeSelectPanelProps> = ({ onCloseMenu, presen
                                     key={theme.id}
                                     theme={theme}
                                     isReadOnly={true}
+                                    isSelected={currentTheme?.id === theme.id}
                                     onClick={() => handleSelect(theme.id)}
                                 />
                             ))}
@@ -80,6 +91,7 @@ const ThemeSelectPanel: React.FC<ThemeSelectPanelProps> = ({ onCloseMenu, presen
                                 key={theme.id}
                                 theme={theme}
                                 isReadOnly={true}
+                                isSelected={currentTheme?.id === theme.id}
                                 onClick={() => handleSelect(theme.id)}
                             />
                         ))}
