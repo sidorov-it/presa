@@ -37,7 +37,6 @@ const TimelineVerticalContent = ({
     handleDrop,
     addItem,
     handleContentChange,
-    align,
     showLines,
     elementRef,
     isLastItem,
@@ -61,7 +60,6 @@ const TimelineVerticalContent = ({
     handleDrop: (e: React.DragEvent<HTMLDivElement>, targetItemId: string) => void;
     addItem: () => void;
     handleContentChange: (itemId: string, key: string) => (content: string) => void;
-    align: 'left' | 'center' | 'right';
     showLines: boolean;
     elementRef: RefObject<HTMLDivElement>;
     isLastItem: boolean;
@@ -116,7 +114,7 @@ const TimelineVerticalContent = ({
                     return <div>Menu timeline</div>;
                 }}
             >
-                <div className={`${styles.textBox} ${align ? styles[align] : ''}`} style={{ position: 'relative' }}>
+                <div className={`${styles.textBox}`} style={{ position: 'relative' }}>
                     <Tiptap
                         isReadOnly={isReadOnly}
                         elementId={elementId}
@@ -187,13 +185,6 @@ export default function TimelineVertical({
                 timelineColor:
                     element.timelineColor || 'var(--presentation-primary-accent, var(--color-primary, #1e88e5))',
             };
-        })
-    );
-
-    const align = usePresentationStore(
-        useShallow(state => {
-            const element = state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement;
-            return element.align || 'left';
         })
     );
 
@@ -607,7 +598,6 @@ export default function TimelineVertical({
                             handleDrop={handleDrop}
                             addItem={addItem}
                             handleContentChange={handleContentChange}
-                            align={align}
                             showLines={showLines}
                             elementRef={elementRefs.current[itemId]}
                             isLastItem={index === itemsIds.length - 1}

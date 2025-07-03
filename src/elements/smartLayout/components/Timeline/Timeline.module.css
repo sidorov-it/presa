@@ -212,7 +212,7 @@
 .itemContainer:hover .addButton {
     opacity: 1;
 }
-
+/* 
 .left {
     text-align: left;
 }
@@ -223,7 +223,7 @@
 
 .right {
     text-align: right;
-}
+} */
 
 .timelineLineItems {
     width: 100%;
@@ -479,6 +479,16 @@
 
 .verticalTimelineItem.rightSide {
     right: 0;
+}
+
+/* Text alignment for right-side elements */
+.verticalTimelineItem.leftSide .textBox {
+    text-align: right;
+}
+
+/* Text alignment for right-side elements */
+.verticalTimelineItem.rightSide .textBox {
+    text-align: left;
 }
 
 /* Connection lines for vertical timeline */

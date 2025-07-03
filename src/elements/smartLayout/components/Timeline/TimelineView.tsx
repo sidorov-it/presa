@@ -23,7 +23,6 @@ export default function TimelineView({
     const isReadOnly = true;
 
     const direction = element.direction || 'horizontal';
-    const align = element.align || 'left';
     const sides = element.sides || 'one';
     const showNumbers = element.showNumbers || false;
     const showLines = element.showLines !== false; // Default to true
@@ -75,9 +74,10 @@ export default function TimelineView({
                         style={
                             {
                                 '--timeline-color': timelineColor,
-                                height: elementPositions.length > 0 
-                                    ? `${Math.max(...elementPositions.map(p => p.top + p.height)) + 40}px`
-                                    : '100%',
+                                height:
+                                    elementPositions.length > 0
+                                        ? `${Math.max(...elementPositions.map(p => p.top + p.height)) + 40}px`
+                                        : '100%',
                             } as React.CSSProperties
                         }
                     >
@@ -107,12 +107,13 @@ export default function TimelineView({
                     </div>
 
                     {/* Content items */}
-                    <div 
+                    <div
                         className={styles.verticalTimelineContent}
                         style={{
-                            height: elementPositions.length > 0 
-                                ? `${Math.max(...elementPositions.map(p => p.top + p.height)) + 40}px`
-                                : '100%',
+                            height:
+                                elementPositions.length > 0
+                                    ? `${Math.max(...elementPositions.map(p => p.top + p.height)) + 40}px`
+                                    : '100%',
                         }}
                     >
                         {itemsIds.map((itemId, index) => {
@@ -144,7 +145,7 @@ export default function TimelineView({
                                         />
                                     )}
 
-                                    <div className={`${styles.textBox} ${align ? styles[align] : ''}`}>
+                                    <div className={`${styles.textBox}`}>
                                         <Tiptap
                                             isReadOnly={isReadOnly}
                                             defaultContent={item.text}
@@ -273,7 +274,7 @@ export default function TimelineView({
                 data-smart-layout-item-id={itemId}
                 style={getItemStyle()}
             >
-                <div className={`${styles.textBox} ${align ? styles[align] : ''}`} style={{ position: 'relative' }}>
+                <div className={`${styles.textBox}`} style={{ position: 'relative' }}>
                     {/* Connection line between timeline and content */}
                     {showLines && (
                         <div
