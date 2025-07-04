@@ -72,7 +72,7 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
 
         // Launch Puppeteer browser
         const browser = await puppeteer.launch({
-            headless: true,
+            headless: false,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
@@ -90,7 +90,7 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
         // Set large initial viewport to ensure content fits
         await page.setViewport({
             width: 1034,
-            height: 3000, // Increased height to accommodate variable content
+            height: 580 + 40, // Increased height to accommodate variable content
             deviceScaleFactor: 2, // Higher DPI for better quality
         });
 
@@ -101,13 +101,11 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
         const pdfPages: Buffer[] = [];
 
         // Determine which slides to process
-        const slidesToProcess =
-            slideIndex !== null
-                ? [slideIndex]
-                : visibleSlides.map((_, i) => i);
+        const slidesToProcess = slideIndex !== null ? [slideIndex] : visibleSlides.map((_, i) => i);
 
         for (const i of slidesToProcess) {
             const slideUrl = `${baseUrl}/view/${presentationId}/slide/${i}?pdf=true`;
+            // const slideUrl = `${baseUrl}/view/${presentationId}/slide/${i}`;
 
             try {
                 // Navigate to slide page
@@ -117,32 +115,32 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
                 });
 
                 // Add CSS to ensure proper PDF layout
-                await page.addStyleTag({
-                    content: `
-                        body { 
-                            margin: 0 !important; 
-                            padding: 0 !important; 
-                            overflow: visible !important;
-                        }
-                        .slideWrapper { 
-                            // min-height: auto !important; 
-                            // height: auto !important; 
-                            overflow: visible !important;
-                            width: 1032px !important; /* Standard slide width */
-                        }
-                        .slideContent { 
-                            // min-height: auto !important; 
-                            // height: auto !important; 
-                            overflow: visible !important;
-                        }
-                        .slideContainer { 
-                            // min-height: auto !important; 
-                            // height: auto !important; 
-                            overflow: visible !important;
-                            // padding: 40px !important;
-                        }
-                    `,
-                });
+                // await page.addStyleTag({
+                //     content: `
+                //         body {
+                //             margin: 0 !important;
+                //             padding: 0 !important;
+                //             overflow: visible !important;
+                //         }
+                //         .slideWrapper {
+                //             // min-height: auto !important;
+                //             // height: auto !important;
+                //             overflow: visible !important;
+                //             width: 1032px !important; /* Standard slide width */
+                //         }
+                //         .slideContent {
+                //             // min-height: auto !important;
+                //             // height: auto !important;
+                //             overflow: visible !important;
+                //         }
+                //         .slideContainer {
+                //             // min-height: auto !important;
+                //             // height: auto !important;
+                //             overflow: visible !important;
+                //             // padding: 40px !important;
+                //         }
+                //     `,
+                // });
 
                 // Wait for content to fully load and render
                 await new Promise(resolve => setTimeout(resolve, 2000));
@@ -163,8 +161,8 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
                 if (slideElement) {
                     const boundingBox = await slideElement.boundingBox();
                     if (boundingBox) {
-                        slideWidth = boundingBox.width;
-                        slideHeight = boundingBox.height;
+                        slideWidth = Math.ceil(boundingBox.width);
+                        slideHeight = Math.ceil(boundingBox.height);
                     }
                 }
 
@@ -213,7 +211,7 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
             }
         }
 
-        await browser.close();
+        // await browser.close();
 
         if (pdfPages.length === 0) {
             return NextResponse.json({ error: 'Failed to generate PDF pages' }, { status: 500 });

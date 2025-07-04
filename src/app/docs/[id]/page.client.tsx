@@ -209,7 +209,7 @@ export default function PresentationEditorPage() {
     const loadThemes = useThemeStore(state => state.loadThemes);
     const currentTheme = useThemeStore(state => state.currentTheme);
     const setCurrentTheme = useThemeStore(state => state.setCurrentTheme);
-    const defaultTheme = useThemeStore(state => state.defaultThemes[0]);
+    // const defaultTheme = useThemeStore(state => state.defaultThemes[0]);
 
     const { colorMode } = useColorMode();
 
@@ -286,7 +286,7 @@ export default function PresentationEditorPage() {
     // Apply theme when presentation is loaded or themes change
     useEffect(() => {
         if (!presentationMeta || !presentationMeta.themeId) {
-            setCurrentTheme(defaultThemes[0]);
+            // setCurrentTheme(defaultThemes[0]);
             return;
         }
 
@@ -341,7 +341,7 @@ export default function PresentationEditorPage() {
         []
     );
 
-    if (isLoading) return loadingUI;
+    if (isLoading || !currentTheme) return loadingUI;
     if (notFound) return <NotFoundPage />;
 
     return (
@@ -349,9 +349,10 @@ export default function PresentationEditorPage() {
             <ReadOnlyProvider isReadOnly={false}>
                 <SavingStatusAlert />
                 <ThemeStylesApplier
-                    theme={currentTheme || defaultTheme}
+                    theme={currentTheme}
                     backgroundSettings={{}}
                     className={styles.container}
+                    colorMode={colorMode}
                 >
                     <MobileWarningOverlay />
                     <div ref={containerRef} className={colorMode === 'dark' ? 'dark' : ''}>

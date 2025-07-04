@@ -1,22 +1,22 @@
 /* PDF Export specific styles */
 .pdfExport {
-    width: 100% !important;
+    /* width: 100% !important;
     height: auto !important;
     min-height: auto !important;
     overflow: visible !important;
     padding: 0 !important;
-    margin: 0 !important;
+    margin: 0 !important; */
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
 }
 
 .pdfExport .slideViewerWrapper {
-    min-height: auto !important;
+    /* min-height: auto !important;
     height: auto !important;
     width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    max-width: none !important; */
+    margin: 20px;
+    /* padding: 0 !important; */
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
 }
@@ -82,6 +82,8 @@
 .slideWrapper {
     margin-top: 20px;
     margin-bottom: 44px;
+    margin-left: 20px;
+    margin-right: 20px;
     border-radius: var(--presentation-slide-border-radius);
 }
 
@@ -89,4 +91,8 @@
     /* top: 20px;
     bottom: 44px; */
     border-radius: var(--presentation-slide-border-radius);
+}
+
+.slideContent {
+    box-shadow: none !important;
 }

@@ -2,10 +2,11 @@ import { prisma } from '@/lib/prisma';
 import { SlideViewer } from '@/components/viewer';
 import ViewerProvider from '@/components/viewer/ViewerProvider';
 import { notFound } from 'next/navigation';
-import themeToCSSVariables from '@/utils/themeCssVariables';
 import { Theme } from '@/types/theme';
 import type { Metadata } from 'next';
 import createNewTheme from '@/utils/theme/createNewTheme';
+import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
+import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 
 export const metadata: Metadata = {
     title: 'Слайд презентации',
@@ -16,7 +17,6 @@ export default async function SlidePage(props: {
     params: Promise<{ id: string; index: string }>;
     searchParams: Promise<{ pdf?: string }>;
 }) {
-    // const { id, index } = params;
     const { id, index } = await props.params;
     const searchParams = await props.searchParams;
     const isPdfExport = searchParams.pdf === 'true';
@@ -69,8 +69,6 @@ export default async function SlidePage(props: {
         };
     }
 
-    const themeStyle = themeToCSSVariables(finalTheme, backgroundSettings);
-
     const pageStyle: React.CSSProperties = {};
     if (slide.templateType === 'imageBackground' && slide.imageUrl) {
         pageStyle.backgroundImage = `url(${slide.imageUrl})`;
@@ -86,26 +84,47 @@ export default async function SlidePage(props: {
     // PDF-specific styles
     if (isPdfExport) {
         pageStyle.width = '100vw';
-        // pageStyle.height = 'auto';
-        // pageStyle.minHeight = 'auto';
         pageStyle.margin = '0';
         pageStyle.padding = '0';
         pageStyle.overflow = 'visible';
     }
 
     return (
-        <ViewerProvider>
-            <div style={themeStyle}>
-                <div style={pageStyle}>
-                    <SlideViewer
-                        theme={finalTheme}
-                        slide={slide}
-                        primaryAccentColor={finalTheme.colors.primaryAccent}
-                        fullPage={true}
-                        isPdfExport={isPdfExport}
-                    />
-                </div>
-            </div>
-        </ViewerProvider>
+        <ReadOnlyProvider isReadOnly={true}>
+            <ThemeStylesApplier theme={finalTheme} backgroundSettings={backgroundSettings}>
+                <ViewerProvider>
+                    <div
+                        style={
+                            {
+                                width: '100%',
+                                minHeight: '100vh',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: 'var(--presentation-page-background-color)',
+                                backgroundImage: 'var(--presentation-page-background-image)',
+                                backgroundSize: 'cover',
+                                // backgroundPosition: 'center',
+                                backgroundRepeat: 'no-repeat',
+                                // backgroundAttachment: 'fixed',
+                                // padding: '3rem',
+                                // Define the same CSS variables as in the main presentation view
+                                '--card-width': 'min(100vw, calc(100vh * 1.7777777777777777))',
+                                '--card-height': 'calc(var(--card-width) / 1.7777777777777777 - 64px)',
+                            } as React.CSSProperties
+                        }
+                        data-read-only="true"
+                    >
+                        <SlideViewer
+                            theme={finalTheme}
+                            slide={slide}
+                            primaryAccentColor={finalTheme.colors.primaryAccent}
+                            fullPage={true}
+                            isPdfExport={isPdfExport}
+                        />
+                    </div>
+                </ViewerProvider>
+            </ThemeStylesApplier>
+        </ReadOnlyProvider>
     );
 }
