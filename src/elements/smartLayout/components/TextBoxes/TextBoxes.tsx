@@ -248,6 +248,7 @@ export default function TextBoxes({
                         data-smart-layout-item-id={itemId}
                         style={{
                             width: `calc(${elementWidth} - 1em)`,
+                            borderColor: 'red',
                         }}
                         onDragOver={e => handleDragOver(e, itemId)}
                         onDragLeave={handleDragLeave}

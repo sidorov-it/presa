@@ -9,6 +9,7 @@ import Tooltip from '@/components/tooltip/Tooltip';
 import BorderWidthSelector from '../BorderWidthSelector/BorderWidthSelector';
 import ShadowSelector from '../ShadowSelector/ShadowSelector';
 import { BsCircle, BsCircleFill, BsCircleHalf } from 'react-icons/bs';
+import { produce } from 'immer';
 
 const blockFillColorsTypes = [
     // {
@@ -30,7 +31,7 @@ export default function BlockDesign({
     handleDesignChange,
 }: {
     theme: Theme;
-    handleDesignChange: (design: Partial<ThemeDesign>) => void;
+    handleDesignChange: (design: Partial<ThemeDesign> | ((currentTheme: Theme) => Partial<ThemeDesign>)) => void;
 }) {
     return (
         <div
@@ -51,7 +52,6 @@ export default function BlockDesign({
                                 blocks: {
                                     ...theme.design.blocks,
                                     blockFillColorsType: e.value as 'subtle' | 'primary' | 'custom',
-                                    // backgroundColor: e.value,
                                 },
                             })
                         }
@@ -86,28 +86,22 @@ export default function BlockDesign({
                                             value={color}
                                             isShowRemoveIcon={true}
                                             onChange={newColor => {
-                                                const newCustomColors = [
-                                                    ...theme.design.blocks.blockBackgroundCustomColors,
-                                                ];
-                                                newCustomColors[index] = newColor;
-                                                handleDesignChange({
+                                                handleDesignChange((currentTheme: Theme) => ({
                                                     blocks: {
-                                                        ...theme.design.blocks,
-                                                        blockBackgroundCustomColors: newCustomColors,
+                                                        ...currentTheme.design.blocks,
+                                                        blockBackgroundCustomColors: currentTheme.design.blocks.blockBackgroundCustomColors.map((color, i) => 
+                                                            i === index ? newColor : color
+                                                        ),
                                                     },
-                                                });
+                                                }));
                                             }}
                                             handleRemove={() => {
-                                                const newCustomColors = [
-                                                    ...theme.design.blocks.blockBackgroundCustomColors,
-                                                ];
-                                                newCustomColors.splice(index, 1);
-                                                handleDesignChange({
+                                                handleDesignChange((currentTheme: Theme) => ({
                                                     blocks: {
-                                                        ...theme.design.blocks,
-                                                        blockBackgroundCustomColors: newCustomColors,
+                                                        ...currentTheme.design.blocks,
+                                                        blockBackgroundCustomColors: currentTheme.design.blocks.blockBackgroundCustomColors.filter((_, i) => i !== index),
                                                     },
-                                                });
+                                                }));
                                             }}
                                         />
                                     )
@@ -117,16 +111,15 @@ export default function BlockDesign({
                                     variant="solid"
                                     disabled={theme.design.blocks.blockBackgroundCustomColors?.length >= 5}
                                     onClick={() => {
-                                        if (theme.design.blocks.blockBackgroundCustomColors?.length >= 5) return;
-                                        handleDesignChange({
+                                        handleDesignChange((currentTheme: Theme) => ({
                                             blocks: {
-                                                ...theme.design.blocks,
+                                                ...currentTheme.design.blocks,
                                                 blockBackgroundCustomColors: [
-                                                    ...(theme.design.blocks.blockBackgroundCustomColors || []),
+                                                    ...currentTheme.design.blocks.blockBackgroundCustomColors,
                                                     '#000000',
                                                 ],
                                             },
-                                        });
+                                        }));
                                     }}
                                 >
                                     Добавить цвет

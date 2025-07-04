@@ -82,6 +82,7 @@
     "eslint-plugin-unused-imports": "^4.1.4",
     "framer-motion": "^12.7.4",
     "gigachat": "^0.0.14",
+    "immer": "^10.1.1",
     "jsdom": "^26.1.0",
     "jspdf": "^3.0.1",
     "lucide-react": "^0.486.0",

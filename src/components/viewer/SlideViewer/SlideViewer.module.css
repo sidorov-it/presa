@@ -78,3 +78,15 @@
     border-radius: 50% !important;
     overflow: hidden !important;
 }
+
+.slideWrapper {
+    margin-top: 20px;
+    margin-bottom: 44px;
+    border-radius: var(--presentation-slide-border-radius);
+}
+
+.slideWrapper::before {
+    /* top: 20px;
+    bottom: 44px; */
+    border-radius: var(--presentation-slide-border-radius);
+}

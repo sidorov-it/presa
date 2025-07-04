@@ -150,12 +150,14 @@ export function themeToCSSVariables(theme: Theme, backgroundSettings?: Backgroun
         // For primary type, use the primary accent color
         set('--presentation-block-background', theme.colors.primaryAccent);
         set('--presentation-block-border-color', getBorderColorForBackground(theme.colors.primaryAccent));
+        set('--presentation-block-text-color', getContrastTextColor(theme.colors.primaryAccent));
     } else if (theme.design.blocks.blockFillColorsType === 'custom') {
         // For custom type, use the custom colors
         if (theme.design.blocks.blockBackgroundCustomColors.length > 0) {
             theme.design.blocks.blockBackgroundCustomColors.forEach((color, idx) => {
                 set(`--presentation-block-background-custom-${idx + 1}`, color);
                 set(`--presentation-block-border-color-custom-${idx + 1}`, getBorderColorForBackground(color));
+                set(`--presentation-block-text-color-custom-${idx + 1}`, getContrastTextColor(color));
             });
             // Set the first custom color as default background
             set('--presentation-block-background', theme.design.blocks.blockBackgroundCustomColors[0]);

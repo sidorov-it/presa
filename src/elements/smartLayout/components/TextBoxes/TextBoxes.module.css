@@ -18,10 +18,22 @@
     position: relative;
     transition: box-shadow 0.2s ease;
 
-    /* border-radius: var(--presentation-slide-border-radius);
-    border-width: var(--presentation-block-border-width); */
+    /* border-width: var(--presentation-block-border-width); */
     z-index: 1;
     /* overflow: hidden; */
+}
+
+.itemContainer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--presentation-block-background, var(--color-surface));
+    opacity: var(--presentation-block-background-opacity, 0);
+    border-radius: var(--presentation-slide-border-radius);
+    z-index: -1;
 }
 
 .itemContainer:hover {
@@ -64,10 +76,12 @@
     z-index: 1;
 
 }
+/* [style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 1"] .itemContainer::before { */
 
 
 [style*="--presentation-block-background-custom-type: primary"] .textBox {
     border-color: var(--presentation-block-border-color, var(--color-border));
+    color: var(--presentation-block-text-color, var(--color-text));
 }
 
 /* [style*="--presentation-block-background-custom-count: 1"] .itemContainer::before {
@@ -78,121 +92,126 @@
     background-color: var(--presentation-block-background, var(--color-surface));
 }
 
-[style*="--presentation-block-background-custom-count: 1"] .itemContainer::before {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 1"] .itemContainer::before {
     background: var(--presentation-block-background-custom-1, var(--presentation-block-background));
 }
 
-[style*="--presentation-block-background-custom-count: 2"] .itemContainer:nth-child(2n+1)::before {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 2"] .itemContainer:nth-child(2n+1)::before {
     background: var(--presentation-block-background-custom-1, var(--presentation-block-background));
 }
-[style*="--presentation-block-background-custom-count: 2"] .itemContainer:nth-child(2n)::before {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 2"] .itemContainer:nth-child(2n)::before {
     background: var(--presentation-block-background-custom-2, var(--presentation-block-background));
 }
 
-[style*="--presentation-block-background-custom-count: 3"] .itemContainer:nth-child(3n+1)::before {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 3"] .itemContainer:nth-child(3n+1)::before {
     background: var(--presentation-block-background-custom-1, var(--presentation-block-background));
 }
-[style*="--presentation-block-background-custom-count: 3"] .itemContainer:nth-child(3n+2)::before {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 3"] .itemContainer:nth-child(3n+2)::before {
     background: var(--presentation-block-background-custom-2, var(--presentation-block-background));
 }
-[style*="--presentation-block-background-custom-count: 3"] .itemContainer:nth-child(3n)::before {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 3"] .itemContainer:nth-child(3n)::before {
     background: var(--presentation-block-background-custom-3, var(--presentation-block-background));
 }
 
-[style*="--presentation-block-background-custom-count: 4"] .itemContainer:nth-child(4n+1)::before {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 4"] .itemContainer:nth-child(4n+1)::before {
     background: var(--presentation-block-background-custom-1, var(--presentation-block-background));
 }
-[style*="--presentation-block-background-custom-count: 4"] .itemContainer:nth-child(4n+2)::before {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 4"] .itemContainer:nth-child(4n+2)::before {
     background: var(--presentation-block-background-custom-2, var(--presentation-block-background));
 }
-[style*="--presentation-block-background-custom-count: 4"] .itemContainer:nth-child(4n+3)::before {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 4"] .itemContainer:nth-child(4n+3)::before {
     background: var(--presentation-block-background-custom-3, var(--presentation-block-background));
 }
-[style*="--presentation-block-background-custom-count: 4"] .itemContainer:nth-child(4n)::before {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 4"] .itemContainer:nth-child(4n)::before {
     background: var(--presentation-block-background-custom-4, var(--presentation-block-background));
 }
 
-[style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n+1)::before {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n+1)::before {
     background: var(--presentation-block-background-custom-1, var(--presentation-block-background));
 }
-[style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n+2)::before {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n+2)::before {
     background: var(--presentation-block-background-custom-2, var(--presentation-block-background));
 }
-[style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n+3)::before {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n+3)::before {
     background: var(--presentation-block-background-custom-3, var(--presentation-block-background));
 }
-[style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n+4)::before {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n+4)::before {
     background: var(--presentation-block-background-custom-4, var(--presentation-block-background));
 }
-[style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n)::before {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n)::before {
     background: var(--presentation-block-background-custom-5, var(--presentation-block-background));}
 
 
-[style*="--presentation-block-background-custom-count: 1"] .itemContainer {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 1"] .textBox {
     border-color: var(--presentation-block-border-color-custom-1, var(--color-border));
+    color: var(--presentation-block-text-color-custom-1, var(--color-text));
 }
 
-[style*="--presentation-block-background-custom-count: 1"] .itemContainer {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 1"] .textBox {
     border-color: var(--presentation-block-border-color-custom-1, var(--color-border));
+    color: var(--presentation-block-text-color-custom-1, var(--color-text));
 }
 
-[style*="--presentation-block-background-custom-count: 2"] .itemContainer:nth-child(2n+1) {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 2"] .itemContainer:nth-child(2n+1) .textBox {
     border-color: var(--presentation-block-border-color-custom-1, var(--color-border));
+    color: var(--presentation-block-text-color-custom-1, var(--color-text));
 }
-[style*="--presentation-block-background-custom-count: 2"] .itemContainer:nth-child(2n) {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 2"] .itemContainer:nth-child(2n) .textBox {
     border-color: var(--presentation-block-border-color-custom-2, var(--color-border));
+    color: var(--presentation-block-text-color-custom-2, var(--color-text));
 }
 
-[style*="--presentation-block-background-custom-count: 3"] .itemContainer:nth-child(3n+1) {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 3"] .itemContainer:nth-child(3n+1) .textBox {
     border-color: var(--presentation-block-border-color-custom-1, var(--color-border));
+    color: var(--presentation-block-text-color-custom-1, var(--color-text));
 }
-[style*="--presentation-block-background-custom-count: 3"] .itemContainer:nth-child(3n+2) {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 3"] .itemContainer:nth-child(3n+2) .textBox {
     border-color: var(--presentation-block-border-color-custom-2, var(--color-border));
+    color: var(--presentation-block-text-color-custom-2, var(--color-text));
 }
-[style*="--presentation-block-background-custom-count: 3"] .itemContainer:nth-child(3n) {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 3"] .itemContainer:nth-child(3n) .textBox {
     border-color: var(--presentation-block-border-color-custom-3, var(--color-border));
+    color: var(--presentation-block-text-color-custom-3, var(--color-text));
 }
 
-[style*="--presentation-block-background-custom-count: 4"] .itemContainer:nth-child(4n+1) {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 4"] .itemContainer:nth-child(4n+1) .textBox {
     border-color: var(--presentation-block-border-color-custom-1, var(--color-border));
+    color: var(--presentation-block-text-color-custom-1, var(--color-text));
 }
-[style*="--presentation-block-background-custom-count: 4"] .itemContainer:nth-child(4n+2) {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 4"] .itemContainer:nth-child(4n+2) .textBox {
     border-color: var(--presentation-block-border-color-custom-2, var(--color-border));
+    color: var(--presentation-block-text-color-custom-2, var(--color-text));
 }
-[style*="--presentation-block-background-custom-count: 4"] .itemContainer:nth-child(4n+3) {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 4"] .itemContainer:nth-child(4n+3) .textBox {
     border-color: var(--presentation-block-border-color-custom-3, var(--color-border));
+    color: var(--presentation-block-text-color-custom-3, var(--color-text));
 }
-[style*="--presentation-block-background-custom-count: 4"] .itemContainer:nth-child(4n) {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 4"] .itemContainer:nth-child(4n) .textBox {
     border-color: var(--presentation-block-border-color-custom-4, var(--color-border));
+    color: var(--presentation-block-text-color-custom-4, var(--color-text));
 }
 
-[style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n+1) {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n+1) .textBox {
     border-color: var(--presentation-block-border-color-custom-1, var(--color-border));
+    color: var(--presentation-block-text-color-custom-1, var(--color-text));
 }
-[style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n+2) {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n+2) .textBox {
     border-color: var(--presentation-block-border-color-custom-2, var(--color-border));
+    color: var(--presentation-block-text-color-custom-2, var(--color-text));
 }
-[style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n+3) {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n+3) .textBox {
     border-color: var(--presentation-block-border-color-custom-3, var(--color-border));
+    color: var(--presentation-block-text-color-custom-3, var(--color-text));
 }
-[style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n+4) {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n+4) .textBox {
     border-color: var(--presentation-block-border-color-custom-4, var(--color-border));
+    color: var(--presentation-block-text-color-custom-4, var(--color-text));
 }
-[style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n) {
+[style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 5"] .itemContainer:nth-child(5n) .textBox {
     border-color: var(--presentation-block-border-color-custom-5, var(--color-border));
+    color: var(--presentation-block-text-color-custom-5, var(--color-text));
 }
 
-.itemContainer::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--presentation-block-background, var(--color-surface));
-    opacity: var(--presentation-block-background-opacity, 0);
-    z-index: -1;
-}
 .textBox:hover {
     box-shadow: var(--presentation-box-shadow-hover, 0 4px 6px rgba(0, 0, 0, 0.1));
 }

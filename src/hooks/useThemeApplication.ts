@@ -1,3 +1,4 @@
+/* eslint-disable indent, prettier/prettier, no-nested-ternary */
 import { useEffect, useRef, useCallback } from 'react';
 import { Theme } from '@/types/theme';
 import getContrastTextColor from '@/utils/getContrastTextColor';
@@ -45,10 +46,12 @@ const createThemeHash = (theme: Theme, backgroundSettings?: BackgroundSettings):
             blocks: theme.design.blocks,
             buttons: theme.design.buttons,
         },
-        backgroundSettings: backgroundSettings ? {
-            backgroundColor: backgroundSettings.backgroundColor,
-            backgroundImage: backgroundSettings.backgroundImage,
-        } : null,
+        backgroundSettings: backgroundSettings
+            ? {
+                backgroundColor: backgroundSettings.backgroundColor,
+                backgroundImage: backgroundSettings.backgroundImage,
+            }
+            : null,
     };
     return JSON.stringify(themeData);
 };
@@ -56,19 +59,19 @@ const createThemeHash = (theme: Theme, backgroundSettings?: BackgroundSettings):
 // Debounce utility function with cancel support
 const debounce = <T extends (...args: any[]) => void>(func: T, wait: number): T & { cancel: () => void } => {
     let timeout: NodeJS.Timeout | null = null;
-    
+
     const debouncedFunction = ((...args: any[]) => {
         if (timeout) clearTimeout(timeout);
         timeout = setTimeout(() => func(...args), wait);
     }) as T & { cancel: () => void };
-    
+
     debouncedFunction.cancel = () => {
         if (timeout) {
             clearTimeout(timeout);
             timeout = null;
         }
     };
-    
+
     return debouncedFunction;
 };
 
@@ -89,7 +92,8 @@ const applyThemeStyles = ({
 }) => {
     // Helper function to set CSS variable only if it changed
     const setCSSVariableIfChanged = (property: string, newValue: string, oldValue?: string) => {
-        if (newValue !== oldValue) {
+        // Force set on first render (when previousTheme is null) or when values actually changed
+        if (previousTheme === null || newValue !== oldValue) {
             container.style.setProperty(property, newValue);
         }
     };
@@ -101,12 +105,24 @@ const applyThemeStyles = ({
 
     // Base colors
     setCSSVariableIfChanged('--presentation-primary-accent', theme.colors.primaryAccent, prevColors?.primaryAccent);
-    setCSSVariableIfChanged('--presentation-accent-blocks-color', theme.colors.primaryAccent, prevColors?.primaryAccent);
+    setCSSVariableIfChanged(
+        '--presentation-accent-blocks-color',
+        theme.colors.primaryAccent,
+        prevColors?.primaryAccent
+    );
 
     // Text colors
-    setCSSVariableIfChanged('--presentation-heading-color', theme.typography.headingColor, prevTypography?.headingColor);
+    setCSSVariableIfChanged(
+        '--presentation-heading-color',
+        theme.typography.headingColor,
+        prevTypography?.headingColor
+    );
     setCSSVariableIfChanged('--presentation-text-color', theme.typography.bodyColor, prevTypography?.bodyColor);
-    setCSSVariableIfChanged('--presentation-slide-background', theme.colors.slideBackground, prevColors?.slideBackground);
+    setCSSVariableIfChanged(
+        '--presentation-slide-background',
+        theme.colors.slideBackground,
+        prevColors?.slideBackground
+    );
 
     // Handle page background
     if (theme.colors.pageBackground || backgroundSettings?.backgroundColor) {
@@ -118,7 +134,7 @@ const applyThemeStyles = ({
         } else {
             backgroundColor = '#f9fafb';
         }
-        
+
         const prevBackgroundColor = prevColors?.pageBackground?.color || '#f9fafb';
         setCSSVariableIfChanged('--presentation-page-background-color', backgroundColor, prevBackgroundColor);
 
@@ -131,7 +147,7 @@ const applyThemeStyles = ({
         }
 
         const prevImageUrl = prevColors?.pageBackground?.imageUrl?.trim() || '';
-        
+
         if (imageUrl !== prevImageUrl) {
             if (imageUrl) {
                 container.style.setProperty('--presentation-page-background-image', `url(${imageUrl})`);
@@ -159,38 +175,78 @@ const applyThemeStyles = ({
     }
 
     // Typography
-    setCSSVariableIfChanged('--presentation-heading-font', `'${theme.typography.headingFont}', sans-serif`, 
-        prevTypography ? `'${prevTypography.headingFont}', sans-serif` : undefined);
-    setCSSVariableIfChanged('--presentation-heading-weight', theme.typography.headingWeight.toString(), 
-        prevTypography?.headingWeight.toString());
-    setCSSVariableIfChanged('--presentation-body-font', `'${theme.typography.bodyFont}', sans-serif`,
-        prevTypography ? `'${prevTypography.bodyFont}', sans-serif` : undefined);
-    setCSSVariableIfChanged('--presentation-body-weight', theme.typography.bodyWeight.toString(),
-        prevTypography?.bodyWeight.toString());
+    setCSSVariableIfChanged(
+        '--presentation-heading-font',
+        `'${theme.typography.headingFont}', sans-serif`,
+        prevTypography ? `'${prevTypography.headingFont}', sans-serif` : undefined
+    );
+    setCSSVariableIfChanged(
+        '--presentation-heading-weight',
+        theme.typography.headingWeight.toString(),
+        prevTypography?.headingWeight.toString()
+    );
+    setCSSVariableIfChanged(
+        '--presentation-body-font',
+        `'${theme.typography.bodyFont}', sans-serif`,
+        prevTypography ? `'${prevTypography.bodyFont}', sans-serif` : undefined
+    );
+    setCSSVariableIfChanged(
+        '--presentation-body-weight',
+        theme.typography.bodyWeight.toString(),
+        prevTypography?.bodyWeight.toString()
+    );
 
     // Heading typography
-    setCSSVariableIfChanged('--presentation-heading-line-height', theme.typography.headingLineHeight.toString(),
-        prevTypography?.headingLineHeight.toString());
-    setCSSVariableIfChanged('--presentation-heading-letter-spacing', theme.typography.headingLetterSpacing + 'px',
-        prevTypography ? prevTypography.headingLetterSpacing + 'px' : undefined);
-    setCSSVariableIfChanged('--presentation-heading-capitalization', 
-        theme.typography.headingCapitalization === 'none' ? 'none' : 'uppercase',
-        prevTypography ? (prevTypography.headingCapitalization === 'none' ? 'none' : 'uppercase') : undefined);
+    setCSSVariableIfChanged(
+        '--presentation-heading-line-height',
+        theme.typography.headingLineHeight.toString(),
+        prevTypography?.headingLineHeight.toString()
+    );
+    setCSSVariableIfChanged(
+        '--presentation-heading-letter-spacing',
+        theme.typography.headingLetterSpacing + 'px',
+        prevTypography ? prevTypography.headingLetterSpacing + 'px' : undefined
+    );
+
+    const headingCapitalization = theme.typography.headingCapitalization === 'none' ? 'none' : 'uppercase';
+    const prevHeadingCapitalization = prevTypography
+        ? prevTypography.headingCapitalization === 'none'
+            ? 'none'
+            : 'uppercase'
+        : undefined;
+    setCSSVariableIfChanged('--presentation-heading-capitalization', headingCapitalization, prevHeadingCapitalization);
 
     // Body typography
-    setCSSVariableIfChanged('--presentation-body-line-height', theme.typography.bodyLineHeight.toString(),
-        prevTypography?.bodyLineHeight.toString());
-    setCSSVariableIfChanged('--presentation-body-letter-spacing', theme.typography.bodyLetterSpacing + 'px',
-        prevTypography ? prevTypography.bodyLetterSpacing + 'px' : undefined);
-    setCSSVariableIfChanged('--presentation-body-capitalization',
-        theme.typography.bodyCapitalization === 'none' ? 'none' : 'uppercase',
-        prevTypography ? (prevTypography.bodyCapitalization === 'none' ? 'none' : 'uppercase') : undefined);
+    setCSSVariableIfChanged(
+        '--presentation-body-line-height',
+        theme.typography.bodyLineHeight.toString(),
+        prevTypography?.bodyLineHeight.toString()
+    );
+    setCSSVariableIfChanged(
+        '--presentation-body-letter-spacing',
+        theme.typography.bodyLetterSpacing + 'px',
+        prevTypography ? prevTypography.bodyLetterSpacing + 'px' : undefined
+    );
+
+    const bodyCapitalization = theme.typography.bodyCapitalization === 'none' ? 'none' : 'uppercase';
+    const prevBodyCapitalization = prevTypography
+        ? prevTypography.bodyCapitalization === 'none'
+            ? 'none'
+            : 'uppercase'
+        : undefined;
+    setCSSVariableIfChanged('--presentation-body-capitalization', bodyCapitalization, prevBodyCapitalization);
 
     // Slide design
-    setCSSVariableIfChanged('--presentation-slide-border-radius', theme.design.slide.borderRadius,
-        prevDesign?.slide.borderRadius);
-    setCSSVariableIfChanged('--presentation-slide-opacity', theme.design.slide.opacity.toString(),
-        prevDesign?.slide.opacity.toString());
+    setCSSVariableIfChanged(
+        '--presentation-slide-border-radius',
+        theme.design.slide.borderRadius,
+        prevDesign?.slide.borderRadius
+    );
+    setCSSVariableIfChanged(
+        '--presentation-slide-opacity',
+        theme.design.slide.opacity.toString(),
+        prevDesign?.slide.opacity.toString()
+    );
 
     // Shadow
     const shadow = theme.design.slide.shadow;
@@ -202,8 +258,10 @@ const applyThemeStyles = ({
         if (shadow === 'none') {
             container.style.setProperty('--presentation-slide-shadow', 'none');
         } else if (shadow === 'sm') {
-            container.style.setProperty('--presentation-slide-shadow',
-                `0 10px 15px -3px ${boxShadowColor},0 4px 6px -2px ${boxShadowColor}`);
+            container.style.setProperty(
+                '--presentation-slide-shadow',
+                `0 10px 15px -3px ${boxShadowColor},0 4px 6px -2px ${boxShadowColor}`
+            );
         } else if (shadow === 'md') {
             container.style.setProperty('--presentation-slide-shadow', `${boxShadowColor} 4px 4px 0px 0px`);
         }
@@ -216,15 +274,20 @@ const applyThemeStyles = ({
         medium: '4px',
         thick: '5px',
     };
-    setCSSVariableIfChanged('--presentation-slide-border-width',
+    setCSSVariableIfChanged(
+        '--presentation-slide-border-width',
         borderWidthMap[theme.design.slide.borderWidth] || '0px',
-        prevDesign ? (borderWidthMap[prevDesign.slide.borderWidth] || '0px') : undefined);
+        prevDesign ? borderWidthMap[prevDesign.slide.borderWidth] || '0px' : undefined
+    );
 
-    setCSSVariableIfChanged('--presentation-slide-border-color', theme.design.slide.borderColor,
-        prevDesign?.slide.borderColor);
+    setCSSVariableIfChanged(
+        '--presentation-slide-border-color',
+        theme.design.slide.borderColor,
+        prevDesign?.slide.borderColor
+    );
 
     // Image masks
-    const getMaskImages = (imageShape: string | null) => {
+    const getMaskImages = (imageShape: string | null | undefined) => {
         const maskMap = {
             default: { left: 'none', right: 'none', top: 'none' },
             fade: {
@@ -257,28 +320,33 @@ const applyThemeStyles = ({
             return maskMap.default;
         }
 
-        return maskMap[imageShape as keyof typeof maskMap];
+        return maskMap[imageShape as keyof typeof maskMap] || maskMap.default;
     };
 
     const maskImages = getMaskImages(theme.design.slide.imageShape);
     const prevMaskImages = getMaskImages(prevDesign?.slide.imageShape);
-    
+
     setCSSVariableIfChanged('--presentation-slide-image-mask-image-left', maskImages.left, prevMaskImages.left);
     setCSSVariableIfChanged('--presentation-slide-image-mask-image-right', maskImages.right, prevMaskImages.right);
     setCSSVariableIfChanged('--presentation-slide-image-mask-image-top', maskImages.top, prevMaskImages.top);
 
     // Block design
-    setCSSVariableIfChanged('--presentation-block-fill-type', theme.design.blocks.backgroundBlockFillType,
-        prevDesign?.blocks.backgroundBlockFillType);
+    setCSSVariableIfChanged(
+        '--presentation-block-fill-type',
+        theme.design.blocks.backgroundBlockFillType,
+        prevDesign?.blocks.backgroundBlockFillType
+    );
 
     const blockOpacityMap = {
         fill: '1',
         semi: '0.5',
         none: '0',
     };
-    setCSSVariableIfChanged('--presentation-block-background-opacity', 
+    setCSSVariableIfChanged(
+        '--presentation-block-background-opacity',
         blockOpacityMap[theme.design.blocks.backgroundBlockFillType] || '0',
-        prevDesign ? (blockOpacityMap[prevDesign.blocks.backgroundBlockFillType] || '0') : undefined);
+        prevDesign ? blockOpacityMap[prevDesign.blocks.backgroundBlockFillType] || '0' : undefined
+    );
 
     const blockBorderWidthMap = {
         none: '0px',
@@ -286,34 +354,66 @@ const applyThemeStyles = ({
         medium: '4px',
         thick: '5px',
     };
-    setCSSVariableIfChanged('--presentation-block-border-width',
+
+    setCSSVariableIfChanged(
+        '--presentation-block-background-custom-type',
+        theme.design.blocks.blockFillColorsType,
+        prevDesign?.blocks.blockFillColorsType
+    );
+
+    setCSSVariableIfChanged(
+        '--presentation-block-border-width',
         blockBorderWidthMap[theme.design.blocks.borderWidth] || '0px',
-        prevDesign ? (blockBorderWidthMap[prevDesign.blocks.borderWidth] || '0px') : undefined);
+        prevDesign ? blockBorderWidthMap[prevDesign.blocks.borderWidth] || '0px' : undefined
+    );
 
     // Block fill colors
     if (theme.design.blocks.blockFillColorsType !== 'custom') {
-        setCSSVariableIfChanged('--presentation-block-background', theme.colors.primaryAccent,
-            prevDesign?.blocks.blockFillColorsType !== 'custom' ? prevColors?.primaryAccent : undefined);
-        setCSSVariableIfChanged('--presentation-block-border-color',
+        setCSSVariableIfChanged(
+            '--presentation-block-background',
+            theme.colors.primaryAccent,
+            prevDesign?.blocks.blockFillColorsType !== 'custom' ? prevColors?.primaryAccent : undefined
+        );
+        setCSSVariableIfChanged(
+            '--presentation-block-border-color',
             getBorderColorForBackground(theme.colors.primaryAccent),
-            prevDesign?.blocks.blockFillColorsType !== 'custom' ? 
-                getBorderColorForBackground(prevColors?.primaryAccent || '') : undefined);
-        setCSSVariableIfChanged('--presentation-block-background-custom-type',
-            theme.design.blocks.blockFillColorsType,
-            prevDesign?.blocks.blockFillColorsType);
+            prevDesign?.blocks.blockFillColorsType !== 'custom'
+                ? getBorderColorForBackground(theme.colors.primaryAccent || '')
+                : undefined
+        );
+        setCSSVariableIfChanged(
+            '--presentation-block-text-color',
+            getContrastTextColor(theme.colors.primaryAccent),
+            prevDesign?.blocks.blockFillColorsType !== 'custom'
+                ? getContrastTextColor(theme.colors.primaryAccent || '')
+                : undefined
+        );
     } else if (theme.design.blocks.blockFillColorsType === 'custom') {
         theme.design.blocks.blockBackgroundCustomColors.forEach((color, index) => {
-            const prevColor = prevDesign?.blocks.blockFillColorsType === 'custom' ? 
-                prevDesign.blocks.blockBackgroundCustomColors[index] : undefined;
+            const prevColor =
+                prevDesign?.blocks.blockFillColorsType === 'custom'
+                    ? prevDesign.blocks.blockBackgroundCustomColors[index]
+                    : undefined;
             setCSSVariableIfChanged(`--presentation-block-background-custom-${index + 1}`, color, prevColor);
-            setCSSVariableIfChanged(`--presentation-block-border-color-custom-${index + 1}`,
+            setCSSVariableIfChanged(
+                `--presentation-block-border-color-custom-${index + 1}`,
                 getBorderColorForBackground(color),
-                prevColor ? getBorderColorForBackground(prevColor) : undefined);
+                prevColor ? getBorderColorForBackground(prevColor) : undefined
+            );
+
+            setCSSVariableIfChanged(
+                `--presentation-block-text-color-custom-${index + 1}`,
+                getContrastTextColor(color),
+                prevColor ? getContrastTextColor(prevColor) : undefined
+            );
         });
-        setCSSVariableIfChanged('--presentation-block-background-custom-count',
+        setCSSVariableIfChanged(
+            '--presentation-block-background-custom-count',
             theme.design.blocks.blockBackgroundCustomColors.length.toString(),
-            prevDesign?.blocks.blockFillColorsType === 'custom' ? 
-                prevDesign.blocks.blockBackgroundCustomColors.length.toString() : undefined);
+            prevDesign?.blocks.blockFillColorsType === 'custom'
+                ? prevDesign.blocks.blockBackgroundCustomColors.length.toString()
+                : undefined
+        );
     }
 
     // Block shadow
@@ -322,23 +422,30 @@ const applyThemeStyles = ({
         sm: '0 1px 2px 0 rgb(0 0 0 / 0.2)',
         md: '0 4px 6px -1px rgb(0 0 0 / 0.4)',
     };
-    setCSSVariableIfChanged('--presentation-block-shadow',
+    setCSSVariableIfChanged(
+        '--presentation-block-shadow',
         shadowMap[theme.design.blocks.shadow] || 'none',
-        prevDesign ? (shadowMap[prevDesign.blocks.shadow] || 'none') : undefined);
+        prevDesign ? shadowMap[prevDesign.blocks.shadow] || 'none' : undefined
+    );
 
     // Button colors
     if (theme.design.buttons.buttonColor) {
-        setCSSVariableIfChanged('--presentation-button-color', theme.design.buttons.buttonColor,
-            prevDesign?.buttons.buttonColor);
+        setCSSVariableIfChanged(
+            '--presentation-button-color',
+            theme.design.buttons.buttonColor,
+            prevDesign?.buttons.buttonColor
+        );
 
         const hoverColor = getHoverColor(theme.design.buttons.buttonColor, 15);
-        const prevHoverColor = prevDesign?.buttons.buttonColor ? 
-            getHoverColor(prevDesign.buttons.buttonColor, 15) : undefined;
+        const prevHoverColor = prevDesign?.buttons.buttonColor
+            ? getHoverColor(prevDesign.buttons.buttonColor, 15)
+            : undefined;
         setCSSVariableIfChanged('--presentation-button-hover-color', hoverColor, prevHoverColor);
-        
+
         const textColor = getContrastTextColor(theme.design.buttons.buttonColor);
-        const prevTextColor = prevDesign?.buttons.buttonColor ? 
-            getContrastTextColor(prevDesign.buttons.buttonColor) : undefined;
+        const prevTextColor = prevDesign?.buttons.buttonColor
+            ? getContrastTextColor(prevDesign.buttons.buttonColor)
+            : undefined;
         setCSSVariableIfChanged('--presentation-button-text-color', textColor, prevTextColor);
     }
 
@@ -349,9 +456,11 @@ const applyThemeStyles = ({
         default: '4px',
         rounded: '8px',
     };
-    setCSSVariableIfChanged('--presentation-button-radius',
+    setCSSVariableIfChanged(
+        '--presentation-button-radius',
         buttonRadiusMap[theme.design.buttons.buttonShape] || '4px',
-        prevDesign ? (buttonRadiusMap[prevDesign.buttons.buttonShape] || '4px') : undefined);
+        prevDesign ? buttonRadiusMap[prevDesign.buttons.buttonShape] || '4px' : undefined
+    );
 
     // Link color
     const linkColor = theme.design.buttons.linkColor || theme.colors.primaryAccent;
@@ -377,7 +486,7 @@ const applyThemeStyles = ({
                     const b = parseInt(rgbValues[2]);
                     const brightness = (r * 299 + g * 587 + b * 114) / 1000;
                     return brightness < 128;
-                }
+              }
             }
             return false;
         })(theme.colors.slideBackground);
@@ -450,14 +559,14 @@ export const useThemeApplication = (options: UseThemeApplicationOptions) => {
 
             try {
                 isApplyingRef.current = true;
-                applyThemeStyles({ 
-                    container, 
-                    theme: activeTheme, 
-                    backgroundSettings, 
-                    setColorMode, 
+                applyThemeStyles({
+                    container,
+                    theme: activeTheme,
+                    backgroundSettings,
+                    setColorMode,
                     colorMode,
-                    previousTheme: previousThemeRef.current
-                });
+                    previousTheme: previousThemeRef.current,
+              });
                 appliedThemeHashRef.current = themeHash;
                 previousThemeRef.current = { ...activeTheme }; // Store deep copy
             } catch (error) {
