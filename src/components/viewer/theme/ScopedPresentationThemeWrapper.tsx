@@ -33,7 +33,7 @@ const ScopedPresentationThemeWrapper: React.FC<ScopedPresentationThemeWrapperPro
                     width: '100%',
                     // maxWidth: '600px',
                     // transform: 'scale(0.8)',
-                    zoom: 0.6,
+                    // zoom: 0.6,
                     transformOrigin: 'center center',
                 }}
             >
