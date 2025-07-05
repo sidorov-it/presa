@@ -26,6 +26,8 @@ interface SlideViewerProps {
     theme: Theme;
 }
 
+// No longer needed - we now use imageHeightRatio and imageWidthRatio directly
+
 const SlideViewer: React.FC<SlideViewerProps> = ({
     slide,
     themeClassName = '',
@@ -102,17 +104,28 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
             baseStyle.WebkitMaskRepeat = 'no-repeat';
         }
 
+                // Calculate dimensions based on ratios
+        const currentImageWidthRatio = slide.imageWidthRatio || 0.33; // Default 33%
+        const currentImageHeightRatio = slide.imageHeightRatio || 0.33; // Default 33%
+        
+        // Convert ratios to CSS values
+        const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
+        // For height, we need to calculate based on slide width
+        // In viewer, we use --card-width CSS variable as reference
+        const imageHeightVw = `calc(var(--card-width) * ${currentImageHeightRatio})`;
+
         switch (slide.templateType) {
-            case 'imageTop':
+            case 'imageTop': {
                 return {
                     ...baseStyle,
                     position: 'absolute',
                     top: 0,
                     left: 0,
                     right: 0,
-                    height: '33%',
+                    height: imageHeightVw,
                     zIndex: 1,
                 };
+            }
             case 'imageLeft':
                 return {
                     ...baseStyle,
@@ -120,7 +133,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                     top: 0,
                     left: 0,
                     bottom: 0,
-                    width: slide.imageSize?.width || '33%',
+                    width: imageWidthPercent,
                     zIndex: 1,
                 };
             case 'imageRight':
@@ -130,7 +143,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                     top: 0,
                     right: 0,
                     bottom: 0,
-                    width: slide.imageSize?.width || '33%',
+                    width: imageWidthPercent,
                     zIndex: 1,
                 };
             case 'imageBackground':
@@ -139,7 +152,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
             default:
                 return {};
         }
-    }, [slide?.templateType, slide?.imageUrl, slide?.imageSize]);
+    }, [slide?.templateType, slide?.imageUrl, slide?.imageHeightRatio, slide?.imageWidthRatio]);
 
     // Calculate content style for layouts based on template
     const contentStyle: React.CSSProperties = useMemo(() => {
@@ -177,13 +190,19 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
             }
         }
 
-        // Additional styles for image templates
+                // Additional styles for image templates
         if (slide.templateType) {
-            // Get stored image size or use default values
-            const imageWidth = slide.imageSize?.width || '33%';
-            const imageHeight = slide.imageSize?.height || '33%';
-            const remainingWidth = `${100 - parseFloat(imageWidth)}%`;
-            const remainingHeight = `${100 - parseFloat(imageHeight)}%`;
+            // Calculate dimensions based on ratios
+            const currentImageWidthRatio = slide.imageWidthRatio || 0.33; // Default 33%
+            const currentImageHeightRatio = slide.imageHeightRatio || 0.33; // Default 33%
+            
+            // Convert ratios to CSS values
+            const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
+            const imageHeightVw = `calc(var(--card-width) * ${currentImageHeightRatio})`;
+            
+            const remainingWidth = `${(1 - currentImageWidthRatio) * 100}%`;
+            // For remaining height, we need to subtract the image height from total height
+            const remainingHeight = `calc(100% - var(--card-width) * ${currentImageHeightRatio})`;
 
             switch (slide.templateType) {
                 case 'imageTop':
@@ -191,7 +210,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                         ...baseStyle,
                         position: 'relative',
                         zIndex: 2,
-                        paddingTop: imageHeight,
+                        paddingTop: imageHeightVw,
                         height: remainingHeight,
                     };
                 case 'imageLeft':
@@ -201,10 +220,10 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                         zIndex: 2,
                         ...(isPdfExport
                             ? {
-                                  paddingLeft: `calc(${imageWidth} + var(--card-inner-padding-x))`,
+                                  paddingLeft: `calc(${imageWidthPercent} + var(--card-inner-padding-x))`,
                               }
                             : {
-                                  marginLeft: imageWidth,
+                                  marginLeft: imageWidthPercent,
                               }),
                         width: remainingWidth,
                     };

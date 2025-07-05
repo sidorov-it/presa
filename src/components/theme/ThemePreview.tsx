@@ -213,9 +213,7 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
                 },
             ],
             templateType: 'imageRight',
-            imageSize: {
-                width: '33%',
-            },
+            imageWidthRatio: 0.33,
         },
         {
             id: 'bnzt2llzvpo',
@@ -538,9 +536,6 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
             style: {},
             contentAlignment: 'top',
             templateType: 'standard',
-            imageSize: {
-                width: '33%',
-            },
         },
         {
             id: 'uqzxx80oz0l',
@@ -609,9 +604,7 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
             style: {},
             contentAlignment: 'center',
             templateType: 'imageLeft',
-            imageSize: {
-                width: '20.387116286103122%',
-            },
+            imageWidthRatio: 0.20387116286103122,
             imageUrl: '',
         },
     ];

@@ -51,20 +51,29 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
 
     const handleTemplateChange = (value: SlideTemplateType) => {
         // Set default image size based on template type
-        let imageSize;
+        let imageHeightRatio;
+        let imageWidthRatio;
         if (value === 'imageTop') {
-            imageSize = { height: `${DEFAULT_HEIGHT_PX}px` };
+            imageHeightRatio = 0.33; // Default 33% height ratio
         } else if (value === 'imageLeft' || value === 'imageRight') {
-            imageSize = { width: '33%' };
+            imageWidthRatio = 0.33; // Default 33% width ratio
         }
 
         useHistoryStore.getState().beginTransaction(presentationId, 'update slide template');
 
+        // Prepare update data with ratios
+        const updateData: any = { templateType: value as SlideTemplateType };
+        if (imageHeightRatio !== undefined) {
+            updateData.imageHeightRatio = imageHeightRatio;
+        }
+        if (imageWidthRatio !== undefined) {
+            updateData.imageWidthRatio = imageWidthRatio;
+        }
+
         // Update background if template is imageBackground
         if (value === 'imageBackground' && imageUrl) {
             updateSlide(presentationId, slideId, {
-                templateType: value as SlideTemplateType,
-                imageSize,
+                ...updateData,
                 background: {
                     type: 'image',
                     value: imageUrl,
@@ -73,23 +82,14 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
         } else if (slide?.background?.type === 'image' && value !== 'imageBackground') {
             // Reset background to color if changing from imageBackground to another template
             updateSlide(presentationId, slideId, {
-                templateType: value as SlideTemplateType,
-                imageSize,
+                ...updateData,
                 background: {
                     type: 'color',
                     value: backgroundColor || DEFAULT_BACKGROUND_COLOR,
                 },
             });
         } else {
-            updateSlide(
-                presentationId,
-                slideId,
-                {
-                    templateType: value as SlideTemplateType,
-                    imageSize,
-                },
-                true,
-            );
+            updateSlide(presentationId, slideId, updateData, true);
         }
 
         // Determine if the selected template will have a resizable image component rendered

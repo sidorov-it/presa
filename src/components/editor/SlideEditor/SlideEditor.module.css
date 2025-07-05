@@ -291,3 +291,24 @@
     z-index: 22;
     display: flex;
 }
+
+.standardHeightIndicator {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(to right, rgba(255, 87, 51, 0.6) 50%, transparent 50%);
+    background-size: 20px 2px;
+    z-index: 15;
+    pointer-events: none;
+    animation: dashMove 2s linear infinite;
+}
+
+@keyframes dashMove {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 20px 0;
+    }
+}

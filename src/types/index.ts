@@ -236,10 +236,8 @@ export interface Slide {
     templateType?: (typeof SLIDE_TEMPLATES)[number]['value'];
     imageUrl?: string;
     textColor?: string;
-    imageSize?: {
-        width?: string;
-        height?: string;
-    };
+    imageHeightRatio?: number; // Height of image as ratio to slide width (0-1)
+    imageWidthRatio?: number; // Width of image as ratio to slide width (0-1) for left/right templates
     contentAlignment?: 'top' | 'center' | 'bottom';
     hidden?: boolean;
 }

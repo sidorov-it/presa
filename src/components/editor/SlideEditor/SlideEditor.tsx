@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 'use client';
 
-import React, { useState, useRef, useCallback, memo, useMemo, MutableRefObject } from 'react';
+import React, { useState, useRef, useCallback, memo, useMemo, MutableRefObject, useEffect } from 'react';
 import { TipTapRefs } from '@/types';
 import { PresentationState, usePresentationStore } from '@/store/presentationStore';
 import styles from './SlideEditor.module.css';
@@ -42,6 +42,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 }) => {
     const editorRef = useRef<HTMLDivElement>(null);
     const [isHovered, setIsHovered] = useState(false);
+    const [showHeightIndicator, setShowHeightIndicator] = useState(false);
+    const [standardHeight, setStandardHeight] = useState(0);
     const openMenu = useMenuStore.getState().openMenu;
 
     const slideRef = useRef<HTMLDivElement>(null);
@@ -52,7 +54,9 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const backgroundValue = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background?.value);
 
     const contentAlignment = usePresentationStore(state => state.getSlide(presentationId, slideId)?.contentAlignment);
-    const imageSize = usePresentationStore(state => state.getSlide(presentationId, slideId)?.imageSize);
+    const slide = usePresentationStore(state => state.getSlide(presentationId, slideId));
+    const imageHeightRatio = slide?.imageHeightRatio;
+    const imageWidthRatio = slide?.imageWidthRatio;
     const templateType = usePresentationStore(state => state.getSlide(presentationId, slideId)?.templateType);
     const imageUrl = usePresentationStore(state => state.getSlide(presentationId, slideId)?.imageUrl);
 
@@ -266,7 +270,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         if (!templateType) return {};
 
         const baseStyle: React.CSSProperties = {
-            // backgroundImage: `url(${imageUrl})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
@@ -276,6 +279,16 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             baseStyle.backgroundImage = `url(${imageUrl})`;
         }
 
+        // Calculate dimensions based on ratios
+        const currentImageWidthRatio = imageWidthRatio || 0.33; // Default 33%
+        const currentImageHeightRatio = imageHeightRatio || 0.33; // Default 33%
+        
+        // Convert ratios to CSS values
+        const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
+        // For height, we need to calculate based on slide width
+        // In editor, slide width is calc(64.5em / 1)
+        const imageHeightVw = `calc(64.5em * ${currentImageHeightRatio})`;
+
         switch (templateType) {
             case 'imageTop':
                 return {
@@ -284,9 +297,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     top: 0,
                     left: 0,
                     right: 0,
-                    height: '33%',
-                    // maxHeight: '200px',
-                    minHeight: '100px',
+                    height: imageHeightVw,
                     zIndex: 1,
                 };
             case 'imageLeft':
@@ -296,9 +307,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     top: 0,
                     left: 0,
                     bottom: 0,
-                    width: '20%',
+                    width: imageWidthPercent,
                     zIndex: 1,
-                    maxWidth: '50%',
                 };
             case 'imageRight':
                 return {
@@ -307,9 +317,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     top: 0,
                     right: 0,
                     bottom: 0,
-                    width: '20%',
+                    width: imageWidthPercent,
                     zIndex: 1,
-                    maxWidth: '50%',
                 };
             case 'imageBackground':
                 // This is handled by slide background
@@ -317,7 +326,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             default:
                 return {};
         }
-    }, [templateType, imageUrl]);
+    }, [templateType, imageUrl, imageWidthRatio, imageHeightRatio]);
 
     // Calculate content style for layouts based on template
     const contentStyle: React.CSSProperties = useMemo(() => {
@@ -349,29 +358,31 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
         // Additional styles for image templates
         if (templateType) {
-            // Get stored image size or use default values
-            let imageWidth = imageSize?.width || 'min(50%, 300px)';
-            if (parseInt(imageWidth, 10) > 50) {
-                imageWidth = '50%';
-            }
-
-            const imageHeight = imageSize?.height || 'min(50%, 300px)';
-            const remainingWidth = `${100 - parseFloat(imageWidth)}%`;
-            const remainingHeight = `${100 - parseFloat(imageHeight)}%`;
+            // Calculate dimensions based on ratios
+            const currentImageWidthRatio = imageWidthRatio || 0.33; // Default 33%
+            const currentImageHeightRatio = imageHeightRatio || 0.33; // Default 33%
+            
+            // Convert ratios to CSS values
+            const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
+            const imageHeightVw = `calc(64.5em * ${currentImageHeightRatio})`;
+            
+            const remainingWidth = `${(1 - currentImageWidthRatio) * 100}%`;
+            // For remaining height, we need to subtract the image height from total height
+            const remainingHeight = `calc(100% - 64.5em * ${currentImageHeightRatio})`;
 
             switch (templateType) {
                 case 'imageTop':
                     return {
                         ...baseStyle,
                         position: 'relative',
-                        paddingTop: imageHeight,
+                        paddingTop: imageHeightVw,
                         height: remainingHeight,
                     };
                 case 'imageLeft':
                     return {
                         ...baseStyle,
                         position: 'relative',
-                        marginLeft: imageWidth,
+                        marginLeft: imageWidthPercent,
                         width: remainingWidth,
                     };
                 case 'imageRight':
@@ -395,7 +406,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         }
 
         return baseStyle;
-    }, [contentAlignment, templateType, imageSize?.width, imageSize?.height, imageUrl]);
+    }, [contentAlignment, templateType, imageWidthRatio, imageHeightRatio, imageUrl]);
 
     // Add useDnd hook
     const { handleDragStart } = useDnd();
@@ -412,6 +423,37 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         setShowAIGenerator(true);
     };
 
+    // Monitor slide content height to show standard height indicator
+    useEffect(() => {
+        const checkSlideHeight = () => {
+            if (!slideRef.current || isReadOnly) return;
+
+            const slideWrapper = slideRef.current.querySelector(`.${styles.slideWrapper}`) as HTMLElement;
+            if (!slideWrapper) return;
+
+            // Calculate standard height based on slide width (16:9 aspect ratio)
+            const slideWidth = slideWrapper.offsetWidth;
+            const calculatedStandardHeight = slideWidth / 1.7777777777777777; // 16:9 ratio
+
+            const actualHeight = slideWrapper.offsetHeight;
+
+            setStandardHeight(calculatedStandardHeight);
+            setShowHeightIndicator(actualHeight > calculatedStandardHeight + 10); // 10px tolerance
+        };
+
+        // Check on mount and when content changes
+        checkSlideHeight();
+
+        // Use ResizeObserver to monitor size changes
+        const resizeObserver = new ResizeObserver(checkSlideHeight);
+        if (slideRef.current) {
+            resizeObserver.observe(slideRef.current);
+        }
+
+        return () => {
+            resizeObserver.disconnect();
+        };
+    }, [slideLayoutIds, isReadOnly]);
 
     return (
         <div
@@ -499,6 +541,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                             />
                         ))}
                     </div>
+
+                    {/* Standard height indicator */}
+                    {showHeightIndicator && !isReadOnly && (
+                        <div className={styles.standardHeightIndicator} style={{ top: `${standardHeight}px` }} />
+                    )}
                 </div>
 
                 {!isReadOnly && (
