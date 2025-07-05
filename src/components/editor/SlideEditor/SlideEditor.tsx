@@ -100,21 +100,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         [slideId, openMenu, handleSelectSlide]
     );
 
-    const getSlideStyle = useCallback(() => {
-        const style: React.CSSProperties & Record<string, string> = {};
-
-        if (templateType === 'imageBackground' && imageUrl) {
-            style.backgroundImage = `url(${imageUrl})`;
-        }
-
-        // Use background color from slide data
-        if (backgroundType === 'color' && backgroundValue) {
-            style['--presentation-slide-background'] = backgroundValue;
-        }
-
-        return style;
-    }, [imageUrl, templateType, backgroundType, backgroundValue]);
-
     const getSlideClassName = useCallback(() => {
         let className = styles.slideWrapper;
         if (isSelected && !isReadOnly) {
@@ -469,7 +454,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     handleSlideWrapperClick(e as unknown as React.MouseEvent);
                 }
             }}
-            style={getSlideStyle()}
         >
             <div className={`${getSlideClassName()}`} data-slide="true">
                 <div className={`${styles.slideBorder} ${isSelected || isHovered ? styles.slideBorderMenuOpen : ''}`} />

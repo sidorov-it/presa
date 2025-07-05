@@ -77,7 +77,10 @@ export async function POST(request: Request) {
             data: {
                 name: theme.name,
                 colors: {
-                    set: theme.colors,
+                    set: {
+                        ...theme.colors,
+                        secondaryAccents: theme.colors.secondaryAccents ?? [],
+                    },
                 },
                 typography: {
                     set: theme.typography,
@@ -94,7 +97,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json(createdTheme, { status: 201 });
     } catch (error) {
-        logger.error('Failed to create theme:', error);
+        logger.error('Failed to create theme:', error instanceof Error ? error.message : 'Unknown error');
         return NextResponse.json({ error: 'Failed to create theme' }, { status: 500 });
     }
 }

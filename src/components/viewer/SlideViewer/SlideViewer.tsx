@@ -107,7 +107,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                 // Calculate dimensions based on ratios
         const currentImageWidthRatio = slide.imageWidthRatio || 0.33; // Default 33%
         const currentImageHeightRatio = slide.imageHeightRatio || 0.33; // Default 33%
-        
+
         // Convert ratios to CSS values
         const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
         // For height, we need to calculate based on slide width
@@ -195,11 +195,11 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
             // Calculate dimensions based on ratios
             const currentImageWidthRatio = slide.imageWidthRatio || 0.33; // Default 33%
             const currentImageHeightRatio = slide.imageHeightRatio || 0.33; // Default 33%
-            
+
             // Convert ratios to CSS values
             const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
             const imageHeightVw = `calc(var(--card-width) * ${currentImageHeightRatio})`;
-            
+
             const remainingWidth = `${(1 - currentImageWidthRatio) * 100}%`;
             // For remaining height, we need to subtract the image height from total height
             const remainingHeight = `calc(100% - var(--card-width) * ${currentImageHeightRatio})`;
@@ -218,13 +218,13 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                         ...baseStyle,
                         position: 'relative',
                         zIndex: 2,
-                        ...(isPdfExport
-                            ? {
-                                  paddingLeft: `calc(${imageWidthPercent} + var(--card-inner-padding-x))`,
-                              }
-                            : {
-                                  marginLeft: imageWidthPercent,
-                              }),
+                        marginLeft: imageWidthPercent,
+                        // ...(isPdfExport
+                        //     ? {
+                        //           paddingLeft: `calc(${imageWidthPercent} + var(--card-inner-padding-x))`,
+                        //       }
+                        //     : {
+                        //       }),
                         width: remainingWidth,
                     };
                 case 'imageRight':

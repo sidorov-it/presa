@@ -183,7 +183,7 @@
     height: auto !important;
     /* overflow: visible !important; */
     padding: 40px;
-    display: block !important;
+    /* display: block !important; */
     /* width: 100% !important; */
     box-sizing: border-box !important;
 }
