@@ -72,7 +72,7 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
 
         // Launch Puppeteer browser
         const browser = await puppeteer.launch({
-            headless: false,
+            headless: process.env.NODE_ENV === 'development' ? false : true,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
@@ -211,7 +211,7 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
             }
         }
 
-        // await browser.close();
+        await browser.close();
 
         if (pdfPages.length === 0) {
             return NextResponse.json({ error: 'Failed to generate PDF pages' }, { status: 500 });

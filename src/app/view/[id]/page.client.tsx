@@ -4,12 +4,10 @@ import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SlideViewer } from '@/components/viewer';
 import styles from './page.module.css';
-import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
 import { useColorMode } from '@/components/ui/color-mode';
 import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 import screenfull from 'screenfull';
 import { FullscreenIcon } from 'lucide-react';
-import { clearAllThemeStyles } from '@/utils/themeUtils';
 import { IPresentation } from '@/types';
 import { Theme } from '@/types/theme';
 
@@ -22,18 +20,6 @@ export default function PresentationView({ presentation, theme }: Props) {
     const { colorMode } = useColorMode();
 
     const [isFullscreen, setIsFullscreen] = useState(false);
-    const [isClient, setIsClient] = useState(false);
-    // const loadPresentation = usePresentationStore(state => state.loadPresentation);
-    // const checkPresentationExists = usePresentationStore(state => state.checkPresentationExists);
-
-    // Get presentation from store instead of local state
-    // const presentation = usePresentationStore(state => state.getPresentation(id as string));
-
-    // const themes = useThemeStore(state => state.themes);
-    // const loadThemes = useThemeStore(state => state.loadThemes);
-    // const currentTheme = useThemeStore(state => state.currentTheme) as Theme;
-    // const setCurrentTheme = useThemeStore(state => state.setCurrentTheme);
-    // const defaultThemes = useThemeStore(state => state.defaultThemes);
 
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
@@ -54,15 +40,12 @@ export default function PresentationView({ presentation, theme }: Props) {
     const scrollDirectionRef = useRef<'next' | 'prev' | null>(null);
     const slideWrapperRef = useRef<HTMLDivElement>(null);
 
-    // Set client-side flag to avoid hydration mismatch
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
+    // Check if we're on the client side
+    // const isClient = typeof window !== 'undefined';
 
-    // Cleanup function to clear theme styles when component unmounts
+    // Cleanup function to clear timeouts when component unmounts
     useEffect(() => {
         return () => {
-            clearAllThemeStyles();
             // Clear all timeouts
             if (idleTimeoutRef.current) {
                 clearTimeout(idleTimeoutRef.current);
@@ -344,143 +327,143 @@ export default function PresentationView({ presentation, theme }: Props) {
         setIsFullscreen(true);
     };
 
-    const currentSlide = visibleSlides[currentSlideIndex];
-    const pageStyle = useMemo(() => {
-        const style: React.CSSProperties = {};
-        if (currentSlide?.templateType === 'imageBackground' && currentSlide?.imageUrl) {
-            style.backgroundImage = `url(${currentSlide.imageUrl})`;
-            style.backgroundSize = 'cover';
-            style.backgroundPosition = 'center';
-            style.backgroundRepeat = 'no-repeat';
-        } else if (currentSlide?.background?.type === 'color') {
-            style.backgroundColor = currentSlide.background.value;
-        } else {
-            style.backgroundColor = 'var(--presentation-slide-background)';
-        }
-        return style;
-    }, [currentSlide]);
+    // const currentSlide = visibleSlides[currentSlideIndex];
+    // const pageStyle = useMemo(() => {
+    //     const style: React.CSSProperties = {};
+    //     if (currentSlide?.templateType === 'imageBackground' && currentSlide?.imageUrl) {
+    //         style.backgroundImage = `url(${currentSlide.imageUrl})`;
+    //         style.backgroundSize = 'cover';
+    //         style.backgroundPosition = 'center';
+    //         style.backgroundRepeat = 'no-repeat';
+    //     } else if (currentSlide?.background?.type === 'color') {
+    //         style.backgroundColor = currentSlide.background.value;
+    //     } else {
+    //         style.backgroundColor = 'var(--presentation-slide-background)';
+    //     }
+    //     return style;
+    // }, [currentSlide]);
 
     if (visibleSlides.length === 0) return <div className={styles.loadingContainer}>Нет видимых слайдов</div>;
 
     return (
         <ReadOnlyProvider isReadOnly={true}>
-            <ThemeStylesApplier theme={theme} backgroundSettings={presentation.backgroundSettings}>
-                <div className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`} style={pageStyle}>
-                    <main className={styles.main} data-read-only="true">
-                        <AnimatePresence mode="wait" initial={false}>
-                            <motion.div
-                                key={currentSlideIndex}
-                                className={styles.slidePage}
-                                initial={{ opacity: 0, y: scrollDirection === 'next' ? 50 : -50 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: scrollDirection === 'next' ? -50 : 50 }}
-                                transition={{ duration: 0.3 }}
-                            >
-                                <SlideViewer
-                                    theme={theme}
-                                    slide={visibleSlides[currentSlideIndex]}
-                                    fullPage={true}
-                                    primaryAccentColor={theme?.colors.primaryAccent || '#000000'}
-                                    wrapperRef={slideWrapperRef}
-                                />
-                            </motion.div>
-                        </AnimatePresence>
-                        <div className={styles.progressBar}>
-                            {visibleSlides.map((_, index) => {
-                                let progressBlockClass = styles.progressBlock;
-                                if (index < currentSlideIndex) {
-                                    progressBlockClass += ` ${styles.progressBlockPast}`;
-                                } else if (index === currentSlideIndex) {
-                                    progressBlockClass += ` ${styles.progressBlockCurrent}`;
-                                }
+            <div className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`}>
+                <main className={styles.main} data-read-only="true">
+                    <AnimatePresence mode="wait" initial={false}>
+                        <motion.div
+                            key={currentSlideIndex}
+                            className={styles.slidePage}
+                            initial={{ opacity: 0, y: scrollDirection === 'next' ? 50 : -50 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: scrollDirection === 'next' ? -50 : 50 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <SlideViewer
+                                theme={theme}
+                                slide={visibleSlides[currentSlideIndex]}
+                                fullPage={true}
+                                primaryAccentColor={theme?.colors.primaryAccent || '#000000'}
+                                wrapperRef={slideWrapperRef}
+                            />
+                        </motion.div>
+                    </AnimatePresence>
+                    <div className={styles.progressBar}>
+                        {visibleSlides.map((_, index) => {
+                            let progressBlockClass = styles.progressBlock;
+                            if (index < currentSlideIndex) {
+                                progressBlockClass += ` ${styles.progressBlockPast}`;
+                            } else if (index === currentSlideIndex) {
+                                progressBlockClass += ` ${styles.progressBlockCurrent}`;
+                            }
 
-                                return <div key={index} className={progressBlockClass}></div>;
-                            })}
+                            return <div key={index} className={progressBlockClass}></div>;
+                        })}
+                    </div>
+                    {scrollProgress > 0 && (
+                        <div
+                            className={`${styles.scrollProgressContainer} ${
+                                scrollDirection === 'next' ? styles.scrollProgressBottom : styles.scrollProgressTop
+                            }`}
+                        >
+                            <svg className={styles.scrollProgressSvg} viewBox="0 0 36 36" width="40" height="40">
+                                <circle cx="18" cy="18" r="16" stroke="#e5e7eb" strokeWidth="4" fill="none" />
+                                <circle
+                                    cx="18"
+                                    cy="18"
+                                    r="16"
+                                    stroke="#3b82f6"
+                                    strokeWidth="4"
+                                    fill="none"
+                                    strokeDasharray="100"
+                                    strokeDashoffset={100 - scrollProgress * 100}
+                                    strokeLinecap="round"
+                                />
+                            </svg>
                         </div>
-                        {scrollProgress > 0 && (
-                            <div
-                                className={`${styles.scrollProgressContainer} ${
-                                    scrollDirection === 'next' ? styles.scrollProgressBottom : styles.scrollProgressTop
-                                }`}
-                            >
-                                <svg className={styles.scrollProgressSvg} viewBox="0 0 36 36" width="40" height="40">
-                                    <circle cx="18" cy="18" r="16" stroke="#e5e7eb" strokeWidth="4" fill="none" />
-                                    <circle
-                                        cx="18"
-                                        cy="18"
-                                        r="16"
-                                        stroke="#3b82f6"
-                                        strokeWidth="4"
-                                        fill="none"
-                                        strokeDasharray="100"
-                                        strokeDashoffset={100 - scrollProgress * 100}
-                                        strokeLinecap="round"
-                                    />
-                                </svg>
+                    )}
+                    {/* Debug info panel - hidden by default to avoid hydration mismatch */}
+                    {process.env.NODE_ENV === 'development' && (
+                        <div
+                            style={{
+                                position: 'fixed',
+                                top: '10px',
+                                right: '10px',
+                                background: 'rgba(0, 0, 0, 0.8)',
+                                color: 'white',
+                                padding: '8px 12px',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontFamily: 'monospace',
+                                zIndex: 1000,
+                                pointerEvents: 'none',
+                                lineHeight: '1.3',
+                                minWidth: '200px',
+                                display: 'block',
+                            }}
+                        >
+                            <div>
+                                <strong>Slide:</strong> {currentSlideIndex + 1}/{visibleSlides.length}
                             </div>
-                        )}
-                        {/* Debug info panel - only show on client to avoid hydration mismatch */}
-                        {isClient && (
-                            <div
-                                style={{
-                                    position: 'fixed',
-                                    top: '10px',
-                                    right: '10px',
-                                    background: 'rgba(0, 0, 0, 0.8)',
-                                    color: 'white',
-                                    padding: '8px 12px',
-                                    borderRadius: '6px',
-                                    fontSize: '11px',
-                                    fontFamily: 'monospace',
-                                    zIndex: 1000,
-                                    pointerEvents: 'none',
-                                    lineHeight: '1.3',
-                                    minWidth: '200px',
-                                }}
-                            >
-                                <div>
-                                    <strong>Slide:</strong> {currentSlideIndex + 1}/{visibleSlides.length}
-                                </div>
-                                <div>
-                                    <strong>At Edge:</strong> {debugInfo.isAtEdge ? 'YES' : 'NO'}
-                                </div>
-                                <div>
-                                    <strong>Direction:</strong> {debugInfo.direction || 'both'}
-                                </div>
-                                <div>
-                                    <strong>Scrollable:</strong> {debugInfo.isScrollable ? 'YES' : 'NO'}
-                                </div>
-                                <div>
-                                    <strong>Scroll:</strong> {debugInfo.scrollTop}/
-                                    {debugInfo.scrollHeight - debugInfo.clientHeight}
-                                </div>
-                                <div>
-                                    <strong>Size:</strong> {debugInfo.clientHeight}px (view)
-                                </div>
-                                <div>
-                                    <strong>Content:</strong> {debugInfo.scrollHeight}px (total)
-                                </div>
-                                <div>
-                                    <strong>Progress:</strong> {Math.round(debugInfo.scrollProgress * 100)}%
-                                </div>
-                                <div>
-                                    <strong>Distance:</strong> {debugInfo.accumulatedDistance}/1000
-                                </div>
-                                <div>
-                                    <strong>Blocked:</strong> {debugInfo.isBlocked ? 'YES' : 'NO'}
-                                </div>
+                            <div>
+                                <strong>At Edge:</strong> {debugInfo.isAtEdge ? 'YES' : 'NO'}
                             </div>
-                        )}
-                        {isClient && screenfull.isEnabled && !isFullscreen && (
-                            <div className={styles.fullscreenButton}>
-                                <button onClick={handleFullscreen}>
-                                    <FullscreenIcon size={24} color="#fff" />
-                                </button>
+                            <div>
+                                <strong>Direction:</strong> {debugInfo.direction || 'both'}
                             </div>
-                        )}
-                    </main>
-                </div>
-            </ThemeStylesApplier>
+                            <div>
+                                <strong>Scrollable:</strong> {debugInfo.isScrollable ? 'YES' : 'NO'}
+                            </div>
+                            <div>
+                                <strong>Scroll:</strong> {debugInfo.scrollTop}/
+                                {debugInfo.scrollHeight - debugInfo.clientHeight}
+                            </div>
+                            <div>
+                                <strong>Size:</strong> {debugInfo.clientHeight}px (view)
+                            </div>
+                            <div>
+                                <strong>Content:</strong> {debugInfo.scrollHeight}px (total)
+                            </div>
+                            <div>
+                                <strong>Progress:</strong> {Math.round(debugInfo.scrollProgress * 100)}%
+                            </div>
+                            <div>
+                                <strong>Distance:</strong> {debugInfo.accumulatedDistance}/1000
+                            </div>
+                            <div>
+                                <strong>Blocked:</strong> {debugInfo.isBlocked ? 'YES' : 'NO'}
+                            </div>
+                        </div>
+                    )}
+
+                    {screenfull.isEnabled && !isFullscreen && (
+                        <div className={styles.fullscreenButton}>
+                            <button onClick={handleFullscreen}>
+                                <FullscreenIcon size={24} color="#fff" />
+                            </button>
+                        </div>
+                    )}
+                </main>
+            </div>
         </ReadOnlyProvider>
     );
 }

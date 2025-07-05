@@ -2,17 +2,13 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
     title: 'Просмотр презентации',
-    description: 'Страницы для просмотра созданных презентаций',
+    description: 'Режим просмотра презентации',
 };
 
-export default function ViewerLayout({
+export default function ViewLayout({
     children,
-}: Readonly<{
+}: {
     children: React.ReactNode;
-}>) {
-    return (
-        <div className="viewer-layout">
-            {children}
-        </div>
-    );
+}) {
+    return <>{children}</>;
 }

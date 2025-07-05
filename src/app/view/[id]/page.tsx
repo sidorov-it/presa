@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import NotFoundPage from '@/components/NotFoundPage/NotFoundPage';
 import { Theme } from '@/types/theme';
 import { IPresentation } from '@/types';
+import ServerThemeStylesApplier from '@/components/viewer/theme/ServerThemeStylesApplier';
 
 type Props = {
     params: Promise<{ id: string }>;
@@ -41,5 +42,9 @@ export default async function PresentationViewWrapper({ params }: Props) {
     const serializedPresentation = JSON.parse(JSON.stringify(presentationData));
     const serializedTheme = JSON.parse(JSON.stringify(theme));
 
-    return <PresentationView presentation={serializedPresentation as IPresentation} theme={serializedTheme as Theme} />;
+    return (
+        <ServerThemeStylesApplier theme={serializedTheme as Theme}>
+            <PresentationView presentation={serializedPresentation as IPresentation} theme={serializedTheme as Theme} />
+        </ServerThemeStylesApplier>
+    );
 }
