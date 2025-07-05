@@ -81,6 +81,12 @@ export const ElementContent = ({
         (contentBeforeCursor?: string, contentAfterCursor?: string) => {
             // Start transaction at the beginning of the operation
             // Получаем текущий макет
+
+            // Обрабатываем пустой contentAfterCursor
+            if (!contentAfterCursor || contentAfterCursor.trim() === '' || contentAfterCursor.trim() === '<p></p>') {
+                contentAfterCursor = '<p><span class="body-text normal-text">&nbsp;</span></p>';
+            }
+
             const presentation = usePresentationStore.getState().getPresentation(presentationId);
             if (!presentation) return;
 
@@ -124,10 +130,8 @@ export const ElementContent = ({
                 updatedLayouts.forEach(layout => {
                     layout.elements.forEach(el => {
                         if (el.id === elementId) {
-                            return {
-                                ...el,
-                                content: contentBeforeCursor || '',
-                            };
+                            // Обновляем контент текущего элемента
+                            el.content = contentBeforeCursor || '<p><span class="body-text normal-text">&nbsp;</span></p>';
                         }
                         return el;
                     });

@@ -100,6 +100,7 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                 attributes: {
                     fontSize: {
                         default: null,
+                        keepOnSplit: true,
                         parseHTML: element => {
                             // Try to extract fontSize from style attribute or custom data attribute
                             const dataFontSize = element.getAttribute('data-font-size');
@@ -193,52 +194,48 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
     addCommands() {
         return {
             setFontSize:
-                fontSize =>
-                    ({ chain }) => {
-                        let fontSizeValue;
+                (fontLevel: number) =>
+                    ({ commands }) => {
+                        const fontSizeInfo = fontSizeMapping.find(mapping => {
+                            switch (fontLevel) {
+                                case SMALL_TEXT_LEVEL:
+                                    return mapping.fontSize === FONT_SIZE_SMALL_TEXT;
+                                case BIG_TEXT_LEVEL:
+                                    return mapping.fontSize === FONT_SIZE_BIG_TEXT;
+                                case HEADING_4_LEVEL:
+                                    return mapping.fontSize === FONT_SIZE_HEADING_4;
+                                case HEADING_3_LEVEL:
+                                    return mapping.fontSize === FONT_SIZE_HEADING_3;
+                                case HEADING_2_LEVEL:
+                                    return mapping.fontSize === FONT_SIZE_HEADING_2;
+                                case HEADING_1_LEVEL:
+                                    return mapping.fontSize === FONT_SIZE_HEADING_1;
+                                case TITLE_LEVEL:
+                                    return mapping.fontSize === FONT_SIZE_TITLE;
+                                case BIG_HEADING_LEVEL:
+                                    return mapping.fontSize === FONT_SIZE_BIG_HEADING;
+                                case VERY_BIG_HEADING_LEVEL:
+                                    return mapping.fontSize === FONT_SIZE_VERY_BIG_HEADING;
+                                case NORMAL_TEXT_LEVEL:
+                                default:
+                                    return mapping.fontSize === null;
+                            }
+                        });
 
-                        switch (fontSize) {
-                            case SMALL_TEXT_LEVEL:
-                                fontSizeValue = FONT_SIZE_SMALL_TEXT;
-                                break;
-                            case NORMAL_TEXT_LEVEL:
-                                fontSizeValue = null; // Default font size
-                                break;
-                            case BIG_TEXT_LEVEL:
-                                fontSizeValue = FONT_SIZE_BIG_TEXT;
-                                break;
-                            case HEADING_4_LEVEL:
-                                fontSizeValue = FONT_SIZE_HEADING_4; // Heading 4 size
-                                break;
-                            case HEADING_3_LEVEL:
-                                fontSizeValue = FONT_SIZE_HEADING_3; // Heading 3 size
-                                break;
-                            case HEADING_2_LEVEL:
-                                fontSizeValue = FONT_SIZE_HEADING_2; // Heading 2 size
-                                break;
-                            case HEADING_1_LEVEL:
-                                fontSizeValue = FONT_SIZE_HEADING_1; // Heading 1 size
-                                break;
-                            case TITLE_LEVEL:
-                                fontSizeValue = FONT_SIZE_TITLE;
-                                break;
-                            case BIG_HEADING_LEVEL:
-                                fontSizeValue = FONT_SIZE_BIG_HEADING;
-                                break;
-                            case VERY_BIG_HEADING_LEVEL:
-                                fontSizeValue = FONT_SIZE_VERY_BIG_HEADING;
-                                break;
-                            default:
-                                fontSizeValue = null;
+                        if (fontSizeInfo) {
+                            return commands.updateAttributes('textStyle', {
+                                fontSize: fontSizeInfo.fontSize,
+                            });
                         }
 
-                        // Only set the font size mark without changing the block type
-                        return chain().focus().setMark('textStyle', { fontSize: fontSizeValue }).run();
+                        return false;
                     },
             unsetFontSize:
                 () =>
-                    ({ chain }) => {
-                        return chain().setMark('textStyle', { fontSize: null }).removeEmptyTextStyle().run();
+                    ({ commands }) => {
+                        return commands.updateAttributes('textStyle', {
+                            fontSize: null,
+                        });
                     },
         };
     },
