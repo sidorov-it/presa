@@ -2,38 +2,38 @@
 'use client';
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useParams } from 'next/navigation';
 import { SlideViewer } from '@/components/viewer';
 import styles from './page.module.css';
 import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
 import { useColorMode } from '@/components/ui/color-mode';
 import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
-import { useThemeStore } from '@/store/themeStore';
-import { usePresentationStore } from '@/store/presentationStore';
 import screenfull from 'screenfull';
 import { FullscreenIcon } from 'lucide-react';
 import { clearAllThemeStyles } from '@/utils/themeUtils';
+import { IPresentation } from '@/types';
 import { Theme } from '@/types/theme';
-import NotFoundPage from '@/components/NotFoundPage/NotFoundPage';
 
-export default function PresentationView() {
-    const params = useParams();
-    const { id } = params;
+type Props = {
+    presentation: IPresentation;
+    theme: Theme;
+};
 
+export default function PresentationView({ presentation, theme }: Props) {
     const { colorMode } = useColorMode();
 
     const [isFullscreen, setIsFullscreen] = useState(false);
-    const loadPresentation = usePresentationStore(state => state.loadPresentation);
-    const checkPresentationExists = usePresentationStore(state => state.checkPresentationExists);
+    const [isClient, setIsClient] = useState(false);
+    // const loadPresentation = usePresentationStore(state => state.loadPresentation);
+    // const checkPresentationExists = usePresentationStore(state => state.checkPresentationExists);
 
     // Get presentation from store instead of local state
-    const presentation = usePresentationStore(state => state.getPresentation(id as string));
+    // const presentation = usePresentationStore(state => state.getPresentation(id as string));
 
-    const themes = useThemeStore(state => state.themes);
-    const loadThemes = useThemeStore(state => state.loadThemes);
-    const currentTheme = useThemeStore(state => state.currentTheme) as Theme;
-    const setCurrentTheme = useThemeStore(state => state.setCurrentTheme);
-    const defaultThemes = useThemeStore(state => state.defaultThemes);
+    // const themes = useThemeStore(state => state.themes);
+    // const loadThemes = useThemeStore(state => state.loadThemes);
+    // const currentTheme = useThemeStore(state => state.currentTheme) as Theme;
+    // const setCurrentTheme = useThemeStore(state => state.setCurrentTheme);
+    // const defaultThemes = useThemeStore(state => state.defaultThemes);
 
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
@@ -53,6 +53,11 @@ export default function PresentationView() {
     const progressHoldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const scrollDirectionRef = useRef<'next' | 'prev' | null>(null);
     const slideWrapperRef = useRef<HTMLDivElement>(null);
+
+    // Set client-side flag to avoid hydration mismatch
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     // Cleanup function to clear theme styles when component unmounts
     useEffect(() => {
@@ -334,71 +339,6 @@ export default function PresentationView() {
         };
     }, [checkEdgePosition, currentSlideIndex]);
 
-    const [isLoading, setIsLoading] = useState(true);
-    const [notFound, setNotFound] = useState(false);
-
-    // Load presentation data only once when component mounts or ID changes
-    useEffect(() => {
-        if (!id) return;
-
-        const load = async () => {
-            try {
-                // Check if presentation already exists in store
-                if (checkPresentationExists(id as string)) {
-                    setIsLoading(false);
-                    return;
-                }
-
-                // If not in store, load it
-                const loadedPresentation = await loadPresentation(id as string);
-                if (!loadedPresentation) {
-                    setNotFound(true);
-                }
-            } catch (error) {
-                console.error('Failed to load presentation:', error);
-                setNotFound(true);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        load();
-    }, [id, loadPresentation, checkPresentationExists]);
-
-    // Apply theme when presentation is loaded or themes change
-    useEffect(() => {
-        if (!presentation) return;
-
-        const savedTheme =
-            themes.find(theme => theme.id === presentation.themeId) ||
-            defaultThemes.find(theme => theme.id === presentation.themeId);
-        if (savedTheme) {
-            setCurrentTheme(savedTheme);
-        } else {
-            setCurrentTheme(defaultThemes[0]);
-        }
-
-        return () => {
-            setCurrentTheme(undefined);
-        };
-    }, [presentation, themes, setCurrentTheme, defaultThemes]);
-
-    // Load themes separately
-    useEffect(() => {
-        loadThemes().catch(error => {
-            console.error('Failed to load themes:', error);
-        });
-    }, [loadThemes]);
-
-    const loadingUI = useMemo(
-        () => (
-            <div className={styles.loadingContainer}>
-                <div className={styles.spinner}></div>
-            </div>
-        ),
-        []
-    );
-
     const handleFullscreen = () => {
         screenfull.request();
         setIsFullscreen(true);
@@ -420,13 +360,11 @@ export default function PresentationView() {
         return style;
     }, [currentSlide]);
 
-    if (isLoading) return loadingUI;
-    if (notFound || !presentation) return <NotFoundPage />;
     if (visibleSlides.length === 0) return <div className={styles.loadingContainer}>Нет видимых слайдов</div>;
 
     return (
         <ReadOnlyProvider isReadOnly={true}>
-            <ThemeStylesApplier theme={currentTheme} backgroundSettings={presentation.backgroundSettings}>
+            <ThemeStylesApplier theme={theme} backgroundSettings={presentation.backgroundSettings}>
                 <div className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`} style={pageStyle}>
                     <main className={styles.main} data-read-only="true">
                         <AnimatePresence mode="wait" initial={false}>
@@ -439,10 +377,10 @@ export default function PresentationView() {
                                 transition={{ duration: 0.3 }}
                             >
                                 <SlideViewer
-                                    theme={currentTheme}
+                                    theme={theme}
                                     slide={visibleSlides[currentSlideIndex]}
                                     fullPage={true}
-                                    primaryAccentColor={currentTheme?.colors.primaryAccent || '#000000'}
+                                    primaryAccentColor={theme?.colors.primaryAccent || '#000000'}
                                     wrapperRef={slideWrapperRef}
                                 />
                             </motion.div>
@@ -481,57 +419,59 @@ export default function PresentationView() {
                                 </svg>
                             </div>
                         )}
-                        {/* Debug info panel */}
-                        <div
-                            style={{
-                                position: 'fixed',
-                                top: '10px',
-                                right: '10px',
-                                background: 'rgba(0, 0, 0, 0.8)',
-                                color: 'white',
-                                padding: '8px 12px',
-                                borderRadius: '6px',
-                                fontSize: '11px',
-                                fontFamily: 'monospace',
-                                zIndex: 1000,
-                                pointerEvents: 'none',
-                                lineHeight: '1.3',
-                                minWidth: '200px',
-                            }}
-                        >
-                            <div>
-                                <strong>Slide:</strong> {currentSlideIndex + 1}/{visibleSlides.length}
+                        {/* Debug info panel - only show on client to avoid hydration mismatch */}
+                        {isClient && (
+                            <div
+                                style={{
+                                    position: 'fixed',
+                                    top: '10px',
+                                    right: '10px',
+                                    background: 'rgba(0, 0, 0, 0.8)',
+                                    color: 'white',
+                                    padding: '8px 12px',
+                                    borderRadius: '6px',
+                                    fontSize: '11px',
+                                    fontFamily: 'monospace',
+                                    zIndex: 1000,
+                                    pointerEvents: 'none',
+                                    lineHeight: '1.3',
+                                    minWidth: '200px',
+                                }}
+                            >
+                                <div>
+                                    <strong>Slide:</strong> {currentSlideIndex + 1}/{visibleSlides.length}
+                                </div>
+                                <div>
+                                    <strong>At Edge:</strong> {debugInfo.isAtEdge ? 'YES' : 'NO'}
+                                </div>
+                                <div>
+                                    <strong>Direction:</strong> {debugInfo.direction || 'both'}
+                                </div>
+                                <div>
+                                    <strong>Scrollable:</strong> {debugInfo.isScrollable ? 'YES' : 'NO'}
+                                </div>
+                                <div>
+                                    <strong>Scroll:</strong> {debugInfo.scrollTop}/
+                                    {debugInfo.scrollHeight - debugInfo.clientHeight}
+                                </div>
+                                <div>
+                                    <strong>Size:</strong> {debugInfo.clientHeight}px (view)
+                                </div>
+                                <div>
+                                    <strong>Content:</strong> {debugInfo.scrollHeight}px (total)
+                                </div>
+                                <div>
+                                    <strong>Progress:</strong> {Math.round(debugInfo.scrollProgress * 100)}%
+                                </div>
+                                <div>
+                                    <strong>Distance:</strong> {debugInfo.accumulatedDistance}/1000
+                                </div>
+                                <div>
+                                    <strong>Blocked:</strong> {debugInfo.isBlocked ? 'YES' : 'NO'}
+                                </div>
                             </div>
-                            <div>
-                                <strong>At Edge:</strong> {debugInfo.isAtEdge ? 'YES' : 'NO'}
-                            </div>
-                            <div>
-                                <strong>Direction:</strong> {debugInfo.direction || 'both'}
-                            </div>
-                            <div>
-                                <strong>Scrollable:</strong> {debugInfo.isScrollable ? 'YES' : 'NO'}
-                            </div>
-                            <div>
-                                <strong>Scroll:</strong> {debugInfo.scrollTop}/
-                                {debugInfo.scrollHeight - debugInfo.clientHeight}
-                            </div>
-                            <div>
-                                <strong>Size:</strong> {debugInfo.clientHeight}px (view)
-                            </div>
-                            <div>
-                                <strong>Content:</strong> {debugInfo.scrollHeight}px (total)
-                            </div>
-                            <div>
-                                <strong>Progress:</strong> {Math.round(debugInfo.scrollProgress * 100)}%
-                            </div>
-                            <div>
-                                <strong>Distance:</strong> {debugInfo.accumulatedDistance}/1000
-                            </div>
-                            <div>
-                                <strong>Blocked:</strong> {debugInfo.isBlocked ? 'YES' : 'NO'}
-                            </div>
-                        </div>
-                        {screenfull.isEnabled && !isFullscreen && (
+                        )}
+                        {isClient && screenfull.isEnabled && !isFullscreen && (
                             <div className={styles.fullscreenButton}>
                                 <button onClick={handleFullscreen}>
                                     <FullscreenIcon size={24} color="#fff" />
