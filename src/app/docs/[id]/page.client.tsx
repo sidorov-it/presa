@@ -320,8 +320,16 @@ export default function PresentationEditorPage() {
 
     // Apply theme when presentation is loaded or themes change
     useEffect(() => {
-        if (!presentationMeta || !presentationMeta.themeId) {
+        if (!presentationMeta || allThemes.length === 0) {
             // setCurrentTheme(defaultThemes[0]);
+            return;
+        }
+
+        if (!presentationMeta.themeId) {
+            const defaultTheme = allThemes.find(theme => theme.defaultForNewPresentations);
+            if (defaultTheme) {
+                setCurrentTheme(defaultTheme);
+            }
             return;
         }
 

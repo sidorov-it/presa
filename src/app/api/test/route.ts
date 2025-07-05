@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { IncomingMessage } from 'http';
 import themes from './themes.json';
 import { FONT_URLS } from '@/utils/fontLoader';
+import { Theme } from '@prisma/client';
 
 const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
 
@@ -65,7 +66,7 @@ async function downloadImage(url: string): Promise<string> {
     });
 }
 
-async function transformTheme(basicTheme: any) {
+async function transformTheme(basicTheme: any): Promise<Theme> {
     // Handle background image if exists
     let pageBackgroundImageUrl = '';
     if (basicTheme.pageBackgroundImage) {
@@ -83,6 +84,7 @@ async function transformTheme(basicTheme: any) {
             primaryAccent: getFirstColor(basicTheme.primaryAccent),
             primaryAccentTextColor: '#FFFFFF', // Default white text on accent
             slideBackground: basicTheme.cardColor,
+            secondaryAccents: basicTheme.secondaryColors || [],
             pageBackground: {
                 type: pageBackgroundImageUrl ? 'image' : 'color',
                 color: basicTheme.pageBackground?.value || '#FFFFFF',
@@ -134,14 +136,18 @@ async function transformTheme(basicTheme: any) {
 export async function GET() {
     try {
         // Transform each theme
-        const transformedThemes = await Promise.all(themes.map(transformTheme));
+        const newDefaultTheme = themes[themes.length - 1];
+        const transformedTheme = await transformTheme(newDefaultTheme);
+
+        transformedTheme.defaultForNewPresentations = true;
+        transformedTheme.isActive = true;
 
         // Save to database
-        await prisma.theme.createMany({
-            data: transformedThemes,
+        await prisma.theme.create({
+            data: transformedTheme,
         });
 
-        return NextResponse.json({ success: true, count: transformedThemes.length });
+        return NextResponse.json({ success: true, count: 1 });
     } catch (error) {
         console.error('Error importing themes:', error);
         return NextResponse.json({ error: 'Failed to import themes' }, { status: 500 });

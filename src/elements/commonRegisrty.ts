@@ -1,13 +1,4 @@
-import {
-    FaFont,
-    FaTable,
-    FaList,
-    FaImage,
-    FaQuoteLeft,
-    FaRegAddressCard,
-    FaHeading,
-    FaListOl,
-} from 'react-icons/fa';
+import { FaFont, FaTable, FaList, FaImage, FaQuoteLeft, FaRegAddressCard, FaHeading, FaListOl } from 'react-icons/fa';
 import { FaRegChartBar, FaListCheck } from 'react-icons/fa6';
 import { LuChartBar, LuChartColumn, LuChartPie, LuHeading1, LuHeading2, LuHeading3, LuHeading4 } from 'react-icons/lu';
 import { TbChartDonutFilled } from 'react-icons/tb';
@@ -20,6 +11,14 @@ import { MenuElementType, ImageElement, EditorElement, TipTapRefs, SmartLayoutEl
 
 import { BubbleMenus } from '@/components/editor/Menus/menusComponents';
 import { MutableRefObject } from 'react';
+import {
+    HEADING_1_LEVEL,
+    HEADING_2_LEVEL,
+    HEADING_3_LEVEL,
+    HEADING_4_LEVEL,
+    HEADING_5_LEVEL,
+    NORMAL_TEXT_LEVEL,
+} from '@/constants/consts';
 
 interface ElementRegistryElement {
     elementTypeId: ElementType;
@@ -295,7 +294,8 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'text',
         props: {
             textType: 'text',
-            content: '',
+            level: NORMAL_TEXT_LEVEL,
+            content: '<span class="body-text normal-text">текст123</span>',
         },
         slots: [{ slot: 'content', llmHint: 'Текстовый контент', type: 'text' }],
         llmHints: {
@@ -311,7 +311,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'heading',
         props: {
             textType: 'heading',
-            level: 1,
+            level: HEADING_1_LEVEL,
             content: '<span class="heading-text title-text">Заголовок</span>',
         },
         slots: [{ slot: 'content', llmHint: 'Текст заголовка', type: 'text' }],
@@ -328,7 +328,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'heading1',
         props: {
             textType: 'heading',
-            level: 2,
+            level: HEADING_2_LEVEL,
             content: '<span class="heading-text heading-1">Подзаголовок 1</span>',
         },
         slots: [{ slot: 'content', llmHint: 'Текст заголовка', type: 'text' }],
@@ -345,7 +345,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'heading2',
         props: {
             textType: 'heading',
-            level: 3,
+            level: HEADING_3_LEVEL,
             content: '<span class="heading-text heading-2">Подзаголовок 2</span>',
         },
         slots: [{ slot: 'content', llmHint: 'Текст заголовка', type: 'text' }],
@@ -362,7 +362,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'heading3',
         props: {
             textType: 'heading',
-            level: 4,
+            level: HEADING_4_LEVEL,
             content: '<span class="heading-text heading-3">Подзаголовок 3</span>',
         },
         slots: [{ slot: 'content', llmHint: 'Текст заголовка', type: 'text' }],
@@ -379,7 +379,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'heading4',
         props: {
             textType: 'heading',
-            level: 5,
+            level: HEADING_5_LEVEL,
             content: '<span class="heading-text heading-4">Подзаголовок 4</span>',
         },
         slots: [{ slot: 'content', llmHint: 'Текст заголовка', type: 'text' }],
