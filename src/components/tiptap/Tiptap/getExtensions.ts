@@ -24,6 +24,7 @@ import {
     PreventDropExtension,
     EnterHandlerExtension,
     SlashCommandExtension,
+    EmptySpanExtension,
 } from '../extensions';
 import { BlockquoteExtension } from '../extensions/BlockquoteExtension';
 import {
@@ -110,6 +111,7 @@ const getExtensions = ({
     FontSizeExtension.configure({
         types: ['textStyle'],
     }),
+    EmptySpanExtension,
     ParagraphExtension,
     Color,
     Underline,

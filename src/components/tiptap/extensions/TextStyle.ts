@@ -58,6 +58,8 @@ export const TextStyle = Mark.create<TextStyleOptions>({
 
     priority: 101,
 
+    keepOnSplit: true,
+
     addOptions() {
         return {
             HTMLAttributes: {},
@@ -71,17 +73,20 @@ export const TextStyle = Mark.create<TextStyleOptions>({
                 tag: 'span',
                 getAttrs: element => {
                     const hasStyles = (element as HTMLElement).hasAttribute('style');
+                    const hasClass = (element as HTMLElement).hasAttribute('class');
 
+                    // Всегда возвращаем атрибуты, даже если span пустой
+                    // Это позволяет сохранить пустые span'ы с классами
                     const result = {
-                        class: element.className,
+                        class: (element as HTMLElement).className || null,
                     };
 
                     if (hasStyles && this.options.mergeNestedSpanStyles) {
-                        mergeNestedSpanStyles(element);
+                        mergeNestedSpanStyles(element as HTMLElement);
                     }
 
-                    return result;
-                    // return {}
+                    // Возвращаем результат даже для пустых span'ов с классами
+                    return hasClass || hasStyles ? result : false;
                 },
             },
         ];
