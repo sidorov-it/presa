@@ -219,12 +219,6 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                         position: 'relative',
                         zIndex: 2,
                         marginLeft: imageWidthPercent,
-                        // ...(isPdfExport
-                        //     ? {
-                        //           paddingLeft: `calc(${imageWidthPercent} + var(--card-inner-padding-x))`,
-                        //       }
-                        //     : {
-                        //       }),
                         width: remainingWidth,
                     };
                 case 'imageRight':

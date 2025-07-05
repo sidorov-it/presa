@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import fs from 'fs/promises';
 import fsSync from 'fs';
@@ -7,6 +7,7 @@ import https from 'https';
 import { v4 as uuidv4 } from 'uuid';
 import { IncomingMessage } from 'http';
 import themes from './themes.json';
+import defaultTheme from './defaultTheme.json';
 import { FONT_URLS } from '@/utils/fontLoader';
 import { Theme } from '@prisma/client';
 
@@ -79,7 +80,7 @@ async function transformTheme(basicTheme: any): Promise<Theme> {
 
     return {
         name: basicTheme.name,
-        description: `Theme imported from Gamma: ${basicTheme.name}`,
+        description: basicTheme.name || '',
         colors: {
             primaryAccent: getFirstColor(basicTheme.primaryAccent),
             primaryAccentTextColor: '#FFFFFF', // Default white text on accent
@@ -133,21 +134,31 @@ async function transformTheme(basicTheme: any): Promise<Theme> {
     };
 }
 
-export async function GET() {
+export async function GET(request: NextRequest, props: { params: Promise<{ default: string }> }) {
     try {
-        // Transform each theme
-        const newDefaultTheme = themes[themes.length - 1];
-        const transformedTheme = await transformTheme(newDefaultTheme);
+        const params = await props.params;
 
-        transformedTheme.defaultForNewPresentations = true;
-        transformedTheme.isActive = true;
+        // if (params?.default === 'true') {
+            const transformedTheme = await transformTheme(defaultTheme);
 
-        // Save to database
-        await prisma.theme.create({
-            data: transformedTheme,
-        });
+            transformedTheme.defaultForNewPresentations = true;
+            transformedTheme.isActive = true;
 
-        return NextResponse.json({ success: true, count: 1 });
+            // Save to database
+            await prisma.theme.create({
+                data: transformedTheme,
+            });
+
+            // return NextResponse.json({ success: true, count: 1 });
+        // } else {
+            const transformedThemes = await Promise.all(themes.map(transformTheme));
+
+            // Save to database
+            await prisma.theme.createMany({
+                data: transformedThemes,
+            });
+            return NextResponse.json({ success: true, count: transformedThemes.length });
+        // }
     } catch (error) {
         console.error('Error importing themes:', error);
         return NextResponse.json({ error: 'Failed to import themes' }, { status: 500 });

@@ -20,6 +20,17 @@ const blockFillMap = ['fill', 'semi', 'none'];
 
 const themes = [];
 
+const parseImage = async theme => {
+    await timeout(3000);
+    const imageUrlString = window
+        .getComputedStyle(document.querySelector('[data-testid="doc-background"]'))
+        .backgroundImage.replace('url("', '')
+        .replace('")', '');
+    if (imageUrlString !== 'none') {
+        theme.pageBackgroundImage = imageUrlString;
+    }
+};
+
 async function parseFonts(theme) {
     // eslint-disable-next-line no-undef
     document.querySelector('[data-testid="theme-config-tab-fonts"]').click();
@@ -97,12 +108,19 @@ async function parseTheme(name) {
     // Page background color
     const pageBackgroundBlock = document.querySelector('[data-testid="media-drawer-menu-button"]').parentNode;
 
-    if (pageBackgroundBlock.querySelector('input')) {
+    if (pageBackgroundBlock.querySelector('button')?.textContent.includes('Unsplash')) {
+        await parseImage(theme);
+    } else if (pageBackgroundBlock.querySelector('input')) {
         theme.pageBackground = pageBackgroundBlock.querySelector('input');
     } else if (document.querySelector('[data-testid="media-drawer-menu-button"]').parentNode.querySelector('img')) {
-        theme.pageBackgroundImage = document
-            .querySelector('[data-testid="media-drawer-menu-button"]')
-            .parentNode.querySelector('img').src;
+        await timeout(3000);
+        const imageUrlString = window
+            .getComputedStyle(document.querySelector('[data-testid="doc-background"]'))
+            .backgroundImage.replace('url("', '')
+            .replace('")', '');
+        if (imageUrlString !== 'none') {
+            theme.pageBackgroundImage = imageUrlString;
+        }
     }
 
     await parseFonts(theme);

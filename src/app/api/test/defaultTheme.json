@@ -1,0 +1,32 @@
+{
+    "name": "Default BW",
+    "primaryAccent": "#000000",
+    "secondaryColors": [],
+    "headingColor": "#000000",
+    "bodyColor": "#222222",
+    "cardColor": "#FFFFFF",
+    "pageBackground": {
+        "_wrapperState": {
+            "initialValue": "#F5F5F5",
+            "controlled": true
+        },
+        "value": "#F5F5F5",
+        "_valueTracker": {}
+    },
+    "headingFont": "Inter",
+    "headingFontWeight": "Regular",
+    "headingFontColor": "#000000",
+    "bodyFont": "Inter",
+    "bodyFontWeight": "Regular",
+    "bodyFontColor": "#222222",
+    "roundness": "12px",
+    "shadow": "none",
+    "cardBorder": "thin",
+    "cardBorderColor": "#E5E5E5",
+    "cardTransparency": 1,
+    "imageShape": "default",
+    "blockFillType": "primary",
+    "blockFill": "fill",
+    "blockBorder": "thin",
+    "blockShadow": "none"
+}
