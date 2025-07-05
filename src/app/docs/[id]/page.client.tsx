@@ -28,7 +28,6 @@ import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
 import { Tooltip } from '@/components/ui/tooltip';
-import Logo from '@/components/icons/Logo/Logo';
 import MobileWarningOverlay from '@/components/MobileWarningOverlay/MobileWarningOverlay';
 import { clearAllThemeStyles } from '@/utils/themeUtils';
 import { SimplePdfExportButton } from '@/components/export';
@@ -58,13 +57,36 @@ const Header = ({
         signOut({ callbackUrl: '/' });
     }, []);
 
+    const updatePresentation = usePresentationStore(state => state.updatePresentation);
+    const presentationMeta = usePresentationStore(state => state.currentPresentationMeta);
+    const [title, setTitle] = useState(presentationMeta?.title || 'Новая презентация');
+
+    useEffect(() => {
+        setTitle(presentationMeta?.title || 'Новая презентация');
+    }, [presentationMeta?.title]);
+
+    const handleTitleChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const value = e.target.value;
+            setTitle(value);
+            updatePresentation(presentationId, { title: value });
+        },
+        [presentationId, updatePresentation]
+    );
+
     return (
         <header className={styles.header}>
             <div className={styles.headerContent}>
                 <div className={styles.headerLeft}>
-                    <Link href="/dashboard" className={styles.logo}>
-                        <Logo size="md" />
+                    <Link href="/" className={styles.homeButton}>
+                        Home
                     </Link>
+                    <input
+                        className={styles.titleInput}
+                        value={title}
+                        onChange={handleTitleChange}
+                        placeholder="Новая презентация"
+                    />
                 </div>
 
                 <div className={styles.headerRight}>
