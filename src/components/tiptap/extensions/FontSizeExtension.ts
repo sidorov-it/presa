@@ -129,19 +129,7 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                             // return element.style.fontSize?.replace(/['"]+/g, '');
                         },
                         renderHTML: attributes => {
-                            if (typeof attributes.fontSize === 'string' && !attributes.fontSize) {
-                                return {};
-                            }
-
-                            if (
-                                attributes.fontSize &&
-                                !(typeof attributes.fontSize === 'string') &&
-                                !attributes.fontSize.fontSize &&
-                                !attributes.fontSize.classList
-                            ) {
-                                return {};
-                            }
-
+                            // Гарантируем, что для обычного текста всегда возвращается класс 'body-text normal-text'
                             let className;
 
                             const fontSize =
@@ -182,16 +170,18 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                                         className = 'body-text normal-text';
                                         break;
                                 }
+                            } else {
+                                // Если fontSize не задан — это обычный текст
+                                className = 'body-text normal-text';
                             }
 
+                            // Если явно передан classList, используем его (например, при парсинге из HTML)
                             if (attributes.fontSize?.classList) {
                                 className = attributes.fontSize.classList.toString();
                             }
 
                             return {
-                                // style: `font-size: ${attributes.fontSize}`,
                                 class: className,
-                                // 'data-font-size': attributes.fontSize,
                             };
                         },
                     },

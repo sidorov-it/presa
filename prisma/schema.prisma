@@ -128,7 +128,7 @@ model Presentation {
 type ThemeColors {
   primaryAccent          String
   primaryAccentTextColor String?
-  secondaryAccents       String[]            @default([])
+  secondaryAccents       String[]       @default([])
   slideBackground        String
   pageBackground         PageBackground
 }
@@ -188,19 +188,20 @@ type ThemeDesign {
 }
 
 model Theme {
-  id          String          @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  description String?
-  logo        String?
-  colors      ThemeColors
-  typography  ThemeTypography
-  design      ThemeDesign
-  isDefault   Boolean         @default(false)
-  isActive    Boolean         @default(true)
-  userId      String?         @db.ObjectId
-  user        User?          @relation(fields: [userId], references: [id])
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  id                         String          @id @default(auto()) @map("_id") @db.ObjectId
+  name                       String
+  description                String?
+  logo                       String?
+  colors                     ThemeColors
+  typography                 ThemeTypography
+  design                     ThemeDesign
+  isDefault                  Boolean         @default(false)
+  isActive                   Boolean         @default(true)
+  defaultForNewPresentations Boolean         @default(false)
+  userId                     String?         @db.ObjectId
+  user                       User?           @relation(fields: [userId], references: [id])
+  createdAt                  DateTime        @default(now())
+  updatedAt                  DateTime        @updatedAt
 }
 
 model LLMRequestHistory {

@@ -88,4 +88,5 @@ export type Theme = ThemeData & {
     isActive: boolean;
     createdAt: Date;
     updatedAt: Date;
+    defaultForNewPresentations: boolean;
 };
