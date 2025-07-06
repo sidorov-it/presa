@@ -60,10 +60,10 @@ const Header = ({
     const updatePresentation = usePresentationStore(state => state.updatePresentation);
     const setCurrentPresentationTitle = usePresentationStore(state => state.setCurrentPresentationTitle);
     const presentationTitle = usePresentationStore(state => state.currentPresentationTitle);
-    const [title, setTitle] = useState(presentationTitle || 'Новая презентация');
+    const [title, setTitle] = useState(presentationTitle);
 
     useEffect(() => {
-        setTitle(presentationTitle || 'Новая презентация');
+        setTitle(presentationTitle);
     }, [presentationTitle]);
 
     const handleTitleChange = useCallback(
@@ -76,8 +76,15 @@ const Header = ({
     );
 
     const handleTitleBlur = useCallback(() => {
-        updatePresentation(presentationId, { title });
-    }, [presentationId, title, updatePresentation]);
+        const trimmed = title.trim();
+        if (trimmed === '') {
+            setTitle('Новая презентация');
+            setCurrentPresentationTitle('Новая презентация');
+            updatePresentation(presentationId, { title: 'Новая презентация' });
+        } else {
+            updatePresentation(presentationId, { title: trimmed });
+        }
+    }, [presentationId, title, updatePresentation, setCurrentPresentationTitle]);
 
     return (
         <header className={styles.header}>
