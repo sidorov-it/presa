@@ -79,11 +79,16 @@
     overflow: hidden !important;
 }
 
+.slide {
+    padding: 0 3em;
+    max-width: calc(100vh / 1.7777777777777777);
+}
+
 .slideWrapper {
-    margin-top: 20px;
+    /* margin-top: 20px;
     margin-bottom: 44px;
     margin-left: 20px;
-    margin-right: 20px;
+    margin-right: 20px; */
     border-radius: var(--presentation-slide-border-radius);
 }
 
@@ -95,4 +100,5 @@
 
 .slideContent {
     box-shadow: none !important;
+    width: var(--card-width);
 }

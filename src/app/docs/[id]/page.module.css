@@ -8,6 +8,13 @@
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    /* Gamma.app-style scaling system for docs/editor */
+    --card-font-scale: 1; /* Fixed scale for consistent editing */
+    --editor-width: 1032px; /* Standard editor width */
+    --card-width: calc(64.5em / var(--card-font-scale, 1)); /* Editor slide width */
+    --card-min-height: calc(min(var(--card-width), var(--editor-width)) / 1.7777777777777777);
+    --card-max-width: var(--editor-width);
+    --media-scale: min(1, var(--card-font-scale, 1));
 }
 
 .hiddenExportPreview {

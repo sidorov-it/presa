@@ -73,7 +73,7 @@ export default function BoxComponent({
             }
         >
             {IconComponent && (
-                <span className={styles.icon} style={{ fontSize: fontSize }}>
+                <span className={styles.icon} style={{ fontSize: 'calc(1.125rem * var(--font-scale, 1))' }}>
                     <IconComponent color={iconColor} width={1.25} height={1.25} />
                 </span>
             )}

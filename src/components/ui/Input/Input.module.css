@@ -1,6 +1,6 @@
 .input {
   width: 100%;
-  border-radius: 0.375rem;
+  border-radius: 0.375em;
   transition: all 200ms;
 }
 
@@ -16,35 +16,35 @@
 
 /* Size variants */
 .xs {
-  height: 1.5rem;
-  font-size: 0.75rem;
-  line-height: 1rem;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
+  height: 1.5em;
+  font-size: 0.75em;
+  line-height: 1em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
 
 .sm {
-  height: 2rem;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  padding-left: 0.75rem;
-  padding-right: 0.75rem;
+  height: 2em;
+  font-size: 0.875em;
+  line-height: 1.25em;
+  padding-left: 0.75em;
+  padding-right: 0.75em;
 }
 
 .md {
-  height: 2.5rem;
-  font-size: 1rem;
-  line-height: 1.5rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  height: 2.5em;
+  font-size: 1em;
+  line-height: 1.5em;
+  padding-left: 1em;
+  padding-right: 1em;
 }
 
 .lg {
-  height: 3rem;
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  height: 3em;
+  font-size: 1.125em;
+  line-height: 1.75em;
+  padding-left: 1em;
+  padding-right: 1em;
 }
 
 /* Variant styles */
@@ -101,7 +101,7 @@
 .elementLeft {
   display: flex;
   position: absolute;
-  left: 0.75rem;
+  left: 0.75em;
   align-items: center;
   pointer-events: none;
 }
@@ -109,15 +109,15 @@
 .elementRight {
   display: flex;
   position: absolute;
-  right: 0.75rem;
+  right: 0.75em;
   align-items: center;
   pointer-events: none;
 }
 
 .hasLeftElement {
-  padding-left: 2.5rem;
+  padding-left: 2.5em;
 }
 
 .hasRightElement {
-  padding-right: 2.5rem;
+  padding-right: 2.5em;
 }

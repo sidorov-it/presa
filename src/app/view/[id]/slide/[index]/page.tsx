@@ -104,13 +104,15 @@ export default async function SlidePage(props: {
                                 backgroundColor: 'var(--presentation-page-background-color)',
                                 backgroundImage: 'var(--presentation-page-background-image)',
                                 backgroundSize: 'cover',
-                                // backgroundPosition: 'center',
                                 backgroundRepeat: 'no-repeat',
-                                // backgroundAttachment: 'fixed',
-                                // padding: '3rem',
-                                // Define the same CSS variables as in the main presentation view
                                 '--card-width': 'min(100vw, calc(100vh * 1.7777777777777777))',
                                 '--card-height': 'calc(var(--card-width) / 1.7777777777777777 - 64px)',
+                                '--card-font-scale': 'calc(var(--card-width) / 1032)', // Scale fonts based on slide width
+                                '--editor-width': '1032px', // Standard editor width
+                                '--card-min-height': 'calc(min(var(--card-width), var(--editor-width)) / 1.7777777777777777)',
+                                '--card-max-width': 'var(--editor-width)',
+                                '--media-scale': 'min(1, var(--card-font-scale, 1))',
+                                boxSizing: 'border-box',
                             } as React.CSSProperties
                         }
                         data-read-only="true"

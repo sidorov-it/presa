@@ -3,7 +3,6 @@ import { Slide } from '@/types';
 import SlideViewer from '../SlideViewer/SlideViewer';
 import styles from './PresentationViewer.module.css';
 import { Theme } from '@/types/theme';
-
 interface PresentationViewerProps {
     slides: Slide[];
     showImagePlaceholder?: boolean;
@@ -24,6 +23,7 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
     if (!visibleSlides || visibleSlides.length === 0) {
         return <div>No slides to display</div>;
     }
+
 
     return (
         <div className={styles.presentationViewerContainer}>

@@ -10,11 +10,15 @@ import screenfull from 'screenfull';
 import { FullscreenIcon } from 'lucide-react';
 import { IPresentation } from '@/types';
 import { Theme } from '@/types/theme';
+import { getSlideLayoutVars } from '@/utils/themeUtils';
 
 type Props = {
     presentation: IPresentation;
     theme: Theme;
 };
+
+// Check if we're on the client side
+// const isClient = typeof window !== 'undefined';
 
 export default function PresentationView({ presentation, theme }: Props) {
     const { colorMode } = useColorMode();
@@ -24,6 +28,8 @@ export default function PresentationView({ presentation, theme }: Props) {
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
     const visibleSlides = useMemo(() => presentation?.slides.filter(s => !s.hidden) || [], [presentation]);
+
+    const [slideLayoutVars, setSlideLayoutVars] = useState<React.CSSProperties>({});
 
     // Distance the user must scroll before changing slide
     const SCROLL_DISTANCE_THRESHOLD = 1000;
@@ -40,9 +46,6 @@ export default function PresentationView({ presentation, theme }: Props) {
     const scrollDirectionRef = useRef<'next' | 'prev' | null>(null);
     const slideWrapperRef = useRef<HTMLDivElement>(null);
 
-    // Check if we're on the client side
-    // const isClient = typeof window !== 'undefined';
-
     // Cleanup function to clear timeouts when component unmounts
     useEffect(() => {
         return () => {
@@ -53,6 +56,22 @@ export default function PresentationView({ presentation, theme }: Props) {
             if (progressHoldTimeoutRef.current) {
                 clearTimeout(progressHoldTimeoutRef.current);
             }
+        };
+    }, []);
+
+    useEffect(() => {
+        window.addEventListener('resize', () => {
+            // debugger;
+            const vars = getSlideLayoutVars({
+                aspectRatio: 1.7777777777777777,
+                themeFontSize: 18,
+                cardFontScale: 1,
+                renderMode: 'view',
+            });
+            setSlideLayoutVars(vars);
+        });
+        return () => {
+            window.removeEventListener('resize', () => {});
         };
     }, []);
 
@@ -347,7 +366,7 @@ export default function PresentationView({ presentation, theme }: Props) {
 
     return (
         <ReadOnlyProvider isReadOnly={true}>
-            <div className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`}>
+            <div className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`} style={slideLayoutVars}>
                 <main className={styles.main} data-read-only="true">
                     <AnimatePresence mode="wait" initial={false}>
                         <motion.div

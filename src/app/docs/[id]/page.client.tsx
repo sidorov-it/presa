@@ -29,7 +29,7 @@ import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
 import { Tooltip } from '@/components/ui/tooltip';
 import MobileWarningOverlay from '@/components/MobileWarningOverlay/MobileWarningOverlay';
-import { clearAllThemeStyles } from '@/utils/themeUtils';
+import { clearAllThemeStyles, getSlideLayoutVars } from '@/utils/themeUtils';
 import { SimplePdfExportButton } from '@/components/export';
 import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
 import { LuEye, LuSettings, LuUser } from 'react-icons/lu';
@@ -230,6 +230,24 @@ export default function PresentationEditorPage() {
     const [isBgModalOpen, setIsBgModalOpen] = useState(false);
     const { status } = useSession();
 
+    const [slideLayoutVars, setSlideLayoutVars] = useState<React.CSSProperties>({});
+
+    useEffect(() => {
+        window.addEventListener('resize', () => {
+            // debugger;
+            const vars = getSlideLayoutVars({
+                aspectRatio: 1.7777777777777777,
+                themeFontSize: 18,
+                cardFontScale: 1,
+                renderMode: 'edit',
+            });
+            setSlideLayoutVars(vars);
+        });
+        return () => {
+            window.removeEventListener('resize', () => {});
+        };
+    }, []);
+
     // Access store values individually to prevent unnecessary re-renders
     const loadPresentation = usePresentationStore(state => state.loadPresentation);
     const checkPresentationExists = usePresentationStore(state => state.checkPresentationExists);
@@ -397,8 +415,8 @@ export default function PresentationEditorPage() {
                     className={styles.container}
                     colorMode={colorMode}
                 >
-                    <MobileWarningOverlay />
-                    <div ref={containerRef} className={colorMode === 'dark' ? 'dark' : ''}>
+                    {/* <MobileWarningOverlay /> */}
+                    <div ref={containerRef} className={colorMode === 'dark' ? 'dark' : ''} style={slideLayoutVars}>
                         <Header
                             presentationId={id}
                             tiptapRefs={tiptapRefs}

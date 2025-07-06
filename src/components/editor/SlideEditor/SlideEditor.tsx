@@ -50,9 +50,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     const isReadOnly = useReadOnly();
 
-    const backgroundType = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background?.type);
-    const backgroundValue = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background?.value);
-
     const contentAlignment = usePresentationStore(state => state.getSlide(presentationId, slideId)?.contentAlignment);
     const slide = usePresentationStore(state => state.getSlide(presentationId, slideId));
     const imageHeightRatio = slide?.imageHeightRatio;
@@ -267,7 +264,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         // Calculate dimensions based on ratios
         const currentImageWidthRatio = imageWidthRatio || 0.33; // Default 33%
         const currentImageHeightRatio = imageHeightRatio || 0.33; // Default 33%
-        
+
         // Convert ratios to CSS values
         const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
         // For height, we need to calculate based on slide width
@@ -320,7 +317,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             position: 'relative',
             height: '100%',
             width: '100%',
-        };
+            // Font scaling now handled by gamma.app-style system in ElementContent
+        } as React.CSSProperties;
 
         // Apply content alignment
         if (contentAlignment) {
@@ -346,11 +344,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             // Calculate dimensions based on ratios
             const currentImageWidthRatio = imageWidthRatio || 0.33; // Default 33%
             const currentImageHeightRatio = imageHeightRatio || 0.33; // Default 33%
-            
+
             // Convert ratios to CSS values
             const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
             const imageHeightVw = `calc(64.5em * ${currentImageHeightRatio})`;
-            
+
             const remainingWidth = `${(1 - currentImageWidthRatio) * 100}%`;
             // For remaining height, we need to subtract the image height from total height
             const remainingHeight = `calc(100% - 64.5em * ${currentImageHeightRatio})`;

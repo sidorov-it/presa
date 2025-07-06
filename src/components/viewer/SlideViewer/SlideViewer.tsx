@@ -166,9 +166,8 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
             color: 'var(--presentation-text-color)',
             fontFamily: 'var(--presentation-body-font)',
             fontWeight: 'var(--presentation-body-weight)',
-            lineHeight: 'var(--presentation-body-line-height)',
             letterSpacing: 'var(--presentation-body-letter-spacing)',
-            textTransform: 'var(--presentation-body-capitalization)' as any,
+            textTransform: 'var(--presentation-body-capitalization)',
         };
 
         // Apply content alignment
@@ -190,7 +189,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
             }
         }
 
-                // Additional styles for image templates
+        // Additional styles for image templates
         if (slide.templateType) {
             // Calculate dimensions based on ratios
             const currentImageWidthRatio = slide.imageWidthRatio || 0.33; // Default 33%
@@ -234,7 +233,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         }
 
         return baseStyle;
-    }, [slide, isPdfExport]);
+    }, [slide, fullPage]);
 
     let height;
     let width;
@@ -283,11 +282,11 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     };
 
     // Адаптируем класс слайда при экспорте в PDF
-    const slideClassName = `${styles.slide} ${themeClassName} ${isPdfExport ? styles.pdfExport : ''}`;
-    const outerStyle = fullPage ? { padding: 0, width: '100%', height: '100%' } : undefined;
+    const slideClassName = `${styles.slide} ${localStyles.slide} ${themeClassName} ${isPdfExport ? styles.pdfExport : ''}`;
+    // const outerStyle = fullPage ? { padding: 0, width: '100%', height: '100%' } : undefined;
 
     return (
-        <div className={slideClassName} style={outerStyle}>
+        <div className={slideClassName}>
             <div
                 className={`${styles.slideWrapper} ${localStyles.slideWrapper}`}
                 style={slideWrapperStyle}
