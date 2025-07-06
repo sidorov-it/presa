@@ -58,6 +58,7 @@ const Header = ({
     }, []);
 
     const updatePresentation = usePresentationStore(state => state.updatePresentation);
+    const setCurrentPresentationTitle = usePresentationStore(state => state.setCurrentPresentationTitle);
     const presentationTitle = usePresentationStore(state => state.currentPresentationTitle);
     const [title, setTitle] = useState(presentationTitle || 'Новая презентация');
 
@@ -69,10 +70,14 @@ const Header = ({
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const value = e.target.value;
             setTitle(value);
-            updatePresentation(presentationId, { title: value });
+            setCurrentPresentationTitle(value);
         },
-        [presentationId, updatePresentation]
+        [setCurrentPresentationTitle]
     );
+
+    const handleTitleBlur = useCallback(() => {
+        updatePresentation(presentationId, { title });
+    }, [presentationId, title, updatePresentation]);
 
     return (
         <header className={styles.header}>
@@ -85,6 +90,7 @@ const Header = ({
                         className={styles.titleInput}
                         value={title}
                         onChange={handleTitleChange}
+                        onBlur={handleTitleBlur}
                         placeholder="Новая презентация"
                     />
                 </div>
