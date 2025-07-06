@@ -86,12 +86,12 @@ const LayoutViewer = ({ layout, slideId, slideBackground, primaryAccentColor, th
                 className={layout.isTable ? styles.tableLayout : ''}
                 style={{
                     display: 'grid',
-                    gap: layout.isTable ? '0' : '1rem',
+                    gap: layout.isTable ? '0' : '1em',
                     marginTop: '1.125em',
                     marginBottom: '1.125em',
                     gridTemplateColumns: getGridTemplateColumns(),
                     gridTemplateAreas: gridTemplateAreas,
-                    fontSize: '18px',
+                    // fontSize: '18px',
                 }}
             >
                 {layout.gridStructure.rows.map((row, rowIndex) => (
@@ -119,7 +119,7 @@ const LayoutViewer = ({ layout, slideId, slideBackground, primaryAccentColor, th
                                         justifyContent,
                                         width: '100%',
                                         height: '100%',
-                                        minHeight: layout.isTable ? '3rem' : 'auto',
+                                        minHeight: layout.isTable ? '3em' : 'auto',
                                         ...getCellStyles(rowIndex),
                                     }}
                                 >

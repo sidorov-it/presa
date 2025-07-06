@@ -71,6 +71,13 @@ export function themeToCSSVariables(theme: Theme, backgroundSettings?: Backgroun
     set('--presentation-body-letter-spacing', `${theme.typography.bodyLetterSpacing}px`);
     set('--presentation-body-capitalization', theme.typography.bodyCapitalization === 'none' ? 'none' : 'uppercase');
 
+    // Gamma.app-style responsive font scaling system
+    set('--card-font-scale', '1');
+    set('--editor-font-size', '1rem');
+    set('--viewport-scale-factor', '1.125');
+    set('--font-size', 'calc(0.875 * var(--card-font-scale, 1) * var(--editor-font-size, 1rem) * var(--zoom-level, 1) * var(--viewport-scale-factor, 1.125))');
+    set('--media-scale', 'min(1, var(--card-font-scale, 1))');
+
     // Slide design
     set('--presentation-slide-border-radius', theme.design.slide.borderRadius);
     set('--presentation-slide-opacity', theme.design.slide.opacity);

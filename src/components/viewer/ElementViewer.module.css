@@ -1,5 +1,5 @@
 .viewerTiptap {
-    font-size: 18px;
+    /* Font size now inherited from parent container with gamma.app-style scaling */
 }
 
 .container {
@@ -48,7 +48,7 @@
     display: inline-flex;
     align-items: baseline;
     line-height: 1.25em;
-    font-size: 1.125em;
+    /* Font size now inherited from parent container with gamma.app-style scaling */
 }
 
 /* Smart layout styles */

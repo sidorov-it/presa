@@ -28,9 +28,8 @@ import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
 import { Tooltip } from '@/components/ui/tooltip';
-import Logo from '@/components/icons/Logo/Logo';
 import MobileWarningOverlay from '@/components/MobileWarningOverlay/MobileWarningOverlay';
-import { clearAllThemeStyles } from '@/utils/themeUtils';
+import { clearAllThemeStyles, getSlideLayoutVars } from '@/utils/themeUtils';
 import { SimplePdfExportButton } from '@/components/export';
 import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
 import { LuEye, LuSettings, LuUser } from 'react-icons/lu';
@@ -58,13 +57,49 @@ const Header = ({
         signOut({ callbackUrl: '/' });
     }, []);
 
+    const updatePresentation = usePresentationStore(state => state.updatePresentation);
+    const setCurrentPresentationTitle = usePresentationStore(state => state.setCurrentPresentationTitle);
+    const presentationTitle = usePresentationStore(state => state.currentPresentationTitle);
+    const [title, setTitle] = useState(presentationTitle);
+
+    useEffect(() => {
+        setTitle(presentationTitle);
+    }, [presentationTitle]);
+
+    const handleTitleChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const value = e.target.value;
+            setTitle(value);
+            setCurrentPresentationTitle(value);
+        },
+        [setCurrentPresentationTitle]
+    );
+
+    const handleTitleBlur = useCallback(() => {
+        const trimmed = title.trim();
+        if (trimmed === '') {
+            setTitle('Новая презентация');
+            setCurrentPresentationTitle('Новая презентация');
+            updatePresentation(presentationId, { title: 'Новая презентация' });
+        } else {
+            updatePresentation(presentationId, { title: trimmed });
+        }
+    }, [presentationId, title, updatePresentation, setCurrentPresentationTitle]);
+
     return (
         <header className={styles.header}>
             <div className={styles.headerContent}>
                 <div className={styles.headerLeft}>
-                    <Link href="/dashboard" className={styles.logo}>
-                        <Logo size="md" />
+                    <Link href="/" className={styles.homeButton}>
+                        Home
                     </Link>
+                    <input
+                        className={styles.titleInput}
+                        value={title}
+                        onChange={handleTitleChange}
+                        onBlur={handleTitleBlur}
+                        placeholder="Новая презентация"
+                    />
                 </div>
 
                 <div className={styles.headerRight}>
@@ -195,6 +230,24 @@ export default function PresentationEditorPage() {
     const [isBgModalOpen, setIsBgModalOpen] = useState(false);
     const { status } = useSession();
 
+    const [slideLayoutVars, setSlideLayoutVars] = useState<React.CSSProperties>({});
+
+    useEffect(() => {
+        window.addEventListener('resize', () => {
+            // debugger;
+            const vars = getSlideLayoutVars({
+                aspectRatio: 1.7777777777777777,
+                themeFontSize: 18,
+                cardFontScale: 1,
+                renderMode: 'edit',
+            });
+            setSlideLayoutVars(vars);
+        });
+        return () => {
+            window.removeEventListener('resize', () => {});
+        };
+    }, []);
+
     // Access store values individually to prevent unnecessary re-renders
     const loadPresentation = usePresentationStore(state => state.loadPresentation);
     const checkPresentationExists = usePresentationStore(state => state.checkPresentationExists);
@@ -259,10 +312,10 @@ export default function PresentationEditorPage() {
 
                     usePresentationStore.getState().setCurrentPresentationMeta({
                         id: id,
-                        title: presentation!.title,
                         themeId: presentation!.themeId || null,
                         backgroundSettings: presentation!.backgroundSettings,
                     });
+                    usePresentationStore.getState().setCurrentPresentationTitle(presentation!.title);
                     setIsLoading(false);
                     return;
                 }
@@ -362,8 +415,8 @@ export default function PresentationEditorPage() {
                     className={styles.container}
                     colorMode={colorMode}
                 >
-                    <MobileWarningOverlay />
-                    <div ref={containerRef} className={colorMode === 'dark' ? 'dark' : ''}>
+                    {/* <MobileWarningOverlay /> */}
+                    <div ref={containerRef} className={colorMode === 'dark' ? 'dark' : ''} style={slideLayoutVars}>
                         <Header
                             presentationId={id}
                             tiptapRefs={tiptapRefs}

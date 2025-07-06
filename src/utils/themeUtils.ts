@@ -137,3 +137,136 @@ export function getBorderColorForBackground(hexColor: string): string {
     const toHex = (value: number) => value.toString(16).padStart(2, '0');
     return `#${toHex(newR)}${toHex(newG)}${toHex(newB)}`;
 }
+
+export type SlideLayoutParams = {
+    aspectRatio: number;
+    themeFontSize?: number; // theme.config.fontSize
+    cardFontScale?: number; // по умолчанию 1
+    renderMode?: 'view' | 'edit'; // по умолчанию 'edit'
+    zoomLevel?: number; // по умолчанию 1
+};
+
+export const calculateLayoutMetrics = ({ themeFontSize = 1 }: { themeFontSize?: number }) => {
+    const fontSizeRem = 0.875; // "sm" всегда
+    const baseFontSize = themeFontSize * fontSizeRem;
+
+    const contentWidthScale = 115; // defaultContentWidth = "lg"
+    const contentWidthEms = (contentWidthScale * (16 / themeFontSize)) / fontSizeRem;
+
+    // Паддинги (на глаз, без isMobile и nestedDepth)
+    const horizontalPaddingEms = 1.5 * fontSizeRem * 2;
+
+    const cardWidthEms = contentWidthEms + horizontalPaddingEms;
+
+    return {
+        baseFontSize,
+        contentWidthEms,
+        cardWidthEms,
+    };
+};
+
+export const getSlideLayoutVars = ({
+    aspectRatio,
+    themeFontSize = 18,
+    cardFontScale = 1,
+    renderMode = 'edit',
+    // zoomLevel = 1,
+}: SlideLayoutParams) => {
+    const { baseFontSize, contentWidthEms, cardWidthEms } = calculateLayoutMetrics({ themeFontSize });
+
+    const zoomLevel = calculateSlideWidthRatio(renderMode);
+
+    const cardMaxWidth = 'calc(var(--editor-width) - 2 * var(--card-outer-padding-x))';
+    const cardMaxHeight = `calc(100vh - 2 * var(--card-outer-padding-y))`;
+
+    // const cardWidthCSS = `min(${cardMaxWidth}, calc(${cardMaxHeight} * ${aspectRatio}))`;
+    const cardWidthCSS = `min(var(--card-max-width), calc(var(--card-max-height)* ${aspectRatio}))`;
+    // const cardMinHeight = `calc(${cardWidthCSS} / ${aspectRatio})`;
+    const cardMinHeight = `calc(min(var(--card-max-width), calc(var(--card-max-height)* ${aspectRatio})) / ${aspectRatio})`;
+
+    // const fontSize = `calc(var(--zoom-level, 1) * var(--card-font-scale, 1) * ${cardWidthCSS} / ${cardWidthEms})`;
+    let fontSize;
+
+    const preparedZoomLevel = renderMode === 'view' ? zoomLevel : Math.min(1, zoomLevel);
+    // console.log('zoomLevel', preparedZoomLevel);
+    // if (renderMode === 'view') {
+    //     const slideWidth = Math.min(window.innerWidth, window.innerHeight * 1.7777777777777777);
+    //     fontSize = `calc(0.875 * var(--card-font-scale, 1) * var(--editor-font-size, 1rem) * ${preparedZoomLevel} * var(--viewport-scale-factor, 1.125))`;
+    // } else {
+    fontSize = `calc(0.875 * var(--card-font-scale, 1) * var(--editor-font-size, 1rem) * ${preparedZoomLevel} * var(--viewport-scale-factor, 1.125))`;
+    // }
+
+    return {
+        '--editor-width': '100vw',
+        // '--zoom-level': '1',
+        '--card-width': cardWidthCSS,
+        '--card-font-scale': `${cardFontScale}`,
+        '--font-size': fontSize,
+        '--card-max-width': cardMaxWidth,
+        '--card-max-height': cardMaxHeight,
+        '--card-min-height': cardMinHeight,
+        // '--media-scale': 'min(1, var(--card-font-scale, 1))',
+
+        '--card-inner-padding-x': 'calc(4em / var(--card-font-scale, 1))',
+        '--card-inner-padding-y': 'calc(2.75em / var(--card-font-scale, 1))',
+        '--card-margin-height': 'calc(2.75em / var(--card-font-scale, 1))',
+        '--card-inner-padding': 'var(--card-inner-padding-y) var(--card-inner-padding-x)',
+        '--card-outer-padding-left':
+            'calc(var(--card-outer-padding-x) + var(--doc-padding-left, 0px) + var(--present-padding-left, 0px))',
+        '--card-outer-padding-right':
+            'calc(var(--card-outer-padding-x) + var(--doc-padding-right, 0px) + var(--present-padding-right, 0px))',
+        '--card-outer-padding-x': '0px',
+        '--card-outer-padding-y': '0px',
+        '--comment-padding': '4em',
+        '--nested-card-margin': 'calc(-1* var(--comment-padding))',
+        '--top-accent-height-sm': '6.25em',
+        '--top-accent-height-md': '12.5em',
+        '--top-accent-height-lg': '18.75em',
+        '--top-accent-height': 'var(--top-accent-height-md)',
+        '--behind-accent-height': '24em',
+        '--viewport-scale-factor': '1.125',
+        // '--card-width': 'min(var(--card-max-width), calc(var(--card-max-height)* 1.7777777777777777))',
+        // '--card-font-scale': '1',
+        // '--font-size': 'calc(var(--zoom-level)* var(--card-font-scale, 1)* min(var(--card-max-width), calc(var(--card-max-height)* 1.7777777777777777)) / 73.71428571428571)',
+        // '--card-max-width': 'calc(var(--editor-width) - 2* var(--card-outer-padding-x))',
+        // '--card-max-height': 'calc(100vh - 2* var(--card-outer-padding-y))',
+        // '--card-min-height': 'calc(min(var(--card-max-width), calc(var(--card-max-height)* 1.7777777777777777)) / 1.7777777777777777)',
+        '--media-scale': 'min(1, var(--card-font-scale, 1))',
+        '--zoom-level': zoomLevel,
+        '--card-vertical-align': 'center',
+    };
+};
+
+export const calculateSlideWidthRatio = (renderMode: 'view' | 'edit'): number => {
+    if (renderMode === 'view') {
+        // Максимальная ширина слайда в режиме просмотра. либо 100vw, либо 100vh * 1.7777777777777777 для сохранения пропорций
+        const maxSlideWidthPx = Math.min(window.innerHeight * 1.7777777777777777, window.innerWidth);
+
+        // будем считать коэффициент, на сколько слайд больше, чем в конструкторе
+        const MAX_SLIDE_WIDTH_EM = 64.5;
+        // Получаем текущий размер шрифта для расчета em в пикселях
+        const currentFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+        // Максимальная ширина слайда в конструкторе
+        const defaultSlideWidthPx = MAX_SLIDE_WIDTH_EM * currentFontSize;
+        // Рассчитываем соотношение между максимальной шириной слайда в конструкторе и текущей шириной слайда
+        const ratio = maxSlideWidthPx / defaultSlideWidthPx;
+        return ratio;
+    } else {
+        // Максимальная ширина слайда в редакторе 64.4em
+        const MAX_SLIDE_WIDTH_EM = 64.5;
+        // Получаем текущий размер шрифта для расчета em в пикселях
+        const currentFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+        const maxSlideWidthPx = MAX_SLIDE_WIDTH_EM * currentFontSize;
+        // Получаем доступную ширину экрана
+        const availableWidth = document.body.clientWidth;
+        // Вычитаем отступы редактора (из CSS файла Editor.module.css)
+        // по 3em с 2 сторон
+        const totalPadding = 3 * currentFontSize * 2;
+        const actualAvailableWidth = availableWidth - totalPadding;
+        // Рассчитываем соотношение между доступной шириной и максимальной шириной слайда
+        // используется только при окне, размер которого меньше 64.5em для рассчета, на сколько уменьшить шрифт
+        // если окно больше 64.5em, то используется коэффициент 1
+        const ratio = actualAvailableWidth / maxSlideWidthPx;
+        return ratio;
+    }
+};

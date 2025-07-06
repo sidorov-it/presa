@@ -621,6 +621,9 @@ export const ElementContent = ({
             key={elementId}
             className={`${styles.elementContent}`}
             data-element-id={elementId}
+            style={{
+                fontSize: 'var(--font-size)', // Apply gamma.app-style parent-level scaling
+            }}
             onMouseEnter={() => {
                 if (!elementIsHovered && !isReadOnly) {
                     setElementIsHovered(true);

@@ -180,7 +180,7 @@ const ElementViewer = ({
                             // ...getElementStyles(),
                             display: 'flex',
                             flexDirection: 'row',
-                            gap: '1rem',
+                            gap: '1em',
                             padding: '1.25em',
                             backgroundColor: blockColors.blockBgColor,
                             color: blockColors.textColor,
@@ -214,9 +214,10 @@ const ElementViewer = ({
         <div
             style={{
                 // ...getElementStyles(),
-                margin: isTable ? '0.4rem 0 0.3rem' : '0.9em 0',
+                margin: isTable ? '0.4em 0 0.3em' : '0.9em 0',
                 zIndex: 0,
                 transform: element.transform || 'none',
+                fontSize: 'var(--font-size)', // Apply gamma.app-style parent-level scaling
             }}
             // className="element-viewer"
         >

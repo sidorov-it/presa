@@ -30,7 +30,6 @@ import { ElementType } from '@/types/elements';
 
 export interface PresentationMeta {
     id: string;
-    title: string;
     themeId: string | null;
     backgroundSettings?: BackgroundSettings;
 }
@@ -38,6 +37,7 @@ export interface PresentationMeta {
 export interface PresentationState {
     presentations: IPresentation[];
     currentPresentationMeta: PresentationMeta | null;
+    currentPresentationTitle: string;
     isLoading: boolean;
     isSaving: boolean;
     savingStatus: 'idle' | 'saving' | 'saved' | 'error';
@@ -55,6 +55,7 @@ export interface PresentationState {
     loadPresentation: (id: string) => Promise<IPresentation | null>;
     loadPresentationsList: () => Promise<void>;
     setCurrentPresentationMeta: (meta: PresentationMeta) => void;
+    setCurrentPresentationTitle: (title: string) => void;
     updatePresentation: (id: string, data: Partial<IPresentation>) => void;
     deletePresentation: (id: string) => void;
     getPresentation: (id?: string) => IPresentation | undefined;
@@ -344,6 +345,7 @@ export const usePresentationStore = create<PresentationState>()(
         (set, get) => ({
             presentations: [],
             currentPresentationMeta: null,
+            currentPresentationTitle: 'Новая презентация',
             isLoading: false,
             isSaving: false,
             savingStatus: 'idle',
@@ -461,6 +463,10 @@ export const usePresentationStore = create<PresentationState>()(
                 set({ currentPresentationMeta: meta });
             },
 
+            setCurrentPresentationTitle: (title: string) => {
+                set({ currentPresentationTitle: title });
+            },
+
             loadPresentation: async (id: string) => {
                 try {
                     set({ isLoading: true });
@@ -476,10 +482,10 @@ export const usePresentationStore = create<PresentationState>()(
                         presentations: [...state.presentations.filter(p => p.id !== id), presentation],
                         currentPresentationMeta: {
                             id: presentation.id,
-                            title: presentation.title,
                             themeId: presentation.themeId,
                             backgroundSettings: presentation.backgroundSettings,
                         },
+                        currentPresentationTitle: presentation.title,
                     }));
 
                     // Инициализируем историю для загруженной презентации
@@ -508,15 +514,20 @@ export const usePresentationStore = create<PresentationState>()(
                     );
 
                     let updatedMeta = state.currentPresentationMeta;
-                    const metaKeys = ['title', 'themeId', 'backgroundSettings'];
+                    const metaKeys = ['themeId', 'backgroundSettings'];
                     const isMetaUpdated = Object.keys(data).some(key => metaKeys.includes(key));
 
                     if (state.currentPresentationMeta?.id === id && isMetaUpdated) {
                         updatedMeta = { ...state.currentPresentationMeta, ...(data as any) };
                     }
+                    let updatedTitle = state.currentPresentationTitle;
+                    if (state.currentPresentationMeta?.id === id && data.title !== undefined) {
+                        updatedTitle = data.title;
+                    }
                     const updatedState = {
                         presentations: updatedPresentations,
                         currentPresentationMeta: updatedMeta,
+                        currentPresentationTitle: updatedTitle,
                     };
 
                     get().recordAction({
@@ -3807,7 +3818,7 @@ export const usePresentationStore = create<PresentationState>()(
             },
 
             clearCurrentPresentationMeta: () => {
-                set({ currentPresentationMeta: null });
+                set({ currentPresentationMeta: null, currentPresentationTitle: 'Новая презентация' });
             },
         }),
         {

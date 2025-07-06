@@ -1,7 +1,6 @@
 
 .slideDivider {
     position: absolute;
-    /* bottom: -3rem; */
     transform: translateY(50%);
     left: 0;
     right: 0;
@@ -28,7 +27,7 @@
     cursor: pointer;
     color: var(--color-text-light);
     transition: all 0.2s ease-in-out;
-    font-size: 18px;
+    font-size: var(--font-size);
 }
 
 .slideDividerButton:first-child {

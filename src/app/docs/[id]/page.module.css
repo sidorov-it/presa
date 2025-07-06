@@ -8,6 +8,13 @@
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    /* Gamma.app-style scaling system for docs/editor */
+    --card-font-scale: 1; /* Fixed scale for consistent editing */
+    --editor-width: 1032px; /* Standard editor width */
+    --card-width: calc(64.5em / var(--card-font-scale, 1)); /* Editor slide width */
+    --card-min-height: calc(min(var(--card-width), var(--editor-width)) / 1.7777777777777777);
+    --card-max-width: var(--editor-width);
+    --media-scale: min(1, var(--card-font-scale, 1));
 }
 
 .hiddenExportPreview {
@@ -86,6 +93,31 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+}
+
+.homeButton {
+    font-size: 1rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 0.25rem 0.75rem;
+    background-color: var(--color-surface);
+}
+
+.titleInput {
+    font-size: 1rem;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--color-text);
+}
+
+.titleInput:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background-color: var(--color-surface);
 }
 
 .logo {
