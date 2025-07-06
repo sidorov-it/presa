@@ -58,12 +58,12 @@ const Header = ({
     }, []);
 
     const updatePresentation = usePresentationStore(state => state.updatePresentation);
-    const presentationMeta = usePresentationStore(state => state.currentPresentationMeta);
-    const [title, setTitle] = useState(presentationMeta?.title || 'Новая презентация');
+    const presentationTitle = usePresentationStore(state => state.currentPresentationTitle);
+    const [title, setTitle] = useState(presentationTitle || 'Новая презентация');
 
     useEffect(() => {
-        setTitle(presentationMeta?.title || 'Новая презентация');
-    }, [presentationMeta?.title]);
+        setTitle(presentationTitle || 'Новая презентация');
+    }, [presentationTitle]);
 
     const handleTitleChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -281,10 +281,10 @@ export default function PresentationEditorPage() {
 
                     usePresentationStore.getState().setCurrentPresentationMeta({
                         id: id,
-                        title: presentation!.title,
                         themeId: presentation!.themeId || null,
                         backgroundSettings: presentation!.backgroundSettings,
                     });
+                    usePresentationStore.getState().setCurrentPresentationTitle(presentation!.title);
                     setIsLoading(false);
                     return;
                 }
