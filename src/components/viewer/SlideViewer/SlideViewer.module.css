@@ -84,6 +84,15 @@
     max-width: calc(100vh / 1.7777777777777777);
 }
 
+.pdfExport .slide {
+    width: 1034px !important;
+    box-sizing: content-box;
+}
+
+/* .pdfExport .slideWrapper {
+    max-width: calc(100vh / 1.7777777777777777);
+} */
+
 .slideWrapper {
     /* margin-top: 20px;
     margin-bottom: 44px;
@@ -101,4 +110,13 @@
 .slideContent {
     box-shadow: none !important;
     width: var(--card-width);
+}
+
+.pdfExport .slideContainer {
+    width: 1034px;
+    box-sizing: content-box;
+}
+
+.slideContainer {
+    max-width: calc(64.5em / 1);
 }

@@ -217,9 +217,8 @@ const ElementViewer = ({
                 margin: isTable ? '0.4em 0 0.3em' : '0.9em 0',
                 zIndex: 0,
                 transform: element.transform || 'none',
-                fontSize: 'var(--font-size)', // Apply gamma.app-style parent-level scaling
+                fontSize: 'var(--font-size)',
             }}
-            // className="element-viewer"
         >
             {renderElementContent()}
         </div>

@@ -124,6 +124,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                     right: 0,
                     height: imageHeightVw,
                     zIndex: 1,
+                    maxWidth: 'calc(64.5em / 1)',
                 };
             }
             case 'imageLeft':
@@ -242,11 +243,13 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     if (isPreview) {
         height = 'auto';
     } else if (fullPage) {
-        width = 'var(--card-width)';
-        minHeight = 'var(--card-height)';
+        // width = 'var(--card-width)';
+        minHeight = 'calc(1034px  / 1.7777)';
         height = 'auto';
     } else if (isPdfExport) {
         height = 'auto';
+        minHeight = 'calc(1034px  / 1.7777)';
+
     }
 
     // Slide wrapper style including theme CSS variables
@@ -268,7 +271,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         // Дополнительные стили для PDF экспорта
         ...(isPdfExport && {
             overflow: 'visible',
-            padding: '20px',
+            // padding: '20px',
         }),
     };
 
@@ -308,7 +311,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                             />
                         )}
 
-                    <div className={styles.slideContainer} style={contentStyle}>
+                    <div className={`${styles.slideContainer} ${localStyles.slideContainer}`} style={contentStyle}>
                         {slide.layouts.map((layout: Layout) => (
                             <LayoutViewer
                                 theme={theme}

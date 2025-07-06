@@ -167,12 +167,12 @@ export const calculateLayoutMetrics = ({ themeFontSize = 1 }: { themeFontSize?: 
 
 export const getSlideLayoutVars = ({
     aspectRatio,
-    themeFontSize = 18,
+    // themeFontSize = 18,
     cardFontScale = 1,
     renderMode = 'edit',
     // zoomLevel = 1,
 }: SlideLayoutParams) => {
-    const { baseFontSize, contentWidthEms, cardWidthEms } = calculateLayoutMetrics({ themeFontSize });
+    // const { baseFontSize, contentWidthEms, cardWidthEms } = calculateLayoutMetrics({ themeFontSize });
 
     const zoomLevel = calculateSlideWidthRatio(renderMode);
 
@@ -184,17 +184,8 @@ export const getSlideLayoutVars = ({
     // const cardMinHeight = `calc(${cardWidthCSS} / ${aspectRatio})`;
     const cardMinHeight = `calc(min(var(--card-max-width), calc(var(--card-max-height)* ${aspectRatio})) / ${aspectRatio})`;
 
-    // const fontSize = `calc(var(--zoom-level, 1) * var(--card-font-scale, 1) * ${cardWidthCSS} / ${cardWidthEms})`;
-    let fontSize;
-
     const preparedZoomLevel = renderMode === 'view' ? zoomLevel : Math.min(1, zoomLevel);
-    // console.log('zoomLevel', preparedZoomLevel);
-    // if (renderMode === 'view') {
-    //     const slideWidth = Math.min(window.innerWidth, window.innerHeight * 1.7777777777777777);
-    //     fontSize = `calc(0.875 * var(--card-font-scale, 1) * var(--editor-font-size, 1rem) * ${preparedZoomLevel} * var(--viewport-scale-factor, 1.125))`;
-    // } else {
-    fontSize = `calc(0.875 * var(--card-font-scale, 1) * var(--editor-font-size, 1rem) * ${preparedZoomLevel} * var(--viewport-scale-factor, 1.125))`;
-    // }
+    const fontSize = `calc(0.875 * var(--card-font-scale, 1) * var(--editor-font-size, 1rem) * ${preparedZoomLevel} * var(--viewport-scale-factor, 1.125))`;
 
     return {
         '--editor-width': '100vw',

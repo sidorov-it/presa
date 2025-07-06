@@ -622,7 +622,7 @@ export const ElementContent = ({
             className={`${styles.elementContent}`}
             data-element-id={elementId}
             style={{
-                fontSize: 'var(--font-size)', // Apply gamma.app-style parent-level scaling
+                fontSize: 'var(--font-size)',
             }}
             onMouseEnter={() => {
                 if (!elementIsHovered && !isReadOnly) {

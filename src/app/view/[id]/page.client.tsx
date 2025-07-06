@@ -60,6 +60,16 @@ export default function PresentationView({ presentation, theme }: Props) {
     }, []);
 
     useEffect(() => {
+        window.addEventListener('load', () => {
+            const vars = getSlideLayoutVars({
+                aspectRatio: 1.7777777777777777,
+                themeFontSize: 18,
+                cardFontScale: 1,
+                renderMode: 'view',
+            });
+            setSlideLayoutVars(vars);
+        });
+
         window.addEventListener('resize', () => {
             // debugger;
             const vars = getSlideLayoutVars({

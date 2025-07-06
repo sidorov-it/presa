@@ -49,7 +49,6 @@ export const Paragraph = Node.create<ParagraphOptions>({
                     if (!(node instanceof HTMLElement)) return false;
 
                     return {
-                        //   level: Number(node.tagName[1]),
                         class: node.className,
                     };
                 },

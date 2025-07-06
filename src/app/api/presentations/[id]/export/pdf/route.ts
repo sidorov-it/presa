@@ -89,9 +89,9 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
 
         // Set large initial viewport to ensure content fits
         await page.setViewport({
-            width: 1034,
+            width: 1034 + 16 * 6,
             height: 580 + 40, // Increased height to accommodate variable content
-            deviceScaleFactor: 2, // Higher DPI for better quality
+            deviceScaleFactor: 1, // Set to 1 to avoid scaling issues in PDF
         });
 
         // Get the base URL for the slide pages
@@ -150,19 +150,86 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
                     timeout: 15000,
                 });
 
-                // Get the actual slide content dimensions
+                // Get the actual slide content dimensions more accurately
                 const slideElement = await page.$(
                     '.presentation-viewer-provider, [class*="presentation-viewer-provider"]'
                 );
 
-                let slideWidth = 1032; // Standard slide width
+                let slideWidth = 1032 + 16 * 6; // Standard slide width
                 let slideHeight = 580; // Default slide height
 
                 if (slideElement) {
-                    const boundingBox = await slideElement.boundingBox();
-                    if (boundingBox) {
-                        slideWidth = Math.ceil(boundingBox.width);
-                        slideHeight = Math.ceil(boundingBox.height);
+                    // Use evaluate to get more accurate dimensions in CSS pixels
+                    const dimensions = await page.evaluate(() => {
+                        const element = document.querySelector(
+                            '.presentation-viewer-provider, [class*="presentation-viewer-provider"]'
+                        );
+                        if (!element) return null;
+
+                        const computedStyle = window.getComputedStyle(element);
+                        const rect = element.getBoundingClientRect();
+
+                        // Get actual rendered dimensions including padding and border
+                        const actualWidth = element.scrollWidth || rect.width;
+                        const actualHeight = element.scrollHeight || rect.height;
+
+                        // Also check document dimensions in case element is clipped
+                        const documentHeight = Math.max(
+                            document.body.scrollHeight,
+                            document.body.offsetHeight,
+                            document.documentElement.clientHeight,
+                            document.documentElement.scrollHeight,
+                            document.documentElement.offsetHeight
+                        );
+
+                        return {
+                            width: actualWidth,
+                            height: actualHeight,
+                            scrollWidth: element.scrollWidth,
+                            scrollHeight: element.scrollHeight,
+                            clientWidth: element.clientWidth,
+                            clientHeight: element.clientHeight,
+                            offsetWidth: element.offsetWidth,
+                            offsetHeight: element.offsetHeight,
+                            rectWidth: rect.width,
+                            rectHeight: rect.height,
+                            documentHeight: documentHeight,
+                            windowHeight: window.innerHeight,
+                        };
+                    });
+
+                    if (dimensions) {
+                        slideWidth = Math.ceil(dimensions.width);
+
+                        // Use the maximum height from all available measurements
+                        const maxHeight = Math.max(
+                            dimensions.height,
+                            dimensions.scrollHeight,
+                            dimensions.offsetHeight,
+                            dimensions.rectHeight,
+                            dimensions.documentHeight
+                        );
+
+                        // Add buffer to height to prevent content overflow
+                        slideHeight = Math.ceil(maxHeight + 150); // Add 150px buffer for safety
+
+                        logger.debug(`Slide ${i} dimensions:`, {
+                            width: dimensions.width,
+                            height: dimensions.height,
+                            scrollWidth: dimensions.scrollWidth,
+                            scrollHeight: dimensions.scrollHeight,
+                            clientWidth: dimensions.clientWidth,
+                            clientHeight: dimensions.clientHeight,
+                            offsetWidth: dimensions.offsetWidth,
+                            offsetHeight: dimensions.offsetHeight,
+                            rectWidth: dimensions.rectWidth,
+                            rectHeight: dimensions.rectHeight,
+                            documentHeight: dimensions.documentHeight,
+                            windowHeight: dimensions.windowHeight,
+                            maxHeight: maxHeight,
+                            finalWidth: slideWidth,
+                            finalHeight: slideHeight,
+                        });
                     }
                 }
 
@@ -179,8 +246,10 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
                         bottom: 0,
                         left: 0,
                     },
-                    preferCSSPageSize: false,
+                    preferCSSPageSize: false, // Set to false to force custom page size
                     scale: 1,
+                    format: undefined, // Don't use standard page format
+                    pageRanges: '1', // Only first page to prevent page breaks
                 });
 
                 // debug
