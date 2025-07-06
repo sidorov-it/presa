@@ -50,6 +50,9 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     const isReadOnly = useReadOnly();
 
+    const backgroundType = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background?.type);
+    const backgroundValue = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background?.value);
+
     const contentAlignment = usePresentationStore(state => state.getSlide(presentationId, slideId)?.contentAlignment);
     const slide = usePresentationStore(state => state.getSlide(presentationId, slideId));
     const imageHeightRatio = slide?.imageHeightRatio;
@@ -104,6 +107,22 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         }
         return className;
     }, [isSelected, isReadOnly]);
+
+
+    const getSlideStyle = useCallback(() => {
+        const style: React.CSSProperties & Record<string, string> = {};
+
+        if (templateType === 'imageBackground' && imageUrl) {
+            style.backgroundImage = `url(${imageUrl})`;
+        }
+
+        // Use background color from slide data
+        if (backgroundType === 'color' && backgroundValue) {
+            style['--presentation-slide-background'] = backgroundValue;
+        }
+
+        return style;
+    }, [imageUrl, templateType, backgroundType, backgroundValue]);
 
     const slideMenuOpen = useMenuStore(state => state.checkSlideMenuIsOpen(slideId));
 
@@ -452,6 +471,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     handleSlideWrapperClick(e as unknown as React.MouseEvent);
                 }
             }}
+            style={getSlideStyle()}
         >
             <div className={`${getSlideClassName()}`} data-slide="true">
                 <div className={`${styles.slideBorder} ${isSelected || isHovered ? styles.slideBorderMenuOpen : ''}`} />

@@ -4,7 +4,7 @@ import React, { useState, useRef, memo, useCallback, useEffect } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { Slide } from '@/types';
 import { useSlideDndStore } from '@/store/slideDndStore';
-import { generateId } from '@/utils/id';
+import { cloneSlideWithNewIds } from '@/utils/cloneSlideWithNewIds';
 import { LuGripVertical, LuCopy, LuPlus, LuEyeOff, LuTrash2, LuClipboardPaste } from 'react-icons/lu';
 
 import styles from './SlidesList.module.css';
@@ -225,7 +225,7 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
     const handleAddCopiedBelow = useCallback(() => {
         if (!contextMenu || !copiedSlide) return;
         const index = slides.findIndex(s => s.id === contextMenu.slide.id);
-        const newSlide = { ...copiedSlide, id: generateId() };
+        const newSlide = cloneSlideWithNewIds(copiedSlide);
         usePresentationStore.getState().addSlide(presentationId, newSlide, index + 1);
         setContextMenu(null);
     }, [contextMenu, copiedSlide, slides, presentationId]);
