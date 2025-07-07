@@ -7,10 +7,10 @@ import deepEqual from 'deep-equal';
 import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlaceholder';
 import { useThemeStore } from '@/store/themeStore';
 import { useHistoryStore } from '@/store/historyStore';
+import ResizeHandlesPortal from './ResizeHandlesPortal';
 
 const MIN_SIZE = 20;
 const MAX_SIZE = 50;
-const DEFAULT_HEIGHT_PX = 200;
 
 interface ResizableTemplateImageProps {
     presentationId: string;
@@ -28,6 +28,8 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     initialImageStyle,
 }) => {
     const [isSelected, setIsSelected] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
+    const [isHandleHovered, setIsHandleHovered] = useState(false);
 
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -317,120 +319,80 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     }
     // Render template image with resize handles
     return (
-        <div
-            className={`${styles.container} ${isSelected ? styles.selected : ''}`}
-            style={containerStyle}
-            ref={containerRef}
-            data-template-type={templateType}
-            onClick={() => {
-                setIsSelected(true);
-            }}
-        >
+        <>
             <div
-                ref={imageRef}
-                className={`${styles.templateImage} ${styles[templateType]} ${imageMaskClass}`}
-                style={imageStyle}
-                aria-label={`Изменяемый шаблон изображения ${templateType}`}
-                role="region"
+                className={`${styles.container} ${isSelected ? styles.selected : ''}`}
+                style={containerStyle}
+                ref={containerRef}
+                data-template-type={templateType}
+                onClick={() => {
+                    setIsSelected(true);
+                }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
             >
-                {imageUrl && (
-                    <div
-                        className={styles.templateImage}
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            backgroundImage: `url(${imageUrl})`,
-                        }}
-                    >
-                        {/* <Image src={imageUrl} alt={`Template ${templateType}`} fill /> */}
-                    </div>
-                )}
+                <div
+                    ref={imageRef}
+                    className={`${styles.templateImage} ${styles[templateType]} ${imageMaskClass}`}
+                    style={imageStyle}
+                    aria-label={`Изменяемый шаблон изображения ${templateType}`}
+                    role="region"
+                >
+                    {imageUrl && (
+                        <div
+                            className={styles.templateImage}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                backgroundImage: `url(${imageUrl})`,
+                            }}
+                        >
+                            {/* <Image src={imageUrl} alt={`Template ${templateType}`} fill /> */}
+                        </div>
+                    )}
 
-                {!imageUrl && (
-                    <div
-                        className={styles.templateImagePlaceholder}
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            backgroundColor: 'var(--chakra-colors-gray-300)',
-                        }}
-                    >
-                        <ImagePlaceholder
-                            imageUrl={imageUrl || ''}
-                            isWidthRightMenu={true}
-                            onClearImage={() => {
-                                updateSlide(presentationId, slideId, {
-                                    imageUrl: '',
-                                });
+                    {!imageUrl && (
+                        <div
+                            className={styles.templateImagePlaceholder}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                backgroundColor: 'var(--chakra-colors-gray-300)',
                             }}
-                            onUpdateLink={(link: string) => {
-                                updateSlide(presentationId, slideId, {
-                                    imageUrl: link,
-                                });
-                            }}
-                        />
-                    </div>
-                )}
+                        >
+                            <ImagePlaceholder
+                                imageUrl={imageUrl || ''}
+                                isWidthRightMenu={true}
+                                onClearImage={() => {
+                                    updateSlide(presentationId, slideId, {
+                                        imageUrl: '',
+                                    });
+                                }}
+                                onUpdateLink={(link: string) => {
+                                    updateSlide(presentationId, slideId, {
+                                        imageUrl: link,
+                                    });
+                                }}
+                            />
+                        </div>
+                    )}
+                </div>
             </div>
 
-            {resizeHandles.includes('left') && (
-                <div
-                    className={styles.resizeHandleLeft}
-                    onMouseDown={e => handleResizeStart(e, 'horizontal')}
-                    tabIndex={0}
-                    role="slider"
-                    aria-label="Изменить ширину изображения"
-                    aria-valuemin={MIN_SIZE}
-                    aria-valuemax={MAX_SIZE}
-                    aria-valuenow={Math.round((currentSize.widthRatio || 0.33) * 100)}
-                    aria-orientation="horizontal"
-                />
-            )}
-
-            {resizeHandles.includes('right') && (
-                <div
-                    className={styles.resizeHandleRight}
-                    onMouseDown={e => handleResizeStart(e, 'horizontal')}
-                    tabIndex={0}
-                    role="slider"
-                    aria-label="Изменить ширину изображения"
-                    aria-valuemin={MIN_SIZE}
-                    aria-valuemax={MAX_SIZE}
-                    aria-valuenow={Math.round((currentSize.widthRatio || 0.33) * 100)}
-                    aria-orientation="horizontal"
-                />
-            )}
-
-            {resizeHandles.includes('top') && (
-                <div
-                    className={styles.resizeHandleTop}
-                    onMouseDown={e => handleResizeStart(e, 'vertical')}
-                    tabIndex={0}
-                    role="slider"
-                    aria-label="Изменить высоту изображения"
-                    aria-valuemin={5}
-                    aria-valuemax={100}
-                    aria-valuenow={Math.round((currentSize.heightRatio || 0.33) * 100)}
-                    aria-orientation="vertical"
-                />
-            )}
-
-            {resizeHandles.includes('bottom') && (
-                <div
-                    className={styles.resizeHandleBottom}
-                    onMouseDown={e => handleResizeStart(e, 'vertical')}
-                    tabIndex={0}
-                    role="slider"
-                    aria-label="Изменить высоту изображения"
-                    aria-valuemin={5}
-                    aria-valuemax={100}
-                    aria-valuenow={Math.round((currentSize.heightRatio || 0.33) * 100)}
-                    aria-orientation="vertical"
-                />
-            )}
-        </div>
+            {/* Render resize handles in portal */}
+            <ResizeHandlesPortal
+                containerRef={containerRef}
+                resizeHandles={resizeHandles}
+                isVisible={isHovered || isHandleHovered || isResizing}
+                onResizeStart={handleResizeStart}
+                currentSize={currentSize}
+                MIN_SIZE={MIN_SIZE}
+                MAX_SIZE={MAX_SIZE}
+                onHandleHover={setIsHandleHovered}
+            />
+        </>
     );
 };
 
