@@ -10,6 +10,7 @@ import { LuGripVertical, LuCopy, LuPlus, LuEyeOff, LuTrash2, LuClipboardPaste } 
 import styles from './SlidesList.module.css';
 import Portal from '@/components/Portal';
 import { useColorMode } from '@/components/ui/color-mode';
+import SlidesListDropIndicator from './SlidesListDropIndicator';
 
 const COPIED_SLIDE_STORAGE_KEY = 'copiedSlide';
 
@@ -35,7 +36,6 @@ const SlideItem = memo(
         const startSlideDrag = useSlideDndStore(state => state.startDrag);
         const slideDragState = useSlideDndStore(state => state.dragState);
         const setSlideIndicators = useSlideDndStore(state => state.setIndicators);
-        const completeSlideDrop = useSlideDndStore(state => state.completeDrop);
         const resetSlideDnd = useSlideDndStore(state => state.reset);
         const getSlideTitle = useCallback(() => {
             if (!slide.layouts.length || !slide.layouts[0].elements.length) {
@@ -89,22 +89,20 @@ const SlideItem = memo(
             [isReordering, setSlideIndicators, slide.id]
         );
 
-        const handleDragLeave = useCallback(() => {
+        const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
             if (isReordering) {
-                setSlideIndicators({ slideIndicator: null, slidePosition: null });
+                // Only clear indicators if we're actually leaving the slide area
+                // Check if we're leaving to go to a child element
+                const rect = e.currentTarget.getBoundingClientRect();
+                const isLeavingToChild = e.relatedTarget && e.currentTarget.contains(e.relatedTarget as Node);
+                
+                if (!isLeavingToChild) {
+                    setSlideIndicators({ slideIndicator: null, slidePosition: null });
+                }
             }
         }, [isReordering, setSlideIndicators]);
 
-        const handleDrop = useCallback(
-            (e: React.DragEvent<HTMLDivElement>) => {
-                if (isReordering) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    completeSlideDrop();
-                }
-            },
-            [isReordering, completeSlideDrop]
-        );
+        // Remove local drop handler - now handled globally
 
 
         return (
@@ -119,7 +117,6 @@ const SlideItem = memo(
                 onContextMenu={e => onContextMenu(e, slide)}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
                 aria-label={`Слайд ${index + 1}: ${slideTitle}`}
                 onKeyDown={handleItemKeyDown}
                 data-slide-id={slide.id}
@@ -175,9 +172,43 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
     // const slides = getPresentation(presentationId)?.slides || [];
 
     const setSlidePresentationId = useSlideDndStore(state => state.setPresentationId);
+    const handleDocumentDrop = useSlideDndStore(state => state.handleDocumentDrop);
+    const dragState = useSlideDndStore(state => state.dragState);
+    
     useEffect(() => {
         setSlidePresentationId(presentationId);
     }, [presentationId, setSlidePresentationId]);
+
+    // Add global drop handler when dragging starts
+    useEffect(() => {
+        if (dragState === 'dragging') {
+            const handleDrop = (e: DragEvent) => {
+                handleDocumentDrop(e);
+            };
+
+            const handleDragOver = (e: DragEvent) => {
+                e.preventDefault(); // Allow drop
+                
+                // Check if we're over the slides list panel
+                const slidesListPanel = document.querySelector('.slides-list-panel');
+                if (slidesListPanel && !slidesListPanel.contains(e.target as Node)) {
+                    // We're outside the slides list - clear indicators
+                    useSlideDndStore.getState().setIndicators({ 
+                        slideIndicator: null, 
+                        slidePosition: null 
+                    });
+                }
+            };
+
+            document.addEventListener('drop', handleDrop);
+            document.addEventListener('dragover', handleDragOver);
+
+            return () => {
+                document.removeEventListener('drop', handleDrop);
+                document.removeEventListener('dragover', handleDragOver);
+            };
+        }
+    }, [dragState, handleDocumentDrop]);
 
     // Load copied slide from localStorage and listen for updates across tabs
     useEffect(() => {
@@ -348,7 +379,7 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
 
     // Expanded view with the list of slides
     return (
-        <div className={styles.leftPanel}>
+        <div className={`${styles.leftPanel} slides-list-panel`}>
             <Portal>
                 <button
                     className={`${styles.expandedPanelCollapseButton} ${colorMode === 'light' ? styles.expandedPanelCollapseButtonLight : ''}`}
@@ -378,6 +409,8 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
                     </svg>
                 </button>
             </Portal>
+
+            <SlidesListDropIndicator />
 
             <div ref={panelRef} className={styles.leftPanelContent}>
                 <button className={styles.createButton} onClick={() => usePresentationStore.getState().addEmptySlide(presentationId, slides.length)}>

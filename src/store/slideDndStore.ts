@@ -20,6 +20,7 @@ interface SlideDndStore extends SlideDndState {
     setIndicators: (indicators: Partial<SlideDndIndicators>) => void;
     completeDrop: () => void;
     reset: () => void;
+    handleDocumentDrop: (e: DragEvent) => void;
 }
 
 export const useSlideDndStore = create<SlideDndStore>(set => ({
@@ -75,4 +76,13 @@ export const useSlideDndStore = create<SlideDndStore>(set => ({
             sourceSlideId: null,
             indicators: { slideIndicator: null, slidePosition: null },
         }),
+
+    handleDocumentDrop: (e: DragEvent) => {
+        const state = useSlideDndStore.getState();
+        
+        if (state.dragState === 'dragging' && state.indicators.slideIndicator && state.indicators.slidePosition) {
+            e.preventDefault();
+            state.completeDrop();
+        }
+    },
 }));

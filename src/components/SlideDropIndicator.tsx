@@ -9,7 +9,18 @@ const SlideDropIndicator = () => {
         return null;
     }
 
-    const slide = document.querySelector<HTMLElement>(`[data-slide-id="${indicators.slideIndicator}"]`);
+    // Find slide element, but exclude ones in the slides list
+    const allSlides = document.querySelectorAll<HTMLElement>(`[data-slide-id="${indicators.slideIndicator}"]`);
+    let slide: HTMLElement | null = null;
+
+    // Find the slide that is NOT in the slides list panel
+    for (const slideElement of allSlides) {
+        if (slideElement.closest('.slides-list-panel')) {
+            slide = slideElement;
+            break;
+        }
+    }
+
     if (!slide) return null;
 
     const rect = slide.getBoundingClientRect();
