@@ -3,18 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/Card/Card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card/Card';
 import SlidePreview from '../dashboard/components/SlidePreview';
-import {
-    PresentationTemplates,
-    PresentationTemplateKeys,
-} from '@/presentationTemplates';
+import { PresentationTemplates, PresentationTemplateKeys } from '@/presentationTemplates';
 import styles from './page.module.css';
 import { useThemeStore } from '@/store/themeStore';
 import TemplatePreviewModal from '@/components/templates/TemplatePreviewModal';
@@ -71,8 +62,7 @@ const TemplatesPage = () => {
                 <div className={styles.templatesGrid}>
                     {TEMPLATE_KEYS.map(key => {
                         const template = PresentationTemplates[key];
-                        const theme =
-                            defaultThemes.find(t => t.id === template.themeId) || defaultThemes[0];
+                        const theme = defaultThemes.find(t => t.id === template.themeId) || defaultThemes[0];
 
                         if (!theme) {
                             return null;
@@ -113,6 +103,7 @@ const TemplatesPage = () => {
                 templateId={previewId}
                 isOpen={previewId !== null}
                 onClose={closePreview}
+                onUseTemplate={handleTemplateUse}
             />
         </div>
     );
