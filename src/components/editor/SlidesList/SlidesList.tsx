@@ -11,6 +11,8 @@ import styles from './SlidesList.module.css';
 import Portal from '@/components/Portal';
 import { useColorMode } from '@/components/ui/color-mode';
 
+const COPIED_SLIDE_STORAGE_KEY = 'copiedSlide';
+
 // Memoized individual slide component to prevent unnecessary re-renders
 const SlideItem = memo(
     ({
@@ -177,6 +179,33 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
         setSlidePresentationId(presentationId);
     }, [presentationId, setSlidePresentationId]);
 
+    // Load copied slide from localStorage and listen for updates across tabs
+    useEffect(() => {
+        const stored = localStorage.getItem(COPIED_SLIDE_STORAGE_KEY);
+        if (stored) {
+            try {
+                setCopiedSlide(JSON.parse(stored));
+            } catch {
+                // ignore parsing errors
+            }
+        }
+
+        const handleStorage = (e: StorageEvent) => {
+            if (e.key === COPIED_SLIDE_STORAGE_KEY && e.newValue) {
+                try {
+                    setCopiedSlide(JSON.parse(e.newValue));
+                } catch {
+                    // ignore parsing errors
+                }
+            }
+        };
+
+        window.addEventListener('storage', handleStorage);
+        return () => {
+            window.removeEventListener('storage', handleStorage);
+        };
+    }, []);
+
     const handleToggleCollapse = useCallback(() => {
         setIsCollapsed(prev => !prev);
     }, []);
@@ -212,6 +241,11 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
     const handleCopy = useCallback(() => {
         if (!contextMenu) return;
         setCopiedSlide(contextMenu.slide);
+        try {
+            localStorage.setItem(COPIED_SLIDE_STORAGE_KEY, JSON.stringify(contextMenu.slide));
+        } catch {
+            // ignore storage errors
+        }
         setContextMenu(null);
     }, [contextMenu]);
 
