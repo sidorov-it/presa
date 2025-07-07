@@ -353,7 +353,7 @@ export const ElementContent = ({
                                     );
                                 }
                             } else {
-                                // Previous element doesn't have text editor, do nothing
+                                usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
                                 return;
                             }
                         } else {
