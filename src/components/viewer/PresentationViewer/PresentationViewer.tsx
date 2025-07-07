@@ -24,7 +24,6 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
         return <div>No slides to display</div>;
     }
 
-
     return (
         <div className={styles.presentationViewerContainer}>
             <div className={styles.presentationViewerAllSlidesContainer}>

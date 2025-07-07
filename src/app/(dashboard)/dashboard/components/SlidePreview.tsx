@@ -25,6 +25,7 @@ export default function SlidePreview({ presentation, theme }: SlidePreviewProps)
                         slide={firstSlide}
                         showImagePlaceholder={true}
                         primaryAccentColor={theme?.colors.primaryAccent || '#000000'}
+                        isSlidePreview={true}
                     />
                 </ScopedThemeStylesApplier>
             </div>

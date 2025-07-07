@@ -295,7 +295,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         props: {
             textType: 'text',
             level: NORMAL_TEXT_LEVEL,
-            content: '<span class="body-text normal-text">текст123</span>',
+            content: '<span class="body-text normal-text"></span>',
         },
         slots: [{ slot: 'content', llmHint: 'Текстовый контент', type: 'text' }],
         llmHints: {

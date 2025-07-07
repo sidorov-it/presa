@@ -5,7 +5,7 @@ import fs from 'fs/promises';
 import logger from '@/utils/logger';
 
 const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
 export const POST = async (req: NextRequest) => {

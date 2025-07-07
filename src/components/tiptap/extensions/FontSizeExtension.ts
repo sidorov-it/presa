@@ -223,7 +223,7 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                         });
 
                         if (fontSizeInfo) {
-                            return commands.updateAttributes('textStyle', {
+                            return commands.setMark('textStyle', {
                                 fontSize: fontSizeInfo.fontSize,
                             });
                         }
@@ -233,7 +233,7 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
             unsetFontSize:
                 () =>
                     ({ commands }) => {
-                        return commands.updateAttributes('textStyle', {
+                        return commands.setMark('textStyle', {
                             fontSize: null,
                         });
                     },

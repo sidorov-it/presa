@@ -23,6 +23,7 @@ interface SlideViewerProps {
     primaryAccentColor: string;
     /** Reference to the scrollable wrapper element */
     wrapperRef?: React.Ref<HTMLDivElement>;
+    isSlidePreview?: boolean;
     theme: Theme;
 }
 
@@ -36,6 +37,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     fullPage = false,
     showImagePlaceholder = false,
     isPreview = false,
+    isSlidePreview = false,
     primaryAccentColor,
     wrapperRef,
     theme,
@@ -104,7 +106,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
             baseStyle.WebkitMaskRepeat = 'no-repeat';
         }
 
-                // Calculate dimensions based on ratios
+        // Calculate dimensions based on ratios
         const currentImageWidthRatio = slide.imageWidthRatio || 0.33; // Default 33%
         const currentImageHeightRatio = slide.imageHeightRatio || 0.33; // Default 33%
 
@@ -239,6 +241,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     let height;
     let width;
     let minHeight;
+    let maxWidth;
 
     if (isPreview) {
         height = 'auto';
@@ -249,7 +252,6 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     } else if (isPdfExport) {
         height = 'auto';
         minHeight = 'calc(1034px  / 1.7777)';
-
     }
 
     // Slide wrapper style including theme CSS variables
@@ -264,7 +266,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         // backgroundColor: fullPage ? 'transparent' : 'var(--presentation-slide-background)',
         // boxShadow: fullPage ? 'none' : 'var(--presentation-slide-shadow)',
         width,
-        maxWidth: width,
+        maxWidth: maxWidth ?? width,
         minHeight: minHeight ?? height,
         height,
         ...(fullPage && { overflow: 'visible' }),
@@ -289,7 +291,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     // const outerStyle = fullPage ? { padding: 0, width: '100%', height: '100%' } : undefined;
 
     return (
-        <div className={slideClassName}>
+        <div className={`${slideClassName} ${isSlidePreview ? localStyles.slidePreview : ''}`}>
             <div
                 className={`${styles.slideWrapper} ${localStyles.slideWrapper}`}
                 style={slideWrapperStyle}

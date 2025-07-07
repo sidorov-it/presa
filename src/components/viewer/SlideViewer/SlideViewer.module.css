@@ -120,3 +120,7 @@
 .slideContainer {
     max-width: calc(64.5em / 1);
 }
+
+.slidePreview {
+    max-width: 100%;
+}

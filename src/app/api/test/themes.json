@@ -355,14 +355,7 @@
         "headingColor": "#000000",
         "bodyColor": "#272525",
         "cardColor": "#FFFFFF",
-        "pageBackground": {
-            "_wrapperState": {
-                "initialValue": "",
-                "controlled": true
-            },
-            "value": "",
-            "_valueTracker": {}
-        },
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/theme_images/prism-background.2232a16e.png?w=3707&q=70",
         "headingFont": "Source Serif Pro",
         "headingFontWeight": "Semi Bold",
         "headingFontColor": "#000000",
@@ -731,14 +724,7 @@
         "headingColor": "#FF75D3 10%, #AF41F0 90%",
         "bodyColor": "#272525",
         "cardColor": "#FFFFFF",
-        "pageBackground": {
-            "_wrapperState": {
-                "initialValue": "",
-                "controlled": true
-            },
-            "value": "",
-            "_valueTracker": {}
-        },
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/theme_images/atmosphere-background.a041341a.png?w=2666&q=70",
         "headingFont": "Source Serif Pro",
         "headingFontWeight": "Semi Bold",
         "headingFontColor": "#FF75D3 10%, #AF41F0 90%",
@@ -2086,14 +2072,7 @@
         "headingColor": "#FFFFFF",
         "bodyColor": "#E5E0DF",
         "cardColor": "#252222",
-        "pageBackground": {
-            "_wrapperState": {
-                "initialValue": "",
-                "controlled": true
-            },
-            "value": "",
-            "_valueTracker": {}
-        },
+        "pageBackgroundImage": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/theme_images/satellite-background.e070b8bc.jpg?w=2400&q=70",
         "headingFont": "Overpass",
         "headingFontWeight": "Bold",
         "headingFontColor": "#FFFFFF",
