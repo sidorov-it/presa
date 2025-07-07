@@ -79,7 +79,11 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
     };
 
     return (
-        <div className={`${styles.themeCard} ${isSelected ? styles.selected : ''}`} onClick={onClick}>
+        <div
+            className={`${styles.themeCard} ${isSelected ? styles.selected : ''}`}
+            onClick={onClick}
+            id={`theme-${theme.id}`}
+        >
             <div className={styles.cardContent}>
                 {/* Theme Preview */}
                 <div
