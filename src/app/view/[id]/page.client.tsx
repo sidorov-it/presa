@@ -24,6 +24,8 @@ export default function PresentationView({ presentation, theme }: Props) {
     const { colorMode } = useColorMode();
 
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isLayoutReady, setIsLayoutReady] = useState(false);
 
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
@@ -59,8 +61,9 @@ export default function PresentationView({ presentation, theme }: Props) {
         };
     }, []);
 
+    // Initialize slide layout and handle loading state
     useEffect(() => {
-        window.addEventListener('load', () => {
+        const calculateLayout = () => {
             const vars = getSlideLayoutVars({
                 aspectRatio: 1.7777777777777777,
                 themeFontSize: 18,
@@ -68,20 +71,33 @@ export default function PresentationView({ presentation, theme }: Props) {
                 renderMode: 'view',
             });
             setSlideLayoutVars(vars);
-        });
+            setIsLayoutReady(true);
+        };
 
-        window.addEventListener('resize', () => {
-            // debugger;
-            const vars = getSlideLayoutVars({
-                aspectRatio: 1.7777777777777777,
-                themeFontSize: 18,
-                cardFontScale: 1,
-                renderMode: 'view',
-            });
-            setSlideLayoutVars(vars);
-        });
+        const handleLoad = () => {
+            calculateLayout();
+            // Hide server-side loader after layout is calculated
+            setTimeout(() => {
+                setIsLoading(false);
+            }, 100);
+        };
+
+        const handleResize = () => {
+            calculateLayout();
+        };
+
+        // Check if window is already loaded
+        if (document.readyState === 'complete') {
+            handleLoad();
+        } else {
+            window.addEventListener('load', handleLoad);
+        }
+
+        window.addEventListener('resize', handleResize);
+
         return () => {
-            window.removeEventListener('resize', () => {});
+            window.removeEventListener('load', handleLoad);
+            window.removeEventListener('resize', handleResize);
         };
     }, []);
 
@@ -374,9 +390,42 @@ export default function PresentationView({ presentation, theme }: Props) {
 
     if (visibleSlides.length === 0) return <div className={styles.loadingContainer}>Нет видимых слайдов</div>;
 
+    // Hide server-side loader when client is ready
+    useEffect(() => {
+        if (!isLoading && isLayoutReady) {
+            // Hide server-side loader
+            const serverLoader = document.querySelector('[data-server-loader]');
+            if (serverLoader) {
+                (serverLoader as HTMLElement).style.display = 'none';
+            }
+        }
+    }, [isLoading, isLayoutReady]);
+
     return (
         <ReadOnlyProvider isReadOnly={true}>
-            <div className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`} style={slideLayoutVars}>
+            {/* Client-side fallback loader (in case server loader is not available) */}
+            {(isLoading || !isLayoutReady) && (
+                <div className={styles.loadingContainer} style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100vw',
+                    height: '100vh',
+                    backgroundColor: '#ffffff',
+                    zIndex: 999
+                }}>
+                    <div className={styles.spinner}></div>
+                </div>
+            )}
+            
+            <div 
+                className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`} 
+                style={{
+                    ...slideLayoutVars,
+                    opacity: isLoading || !isLayoutReady ? 0 : 1,
+                    transition: 'opacity 0.3s ease-in-out'
+                }}
+            >
                 <main className={styles.main} data-read-only="true">
                     <AnimatePresence mode="wait" initial={false}>
                         <motion.div

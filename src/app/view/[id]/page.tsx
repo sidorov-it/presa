@@ -24,6 +24,52 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
+// Server-side loading component
+function PresentationLoader() {
+    return (
+        <>
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                    @keyframes presentation-loader-spin {
+                        to {
+                            transform: rotate(360deg);
+                        }
+                    }
+                    .presentation-loader-spinner {
+                        animation: presentation-loader-spin 1s linear infinite;
+                    }
+                `
+            }} />
+            <div 
+                data-server-loader
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100vw',
+                    height: '100vh',
+                    backgroundColor: '#ffffff',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    zIndex: 1000
+                }}
+            >
+                <div 
+                    className="presentation-loader-spinner"
+                    style={{
+                        width: '3rem',
+                        height: '3rem',
+                        borderRadius: '50%',
+                        border: '2px solid #e2e8f0',
+                        borderTop: '2px solid #3b82f6'
+                    }}
+                />
+            </div>
+        </>
+    );
+}
+
 export default async function PresentationViewWrapper({ params }: Props) {
     const { id } = await params;
     const presentationData = await prisma.presentation.findUnique({
@@ -43,8 +89,17 @@ export default async function PresentationViewWrapper({ params }: Props) {
     const serializedTheme = JSON.parse(JSON.stringify(theme));
 
     return (
-        <ServerThemeStylesApplier theme={serializedTheme as Theme}>
-            <PresentationView presentation={serializedPresentation as IPresentation} theme={serializedTheme as Theme} />
-        </ServerThemeStylesApplier>
+        <>
+            {/* Server-side loader - shown immediately */}
+            <PresentationLoader />
+            
+            {/* Client-side presentation - will replace loader after hydration */}
+            <ServerThemeStylesApplier theme={serializedTheme as Theme}>
+                <PresentationView 
+                    presentation={serializedPresentation as IPresentation} 
+                    theme={serializedTheme as Theme} 
+                />
+            </ServerThemeStylesApplier>
+        </>
     );
 }

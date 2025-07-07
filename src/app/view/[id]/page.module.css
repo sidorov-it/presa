@@ -102,7 +102,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    --card-width: min(100vw, calc(100vh* 1.7777777777777777));
+    --card-width: min(100vw - 64px, calc(100vh* 1.7777777777777777 - 64px));
     --card-height: calc(var(--card-width) / 1.7777777777777777);
     --card-font-scale: calc(var(--card-width) / 1032); /* Scale fonts based on slide width */
     --editor-width: 1032px; /* Standard editor width */
