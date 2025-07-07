@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { usePresentationStore } from '@/store/presentationStore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card/Card';
+import { Button } from '@/components/ui/Button';
 import SlidePreview from '../dashboard/components/SlidePreview';
 import { PresentationTemplates, PresentationTemplateKeys } from '@/presentationTemplates';
 import styles from './page.module.css';
@@ -15,28 +15,30 @@ const TEMPLATE_KEYS = Object.keys(PresentationTemplates) as PresentationTemplate
 
 const TemplatesPage = () => {
     const router = useRouter();
-    const { createPresentation, updatePresentation } = usePresentationStore();
     const defaultThemes = useThemeStore(state => state.defaultThemes);
     const loadThemes = useThemeStore(state => state.loadThemes);
 
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleTemplateSelect = async (templateId: PresentationTemplateKeys) => {
+    const handleUseTemplate = async (templateId: PresentationTemplateKeys) => {
         setIsLoading(true);
-        const template = PresentationTemplates[templateId];
-
         try {
-            const presentationId = await createPresentation(template.title);
-            updatePresentation(presentationId, {
-                title: template.title,
-                description: template.description,
-                slides: template.slides,
+            const response = await fetch(`/api/templates/${templateId}/use`, {
+                method: 'POST',
             });
-            router.push(`/docs/${presentationId}`);
+            if (!response.ok) {
+                throw new Error('Failed to create presentation');
+            }
+            const { presentation } = await response.json();
+            router.push(`/docs/${presentation.id}`);
         } catch (error) {
             console.error(error);
             setIsLoading(false);
         }
+    };
+
+    const handlePreview = (templateId: PresentationTemplateKeys) => {
+        router.push(`/templates/${templateId}`);
     };
 
     useEffect(() => {
@@ -63,15 +65,22 @@ const TemplatesPage = () => {
                             return null;
                         }
                         return (
-                            <Card key={key} className={styles.templateCard} onClick={() => handleTemplateSelect(key)}>
+                            <Card key={key} className={styles.templateCard}>
                                 <CardHeader>
                                     <CardTitle>{template.title}</CardTitle>
                                     <CardDescription>{template.description}</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className={styles.cap} />
                                     <div className={styles.templatePreview}>
                                         <SlidePreview presentation={template} theme={theme} />
+                                    </div>
+                                    <div className={styles.templateActions}>
+                                        <Button variant="outline" size="sm" onClick={() => handlePreview(key)}>
+                                            Предпросмотр
+                                        </Button>
+                                        <Button variant="solid" size="sm" onClick={() => handleUseTemplate(key)}>
+                                            Использовать
+                                        </Button>
                                     </div>
                                 </CardContent>
                             </Card>
