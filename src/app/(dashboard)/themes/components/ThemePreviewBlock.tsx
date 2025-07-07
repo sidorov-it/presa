@@ -124,7 +124,7 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
                                     textTransform: theme.typography.headingCapitalization,
                                 }}
                             >
-                                Title
+                                Заголовок
                             </h3>
                             <p
                                 className={styles.slideText}
@@ -137,12 +137,12 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
                                     textTransform: theme.typography.bodyCapitalization,
                                 }}
                             >
-                                Body &{' '}
+                                Текст &{' '}
                                 <span
                                     className={styles.slideLink}
                                     style={{ color: theme.design.buttons.linkColor || theme.colors.primaryAccent }}
                                 >
-                                    link
+                                    ссылка
                                 </span>
                             </p>
                         </div>
