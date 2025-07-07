@@ -81,7 +81,7 @@
 
 .slide {
     padding: 0 3em;
-    max-width: calc(100vh / 1.7777777777777777);
+    /* max-width: calc(100vh / 1.7777777777777777); */
 }
 
 .pdfExport .slide {
