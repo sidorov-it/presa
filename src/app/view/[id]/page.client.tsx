@@ -387,9 +387,6 @@ export default function PresentationView({ presentation, theme }: Props) {
     //     }
     //     return style;
     // }, [currentSlide]);
-
-    if (visibleSlides.length === 0) return <div className={styles.loadingContainer}>Нет видимых слайдов</div>;
-
     // Hide server-side loader when client is ready
     useEffect(() => {
         if (!isLoading && isLayoutReady) {
@@ -401,29 +398,34 @@ export default function PresentationView({ presentation, theme }: Props) {
         }
     }, [isLoading, isLayoutReady]);
 
+    if (visibleSlides.length === 0) return <div className={styles.loadingContainer}>Нет видимых слайдов</div>;
+
     return (
         <ReadOnlyProvider isReadOnly={true}>
             {/* Client-side fallback loader (in case server loader is not available) */}
             {(isLoading || !isLayoutReady) && (
-                <div className={styles.loadingContainer} style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100vw',
-                    height: '100vh',
-                    backgroundColor: '#ffffff',
-                    zIndex: 999
-                }}>
+                <div
+                    className={styles.loadingContainer}
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100vw',
+                        height: '100vh',
+                        backgroundColor: '#ffffff',
+                        zIndex: 999,
+                    }}
+                >
                     <div className={styles.spinner}></div>
                 </div>
             )}
-            
-            <div 
-                className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`} 
+
+            <div
+                className={`${styles.container} ${colorMode === 'dark' ? 'dark' : ''}`}
                 style={{
                     ...slideLayoutVars,
                     opacity: isLoading || !isLayoutReady ? 0 : 1,
-                    transition: 'opacity 0.3s ease-in-out'
+                    transition: 'opacity 0.3s ease-in-out',
                 }}
             >
                 <main className={styles.main} data-read-only="true">
