@@ -15,6 +15,7 @@ import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import { Extension, generateHTML } from '@tiptap/core';
 import Link from '@tiptap/extension-link';
+import { Heading } from '@tiptap/extension-heading';
 
 import {
     CustomCodeExtension,
@@ -38,6 +39,7 @@ import {
     QuestionBoxNode,
 } from '../nodes';
 import { MenuItem } from '@/types/templates';
+import { CleanPasteExtension } from './CleanPasteExtension';
 
 interface GetExtensionsProps {
     placeholder: string;
@@ -55,6 +57,7 @@ interface GetExtensionsProps {
     onDeletePressed: (isEmpty: boolean, textContent: string) => void;
     onBackspacePressed: (isEmpty: boolean, textContent: string) => void;
     onAddElement?: (menuItem: MenuItem) => void;
+    editor?: any;
 }
 // Определяем массив расширений
 const getExtensions = ({
@@ -70,6 +73,7 @@ const getExtensions = ({
     onDeletePressed,
     onBackspacePressed,
     onAddElement,
+    editor,
 }: GetExtensionsProps) => [
     // Базовый набор расширений
     StarterKit.configure({
@@ -95,6 +99,31 @@ const getExtensions = ({
         code: false,
         codeBlock: false,
         paragraph: false,
+    }),
+    // Add custom Heading extension with class support
+    Heading.configure({
+        levels: [1, 2, 3, 4, 5, 6],
+        HTMLAttributes: {
+            class: null, // Allow any classes
+        },
+    }).extend({
+        addGlobalAttributes() {
+            return [
+                {
+                    types: ['heading'],
+                    attributes: {
+                        class: {
+                            default: null,
+                            parseHTML: element => element.getAttribute('class'),
+                            renderHTML: attributes => {
+                                if (!attributes.class) return {};
+                                return { class: attributes.class };
+                            },
+                        },
+                    },
+                },
+            ];
+        },
     }),
     CustomCodeExtension.configure({
         HTMLAttributes: {
@@ -303,6 +332,7 @@ const getExtensions = ({
     CautionBoxNode,
     SuccessBoxNode,
     QuestionBoxNode,
+    CleanPasteExtension.configure({ editor }),
 ];
 
 export default getExtensions;

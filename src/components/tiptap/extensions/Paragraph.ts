@@ -60,6 +60,24 @@ export const Paragraph = Node.create<ParagraphOptions>({
         return ['p', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0];
     },
 
+    addGlobalAttributes() {
+        return [
+            {
+                types: ['paragraph'],
+                attributes: {
+                    class: {
+                        default: null,
+                        parseHTML: element => element.getAttribute('class'),
+                        renderHTML: attributes => {
+                            if (!attributes.class) return {};
+                            return { class: attributes.class };
+                        },
+                    },
+                },
+            },
+        ];
+    },
+
     addCommands() {
         return {
             setParagraph:

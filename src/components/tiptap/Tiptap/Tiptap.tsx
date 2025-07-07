@@ -116,6 +116,7 @@ const Tiptap = ({
             tiptapRefs,
             standardEnterBehavior,
             isHideSlashMenu,
+            editor: undefined,
         }),
         content: initialContent,
         editorProps: {
@@ -149,6 +150,29 @@ const Tiptap = ({
             onContentChange(html, isEnterPress, isTransaction);
         },
     });
+
+    // After editor is created, update extensions with editor instance
+    useEffect(() => {
+        if (editor) {
+            editor.setOptions({
+                extensions: getExtensions({
+                    onEnterPressed,
+                    onBackspacePressed,
+                    onDeletePressed,
+                    placeholder: placeholder || 'Введите текст или / для выбора готового шаблона',
+                    onAddElement,
+                    presentationId,
+                    slideId,
+                    layoutId,
+                    elementId,
+                    tiptapRefs,
+                    standardEnterBehavior,
+                    isHideSlashMenu,
+                    editor,
+                }),
+            });
+        }
+    }, [editor]);
 
     // Update editor content when initialContent changes (including undo/redo operations)
     useEffect(() => {
