@@ -102,7 +102,7 @@ async function transformTheme(basicTheme: any): Promise<Theme> {
             bodyFont: getValidFont(basicTheme.bodyFont || 'Inter'),
             bodyWeight: 400,
             bodyColor: getFirstColor(basicTheme.bodyColor),
-            bodyLineHeight: 1.25,
+            bodyLineHeight: 1.6,
             bodyLetterSpacing: 0,
             bodyCapitalization: 'none',
         },
@@ -139,25 +139,25 @@ export async function GET(request: NextRequest, props: { params: Promise<{ defau
         const params = await props.params;
 
         // if (params?.default === 'true') {
-            const transformedTheme = await transformTheme(defaultTheme);
+        const transformedTheme = await transformTheme(defaultTheme);
 
-            transformedTheme.defaultForNewPresentations = true;
-            transformedTheme.isActive = true;
+        transformedTheme.defaultForNewPresentations = true;
+        transformedTheme.isActive = true;
 
-            // Save to database
-            await prisma.theme.create({
-                data: transformedTheme,
-            });
+        // Save to database
+        await prisma.theme.create({
+            data: transformedTheme,
+        });
 
-            // return NextResponse.json({ success: true, count: 1 });
+        // return NextResponse.json({ success: true, count: 1 });
         // } else {
-            const transformedThemes = await Promise.all(themes.map(transformTheme));
+        const transformedThemes = await Promise.all(themes.map(transformTheme));
 
-            // Save to database
-            await prisma.theme.createMany({
-                data: transformedThemes,
-            });
-            return NextResponse.json({ success: true, count: transformedThemes.length });
+        // Save to database
+        await prisma.theme.createMany({
+            data: transformedThemes,
+        });
+        return NextResponse.json({ success: true, count: transformedThemes.length });
         // }
     } catch (error) {
         console.error('Error importing themes:', error);
