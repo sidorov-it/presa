@@ -31,7 +31,7 @@ import { Tooltip } from '@/components/ui/tooltip';
 import { clearAllThemeStyles, getSlideLayoutVars } from '@/utils/themeUtils';
 import { SimplePdfExportButton } from '@/components/export';
 import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
-import { LuEye, LuSettings, LuUser } from 'react-icons/lu';
+import { LuEye, LuSettings, LuUser, LuHouse } from 'react-icons/lu';
 import Popover from '@/components/ui/Popover';
 
 const Header = ({
@@ -60,6 +60,7 @@ const Header = ({
     const setCurrentPresentationTitle = usePresentationStore(state => state.setCurrentPresentationTitle);
     const presentationTitle = usePresentationStore(state => state.currentPresentationTitle);
     const [title, setTitle] = useState(presentationTitle);
+    const [isEditingTitle, setIsEditingTitle] = useState(false);
 
     useEffect(() => {
         setTitle(presentationTitle);
@@ -83,22 +84,37 @@ const Header = ({
         } else {
             updatePresentation(presentationId, { title: trimmed });
         }
+        setIsEditingTitle(false);
     }, [presentationId, title, updatePresentation, setCurrentPresentationTitle]);
+
+    const handleTitleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            (e.target as HTMLInputElement).blur();
+        }
+    }, []);
 
     return (
         <header className={styles.header}>
             <div className={styles.headerContent}>
                 <div className={styles.headerLeft}>
-                    <Link href="/" className={styles.homeButton}>
-                        Home
+                    <Link href="/dashboard" className={styles.homeButton} aria-label="Домой">
+                        <LuHouse className={styles.homeIcon} aria-hidden="true" />
                     </Link>
-                    <input
-                        className={styles.titleInput}
-                        value={title}
-                        onChange={handleTitleChange}
-                        onBlur={handleTitleBlur}
-                        placeholder="Новая презентация"
-                    />
+                    {isEditingTitle ? (
+                        <input
+                            className={styles.titleInput}
+                            value={title}
+                            onChange={handleTitleChange}
+                            onBlur={handleTitleBlur}
+                            onKeyDown={handleTitleKeyDown}
+                            autoFocus
+                            placeholder="Новая презентация"
+                        />
+                    ) : (
+                        <span className={styles.titleDisplay} onClick={() => setIsEditingTitle(true)}>
+                            {title}
+                        </span>
+                    )}
                 </div>
 
                 <div className={styles.headerRight}>
