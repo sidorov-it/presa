@@ -3,11 +3,21 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card/Card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/Card/Card';
 import SlidePreview from '../dashboard/components/SlidePreview';
-import { PresentationTemplates, PresentationTemplateKeys } from '@/presentationTemplates';
+import {
+    PresentationTemplates,
+    PresentationTemplateKeys,
+} from '@/presentationTemplates';
 import styles from './page.module.css';
 import { useThemeStore } from '@/store/themeStore';
+import TemplatePreviewModal from '@/components/templates/TemplatePreviewModal';
 
 import FullPageLoader from '@/components/FullPageLoader/FullPageLoader';
 
@@ -15,24 +25,28 @@ const TEMPLATE_KEYS = Object.keys(PresentationTemplates) as PresentationTemplate
 
 const TemplatesPage = () => {
     const router = useRouter();
-    const { createPresentation, updatePresentation } = usePresentationStore();
+    const { loadPresentation } = usePresentationStore();
     const defaultThemes = useThemeStore(state => state.defaultThemes);
     const loadThemes = useThemeStore(state => state.loadThemes);
 
     const [isLoading, setIsLoading] = useState(false);
+    const [previewId, setPreviewId] = useState<PresentationTemplateKeys | null>(null);
 
-    const handleTemplateSelect = async (templateId: PresentationTemplateKeys) => {
+    const openPreview = (id: PresentationTemplateKeys) => setPreviewId(id);
+    const closePreview = () => setPreviewId(null);
+
+    const handleTemplateUse = async (templateId: PresentationTemplateKeys) => {
         setIsLoading(true);
-        const template = PresentationTemplates[templateId];
-
         try {
-            const presentationId = await createPresentation(template.title);
-            updatePresentation(presentationId, {
-                title: template.title,
-                description: template.description,
-                slides: template.slides,
+            const response = await fetch(`/api/templates/${templateId}/use`, {
+                method: 'POST',
             });
-            router.push(`/docs/${presentationId}`);
+            if (!response.ok) {
+                throw new Error('Failed to create presentation');
+            }
+            const { presentation } = await response.json();
+            await loadPresentation(presentation.id);
+            router.push(`/docs/${presentation.id}`);
         } catch (error) {
             console.error(error);
             setIsLoading(false);
@@ -57,21 +71,37 @@ const TemplatesPage = () => {
                 <div className={styles.templatesGrid}>
                     {TEMPLATE_KEYS.map(key => {
                         const template = PresentationTemplates[key];
-                        const theme = defaultThemes.find(t => t.id === template.themeId) || defaultThemes[0];
+                        const theme =
+                            defaultThemes.find(t => t.id === template.themeId) || defaultThemes[0];
 
                         if (!theme) {
                             return null;
                         }
                         return (
-                            <Card key={key} className={styles.templateCard} onClick={() => handleTemplateSelect(key)}>
+                            <Card key={key} className={styles.templateCard}>
                                 <CardHeader>
                                     <CardTitle>{template.title}</CardTitle>
                                     <CardDescription>{template.description}</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className={styles.cap} />
                                     <div className={styles.templatePreview}>
                                         <SlidePreview presentation={template} theme={theme} />
+                                    </div>
+                                    <div className={styles.templateActions}>
+                                        <button
+                                            onClick={() => openPreview(key)}
+                                            className={styles.previewButton}
+                                            type="button"
+                                        >
+                                            Просмотр
+                                        </button>
+                                        <button
+                                            onClick={() => handleTemplateUse(key)}
+                                            className={styles.useButton}
+                                            type="button"
+                                        >
+                                            Использовать
+                                        </button>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -79,6 +109,11 @@ const TemplatesPage = () => {
                     })}
                 </div>
             )}
+            <TemplatePreviewModal
+                templateId={previewId}
+                isOpen={previewId !== null}
+                onClose={closePreview}
+            />
         </div>
     );
 };
