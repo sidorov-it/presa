@@ -15,7 +15,6 @@ export const EmptySpanExtension = Extension.create({
 
                         // Проверяем, заменяем ли мы неразрывный пробел
                         const $from = doc.resolve(from);
-                        const $to = doc.resolve(to);
 
                         // Получаем текст, который будет заменен
                         const textToReplace = doc.textBetween(from, to);
@@ -42,6 +41,37 @@ export const EmptySpanExtension = Extension.create({
 
                                 view.dispatch(tr);
                                 return true;
+                            }
+                        }
+
+                        // Проверяем, вводим ли мы текст в пустой редактор
+                        const isEmpty = doc.textContent.trim() === '';
+                        const isEmptyParagraph = doc.textContent === '' || doc.textContent === '\u00A0';
+
+                        if (isEmpty || isEmptyParagraph) {
+                            const marks = $from.marks();
+
+                            // Проверяем, есть ли уже textStyle mark
+                            const hasTextStyleMark = marks.some(mark => mark.type.name === 'textStyle');
+
+                            if (!hasTextStyleMark) {
+                                // Создаем mark с дефолтными классами
+                                const textStyleMarkType = this.editor.schema.marks.textStyle;
+                                if (textStyleMarkType) {
+                                    const defaultMark = textStyleMarkType.create({
+                                        class: 'body-text normal-text',
+                                        fontSize: null,
+                                    });
+
+                                    const tr = state.tr;
+                                    tr.insertText(text, from, to);
+
+                                    // Применяем дефолтный mark к новому тексту
+                                    tr.addMark(from, from + text.length, defaultMark);
+
+                                    view.dispatch(tr);
+                                    return true;
+                                }
                             }
                         }
 

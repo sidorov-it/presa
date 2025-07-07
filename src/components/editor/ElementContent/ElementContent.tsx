@@ -84,7 +84,7 @@ export const ElementContent = ({
 
             // Обрабатываем пустой contentAfterCursor
             if (!contentAfterCursor || contentAfterCursor.trim() === '' || contentAfterCursor.trim() === '<p></p>') {
-                contentAfterCursor = '<p><span class="body-text normal-text">&nbsp;</span></p>';
+                contentAfterCursor = '<p><span class="body-text normal-text"></span></p>';
             }
 
             const presentation = usePresentationStore.getState().getPresentation(presentationId);
@@ -132,7 +132,7 @@ export const ElementContent = ({
                         if (el.id === elementId && 'content' in el) {
                             // Обновляем контент текущего элемента
                             (el as EditorElement).content =
-                                contentBeforeCursor || '<p><span class="body-text normal-text">&nbsp;</span></p>';
+                                contentBeforeCursor || '<p><span class="body-text normal-text"></span></p>';
                         }
                         return el;
                     });

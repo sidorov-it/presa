@@ -136,6 +136,22 @@ const Tiptap = ({
         },
         onFocus: () => {
             useEditorStore.getState().setActiveEditor(editor, elementId);
+
+            // Если редактор пустой и нет сохраненных стилей, устанавливаем дефолтные
+            if (editor?.isEmpty) {
+                const { level, color, bold, italic, underline, strike } = lastStyleRef.current;
+
+                if (level === NORMAL_TEXT_LEVEL && !color && !bold && !italic && !underline && !strike) {
+                    setTimeout(() => {
+                        if (editor && editor.isEmpty) {
+                            const chain = editor.chain();
+                            chain.setMark('textStyle', { class: 'body-text normal-text', fontSize: null });
+                            applyingStoredMarksRef.current = true;
+                            chain.run();
+                        }
+                    }, 0);
+                }
+            }
         },
         onUpdate: ({ editor, transaction }) => {
             const html = editor.getHTML();
@@ -200,7 +216,13 @@ const Tiptap = ({
             if (editor.isEmpty) {
                 const { level, color, bold, italic, underline, strike } = lastStyleRef.current;
 
-                if (level !== undefined || color || bold || italic || underline || strike) {
+                // Если нет сохраненных стилей, устанавливаем дефолтные
+                if (level === NORMAL_TEXT_LEVEL && !color && !bold && !italic && !underline && !strike) {
+                    const chain = editor.chain();
+                    chain.setMark('textStyle', { class: 'body-text normal-text', fontSize: null });
+                    applyingStoredMarksRef.current = true;
+                    chain.run();
+                } else if (level !== undefined || color || bold || italic || underline || strike) {
                     const chain = editor.chain();
                     if (level !== undefined && level !== null) chain.setFontSize(level);
                     if (color) chain.setColor(color);
