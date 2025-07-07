@@ -26,8 +26,8 @@
     padding-left: 25px;
     margin-left: -25px;
     font-size: var(--font-size);
-    margin-top: var(--block-margin);
-    margin-bottom: var(--block-margin);
+    /* margin-top: var(--block-margin);
+    margin-bottom: var(--block-margin); */
 }
 
 .layout::before {
