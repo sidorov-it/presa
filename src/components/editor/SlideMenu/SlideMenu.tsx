@@ -212,8 +212,16 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
             case 'cell':
                 return (
                     <>
-                        <MenuItem icon={<AddColumnLeftIcon />} label="Добавить ячейку слева" onClick={handleAddCellLeft} />
-                        <MenuItem icon={<AddColumnRightIcon />} label="Добавить ячейку справа" onClick={handleAddCellRight} />
+                        <MenuItem
+                            icon={<AddColumnLeftIcon />}
+                            label="Добавить ячейку слева"
+                            onClick={handleAddCellLeft}
+                        />
+                        <MenuItem
+                            icon={<AddColumnRightIcon />}
+                            label="Добавить ячейку справа"
+                            onClick={handleAddCellRight}
+                        />
                         <MenuItem icon={<DuplicateIcon />} label="Дублировать" onClick={handleDuplicateColumn} />
                         <MenuItem
                             icon={<AlignTopIcon />}
@@ -233,14 +241,21 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
                             onClick={handleAlignColumnBottom}
                             active={cell?.alignment === 'bottom'}
                         />
-                        <MenuItem icon={<DeleteIcon />} label="Удалить ячейку" onClick={handleDeleteCell} color="#f00" />
+                        <MenuItem
+                            icon={<DeleteIcon />}
+                            label="Удалить ячейку"
+                            onClick={handleDeleteCell}
+                            color="#f00"
+                        />
                     </>
                 );
             case 'slide':
                 return (
                     <>
                         <MenuItem icon={<DuplicateIcon />} label="Дублировать" onClick={duplicateSlide} />
-                        {slideIndex > 0 && <MenuItem icon={<MergeIcon />} label="Объединить" onClick={handleMergeSlide} />}
+                        {slideIndex > 0 && (
+                            <MenuItem icon={<MergeIcon />} label="Объединить" onClick={handleMergeSlide} />
+                        )}
                         <MenuItem icon={<DeleteIcon />} label="Удалить" onClick={deleteSlide} color="#f00" />
                     </>
                 );

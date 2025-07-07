@@ -120,10 +120,11 @@ export default function TimelineView({
                     const elementWidth = `(100% / ${maxItemsCount})`;
                     const timelinePointPosition = `((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2)`;
                     const leftMargin = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
-                    
+
                     return {
                         ...baseStyle,
-                        marginLeft: index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
+                        marginLeft:
+                            index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
                         marginRight: 0,
                     };
                 } else if (sides === 'two' && isSecondLine) {
@@ -132,10 +133,11 @@ export default function TimelineView({
                     const elementWidth = `(100% / ${maxItemsCount})`;
                     const timelinePointPosition = `((100% / ${itemsIds.length + 1}) * ${originalItemIndex + 1})`;
                     const leftMargin = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
-                    
+
                     return {
                         ...baseStyle,
-                        marginLeft: index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
+                        marginLeft:
+                            index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
                         marginRight: 0,
                     };
                 } else if (sides === 'two' && !isSecondLine) {
@@ -144,10 +146,11 @@ export default function TimelineView({
                     const elementWidth = `(100% / ${maxItemsCount})`;
                     const timelinePointPosition = `((100% / ${itemsIds.length + 1}) * ${originalItemIndex + 1})`;
                     const leftMargin = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
-                    
+
                     return {
                         ...baseStyle,
-                        marginLeft: index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
+                        marginLeft:
+                            index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
                         marginRight: 0,
                     };
                 }
@@ -216,10 +219,7 @@ export default function TimelineView({
     };
 
     return (
-        <div 
-            className={containerClasses}
-            style={{ '--item-count': itemsIds.length } as React.CSSProperties}
-        >
+        <div className={containerClasses} style={{ '--item-count': itemsIds.length } as React.CSSProperties}>
             <div
                 className={`${styles.flexContainer} ${direction === 'horizontal' ? styles.horizontal : styles.vertical}`}
             >
@@ -246,20 +246,21 @@ export default function TimelineView({
                                 }
                             }
 
-                                                    // Different positioning logic for "one side" vs "two sides"
-                        const timelinePointPosition = sides === 'one' 
-                            ? `calc((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2)` // Center of each block
-                            : `calc((100% / ${itemsIds.length + 1}) * ${index + 1})`; // Equal distances from borders
+                            // Different positioning logic for "one side" vs "two sides"
+                            const timelinePointPosition =
+                                sides === 'one'
+                                    ? `calc((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2)` // Center of each block
+                                    : `calc((100% / ${itemsIds.length + 1}) * ${index + 1})`; // Equal distances from borders
 
-                        return (
-                            <div
-                                key={index}
-                                className={classNames.join(' ')}
-                                style={{
-                                    left: timelinePointPosition,
-                                }}
-                            />
-                        );
+                            return (
+                                <div
+                                    key={index}
+                                    className={classNames.join(' ')}
+                                    style={{
+                                        left: timelinePointPosition,
+                                    }}
+                                />
+                            );
                         })}
                     <div className={styles.timelineLineItemInvisible}></div>
                 </div>

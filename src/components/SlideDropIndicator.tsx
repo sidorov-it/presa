@@ -5,17 +5,11 @@ const SlideDropIndicator = () => {
     const dragState = useSlideDndStore(state => state.dragState);
     const indicators = useSlideDndStore(state => state.indicators);
 
-    if (
-        dragState !== 'dragging' ||
-        !indicators.slideIndicator ||
-        !indicators.slidePosition
-    ) {
+    if (dragState !== 'dragging' || !indicators.slideIndicator || !indicators.slidePosition) {
         return null;
     }
 
-    const slide = document.querySelector<HTMLElement>(
-        `[data-slide-id="${indicators.slideIndicator}"]`
-    );
+    const slide = document.querySelector<HTMLElement>(`[data-slide-id="${indicators.slideIndicator}"]`);
     if (!slide) return null;
 
     const rect = slide.getBoundingClientRect();
@@ -23,10 +17,7 @@ const SlideDropIndicator = () => {
     const style: React.CSSProperties = {
         position: 'fixed',
         left: rect.left,
-        top:
-            indicators.slidePosition === 'top'
-                ? rect.top - thickness / 2
-                : rect.bottom - thickness / 2,
+        top: indicators.slidePosition === 'top' ? rect.top - thickness / 2 : rect.bottom - thickness / 2,
         width: rect.width,
         height: thickness,
         pointerEvents: 'none',

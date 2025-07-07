@@ -84,8 +84,26 @@ export const EnterHandlerExtension = (
                     const { selection } = state;
                     const { $head } = selection;
 
-                    // Если курсор в начале документа
-                    if ($head.pos === 0) {
+                    // Проверяем, находится ли курсор в начале первого текстового содержимого
+                    // Находим первую позицию с текстовым содержимым
+                    let firstTextPos = 1; // Начинаем с позиции 1 (после корневого узла)
+
+                    // Проходим по документу, чтобы найти первую позицию с текстом
+                    state.doc.descendants((node, pos) => {
+                        if (node.isText && node.text && node.text.length > 0) {
+                            firstTextPos = pos;
+                            return false; // Останавливаем поиск
+                        }
+                        if (node.isBlock && node.content.size === 0) {
+                            // Пустой блок - курсор может быть в начале
+                            firstTextPos = pos + 1;
+                            return false;
+                        }
+                        return true;
+                    });
+
+                    // Если курсор в начале первого содержимого
+                    if ($head.pos <= firstTextPos) {
                         onBackspacePressed(false, editor.getHTML());
                         return true;
                     }
@@ -105,8 +123,23 @@ export const EnterHandlerExtension = (
                     const { selection } = state;
                     const { $head } = selection;
 
-                    // Если курсор в конце документа
-                    if ($head.pos === state.doc.content.size) {
+                    // Проверяем, находится ли курсор в конце последнего текстового содержимого
+                    let lastTextPos = state.doc.content.size - 1;
+
+                    // Проходим по документу в обратном порядке, чтобы найти последнюю позицию с текстом
+                    state.doc.descendants((node, pos) => {
+                        if (node.isText && node.text && node.text.length > 0) {
+                            lastTextPos = pos + node.text.length;
+                        }
+                        if (node.isBlock && node.content.size === 0) {
+                            // Пустой блок - курсор может быть в конце
+                            lastTextPos = pos + 1;
+                        }
+                        return true;
+                    });
+
+                    // Если курсор в конце последнего содержимого
+                    if ($head.pos >= lastTextPos) {
                         onDeletePressed(false, editor.getHTML());
                         return true;
                     }

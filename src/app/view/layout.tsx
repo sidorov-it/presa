@@ -5,10 +5,6 @@ export const metadata: Metadata = {
     description: 'Режим просмотра презентации',
 };
 
-export default function ViewLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
+export default function ViewLayout({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
 }

@@ -28,7 +28,6 @@ import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
 import { Tooltip } from '@/components/ui/tooltip';
-import MobileWarningOverlay from '@/components/MobileWarningOverlay/MobileWarningOverlay';
 import { clearAllThemeStyles, getSlideLayoutVars } from '@/utils/themeUtils';
 import { SimplePdfExportButton } from '@/components/export';
 import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';

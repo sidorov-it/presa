@@ -1,4 +1,4 @@
-import { menuRegistry, SLIDE_TEMPLATE_TYPES } from '@/elements/menuRegistry';
+import { menuRegistry } from '@/elements/menuRegistry';
 import { useDndStore } from '@/store/dndStore';
 import { usePresentationStore } from '@/store/presentationStore';
 import { BaseElement } from '@/types';

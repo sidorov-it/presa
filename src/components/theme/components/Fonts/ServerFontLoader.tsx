@@ -16,13 +16,8 @@ export default function ServerFontLoader({ theme }: ServerFontLoaderProps) {
     return (
         <>
             {fontUrls.map((url, index) => (
-                <link
-                    key={index}
-                    href={url}
-                    rel="stylesheet"
-                    crossOrigin="anonymous"
-                />
+                <link key={index} href={url} rel="stylesheet" crossOrigin="anonymous" />
             ))}
         </>
     );
-} 
+}

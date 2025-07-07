@@ -58,8 +58,12 @@ describe('cloneSlideWithNewIds', () => {
         expect(clonedSlide.id).not.toBe(mockSlide.id);
         expect(clonedSlide.layouts[0].id).not.toBe(mockSlide.layouts[0].id);
         expect(clonedSlide.layouts[0].gridStructure.rows[0].id).not.toBe(mockSlide.layouts[0].gridStructure.rows[0].id);
-        expect(clonedSlide.layouts[0].gridStructure.rows[0].cells[0].id).not.toBe(mockSlide.layouts[0].gridStructure.rows[0].cells[0].id);
-        expect(clonedSlide.layouts[0].gridStructure.rows[0].cells[1].id).not.toBe(mockSlide.layouts[0].gridStructure.rows[0].cells[1].id);
+        expect(clonedSlide.layouts[0].gridStructure.rows[0].cells[0].id).not.toBe(
+            mockSlide.layouts[0].gridStructure.rows[0].cells[0].id
+        );
+        expect(clonedSlide.layouts[0].gridStructure.rows[0].cells[1].id).not.toBe(
+            mockSlide.layouts[0].gridStructure.rows[0].cells[1].id
+        );
         expect(clonedSlide.layouts[0].elements[0].id).not.toBe(mockSlide.layouts[0].elements[0].id);
         expect(clonedSlide.layouts[0].elements[1].id).not.toBe(mockSlide.layouts[0].elements[1].id);
     });
@@ -69,7 +73,7 @@ describe('cloneSlideWithNewIds', () => {
 
         // Get the new cell IDs
         const newCellIds = clonedSlide.layouts[0].gridStructure.rows[0].cells.map(cell => cell.id);
-        
+
         // Check that elements reference the correct new cell IDs
         expect(newCellIds).toContain(clonedSlide.layouts[0].elements[0].cellId);
         expect(newCellIds).toContain(clonedSlide.layouts[0].elements[1].cellId);
@@ -82,9 +86,13 @@ describe('cloneSlideWithNewIds', () => {
         expect(clonedSlide.title).toBe(mockSlide.title);
         expect(clonedSlide.layouts[0].type).toBe(mockSlide.layouts[0].type);
         expect(clonedSlide.layouts[0].gridStructure.columns).toBe(mockSlide.layouts[0].gridStructure.columns);
-        expect(clonedSlide.layouts[0].gridStructure.columnWidths).toEqual(mockSlide.layouts[0].gridStructure.columnWidths);
+        expect(clonedSlide.layouts[0].gridStructure.columnWidths).toEqual(
+            mockSlide.layouts[0].gridStructure.columnWidths
+        );
         expect(clonedSlide.layouts[0].elements[0].elementTypeId).toBe(mockSlide.layouts[0].elements[0].elementTypeId);
-        expect((clonedSlide.layouts[0].elements[0] as any).content).toBe((mockSlide.layouts[0].elements[0] as any).content);
+        expect((clonedSlide.layouts[0].elements[0] as any).content).toBe(
+            (mockSlide.layouts[0].elements[0] as any).content
+        );
     });
 
     it('should handle SmartLayoutElement items', () => {
@@ -138,9 +146,9 @@ describe('cloneSlideWithNewIds', () => {
         // Check that SmartLayoutElement items have new IDs
         expect(smartElement.items[0].id).not.toBe('item-1');
         expect(smartElement.items[1].id).not.toBe('item-2');
-        
+
         // Check that content is preserved
         expect(smartElement.items[0].content).toBe('Item 1');
         expect(smartElement.items[1].content).toBe('Item 2');
     });
-}); 
+});

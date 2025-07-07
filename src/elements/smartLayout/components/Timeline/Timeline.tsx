@@ -89,7 +89,7 @@ const TimelineContent = ({
                 const elementWidth = `(100% / ${maxItemsCount})`;
                 const timelinePointPosition = `((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2)`;
                 const leftMargin = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
-                
+
                 return {
                     ...baseStyle,
                     marginLeft: index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
@@ -101,7 +101,7 @@ const TimelineContent = ({
                 const elementWidth = `(100% / ${maxItemsCount})`;
                 const timelinePointPosition = `((100% / ${itemsIds.length + 1}) * ${originalItemIndex + 1})`;
                 const leftMargin = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
-                
+
                 return {
                     ...baseStyle,
                     marginLeft: index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
@@ -113,7 +113,7 @@ const TimelineContent = ({
                 const elementWidth = `(100% / ${maxItemsCount})`;
                 const timelinePointPosition = `((100% / ${itemsIds.length + 1}) * ${originalItemIndex + 1})`;
                 const leftMargin = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
-                
+
                 return {
                     ...baseStyle,
                     marginLeft: index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,

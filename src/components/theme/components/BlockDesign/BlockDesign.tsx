@@ -9,7 +9,6 @@ import Tooltip from '@/components/tooltip/Tooltip';
 import BorderWidthSelector from '../BorderWidthSelector/BorderWidthSelector';
 import ShadowSelector from '../ShadowSelector/ShadowSelector';
 import { BsCircle, BsCircleFill, BsCircleHalf } from 'react-icons/bs';
-import { produce } from 'immer';
 
 const blockFillColorsTypes = [
     // {
@@ -89,9 +88,10 @@ export default function BlockDesign({
                                                 handleDesignChange((currentTheme: Theme) => ({
                                                     blocks: {
                                                         ...currentTheme.design.blocks,
-                                                        blockBackgroundCustomColors: currentTheme.design.blocks.blockBackgroundCustomColors.map((color, i) => 
-                                                            i === index ? newColor : color
-                                                        ),
+                                                        blockBackgroundCustomColors:
+                                                            currentTheme.design.blocks.blockBackgroundCustomColors.map(
+                                                                (color, i) => (i === index ? newColor : color)
+                                                            ),
                                                     },
                                                 }));
                                             }}
@@ -99,7 +99,10 @@ export default function BlockDesign({
                                                 handleDesignChange((currentTheme: Theme) => ({
                                                     blocks: {
                                                         ...currentTheme.design.blocks,
-                                                        blockBackgroundCustomColors: currentTheme.design.blocks.blockBackgroundCustomColors.filter((_, i) => i !== index),
+                                                        blockBackgroundCustomColors:
+                                                            currentTheme.design.blocks.blockBackgroundCustomColors.filter(
+                                                                (_, i) => i !== index
+                                                            ),
                                                     },
                                                 }));
                                             }}

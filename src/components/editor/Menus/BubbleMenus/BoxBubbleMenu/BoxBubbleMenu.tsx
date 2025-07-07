@@ -14,7 +14,6 @@ import { BoxIconOptions } from './BoxIconOptions';
 
 import styles from './BoxBubbleMenu.module.css';
 import { ElementRegistry } from '@/elements/commonRegisrty';
-import { RiResetLeftFill } from 'react-icons/ri';
 
 interface BubbleMenuProps {
     editor: Editor;

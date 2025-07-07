@@ -61,10 +61,7 @@ const defaultData = [
     { name: 'Q4', value: 500 },
 ];
 
-const getDataBoundaries = (
-    data: any[],
-    series?: { key: string }[]
-): { min: number; max: number } => {
+const getDataBoundaries = (data: any[], series?: { key: string }[]): { min: number; max: number } => {
     const values: number[] = [];
 
     data.forEach(item => {

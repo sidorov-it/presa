@@ -8,7 +8,6 @@ import { MenuItem } from '@/components/editor/SlideMenu/BaseMenu';
 import AlignmentGroup from '@/components/settings/AlignmentGroup/AlignmentGroup';
 import { DeleteIcon } from '@/components/icons';
 import { useHistoryStore } from '@/store/historyStore';
-import { ColorPicker } from '@/components/tiptap/ColorPicker';
 
 export default function TextBoxesSettings({
     element,

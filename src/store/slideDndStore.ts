@@ -30,8 +30,7 @@ export const useSlideDndStore = create<SlideDndStore>(set => ({
 
     setPresentationId: id => set({ presentationId: id }),
 
-    startDrag: slideId =>
-        set({ dragState: 'dragging', sourceSlideId: slideId }),
+    startDrag: slideId => set({ dragState: 'dragging', sourceSlideId: slideId }),
 
     setIndicators: indicators =>
         set(state => ({
@@ -49,21 +48,16 @@ export const useSlideDndStore = create<SlideDndStore>(set => ({
                 state.indicators.slideIndicator &&
                 state.presentationId
             ) {
-                const presentation = usePresentationStore
-                    .getState()
-                    .getPresentation(state.presentationId);
+                const presentation = usePresentationStore.getState().getPresentation(state.presentationId);
 
                 if (presentation) {
                     const sourceIndex = presentation.slides.findIndex(s => s.id === state.sourceSlideId);
                     const targetIndex = presentation.slides.findIndex(s => s.id === state.indicators.slideIndicator);
 
                     if (sourceIndex !== -1 && targetIndex !== -1) {
-                        let insertIndex =
-                            state.indicators.slidePosition === 'top' ? targetIndex : targetIndex + 1;
+                        let insertIndex = state.indicators.slidePosition === 'top' ? targetIndex : targetIndex + 1;
                         if (sourceIndex < targetIndex) insertIndex -= 1;
-                        usePresentationStore
-                            .getState()
-                            .reorderSlides(state.presentationId!, sourceIndex, insertIndex);
+                        usePresentationStore.getState().reorderSlides(state.presentationId!, sourceIndex, insertIndex);
                     }
                 }
             }

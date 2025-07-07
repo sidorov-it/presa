@@ -129,9 +129,10 @@ export const ElementContent = ({
 
                 updatedLayouts.forEach(layout => {
                     layout.elements.forEach(el => {
-                        if (el.id === elementId) {
+                        if (el.id === elementId && 'content' in el) {
                             // Обновляем контент текущего элемента
-                            el.content = contentBeforeCursor || '<p><span class="body-text normal-text">&nbsp;</span></p>';
+                            (el as EditorElement).content =
+                                contentBeforeCursor || '<p><span class="body-text normal-text">&nbsp;</span></p>';
                         }
                         return el;
                     });
@@ -270,7 +271,7 @@ export const ElementContent = ({
     );
 
     const handleBackspacePressed = useCallback(
-        (isEmpty: boolean, textContent: string) => {
+        (isEmpty: boolean, _textContent: string) => {
             const presentation = usePresentationStore.getState().getPresentation(presentationId);
             if (!presentation) return;
 
@@ -297,7 +298,13 @@ export const ElementContent = ({
             const layoutIndex = slide.layouts.findIndex(l => l.id === layoutId);
             const isMultiCellRow = layout.gridStructure.rows[0].cells.length > 1;
 
-            // If empty and not the last element, delete the element
+            // Helper function to check if an element has a text editor
+            const hasTextEditor = (element: any) => {
+                const config = getElementConfig(element.elementTypeId);
+                return config?.hasTextEditor || false;
+            };
+
+            // If empty and not the last element, check what to do
             if (isEmpty) {
                 if (isMultiCellRow) {
                     // Handle multi-cell row case
@@ -306,8 +313,57 @@ export const ElementContent = ({
                     updatedLayout.elements = updatedElements;
                     usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
                 } else {
-                    // Handle single-cell row case
-                    usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, elementId);
+                    // Handle single-cell row case - check previous layout
+                    if (layoutIndex > 0) {
+                        const previousLayout = slide.layouts[layoutIndex - 1];
+                        const previousLayoutHasOneCell = previousLayout.gridStructure.rows[0].cells.length === 1;
+
+                        if (previousLayoutHasOneCell) {
+                            const previousElement = previousLayout.elements[previousLayout.elements.length - 1];
+                            const previousElementHasTextEditor = hasTextEditor(previousElement);
+
+                            if (previousElementHasTextEditor) {
+                                // Move content from current editor to the end of previous text editor
+                                const editorInPreviousLayout = tiptapRefs.current?.editors[previousElement.id];
+                                const currentEditor = tiptapRefs.current?.editors[elementId];
+
+                                if (editorInPreviousLayout && currentEditor) {
+                                    // Get the text content from current editor to merge
+                                    const currentTextContent = currentEditor.editor.getText();
+
+                                    // Insert the text content at the end of previous editor
+                                    editorInPreviousLayout.editor
+                                        .chain()
+                                        .focus('end')
+                                        .insertContent(currentTextContent)
+                                        .run();
+
+                                    // Delete current element and layout
+                                    usePresentationStore
+                                        .getState()
+                                        .deleteElement(presentationId, slideId, layoutId, elementId);
+                                    usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+
+                                    setTimeout(() => {
+                                        editorInPreviousLayout.editor.commands.focus('end');
+                                    }, 10);
+                                } else {
+                                    console.warn(
+                                        `Editor instance ${previousElement.id} or ${elementId} not found in tiptapRefs. Cannot merge content programmatically.`
+                                    );
+                                }
+                            } else {
+                                // Previous element doesn't have text editor, do nothing
+                                return;
+                            }
+                        } else {
+                            // Previous layout has more than 1 cell, do nothing
+                            return;
+                        }
+                    } else {
+                        // This is the first layout, just delete the element
+                        usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, elementId);
+                    }
                 }
                 return;
             }
@@ -354,29 +410,55 @@ export const ElementContent = ({
                 elementsInCell.length === 1 &&
                 !isMultiCellRow &&
                 layoutIndex !== 0 &&
-                slide.layouts.length > 1 &&
-                isEmpty
+                slide.layouts.length > 1
             ) {
+                // Check if current element is the only element in cell and layout
                 const previousLayout = slide.layouts[layoutIndex - 1];
+                const previousLayoutHasOneCell = previousLayout.gridStructure.rows[0].cells.length === 1;
 
-                if (previousLayout.gridStructure.columns === 1) {
-                    const elementInPreviousLayout = previousLayout.elements[previousLayout.elements.length - 1];
-                    const editorInPreviousLayout = tiptapRefs.current?.editors[elementInPreviousLayout.id];
+                if (previousLayoutHasOneCell) {
+                    const previousElement = previousLayout.elements[previousLayout.elements.length - 1];
+                    const previousElementHasTextEditor = hasTextEditor(previousElement);
+                    const currentElementHasTextEditor = hasTextEditor(layout.elements.find(e => e.id === elementId));
 
-                    if (editorInPreviousLayout) {
-                        usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+                    if (previousElementHasTextEditor && currentElementHasTextEditor) {
+                        // Move content from current editor to the end of previous text editor
+                        const editorInPreviousLayout = tiptapRefs.current?.editors[previousElement.id];
+                        const currentEditor = tiptapRefs.current?.editors[elementId];
 
-                        setTimeout(() => {
-                            editorInPreviousLayout.editor.commands.focus('end');
-                        }, 10);
+                        if (editorInPreviousLayout && currentEditor) {
+                            const oldContentSize = editorInPreviousLayout.editor.state.doc.content.size - 1;
+
+                            // Get the text content from current editor to merge
+                            const currentTextContent = currentEditor.editor.getText();
+
+                            // Insert the text content at the end of previous editor
+                            editorInPreviousLayout.editor.chain().focus('end').insertContent(currentTextContent).run();
+
+                            // Delete current element and layout
+                            usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, elementId);
+                            usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+
+                            setTimeout(() => {
+                                const updatedEditor = tiptapRefs.current?.editors[previousElement.id];
+                                updatedEditor?.editor.commands.focus(oldContentSize);
+                            }, 10);
+                        } else {
+                            console.warn(
+                                `Editor instance ${previousElement.id} or ${elementId} not found in tiptapRefs. Cannot merge content programmatically.`
+                            );
+                        }
+                    } else if (currentElementHasTextEditor) {
+                        // Current element has text editor but previous doesn't, just delete current element
+                        usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, elementId);
                     } else {
-                        console.warn(
-                            `Editor instance ${elementInPreviousLayout.id} not found in tiptapRefs. Cannot merge content programmatically.`
-                        );
+                        // Neither has text editor, delete current layout
+                        usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
                     }
+                } else {
+                    // Previous layout has more than 1 cell, delete current layout
+                    usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
                 }
-
-                usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
             } else if (isMultiCellRow && elementsInCell.length === 1) {
                 const updatedLayout = { ...layout };
                 const updatedElements = updatedLayout.elements.filter(e => e.cellId !== cellId);
@@ -432,23 +514,39 @@ export const ElementContent = ({
                     return;
                 } else if (elementIndex > 0) {
                     const previousElement = elementsInCell[elementIndex - 1];
-                    const editorToUpdate = tiptapRefs.current?.editors[previousElement.id];
+                    const previousElementHasTextEditor = hasTextEditor(previousElement);
+                    const currentElementHasTextEditor = hasTextEditor(layout.elements.find(e => e.id === elementId));
 
-                    if (editorToUpdate) {
-                        const oldContentSize = editorToUpdate.editor.state.doc.content.size - 1;
+                    if (previousElementHasTextEditor && currentElementHasTextEditor) {
+                        const editorToUpdate = tiptapRefs.current?.editors[previousElement.id];
+                        const currentEditor = tiptapRefs.current?.editors[elementId];
 
-                        editorToUpdate.editor.chain().focus('end').insertContent(textContent).run();
+                        if (editorToUpdate && currentEditor) {
+                            const oldContentSize = editorToUpdate.editor.state.doc.content.size - 1;
 
-                        usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, elementId);
+                            // Get the text content from current editor to merge
+                            const currentTextContent = currentEditor.editor.getText();
 
-                        setTimeout(() => {
-                            const updatedEditor = tiptapRefs.current?.editors[previousElement.id];
-                            updatedEditor?.editor.commands.focus(oldContentSize);
-                        }, 10);
+                            // Insert the text content at the end of previous editor
+                            editorToUpdate.editor.chain().focus('end').insertContent(currentTextContent).run();
+
+                            usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, elementId);
+
+                            setTimeout(() => {
+                                const updatedEditor = tiptapRefs.current?.editors[previousElement.id];
+                                updatedEditor?.editor.commands.focus(oldContentSize);
+                            }, 10);
+                        } else {
+                            console.warn(
+                                `Editor instance ${previousElement.id} or ${elementId} not found in tiptapRefs. Cannot merge content programmatically.`
+                            );
+                        }
                     } else {
-                        console.warn(
-                            `Editor instance ${previousElement.id} not found in tiptapRefs. Cannot merge content programmatically.`
-                        );
+                        // If previous element doesn't have text editor, just delete current element
+                        const updatedLayout = { ...layout };
+                        const updatedElements = updatedLayout.elements.filter(e => e.id !== elementId);
+                        updatedLayout.elements = updatedElements;
+                        usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
                     }
                 } else {
                     const updatedLayout = { ...layout };
@@ -466,23 +564,36 @@ export const ElementContent = ({
 
                 if (previousLayout.gridStructure.columns === 1) {
                     const elementInPreviousLayout = previousLayout.elements[0];
-                    const editorToUpdate = tiptapRefs.current?.editors[elementInPreviousLayout.id];
+                    const previousElementHasTextEditor = hasTextEditor(elementInPreviousLayout);
+                    const currentElementHasTextEditor = hasTextEditor(layout.elements.find(e => e.id === elementId));
 
-                    if (editorToUpdate) {
-                        const oldContentSize = editorToUpdate.editor.state.doc.content.size - 1;
+                    if (previousElementHasTextEditor && currentElementHasTextEditor) {
+                        const editorToUpdate = tiptapRefs.current?.editors[elementInPreviousLayout.id];
+                        const currentEditor = tiptapRefs.current?.editors[elementId];
 
-                        editorToUpdate.editor.chain().focus('end').insertContent(textContent).run();
+                        if (editorToUpdate && currentEditor) {
+                            const oldContentSize = editorToUpdate.editor.state.doc.content.size - 1;
 
-                        usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+                            // Get the text content from current editor to merge
+                            const currentTextContent = currentEditor.editor.getText();
 
-                        setTimeout(() => {
-                            const updatedEditor = tiptapRefs.current?.editors[elementInPreviousLayout.id];
-                            updatedEditor?.editor.commands.focus(oldContentSize);
-                        }, 10);
+                            // Insert the text content at the end of previous editor
+                            editorToUpdate.editor.chain().focus('end').insertContent(currentTextContent).run();
+
+                            usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+
+                            setTimeout(() => {
+                                const updatedEditor = tiptapRefs.current?.editors[elementInPreviousLayout.id];
+                                updatedEditor?.editor.commands.focus(oldContentSize);
+                            }, 10);
+                        } else {
+                            console.warn(
+                                `Editor instance ${elementInPreviousLayout.id} or ${elementId} not found in tiptapRefs. Cannot merge content programmatically.`
+                            );
+                        }
                     } else {
-                        console.warn(
-                            `Editor instance ${elementInPreviousLayout.id} not found in tiptapRefs. Cannot merge content programmatically.`
-                        );
+                        // If previous element doesn't have text editor, just delete current layout
+                        usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
                     }
                 }
             }

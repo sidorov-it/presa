@@ -48,10 +48,18 @@ const TableBubbleMenu: React.FC<BubbleMenuProps> = ({ editor }) => {
             >
                 Добавить столбец после
             </button>
-            <button onClick={handleAddRowBefore} className="p-1 hover:bg-gray-100 rounded" aria-label="Добавить строку до">
+            <button
+                onClick={handleAddRowBefore}
+                className="p-1 hover:bg-gray-100 rounded"
+                aria-label="Добавить строку до"
+            >
                 Добавить строку до
             </button>
-            <button onClick={handleAddRowAfter} className="p-1 hover:bg-gray-100 rounded" aria-label="Добавить строку после">
+            <button
+                onClick={handleAddRowAfter}
+                className="p-1 hover:bg-gray-100 rounded"
+                aria-label="Добавить строку после"
+            >
                 Добавить строку после
             </button>
             <button

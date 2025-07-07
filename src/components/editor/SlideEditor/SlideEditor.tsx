@@ -108,7 +108,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         return className;
     }, [isSelected, isReadOnly]);
 
-
     const getSlideStyle = useCallback(() => {
         const style: React.CSSProperties & Record<string, string> = {};
 
