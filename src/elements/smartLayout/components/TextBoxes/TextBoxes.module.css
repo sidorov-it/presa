@@ -84,13 +84,26 @@
     color: var(--presentation-block-text-color, var(--color-text));
 }
 
-/* [style*="--presentation-block-background-custom-count: 1"] .itemContainer::before {
-    background: var(--presentation-block-background-custom-1, var(--presentation-block-background));
-} */
-
 [style*="--presentation-block-background-custom-type: primary"] .textBox::before {
     background-color: var(--presentation-block-background, var(--color-surface));
 }
+
+
+[style*="--presentation-block-background-custom-type: subtle"] .textBox {
+    border-color: var(--presentation-block-border-color-subtle, var(--color-border));
+    color: var(--presentation-block-text-color-subtle, var(--color-text));
+}
+
+[style*="--presentation-block-background-custom-type: subtle"] .textBox::before {
+    background-color: var(--presentation-block-background-subtle, var(--color-surface));
+}
+
+
+
+[style*="--presentation-block-background-custom-type: subtle"] .itemContainer::before {
+    background: var(--presentation-block-background-subtle, var(--presentation-block-background));
+}
+
 
 [style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 1"] .itemContainer::before {
     background: var(--presentation-block-background-custom-1, var(--presentation-block-background));

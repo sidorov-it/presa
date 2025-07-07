@@ -15,11 +15,12 @@
 
 
 .radioItemText-subtle {
-    background-color: var(--chakra-colors-trueblue-400);
+    background-color: var(--presentation-accent-blocks-color-subtle);
+    opacity: 0.2;
 }
 
 .radioItemText-primary {
-    background-color: var(--chakra-colors-trueblue-400);
+    background-color: var(--presentation-accent-blocks-color);
 }
 
 .radioItemText-custom {

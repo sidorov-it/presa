@@ -11,10 +11,10 @@ import ShadowSelector from '../ShadowSelector/ShadowSelector';
 import { BsCircle, BsCircleFill, BsCircleHalf } from 'react-icons/bs';
 
 const blockFillColorsTypes = [
-    // {
-    //     value: 'subtle',
-    //     label: 'Фон слайда',
-    // },
+    {
+        value: 'subtle',
+        label: 'Мягкий',
+    },
     {
         value: 'primary',
         label: 'Акцентный цвет',
@@ -55,7 +55,16 @@ export default function BlockDesign({
                             })
                         }
                     >
-                        <Stack gap={2}>
+                        <Stack
+                            gap={2}
+                            style={
+                                {
+                                    '--presentation-accent-blocks-color': theme.colors.primaryAccent,
+                                    '--presentation-accent-blocks-color-subtle':
+                                        theme.colors.pageBackground.color || theme.colors.primaryAccent,
+                                } as React.CSSProperties
+                            }
+                        >
                             {blockFillColorsTypes.map(item => (
                                 <RadioGroup.Item key={item.value} value={item.value} className={styles.radioItem}>
                                     <RadioGroup.ItemHiddenInput />

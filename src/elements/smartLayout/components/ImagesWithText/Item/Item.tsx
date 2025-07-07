@@ -118,7 +118,7 @@ export default function Item({
                 />
             )}
             <div className={styles.content}>
-                <div className={styles.text}>
+                <div className={styles.title}>
                     <Tiptap
                         // key={element.id}
                         isReadOnly={isReadOnly}

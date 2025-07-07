@@ -184,7 +184,7 @@
 }
 
 .pdfExport .slideContainer {
-    min-height: auto !important;
+    /* min-height: auto !important; */
     height: auto !important;
     /* overflow: visible !important; */
     padding: var(--card-inner-padding);

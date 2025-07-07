@@ -14,6 +14,8 @@ import TextBoxesMenu from './TextBoxesMenu';
 import styles from './TextBoxes.module.css';
 import { useDndStore } from '@/store/dndStore';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
+import { useThemeStore } from '@/store/themeStore';
+import { useShallow } from 'zustand/react/shallow';
 
 export default function TextBoxes({
     elementId,
@@ -39,6 +41,26 @@ export default function TextBoxes({
             state.state.source.elementId === elementId &&
             state.state.source.layoutId === layoutId &&
             !!state.state.source.smartLayoutItemId
+    );
+
+    const customColors: string[] = useThemeStore(
+        useShallow(state => {
+            if (
+                state.currentTheme?.design?.blocks?.blockFillColorsType === 'custom' &&
+                state.currentTheme?.design?.blocks?.blockBackgroundCustomColors?.length > 0
+            ) {
+                const colors: string[] = [];
+                state.currentTheme?.design?.blocks?.blockBackgroundCustomColors.map(color => {
+                    const textColor = getContrastingTextColor(color);
+                    colors.push(textColor);
+                });
+                return colors;
+            } else if (state.currentTheme?.design?.blocks?.blockFillColorsType === 'primary') {
+                const textColor = getContrastingTextColor(state.currentTheme?.colors.primaryAccent);
+                return [textColor];
+            };
+            return [];
+        })
     );
 
     // const isDraggingFromSameLayout = useCallback(() => {
@@ -241,6 +263,7 @@ export default function TextBoxes({
                     style['--presentation-heading-color'] = contrastColor;
                 }
 
+                const color = customColors[index % customColors.length];
                 return (
                     <div
                         key={itemId}
@@ -249,6 +272,8 @@ export default function TextBoxes({
                         style={{
                             width: `calc(${elementWidth} - 1em)`,
                             borderColor: 'red',
+                            '--presentation-heading-color': color,
+                            '--presentation-text-color': color,
                         }}
                         onDragOver={e => handleDragOver(e, itemId)}
                         onDragLeave={handleDragLeave}

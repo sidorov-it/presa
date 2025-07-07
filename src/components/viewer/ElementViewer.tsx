@@ -20,6 +20,8 @@ interface ElementViewerProps {
     primaryAccentColor?: string;
     theme: Theme;
     isTable?: boolean;
+    blockFillColorsType?: string;
+    blockBackgroundCustomColors?: string[];
 }
 
 const ElementViewer = ({
@@ -28,6 +30,8 @@ const ElementViewer = ({
     layoutId,
     slideBackground,
     primaryAccentColor,
+    blockFillColorsType,
+    blockBackgroundCustomColors,
     theme,
     isTable,
 }: ElementViewerProps) => {
@@ -136,6 +140,9 @@ const ElementViewer = ({
                         layoutId={layoutId}
                         tiptapRefs={null}
                         isFocused={false}
+                        blockFillColorsType={blockFillColorsType}
+                        blockBackgroundCustomColors={blockBackgroundCustomColors}
+                        primaryAccentColor={primaryAccentColor}
                     />
                 );
             }

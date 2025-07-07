@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /**
  * Clears all theme-related CSS variables from document.documentElement
  * Use this when you want to completely remove theme styling from the page
@@ -76,7 +77,7 @@ export function getContrastingTextColor(hexColor: string): '#000000' | '#FFFFFF'
     const hex = hexColor.replace('#', '');
 
     // Проверка на валидность
-    if (!/^([0-9A-Fa-f]{6})$/.test(hex)) {
+    if (!/^([0-9A-Fa-f]{6,8})$/.test(hex)) {
         throw new Error(`Invalid hex color format: ${hexColor}`);
     }
 
@@ -102,7 +103,7 @@ export function getBorderColorForBackground(hexColor: string): string {
     const hex = hexColor.replace('#', '');
 
     // Проверка на валидность
-    if (!/^([0-9A-Fa-f]{6})$/.test(hex)) {
+    if (!/^([0-9A-Fa-f]{6,8})$/.test(hex)) {
         throw new Error(`Invalid hex color format: ${hexColor}`);
     }
 
@@ -136,6 +137,134 @@ export function getBorderColorForBackground(hexColor: string): string {
     // Преобразуем обратно в hex
     const toHex = (value: number) => value.toString(16).padStart(2, '0');
     return `#${toHex(newR)}${toHex(newG)}${toHex(newB)}`;
+}
+
+/**
+ * Возвращает "subtle" вариант цвета фона для блоков с текстом
+ * Создает слегка затемненную или осветленную версию цвета фона с прозрачностью
+ * для визуального выделения блоков на этом же фоне
+ *
+ * @param backgroundHex - цвет фона (например, "#FFFFFF")
+ * @param opacity - прозрачность результирующего цвета (по умолчанию 0.08)
+ * @returns строка в формате rgba()
+ */
+// export function getSubtleColor(backgroundHex: string, opacity: number = 0.08): string {
+//     // Удаляем символ "#" если есть
+//     const hex = backgroundHex.replace('#', '');
+
+//     // Проверка на валидность цвета
+//     if (!/^([0-9A-Fa-f]{6})$/.test(hex)) {
+//         throw new Error(`Invalid hex color format: ${backgroundHex}`);
+//     }
+
+//     // Проверка opacity
+//     if (opacity < 0 || opacity > 1) {
+//         throw new Error(`Opacity must be between 0 and 1, got: ${opacity}`);
+//     }
+
+//     // Преобразуем hex в R, G, B
+//     const r = parseInt(hex.substring(0, 2), 16);
+//     const g = parseInt(hex.substring(2, 4), 16);
+//     const b = parseInt(hex.substring(4, 6), 16);
+
+//     // Вычисляем яркость фона
+//     const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+//     const isLightBackground = luminance > 128;
+
+//     let finalR: number, finalG: number, finalB: number;
+
+//     if (isLightBackground) {
+//         // Для светлого фона создаем слегка затемненную версию
+//         const darkenFactor = 0.15;
+//         finalR = Math.max(0, Math.round(r * (1 - darkenFactor)));
+//         finalG = Math.max(0, Math.round(g * (1 - darkenFactor)));
+//         finalB = Math.max(0, Math.round(b * (1 - darkenFactor)));
+//     } else {
+//         // Для темного фона создаем слегка осветленную версию
+//         const lightenFactor = 0.15;
+//         finalR = Math.min(255, Math.round(r + (255 - r) * lightenFactor));
+//         finalG = Math.min(255, Math.round(g + (255 - g) * lightenFactor));
+//         finalB = Math.min(255, Math.round(b + (255 - b) * lightenFactor));
+//     }
+
+//     return `rgba(${finalR}, ${finalG}, ${finalB}, ${opacity})`;
+// }
+
+function hexToRgb(hex) {
+    hex = hex.replace(/^#/, '');
+    if (hex.length === 3)
+        hex = hex
+            .split('')
+            .map(x => x + x)
+            .join('');
+    if (hex.length !== 6) throw new Error('Invalid HEX');
+    const num = parseInt(hex, 16);
+    return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
+}
+
+// https://stackoverflow.com/a/9493060/1132305
+function rgbToHsl([r, g, b]) {
+    (r /= 255), (g /= 255), (b /= 255);
+    const max = Math.max(r, g, b),
+        min = Math.min(r, g, b);
+    let h,
+        s,
+        l = (max + min) / 2;
+    if (max == min) {
+        h = s = 0; // achromatic
+    } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+            case r:
+                h = (g - b) / d + (g < b ? 6 : 0);
+                break;
+            case g:
+                h = (b - r) / d + 2;
+                break;
+            case b:
+                h = (r - g) / d + 4;
+                break;
+        }
+        h /= 6;
+    }
+    return [h * 360, s, l];
+}
+function hslToRgb([h, s, l]) {
+    let r, g, b;
+    h /= 360;
+    if (s == 0) {
+        r = g = b = l; // achromatic
+    } else {
+        function hue2rgb(p, q, t) {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1 / 6) return p + (q - p) * 6 * t;
+            if (t < 1 / 2) return q;
+            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+            return p;
+        }
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1 / 3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1 / 3);
+    }
+    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+}
+
+function rgbToHex([r, g, b]) {
+    return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+
+export function getSubtleColor(hex) {
+    const rgb = hexToRgb(hex);
+    let [h, s, l] = rgbToHsl(rgb);
+    // попробуем сильнее снизить насыщенность и осветлить
+    s = s * 0.5; // снизим насыщенность в 2 раза
+    l = l * 0.9 + 0.05; // сделаем цвет светлее
+    const subtleRgb = hslToRgb([h, s, l]);
+    return rgbToHex(subtleRgb) + 'ff';
 }
 
 export type SlideLayoutParams = {

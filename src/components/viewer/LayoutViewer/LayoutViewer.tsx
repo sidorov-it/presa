@@ -131,6 +131,10 @@ const LayoutViewer = ({ layout, slideId, slideBackground, primaryAccentColor, th
                                             layoutId={layout.id}
                                             slideBackground={slideBackground}
                                             primaryAccentColor={primaryAccentColor}
+                                            blockFillColorsType={theme.design.blocks.blockFillColorsType}
+                                            blockBackgroundCustomColors={
+                                                theme.design.blocks.blockBackgroundCustomColors
+                                            }
                                             theme={theme}
                                             isTable={layout.isTable}
                                         />

@@ -2,7 +2,7 @@ import { Theme } from '@/types/theme';
 import { BackgroundSettings } from '@/types';
 import getContrastTextColor from './getContrastTextColor';
 import getHoverColor from './getHoverColor';
-import { getBorderColorForBackground } from './themeUtils';
+import { getBorderColorForBackground, getSubtleColor } from './themeUtils';
 
 /**
  * Convert theme settings to a style object with CSS variables.
@@ -161,6 +161,11 @@ export function themeToCSSVariables(theme: Theme, backgroundSettings?: Backgroun
         set('--presentation-block-background', theme.colors.primaryAccent);
         set('--presentation-block-border-color', getBorderColorForBackground(theme.colors.primaryAccent));
         set('--presentation-block-text-color', getContrastTextColor(theme.colors.primaryAccent));
+    } else if (theme.design.blocks.blockFillColorsType === 'subtle') {
+        const subtleBackground = getSubtleColor(theme.colors.slideBackground);
+        set('--presentation-block-background-subtle', subtleBackground);
+        set('--presentation-block-border-color-subtle', getBorderColorForBackground(subtleBackground));
+        set('--presentation-block-text-color-subtle', getContrastTextColor(subtleBackground));
     } else if (theme.design.blocks.blockFillColorsType === 'custom') {
         // For custom type, use the custom colors
         if (theme.design.blocks.blockBackgroundCustomColors.length > 0) {

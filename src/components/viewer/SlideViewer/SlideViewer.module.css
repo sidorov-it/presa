@@ -109,7 +109,7 @@
 
 .slideContent {
     box-shadow: none !important;
-    width: var(--card-width);
+    /* width: var(--card-width); */
 }
 
 .pdfExport .slideContainer {

@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { RefObject } from 'react';
+import { RefObject, useMemo } from 'react';
 import { SmartLayoutElement, TipTapRefs } from '@/types';
 import Tiptap from '@/components/tiptap/Tiptap/Tiptap';
 
@@ -15,6 +15,9 @@ export default function TextBoxesView({
     slideId,
     layoutId,
     isFocused,
+    blockFillColorsType = 'primary',
+    blockBackgroundCustomColors = [],
+    primaryAccentColor,
 }: {
     element: SmartLayoutElement;
     tiptapRefs: RefObject<TipTapRefs> | null;
@@ -22,6 +25,9 @@ export default function TextBoxesView({
     slideId: string;
     layoutId: string;
     isFocused: boolean;
+    blockFillColorsType?: string;
+    blockBackgroundCustomColors?: string[];
+    primaryAccentColor?: string;
 }) {
     const isReadOnly = true;
     let columnSize = element.columnSize;
@@ -34,6 +40,21 @@ export default function TextBoxesView({
     } else if (items.length === 3 && columnSize > 3) {
         columnSize = 2;
     }
+
+    const customColors: string[] = useMemo(() => {
+        if (blockFillColorsType === 'custom' && blockBackgroundCustomColors?.length > 0) {
+            const colors: string[] = [];
+            blockBackgroundCustomColors.map(color => {
+                const textColor = getContrastingTextColor(color);
+                colors.push(textColor);
+            });
+            return colors;
+        } else if (blockFillColorsType === 'primary') {
+            const textColor = getContrastingTextColor(primaryAccentColor || '#ffffff');
+            return [textColor];
+        }
+        return [];
+    }, [blockFillColorsType, blockBackgroundCustomColors, primaryAccentColor]);
 
     const align = element.align || 'left';
 
@@ -53,7 +74,7 @@ export default function TextBoxesView({
 
     return (
         <div className={`${styles.container} ${isFocused ? styles.focused : ''}`}>
-            {itemsIds?.map(itemId => {
+            {itemsIds?.map((itemId, index) => {
                 const item = element.items?.find(item => item.id === itemId);
                 if (!item) return null;
 
@@ -62,22 +83,31 @@ export default function TextBoxesView({
                 if (backgroundColor) {
                     style.backgroundColor = backgroundColor;
                     const contrastColor = getContrastingTextColor(backgroundColor);
-                    // @ts-ignore
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
                     style['--presentation-text-color'] = contrastColor;
-                    // @ts-ignore
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
                     style['--presentation-heading-color'] = contrastColor;
                 }
+
+                const color = customColors[index % customColors.length];
 
                 return (
                     <div
                         key={itemId}
                         className={styles.itemContainer}
                         data-smart-layout-item-id={itemId}
-                        style={{
-                            width: `calc(${elementWidth} - 1em)`,
-                            backgroundColor: element.backgroundColor || undefined,
-                            color: element.textColor || undefined,
-                        }}
+                        style={
+                            {
+                                width: `calc(${elementWidth} - 1em)`,
+                                backgroundColor: element.backgroundColor || undefined,
+                                color: element.textColor || undefined,
+                                '--presentation-block-text-color': color,
+                                '--presentation-heading-color': color,
+                                '--presentation-text-color': color,
+                            } as React.CSSProperties & Record<string, string>
+                        }
                     >
                         <div className={`${styles.textBox} ${align ? styles[align] : ''}`} style={style}>
                             <div className={styles.title}>

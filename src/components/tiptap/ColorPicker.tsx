@@ -73,7 +73,7 @@ export const ColorPicker = ({
 
     // Валидация hex-цвета
     const isValidHex = (hex: string) => {
-        return /^#([0-9A-Fa-f]{6})$/.test(hex);
+        return /^#([0-9A-Fa-f]{6,8})$/.test(hex);
     };
 
     // Обработка выбора цвета из палитры

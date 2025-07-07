@@ -4,7 +4,7 @@ import { Theme } from '@/types/theme';
 import getContrastTextColor from '@/utils/getContrastTextColor';
 import getHoverColor from '@/utils/getHoverColor';
 import { BackgroundSettings } from '@/types';
-import { getBorderColorForBackground } from '@/utils/themeUtils';
+import { getBorderColorForBackground, getSubtleColor } from '@/utils/themeUtils';
 import { ColorMode } from '@/components/ui/color-mode';
 
 interface UseThemeApplicationOptions {
@@ -367,25 +367,47 @@ const applyThemeStyles = ({
         prevDesign ? blockBorderWidthMap[prevDesign.blocks.borderWidth] || '0px' : undefined
     );
 
+
     // Block fill colors
-    if (theme.design.blocks.blockFillColorsType !== 'custom') {
+    if (theme.design.blocks.blockFillColorsType === 'primary') {
         setCSSVariableIfChanged(
             '--presentation-block-background',
             theme.colors.primaryAccent,
-            prevDesign?.blocks.blockFillColorsType !== 'custom' ? prevColors?.primaryAccent : undefined
+            prevDesign?.blocks.blockFillColorsType === 'primary' ? prevColors?.primaryAccent : undefined
         );
         setCSSVariableIfChanged(
             '--presentation-block-border-color',
             getBorderColorForBackground(theme.colors.primaryAccent),
-            prevDesign?.blocks.blockFillColorsType !== 'custom'
+            prevDesign?.blocks.blockFillColorsType === 'primary'
                 ? getBorderColorForBackground(theme.colors.primaryAccent || '')
                 : undefined
         );
         setCSSVariableIfChanged(
             '--presentation-block-text-color',
             getContrastTextColor(theme.colors.primaryAccent),
-            prevDesign?.blocks.blockFillColorsType !== 'custom'
+            prevDesign?.blocks.blockFillColorsType === 'primary'
                 ? getContrastTextColor(theme.colors.primaryAccent || '')
+                : undefined
+        );
+    } else if (theme.design.blocks.blockFillColorsType === 'subtle') {
+        const subtleBackground = getSubtleColor(theme.colors.slideBackground);
+        setCSSVariableIfChanged(
+            '--presentation-block-background-subtle',
+            subtleBackground,
+            prevDesign?.blocks.blockFillColorsType === 'subtle' ? prevColors?.slideBackground : undefined
+        );
+        setCSSVariableIfChanged(
+            '--presentation-block-border-color-subtle',
+            getBorderColorForBackground(subtleBackground),
+            prevDesign?.blocks.blockFillColorsType === 'subtle'
+                ? getBorderColorForBackground(subtleBackground || '')
+                : undefined
+        );
+        setCSSVariableIfChanged(
+            '--presentation-block-text-color-subtle',
+            getContrastTextColor(subtleBackground),
+            prevDesign?.blocks.blockFillColorsType === 'subtle'
+                ? getContrastTextColor(subtleBackground || '')
                 : undefined
         );
     } else if (theme.design.blocks.blockFillColorsType === 'custom') {
