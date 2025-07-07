@@ -1,6 +1,9 @@
-import { generatePresentationTemplate, PresentationDescriptor } from './generator';
+import {
+    generatePresentationTemplate,
+    PresentationDescriptor,
+} from './generator';
 
-const personalPortfolioDescriptor: PresentationDescriptor = {
+export const personalPortfolioDescriptor: PresentationDescriptor = {
     title: 'Портфолио',
     description: 'Простое портфолио для демонстрации ваших работ и навыков.',
     themeId: 'atacama',
@@ -41,7 +44,7 @@ const personalPortfolioDescriptor: PresentationDescriptor = {
     ],
 };
 
-const salesDeckDescriptor: PresentationDescriptor = {
+export const salesDeckDescriptor: PresentationDescriptor = {
     title: 'Презентация продаж',
     themeId: 'ocean-breeze',
     description: 'Шаблон для презентации вашего продукта потенциальным клиентам.',
@@ -82,7 +85,7 @@ const salesDeckDescriptor: PresentationDescriptor = {
     ],
 };
 
-const salesPresentationDescriptor: PresentationDescriptor = {
+export const salesPresentationDescriptor: PresentationDescriptor = {
     title: 'Презентация продаж',
     description: 'Общая презентация продаж.',
     themeId: 'forest-whisper',
@@ -134,11 +137,23 @@ const salesPresentationDescriptor: PresentationDescriptor = {
     ],
 };
 
-export const PresentationTemplates = {
-    personalPortfolio: generatePresentationTemplate(personalPortfolioDescriptor),
-    salesDeck: generatePresentationTemplate(salesDeckDescriptor),
-    salesPresentation: generatePresentationTemplate(salesPresentationDescriptor),
+export const PresentationTemplateDescriptors = {
+    personalPortfolio: personalPortfolioDescriptor,
+    salesDeck: salesDeckDescriptor,
+    salesPresentation: salesPresentationDescriptor,
 };
 
-export type PresentationTemplateKeys = keyof typeof PresentationTemplates;
+export type PresentationTemplateKeys = keyof typeof PresentationTemplateDescriptors;
+
+export const PresentationTemplates = Object.fromEntries(
+    Object.entries(PresentationTemplateDescriptors).map(([key, desc]) => [
+        key,
+        generatePresentationTemplate(desc as PresentationDescriptor),
+    ])
+) as Record<PresentationTemplateKeys, ReturnType<typeof generatePresentationTemplate>>;
+
+export function createPresentationFromTemplate(key: PresentationTemplateKeys) {
+    return generatePresentationTemplate(PresentationTemplateDescriptors[key]);
+}
+
 export * from './generator';
