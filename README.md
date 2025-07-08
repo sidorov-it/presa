@@ -72,6 +72,25 @@ npm run build
 npm run start
 ```
 
+## Миграции MongoDB (Prisma)
+
+- Миграции лежат в папке `prisma/migrations/`.
+- Для запуска всех миграций используйте:
+  ```sh
+  npm run migrate
+  # или
+  yarn migrate
+  ```
+- Новая миграция — это файл вида `NNN-description.ts` с экспортом функции `up(db: Db)`.
+- Пример:
+  ```ts
+  import { Db } from "mongodb";
+  export async function up(db: Db) {
+    await db.collection("User").updateMany({}, { $set: { demoField: true } });
+  }
+  ```
+- Применённые миграции отмечаются в коллекции `_migrations` в MongoDB.
+
 ## Лицензия
 
 MIT
