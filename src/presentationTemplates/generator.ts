@@ -36,7 +36,7 @@ export interface PresentationDescriptor {
 }
 
 function mapElement(desc: ElementDescriptor) {
-    const type = desc.type.toLowerCase();
+    const type = desc?.type?.toLowerCase() || 'text';
     switch (type) {
         case 'heading':
         case 'title':

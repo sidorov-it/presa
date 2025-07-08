@@ -11,6 +11,7 @@ import { useThemeStore } from '@/store/themeStore';
 import TemplatePreviewModal from '@/components/templates/TemplatePreviewModal';
 
 import FullPageLoader from '@/components/FullPageLoader/FullPageLoader';
+import { LuFileImage } from 'react-icons/lu';
 
 const TEMPLATE_KEYS = Object.keys(PresentationTemplates) as PresentationTemplateKeys[];
 
@@ -59,7 +60,7 @@ const TemplatesPage = () => {
             {isLoading ? (
                 <FullPageLoader />
             ) : (
-                <div className={styles.templatesGrid}>
+                <div className={styles.cardsContainer}>
                     {TEMPLATE_KEYS.map(key => {
                         const template = PresentationTemplates[key];
                         const theme = defaultThemes.find(t => t.id === template.themeId) || defaultThemes[0];
@@ -69,13 +70,13 @@ const TemplatesPage = () => {
                         }
                         return (
                             <Card key={key} className={styles.templateCard}>
-                                <CardHeader>
-                                    <CardTitle>{template.title}</CardTitle>
+                                <CardHeader className={styles.cardHeader}>
+                                    <CardTitle className={styles.cardTitle}>{template.title}</CardTitle>
                                     <CardDescription>{template.description}</CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <div className={styles.templatePreview}>
-                                        <SlidePreview presentation={template} theme={theme} />
+                                        <LuFileImage size={48} />
                                     </div>
                                     <div className={styles.templateActions}>
                                         <button

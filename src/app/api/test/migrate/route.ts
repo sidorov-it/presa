@@ -21,7 +21,6 @@ export async function GET(request: NextRequest) {
                 lte: new Date('2025-06-15'),
             },
         },
-
     });
 
     return NextResponse.json(presentations);
