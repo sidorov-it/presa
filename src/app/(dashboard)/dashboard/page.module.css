@@ -157,21 +157,9 @@
 }
 
 .presentationsGrid {
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
+    display: flex;
+    flex-wrap: wrap;
     gap: 1.5rem;
-}
-
-@media (min-width: 640px) {
-    .presentationsGrid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (min-width: 1024px) {
-    .presentationsGrid {
-        grid-template-columns: repeat(3, 1fr);
-    }
 }
 
 .presentationCard {
@@ -182,6 +170,7 @@
     overflow: hidden;
     cursor: pointer;
     transition: all 0.2s ease;
+    width: 320px;
 }
 
 .presentationCard:hover {
@@ -190,7 +179,7 @@
 }
 
 .previewArea {
-    height: 10rem;
+    height: 180px;
     background-color: var(--color-background);
     position: relative;
     cursor: pointer;

@@ -114,34 +114,6 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
                     timeout: 30000,
                 });
 
-                // Add CSS to ensure proper PDF layout
-                // await page.addStyleTag({
-                //     content: `
-                //         body {
-                //             margin: 0 !important;
-                //             padding: 0 !important;
-                //             overflow: visible !important;
-                //         }
-                //         .slideWrapper {
-                //             // min-height: auto !important;
-                //             // height: auto !important;
-                //             overflow: visible !important;
-                //             width: 1032px !important; /* Standard slide width */
-                //         }
-                //         .slideContent {
-                //             // min-height: auto !important;
-                //             // height: auto !important;
-                //             overflow: visible !important;
-                //         }
-                //         .slideContainer {
-                //             // min-height: auto !important;
-                //             // height: auto !important;
-                //             overflow: visible !important;
-                //             // padding: 40px !important;
-                //         }
-                //     `,
-                // });
-
                 // Wait for content to fully load and render
                 await new Promise(resolve => setTimeout(resolve, 2000));
 

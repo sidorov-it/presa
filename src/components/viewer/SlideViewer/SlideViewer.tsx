@@ -201,7 +201,8 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
 
             // Convert ratios to CSS values
             const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
-            const paddingTopVw = `calc(64.5em * var(--card-font-scale, 1) * ${currentImageHeightRatio} + 1em)`;
+            // const paddingTopVw = `calc(64.5em * var(--card-font-scale, 1) * ${currentImageHeightRatio} + 1em)`;
+            const paddingTopVw = `calc(var(--card-width) * ${currentImageHeightRatio} + 1em)`;
 
             const remainingWidth = `${(1 - currentImageWidthRatio) * 100}%`;
             // For remaining height, we need to subtract the image height from total height
@@ -287,10 +288,10 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     const slideContentStyle: React.CSSProperties = {
         // backgroundColor: fullPage ? 'transparent' : 'var(--presentation-slide-background)',
         borderRadius: fullPage ? 0 : 'var(--presentation-slide-border-radius)',
-        minHeight: isSlidePreview ? 'var(--card-min-height)' : fullPage ? 'var(--card-height)' : isPdfExport ? 'auto' : '130px',
+        minHeight: isSlidePreview ? 'var(--card-min-height)' : fullPage ? 'var(--card-height)' : isPdfExport ? 'auto' : undefined,
         height: isSlidePreview || fullPage ? 'auto' : undefined,
         overflow: isSlidePreview || fullPage || isPdfExport ? 'visible' : 'auto',
-        transform: isSlidePreview ? 'scale(0.8)' : 'none',
+        // transform: isSlidePreview ? 'scale(1)' : 'none',
     };
 
     // Адаптируем класс слайда при экспорте в PDF

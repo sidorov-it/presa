@@ -111,6 +111,7 @@
 
 .slideContent {
     box-shadow: none !important;
+    min-height: calc(64em / 16 * 9 )
 }
 
 .pdfExport .slideContainer {

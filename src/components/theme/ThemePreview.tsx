@@ -1,15 +1,41 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import ScopedPresentationThemeWrapper from '@/components/viewer/theme/ScopedPresentationThemeWrapper';
 import PresentationViewer from '@/components/viewer/PresentationViewer/PresentationViewer';
 import { EditorElement, Slide } from '@/types';
 import { Theme } from '@/types/theme';
 import { ElementType } from '@/types/elements';
+import { getSlideLayoutVars } from '@/utils/themeUtils';
 
 interface ThemePreviewProps {
     theme: Theme;
 }
 
 export const ThemePreview = ({ theme }: ThemePreviewProps) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
+
+    // Измеряем размеры контейнера
+    useEffect(() => {
+        const updateDimensions = () => {
+            if (containerRef.current) {
+                const rect = containerRef.current.getBoundingClientRect();
+                setContainerDimensions({
+                    width: rect.width,
+                    height: rect.height
+                });
+            }
+        };
+
+        updateDimensions();
+        
+        const resizeObserver = new ResizeObserver(updateDimensions);
+        if (containerRef.current) {
+            resizeObserver.observe(containerRef.current);
+        }
+
+        return () => resizeObserver.disconnect();
+    }, []);
+
     const sampleSlides: Slide[] = [
         {
             id: 't3akl78koxp',
@@ -609,15 +635,27 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
         },
     ];
 
+    // Рассчитываем CSS переменные для превью
+    const layoutVars = getSlideLayoutVars({
+        aspectRatio: 1.7777777777777777,
+        cardFontScale: 1,
+        renderMode: 'view',
+        containerWidth: containerDimensions.width,
+        containerHeight: containerDimensions.height,
+        useContainerScaling: true,
+    });
+
     return (
-        <ScopedPresentationThemeWrapper theme={theme}>
-            <PresentationViewer
-                theme={theme}
-                slides={sampleSlides}
-                showImagePlaceholder={true}
-                isPreview={true}
-                primaryAccentColor={theme?.colors.primaryAccent || '#000000'}
-            />
-        </ScopedPresentationThemeWrapper>
+        <div ref={containerRef} style={layoutVars as React.CSSProperties}>
+            <ScopedPresentationThemeWrapper theme={theme}>
+                <PresentationViewer
+                    theme={theme}
+                    slides={sampleSlides}
+                    showImagePlaceholder={true}
+                    isPreview={true}
+                    primaryAccentColor={theme?.colors.primaryAccent || '#000000'}
+                />
+            </ScopedPresentationThemeWrapper>
+        </div>
     );
 };

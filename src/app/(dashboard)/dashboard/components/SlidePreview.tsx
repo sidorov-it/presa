@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { IPresentation } from '@/types';
 import { Theme } from '@/types/theme';
 import ScopedThemeStylesApplier from '@/components/viewer/theme/ScopedThemeStylesApplier/ScopedThemeStylesApplier';
@@ -13,47 +13,49 @@ interface SlidePreviewProps {
 
 export default function SlidePreview({ presentation, theme }: SlidePreviewProps) {
     const firstSlide = presentation.slides[0];
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
+
+    // Измеряем размеры контейнера
+    useEffect(() => {
+        const updateDimensions = () => {
+            if (containerRef.current) {
+                const rect = containerRef.current.getBoundingClientRect();
+                setContainerDimensions({
+                    width: rect.width,
+                    height: rect.height,
+                });
+            }
+        };
+
+        updateDimensions();
+
+        const resizeObserver = new ResizeObserver(updateDimensions);
+        if (containerRef.current) {
+            resizeObserver.observe(containerRef.current);
+        }
+
+        return () => resizeObserver.disconnect();
+    }, []);
+
+    const aspectRatio = 1.7777777777777777;
+
+    // Используем новые параметры для контекстного масштабирования
+    const layoutVars = getSlideLayoutVars({
+        aspectRatio,
+        cardFontScale: 1,
+        renderMode: 'view',
+        containerWidth: containerDimensions.width,
+        containerHeight: containerDimensions.height,
+        useContainerScaling: true,
+    });
+
     if (!firstSlide || !firstSlide.layouts) {
         return <div className={styles.empty}>Нет слайдов</div>;
     }
 
-    // Calculate CSS variables similar to how it's done in /view page
-    const aspectRatio = 1.7777777777777777;
-
-    // For preview, we need to calculate the scale based on container size
-    // Container height is 10rem = 160px (assuming 16px base font)
-    // We want the slide to scale down to fit the container width
-    const containerWidthPx = 300; // Approximate width of preview container
-    const standardSlideWidthPx = 1032; // Standard slide width from /view
-    // const previewCardFontScale = containerWidthPx / standardSlideWidthPx; // ~0.29
-    const previewCardFontScale = 0.27;
-
-    // Use getSlideLayoutVars but override some values for preview
-    const baseLayoutVars = getSlideLayoutVars({
-        aspectRatio,
-        cardFontScale: previewCardFontScale,
-        renderMode: 'view',
-    });
-
-    // Override specific values for preview
-    const previewLayoutVars = {
-        ...baseLayoutVars,
-        '--card-width': '100%',
-        '--card-height': `calc(100% / ${aspectRatio})`,
-        '--card-min-height': '10rem', // Match container height
-        '--card-font-scale': `${previewCardFontScale}`,
-        '--editor-width': '100%',
-        '--card-max-width': '100%',
-        '--card-max-height': '10rem',
-        // Fix padding calculation for preview - should scale down, not up
-        '--card-inner-padding-x': `calc(4em * ${previewCardFontScale})`,
-        '--card-inner-padding-y': `calc(2.75em * ${previewCardFontScale})`,
-        '--card-margin-height': `calc(2.75em * ${previewCardFontScale})`,
-        '--card-inner-padding': `calc(2.75em * ${previewCardFontScale}) calc(4em * ${previewCardFontScale})`,
-    };
-
     return (
-        <div className={styles.wrapper} style={previewLayoutVars as React.CSSProperties}>
+        <div ref={containerRef} className={styles.wrapper} style={layoutVars as React.CSSProperties}>
             <div className={styles.scaled}>
                 <ScopedThemeStylesApplier theme={theme}>
                     <SlideViewer

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ThemeEditor } from '@/components/theme/ThemeEditor';
 import { ThemePreview } from '@/components/theme/ThemePreview';
@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/Input/Input';
 import { Label } from '@/components/ui/Label';
 import { generateId } from '@/utils/id';
+import { getSlideLayoutVars } from '@/utils/themeUtils';
 
 import styles from './page.module.css';
 import FullPageLoader from '@/components/FullPageLoader/FullPageLoader';
@@ -22,6 +23,8 @@ const ThemeEditorPageContent = (props: { params: { action: string } }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { addTheme, updateTheme, loadTheme, allThemes, defaultThemes, loadThemes } = useThemeStore();
+    const previewContainerRef = useRef<HTMLDivElement>(null);
+    const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
 
     const isNewTheme = params.action === 'new';
     const existingTheme = !isNewTheme ? allThemes.find(t => t.id === params.action) : undefined;
@@ -119,6 +122,28 @@ const ThemeEditorPageContent = (props: { params: { action: string } }) => {
         };
     }, []);
 
+    // Измеряем размеры контейнера превью
+    useEffect(() => {
+        const updateDimensions = () => {
+            if (previewContainerRef.current) {
+                const rect = previewContainerRef.current.getBoundingClientRect();
+                setContainerDimensions({
+                    width: rect.width,
+                    height: rect.height
+                });
+            }
+        };
+
+        updateDimensions();
+        
+        const resizeObserver = new ResizeObserver(updateDimensions);
+        if (previewContainerRef.current) {
+            resizeObserver.observe(previewContainerRef.current);
+        }
+
+        return () => resizeObserver.disconnect();
+    }, []);
+
     const handleSave = async () => {
         try {
             if (!theme) {
@@ -154,6 +179,16 @@ const ThemeEditorPageContent = (props: { params: { action: string } }) => {
     if (notFound) {
         return <NotFoundPage />;
     }
+
+    // Рассчитываем CSS переменные для превью
+    const layoutVars = getSlideLayoutVars({
+        aspectRatio: 1.7777777777777777,
+        cardFontScale: 1,
+        renderMode: 'view',
+        containerWidth: containerDimensions.width,
+        containerHeight: containerDimensions.height,
+        useContainerScaling: true,
+    });
 
     return (
         <div
@@ -194,7 +229,7 @@ const ThemeEditorPageContent = (props: { params: { action: string } }) => {
             </div>
 
             {/* Right section with preview */}
-            <div className={styles.rightSection}>
+            <div ref={previewContainerRef} className={styles.rightSection} style={layoutVars as React.CSSProperties}>
                 <ThemePreview theme={theme!} />
             </div>
         </div>
