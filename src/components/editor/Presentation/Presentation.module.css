@@ -16,3 +16,34 @@
     background-repeat: no-repeat;
     background-attachment: fixed;
 }
+
+/* Mobile optimizations */
+@media (max-width: 1023px) {
+    .presentation {
+        padding: 1rem 0.5rem;
+        background-attachment: scroll; /* Better performance on mobile */
+        width: 100%;
+        min-height: auto;
+    }
+
+    .emptyContainer {
+        padding: 2rem 1rem;
+        text-align: center;
+    }
+
+    /* Optimize slide layout for mobile viewing */
+    .presentation > * {
+        margin-bottom: 2rem;
+    }
+
+    /* Remove fixed backgrounds on mobile for better performance */
+    .presentation {
+        background-attachment: scroll;
+    }
+
+    /* Hide editing components on mobile as safety measure */
+    .presentation :global(.slides-list-panel),
+    .presentation :global(.slide-drop-indicator) {
+        display: none !important;
+    }
+}

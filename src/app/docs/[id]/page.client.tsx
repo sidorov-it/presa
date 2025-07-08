@@ -40,14 +40,17 @@ const Header = ({
     handleViewPresentation,
     handleOpenBgModal,
     handleKeyDownCog,
+    isMobile,
 }: {
     presentationId: string;
     tiptapRefs: MutableRefObject<TipTapRefs>;
     handleViewPresentation: () => void;
     handleOpenBgModal: () => void;
     handleKeyDownCog: (e: React.KeyboardEvent<HTMLButtonElement>) => void;
+    isMobile: boolean;
 }) => {
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const [isHamburgerMenuOpen, setIsHamburgerMenuOpen] = useState(false);
     const { data: session } = useSession();
     // Token management
     const { balance: tokenBalance, loading: tokensLoading } = useTokens();
@@ -61,6 +64,55 @@ const Header = ({
     const presentationTitle = usePresentationStore(state => state.currentPresentationTitle);
     const [title, setTitle] = useState(presentationTitle);
     const [isEditingTitle, setIsEditingTitle] = useState(false);
+
+    // Get slides for mobile navigation
+    const slideIds =
+        usePresentationStore
+            .getState()
+            .presentations.find(p => p.id === presentationId)
+            ?.slides.map(slide => slide.id) || [];
+    // return presentation ? presentation.slides.map(slide => slide.id) : [];
+    // });
+    // const slideIds = usePresentationStore(state => {
+    //     const presentation = state.presentations.find(p => p.id === presentationId);
+    //     return presentation ? presentation.slides.map(slide => slide.id) : [];
+    // });
+
+    const getSlideTitle = useCallback(
+        (slideId: string) => {
+            const slide = usePresentationStore.getState().getSlide(presentationId, slideId);
+            if (!slide) return `Слайд ${slideIds.indexOf(slideId) + 1}`;
+
+            // Try to get title from first text element
+            const firstLayout = slide.layouts[0];
+            if (firstLayout && firstLayout.elements.length > 0) {
+                const firstElement = firstLayout.elements[0];
+                if (firstElement.elementTypeId === 'text' && firstElement.content) {
+                    // Extract plain text from HTML content
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = firstElement.content;
+                    const plainText = tempDiv.textContent || tempDiv.innerText || '';
+                    return (
+                        plainText.slice(0, 50) + (plainText.length > 50 ? '...' : '') ||
+                        `Слайд ${slideIds.indexOf(slideId) + 1}`
+                    );
+                }
+            }
+            return `Слайд ${slideIds.indexOf(slideId) + 1}`;
+        },
+        [presentationId, slideIds]
+    );
+
+    const handleSlideNavigation = useCallback((slideId: string) => {
+        const slideElement = document.querySelector(`[data-slide-id="${slideId}"]`);
+        if (slideElement) {
+            slideElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+            });
+        }
+        setIsHamburgerMenuOpen(false);
+    }, []);
 
     useEffect(() => {
         setTitle(presentationTitle);
@@ -93,6 +145,70 @@ const Header = ({
         }
     }, []);
 
+    // Mobile header layout
+    if (isMobile) {
+        return (
+            <header className={styles.header}>
+                <div className={styles.headerContent}>
+                    <div className={styles.mobileHeaderLayout}>
+                        <div className={styles.mobileHeaderLeft}>
+                            <Link href="/dashboard" className={styles.mobileHomeButton} aria-label="Домой">
+                                <LuHouse className={styles.homeIcon} aria-hidden="true" />
+                            </Link>
+
+                            <div className={styles.mobileTitleContainer}>
+                                <span className={styles.mobileTitle}>{title}</span>
+                            </div>
+                        </div>
+
+                        <button
+                            className={styles.hamburgerButton}
+                            onClick={() => setIsHamburgerMenuOpen(!isHamburgerMenuOpen)}
+                            aria-label="Открыть меню слайдов"
+                        >
+                            <div className={styles.hamburgerIcon}>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                {/* Mobile hamburger menu */}
+                {isHamburgerMenuOpen && (
+                    <div className={styles.hamburgerMenu}>
+                        <div className={styles.hamburgerMenuContent}>
+                            <div className={styles.hamburgerMenuHeader}>
+                                <h3 className={styles.hamburgerMenuTitle}>Слайды</h3>
+                                <button
+                                    className={styles.hamburgerMenuClose}
+                                    onClick={() => setIsHamburgerMenuOpen(false)}
+                                    aria-label="Закрыть меню"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                            <div className={styles.hamburgerMenuList}>
+                                {slideIds.map((slideId, index) => (
+                                    <button
+                                        key={slideId}
+                                        className={styles.hamburgerMenuItem}
+                                        onClick={() => handleSlideNavigation(slideId)}
+                                    >
+                                        <span className={styles.slideNumber}>{index + 1}</span>
+                                        <span className={styles.slideTitle}>{getSlideTitle(slideId)}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </header>
+        );
+    }
+
+    // Desktop header layout (existing code)
     return (
         <header className={styles.header}>
             <div className={styles.headerContent}>
@@ -245,23 +361,10 @@ export default function PresentationEditorPage() {
     const [isBgModalOpen, setIsBgModalOpen] = useState(false);
     const { status } = useSession();
 
-    const [slideLayoutVars, setSlideLayoutVars] = useState<React.CSSProperties>({});
+    // Mobile detection state
+    const [isMobile, setIsMobile] = useState(false);
 
-    useEffect(() => {
-        window.addEventListener('resize', () => {
-            // debugger;
-            const vars = getSlideLayoutVars({
-                aspectRatio: 1.7777777777777777,
-                themeFontSize: 18,
-                cardFontScale: 1,
-                renderMode: 'edit',
-            });
-            setSlideLayoutVars(vars);
-        });
-        return () => {
-            window.removeEventListener('resize', () => {});
-        };
-    }, []);
+    const [slideLayoutVars, setSlideLayoutVars] = useState<React.CSSProperties>({});
 
     // Access store values individually to prevent unnecessary re-renders
     const loadPresentation = usePresentationStore(state => state.loadPresentation);
@@ -297,6 +400,60 @@ export default function PresentationEditorPage() {
             clearCurrentPresentationMeta();
         };
     }, []);
+
+
+    // Mobile detection effect
+    useEffect(() => {
+        const checkMobile = () => {
+            console.log('checkMobile', window.innerWidth < 1024);
+            setIsMobile(window.innerWidth < 1024);
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+
+        return () => {
+            window.removeEventListener('resize', checkMobile);
+        };
+    }, []);
+
+    useEffect(() => {
+        window.addEventListener('orientationchange', () => {
+            const vars = getSlideLayoutVars({
+                aspectRatio: 1.7777777777777777,
+                themeFontSize: 18,
+                cardFontScale: 1,
+                renderMode: 'edit',
+            });
+            setSlideLayoutVars(vars);
+        });
+
+        window.addEventListener('resize', () => {
+            // debugger;
+            const vars = getSlideLayoutVars({
+                aspectRatio: 1.7777777777777777,
+                themeFontSize: 18,
+                cardFontScale: 1,
+                renderMode: 'edit',
+            });
+            setSlideLayoutVars(vars);
+        });
+        return () => {
+            window.removeEventListener('resize', () => {});
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!isLoading && currentTheme && !notFound) {
+            const vars = getSlideLayoutVars({
+                aspectRatio: 1.7777777777777777,
+                themeFontSize: 18,
+                cardFontScale: 1,
+                renderMode: 'edit',
+            });
+            setSlideLayoutVars(vars);
+        }
+    }, [isLoading, currentTheme, notFound]);
 
     useEffect(() => {
         // window.tiptapRefs = tiptapRefs.current;
@@ -422,7 +579,7 @@ export default function PresentationEditorPage() {
 
     return (
         <>
-            <ReadOnlyProvider isReadOnly={false}>
+            <ReadOnlyProvider isReadOnly={isMobile}>
                 <SavingStatusAlert />
                 <ThemeStylesApplier
                     theme={currentTheme}
@@ -438,6 +595,7 @@ export default function PresentationEditorPage() {
                             handleViewPresentation={handleViewPresentation}
                             handleOpenBgModal={handleOpenBgModal}
                             handleKeyDownCog={handleKeyDownCog}
+                            isMobile={isMobile}
                         />
                         <main className={styles.main}>
                             <Editor presentationId={id} tiptapRefs={tiptapRefs} />

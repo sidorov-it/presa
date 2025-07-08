@@ -92,8 +92,12 @@ function Presentation({ presentationId, activeSlideId, onSlideSelect, tiptapRefs
                 />
             ))}
 
-            <SlidesList presentationId={presentationId} activeSlideId={activeSlideId} onSlideSelect={onSlideSelect} />
-            <SlideDropIndicator />
+            {!isReadOnly && (
+                <>
+                    <SlidesList presentationId={presentationId} activeSlideId={activeSlideId} onSlideSelect={onSlideSelect} />
+                    <SlideDropIndicator />
+                </>
+            )}
         </div>
     );
 }

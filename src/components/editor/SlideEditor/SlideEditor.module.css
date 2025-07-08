@@ -312,10 +312,81 @@
 }
 
 @keyframes dashMove {
-    0% {
-        background-position: 0 0;
+    from {
+        stroke-dashoffset: 0;
     }
-    100% {
-        background-position: 20px 0;
+    to {
+        stroke-dashoffset: 20;
+    }
+}
+
+/* Mobile optimizations */
+@media (max-width: 1023px) {
+    .slide {
+        padding: 1em 0.5em;
+    }
+
+    /*  .slideWrapper {
+        min-width: 280px;
+        margin: 0 auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .slideContainer {
+        width: 100%;
+        min-height: calc((100vw - 2em) / 1.7777777777777777);
+        padding: 1em;
+        font-size: 0.875em;
+    }
+
+    .slideContent {
+        width: 100%;
+        overflow: visible;
+    } */
+
+    .slideContent::after {
+        display: none;
+    }
+
+    /* Hide editing-related elements on mobile */
+    .slideBorderSelected,
+    .slideBorderMenuOpen,
+    .slideButtons,
+    .standardHeightIndicator,
+    .slideDragHandle {
+        display: none !important;
+    }
+
+    /* emove hover effects and selection styling on mobile */
+    .slide:hover .slideBorder,
+    .slideSelected {
+        border-color: transparent;
+        outline: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Ensure slides are spaced properly */
+    .slide:not(:last-child) {
+        margin-bottom: 2em;
+    }
+
+    /* emove last slide extra padding on mobile */
+    .slideLast {
+        padding-bottom: 1em;
+    }
+
+    /* Optimize text and content for mobile viewing */
+    .slideContainer * {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        pointer-events: none;
+    }
+
+    /* emove AI generator overlay on mobile */
+    .aiGeneratorOverlay {
+        display: none !important;
     }
 }

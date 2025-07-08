@@ -17,3 +17,29 @@
     line-height: 1.75rem; 
     color: #6B7280; 
 }
+
+/* Mobile optimizations */
+@media (max-width: 1023px) {
+    .editorContainer {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* Ensure slides are centered and properly sized on mobile */
+    .editorContainer > div {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        /* padding: 0 1rem; */
+    }
+
+    /* Hide elements panel and slide menu on mobile */
+    .elementsPanel,
+    .slideMenu,
+    .dragDropIndicator {
+        display: none !important;
+    }
+}

@@ -366,17 +366,18 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             // Convert ratios to CSS values
             const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
             const imageHeightVw = `calc(64.5em * ${currentImageHeightRatio})`;
+            const paddingTopVw = `calc(64.5em * ${currentImageHeightRatio} + 1em)`;
 
             const remainingWidth = `${(1 - currentImageWidthRatio) * 100}%`;
             // For remaining height, we need to subtract the image height from total height
-            const remainingHeight = `calc(100% - 64.5em * ${currentImageHeightRatio})`;
+            const remainingHeight = `calc(100% - 64.5em * ${currentImageHeightRatio} - 1em)`;
 
             switch (templateType) {
                 case 'imageTop':
                     return {
                         ...baseStyle,
                         position: 'relative',
-                        paddingTop: imageHeightVw,
+                        paddingTop: paddingTopVw,
                         height: remainingHeight,
                     };
                 case 'imageLeft':
