@@ -21,6 +21,8 @@ export default function DashboardPage() {
     const { presentations, createPresentation, loadPresentationsList, deletePresentation } = usePresentationStore();
     const { setCurrentTheme, loadThemes, defaultThemes, allThemes } = useThemeStore();
     const [userPresentations, setUserPresentations] = useState<IPresentation[]>([]);
+    const [isLoadingPresentations, setIsLoadingPresentations] = useState(true);
+    const [isLoadingThemes, setIsLoadingThemes] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const [showRenameModal, setShowRenameModal] = useState(false);
@@ -36,27 +38,39 @@ export default function DashboardPage() {
     const [sortBy, setSortBy] = useState<SortOption>('updatedAt');
 
     useEffect(() => {
-        loadThemes().catch(err => {
-            console.error('Failed to load themes:', err);
-        });
+        setIsLoadingThemes(true);
+        loadThemes()
+            .catch(err => {
+                console.error('Failed to load themes:', err);
+            })
+            .finally(() => {
+                setIsLoadingThemes(false);
+            });
     }, [loadThemes]);
 
     // Fetch user's presentations from the database
     useEffect(() => {
         const loadPresentations = async () => {
             try {
-                setIsLoading(true);
+                setIsLoadingPresentations(true);
                 await loadPresentationsList();
             } catch (error) {
                 console.error('Не удалось загрузить презентации:', error);
             } finally {
-                setIsLoading(false);
+                setIsLoadingPresentations(false);
             }
         };
 
         loadPresentations();
     }, [loadPresentationsList]);
 
+    useEffect(() => {
+        if (isLoadingPresentations && isLoadingThemes) {
+            setIsLoading(true);
+        } else {
+            setIsLoading(false);
+        }
+    }, [isLoadingPresentations, isLoadingThemes]);
     // Update local state when presentations or sorting change
     useEffect(() => {
         const sorted = [...presentations].sort((a, b) => {
@@ -71,7 +85,8 @@ export default function DashboardPage() {
 
     // Handle creating an empty presentation
     const handleCreateEmptyPresentation = async () => {
-        setCurrentTheme(defaultThemes[0]);
+        const defaultTheme = defaultThemes.find(theme => theme.defaultForNewPresentations);
+        setCurrentTheme(defaultTheme);
 
         const presentationId = await createPresentation('Новая презентация');
         router.push(`/docs/${presentationId}`);
@@ -218,7 +233,7 @@ export default function DashboardPage() {
         [toggleMenu]
     );
 
-    const defaultTheme = defaultThemes[0];
+    const defaultTheme = defaultThemes.find(theme => theme.defaultForNewPresentations);
 
     return (
         <div className={styles.container}>

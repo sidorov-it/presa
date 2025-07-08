@@ -25,7 +25,8 @@ export default function SlidePreview({ presentation, theme }: SlidePreviewProps)
     // We want the slide to scale down to fit the container width
     const containerWidthPx = 300; // Approximate width of preview container
     const standardSlideWidthPx = 1032; // Standard slide width from /view
-    const previewCardFontScale = containerWidthPx / standardSlideWidthPx; // ~0.29
+    // const previewCardFontScale = containerWidthPx / standardSlideWidthPx; // ~0.29
+    const previewCardFontScale = 0.27;
 
     // Use getSlideLayoutVars but override some values for preview
     const baseLayoutVars = getSlideLayoutVars({
