@@ -4,6 +4,10 @@
     padding: 2rem 1rem;
 }
 
+.container [data-class="slide-container"] {
+    min-height: var(--card-min-height) !important;
+}
+
 .header {
     display: flex;
     flex-direction: column;

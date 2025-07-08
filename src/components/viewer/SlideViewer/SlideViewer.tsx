@@ -113,7 +113,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         // Convert ratios to CSS values
         const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
         // For height, we need to calculate based on slide width
-        // In viewer, we use --card-width CSS variable as reference
+        // In viewer, we use --card-width CSS variable as reference, but scale it properly
         const imageHeightVw = `calc(var(--card-width) * ${currentImageHeightRatio})`;
 
         switch (slide.templateType) {
@@ -126,7 +126,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                     right: 0,
                     height: imageHeightVw,
                     zIndex: 1,
-                    maxWidth: 'calc(64.5em / 1)',
+                    maxWidth: 'calc(64.5em / var(--card-font-scale, 1))',
                 };
             }
             case 'imageLeft':
@@ -170,7 +170,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
             fontFamily: 'var(--presentation-body-font)',
             fontWeight: 'var(--presentation-body-weight)',
             letterSpacing: 'var(--presentation-body-letter-spacing)',
-            textTransform: 'var(--presentation-body-capitalization)',
+            textTransform: 'var(--presentation-body-capitalization)' as any,
             minHeight: 'var(--card-height)',
         };
 
@@ -201,11 +201,11 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
 
             // Convert ratios to CSS values
             const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
-            const paddingTopVw = `calc(64.5em * ${currentImageHeightRatio} + 1em)`;
+            const paddingTopVw = `calc(64.5em * var(--card-font-scale, 1) * ${currentImageHeightRatio} + 1em)`;
 
             const remainingWidth = `${(1 - currentImageWidthRatio) * 100}%`;
             // For remaining height, we need to subtract the image height from total height
-            const remainingHeight = `calc(100% - 64.5em * ${currentImageHeightRatio} - 1em)`;
+            const remainingHeight = `calc(100% - 64.5em * var(--card-font-scale, 1) * ${currentImageHeightRatio} - 1em)`;
 
             switch (slide.templateType) {
                 case 'imageTop':
@@ -244,7 +244,12 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     let minHeight;
     let maxWidth;
 
-    if (isPreview) {
+    if (isSlidePreview) {
+        width = '100%';
+        height = 'auto';
+        minHeight = 'var(--card-min-height)';
+        maxWidth = 'none';
+    } else if (isPreview) {
         height = 'auto';
     } else if (fullPage) {
         // width = 'var(--card-width)';
@@ -282,9 +287,10 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     const slideContentStyle: React.CSSProperties = {
         // backgroundColor: fullPage ? 'transparent' : 'var(--presentation-slide-background)',
         borderRadius: fullPage ? 0 : 'var(--presentation-slide-border-radius)',
-        minHeight: fullPage ? 'var(--card-height)' : isPdfExport ? 'auto' : '130px',
-        height: fullPage ? 'auto' : undefined,
-        overflow: fullPage || isPdfExport ? 'visible' : 'auto',
+        minHeight: isSlidePreview ? 'var(--card-min-height)' : fullPage ? 'var(--card-height)' : isPdfExport ? 'auto' : '130px',
+        height: isSlidePreview || fullPage ? 'auto' : undefined,
+        overflow: isSlidePreview || fullPage || isPdfExport ? 'visible' : 'auto',
+        transform: isSlidePreview ? 'scale(0.8)' : 'none',
     };
 
     // Адаптируем класс слайда при экспорте в PDF
@@ -314,7 +320,11 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                             />
                         )}
 
-                    <div className={`${styles.slideContainer} ${localStyles.slideContainer}`} style={contentStyle}>
+                    <div
+                        className={`${styles.slideContainer} ${localStyles.slideContainer}`}
+                        style={contentStyle}
+                        data-class="slide-container"
+                    >
                         {slide.layouts.map((layout: Layout) => (
                             <LayoutViewer
                                 theme={theme}
@@ -323,6 +333,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                                 slideId={slide.id}
                                 slideBackground={slide.background?.value}
                                 primaryAccentColor={primaryAccentColor}
+                                isSlidePreview={isSlidePreview}
                             />
                         ))}
                     </div>

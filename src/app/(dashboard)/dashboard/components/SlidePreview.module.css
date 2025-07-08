@@ -3,18 +3,13 @@
   height: 100%;
   position: relative;
   overflow: hidden;
-  /* display: flex;
-  align-items: center;
-  justify-content: center; */
+  background-color: var(--color-background);
 }
 
 .scaled {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: scale(0.4);
-  width: 250%;
-  transform-origin: top left;
+  width: 100%;
+  height: auto;
+  transform-origin: top center;
 }
 
 .empty {

@@ -4,37 +4,25 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
     const presentations = await prisma.presentation.findMany({
         where: {
-            NOT: {
-                themeId: null,
+            createdAt: {
+                lte: new Date('2025-06-15'),
             },
         },
     });
+    // const themes = await prisma.theme.findMany();
 
-    // const presentationsWithThemes = presentations.filter(p => p.themeId);
+    // const themesIds = themes.map(t => t.id);
 
-    const usedThemes = presentations.map(presentation => presentation.themeId).filter(Boolean);
+    // const presentationsWithoutThemes = presentations.filter(p => p.themeId && !themesIds.includes(p.themeId));
 
-    const themes = await prisma.theme.findMany({
+    await prisma.presentation.deleteMany({
         where: {
-            id: { in: usedThemes },
-            isDefault: true,
+            createdAt: {
+                lte: new Date('2025-06-15'),
+            },
         },
+
     });
 
-    const mapping = presentations.reduce((acc, presentation) => {
-        const usedTheme = themes.find(t => t.id === presentation.themeId);
-
-        if (usedTheme) {
-            acc[presentation.id] = {
-                presentationId: presentation.id,
-                presentationName: presentation.title,
-                themeId: usedTheme.id,
-                themeName: usedTheme.name,
-                newThemeId: usedTheme?.name,
-            };
-        }
-        return acc;
-    }, {});
-
-    return NextResponse.json(mapping);
+    return NextResponse.json(presentations);
 }
