@@ -5,7 +5,7 @@
 
 import { useEffect, useState, useCallback, useMemo, useRef, MutableRefObject } from 'react';
 import { useParams } from 'next/navigation';
-import { usePresentationStore } from '@/store/presentationStore';
+import { PresentationState, usePresentationStore } from '@/store/presentationStore';
 import { useSession, signOut } from 'next-auth/react';
 import Editor from '@/components/editor/Editor/Editor';
 import { TipTapRefs } from '@/types';
@@ -33,6 +33,7 @@ import { SimplePdfExportButton } from '@/components/export';
 import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
 import { LuEye, LuSettings, LuUser, LuHouse } from 'react-icons/lu';
 import Popover from '@/components/ui/Popover';
+import { useShallow } from 'zustand/react/shallow';
 
 const Header = ({
     presentationId,
@@ -66,17 +67,12 @@ const Header = ({
     const [isEditingTitle, setIsEditingTitle] = useState(false);
 
     // Get slides for mobile navigation
-    const slideIds =
-        usePresentationStore
-            .getState()
-            .presentations.find(p => p.id === presentationId)
-            ?.slides.map(slide => slide.id) || [];
-    // return presentation ? presentation.slides.map(slide => slide.id) : [];
-    // });
-    // const slideIds = usePresentationStore(state => {
-    //     const presentation = state.presentations.find(p => p.id === presentationId);
-    //     return presentation ? presentation.slides.map(slide => slide.id) : [];
-    // });
+    const slideIds = usePresentationStore(
+        useShallow((state: PresentationState) => {
+            const presentation = state.presentations.find(p => p.id === presentationId);
+            return presentation ? presentation.slides.map(slide => slide.id) : [];
+        })
+    );
 
     const getSlideTitle = useCallback(
         (slideId: string) => {
@@ -151,14 +147,12 @@ const Header = ({
             <header className={styles.header}>
                 <div className={styles.headerContent}>
                     <div className={styles.mobileHeaderLayout}>
-                        <div className={styles.mobileHeaderLeft}>
-                            <Link href="/dashboard" className={styles.mobileHomeButton} aria-label="Домой">
-                                <LuHouse className={styles.homeIcon} aria-hidden="true" />
-                            </Link>
+                        <Link href="/dashboard" className={styles.mobileHomeButton} aria-label="Домой">
+                            <LuHouse className={styles.homeIcon} aria-hidden="true" />
+                        </Link>
 
-                            <div className={styles.mobileTitleContainer}>
-                                <span className={styles.mobileTitle}>{title}</span>
-                            </div>
+                        <div className={styles.mobileTitleContainer}>
+                            <span className={styles.mobileTitle}>{title}</span>
                         </div>
 
                         <button
@@ -400,7 +394,6 @@ export default function PresentationEditorPage() {
             clearCurrentPresentationMeta();
         };
     }, []);
-
 
     // Mobile detection effect
     useEffect(() => {
