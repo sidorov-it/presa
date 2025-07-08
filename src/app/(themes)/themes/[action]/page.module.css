@@ -17,7 +17,7 @@
 }
 
 .leftSection {
-    width: 48rem;
+    width: 40rem;
     height: 100vh;
     background: white;
     color: var(--chakra-colors-gray-900);
@@ -49,7 +49,7 @@
     position: fixed;
     bottom: 0;
     left: 0;
-    width: 48rem;
+    width: 40rem;
     background: white;
     border-top: 1px solid #e5e7eb;
     padding: 16px 24px;

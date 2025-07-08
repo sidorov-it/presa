@@ -87,8 +87,8 @@ const LayoutViewer = ({ layout, slideId, slideBackground, primaryAccentColor, th
                 style={{
                     display: 'grid',
                     gap: layout.isTable ? '0' : '1em',
-                    marginTop: '1.125em',
-                    marginBottom: '1.125em',
+                    // marginTop: '1.125em',
+                    // marginBottom: '1.125em',
                     gridTemplateColumns: getGridTemplateColumns(),
                     gridTemplateAreas: gridTemplateAreas,
                     // fontSize: '18px',

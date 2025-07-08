@@ -89,6 +89,9 @@ export default function TextBoxesView({
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-expect-error
                     style['--presentation-heading-color'] = contrastColor;
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
+                    style['--presentation-block-text-color-subtle'] = contrastColor;
                 }
 
                 const color = customColors[index % customColors.length];

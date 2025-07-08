@@ -201,11 +201,11 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
 
             // Convert ratios to CSS values
             const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
-            const imageHeightVw = `calc(var(--card-width) * ${currentImageHeightRatio})`;
+            const paddingTopVw = `calc(64.5em * ${currentImageHeightRatio} + 1em)`;
 
             const remainingWidth = `${(1 - currentImageWidthRatio) * 100}%`;
             // For remaining height, we need to subtract the image height from total height
-            const remainingHeight = `calc(100% - var(--card-width) * ${currentImageHeightRatio})`;
+            const remainingHeight = `calc(100% - 64.5em * ${currentImageHeightRatio} - 1em)`;
 
             switch (slide.templateType) {
                 case 'imageTop':
@@ -213,7 +213,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                         ...baseStyle,
                         position: 'relative',
                         zIndex: 2,
-                        paddingTop: imageHeightVw,
+                        paddingTop: paddingTopVw,
                         height: remainingHeight,
                     };
                 case 'imageLeft':
@@ -282,7 +282,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     const slideContentStyle: React.CSSProperties = {
         // backgroundColor: fullPage ? 'transparent' : 'var(--presentation-slide-background)',
         borderRadius: fullPage ? 0 : 'var(--presentation-slide-border-radius)',
-        minHeight: fullPage ? 'var(--card-height)' : isPdfExport ? 'auto' : undefined,
+        minHeight: fullPage ? 'var(--card-height)' : isPdfExport ? 'auto' : '130px',
         height: fullPage ? 'auto' : undefined,
         overflow: fullPage || isPdfExport ? 'visible' : 'auto',
     };

@@ -58,7 +58,7 @@ export default function TextBoxes({
             } else if (state.currentTheme?.design?.blocks?.blockFillColorsType === 'primary') {
                 const textColor = getContrastingTextColor(state.currentTheme?.colors.primaryAccent);
                 return [textColor];
-            };
+            }
             return [];
         })
     );
@@ -261,6 +261,10 @@ export default function TextBoxes({
                     style['--presentation-text-color'] = contrastColor;
                     // @ts-ignore
                     style['--presentation-heading-color'] = contrastColor;
+                    // @ts-ignore
+                    style['--presentation-block-background-subtle'] = backgroundColor;
+                    // @ts-ignore
+                    style['--presentation-block-text-color-subtle'] = contrastColor;
                 }
 
                 const color = customColors[index % customColors.length];
@@ -269,12 +273,17 @@ export default function TextBoxes({
                         key={itemId}
                         className={styles.itemContainer}
                         data-smart-layout-item-id={itemId}
-                        style={{
-                            width: `calc(${elementWidth} - 1em)`,
-                            borderColor: 'red',
-                            '--presentation-heading-color': color,
-                            '--presentation-text-color': color,
-                        }}
+                        style={
+                            {
+                                width: `calc(${elementWidth} - 1em)`,
+                                borderColor: 'red',
+                                '--presentation-heading-color': color,
+                                '--presentation-text-color': color,
+                            } as React.CSSProperties & {
+                                '--presentation-heading-color': string;
+                                '--presentation-text-color': string;
+                            }
+                        }
                         onDragOver={e => handleDragOver(e, itemId)}
                         onDragLeave={handleDragLeave}
                         onDrop={e => handleDrop(e, itemId)}

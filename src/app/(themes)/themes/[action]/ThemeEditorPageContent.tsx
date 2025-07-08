@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ThemeEditor } from '@/components/theme/ThemeEditor';
 import { ThemePreview } from '@/components/theme/ThemePreview';
@@ -18,7 +18,6 @@ import NotFoundPage from '@/components/NotFoundPage/NotFoundPage';
 import createNewTheme from '@/utils/theme/createNewTheme';
 
 const ThemeEditorPageContent = (props: { params: { action: string } }) => {
-    console.log('props', props);
     const params = props.params;
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -27,10 +26,12 @@ const ThemeEditorPageContent = (props: { params: { action: string } }) => {
     const isNewTheme = params.action === 'new';
     const existingTheme = !isNewTheme ? allThemes.find(t => t.id === params.action) : undefined;
 
-    const [theme, setTheme] = useState<Theme | undefined>(null);
+    const [theme, setTheme] = useState<Theme | undefined>();
 
     const [isLoading, setIsLoading] = useState(params.action !== 'new' && !existingTheme);
     const [notFound, setNotFound] = useState(false);
+
+    const [fontSize, setFontSize] = useState('1em');
 
     useEffect(() => {
         loadThemes().catch(err => {
@@ -98,6 +99,26 @@ const ThemeEditorPageContent = (props: { params: { action: string } }) => {
             });
     }, [loadTheme, params.action, existingTheme]);
 
+    const calculateFontSize = useCallback(() => {
+        return `calc(0.875 * var(--card-font-scale, 1) * var(--editor-font-size, 1rem) * ${(window.innerWidth - 40 * 16) / window.innerWidth} * var(--viewport-scale-factor, 1.125))`;
+    }, []);
+
+    useEffect(() => {
+        if (theme && !notFound && !isLoading) {
+            setFontSize(calculateFontSize());
+        }
+    }, [theme, notFound, isLoading, calculateFontSize]);
+
+    useEffect(() => {
+        window.addEventListener('resize', () => {
+            setFontSize(calculateFontSize());
+        });
+        calculateFontSize();
+        return () => {
+            window.removeEventListener('resize', () => {});
+        };
+    }, []);
+
     const handleSave = async () => {
         try {
             if (!theme) {
@@ -135,7 +156,14 @@ const ThemeEditorPageContent = (props: { params: { action: string } }) => {
     }
 
     return (
-        <div className={styles.container}>
+        <div
+            className={styles.container}
+            style={
+                {
+                    '--font-size': fontSize,
+                } as React.CSSProperties & { '--font-size': string }
+            }
+        >
             {/* Left section with editor */}
             <div className={styles.leftSection}>
                 <div className={styles.leftSectionContent}>

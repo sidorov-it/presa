@@ -221,7 +221,7 @@ const ElementViewer = ({
         <div
             style={{
                 // ...getElementStyles(),
-                margin: isTable ? '0.4em 0 0.3em' : '0.9em 0',
+                margin: isTable ? '0.4em 0 0.3em' : '0',
                 zIndex: 0,
                 transform: element.transform || 'none',
                 fontSize: 'var(--font-size)',

@@ -80,7 +80,7 @@
 }
 
 .slide {
-    padding: 0 3em;
+    padding: 0;
     /* max-width: calc(100vh / 1.7777777777777777); */
 }
 
@@ -99,6 +99,8 @@
     margin-left: 20px;
     margin-right: 20px; */
     border-radius: var(--presentation-slide-border-radius);
+    min-height: 130px;
+
 }
 
 .slideWrapper::before {

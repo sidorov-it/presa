@@ -64,6 +64,7 @@ export default function BoxComponent({
             className={styles.box}
             style={
                 {
+                    color: textColor,
                     '--presentation-text-color': textColor,
                     '--presentation-block-background': customBackgroundColor || blockBgColor || '#FFFFFF',
                     '--presentation-block-background-custom-type': 'primary',
