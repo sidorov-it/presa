@@ -1,13 +1,76 @@
 
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.downloadButton {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+}
+
+.downloadButton:hover:not(:disabled) {
+    background-color: var(--color-surface);
+    border-color: var(--color-primary);
+}
+
+.downloadButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 .downloadIcon {
-    width: 1.5rem;
-    height: 1.5rem;
-    color: var(--color-text-light);
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--color-text);
 }
 
 .spinner {
-    composes: downloadIcon;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--color-primary);
     animation: spin 1s linear infinite;
+}
+
+.progressContainer {
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--color-border);
+    border-radius: 0 0 0.375rem 0.375rem;
+    overflow: hidden;
+}
+
+.progressBar {
+    height: 100%;
+    background-color: var(--color-primary);
+    transition: width 0.3s ease;
+    border-radius: inherit;
+}
+
+.exportingText {
+    font-size: 0.75rem;
+    color: var(--color-text-light);
+    margin-top: 0.25rem;
+    text-align: center;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 @keyframes spin {

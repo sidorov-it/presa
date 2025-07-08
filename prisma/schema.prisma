@@ -103,6 +103,7 @@ model User {
   tokens            UserTokens?
   tokenPurchases    TokenPurchase[]
   tokenTransactions TokenTransaction[]
+  pdfGenerationTasks PdfGenerationTask[]
 }
 
 model Presentation {
@@ -123,6 +124,7 @@ model Presentation {
   updatedAt          DateTime            @updatedAt
   backgroundSettings BackgroundSettings?
   llmRequests        LLMRequestHistory[]
+  pdfGenerationTasks PdfGenerationTask[]
 }
 
 type ThemeColors {
@@ -327,4 +329,43 @@ enum TransactionType {
   bonus // Free tokens given
   refund // Tokens refunded
   admin_adjustment // Manual adjustment by admin
+}
+
+enum PdfGenerationStatus {
+  pending
+  in_progress
+  completed
+  failed
+}
+
+model PdfGenerationTask {
+  id             String              @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String              @db.ObjectId
+  user           User                @relation(fields: [userId], references: [id])
+  presentationId String              @db.ObjectId
+  presentation   Presentation        @relation(fields: [presentationId], references: [id])
+  
+  // Task details
+  status         PdfGenerationStatus @default(pending)
+  slideIndex     Int?                // null for all slides, number for specific slide
+  
+  // Progress tracking
+  totalSlides    Int                 @default(0)
+  completedSlides Int                @default(0)
+  
+  // File details
+  fileName       String?             // Generated filename
+  filePath       String?             // Path to generated file in public folder
+  fileSize       Int?                // File size in bytes
+  
+  // Error handling
+  errorMessage   String?             // Error message if failed
+  
+  // Timestamps
+  createdAt      DateTime            @default(now())
+  startedAt      DateTime?           // When processing started
+  completedAt    DateTime?           // When processing completed
+  
+  // Metadata
+  metadata       Json?               // Additional task data
 }

@@ -13,3 +13,4 @@ debug-pdfs/
 logs/
 .secrets
 test/recordings/test.json
+docs
