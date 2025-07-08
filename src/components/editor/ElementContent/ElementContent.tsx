@@ -244,6 +244,10 @@ export const ElementContent = ({
                         id: elementId,
                     };
 
+                    const content = (elementData as EditorElement).content
+                        ? (elementData as EditorElement).content
+                        : '';
+
                     usePresentationStore.getState().updateElement({
                         presentationId,
                         slideId,
@@ -251,6 +255,7 @@ export const ElementContent = ({
                         elementId,
                         data: {
                             ...newElementWithCell,
+                            content,
                         },
                     });
 

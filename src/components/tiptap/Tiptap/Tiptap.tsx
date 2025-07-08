@@ -126,7 +126,7 @@ const Tiptap = ({
             },
         },
         editable: !isReadOnly,
-        immediatelyRender: true,
+        immediatelyRender: typeof window !== 'undefined',
         onContentError: error => {
             console.log('contentError', error);
             return false;

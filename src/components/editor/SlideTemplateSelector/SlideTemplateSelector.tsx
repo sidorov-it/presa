@@ -8,6 +8,7 @@ import { useHistoryStore } from '@/store/historyStore';
 import { FiLoader } from 'react-icons/fi';
 import { useThemeStore } from '@/store/themeStore';
 import { useShallow } from 'zustand/react/shallow';
+import getContrastTextColor from '@/utils/getContrastTextColor';
 
 type SlideTemplateType = (typeof SLIDE_TEMPLATES)[number]['value'];
 type ContentAlignment = 'top' | 'center' | 'bottom';
@@ -103,20 +104,43 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
         (color: string) => {
             // Only update background if not using image background
             if (templateType !== 'imageBackground') {
+                const elements = usePresentationStore.getState().getSlideElements(presentationId, slideId);
+
+                const textColor = getContrastTextColor(color);
+                useHistoryStore.getState().beginTransaction(presentationId, 'change text color');
+
+                // Update existing elements
+                elements.forEach(element => {
+                    if (tiptapRefs.current?.editors[element.id]) {
+                        tiptapRefs.current.editors[element.id]?.editor
+                            .chain()
+                            .setMeta('transaction', true)
+                            .focus(null, { scrollIntoView: false })
+                            .selectAll()
+                            .setColor(textColor)
+                            .blur()
+                            .run();
+                    }
+                });
+
+                setTextColor(textColor);
+
                 updateSlide(presentationId, slideId, {
                     background: {
                         type: 'color',
                         value: color,
                     },
+                    textColor: textColor,
                 });
+
+                useHistoryStore.getState().commitTransaction(presentationId);
             }
         },
-        [templateType, presentationId, slideId, updateSlide]
+        [templateType, presentationId, slideId, updateSlide, tiptapRefs]
     );
 
     const handleTextColorChange = useCallback(
         (color: string) => {
-            console.log('handleTextColorChange', color);
             const elements = usePresentationStore.getState().getSlideElements(presentationId, slideId);
 
             useHistoryStore.getState().beginTransaction(presentationId, 'change text color');

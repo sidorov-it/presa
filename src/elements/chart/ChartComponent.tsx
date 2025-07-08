@@ -36,14 +36,15 @@ import styles from './Chart.module.css';
 import { Theme } from '@/types/theme';
 import { getChartColors, getChartAxisColors } from '@/utils/colors';
 import { LayoutType } from 'recharts/types/util/types';
+import { usePresentationStore } from '@/store/presentationStore';
 // import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 interface ChartComponentProps {
     element: ChartElement;
     className?: string;
-    presentationId?: string;
-    slideId?: string;
-    layoutId?: string;
+    presentationId: string;
+    slideId: string;
+    layoutId: string;
     hasMultipleCells?: boolean;
     inSettings?: boolean;
     theme: Theme | null | undefined;
@@ -115,6 +116,14 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
     const [legendPosition, setLegendPosition] = useState<'left' | 'right' | 'top' | 'bottom'>(
         element.legendPosition || 'right'
     );
+
+    // const currentSlideCustomBackground = usePresentationStore(state => {
+    //     if (state.getSlide(presentationId, slideId)?.background?.type === 'color') {
+    //         return state.getSlide(presentationId, slideId)?.background?.value;
+    //     }
+    //     return null;
+    // });
+
     // const [colorScheme, setColorScheme] = useState('default');
     const [horizontalAlignment, setHorizontalAlignment] = useState<'left' | 'center' | 'right'>('center');
 
