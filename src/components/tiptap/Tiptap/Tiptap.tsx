@@ -15,8 +15,46 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { EditorElement } from '@/types';
 import { MenuItem } from '@/types/templates';
 import getHeadingLevel from '@/utils/getHeadingLevel';
-import { NORMAL_TEXT_LEVEL } from '@/constants/consts';
+import {
+    NORMAL_TEXT_LEVEL,
+    SMALL_TEXT_LEVEL,
+    BIG_TEXT_LEVEL,
+    HEADING_4_LEVEL,
+    HEADING_3_LEVEL,
+    HEADING_2_LEVEL,
+    HEADING_1_LEVEL,
+    TITLE_LEVEL,
+    BIG_HEADING_LEVEL,
+    VERY_BIG_HEADING_LEVEL,
+} from '@/constants/consts';
 import getExtensions from './getExtensions';
+
+// Helper function to get CSS classes from level for editor
+const getEditorClassFromLevel = (level: number): string => {
+    switch (level) {
+        case SMALL_TEXT_LEVEL:
+            return 'body-text small-text';
+        case BIG_TEXT_LEVEL:
+            return 'body-text big-text';
+        case HEADING_4_LEVEL:
+            return 'heading-text heading-4';
+        case HEADING_3_LEVEL:
+            return 'heading-text heading-3';
+        case HEADING_2_LEVEL:
+            return 'heading-text heading-2';
+        case HEADING_1_LEVEL:
+            return 'heading-text heading-1';
+        case TITLE_LEVEL:
+            return 'heading-text title-text';
+        case BIG_HEADING_LEVEL:
+            return 'heading-text big-heading';
+        case VERY_BIG_HEADING_LEVEL:
+            return 'heading-text very-big-heading';
+        case NORMAL_TEXT_LEVEL:
+        default:
+            return 'body-text normal-text';
+    }
+};
 
 // Определяем типы пропсов
 interface TiptapProps {
@@ -121,7 +159,7 @@ const Tiptap = ({
         content: initialContent,
         editorProps: {
             attributes: {
-                class: `${styles.editor} custom-tiptap-editor no-dropcursor not-prose`,
+                class: `${styles.editor} tiptap ProseMirror custom-tiptap-editor no-dropcursor not-prose`,
                 'data-is-in-table': String(isInTable),
             },
         },
@@ -137,20 +175,47 @@ const Tiptap = ({
         onFocus: () => {
             useEditorStore.getState().setActiveEditor(editor, elementId);
 
-            // Если редактор пустой и нет сохраненных стилей, устанавливаем дефолтные
+            // Apply stored styles when focusing empty editor
             if (editor?.isEmpty) {
                 const { level, color, bold, italic, underline, strike } = lastStyleRef.current;
 
-                if (level === NORMAL_TEXT_LEVEL && !color && !bold && !italic && !underline && !strike) {
-                    setTimeout(() => {
-                        if (editor && editor.isEmpty) {
-                            const chain = editor.chain();
-                            chain.setMark('textStyle', { class: 'body-text normal-text', fontSize: null });
-                            applyingStoredMarksRef.current = true;
-                            chain.run();
-                        }
-                    }, 0);
+                // Sync with CustomPlaceholderExtension storage
+                if (editor.extensionManager.extensions.find(ext => ext.name === 'customPlaceholder')) {
+                    editor.commands.updatePlaceholderStyle({
+                        level,
+                        color,
+                        bold,
+                        italic,
+                        underline,
+                        strike,
+                    });
                 }
+
+                // Always apply stored styles to ensure new text inherits them
+                setTimeout(() => {
+                    if (editor && editor.isEmpty) {
+                        const chain = editor.chain();
+
+                        // Set font size (including normal level)
+                        chain.setFontSize(level);
+
+                        if (color) chain.setColor(color);
+                        if (bold) chain.setBold();
+                        if (italic) chain.setItalic();
+                        if (underline) chain.setUnderline();
+                        if (strike) chain.setStrike();
+
+                        applyingStoredMarksRef.current = true;
+                        chain.run();
+
+                        // Force focus to ensure cursor is positioned correctly
+                        setTimeout(() => {
+                            if (editor && !editor.isFocused) {
+                                editor.commands.focus();
+                            }
+                        }, 10);
+                    }
+                }, 0);
             }
         },
         onUpdate: ({ editor, transaction }) => {
@@ -201,9 +266,37 @@ const Tiptap = ({
         }
     }, [editor, initialContent]);
 
-    // Preserve text styles when content is cleared
+    // Initialize CustomPlaceholderExtension with default styles
     useEffect(() => {
         if (!editor) return;
+
+        // Initialize placeholder extension with default styles on editor creation
+        if (editor.extensionManager.extensions.find(ext => ext.name === 'customPlaceholder')) {
+            editor.commands.updatePlaceholderStyle(lastStyleRef.current);
+        }
+    }, [editor]);
+
+    // Update editor classes based on stored styles when empty
+    useEffect(() => {
+        if (!editor) return;
+
+        const updateEditorClasses = () => {
+            const editorElement = editor.view.dom as HTMLElement;
+            if (!editorElement) return;
+
+            const baseClasses = `${styles.editor} tiptap ProseMirror custom-tiptap-editor no-dropcursor not-prose`;
+
+            if (editor.isEmpty) {
+                const { level } = lastStyleRef.current;
+                const sizeClasses = getEditorClassFromLevel(level);
+                editorElement.className = `${baseClasses} ${sizeClasses}`;
+            } else {
+                editorElement.className = baseClasses;
+            }
+        };
+
+        // Update classes immediately
+        updateEditorClasses();
 
         const handleUpdate = () => {
             if (applyingStoredMarksRef.current) {
@@ -214,17 +307,126 @@ const Tiptap = ({
             const { empty } = editor.state.selection;
 
             if (editor.isEmpty) {
+                // Update editor classes for placeholder styling
+                updateEditorClasses();
+
+                // Update placeholder with current stored styles
                 const { level, color, bold, italic, underline, strike } = lastStyleRef.current;
 
-                // Если нет сохраненных стилей, устанавливаем дефолтные
-                if (level === NORMAL_TEXT_LEVEL && !color && !bold && !italic && !underline && !strike) {
+                // Update the custom placeholder extension with stored styles
+                if (editor.extensionManager.extensions.find(ext => ext.name === 'customPlaceholder')) {
+                    editor.commands.updatePlaceholderStyle({
+                        level,
+                        color,
+                        bold,
+                        italic,
+                        underline,
+                        strike,
+                    });
+                }
+
+                // Apply stored marks to empty editor so new text inherits them
+                if (level !== undefined || color || bold || italic || underline || strike) {
+                    // Use setTimeout to ensure the editor is ready for mark application
+                    setTimeout(() => {
+                        if (editor && editor.isEmpty) {
+                            const chain = editor.chain();
+
+                            // Always set font size, even if it's normal level
+                            chain.setFontSize(level);
+
+                            if (color) chain.setColor(color);
+                            if (bold) chain.setBold();
+                            if (italic) chain.setItalic();
+                            if (underline) chain.setUnderline();
+                            if (strike) chain.setStrike();
+
+                            applyingStoredMarksRef.current = true;
+                            chain.run();
+                        }
+                    }, 0);
+                }
+            } else {
+                // Reset editor classes when not empty
+                updateEditorClasses();
+                
+                if (empty) {
+                    // Store current styles when cursor is positioned but editor has content
+                    const currentLevel = getHeadingLevel(editor);
+                    const currentColor = editor.getAttributes('textStyle').color || null;
+                    const currentBold = editor.isActive('bold');
+                    const currentItalic = editor.isActive('italic');
+                    const currentUnderline = editor.isActive('underline');
+                    const currentStrike = editor.isActive('strike');
+
+                    const newStyles = {
+                        level: currentLevel,
+                        color: currentColor,
+                        bold: currentBold,
+                        italic: currentItalic,
+                        underline: currentUnderline,
+                        strike: currentStrike,
+                    };
+
+                    lastStyleRef.current = newStyles;
+
+                    // Sync with CustomPlaceholderExtension storage
+                    if (editor.extensionManager.extensions.find(ext => ext.name === 'customPlaceholder')) {
+                        editor.commands.updatePlaceholderStyle(newStyles);
+                    }
+                }
+            }
+        };
+
+        const handleSelectionUpdate = () => {
+            // Update stored styles when selection changes (but not when applying stored marks)
+            if (!applyingStoredMarksRef.current && !editor.isEmpty) {
+                const { empty } = editor.state.selection;
+                if (empty) {
+                    const currentLevel = getHeadingLevel(editor);
+                    const currentColor = editor.getAttributes('textStyle').color || null;
+                    const currentBold = editor.isActive('bold');
+                    const currentItalic = editor.isActive('italic');
+                    const currentUnderline = editor.isActive('underline');
+                    const currentStrike = editor.isActive('strike');
+
+                    const newStyles = {
+                        level: currentLevel,
+                        color: currentColor,
+                        bold: currentBold,
+                        italic: currentItalic,
+                        underline: currentUnderline,
+                        strike: currentStrike,
+                    };
+
+                    lastStyleRef.current = newStyles;
+
+                    // Sync with CustomPlaceholderExtension storage
+                    if (editor.extensionManager.extensions.find(ext => ext.name === 'customPlaceholder')) {
+                        editor.commands.updatePlaceholderStyle(newStyles);
+                    }
+                }
+            }
+        };
+
+        const handleBeforeInput = () => {
+            // Apply stored styles right before user starts typing in empty editor
+            if (editor.isEmpty && !applyingStoredMarksRef.current) {
+                // Clear parent element classes immediately to prevent doubling with child span classes
+                const editorElement = editor.view.dom as HTMLElement;
+                if (editorElement) {
+                    const baseClasses = `${styles.editor} tiptap ProseMirror custom-tiptap-editor no-dropcursor not-prose`;
+                    editorElement.className = baseClasses;
+                }
+
+                const { level, color, bold, italic, underline, strike } = lastStyleRef.current;
+
+                if (level !== undefined || color || bold || italic || underline || strike) {
                     const chain = editor.chain();
-                    chain.setMark('textStyle', { class: 'body-text normal-text', fontSize: null });
-                    applyingStoredMarksRef.current = true;
-                    chain.run();
-                } else if (level !== undefined || color || bold || italic || underline || strike) {
-                    const chain = editor.chain();
-                    if (level !== undefined && level !== null) chain.setFontSize(level);
+
+                    // Set font size first
+                    chain.setFontSize(level);
+
                     if (color) chain.setColor(color);
                     if (bold) chain.setBold();
                     if (italic) chain.setItalic();
@@ -233,22 +435,26 @@ const Tiptap = ({
 
                     applyingStoredMarksRef.current = true;
                     chain.run();
+
+                    // Reset the flag after a short delay
+                    setTimeout(() => {
+                        applyingStoredMarksRef.current = false;
+                    }, 50);
                 }
-            } else if (empty) {
-                lastStyleRef.current = {
-                    level: getHeadingLevel(editor),
-                    color: editor.getAttributes('textStyle').color || null,
-                    bold: editor.isActive('bold'),
-                    italic: editor.isActive('italic'),
-                    underline: editor.isActive('underline'),
-                    strike: editor.isActive('strike'),
-                };
             }
         };
 
         editor.on('update', handleUpdate);
+        editor.on('selectionUpdate', handleSelectionUpdate);
+
+        // Add DOM event listener for beforeinput to catch typing events
+        const editorElement = editor.view.dom;
+        editorElement.addEventListener('beforeinput', handleBeforeInput);
+
         return () => {
             editor.off('update', handleUpdate);
+            editor.off('selectionUpdate', handleSelectionUpdate);
+            editorElement.removeEventListener('beforeinput', handleBeforeInput);
         };
     }, [editor]);
 

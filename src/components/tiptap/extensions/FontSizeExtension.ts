@@ -37,6 +37,10 @@ declare module '@tiptap/core' {
              * Unset the font size
              */
             unsetFontSize: () => ReturnType;
+            /**
+             * Get the last used font level
+             */
+            getLastFontLevel: () => ReturnType;
         };
     }
 }
@@ -90,6 +94,12 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
     addOptions() {
         return {
             types: ['textStyle'],
+        };
+    },
+
+    addStorage() {
+        return {
+            lastLevel: NORMAL_TEXT_LEVEL,
         };
     },
 
@@ -196,6 +206,9 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
             setFontSize:
                 (fontLevel: number) =>
                     ({ commands }) => {
+                        // Store the last used font level
+                        this.storage.lastLevel = fontLevel;
+
                         const fontSizeInfo = fontSizeMapping.find(mapping => {
                             switch (fontLevel) {
                                 case SMALL_TEXT_LEVEL:
@@ -237,6 +250,9 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                             fontSize: null,
                         });
                     },
+            getLastFontLevel: () => () => {
+                return this.storage.lastLevel || NORMAL_TEXT_LEVEL;
+            },
         };
     },
 });

@@ -689,6 +689,39 @@ details.toggle-wrapper>div {
         line-height: 2.25em !important; */
 }
 
+/* Custom placeholder styles for dynamically styled placeholders */
+.placeholder-text {
+    pointer-events: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    max-width: 100%;
+    line-height: inherit;
+    font-family: inherit;
+    letter-spacing: inherit;
+    font-size: inherit;
+    /* Ensure single line with ellipsis */
+    display: block;
+}
+
+/* Ensure placeholder inherits theme font properties */
+.placeholder-text.body-text {
+    font-family: var(--presentation-body-font, inherit);
+    font-weight: var(--presentation-body-weight, inherit);
+    line-height: var(--presentation-body-line-height, inherit);
+    letter-spacing: var(--presentation-body-letter-spacing, inherit);
+    text-transform: var(--presentation-body-capitalization, inherit);
+}
+
+.placeholder-text.heading-text {
+    font-family: var(--presentation-heading-font, inherit);
+    font-weight: var(--presentation-heading-weight, inherit);
+    line-height: var(--presentation-heading-line-height, inherit);
+    letter-spacing: var(--presentation-heading-letter-spacing, inherit);
+    text-transform: var(--presentation-heading-capitalization, inherit);
+}
+
 .ProseMirror:focus {
     outline: none;
 }
@@ -1023,25 +1056,25 @@ button[data-type="button"]:hover {
     line-height: var(--line-height-body);
 }
 
-.tiptap.ProseMirror .heading-1 {
+.heading-1 {
     font-size: 2.5em;
     line-height: var(--line-height-heading);
     font-weight: var(--heading-font-weight);
 }
 
-.tiptap.ProseMirror .heading-2 {
+.heading-2 {
     font-size: 2em;
     line-height: var(--line-height-heading);
     font-weight: var(--heading-font-weight);
 }
 
-.tiptap.ProseMirror .heading-3 {
+.heading-3 {
     font-size: 1.5em;
     line-height: var(--line-height-heading);
     font-weight: var(--heading-font-weight);
 }
 
-.tiptap.ProseMirror .heading-4 {
+.heading-4 {
     font-size: 1.25em;
     line-height: var(--line-height-heading);
     font-weight: var(--heading-font-weight);
@@ -1054,6 +1087,7 @@ button[data-type="button"]:hover {
 .body-text {
     line-height: var(--presentation-body-line-height);
     color: var(--presentation-text-color);
+    caret-color: var(--presentation-text-color);
 }
 
 /* --presentation-heading-capitaliza    tion
@@ -1073,13 +1107,18 @@ none
 
 --presentation-heading-weight */
 
+*:focus-visible {
+    outline: none;
+}
+
 .heading-text {
     line-height: var(--presentation-heading-line-height) !important;
-    margin-top: 0.375em !important;
-    margin-bottom: 0.375em !important;
+    /* margin-top: 0.375em !important;
+    margin-bottom: 0.375em !important; */
     font-weight: var(--presentation-heading-weight) !important;
     text-transform: var(--presentation-heading-capitalization) !important;
     color: var(--presentation-heading-color);
+    caret-color: var(--presentation-heading-color);
     font-family: var(--presentation-heading-font) !important;
     letter-spacing: var(--presentation-heading-letter-spacing) !important;
 }

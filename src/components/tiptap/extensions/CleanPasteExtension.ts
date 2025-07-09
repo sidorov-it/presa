@@ -89,7 +89,7 @@ export const CleanPasteExtension = Extension.create<{
 }>({
     name: 'cleanPaste',
     addProseMirrorPlugins() {
-        const editor = this.options.editor;
+        const editor = this.editor;
         return [
             new Plugin({
                 props: {
@@ -98,12 +98,32 @@ export const CleanPasteExtension = Extension.create<{
                         if (html) {
                             console.log('Original HTML:', html);
                             const doc = new DOMParser().parseFromString(html, 'text/html');
+
+                            const wrapper = doc.body.querySelector('[data-pm-slice]');
+
+                            if (wrapper) {
+                                const parent = wrapper.parentNode as HTMLElement;
+
+                                // Переносим всех детей элемента к родителю, перед самим элементом
+                                while (wrapper.firstChild) {
+                                    parent.insertBefore(wrapper.firstChild, wrapper);
+                                }
+
+                                // Удаляем сам элемент
+                                parent.removeChild(wrapper);
+                            }
+
                             sanitizeNode(doc.body);
+
                             const cleanHtml = doc.body.innerHTML;
                             console.log('Sanitized HTML:', cleanHtml);
                             if (editor && typeof editor.commands?.insertContent === 'function') {
                                 console.log('Using editor.commands.insertContent');
-                                editor.commands.insertContent(cleanHtml);
+                                if (editor.isEmpty) {
+                                    editor.commands.setContent(cleanHtml);
+                                } else {
+                                    editor.commands.insertContent(cleanHtml);
+                                }
                             } else {
                                 console.log('Fallback to document.execCommand');
                                 // fallback: insert as plain text

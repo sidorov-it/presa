@@ -7,6 +7,7 @@ import { Code as CustomCodeExtension } from './CustomCodeExtension';
 import { Paragraph as ParagraphExtension } from './Paragraph';
 import { TextStyle as TextStyleExtension } from './TextStyle';
 import { EmptySpanExtension } from './EmptySpanExtension';
+import { CustomPlaceholderExtension, type StoredStyle } from './CustomPlaceholderExtension';
 
 export {
     SlashCommandExtension,
@@ -18,5 +19,7 @@ export {
     ParagraphExtension,
     TextStyleExtension,
     EmptySpanExtension,
+    CustomPlaceholderExtension,
     type EditorWithMethods,
+    type StoredStyle,
 };

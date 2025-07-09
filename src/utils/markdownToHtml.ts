@@ -30,7 +30,7 @@ export const markdownToHtml = (raw: string): string => {
 
         if (!line) {
             closeList();
-            htmlParts.push('<br />');
+            // htmlParts.push('<br />');
             continue;
         }
 

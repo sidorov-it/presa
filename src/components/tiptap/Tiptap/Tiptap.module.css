@@ -4,15 +4,14 @@
 }
 
 .editor {
-  @apply p-2 w-full relative cursor-text;
   /* min-height: 40px; */
 
-  line-height: var(--presentation-body-line-height) !important;
-  font-weight: var(--presentation-body-weight) !important;
-  text-transform: var(--presentation-body-capitalization) !important;
+  /* line-height: var(--presentation-body-line-height) !important;
+  font-weight: var(--presentation-body-weight) !important; */
+  /* text-transform: var(--presentation-body-capitalization) !important; */
   /* color: var(--presentation-text-color) !important; */
-  font-family: var(--presentation-body-font) !important;
-  letter-spacing: var(--presentation-body-letter-spacing) !important;
+  /* font-family: var(--presentation-body-font) !important;
+  letter-spacing: var(--presentation-body-letter-spacing) !important; */
 }
 
 

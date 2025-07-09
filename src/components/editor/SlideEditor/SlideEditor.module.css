@@ -137,6 +137,8 @@
     padding: var(--card-inner-padding);
     min-height: calc(64.5em / 1.7777777777777777);
     border-style: solid;
+    display: flex;
+    flex-direction: column;
     gap: var(--block-margin);
     /* Font size now handled by gamma.app-style scaling in ElementContent */
     /* z-index: 2; */

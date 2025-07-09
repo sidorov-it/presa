@@ -2,7 +2,7 @@
 import { RefObject } from 'react';
 import { ArrowNavigationExtension, EditorWithMethods } from '../extensions/ArrowNavigationExtension';
 import StarterKit from '@tiptap/starter-kit';
-import Placeholder from '@tiptap/extension-placeholder';
+
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
 import Table from '@tiptap/extension-table';
@@ -26,6 +26,7 @@ import {
     EnterHandlerExtension,
     SlashCommandExtension,
     EmptySpanExtension,
+    CustomPlaceholderExtension,
 } from '../extensions';
 import { BlockquoteExtension } from '../extensions/BlockquoteExtension';
 import {
@@ -39,7 +40,7 @@ import {
     QuestionBoxNode,
 } from '../nodes';
 import { MenuItem } from '@/types/templates';
-import { CleanPasteExtension } from './CleanPasteExtension';
+import { CleanPasteExtension } from '../extensions/CleanPasteExtension';
 
 interface GetExtensionsProps {
     placeholder: string;
@@ -311,8 +312,8 @@ const getExtensions = ({
                   onAddElement: onAddElement || (() => {}),
               }),
           ]),
-    // Плейсхолдер
-    Placeholder.configure({
+    // Custom placeholder with dynamic styling
+    CustomPlaceholderExtension.configure({
         placeholder,
     }),
     ButtonNode,
