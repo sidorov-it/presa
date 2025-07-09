@@ -37,29 +37,29 @@ export const getTextContent = (textType: TextType, text: string | string[]) => {
         case TextType.BULLET_LIST:
             if (Array.isArray(text)) {
                 return `<ul>
-    ${text.map(item => `<li>${item}</li>`).join('')}
+    ${text.map(item => `<li><span class="body-text normal-text">${item}</span></li>`).join('')}
 </ul>`;
             }
             return `<ul>
-    <li>${text}</li>
+    <li><span class="body-text normal-text">${text}</span></li>
 </ul>`;
         case TextType.NUMERED_LIST:
             if (Array.isArray(text)) {
                 return `<ol>
-    ${text.map(item => `<li>${item}</li>`).join('')}
+    ${text.map(item => `<li><span class="body-text normal-text">${item}</span></li>`).join('')}
 </ol>`;
             }
             return `<ol>
-    <li>${text}</li>
+    <li><span class="body-text normal-text">${text}</span></li>
 </ol>`;
         case TextType.TODO_LIST:
             if (Array.isArray(text)) {
                 return `<ul data-type="taskList">
-    ${text.map(item => `<li data-type="taskItem" data-checked="false">${item}</li>`).join('')}
+    ${text.map(item => `<li data-type="taskItem" data-checked="false"><span class="body-text normal-text">${item}</span></li>`).join('')}
 </ul>`;
             }
             return `<ul data-type="taskList">
-    <li data-type="taskItem" data-checked="false">${text}</li>
+    <li data-type="taskItem" data-checked="false"><span class="body-text normal-text">${text}</span></li>
 </ul>`;
 
         default:
@@ -71,18 +71,18 @@ export const getTextContent = (textType: TextType, text: string | string[]) => {
                     const htmlParts: string[] = [];
 
                     for (const line of lines) {
-                        const trimmed = line.trim();
+                        // const trimmed = line.trim();
 
-                        if (!trimmed) {
-                            htmlParts.push('<br />');
-                            continue;
-                        }
+                        // if (!trimmed) {
+                        //     htmlParts.push('<br />');
+                        //     continue;
+                        // }
 
-                        const headingMatch = trimmed.match(/^\*\*(.+?)\*\*$/);
+                        const headingMatch = line.match(/^\*\*(.+?)\*\*$/);
                         if (headingMatch) {
                             htmlParts.push(`<span class="heading-text heading-1">${headingMatch[1].trim()}</span>`);
                         } else {
-                            htmlParts.push(`<p>${trimmed}</p>`);
+                            htmlParts.push(`<p class="body-text normal-text">${line}</p>`);
                         }
                     }
 

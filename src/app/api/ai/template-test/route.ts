@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
-import { createSlideFromTemplateWithContent } from '@/utils/createSlideFromTemplateWithContent';
+import { createSlideFromTemplateWithContent } from '@/utils/createSlideFromTemplateWithContentMock';
 import { createGenerateSlideContentFunction } from '@/services/llm/generateSlideContent';
 import { generateId } from '@/utils/id';
 import { ElementType } from '@/types/elements';

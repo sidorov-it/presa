@@ -96,7 +96,7 @@ export default function SlideBottomButtons({
                     >
                         <BsMagic />
                     </button>
-                    {handleTestTemplate && (
+                    {handleTestTemplate && process.env.NODE_ENV === 'development' && (
                         <button
                             className={`${styles.slideDividerButton} ${styles.testButton}`}
                             onClick={handleTestTemplate}
