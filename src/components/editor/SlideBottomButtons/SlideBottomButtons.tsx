@@ -1,5 +1,6 @@
 import Portal from '@/components/Portal';
 import { BsMagic } from 'react-icons/bs';
+import { FaFlask } from 'react-icons/fa';
 import { useColorMode } from '@/components/ui/color-mode';
 import { useEffect, useState } from 'react';
 
@@ -11,6 +12,7 @@ interface SlideBottomButtonsProps {
     isLast: boolean;
     handleAddSlideAfter: (e: React.MouseEvent<HTMLButtonElement>) => void;
     handleAddSlideWithAI: (e: React.MouseEvent<HTMLButtonElement>) => void;
+    handleTestTemplate?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 export default function SlideBottomButtons({
@@ -19,6 +21,7 @@ export default function SlideBottomButtons({
     isLast,
     handleAddSlideAfter,
     handleAddSlideWithAI,
+    handleTestTemplate,
 }: SlideBottomButtonsProps) {
     const { colorMode } = useColorMode();
     const [buttonPosition, setButtonPosition] = useState(0);
@@ -93,6 +96,15 @@ export default function SlideBottomButtons({
                     >
                         <BsMagic />
                     </button>
+                    {handleTestTemplate && (
+                        <button
+                            className={`${styles.slideDividerButton} ${styles.testButton}`}
+                            onClick={handleTestTemplate}
+                            aria-label="Тестировать шаблон"
+                        >
+                            <FaFlask />
+                        </button>
+                    )}
                 </div>
             </div>
         </Portal>

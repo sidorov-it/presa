@@ -35,7 +35,7 @@
     border-bottom-left-radius: 0.5rem;
 }
 
-.slideDividerButton.aiButton {
+.slideDividerButton:last-child {
     border-top-right-radius: 0.5rem;
     border-bottom-right-radius: 0.5rem;
 }
@@ -48,6 +48,11 @@
 .slideDividerButton.aiButton svg {
     width: 16px;
     height: 16px;
+}
+
+.slideDividerButton.testButton svg {
+    width: 14px;
+    height: 14px;
 }
 
 .aiButton svg {

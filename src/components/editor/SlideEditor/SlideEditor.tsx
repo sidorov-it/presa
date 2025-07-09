@@ -20,6 +20,7 @@ import { useReadOnly } from '@/contexts/ReadOnlyContext';
 import getNewLayoutWithTextEditor from '@/utils/getNewLayoutWithTextEditor';
 import AISlideGenerator from '../AISlideGenerator/AISlideGenerator';
 import SlideBottomButtons from '../SlideBottomButtons/SlideBottomButtons';
+import TemplateTestModal from '../TemplateTestModal';
 
 interface SlideEditorProps {
     slideLayoutIds: string[];
@@ -63,6 +64,9 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const addEmptySlideSelector = useCallback((state: PresentationState) => state.addEmptySlide, []);
     const addEmptySlide = usePresentationStore(addEmptySlideSelector);
 
+    const [showAIGenerator, setShowAIGenerator] = useState(false);
+    const [showTemplateTestModal, setShowTemplateTestModal] = useState(false);
+
     const handleDeleteElement = useCallback(
         (layoutId: string, elementId: string) => {
             // Use getState to access the store without subscribing to it
@@ -85,6 +89,54 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             }
         },
         [presentationId, slideId, addEmptySlide]
+    );
+
+    const handleAddSlideWithAI = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        setShowAIGenerator(true);
+    };
+
+    const handleTestTemplate = useCallback(
+        (e: React.MouseEvent<HTMLButtonElement>) => {
+            e.stopPropagation();
+            setShowTemplateTestModal(true);
+        },
+        []
+    );
+
+    const handleTemplateTest = useCallback(
+        async (templateId: string) => {
+            try {
+                const response = await fetch('/api/ai/template-test', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ templateId }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to test template');
+                }
+
+                const result = await response.json();
+                
+                // Add the test slide after the current slide
+                const getSlideIndex = usePresentationStore.getState().getSlideIndex;
+                const slideIndex = getSlideIndex(presentationId, slideId);
+                
+                if (slideIndex !== -1) {
+                    const newSlideIndex = slideIndex + 1;
+                    usePresentationStore.getState().addSlide(presentationId, result.slide, newSlideIndex);
+                }
+
+                setShowTemplateTestModal(false);
+            } catch (error) {
+                console.error('Error testing template:', error);
+                // TODO: Show error message to user
+            }
+        },
+        [presentationId, slideId]
     );
 
     const handleOpenSlideMenu = useCallback(
@@ -415,15 +467,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     const isDropTarget = useDndStore(({ state }) => state.indicators.slideIndicator === slideId);
     const isDragging = useDndStore(({ state }) => state.dragState === 'dragging' && state.source.slideId === slideId);
-    // Добавляем проверку на активный индикатор для слайда
-    // const isDropTarget = state.indicators.slideIndicator === slideId;
-
-    const [showAIGenerator, setShowAIGenerator] = useState(false);
-
-    const handleAddSlideWithAI = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.stopPropagation();
-        setShowAIGenerator(true);
-    };
 
     // Monitor slide content height to show standard height indicator
     useEffect(() => {
@@ -557,6 +600,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                         isLast={isLast}
                         handleAddSlideAfter={handleAddSlideAfter}
                         handleAddSlideWithAI={handleAddSlideWithAI}
+                        handleTestTemplate={handleTestTemplate}
                     />
                 )}
 
@@ -571,6 +615,14 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                         </div>
                     </div>
                 )}
+
+                {showTemplateTestModal && (
+                    <TemplateTestModal
+                        isOpen={showTemplateTestModal}
+                        onClose={() => setShowTemplateTestModal(false)}
+                        onSelectTemplate={handleTemplateTest}
+                    />
+                )}
             </div>
         </div>
     );
@@ -578,14 +630,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
 // Enhanced memo comparison to perform deep comparison of relevant slide properties
 export default memo(SlideEditor, (prevProps, nextProps) => {
-    // Deep compare the slide layouts to ensure we only re-render when layouts change
-    // const prevLayouts = prevProps.slideLayoutsLength;
-    // const nextLayouts = nextProps.slideLayoutsLength;
-
-    // const layoutsEqual = prevLayouts.length === nextLayouts.length &&
-    //     prevLayouts.every((layout, index) =>
-    //         JSON.stringify(layout) === JSON.stringify(nextLayouts[index]));
-
     return (
         deepEqual(prevProps.slideLayoutIds, nextProps.slideLayoutIds) &&
         prevProps.isSelected === nextProps.isSelected &&
