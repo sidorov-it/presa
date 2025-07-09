@@ -7,6 +7,7 @@ import { IPresentation } from '@/types';
 import generateSlide from '@/services/llm/generateSlide';
 import { withTokenDeduction, TokenCalculators, MetadataExtractors } from '@/utils/aiTokenMiddleware';
 import logger from '@/utils/logger';
+import { v4 as uuidv4 } from 'uuid';
 
 interface RequestBody {
     presentationId: string;
@@ -25,6 +26,7 @@ interface RequestBody {
 
 export async function POST(request: NextRequest) {
     logger.info('POST /api/ai/slide');
+    const requestId = uuidv4();
     return withTokenDeduction(
         request,
         {
@@ -94,6 +96,7 @@ export async function POST(request: NextRequest) {
                     options: {
                         userId: session.user.id,
                         presentationId,
+                        requestId,
                     },
                 });
 
@@ -127,6 +130,7 @@ ${surroundingSlides[1]?.text ? `Текст следующего слайда: ${
                 options: {
                     userId: session.user.id,
                     presentationId,
+                    requestId,
                 },
             });
 

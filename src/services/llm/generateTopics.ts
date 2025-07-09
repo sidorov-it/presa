@@ -51,6 +51,8 @@ const getTopicsPrompt = ({
 }) =>
     `Используя лучшие практики презентационного дизайна (см. список), создай исчерпывающую структуру презентации.
 
+ОБЯЗАТЕЛЬНО ВЫЗОВИ фунцию generate_presentation_topics!
+
 Входные данные:
 • Тема: ${description}
 ${goal ? `• Цель: ${goal}` : ''}
@@ -66,7 +68,7 @@ ${Number.isInteger(durationMinutes) ? `• Длительность доклад
 4. Учитывай аудиторию и цель при выборе акцентов и доказательств.
 5. **Формат ответа:** JSON-массив объектов со структурой
 
-Для генерации структуры презентации обязательно вызови фунцию generate_presentation_topics.
+Для генерации структуры презентации ОБЯЗАТЕЛЬНО ВЫЗОВИ фунцию generate_presentation_topics!
 
 `;
 
@@ -91,7 +93,8 @@ async function generateTopics(
         durationMinutes?: number;
         goal?: string;
         audience?: string;
-    }
+    },
+    requestId: string
 ) {
     try {
         const llmService = createLLMService({ userId });
@@ -106,7 +109,10 @@ async function generateTopics(
                 goal,
                 audience,
             }),
-            topicsOptions
+            {
+                ...topicsOptions,
+                ...(requestId ? { requestId } : {}),
+            }
         );
 
         let topics = [];

@@ -46,7 +46,7 @@ export interface TokenTransaction {
     type: TransactionType;
     description: string;
     purchaseId?: string;
-    llmRequestId?: string;
+    llmrequestId: string;
     balanceBefore: number;
     balanceAfter: number;
     createdAt: Date;
@@ -63,7 +63,7 @@ export interface TokenUsageData {
     userId: string;
     amount: number;
     description: string;
-    llmRequestId?: string;
+    llmrequestId: string;
     metadata?: any;
 }
 

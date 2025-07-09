@@ -84,7 +84,7 @@ ${topics.map((t, i) => `${i + 1}. "${t.title}"${t.instructions ? ` — Инст�
 4. Используй простые, контрастные композиции и достаточные поля.
 5. У двух соседних слайдов не может быть один и тот же шаблон — обеспечь разнообразие.
 
-**Внимание:** Для возврата результата ты ОБЯЗАН вызвать функцию "select_slide_templates".
+**Внимание:** Для возврата результата ты ОБЯЗАН вызвать функцию "select_slide_templates"!
 `;
 
 const getTemplatesOptions = {
@@ -137,7 +137,10 @@ export default async function generateSlidesTemplates({
                 audience,
                 tone,
             }),
-            getTemplatesOptions
+            {
+                ...getTemplatesOptions,
+                ...(options.requestId ? { requestId: options.requestId } : {}),
+            }
         );
 
         let templateSuggestions = [];

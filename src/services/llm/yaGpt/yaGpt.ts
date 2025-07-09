@@ -5,6 +5,7 @@ import { RecordingOptions } from '@/types/llm/recordings';
 import { RecordingService } from '../recordings/recordingService';
 import { replyConfig } from '../gigaChat/replyConfig';
 import { SYSTEM_PROMPT } from '@/prompts';
+import { v4 as uuidv4 } from 'uuid';
 
 interface YaGPTMessage {
     role: 'system' | 'user' | 'assistant';
@@ -101,6 +102,7 @@ export class YaGptService implements LLMService {
             function_call?: any;
             requireFunctionCall?: boolean;
             __attemptCount?: number;
+            requestId: string;
         } = {}
     ): Promise<LLMResponse> {
         const start = Date.now();
@@ -195,9 +197,9 @@ export class YaGptService implements LLMService {
         const duration = Date.now() - start;
 
         // Attempt to read token information if provided (YaGPT may not provide it)
-        const totalTokens: number = responseJson.usage?.total_tokens ?? 0;
-        const inputTokens: number = responseJson.usage?.prompt_tokens ?? 0;
-        const outputTokens: number = responseJson.usage?.completion_tokens ?? 0;
+        const totalTokens: number = parseInt(responseJson.result.usage?.totalTokens, 10) ?? 0;
+        const inputTokens: number = parseInt(responseJson.result.usage?.inputTextTokens, 10) ?? 0;
+        const outputTokens: number = parseInt(responseJson.result.usage?.completionTokens, 10) ?? 0;
 
         const cost = this.calculateCost(totalTokens);
 
@@ -260,6 +262,9 @@ export class YaGptService implements LLMService {
                     type: 'chat',
                     data: responseData,
                 },
+                inputTokens,
+                outputTokens,
+                requestId: options.requestId || '',
             });
         }
 
@@ -319,7 +324,7 @@ export class YaGptService implements LLMService {
 
     async generateImage(
         prompt: string,
-        options: { presentationId?: string; userId: string }
+        options: { presentationId?: string; userId: string; requestId: string }
     ): Promise<{ imageUrl: string; imageId: string }> {
         const startTime = Date.now();
 
@@ -455,6 +460,9 @@ export class YaGptService implements LLMService {
                     type: 'image',
                     data: result,
                 },
+                inputTokens: 0,
+                outputTokens: 0,
+                requestId: options.requestId || '',
             });
         }
 

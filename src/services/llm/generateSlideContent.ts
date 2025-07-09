@@ -347,6 +347,7 @@ export default async function generateSlideContent({
     const response = await llmService.generate(prompt, {
         functions: [functionSchema],
         function_call: { name: 'generate_slide_text' },
+        ...(options.requestId ? { requestId: options.requestId } : {}),
     });
 
     logger.debug('LLM response (generateSlideContent):', JSON.stringify(response));

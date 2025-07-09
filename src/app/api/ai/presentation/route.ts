@@ -8,8 +8,10 @@ import { generateSlidesTemplates } from '@/services/llm/gigaChat';
 import generateSlide from '@/services/llm/generateSlide';
 import { withTokenDeduction, TokenCalculators, MetadataExtractors } from '@/utils/aiTokenMiddleware';
 import extractTextFromElement from '@/utils/extractTextFromElement';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(request: NextRequest) {
+    const requestId = uuidv4();
     return withTokenDeduction(
         request,
         {
@@ -39,6 +41,7 @@ export async function POST(request: NextRequest) {
                     tone,
                     options: {
                         userId,
+                        requestId,
                     },
                 });
 
@@ -73,10 +76,24 @@ export async function POST(request: NextRequest) {
                         previousSlides: previousSlidesContent,
                         options: {
                             userId,
+                            requestId,
                         },
                     });
                     slides.push(slide);
                 }
+
+                const themes = await prisma.theme.findMany({
+                    where: {
+                        isActive: true,
+                        isDefault: true,
+                        userId,
+                    },
+                    select: {
+                        id: true,
+                    },
+                });
+
+                const ramdomTheme = themes[Math.floor(Math.random() * themes.length)];
 
                 // Create presentation in database
                 const presentation = await prisma.presentation.create({
@@ -89,6 +106,7 @@ export async function POST(request: NextRequest) {
                         goal,
                         audience,
                         tone,
+                        themeId: ramdomTheme.id,
                     },
                 });
 

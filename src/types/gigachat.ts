@@ -43,4 +43,5 @@ export interface LLMRequestContext {
     presentationId?: string;
     slideId?: string;
     userId: string;
+    requestId: string;
 }

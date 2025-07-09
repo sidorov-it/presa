@@ -90,6 +90,7 @@ export class GigaChatService implements LLMService {
             function_call?: any;
             requireFunctionCall?: boolean;
             __attemptCount?: number;
+            requestId: string;
         } = {}
     ): Promise<LLMResponse> {
         const startTime = performance.now();
@@ -178,6 +179,9 @@ export class GigaChatService implements LLMService {
                             type: 'chat',
                             data: parsedResponse,
                         },
+                        inputTokens: apiResponse.usage.prompt_tokens,
+                        outputTokens: apiResponse.usage.completion_tokens,
+                        requestId: options.requestId || '',
                     });
                 }
 
@@ -387,6 +391,9 @@ export class GigaChatService implements LLMService {
                             type: 'image',
                             data: result,
                         },
+                        inputTokens: 0,
+                        outputTokens: 0,
+                        requestId: options.requestId || '',
                     });
                 }
             }

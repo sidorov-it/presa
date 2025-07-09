@@ -118,7 +118,10 @@ export default async function generateSlideTemplate({
             tone,
             surroundingSlides,
         }),
-        getTemplateOptions
+        {
+            ...getTemplateOptions,
+            ...(options.requestId ? { requestId: options.requestId } : {}),
+        }
     );
 
     // Парсим ответ функции

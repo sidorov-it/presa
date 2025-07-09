@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import rewriteSlideContent from '@/services/llm/rewriteSlideContent';
 import { withTokenDeduction, TokenCalculators, MetadataExtractors } from '@/utils/aiTokenMiddleware';
 import logger from '@/utils/logger';
+import { v4 as uuidv4 } from 'uuid';
 
 interface RequestBody {
     slideId: string;
@@ -11,6 +12,7 @@ interface RequestBody {
 
 export async function POST(request: NextRequest) {
     logger.info('POST /api/ai/expand');
+    const requestId = uuidv4();
     return withTokenDeduction(
         request,
         {
@@ -43,7 +45,8 @@ export async function POST(request: NextRequest) {
             const content = await rewriteSlideContent(
                 session.user.id,
                 currentSlide,
-                'Сделай текст более подробным и длинным.'
+                'Сделай текст более подробным и длинным.',
+                requestId
             );
 
             return { content };

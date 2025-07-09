@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import rewriteSlideContent from '@/services/llm/rewriteSlideContent';
 import { withTokenDeduction, TokenCalculators, MetadataExtractors } from '@/utils/aiTokenMiddleware';
 import logger from '@/utils/logger';
+import { v4 as uuidv4 } from 'uuid';
 
 // function generateSlotDescription(slide: Slide): string {
 //     return slide.layouts
@@ -78,6 +79,7 @@ interface RewriteRequestBody {
 
 export async function POST(request: NextRequest) {
     logger.info('POST /api/ai/improve');
+    const requestId = uuidv4();
     return withTokenDeduction(
         request,
         {
@@ -109,7 +111,7 @@ export async function POST(request: NextRequest) {
             }
 
             const currentSlide = presentation.slides[slideIndex];
-            const content = await rewriteSlideContent(session.user.id, currentSlide, comment);
+            const content = await rewriteSlideContent(session.user.id, currentSlide, comment, requestId);
 
             return { content };
         }
