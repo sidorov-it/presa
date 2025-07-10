@@ -1,13 +1,16 @@
+import styles from './heading.module.css';
+
 interface HeadingProps {
     title: string;
     description?: string;
+    withoutMargin?: boolean;
 }
 
-export function Heading({ title, description }: HeadingProps) {
+export function Heading({ title, description, withoutMargin }: HeadingProps) {
     return (
-        <div className="flex flex-col gap-1">
-            <h2 className="text-3xl font-bold tracking-tight">{title}</h2>
-            {description && <p className="text-sm text-muted-foreground">{description}</p>}
+        <div className={`${styles.container} ${withoutMargin ? styles.withoutMargin : ''}`}>
+            <h1 className={styles.title}>{title}</h1>
+            {description && <p className={styles.description}>{description}</p>}
         </div>
     );
 }

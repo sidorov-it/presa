@@ -1,6 +1,6 @@
 .wrapper {
-  width: 320px;
-  height: 180px;
+  width: 384px;
+  height: 216px;
   position: relative;
   overflow: hidden;
   background-color: var(--color-background);

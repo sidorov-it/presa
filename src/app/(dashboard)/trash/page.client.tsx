@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-// import { useSession } from 'next-auth/react';
-import { FaTrashRestore, FaTrashAlt, FaRegClock } from 'react-icons/fa';
+import { LuArchiveRestore, LuTrash2, LuCalendar } from 'react-icons/lu';
 import { toast } from 'sonner';
 import { pluralize } from '@/utils/helpers';
+import { Heading } from '@/components/ui/heading';
 import styles from './page.module.css';
 
 interface DeletedPresentation {
@@ -99,10 +99,10 @@ export default function TrashPage() {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Корзина</h1>
-                <p className={styles.description}>
-                    Удаленные презентации хранятся 30 дней перед окончательным удалением
-                </p>
+                <Heading
+                    title="Корзина"
+                    description="Удаленные презентации хранятся 30 дней перед окончательным удалением"
+                />
             </div>
 
             {isLoading && (
@@ -113,7 +113,7 @@ export default function TrashPage() {
             {!isLoading && deletedPresentations.length === 0 ? (
                 <div className={styles.emptyState}>
                     <div className={styles.emptyIconContainer}>
-                        <FaTrashAlt className={styles.emptyIcon} />
+                        <LuTrash2 className={styles.emptyIcon} />
                     </div>
                     <h2 className={styles.emptyTitle}>Ваша корзина пуста</h2>
                     <p className={styles.emptyText}>Здесь будут отображаться удаленные презентации</p>
@@ -137,7 +137,7 @@ export default function TrashPage() {
                                     </td>
                                     <td className={styles.tableCell}>
                                         <div className={styles.timeInfo}>
-                                            <FaRegClock className={styles.timeIcon} />
+                                            <LuCalendar className={styles.timeIcon} />
                                             {formatRelativeTime(presentation.deletedAt)}
                                         </div>
                                     </td>
@@ -152,14 +152,14 @@ export default function TrashPage() {
                                                 onClick={() => handleRestore(presentation.id)}
                                                 className={styles.restoreButton}
                                             >
-                                                <FaTrashRestore className={styles.actionIcon} />
+                                                <LuArchiveRestore className={styles.actionIcon} />
                                                 Восстановить
                                             </button>
                                             <button
                                                 onClick={() => handleDelete(presentation.id)}
                                                 className={styles.deleteButton}
                                             >
-                                                <FaTrashAlt className={styles.actionIcon} />
+                                                <LuTrash2 className={styles.actionIcon} />
                                                 Удалить
                                             </button>
                                         </div>
