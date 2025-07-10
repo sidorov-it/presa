@@ -3,13 +3,14 @@ import { BiBold, BiItalic, BiUnderline, BiX, BiArrowToTop, BiArrowToBottom } fro
 import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
 import HeadingSelector from '@/components/settings/HeadingSelector/HeadingSelector';
-import { useUIStateStore } from '@/store/uiStateStore';
+import { useSelectedState, useUIStateStore } from '@/store/uiStateStore';
 import { TipTapRefs } from '@/types';
 import { MenuItem } from '../BaseMenu';
 import { useShallow } from 'zustand/react/shallow';
 import isEditorPropertyConsistent from '@/utils/isEditorPropertyConsistent';
 import DeleteIcon from '@/components/icons/DeleteIcon';
 import { useHistoryStore } from '@/store/historyStore';
+import { usePresentationStore } from '@/store/presentationStore';
 interface RowTableMenuProps {
     elementId?: string;
     tableRowIndex?: number;
@@ -21,8 +22,32 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, presentation
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
 
-    const tableRowElements = useUIStateStore(useShallow(state => state.getTableRowElements()));
-    const currentHeadingLevel = useUIStateStore(useShallow(state => state.getCommonRowHeadingLevel(tiptapRefs) || 0));
+    const selectedState = useSelectedState();
+
+    const selectedRowIndex = useUIStateStore(state => state.selectedRowIndex);
+
+    const tableRowElements = usePresentationStore(
+        useShallow(state =>
+            state.getTableRowElements(
+                selectedState.presentationId!,
+                selectedState.selectedSlideId!,
+                selectedState.selectedLayoutId!,
+                selectedRowIndex!
+            )
+        )
+    );
+    const currentHeadingLevel = usePresentationStore(
+        useShallow(
+            state =>
+                state.getCommonRowHeadingLevel(
+                    tiptapRefs,
+                    selectedState.presentationId!,
+                    selectedState.selectedSlideId!,
+                    selectedState.selectedLayoutId!,
+                    selectedRowIndex!
+                ) || 0
+        )
+    );
 
     const [localHeadingLevel, setLocalHeadingLevel] = useState<number>(currentHeadingLevel || 0);
 
@@ -191,24 +216,45 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, presentation
     // Table row operations
     const handleAddRowAbove = useCallback(() => {
         if (Number.isInteger(tableRowIndex)) {
-            useUIStateStore.getState().addRowToTable(tableRowIndex!);
+            usePresentationStore
+                .getState()
+                .addRowToTable(
+                    selectedState.presentationId!,
+                    selectedState.selectedSlideId!,
+                    selectedState.selectedLayoutId!,
+                    tableRowIndex!
+                );
             useUIStateStore.getState().closeContextMenu();
         }
-    }, [tableRowIndex]);
+    }, [selectedState.presentationId, selectedState.selectedLayoutId, selectedState.selectedSlideId, tableRowIndex]);
 
     const handleAddRowBelow = useCallback(() => {
         if (Number.isInteger(tableRowIndex)) {
-            useUIStateStore.getState().addRowToTable(tableRowIndex! + 1);
+            usePresentationStore
+                .getState()
+                .addRowToTable(
+                    selectedState.presentationId!,
+                    selectedState.selectedSlideId!,
+                    selectedState.selectedLayoutId!,
+                    tableRowIndex! + 1
+                );
             useUIStateStore.getState().closeContextMenu();
         }
-    }, [tableRowIndex]);
+    }, [selectedState.presentationId, selectedState.selectedLayoutId, selectedState.selectedSlideId, tableRowIndex]);
 
     const handleDeleteRow = useCallback(() => {
         if (Number.isInteger(tableRowIndex)) {
-            useUIStateStore.getState().deleteRowFromTable(tableRowIndex!);
+            usePresentationStore
+                .getState()
+                .deleteRowFromTable(
+                    selectedState.presentationId!,
+                    selectedState.selectedSlideId!,
+                    selectedState.selectedLayoutId!,
+                    tableRowIndex!
+                );
             useUIStateStore.getState().closeContextMenu();
         }
-    }, [tableRowIndex]);
+    }, [selectedState.presentationId, selectedState.selectedLayoutId, selectedState.selectedSlideId, tableRowIndex]);
 
     const handleColorReset = useCallback(() => {
         useHistoryStore.getState().beginTransaction(presentationId, 'Reset color');

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, MutableRefObject } fro
 import { BiBold, BiItalic, BiUnderline, BiX } from 'react-icons/bi';
 import { PiEquals } from 'react-icons/pi';
 
-import { useUIStateStore } from '@/store/uiStateStore';
+import { useSelectedState, useUIStateStore } from '@/store/uiStateStore';
 import { TipTapRefs } from '@/types';
 import { BaseMenu, MenuItem } from '../BaseMenu';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
@@ -13,6 +13,7 @@ import isEditorPropertyConsistent from '@/utils/isEditorPropertyConsistent';
 import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
 import { DeleteIcon } from '@/components/icons';
 import { useHistoryStore } from '@/store/historyStore';
+import { usePresentationStore } from '@/store/presentationStore';
 
 interface TableMenuProps {
     presentationId: string;
@@ -24,8 +25,27 @@ const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, presentationId, posit
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
 
-    const tableElements = useUIStateStore(useShallow(state => state.getTableElements()));
-    const currentHeadingLevel = useUIStateStore(useShallow(state => state.getCommonTableHeadingLevel(tiptapRefs) || 0));
+    const selectedState = useSelectedState();
+    const tableElements = usePresentationStore(
+        useShallow(state =>
+            state.getTableElements(
+                selectedState.presentationId!,
+                selectedState.selectedSlideId!,
+                selectedState.selectedLayoutId!
+            )
+        )
+    );
+    const currentHeadingLevel = usePresentationStore(
+        useShallow(
+            state =>
+                state.getCommonTableHeadingLevel(
+                    tiptapRefs,
+                    selectedState.presentationId!,
+                    selectedState.selectedSlideId!,
+                    selectedState.selectedLayoutId!
+                ) || 0
+        )
+    );
 
     const [localHeadingLevel, setLocalHeadingLevel] = useState<number>(currentHeadingLevel || 0);
 
@@ -188,12 +208,24 @@ const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, presentationId, posit
     }, [tableElements, tiptapRefs, presentationId]);
 
     const handleEqualize = useCallback(() => {
-        useUIStateStore.getState().equalizeTable();
-    }, []);
+        usePresentationStore
+            .getState()
+            .equalizeTable(
+                selectedState.presentationId!,
+                selectedState.selectedSlideId!,
+                selectedState.selectedLayoutId!
+            );
+    }, [selectedState.presentationId, selectedState.selectedSlideId, selectedState.selectedLayoutId]);
 
     const handleDelete = useCallback(() => {
-        useUIStateStore.getState().deleteLayout();
-    }, []);
+        usePresentationStore
+            .getState()
+            .deleteLayout(
+                selectedState.presentationId!,
+                selectedState.selectedSlideId!,
+                selectedState.selectedLayoutId!
+            );
+    }, [selectedState.presentationId, selectedState.selectedSlideId, selectedState.selectedLayoutId]);
 
     const handleColorReset = useCallback(() => {
         useHistoryStore.getState().beginTransaction(presentationId, 'Reset color');

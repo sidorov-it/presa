@@ -91,19 +91,13 @@ const SlideItem = memo(
 
         const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
             if (isReordering) {
-                // Only clear indicators if we're actually leaving the slide area
-                // Check if we're leaving to go to a child element
-                const rect = e.currentTarget.getBoundingClientRect();
                 const isLeavingToChild = e.relatedTarget && e.currentTarget.contains(e.relatedTarget as Node);
-                
+
                 if (!isLeavingToChild) {
                     setSlideIndicators({ slideIndicator: null, slidePosition: null });
                 }
             }
         }, [isReordering, setSlideIndicators]);
-
-        // Remove local drop handler - now handled globally
-
 
         return (
             <div
@@ -167,14 +161,12 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
 
     const { colorMode } = useColorMode();
 
-    // const { addEmptySlide, addSlide, deleteSlide, updateSlide } = usePresentationStore();
     const slides = usePresentationStore(state => state.getPresentation(presentationId)?.slides || []);
-    // const slides = getPresentation(presentationId)?.slides || [];
 
     const setSlidePresentationId = useSlideDndStore(state => state.setPresentationId);
     const handleDocumentDrop = useSlideDndStore(state => state.handleDocumentDrop);
     const dragState = useSlideDndStore(state => state.dragState);
-    
+
     useEffect(() => {
         setSlidePresentationId(presentationId);
     }, [presentationId, setSlidePresentationId]);
@@ -188,14 +180,14 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
 
             const handleDragOver = (e: DragEvent) => {
                 e.preventDefault(); // Allow drop
-                
+
                 // Check if we're over the slides list panel
                 const slidesListPanel = document.querySelector('.slides-list-panel');
                 if (slidesListPanel && !slidesListPanel.contains(e.target as Node)) {
                     // We're outside the slides list - clear indicators
-                    useSlideDndStore.getState().setIndicators({ 
-                        slideIndicator: null, 
-                        slidePosition: null 
+                    useSlideDndStore.getState().setIndicators({
+                        slideIndicator: null,
+                        slidePosition: null
                     });
                 }
             };

@@ -29,7 +29,9 @@ export const useIsSelectedColumn = (tableId: string, columnIndex: number) =>
     });
 
 export const useIsHoveredRow = (tableId: string, rowIndex: number, columnIndex: number) =>
-    useUIStateStore(state => columnIndex === 0 && state.hoveredRowIndex === rowIndex && state.hoveredTableId === tableId);
+    useUIStateStore(
+        state => columnIndex === 0 && state.hoveredRowIndex === rowIndex && state.hoveredTableId === tableId
+    );
 
 export const useIsHoveredColumn = (tableId: string, rowIndex: number, columnIndex: number) =>
     useUIStateStore(
@@ -75,8 +77,12 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         return state.contextMenuTableColumnIndex === columnIndex && state.selectedTableId === layoutId;
     });
 
-    const hasSelectedColumn = useUIStateStore(state => !!state.contextMenuTableColumnIndex && state.selectedTableId === layoutId);
-    const hasSelectedRow = useUIStateStore(state => !!state.contextMenuTableRowIndex && state.selectedTableId === layoutId);
+    const hasSelectedColumn = useUIStateStore(
+        state => !!state.contextMenuTableColumnIndex && state.selectedTableId === layoutId
+    );
+    const hasSelectedRow = useUIStateStore(
+        state => !!state.contextMenuTableRowIndex && state.selectedTableId === layoutId
+    );
 
     const elementsIds = usePresentationStore(
         useShallow(
