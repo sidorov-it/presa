@@ -6,7 +6,7 @@ import { FiLoader } from 'react-icons/fi';
 import { ImageElement } from '@/types';
 import { default as NextImage } from 'next/image';
 import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlaceholder';
-import type { useMenuStore } from '@/store/menuStore';
+import type { useUIStateStore } from '@/store/uiStateStore';
 
 import styles from './Image.module.css';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
@@ -19,7 +19,7 @@ interface ImageComponentProps {
     layoutId: string;
     hasMultipleCells?: boolean;
     isGenerating?: boolean;
-    openMenu?: ReturnType<typeof useMenuStore>['openMenu'];
+    openMenu?: ReturnType<typeof useUIStateStore>['openContextMenu'];
     updateElement?: (data: Partial<ImageElement>) => void;
     addColumnsAroundImage?: (options: { width: number; direction?: 'right' | 'left' | 'both' }) => void;
 }

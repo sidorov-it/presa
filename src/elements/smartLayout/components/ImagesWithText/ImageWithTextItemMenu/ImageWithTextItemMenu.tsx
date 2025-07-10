@@ -1,7 +1,7 @@
 import { BaseMenu, MenuItem } from '@/components/editor/SlideMenu/BaseMenu';
 import { AddColumnLeftIcon, AddColumnRightIcon, DeleteIcon, DuplicateIcon } from '@/components/icons';
 import { usePresentationStore } from '@/store/presentationStore';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import { CiImageOff } from 'react-icons/ci';
 import { FiEdit3 } from 'react-icons/fi';
 
@@ -32,8 +32,8 @@ export default function ImageWithTextItemMenu({
         const item = (element as any)?.items?.find((item: any) => item.id === itemId);
         const imageUrl = item?.imageUrl || '';
 
-        useMenuStore.getState().closeMenu();
-        useMenuStore.getState().openSideMenu('image-edit', {
+        useUIStateStore.getState().closeContextMenu();
+        useUIStateStore.getState().openSideMenu('image-edit', {
             imageUrl,
             onClearImage: () => {
                 usePresentationStore

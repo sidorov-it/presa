@@ -21,11 +21,10 @@
     align-items: stretch;
 }
 
-.focused {
+/* .focused {
     outline: 1px solid #999;
     outline-offset: 0.25em;
-    /* border-radius: var(--presentation-slide-border-radius); */
-}
+} */
 
 .itemContainer {
     position: relative;
@@ -177,10 +176,10 @@
     width: 100%;
 }
 
-.focused .textBox {
+/* .focused .textBox {
     outline: 1px solid var(--color-border);
     border-radius: var(--presentation-slide-border-radius);
-}
+} */
 
 .textBox:focus-visible,
 .textBox:focus {

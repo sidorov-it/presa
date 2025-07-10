@@ -5,7 +5,7 @@ import { DndProvider } from '@/contexts/DragDropContext';
 import Presentation from '../Presentation';
 import DragDropIndicator from '@/components/DragDropIndicator';
 import SlideMenu from '../SlideMenu/SlideMenu';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import { useEditorStore } from '@/store/editorStore';
 import { TipTapRefs } from '@/types';
 import { useShallow } from 'zustand/react/shallow';
@@ -67,8 +67,8 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
     );
 
     useEffect(() => {
-        const { setPresentationId } = useMenuStore.getState();
-        setPresentationId(presentationId);
+        const { setCurrentPresentationId } = useUIStateStore.getState();
+        setCurrentPresentationId(presentationId);
     }, [presentationId]);
 
     // Memoize not found UI
@@ -112,13 +112,13 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
             if (e.key !== 'Delete' && e.key !== 'Backspace') return;
 
             const {
-                elementId,
-                slideId,
-                layoutId,
-                presentationId: menuPresentationId,
-                isTextEditor,
+                selectedElementId: elementId,
+                selectedSlideId: slideId,
+                selectedLayoutId: layoutId,
+                currentPresentationId: menuPresentationId,
+                isContextMenuOnTextEditor: isTextEditor,
                 selectedSmartLayoutItemId,
-            } = useMenuStore.getState();
+            } = useUIStateStore.getState();
             const activeEditor = useEditorStore.getState().activeEditor;
 
             if (
@@ -139,10 +139,10 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
                 usePresentationStore
                     .getState()
                     .removeSmartLayoutItem(menuPresentationId, slideId, layoutId, elementId, selectedSmartLayoutItemId);
-                useMenuStore.getState().closeMenu();
+                useUIStateStore.getState().closeContextMenu();
             } else {
                 usePresentationStore.getState().deleteElement(menuPresentationId, slideId, layoutId, elementId);
-                useMenuStore.getState().closeMenu();
+                useUIStateStore.getState().closeContextMenu();
             }
         };
 

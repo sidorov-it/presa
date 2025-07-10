@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, MutableRefObject } fro
 import { BiBold, BiItalic, BiUnderline, BiX } from 'react-icons/bi';
 import { PiEquals } from 'react-icons/pi';
 
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import { TipTapRefs } from '@/types';
 import { BaseMenu, MenuItem } from '../BaseMenu';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
@@ -24,8 +24,8 @@ const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, presentationId, posit
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
 
-    const tableElements = useMenuStore(useShallow(state => state.getTableElements()));
-    const currentHeadingLevel = useMenuStore(useShallow(state => state.getCommonTableHeadingLevel(tiptapRefs) || 0));
+    const tableElements = useUIStateStore(useShallow(state => state.getTableElements()));
+    const currentHeadingLevel = useUIStateStore(useShallow(state => state.getCommonTableHeadingLevel(tiptapRefs) || 0));
 
     const [localHeadingLevel, setLocalHeadingLevel] = useState<number>(currentHeadingLevel || 0);
 
@@ -54,7 +54,7 @@ const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, presentationId, posit
             if (target.closest('.layout-menu')) {
                 return;
             }
-            useMenuStore.getState().closeMenu();
+            useUIStateStore.getState().closeContextMenu();
         };
 
         document.addEventListener('click', handleClickOutside);
@@ -188,11 +188,11 @@ const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, presentationId, posit
     }, [tableElements, tiptapRefs, presentationId]);
 
     const handleEqualize = useCallback(() => {
-        useMenuStore.getState().equalizeTable();
+        useUIStateStore.getState().equalizeTable();
     }, []);
 
     const handleDelete = useCallback(() => {
-        useMenuStore.getState().deleteLayout();
+        useUIStateStore.getState().deleteLayout();
     }, []);
 
     const handleColorReset = useCallback(() => {

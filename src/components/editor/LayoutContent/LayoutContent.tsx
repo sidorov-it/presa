@@ -6,7 +6,7 @@ import GridCellElement from '../GridCellElement';
 import styles from './LayoutContent.module.css';
 import { usePresentationStore } from '@/store/presentationStore';
 import DragHandler from '../DragHandler';
-import { useMenuSelectedCell, useMenuSelectedElement, useMenuSelectedLayout, useMenuStore } from '@/store/menuStore';
+import { useSelectedCellId, useSelectedElementId, useSelectedLayoutId, useUIStateStore } from '@/store/uiStateStore';
 import { useShallow } from 'zustand/react/shallow';
 import adjustWidths from '@/utils/adjustWidths';
 import { LayoutHoverEvent } from '@/customEvents/LayoutHoverEvent';
@@ -45,18 +45,19 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     // Get resize state from the store for smooth column resizing
     const resizeState = usePresentationStore(useShallow(state => state.resizeState));
 
-    const openMenu = useMenuStore.getState().openMenu;
+    const openMenu = useUIStateStore.getState().openContextMenu;
 
     const isReadOnly = useReadOnly();
 
-    const menuLayoutId = useMenuSelectedLayout();
-    const menuElementId = useMenuSelectedElement();
-    const menuCellId = useMenuSelectedCell();
+    const menuLayoutId = useSelectedLayoutId();
+    const menuElementId = useSelectedElementId();
+    const menuCellId = useSelectedCellId();
 
     const themeSlideBackground = useThemeStore(useShallow(state => state.getCurrentThemeSlideBackground()));
 
-    const isTableContentSelected = useMenuStore(
-        state => state.tableColumnIndex !== null || state.tableRowIndex !== null
+    const isTableContentSelected = useUIStateStore(
+        state => state.selectedColumnIndex !== null || state.selectedRowIndex !== null
+        // state => state.selectedTableColumnIndex !== null || state.selectedTableRowIndex !== null
     );
 
     // Retrieve slide background color (if any)
@@ -356,7 +357,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     );
 
     const isSelected = menuLayoutId === layout.id && menuElementId === null && menuCellId === null;
-    const isFocused = useMenuStore(state => state.focusedLayoutId === layout.id);
+    const isFocused = useUIStateStore(state => state.focusedLayoutId === layout.id);
 
     // const isHovered = isLayoutHovered || isSelected;
 
@@ -365,10 +366,10 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
             return;
         }
 
-        useMenuStore.getState().setFocusedLayoutId(layout.id);
+        useUIStateStore.getState().setFocusedLayoutId(layout.id);
         document.addEventListener('click', e => {
             if (e.target instanceof HTMLElement && !e.target.closest('[data-layout-id]')) {
-                useMenuStore.getState().resetFocusedLayoutId();
+                useUIStateStore.getState().resetFocusedLayoutId();
             }
         });
     }, [layout.id, isReadOnly]);

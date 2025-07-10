@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import { BaseMenu, MenuItem } from '../BaseMenu';
 import { AlignTopIcon, AlignCenterIcon, AlignBottomIcon, DeleteIcon } from '@/components/icons';
 
@@ -13,9 +13,9 @@ interface LayoutMenuProps {
 }
 
 export default function LayoutMenu({ position, layoutId }: LayoutMenuProps) {
-    const { updateAlignLayout, deleteLayout, closeMenu, getLayout, changeTemplate } = useMenuStore();
+    const { updateAlignLayout, deleteLayout, closeContextMenu, getLayout, changeTemplate } = useUIStateStore();
 
-    const commonAlignment = useMenuStore(state => state.getCommonAlignment());
+    const commonAlignment = useUIStateStore(state => state.getCommonAlignment());
 
     const slideId = useMenuSelectedSlide();
     const layout = slideId && layoutId ? getLayout(slideId, layoutId) : null;
@@ -24,30 +24,30 @@ export default function LayoutMenu({ position, layoutId }: LayoutMenuProps) {
 
     const handleAlignTop = useCallback(() => {
         updateAlignLayout('top');
-        closeMenu();
-    }, [updateAlignLayout, closeMenu]);
+        closeContextMenu();
+    }, [updateAlignLayout, closeContextMenu]);
 
     const handleAlignCenter = useCallback(() => {
         updateAlignLayout('center');
-        closeMenu();
-    }, [updateAlignLayout, closeMenu]);
+        closeContextMenu();
+    }, [updateAlignLayout, closeContextMenu]);
 
     const handleAlignBottom = useCallback(() => {
         updateAlignLayout('bottom');
-        closeMenu();
-    }, [updateAlignLayout, closeMenu]);
+        closeContextMenu();
+    }, [updateAlignLayout, closeContextMenu]);
 
     const handleDeleteLayout = useCallback(() => {
         deleteLayout();
-        closeMenu();
-    }, [deleteLayout, closeMenu]);
+        closeContextMenu();
+    }, [deleteLayout, closeContextMenu]);
 
     const handleChangeTemplate = useCallback(
         (templateType: LayoutType) => {
             changeTemplate(templateType);
-            closeMenu();
+            closeContextMenu();
         },
-        [changeTemplate, closeMenu]
+        [changeTemplate, closeContextMenu]
     );
 
     if (!layout) {

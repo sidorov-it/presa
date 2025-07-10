@@ -30,13 +30,12 @@ import { MdOutlineEdit } from 'react-icons/md';
 import { HiOutlineTrash } from 'react-icons/hi';
 
 import { OpenCustomMenuEvent } from '@/customEvents/OpenCustomMenuEvent';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 
 import styles from './Chart.module.css';
 import { Theme } from '@/types/theme';
 import { getChartColors, getChartAxisColors } from '@/utils/colors';
 import { LayoutType } from 'recharts/types/util/types';
-import { usePresentationStore } from '@/store/presentationStore';
 // import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 interface ChartComponentProps {
@@ -188,7 +187,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
         if (presentationId && slideId && layoutId) {
             setIsSelected(true);
             setIsSettingsOpen(true);
-            useMenuStore.getState().openMenu({
+            useUIStateStore.getState().openContextMenu({
                 slideId,
                 elementId: element.id,
                 layoutId,
@@ -213,7 +212,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
             ) {
                 setIsSelected(false);
                 setIsSettingsOpen(false);
-                useMenuStore.getState().closeMenu();
+                useUIStateStore.getState().closeContextMenu();
             }
         };
 
@@ -228,7 +227,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
             if (e.detail.elementId === element.id && e.detail.elementType === 'chart') {
                 setIsSettingsOpen(true);
                 if (presentationId && slideId && layoutId) {
-                    useMenuStore.getState().openMenu({
+                    useUIStateStore.getState().openContextMenu({
                         slideId,
                         elementId: element.id,
                         layoutId,
@@ -356,7 +355,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
     );
 
     const handleRemoveChart = useCallback(() => {
-        useMenuStore.getState().closeMenu();
+        useUIStateStore.getState().closeContextMenu();
         onDeleteElement?.();
     }, [onDeleteElement]);
 

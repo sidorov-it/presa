@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useEffect, useRef, useState } from 'react';
 import DragHandler from '@/components/editor/DragHandler';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import styles from './ItemWrapper.module.css';
 import { useDnd } from '@/contexts/DragDropContext';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
@@ -28,8 +28,8 @@ export default function ItemWrapper({
     const isReadOnly = useReadOnly();
 
     const [hovered, setHovered] = useState(false);
-    const isSelected = useMenuStore(state => state.selectedSmartLayoutItemId === itemId);
-    const isMenuOpen = useMenuStore(state => state.isOpen && state.smartLayoutItemId === itemId);
+    const isSelected = useUIStateStore(state => state.selectedSmartLayoutItemId === itemId);
+    const isMenuOpen = useUIStateStore(state => state.isContextMenuOpen && state.selectedSmartLayoutItemId === itemId);
     const itemRef = useRef<HTMLDivElement>(null);
     const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
     const { handleDragStart } = useDnd();
@@ -67,7 +67,7 @@ export default function ItemWrapper({
             onMouseLeave={() => setHovered(false)}
             onClick={() => {
                 if (!isReadOnly) {
-                    useMenuStore.getState().setSelectedSmartLayoutItemId(layoutId, elementId, itemId);
+                    useUIStateStore.getState().setSelectedSmartLayoutItemId(layoutId, elementId, itemId);
                 }
             }}
             data-smart-layout-item-id={itemId}
@@ -79,7 +79,7 @@ export default function ItemWrapper({
                     slideId={slideId}
                     isActive={isMenuOpen}
                     ariaLabel="Перетащить"
-                    handleClick={() => useMenuStore.getState().openMenu({ smartLayoutItemId: itemId })}
+                    handleClick={() => useUIStateStore.getState().openContextMenu({ smartLayoutItemId: itemId })}
                     handleKeyDown={() => {}}
                     handleDragStart={handleItemDragStart}
                     dataAttributes={{

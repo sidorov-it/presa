@@ -7,7 +7,7 @@ import { BoxElement } from '@/types';
 import SettingsSelector from '@/components/ui/SettingsSelector/SettingsSelector';
 
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import DeleteIcon from '@/components/icons/DeleteIcon';
 
 import { BoxIconOptions } from './BoxIconOptions';
@@ -102,7 +102,7 @@ const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ presentationId, slideId, lay
 
     const handleDelete = () => {
         deleteElement(presentationId, slideId, layoutId, elementId);
-        useMenuStore.getState().closeMenu();
+        useUIStateStore.getState().closeContextMenu();
     };
 
     return (

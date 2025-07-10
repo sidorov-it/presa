@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { BiBold, BiItalic, BiUnderline, BiX, BiArrowToLeft, BiArrowToRight } from 'react-icons/bi';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import { TipTapRefs } from '@/types';
 import { MutableRefObject } from 'react';
 import { MenuItem } from '../BaseMenu';
@@ -22,8 +22,8 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({ tableColumnIndex, pre
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
 
-    const tableColumnElements = useMenuStore(useShallow(state => state.getTableColumnElements()));
-    const currentHeadingLevel = useMenuStore(state => state.getCommonColumnHeadingLevel(tiptapRefs));
+    const tableColumnElements = useUIStateStore(useShallow(state => state.getTableColumnElements()));
+    const currentHeadingLevel = useUIStateStore(state => state.getCommonColumnHeadingLevel(tiptapRefs));
 
     const [localHeadingLevel, setLocalHeadingLevel] = useState<number>(currentHeadingLevel || 0);
 
@@ -157,22 +157,22 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({ tableColumnIndex, pre
 
     const handleAddColumnLeft = useCallback(() => {
         if (Number.isInteger(tableColumnIndex)) {
-            useMenuStore.getState().addColumnToTable(tableColumnIndex!);
-            useMenuStore.getState().closeMenu();
+            useUIStateStore.getState().addColumnToTable(tableColumnIndex!);
+            useUIStateStore.getState().closeContextMenu();
         }
     }, [tableColumnIndex]);
 
     const handleAddColumnRight = useCallback(() => {
         if (Number.isInteger(tableColumnIndex)) {
-            useMenuStore.getState().addColumnToTable(tableColumnIndex! + 1);
-            useMenuStore.getState().closeMenu();
+            useUIStateStore.getState().addColumnToTable(tableColumnIndex! + 1);
+            useUIStateStore.getState().closeContextMenu();
         }
     }, [tableColumnIndex]);
 
     const handleDeleteColumn = useCallback(() => {
         if (Number.isInteger(tableColumnIndex)) {
-            useMenuStore.getState().deleteColumnFromTable(tableColumnIndex!);
-            useMenuStore.getState().closeMenu();
+            useUIStateStore.getState().deleteColumnFromTable(tableColumnIndex!);
+            useUIStateStore.getState().closeContextMenu();
         }
     }, [tableColumnIndex]);
 

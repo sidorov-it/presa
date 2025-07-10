@@ -11,7 +11,7 @@ import { MenuElementType } from '@/types';
 import { Editor } from '@tiptap/react';
 import DragHandler from '../DragHandler';
 import ElementContent from '../ElementContent/ElementContent';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import { useShallow } from 'zustand/react/shallow';
 import adjustWidths from '@/utils/adjustWidths';
 import { OpenCustomMenuEvent } from '@/customEvents/OpenCustomMenuEvent';
@@ -21,22 +21,22 @@ import { getNewEditorElement } from '@/utils/getNewEditorElement';
 import { ElementType } from '@/types/elements';
 
 export const useIsSelectedRow = (tableId: string, rowIndex: number) =>
-    useMenuStore(state => state.tableRowIndex === rowIndex && state.tableId === tableId);
+    useUIStateStore(state => state.contextMenuTableRowIndex === rowIndex && state.contextMenuTableId === tableId);
 
 export const useIsSelectedColumn = (tableId: string, columnIndex: number) =>
-    useMenuStore(state => {
-        return state.tableColumnIndex === columnIndex && state.tableId === tableId;
+    useUIStateStore(state => {
+        return state.contextMenuTableColumnIndex === columnIndex && state.contextMenuTableId === tableId;
     });
 
 export const useIsHoveredRow = (tableId: string, rowIndex: number, columnIndex: number) =>
-    useMenuStore(state => columnIndex === 0 && state.hoveredRowIndex === rowIndex && state.hoveredTableId === tableId);
+    useUIStateStore(state => columnIndex === 0 && state.hoveredRowIndex === rowIndex && state.hoveredTableId === tableId);
 
 export const useIsHoveredColumn = (tableId: string, rowIndex: number, columnIndex: number) =>
-    useMenuStore(
+    useUIStateStore(
         state => rowIndex === 0 && state.hoveredColumnIndex === columnIndex && state.hoveredTableId === tableId
     );
 
-export const useMenuElementId = () => useMenuStore(state => state.elementId);
+export const useMenuElementId = () => useUIStateStore(state => state.selectedElementId);
 
 interface GridCellElementProps {
     cell: GridCell;
@@ -71,12 +71,12 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     const isSelectedColumn = useIsSelectedColumn(layoutId, columnIndex);
     const isHoveredColumn = useIsHoveredColumn(layoutId, rowIndex, columnIndex);
-    const isMenuCurrentColumn = useMenuStore(state => {
-        return state.tableColumnIndex === columnIndex && state.selectedTableId === layoutId;
+    const isMenuCurrentColumn = useUIStateStore(state => {
+        return state.contextMenuTableColumnIndex === columnIndex && state.selectedTableId === layoutId;
     });
 
-    const hasSelectedColumn = useMenuStore(state => !!state.tableColumnIndex && state.selectedTableId === layoutId);
-    const hasSelectedRow = useMenuStore(state => !!state.tableRowIndex && state.selectedTableId === layoutId);
+    const hasSelectedColumn = useUIStateStore(state => !!state.contextMenuTableColumnIndex && state.selectedTableId === layoutId);
+    const hasSelectedRow = useUIStateStore(state => !!state.contextMenuTableRowIndex && state.selectedTableId === layoutId);
 
     const elementsIds = usePresentationStore(
         useShallow(
@@ -108,7 +108,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         layoutId: storeLayoutId,
     } = usePresentationStore(state => state.resizeState);
 
-    const menuCellId = useMenuStore(state => state.cellId);
+    const menuCellId = useUIStateStore(state => state.selectedCellId);
 
     const isHoveredRow = useIsHoveredRow(layoutId, rowIndex, columnIndex);
     const isSelectedRow = useIsSelectedRow(layoutId, rowIndex);
@@ -119,7 +119,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     const handleDragStart = useHandleDragStart();
 
-    const layoutIsFocused = useMenuStore(state => state.focusedLayoutId === layoutId);
+    const layoutIsFocused = useUIStateStore(state => state.focusedLayoutId === layoutId);
 
     // const [elementIsHovered, setElementIsHovered] = useState(false);
     const [cellIsHovered, setCellIsHovered] = useState(false);
@@ -136,7 +136,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const handleMenuClick = useCallback(
         (menuData: { elementId: string; elementType: MenuElementType; activeEditor?: Editor }) => {
             useEditorStore.getState().setActiveEditor(menuData.activeEditor ?? null);
-            useMenuStore.getState().openMenu({
+            useUIStateStore.getState().openContextMenu({
                 slideId,
                 elementId: menuData.elementId,
                 elementType: menuData.elementType,
@@ -377,7 +377,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const className = `${styles.gridCellElement} ${hasMultipleCells ? styles.multiCell : ''}  ${isTable ? styles.tableCell : ''}`;
 
     const handleClickCellDragHandle = useCallback(() => {
-        useMenuStore.getState().openMenu({
+        useUIStateStore.getState().openContextMenu({
             slideId,
             elementId: null,
             elementType: 'cell',
@@ -417,7 +417,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         if (!layout) return;
 
         if (layout.gridStructure.columns === 1) {
-            useMenuStore.getState().openMenu({
+            useUIStateStore.getState().openContextMenu({
                 slideId,
                 elementId: null,
                 layoutId,
@@ -428,7 +428,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 tableId: null,
             });
         } else {
-            useMenuStore.getState().openMenu({
+            useUIStateStore.getState().openContextMenu({
                 slideId,
                 elementId: null,
                 layoutId,
@@ -442,7 +442,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     }, [slideId, presentationId, layoutId, columnIndex]);
 
     const handleOpenRowMenu = useCallback(() => {
-        useMenuStore.getState().openMenu({
+        useUIStateStore.getState().openContextMenu({
             slideId,
             elementId: null,
             layoutId,
@@ -613,7 +613,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 }
 
                 if (isTable) {
-                    useMenuStore.getState().hoverTableCell(layoutId, rowIndex, columnIndex);
+                    useUIStateStore.getState().hoverTableCell(layoutId, rowIndex, columnIndex);
                 }
                 setCellIsHovered(true);
             }}

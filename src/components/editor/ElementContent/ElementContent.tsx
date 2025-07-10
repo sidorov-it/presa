@@ -10,7 +10,7 @@ import { useEditorStore } from '@/store/editorStore';
 import { useHistoryStore } from '@/store/historyStore';
 
 import Image from '@/elements/image';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import { useShallow } from 'zustand/react/shallow';
 import Chart from '@/elements/chart';
 import SmartLayout from '@/elements/smartLayout/SmartLayout';
@@ -67,10 +67,10 @@ export const ElementContent = ({
     const elementConfig = useMemo(() => getElementConfig(elementTypeId), [elementTypeId]);
     const slideBackground = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background?.value);
 
-    const isMenuOpenOnCurrentElement = useMenuStore(
+    const isMenuOpenOnCurrentElement = useUIStateStore(
         useShallow(
             state =>
-                state.elementId === elementId &&
+                state.selectedElementId === elementId &&
                 (elementTypeId !== 'smart-layout' || state.selectedSmartLayoutItemId === null)
         )
     );
@@ -646,7 +646,7 @@ export const ElementContent = ({
 
     const handleBlur = useCallback(() => {
         useEditorStore.getState().setActiveEditor(null);
-        useMenuStore.getState().closeMenu();
+        useUIStateStore.getState().closeContextMenu();
     }, []);
 
     const renderElementContent = useCallback(

@@ -3,7 +3,7 @@ import { BiBold, BiItalic, BiUnderline, BiX, BiArrowToTop, BiArrowToBottom } fro
 import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
 import HeadingSelector from '@/components/settings/HeadingSelector/HeadingSelector';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import { TipTapRefs } from '@/types';
 import { MenuItem } from '../BaseMenu';
 import { useShallow } from 'zustand/react/shallow';
@@ -21,8 +21,8 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, presentation
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
 
-    const tableRowElements = useMenuStore(useShallow(state => state.getTableRowElements()));
-    const currentHeadingLevel = useMenuStore(useShallow(state => state.getCommonRowHeadingLevel(tiptapRefs) || 0));
+    const tableRowElements = useUIStateStore(useShallow(state => state.getTableRowElements()));
+    const currentHeadingLevel = useUIStateStore(useShallow(state => state.getCommonRowHeadingLevel(tiptapRefs) || 0));
 
     const [localHeadingLevel, setLocalHeadingLevel] = useState<number>(currentHeadingLevel || 0);
 
@@ -191,22 +191,22 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, presentation
     // Table row operations
     const handleAddRowAbove = useCallback(() => {
         if (Number.isInteger(tableRowIndex)) {
-            useMenuStore.getState().addRowToTable(tableRowIndex!);
-            useMenuStore.getState().closeMenu();
+            useUIStateStore.getState().addRowToTable(tableRowIndex!);
+            useUIStateStore.getState().closeContextMenu();
         }
     }, [tableRowIndex]);
 
     const handleAddRowBelow = useCallback(() => {
         if (Number.isInteger(tableRowIndex)) {
-            useMenuStore.getState().addRowToTable(tableRowIndex! + 1);
-            useMenuStore.getState().closeMenu();
+            useUIStateStore.getState().addRowToTable(tableRowIndex! + 1);
+            useUIStateStore.getState().closeContextMenu();
         }
     }, [tableRowIndex]);
 
     const handleDeleteRow = useCallback(() => {
         if (Number.isInteger(tableRowIndex)) {
-            useMenuStore.getState().deleteRowFromTable(tableRowIndex!);
-            useMenuStore.getState().closeMenu();
+            useUIStateStore.getState().deleteRowFromTable(tableRowIndex!);
+            useUIStateStore.getState().closeContextMenu();
         }
     }, [tableRowIndex]);
 

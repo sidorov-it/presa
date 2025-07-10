@@ -11,7 +11,7 @@ import DragHandler from '../DragHandler';
 import TemplateButton from '../TemplateButton/TemplateButton';
 import AIEditButton from '../AIEditButton/AIEditButton';
 import ResizableTemplateImage from '../ResizableTemplateImage';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import deepEqual from 'deep-equal';
 import { useDnd } from '@/contexts/DragDropContext';
 import { TEXT_ELEMENT_TYPES } from '@/elements/menuRegistry';
@@ -45,7 +45,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const [isHovered, setIsHovered] = useState(false);
     const [showHeightIndicator, setShowHeightIndicator] = useState(false);
     const [standardHeight, setStandardHeight] = useState(0);
-    const openMenu = useMenuStore.getState().openMenu;
+    const openMenu = useUIStateStore.getState().openContextMenu;
 
     const slideRef = useRef<HTMLDivElement>(null);
 
@@ -96,13 +96,10 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         setShowAIGenerator(true);
     };
 
-    const handleTestTemplate = useCallback(
-        (e: React.MouseEvent<HTMLButtonElement>) => {
-            e.stopPropagation();
-            setShowTemplateTestModal(true);
-        },
-        []
-    );
+    const handleTestTemplate = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        setShowTemplateTestModal(true);
+    }, []);
 
     const handleTemplateTest = useCallback(
         async (templateId: string) => {
@@ -120,11 +117,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 }
 
                 const result = await response.json();
-                
+
                 // Add the test slide after the current slide
                 const getSlideIndex = usePresentationStore.getState().getSlideIndex;
                 const slideIndex = getSlideIndex(presentationId, slideId);
-                
+
                 if (slideIndex !== -1) {
                     const newSlideIndex = slideIndex + 1;
                     usePresentationStore.getState().addSlide(presentationId, result.slide, newSlideIndex);
@@ -175,7 +172,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         return style;
     }, [imageUrl, templateType, backgroundType, backgroundValue]);
 
-    const slideMenuOpen = useMenuStore(state => state.checkSlideMenuIsOpen(slideId));
+    const slideMenuOpen = useUIStateStore(state => state.checkSlideContextMenuIsOpen(slideId));
 
     const handleSlideWrapperClick = useCallback(
         (e: React.MouseEvent) => {

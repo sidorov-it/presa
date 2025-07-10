@@ -17,7 +17,7 @@ import { MenuItem } from '@/components/editor/SlideMenu/BaseMenu';
 import AlignmentGroup from '@/components/settings/AlignmentGroup/AlignmentGroup';
 import { DeleteIcon } from '@/components/icons';
 import { generateId } from '@/utils/id';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import { useHistoryStore } from '@/store/historyStore';
 import { getPredefinedGridStructures } from '@/utils/getPredefinedGridStructures';
 import { getNewEditorElement } from '@/utils/getNewEditorElement';
@@ -121,7 +121,7 @@ export default function ImageWithTextSettings({
             // удаляем лайаут
             usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
         }
-        useMenuStore.getState().closeMenu();
+        useUIStateStore.getState().closeContextMenu();
     }, [presentationId, slideId, layoutId, element.cellId, elementId]);
 
     const handleChangeElement = useCallback(

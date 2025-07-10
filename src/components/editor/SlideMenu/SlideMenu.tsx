@@ -15,13 +15,13 @@ import {
 import RowTableMenu from './RowTableMenu/RowTableMenu';
 import ColumnTableMenu from './ColumnTableMenu/ColumnTableMenu';
 import {
-    useMenuIsOpen,
-    useMenuStore,
-    useMenuSelectedElement,
-    useMenuSelectedLayout,
-    useMenuSelectedSlide,
-    useMenuSelectedCell,
-} from '@/store/menuStore';
+    useIsContextMenuOpen,
+    useUIStateStore,
+    useSelectedElementId,
+    useSelectedLayoutId,
+    useSelectedSlideId,
+    useSelectedCellId,
+} from '@/store/uiStateStore';
 import { usePresentationStore } from '@/store/presentationStore';
 import { TipTapRefs } from '@/types';
 import TableMenu from './TableMenu/TableMenu';
@@ -46,27 +46,27 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
         getCell,
         getSlide,
         mergeSlideWithPrevious,
-    } = useMenuStore();
+    } = useUIStateStore();
 
     const { activeEditor } = useEditorStore();
 
     const [isTable, setIsTable] = useState(false);
 
-    const slideId = useMenuSelectedSlide();
-    const layoutId = useMenuSelectedLayout();
-    const cellId = useMenuSelectedCell();
-    const elementId = useMenuSelectedElement();
-    const presentationId = useMenuStore(state => state.presentationId);
+    const slideId = useSelectedSlideId();
+    const layoutId = useSelectedLayoutId();
+    const cellId = useSelectedCellId();
+    const elementId = useSelectedElementId();
+    const presentationId = useUIStateStore(state => state.currentPresentationId);
     const presentation = usePresentationStore(state => state.getPresentation(presentationId ?? ''));
-    const elementType = useMenuStore(state => state.elementType);
-    const isOpen = useMenuIsOpen();
+    const elementType = useUIStateStore(state => state.contextMenuElementType);
+    const isOpen = useIsContextMenuOpen();
 
-    const isTextEditor = useMenuStore(state => state.isTextEditor);
-    const isInTable = useMenuStore(state => state.isInTable);
+    const isTextEditor = useUIStateStore(state => state.isContextMenuOnTextEditor);
+    const isInTable = useUIStateStore(state => state.isContextMenuInTable);
 
-    const tableRowIndex = useMenuStore(state => state.tableRowIndex);
-    const tableColumnIndex = useMenuStore(state => state.tableColumnIndex);
-    const columnIndex = useMenuStore(state => state.columnIndex);
+    const tableRowIndex = useUIStateStore(state => state.contextMenuTableRowIndex);
+    const tableColumnIndex = useUIStateStore(state => state.contextMenuTableColumnIndex);
+    const columnIndex = useUIStateStore(state => state.contextMenuColumnIndex);
 
     const cell = getCell(slideId, layoutId, cellId);
     const element = getElement(slideId, layoutId, elementId);
@@ -155,46 +155,46 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
     const handleAddCellLeft = useCallback(() => {
         if (Number.isInteger(columnIndex)) {
             addColumnLeft(columnIndex!);
-            useMenuStore.getState().closeMenu();
+            useUIStateStore.getState().closeContextMenu();
         }
     }, [columnIndex, addColumnLeft]);
 
     const handleAddCellRight = useCallback(() => {
         if (Number.isInteger(columnIndex)) {
             addColumnRight(columnIndex!);
-            useMenuStore.getState().closeMenu();
+            useUIStateStore.getState().closeContextMenu();
         }
     }, [columnIndex, addColumnRight]);
 
     const handleDuplicateColumn = useCallback(() => {
         duplicateColumn();
-        useMenuStore.getState().closeMenu();
+        useUIStateStore.getState().closeContextMenu();
     }, [duplicateColumn]);
 
     const handleAlignColumnTop = useCallback(() => {
         alignColumnTop();
-        useMenuStore.getState().closeMenu();
+        useUIStateStore.getState().closeContextMenu();
     }, [alignColumnTop]);
 
     const handleAlignColumnCenter = useCallback(() => {
         alignColumnCenter();
-        useMenuStore.getState().closeMenu();
+        useUIStateStore.getState().closeContextMenu();
     }, [alignColumnCenter]);
 
     const handleAlignColumnBottom = useCallback(() => {
         alignColumnBottom();
-        useMenuStore.getState().closeMenu();
+        useUIStateStore.getState().closeContextMenu();
     }, [alignColumnBottom]);
 
     const handleDeleteCell = useCallback(() => {
         deleteCell();
-        useMenuStore.getState().closeMenu();
+        useUIStateStore.getState().closeContextMenu();
     }, [deleteCell]);
 
     const handleMergeSlide = useCallback(() => {
         if (slideId) {
             mergeSlideWithPrevious();
-            useMenuStore.getState().closeMenu();
+            useUIStateStore.getState().closeContextMenu();
         }
     }, [slideId, mergeSlideWithPrevious]);
 
