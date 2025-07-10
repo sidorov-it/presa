@@ -221,7 +221,10 @@ export const createSlideFromTemplateWithContent = async ({
                 } else {
                     // Handle regular text element
                     // const content = elementContent[mapping.items?.[0]?.key] || '';
-                    newElement = getNewEditorElementFromMarkdown(elementContent || elementConfig.props?.content || '');
+                    newElement = getNewEditorElementFromMarkdown(
+                        elementContent || elementConfig.props?.content || '',
+                        elementConfig.props?.textType
+                    );
                 }
 
                 // const elementConfig = element;

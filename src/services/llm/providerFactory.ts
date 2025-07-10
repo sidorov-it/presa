@@ -1,6 +1,7 @@
 import { SupportedLLMProvider, LLMService } from '@/types/llm';
 import { GigaChatService } from './gigaChat/gigaChat';
 import { YaGptService } from './yaGpt/yaGpt';
+import { MockGptService } from './mockGpt/mockGpt';
 
 interface CreateServiceOptions {
     userId: string;
@@ -16,6 +17,8 @@ export function createLLMService({ userId, provider }: CreateServiceOptions): LL
             return new GigaChatService({ userId });
         case 'yagpt':
             return new YaGptService({ userId });
+        case 'mock':
+            return new MockGptService({ userId });
         default:
             throw new Error(`Unsupported LLM provider: ${selectedProvider}`);
     }

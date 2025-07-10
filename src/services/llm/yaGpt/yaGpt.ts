@@ -102,7 +102,7 @@ export class YaGptService implements LLMService {
             function_call?: any;
             requireFunctionCall?: boolean;
             __attemptCount?: number;
-            requestId: string;
+            requestId?: string;
         } = {}
     ): Promise<LLMResponse> {
         const start = Date.now();

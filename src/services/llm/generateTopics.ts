@@ -121,7 +121,7 @@ async function generateTopics(
         }
 
         // Ensure we have exactly the requested number of slides
-        topics = topics.slice(0, numSlides);
+        // topics = topics.slice(0, numSlides);
         while (topics.length < numSlides) {
             topics.push({
                 title: `Слайд ${topics.length + 1}`,

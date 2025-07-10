@@ -51,4 +51,9 @@ export interface YaGptConfig {
     userId: string;
 }
 
-export type SupportedLLMProvider = 'gigachat' | 'yagpt';
+// Configuration for Mock LLM initialization
+export interface MockGptConfig {
+    userId: string;
+}
+
+export type SupportedLLMProvider = 'gigachat' | 'yagpt' | 'mock';

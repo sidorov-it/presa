@@ -12,7 +12,7 @@ import { markdownToHtml } from '@/utils/markdownToHtml';
 
 // Placeholder content generators based on element type and context
 const generatePlaceholderContent = (type: string, description?: string, purpose?: string): string => {
-    const templates = {
+    const templates: Record<string, string[]> = {
         title: [
             'Заголовок презентации',
             'Основная тема слайда',
@@ -22,9 +22,6 @@ const generatePlaceholderContent = (type: string, description?: string, purpose?
         ],
         heading: ['## Важный раздел', 'Ключевая информация', 'Основные моменты', 'Главные аспекты', 'Центральные идеи'],
         content: [
-            // 'Это пример содержимого для демонстрации структуры шаблона. Здесь может быть размещен любой текст, который поможет понять, как будет выглядеть готовый слайд.',
-            // 'Демонстрационный контент показывает, как информация будет представлена в данном разделе слайда. Это помогает оценить визуальную структуру.',
-            // 'Тестовое содержимое для проверки макета и расположения элементов. Позволяет увидеть финальный вид слайда перед добавлением реального контента.',
             '# Спасибо за внимание!\n\nВаше время ценно, и я рад, что смог поделиться с вами прогнозами и тенденциями в области искусственного интеллекта на ближайшие годы.',
             '### Что делать дальше?\n- Изучите материалы по ИИ и машинному обучению.\n- Подпишитесь на наши обновления, чтобы быть в курсе последних новостей.\n- Присоединяйтесь к нашим семинарам и вебинарам.',
             '### Свяжитесь со мной:\n📧 Email: example@example.com\n📞 Телефон: +123456789\n🌐 Сайт: www.example.com',
@@ -34,13 +31,11 @@ const generatePlaceholderContent = (type: string, description?: string, purpose?
             'Дополнительная информация для лучшего понимания',
             'Поясняющий текст к представленным данным',
         ],
-        image: [
-            '/uploads/fbv8kc60ab1n7s95m3l5.jpg',
-        ],
+        image: ['/uploads/fbv8kc60ab1n7s95m3l5.jpg'],
     };
 
     // Determine content type based on description and purpose
-    let contentType = 'content';
+    let contentType: keyof typeof templates = 'content';
     if (description || purpose) {
         const text = (description || purpose || '').toLowerCase();
         if (text.includes('заголовок') || text.includes('title') || text.includes('heading')) {
@@ -75,8 +70,8 @@ const generatePlaceholderList = (count: number = 3): string[] => {
 };
 
 // Generate placeholder smart layout items
-const generatePlaceholderSmartLayoutItems = (itemsSchema: any[], count: number = 3) => {
-    const result = {};
+const generatePlaceholderSmartLayoutItems = (itemsSchema: any[], count: number = 3): Record<string, any> => {
+    const result: Record<string, any> = {};
 
     for (let i = 0; i < count; i++) {
         itemsSchema.forEach(schemaItem => {
@@ -147,23 +142,24 @@ export async function POST(request: NextRequest) {
         const { functionSchema, slotMapping } = createGenerateSlideContentFunction(template);
 
         // Generate placeholder content based on the schema
-        const placeholderArgs = {};
+        const placeholderArgs: Record<string, any> = {};
 
         for (const [key, propertySchema] of Object.entries(functionSchema.parameters.properties)) {
             const slotInfo = slotMapping.get(key);
+            const typedPropertySchema = propertySchema as any;
 
-            if (propertySchema.type === 'object') {
+            if (typedPropertySchema.type === 'object') {
                 // Smart layout items
                 if (slotInfo?.items) {
                     const itemsData = generatePlaceholderSmartLayoutItems(slotInfo.items, 3);
                     placeholderArgs[key] = itemsData;
                 }
-            } else if (propertySchema.type === 'array') {
+            } else if (typedPropertySchema.type === 'array') {
                 // List items
                 placeholderArgs[key] = generatePlaceholderList(3);
             } else {
                 // String content
-                const description = propertySchema.description;
+                const description = typedPropertySchema.description;
                 const purpose = slotInfo?.llmHints?.purpose;
 
                 // Special handling for chart data
