@@ -41,43 +41,43 @@
 .label {
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--chakra-colors-gray-700);
+    color: var(--color-text);
 }
 
 .input {
     width: 100%;
     padding: 0.5rem 0.75rem;
-    border: 1px solid var(--chakra-colors-gray-300);
-    border-radius: var(--chakra-radii-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
     font-size: 0.875rem;
-    background-color: var(--chakra-colors-white);
+    background-color: var(--color-background);
     transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .input:focus {
     outline: none;
-    border-color: var(--chakra-colors-blue-500);
-    box-shadow: 0 0 0 3px var(--chakra-colors-blue-100);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary);
 }
 
 .inputDisabled {
-    background-color: var(--chakra-colors-gray-100);
-    color: var(--chakra-colors-gray-500);
+    background-color: var(--color-surface);
+    color: var(--color-text-light);
     cursor: not-allowed;
 }
 
 .helperText {
     font-size: 0.75rem;
-    color: var(--chakra-colors-gray-500);
+    color: var(--color-text-light);
     margin-top: 0.25rem;
 }
 
 .submitButton {
     align-self: flex-start;
-    background-color: var(--chakra-colors-blue-500);
-    color: var(--chakra-colors-white);
+    background-color: var(--color-primary);
+    color: var(--color-button-text);
     border: none;
-    border-radius: var(--chakra-radii-md);
+    border-radius: var(--radius-md);
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
     font-weight: 500;
@@ -86,7 +86,7 @@
 }
 
 .submitButton:hover:not(:disabled) {
-    background-color: var(--chakra-colors-blue-600);
+    background-color: var(--color-primary-dark);
 }
 
 .submitButton:disabled {
@@ -103,7 +103,7 @@
 
 .emailPreferencesDescription {
     font-size: 0.875rem;
-    color: var(--chakra-colors-gray-600);
+    color: var(--color-text-light);
     margin-top: 0.25rem;
 }
 
@@ -114,7 +114,7 @@
 .checkbox {
     width: 1rem;
     height: 1rem;
-    accent-color: var(--chakra-colors-blue-500);
+    accent-color: var(--color-primary);
     cursor: pointer;
 }
 
@@ -128,8 +128,8 @@
 .spinner {
     width: 2rem;
     height: 2rem;
-    border: 2px solid var(--chakra-colors-gray-200);
-    border-top: 2px solid var(--chakra-colors-blue-500);
+    border: 2px solid var(--color-border);
+    border-top: 2px solid var(--color-primary);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }

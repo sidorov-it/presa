@@ -5,6 +5,8 @@ import { useSession } from 'next-auth/react';
 import { Heading } from '@/components/ui/heading';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card/Card';
 import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Checkbox } from '@/components/ui/Checkbox';
 import { toast } from 'sonner';
 import styles from './page.module.css';
 
@@ -264,7 +266,7 @@ const SettingsPage = () => {
                                 <label htmlFor="name" className={styles.label}>
                                     Имя
                                 </label>
-                                <input
+                                <Input
                                     type="text"
                                     id="name"
                                     value={name}
@@ -277,7 +279,7 @@ const SettingsPage = () => {
                                 <label htmlFor="email" className={styles.label}>
                                     Email
                                 </label>
-                                <input
+                                <Input
                                     type="email"
                                     id="email"
                                     value={session?.user?.email || ''}
@@ -304,7 +306,7 @@ const SettingsPage = () => {
                                 <label htmlFor="currentPassword" className={styles.label}>
                                     Текущий пароль
                                 </label>
-                                <input
+                                <Input
                                     type="password"
                                     id="currentPassword"
                                     value={currentPassword}
@@ -317,7 +319,7 @@ const SettingsPage = () => {
                                 <label htmlFor="newPassword" className={styles.label}>
                                     Новый пароль
                                 </label>
-                                <input
+                                <Input
                                     type="password"
                                     id="newPassword"
                                     value={newPassword}
@@ -331,7 +333,7 @@ const SettingsPage = () => {
                                 <label htmlFor="confirmPassword" className={styles.label}>
                                     Подтвердить новый пароль
                                 </label>
-                                <input
+                                <Input
                                     type="password"
                                     id="confirmPassword"
                                     value={confirmPassword}
@@ -364,12 +366,11 @@ const SettingsPage = () => {
                                     </p>
                                 </div>
                                 <div className={styles.checkboxGroup}>
-                                    <input
-                                        type="checkbox"
+                                    <Checkbox
                                         id="emailUpdates"
                                         checked={emailUpdates}
                                         onChange={e => {
-                                            const newValue = e.target.checked;
+                                            const newValue = (e.target as HTMLInputElement).checked;
                                             console.log('Checkbox toggled to:', newValue);
                                             setEmailUpdates(newValue);
                                         }}
