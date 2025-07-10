@@ -15,6 +15,7 @@ import styles from './page.module.css';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { HiOutlineDotsVertical } from 'react-icons/hi';
+import { Heading } from '@/components/ui/heading';
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -238,7 +239,7 @@ export default function DashboardPage() {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Мои презентации</h1>
+                <Heading title="Мои презентации" description="Управление и редактирование ваших презентаций" />
                 <div className={styles.buttonGroup}>
                     <Button variant="premium" onClick={handleCreateWithAI}>
                         <FaMagic className={styles.buttonIcon} />

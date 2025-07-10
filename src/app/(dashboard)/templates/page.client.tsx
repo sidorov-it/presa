@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import SlidePreview from '../dashboard/components/SlidePreview';
 import { PresentationTemplates, PresentationTemplateKeys } from '@/presentationTemplates';
 import styles from './page.module.css';
+import { Heading } from '@/components/ui/heading';
 import { useThemeStore } from '@/store/themeStore';
 import TemplatePreviewModal from '@/components/templates/TemplatePreviewModal';
 
@@ -54,7 +55,7 @@ const TemplatesPage = () => {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Шаблоны</h1>
+                <Heading title="Шаблоны" description="Выберите шаблон презентации" />
             </div>
 
             {isLoading ? (

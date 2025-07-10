@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import styles from './page.module.css';
+import { Heading } from '@/components/ui/heading';
 import ThemePreviewBlock from './components/ThemePreviewBlock';
 import { Tabs as ChakraTabs } from '@chakra-ui/react';
 import { useThemeStore } from '@/store/themeStore';
@@ -66,7 +67,7 @@ export default function ThemesPage() {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Темы</h1>
+                <Heading title="Темы" description="Управление темами оформления" />
                 <Link href="/themes/new">
                     <Button className={styles.addButton}>
                         <Plus className={styles.buttonIcon} />

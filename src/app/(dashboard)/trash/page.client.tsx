@@ -6,6 +6,7 @@ import { FaTrashRestore, FaTrashAlt, FaRegClock } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { pluralize } from '@/utils/helpers';
 import styles from './page.module.css';
+import { Heading } from '@/components/ui/heading';
 
 interface DeletedPresentation {
     id: string;
@@ -99,10 +100,10 @@ export default function TrashPage() {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Корзина</h1>
-                <p className={styles.description}>
-                    Удаленные презентации хранятся 30 дней перед окончательным удалением
-                </p>
+                <Heading
+                    title="Корзина"
+                    description="Удаленные презентации хранятся 30 дней перед окончательным удалением"
+                />
             </div>
 
             {isLoading && (

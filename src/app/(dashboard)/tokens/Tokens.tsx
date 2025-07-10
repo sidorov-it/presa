@@ -8,6 +8,7 @@ import { TokenPackage } from '@/types/tokens';
 import { FaCreditCard, FaHistory, FaCoins, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import { HiOutlineCreditCard } from 'react-icons/hi2';
 import { PaymentStatus } from '@/components/tokens/PaymentStatus';
+import { Heading } from '@/components/ui/heading';
 import styles from './page.module.css';
 
 interface TransactionRowProps {
@@ -192,8 +193,7 @@ const Tokens = () => {
             <div className={styles.content}>
                 {/* Header */}
                 <div className={styles.header}>
-                    <h1 className={styles.title}>Токены</h1>
-                    <p className={styles.subtitle}>Управляйте своими токенами для использования AI-функций</p>
+                    <Heading title="Токены" description="Управляйте своими токенами для использования AI-функций" />
                 </div>
 
                 {/* Notifications */}
