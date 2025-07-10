@@ -11,6 +11,7 @@ import isEditorPropertyConsistent from '@/utils/isEditorPropertyConsistent';
 import DeleteIcon from '@/components/icons/DeleteIcon';
 import { useHistoryStore } from '@/store/historyStore';
 import { usePresentationStore } from '@/store/presentationStore';
+import { NORMAL_TEXT_LEVEL } from '@/constants/consts';
 interface RowTableMenuProps {
     elementId?: string;
     tableRowIndex?: number;
@@ -24,7 +25,7 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, presentation
 
     const selectedState = useSelectedState();
 
-    const selectedRowIndex = useUIStateStore(state => state.selectedRowIndex);
+    const selectedRowIndex = useUIStateStore(state => state.contextMenuTableRowIndex);
 
     const tableRowElements = usePresentationStore(
         useShallow(state =>
@@ -207,7 +208,13 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, presentation
         tableRowElements.forEach(element => {
             const editor = tiptapRefs.current.editors[element.id]?.editor;
             if (editor) {
-                editor.chain().setMeta('transaction', true).clearNodes().unsetAllMarks().run();
+                editor
+                    .chain()
+                    .setMeta('transaction', true)
+                    .clearNodes()
+                    .unsetAllMarks()
+                    .setFontSize(NORMAL_TEXT_LEVEL)
+                    .run();
             }
         });
         useHistoryStore.getState().commitTransaction(presentationId);

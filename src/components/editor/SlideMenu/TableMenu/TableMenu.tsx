@@ -14,6 +14,7 @@ import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
 import { DeleteIcon } from '@/components/icons';
 import { useHistoryStore } from '@/store/historyStore';
 import { usePresentationStore } from '@/store/presentationStore';
+import { NORMAL_TEXT_LEVEL } from '@/constants/consts';
 
 interface TableMenuProps {
     presentationId: string;
@@ -202,6 +203,7 @@ const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, presentationId, posit
                 .focus(null, { scrollIntoView: false })
                 .selectAll()
                 .unsetAllMarks()
+                .setFontSize(NORMAL_TEXT_LEVEL)
                 .run();
         });
         useHistoryStore.getState().commitTransaction(presentationId);

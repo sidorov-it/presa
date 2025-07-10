@@ -74,14 +74,14 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     const isSelectedColumn = useIsSelectedColumn(layoutId, columnIndex);
     const isHoveredColumn = useIsHoveredColumn(layoutId, rowIndex, columnIndex);
     const isMenuCurrentColumn = useUIStateStore(state => {
-        return state.contextMenuTableColumnIndex === columnIndex && state.selectedTableId === layoutId;
+        return state.contextMenuTableColumnIndex === columnIndex && state.contextMenuTableId === layoutId;
     });
 
     const hasSelectedColumn = useUIStateStore(
-        state => !!state.contextMenuTableColumnIndex && state.selectedTableId === layoutId
+        state => !!state.contextMenuTableColumnIndex && state.contextMenuTableId === layoutId
     );
     const hasSelectedRow = useUIStateStore(
-        state => !!state.contextMenuTableRowIndex && state.selectedTableId === layoutId
+        state => !!state.contextMenuTableRowIndex && state.contextMenuTableId === layoutId
     );
 
     const elementsIds = usePresentationStore(

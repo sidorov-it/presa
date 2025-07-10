@@ -12,6 +12,7 @@ import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
 import DeleteIcon from '@/components/icons/DeleteIcon';
 import { useHistoryStore } from '@/store/historyStore';
 import { usePresentationStore } from '@/store/presentationStore';
+import { NORMAL_TEXT_LEVEL } from '@/constants/consts';
 interface ColumnTableMenuProps {
     elementId?: string;
     presentationId: string;
@@ -23,7 +24,8 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({ tableColumnIndex, pre
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
 
-    const selectedColumnIndex = useUIStateStore(state => state.selectedColumnIndex);
+    const selectedColumnIndex = useUIStateStore(state => state.contextMenuTableColumnIndex);
+
     const selectedState = useSelectedState();
 
     const tableColumnElements = usePresentationStore(
@@ -172,7 +174,13 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({ tableColumnIndex, pre
         tableColumnElements.forEach(element => {
             const editor = tiptapRefs.current.editors[element.id]?.editor;
             if (editor) {
-                editor.chain().setMeta('transaction', true).clearNodes().unsetAllMarks().run();
+                editor
+                    .chain()
+                    .setMeta('transaction', true)
+                    .clearNodes()
+                    .unsetAllMarks()
+                    .setFontSize(NORMAL_TEXT_LEVEL)
+                    .run();
             }
         });
         useHistoryStore.getState().commitTransaction(presentationId);

@@ -3,7 +3,7 @@ import { useSelectedState, useUIStateStore } from '@/store/uiStateStore';
 import { BaseMenu, MenuItem } from '../BaseMenu';
 import { AlignTopIcon, AlignCenterIcon, AlignBottomIcon, DeleteIcon } from '@/components/icons';
 
-import { useMenuSelectedSlide } from '@/store/menuStore';
+// import { useMenuSelectedSlide } from '@/store/menuStore';
 import { usePresentationStore } from '@/store/presentationStore';
 import { LayoutType } from '@/types';
 import LayoutTemplateDropdown from '../LayoutTemplateDropdown/LayoutTemplateDropdown';
@@ -24,7 +24,7 @@ export default function LayoutMenu({ position, layoutId }: LayoutMenuProps) {
         selectedState.selectedLayoutId!
     );
 
-    const slideId = useMenuSelectedSlide();
+    const slideId = selectedState.selectedSlideId;
     const layout = slideId && layoutId ? getLayout(selectedState.presentationId!, slideId, layoutId) : null;
 
     const currentLayoutType = layout?.type || 'custom';
