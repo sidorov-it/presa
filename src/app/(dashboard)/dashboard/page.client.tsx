@@ -13,6 +13,7 @@ import { IPresentation } from '@/types';
 import { pluralize, formatRelativeTime } from '@/utils/helpers';
 import styles from './page.module.css';
 import { Button } from '@/components/ui/Button';
+import { Heading } from '@/components/ui/heading';
 import Link from 'next/link';
 import { HiOutlineDotsVertical } from 'react-icons/hi';
 
@@ -65,12 +66,13 @@ export default function DashboardPage() {
     }, [loadPresentationsList]);
 
     useEffect(() => {
-        if (isLoadingPresentations && isLoadingThemes) {
+        if (isLoadingPresentations || isLoadingThemes) {
             setIsLoading(true);
         } else {
             setIsLoading(false);
         }
     }, [isLoadingPresentations, isLoadingThemes]);
+
     // Update local state when presentations or sorting change
     useEffect(() => {
         const sorted = [...presentations].sort((a, b) => {
@@ -238,7 +240,11 @@ export default function DashboardPage() {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Мои презентации</h1>
+                <Heading
+                    title="Мои презентации"
+                    description="Управление и редактирование ваших презентаций"
+                    withoutMargin={true}
+                />
                 <div className={styles.buttonGroup}>
                     <Button variant="premium" onClick={handleCreateWithAI}>
                         <FaMagic className={styles.buttonIcon} />

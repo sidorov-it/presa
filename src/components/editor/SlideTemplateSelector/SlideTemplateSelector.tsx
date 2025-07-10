@@ -1,6 +1,6 @@
 import React, { MutableRefObject, useCallback, useState } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
-import { SLIDE_TEMPLATES, TipTapRefs } from '@/types';
+import { SLIDE_TEMPLATES, SmartLayoutElement, SmartLayoutItem, TipTapRefs } from '@/types';
 import styles from './SlideTemplateSelector.module.css';
 import ColorPicker from '@/components/ui/ColorPicker';
 import { MdOutlineVerticalAlignTop, MdOutlineVerticalAlignCenter, MdOutlineVerticalAlignBottom } from 'react-icons/md';
@@ -9,6 +9,7 @@ import { FiLoader } from 'react-icons/fi';
 import { useThemeStore } from '@/store/themeStore';
 import { useShallow } from 'zustand/react/shallow';
 import getContrastTextColor from '@/utils/getContrastTextColor';
+import { ElementType } from '@/types/elements';
 
 type SlideTemplateType = (typeof SLIDE_TEMPLATES)[number]['value'];
 type ContentAlignment = 'top' | 'center' | 'bottom';
@@ -159,6 +160,32 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                         .setColor(color)
                         .blur()
                         .run();
+                } else if (element.elementTypeId === ElementType.SMART_LAYOUT) {
+                    (element as SmartLayoutElement).items.forEach((item: SmartLayoutItem) => {
+                        const titleEditor = tiptapRefs.current.editors[`title-${element.id}-${item.id}`];
+                        const textEditor = tiptapRefs.current.editors[`text-${element.id}-${item.id}`];
+
+                        if (titleEditor) {
+                            titleEditor.editor
+                                .chain()
+                                .setMeta('transaction', true)
+                                .focus(null, { scrollIntoView: false })
+                                .selectAll()
+                                .setColor(color)
+                                .blur()
+                                .run();
+                        }
+                        if (textEditor) {
+                            textEditor.editor
+                                .chain()
+                                .setMeta('transaction', true)
+                                .focus(null, { scrollIntoView: false })
+                                .selectAll()
+                                .setColor(color)
+                                .blur()
+                                .run();
+                        }
+                    });
                 }
             });
 

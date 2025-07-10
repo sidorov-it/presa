@@ -53,19 +53,19 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
             items: [
                 {
                     title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
                     title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
                     title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
@@ -140,19 +140,19 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
             items: [
                 {
                     title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
                     title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
                     title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
@@ -227,19 +227,19 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
             items: [
                 {
                     title: '<p><span class="heading-text heading-3">Шаг 1</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
                     title: '<p><span class="heading-text heading-3">Шаг 2</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
                     title: '<p><span class="heading-text heading-3">Шаг 3</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
@@ -261,19 +261,19 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
             items: [
                 {
                     title: '<p><span class="heading-text heading-3">Событие 1</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
                     title: '<p><span class="heading-text heading-3">Событие 2</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
                     title: '<p><span class="heading-text heading-3">Событие 3</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },

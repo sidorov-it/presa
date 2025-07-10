@@ -1,34 +1,13 @@
 .container {
-    min-height: 100vh;
-    background-color: var(--chakra-colors-gray-50);
-    padding: 2rem 0;
+    /* Layout is now handled by the main dashboard layout */
 }
 
 .content {
-    max-width: 72rem;
-    margin: 0 auto;
-    padding: 0 1rem;
+    /* Content wrapper is now handled by the main dashboard layout */
 }
 
 .header {
-    margin-bottom: 2rem;
-}
-
-@media (max-width: 1023px) {
-    .header {
-        padding-left: 3rem;
-    }
-}
-
-.title {
-    font-size: 1.875rem;
-    font-weight: 700;
-    color: var(--chakra-colors-gray-900);
-    margin-bottom: 0.5rem;
-}
-
-.subtitle {
-    color: var(--chakra-colors-gray-600);
+    /* Styling is now handled by the Heading component */
 }
 
 .balanceCard {

@@ -1,7 +1,5 @@
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
+    /* Layout is now handled by the main dashboard layout */
 }
 
 .container [data-class="slide-container"] {
@@ -14,23 +12,17 @@
     margin-bottom: 1.5rem;
 }
 
-@media (max-width: 1023px) {
-    .header {
-        padding-left: 3rem;
-    }
-}
-
 .sortContainer {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     margin-bottom: 1rem;
-    justify-content: end;
+    justify-content: flex-start;
 }
 
 .sortLabel {
     color: var(--color-text);
-    font-size: var(--text-sm);
+    font-size: 1rem;
 }
 
 .sortSelect {
@@ -44,16 +36,12 @@
 @media (min-width: 768px) {
     .header {
         flex-direction: row;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
     }
 }
 
-.title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--color-text);
-}
+/* Title styling moved to Heading component */
 
 .buttonGroup {
     margin-top: 1rem;
@@ -170,7 +158,7 @@
     overflow: hidden;
     cursor: pointer;
     transition: all 0.2s ease;
-    width: 320px;
+    width: 384px;
 }
 
 .presentationCard:hover {
@@ -179,7 +167,7 @@
 }
 
 .previewArea {
-    height: 180px;
+    height: 216px;
     background-color: var(--color-background);
     position: relative;
     cursor: pointer;

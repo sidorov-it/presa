@@ -47,7 +47,8 @@ export interface PresentationState {
     // incrementVersion: () => void;
 
     recordAction: (
-        action: Omit<HistoryAction, 'timestamp' | 'transactionId' | 'changes'> & { before: any; after: any }
+        action: Omit<HistoryAction, 'timestamp' | 'transactionId' | 'changes'> & { before: any; after: any },
+        isForceRecodrTransaction?: boolean
     ) => void;
 
     // Работа с презентациями
@@ -143,7 +144,13 @@ export interface PresentationState {
         isTextElement?: boolean;
         isExcludeFromHistory?: boolean;
     }) => void;
-    deleteElement: (presentationId: string, slideId: string, layoutId: string, elementId: string) => void;
+    deleteElement: (
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        elementId: string,
+        isForceRecodrTransaction?: boolean
+    ) => void;
     duplicateElement: (presentationId: string, slideId: string, elementId: string) => void;
     addColumn: (
         presentationId: string,
@@ -387,10 +394,11 @@ export const usePresentationStore = create<PresentationState>()(
             }, 1000),
 
             recordAction: (
-                action: Omit<HistoryAction, 'timestamp' | 'transactionId' | 'changes'> & { before: any; after: any }
+                action: Omit<HistoryAction, 'timestamp' | 'transactionId' | 'changes'> & { before: any; after: any },
+                isForceRecodrTransaction?: boolean
             ) => {
                 const historyStore = useHistoryStore.getState();
-                if (historyStore.hasActiveTransaction(action.presentationId)) {
+                if (historyStore.hasActiveTransaction(action.presentationId) && !isForceRecodrTransaction) {
                     // Don't record individual actions during a transaction
                     // Let the transaction helper handle it
                 } else {
@@ -2279,7 +2287,7 @@ export const usePresentationStore = create<PresentationState>()(
                 get().saveChanges(presentationId);
             },
 
-            deleteElement: (presentationId, slideId, layoutId, elementId) => {
+            deleteElement: (presentationId, slideId, layoutId, elementId, isForceRecodrTransaction = false) => {
                 const beforeState = { ...get() };
 
                 const currentPresentation = get().getPresentation(presentationId);
@@ -2367,16 +2375,19 @@ export const usePresentationStore = create<PresentationState>()(
                     };
 
                     // Record the action for history
-                    get().recordAction({
-                        type: 'element',
-                        description: 'Delete element',
-                        presentationId,
-                        slideId,
-                        layoutId,
-                        elementId,
-                        before: { presentations: beforeState.presentations },
-                        after: updatedState,
-                    });
+                    get().recordAction(
+                        {
+                            type: 'element',
+                            description: 'Delete element',
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            elementId,
+                            before: { presentations: beforeState.presentations },
+                            after: updatedState,
+                        },
+                        isForceRecodrTransaction
+                    );
                     return updatedState;
                 });
 

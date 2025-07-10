@@ -1,6 +1,6 @@
 [
     {
-        "name": "Pearl",
+        "name": "Жемчужная",
         "primaryAccent": "#1B1B27",
         "secondaryColors": [],
         "headingColor": "#1B1B27",
@@ -32,7 +32,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Vortex",
+        "name": "Вихрь",
         "primaryAccent": "#F2F2F3",
         "secondaryColors": [],
         "headingColor": "#F2F2F3",
@@ -64,7 +64,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Chisel",
+        "name": "Грани",
         "primaryAccent": "#3E2513",
         "secondaryColors": [
             "#F3E3D8"
@@ -97,7 +97,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Stardust",
+        "name": "Звёздная пыль",
         "primaryAccent": "#FC8337",
         "secondaryColors": [],
         "headingColor": "#FFFFFF",
@@ -125,7 +125,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Seafoam",
+        "name": "Морская пена",
         "primaryAccent": "#26A688",
         "secondaryColors": [
             "#DDF8F2",
@@ -161,7 +161,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Nebulae",
+        "name": "Туманности",
         "primaryAccent": "#B380FF 10%, #7AF0FF 90%",
         "secondaryColors": [
             "#7AF0FF",
@@ -189,7 +189,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Creme",
+        "name": "Кремовая",
         "primaryAccent": "#D3C5B6",
         "secondaryColors": [
             "#F2EBDF",
@@ -223,7 +223,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Lux",
+        "name": "Люкс",
         "primaryAccent": "#EF9C82",
         "secondaryColors": [
             "#1D4241"
@@ -256,7 +256,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Consultant",
+        "name": "Консультант",
         "primaryAccent": "#2150FE",
         "secondaryColors": [
             "#04318F"
@@ -289,7 +289,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Marine",
+        "name": "Морская",
         "primaryAccent": "#8C98CA",
         "secondaryColors": [],
         "headingColor": "#FFFFFF",
@@ -321,7 +321,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Elysia",
+        "name": "Элизия",
         "primaryAccent": "#3371A5",
         "secondaryColors": [
             "#E282B7",
@@ -349,7 +349,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Prism",
+        "name": "Призма",
         "primaryAccent": "#BE49DF",
         "secondaryColors": [],
         "headingColor": "#000000",
@@ -374,7 +374,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Night Sky",
+        "name": "Ночное небо",
         "primaryAccent": "#5A6ED8",
         "secondaryColors": [
             "#243799",
@@ -403,7 +403,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Commons",
+        "name": "Пространство",
         "primaryAccent": "#1C9770",
         "secondaryColors": [
             "#93CB52",
@@ -471,7 +471,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Gamma",
+        "name": "Гамма",
         "primaryAccent": "#6237C8",
         "secondaryColors": [],
         "headingColor": "#591CE6 5%, #F9598D 45%, #FB8B61 85%",
@@ -495,7 +495,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Gamma Dark",
+        "name": "Гамма Тёмная",
         "primaryAccent": "#9A81DF 10%, #7456C8 90%",
         "secondaryColors": [
             "#D783D8",
@@ -525,7 +525,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Dialogue",
+        "name": "Диалог",
         "primaryAccent": "#E04F00",
         "secondaryColors": [],
         "headingColor": "#020202",
@@ -556,7 +556,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Founder",
+        "name": "Основатель",
         "primaryAccent": "#AC9EF5",
         "secondaryColors": [],
         "headingColor": "#F7F7F8",
@@ -587,7 +587,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Lavender",
+        "name": "Лавандовая",
         "primaryAccent": "#5955EB 10%, #2622B2 90%",
         "secondaryColors": [
             "#E7E0FF",
@@ -621,7 +621,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Indigo",
+        "name": "Индиго",
         "primaryAccent": "#8061FF",
         "secondaryColors": [],
         "headingColor": "#FFFFFF",
@@ -652,7 +652,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Howlite",
+        "name": "Гаулит",
         "primaryAccent": "#2D2E34",
         "secondaryColors": [
             "#F2F2F2"
@@ -685,7 +685,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Onyx",
+        "name": "Оникс",
         "primaryAccent": "#FFFFFF",
         "secondaryColors": [
             "#1D1F22"
@@ -718,7 +718,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Atmosphere",
+        "name": "Атмосфера",
         "primaryAccent": "#AF41F0 10%, #FF75D3 90%",
         "secondaryColors": [],
         "headingColor": "#FF75D3 10%, #AF41F0 90%",
@@ -743,7 +743,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Blueberry ",
+        "name": "Черничная",
         "primaryAccent": "#FA2F5C 10%, #FF7161 90%",
         "secondaryColors": [
             "#1B1744",
@@ -777,7 +777,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Kraft ",
+        "name": "Крафтовая",
         "primaryAccent": "#282824",
         "secondaryColors": [
             "#E8E4DD",
@@ -811,7 +811,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Mystique ",
+        "name": "Мистика",
         "primaryAccent": "#FF6BD8",
         "secondaryColors": [
             "#211E24",
@@ -845,7 +845,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Petrol",
+        "name": "Петроль",
         "primaryAccent": "#325F7B",
         "secondaryColors": [
             "#51738C",
@@ -879,7 +879,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Blues",
+        "name": "Блюз",
         "primaryAccent": "#609DFF",
         "secondaryColors": [
             "#041938",
@@ -907,7 +907,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Peach",
+        "name": "Персиковая",
         "primaryAccent": "#FFAD94",
         "secondaryColors": [
             "#FFD1CC",
@@ -937,7 +937,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Incandescent",
+        "name": "Сияние",
         "primaryAccent": "#FF6680 5%, #FF4DA9 45%, #CD42D7 85%",
         "secondaryColors": [],
         "headingColor": "#FF726D 5%, #FF4DA9 45%, #CD42D7 85%",
@@ -968,7 +968,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Oatmeal",
+        "name": "Овсяная",
         "primaryAccent": "#E5E5E0",
         "secondaryColors": [
             "#D3C1B6",
@@ -996,7 +996,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Sanguine",
+        "name": "Бордовая",
         "primaryAccent": "#C91313",
         "secondaryColors": [
             "#510C04",
@@ -1024,7 +1024,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Sage",
+        "name": "Шалфейная",
         "primaryAccent": "#437066",
         "secondaryColors": [],
         "headingColor": "#272D45",
@@ -1056,7 +1056,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Verdigris",
+        "name": "Патинированная",
         "primaryAccent": "#0A988B",
         "secondaryColors": [
             "#1C3645",
@@ -1083,7 +1083,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Ash",
+        "name": "Пепельная",
         "primaryAccent": "#1D1D1B",
         "secondaryColors": [
             "#EFEFEF"
@@ -1116,7 +1116,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Coal",
+        "name": "Угольная",
         "primaryAccent": "#E1E1DF",
         "secondaryColors": [
             "#1F1F1E",
@@ -1150,7 +1150,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Flamingo",
+        "name": "Фламинго",
         "primaryAccent": "#F5A3A3",
         "secondaryColors": [],
         "headingColor": "#1F1E1E",
@@ -1174,7 +1174,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Canaveral",
+        "name": "Канаверал",
         "primaryAccent": "#F65F62",
         "secondaryColors": [],
         "headingColor": "#FFFFFF",
@@ -1199,7 +1199,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Oasis",
+        "name": "Оазис",
         "primaryAccent": "#D2600F",
         "secondaryColors": [
             "#C3CDC1",
@@ -1234,7 +1234,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Fluo",
+        "name": "Флуоресцентная",
         "primaryAccent": "#DCFF50",
         "secondaryColors": [
             "#141414"
@@ -1267,7 +1267,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Finesse",
+        "name": "Изящество",
         "primaryAccent": "#38512F",
         "secondaryColors": [],
         "headingColor": "#38512F",
@@ -1298,7 +1298,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Electric",
+        "name": "Электрик",
         "primaryAccent": "#6EB9FC 5%, #F888D2 45%, #FD957D 85%",
         "secondaryColors": [],
         "headingColor": "#6EB9FC 5%, #F888D2 45%, #FD957D 85%",
@@ -1329,7 +1329,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Soft Cloud",
+        "name": "Мягкое облако",
         "primaryAccent": "#396AF1 10%, #A665F6 90%",
         "secondaryColors": [],
         "headingColor": "#396AF1 10%, #A665F6 90%",
@@ -1351,7 +1351,7 @@
         "blockBorder": "none"
     },
     {
-        "name": "Zephyr",
+        "name": "Зефир",
         "primaryAccent": "#4296CD 0%, #A7DDFF 100%",
         "secondaryColors": [
             "#2589C9",
@@ -1382,7 +1382,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Soft Coal",
+        "name": "Мягкий уголь",
         "primaryAccent": "#60A9FF 10%, #D187FF 90%",
         "secondaryColors": [],
         "headingColor": "#60A9FF 10%, #D187FF 90%",
@@ -1411,7 +1411,7 @@
         "blockBorder": "none"
     },
     {
-        "name": "Chimney Smoke",
+        "name": "Дым",
         "primaryAccent": "#5B5F72 10%, #45495E 90%",
         "secondaryColors": [
             "#F4F4F5",
@@ -1439,7 +1439,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Chimney Dust",
+        "name": "Сажа",
         "primaryAccent": "#E4E4E7 10%, #C5C5C9 90%",
         "secondaryColors": [
             "#141415",
@@ -1468,7 +1468,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Icebreaker",
+        "name": "Ледокол",
         "primaryAccent": "#476FD6 10%, #1C3F99 90%",
         "secondaryColors": [],
         "headingColor": "#476FD6 10%, #1C3F99 90%",
@@ -1499,7 +1499,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Blue Steel",
+        "name": "Синяя сталь",
         "primaryAccent": "#599CE8 10%, #73B3F3 90%",
         "secondaryColors": [],
         "headingColor": "#60A9FF 10%, #8CC9FF 90%",
@@ -1530,7 +1530,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Daydream",
+        "name": "Грёзы",
         "primaryAccent": "#2D4DF2",
         "secondaryColors": [
             "#018CE1",
@@ -1563,7 +1563,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Orbit",
+        "name": "Орбита",
         "primaryAccent": "#F2B42D",
         "secondaryColors": [
             "#D7425E",
@@ -1600,7 +1600,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Dune",
+        "name": "Дюна",
         "primaryAccent": "#B88E23",
         "secondaryColors": [],
         "headingColor": "#5C4E3D",
@@ -1625,7 +1625,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Mocha",
+        "name": "Мокка",
         "primaryAccent": "#C49F8C",
         "secondaryColors": [],
         "headingColor": "#EBCCBB 10%, #C49F8C 90%",
@@ -1656,7 +1656,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Serene",
+        "name": "Безмятежность",
         "primaryAccent": "#1A2D7A",
         "secondaryColors": [
             "#D3DCF6",
@@ -1691,7 +1691,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Cornflower",
+        "name": "Васильковая",
         "primaryAccent": "#1B54DA",
         "secondaryColors": [
             "#D2DDF8"
@@ -1725,7 +1725,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Vanilla",
+        "name": "Ванильная",
         "primaryAccent": "#224435",
         "secondaryColors": [
             "#F9F4BE",
@@ -1762,7 +1762,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Alien",
+        "name": "Инопланетная",
         "primaryAccent": "#A9F00F",
         "secondaryColors": [
             "#547808",
@@ -1791,7 +1791,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Breeze",
+        "name": "Лёгкий бриз",
         "primaryAccent": "#84C1FA",
         "secondaryColors": [
             "#000E21",
@@ -1832,7 +1832,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Aurora",
+        "name": "Аврора",
         "primaryAccent": "#581CA0 10%, #371C9C 90%",
         "secondaryColors": [],
         "headingColor": "#F2F0F4",
@@ -1857,7 +1857,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Velvet Tides",
+        "name": "Бархатные волны",
         "primaryAccent": "#A95B95",
         "secondaryColors": [],
         "headingColor": "#C6BFEE",
@@ -1882,7 +1882,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Tranquil",
+        "name": "Спокойствие",
         "primaryAccent": "#007EBD",
         "secondaryColors": [],
         "headingColor": "#000000",
@@ -1907,7 +1907,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Borealis",
+        "name": "Северное сияние",
         "primaryAccent": "#16FFBB",
         "secondaryColors": [
             "#29DDDA",
@@ -1942,7 +1942,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Terracotta",
+        "name": "Терракотовая",
         "primaryAccent": "#835E54",
         "secondaryColors": [
             "#C9907C",
@@ -1977,7 +1977,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Bubble Gum",
+        "name": "Жвачка",
         "primaryAccent": "#FA95AE",
         "secondaryColors": [
             "#121212"
@@ -2010,7 +2010,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Snowball",
+        "name": "Снежок",
         "primaryAccent": "#4967E9",
         "secondaryColors": [],
         "headingColor": "#1B1B27",
@@ -2035,7 +2035,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Piano",
+        "name": "Пианино",
         "primaryAccent": "#101014",
         "secondaryColors": [],
         "headingColor": "#101014",
@@ -2066,7 +2066,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Atacama",
+        "name": "Атакама",
         "primaryAccent": "#F20374",
         "secondaryColors": [],
         "headingColor": "#FFFFFF",
@@ -2091,7 +2091,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Wireframe",
+        "name": "Каркас",
         "primaryAccent": "#CCCCCC",
         "secondaryColors": [
             "#FFFFFF",
@@ -2126,7 +2126,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Aurum",
+        "name": "Золото",
         "primaryAccent": "#D2AC47 5%, #F7EF8A 45%, #AE8625 85%",
         "secondaryColors": [
             "#F4E883",
@@ -2153,7 +2153,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Bee Happy",
+        "name": "Пчелиное счастье",
         "primaryAccent": "#FFE14D",
         "secondaryColors": [],
         "headingColor": "#FFE14D",
@@ -2184,7 +2184,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Chocolate",
+        "name": "Шоколадная",
         "primaryAccent": "#E2C2B3",
         "secondaryColors": [
             "#403234",
@@ -2219,7 +2219,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Cigar",
+        "name": "Сигара",
         "primaryAccent": "#84482D",
         "secondaryColors": [
             "#1C1D1F",
@@ -2255,7 +2255,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Cornfield",
+        "name": "Кукурузное поле",
         "primaryAccent": "#626C3B",
         "secondaryColors": [
             "#83792E",
@@ -2298,7 +2298,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Daktilo",
+        "name": "Дактило",
         "primaryAccent": "#151617",
         "secondaryColors": [
             "#F2DED0",
@@ -2336,7 +2336,7 @@
         "blockShadow": "md"
     },
     {
-        "name": "Dawn",
+        "name": "Рассвет",
         "primaryAccent": "#FDC4C4",
         "secondaryColors": [
             "#C8C7FF"
@@ -2369,7 +2369,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Editoria",
+        "name": "Редакция",
         "primaryAccent": "#1E1E1A",
         "secondaryColors": [
             "#DBDCD4",
@@ -2407,7 +2407,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Flax",
+        "name": "Льняная",
         "primaryAccent": "#28282F",
         "secondaryColors": [],
         "headingColor": "#161613",
@@ -2438,7 +2438,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Gleam",
+        "name": "Сияние",
         "primaryAccent": "#373B48",
         "secondaryColors": [
             "#D4D6DD",
@@ -2470,7 +2470,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Gold Leaf",
+        "name": "Золотой лист",
         "primaryAccent": "#DA9B49 0%, #F3E38A 99%",
         "secondaryColors": [
             "#DFAB58",
@@ -2499,7 +2499,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Iris",
+        "name": "Ирис",
         "primaryAccent": "#5E4CE6",
         "secondaryColors": [],
         "headingColor": "#231971",
@@ -2524,7 +2524,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Keepsake",
+        "name": "Памятная",
         "primaryAccent": "#C7E0E7 0%, #64B8CE 99%",
         "secondaryColors": [
             "#C3643D",
@@ -2560,7 +2560,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Leimoon",
+        "name": "Леймун",
         "primaryAccent": "#FF7047",
         "secondaryColors": [
             "#FFF0ED",
@@ -2599,7 +2599,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Linen",
+        "name": "Льняная",
         "primaryAccent": "#9C9283",
         "secondaryColors": [
             "#3A3A3A",
@@ -2643,7 +2643,7 @@
         "blockShadow": "md"
     },
     {
-        "name": "Malibu",
+        "name": "Малибу",
         "primaryAccent": "#E851B2",
         "secondaryColors": [
             "#FFE1F7",
@@ -2672,7 +2672,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Moss & Mist",
+        "name": "Мох и туман",
         "primaryAccent": "#9FA582",
         "secondaryColors": [
             "#1F2D1B",
@@ -2708,7 +2708,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Plant Shop",
+        "name": "Цветочная",
         "primaryAccent": "#1B5F39",
         "secondaryColors": [
             "#FAF9F4"
@@ -2741,7 +2741,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Rush",
+        "name": "Порыв",
         "primaryAccent": "#DA1B2E",
         "secondaryColors": [
             "#790C1C",
@@ -2770,7 +2770,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Shadow",
+        "name": "Тень",
         "primaryAccent": "#FFFFFF",
         "secondaryColors": [
             "#424242",
@@ -2798,7 +2798,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Slate",
+        "name": "Сланцевая",
         "primaryAccent": "#FFBC8F",
         "secondaryColors": [
             "#1F1F1E",
@@ -2832,7 +2832,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Sprout",
+        "name": "Росток",
         "primaryAccent": "#006747",
         "secondaryColors": [
             "#E5F9F2",
@@ -2860,7 +2860,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Wine",
+        "name": "Винная",
         "primaryAccent": "#FFB393",
         "secondaryColors": [
             "#421424"
@@ -2893,7 +2893,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Basic Light",
+        "name": "Базовая светлая",
         "primaryAccent": "#4950BC",
         "secondaryColors": [],
         "headingColor": "#000000",
@@ -2917,7 +2917,7 @@
         "blockShadow": "none"
     },
     {
-        "name": "Basic Dark",
+        "name": "Базовая тёмная",
         "primaryAccent": "#2B0AFF",
         "secondaryColors": [],
         "headingColor": "#FFFFFF",

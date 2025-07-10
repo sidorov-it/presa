@@ -9,6 +9,7 @@ import { PresentationTemplates, PresentationTemplateKeys } from '@/presentationT
 import styles from './page.module.css';
 import { useThemeStore } from '@/store/themeStore';
 import TemplatePreviewModal from '@/components/templates/TemplatePreviewModal';
+import { Heading } from '@/components/ui/heading';
 
 import FullPageLoader from '@/components/FullPageLoader/FullPageLoader';
 import { LuFileImage } from 'react-icons/lu';
@@ -54,7 +55,10 @@ const TemplatesPage = () => {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Шаблоны</h1>
+                <Heading 
+                    title="Шаблоны" 
+                    description="Выберите готовый шаблон для быстрого создания презентации" 
+                />
             </div>
 
             {isLoading ? (

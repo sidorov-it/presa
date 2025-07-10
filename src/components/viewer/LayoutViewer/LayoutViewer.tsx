@@ -17,7 +17,14 @@ interface LayoutViewerProps {
     isSlidePreview?: boolean;
 }
 
-const LayoutViewer = ({ layout, slideId, slideBackground, primaryAccentColor, theme, isSlidePreview = false }: LayoutViewerProps) => {
+const LayoutViewer = ({
+    layout,
+    slideId,
+    slideBackground,
+    primaryAccentColor,
+    theme,
+    isSlidePreview = false,
+}: LayoutViewerProps) => {
     // Calculate grid template columns based on column widths
     const getGridTemplateColumns = () => {
         if (layout.gridStructure.columnWidths) {
@@ -76,6 +83,8 @@ const LayoutViewer = ({ layout, slideId, slideBackground, primaryAccentColor, th
             backgroundColor,
         };
     };
+
+    if (!theme) return null;
 
     return (
         <div

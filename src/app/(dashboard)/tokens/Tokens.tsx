@@ -5,9 +5,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
 import { TokenPackage } from '@/types/tokens';
-import { FaCreditCard, FaHistory, FaCoins, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { FaCreditCard, FaCoins, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import { HiOutlineCreditCard } from 'react-icons/hi2';
 import { PaymentStatus } from '@/components/tokens/PaymentStatus';
+import { Heading } from '@/components/ui/heading';
 import styles from './page.module.css';
 
 interface TransactionRowProps {
@@ -112,8 +113,7 @@ const TokenPackageCard = ({ package: pkg, onPurchase, isLoading }: TokenPackageC
 const Tokens = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { balance, loading, packages, transactions, refreshBalance, purchaseTokens } =
-        useTokens();
+    const { balance, loading, packages, transactions, refreshBalance, purchaseTokens } = useTokens();
     const [purchaseLoading, setPurchaseLoading] = useState<string | null>(null);
     const [activePurchaseId, setActivePurchaseId] = useState<string | null>(null);
     const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -192,8 +192,7 @@ const Tokens = () => {
             <div className={styles.content}>
                 {/* Header */}
                 <div className={styles.header}>
-                    <h1 className={styles.title}>Токены</h1>
-                    <p className={styles.subtitle}>Управляйте своими токенами для использования AI-функций</p>
+                    <Heading title="Токены" description="Ваши токены для использования AI-функций" />
                 </div>
 
                 {/* Notifications */}

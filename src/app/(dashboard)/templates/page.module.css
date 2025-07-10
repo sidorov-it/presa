@@ -1,33 +1,16 @@
 .container {
-    flex: 1;
-    padding: 1rem;
-    padding-top: 1.5rem;
-}
-
-@media (min-width: 768px) {
-    .container {
-        padding: 2rem;
-        padding-top: 1.5rem;
-    }
+    /* Layout is now handled by the main dashboard layout */
 }
 
 .cardsContainer {
     display: flex;
     flex-direction: row;
-    gap: 2em;
+    gap: 1.5rem;
     flex-wrap: wrap;
 }
 
 .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-@media (max-width: 1023px) {
-    .header {
-        padding-left: 3rem;
-    }
+    /* Styling is now handled by the Heading component */
 }
 
 .addButton {
@@ -93,7 +76,8 @@
     position: relative;
     border-radius: var(--radius-md);
     border: 1px solid var(--color-border);
-    width: 320px;
+    width: 384px;
+    background-color: #fff;
 }
 
 .templateCard:hover {
