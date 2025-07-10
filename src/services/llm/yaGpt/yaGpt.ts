@@ -5,7 +5,7 @@ import { RecordingOptions } from '@/types/llm/recordings';
 import { RecordingService } from '../recordings/recordingService';
 import { replyConfig } from '../gigaChat/replyConfig';
 import { SYSTEM_PROMPT } from '@/prompts';
-import { v4 as uuidv4 } from 'uuid';
+import logger from '@/utils/logger';
 
 interface YaGPTMessage {
     role: 'system' | 'user' | 'assistant';
@@ -107,12 +107,14 @@ export class YaGptService implements LLMService {
     ): Promise<LLMResponse> {
         const start = Date.now();
 
+        logger.debug('YaGPT generate', { prompt, options });
         // ------------------------------------------------------------------
         //  RecordingService replay mode: return cached response if available
         // ------------------------------------------------------------------
         if (this.recordingOptions.replayMode && this.recordingService) {
             const cachedRecording = await this.recordingService.findRecording(prompt, options);
             if (cachedRecording && cachedRecording.response.type === 'chat') {
+                logger.debug('YaGPT generate: cached response found', { cachedRecording, options });
                 return cachedRecording.response.data as LLMResponse;
             }
         }
@@ -130,6 +132,7 @@ export class YaGptService implements LLMService {
 
         const body = this.buildRequestBody(prompt, chatOptions);
 
+        logger.debug('YaGPT generate: request llm', { body });
         const responseJson = await this.withRateLimit(async () => {
             const res = await fetch(endpoint, {
                 method: 'POST',
@@ -148,6 +151,7 @@ export class YaGptService implements LLMService {
             return res.json();
         });
 
+        logger.debug('YaGPT generate: response llm', { responseJson });
         const yaResult = responseJson.result || responseJson;
         const firstAlt = yaResult.alternatives?.[0] || {};
         const message =
@@ -161,17 +165,20 @@ export class YaGptService implements LLMService {
         let functionCall: LLMResponse['function_call'];
 
         if (message?.toolCallList?.toolCalls?.length) {
+            logger.debug('YaGPT generate: function call found', { message });
             const tool = message.toolCallList.toolCalls[0];
             functionCall = {
                 name: tool.functionCall?.name,
                 arguments: tool.functionCall?.arguments,
             };
         } else if (message?.function_call) {
+            logger.debug('YaGPT generate: function call found', { message });
             functionCall = {
                 name: message.function_call.name,
                 arguments: message.function_call.arguments,
             };
         } else {
+            logger.debug('YaGPT generate: text response found', { message });
             const textResponse: string = message?.text || message?.content || '';
 
             elements = textResponse
@@ -193,6 +200,8 @@ export class YaGptService implements LLMService {
                     };
                 });
         }
+
+        logger.debug('YaGPT generate: elements', { elements });
 
         const duration = Date.now() - start;
 
@@ -226,11 +235,16 @@ export class YaGptService implements LLMService {
         // Check if function call is required but absent
         if (requireFunctionCall && !functionCall) {
             if (__attemptCount >= 2) {
+                logger.debug('YaGPT generate: function call required but not found. Attempts exceeded', {
+                    chatOptions,
+                    __attemptCount,
+                });
                 throw new Error(
                     `Required function ${chatOptions.function_call?.name || ''} was not called after 3 attempts`
                 );
             }
 
+            logger.debug('YaGPT generate: function call required but absent', { chatOptions, __attemptCount });
             const functionSpec = (chatOptions.functions || []).find(
                 (f: any) => f.name === chatOptions.function_call?.name
             );
@@ -252,6 +266,8 @@ export class YaGptService implements LLMService {
             elements,
             ...(functionCall ? { function_call: functionCall } : {}),
         };
+
+        logger.debug('YaGPT generate: response data', { responseData });
 
         // Save recording if enabled
         if (this.recordingOptions.enabled && this.recordingService) {

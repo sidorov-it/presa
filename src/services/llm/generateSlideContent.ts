@@ -283,7 +283,10 @@ ${slotsDescription}
 6. Для заголовков используй символы #, ##, ###.
 7. Для списков используй символы -, 1. 2. 3.
 8. Для цитат используй символы >
-${instructions ? `9. Дополнительные инструкции: ${instructions}` : ''}`;
+${instructions ? `9. Дополнительные инструкции: ${instructions}` : ''}
+
+ОБЯЗАТЕЛЬНО ВЫЗОВИ фунцию generate_slide_text!
+`;
 }
 
 // function parseGeneratedContent(content: Array<Array<SlotContent>>): Array<Record<string, string | SmartLayoutContent>> {

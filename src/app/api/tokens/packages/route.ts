@@ -10,7 +10,7 @@ export async function GET(_request: NextRequest) {
             packages,
         });
     } catch (error) {
-        logger.error('Error getting token packages:', error);
+        logger.error('Error getting token packages:', error.message);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

@@ -6,7 +6,7 @@
     gap: 0.25rem;
 }
 
-.downloadButton {
+/* .downloadButton {
     position: relative;
     display: inline-flex;
     align-items: center;
@@ -19,7 +19,7 @@
     transition: all 0.2s ease;
     min-width: 2.5rem;
     min-height: 2.5rem;
-}
+} */
 
 .downloadButton:hover:not(:disabled) {
     background-color: var(--color-surface);
@@ -32,9 +32,9 @@
 }
 
 .downloadIcon {
-    width: 1.25rem;
-    height: 1.25rem;
-    color: var(--color-text);
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--color-text-light);
 }
 
 .spinner {

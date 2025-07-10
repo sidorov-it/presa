@@ -6,13 +6,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(request: NextRequest) {
     const requestId = uuidv4();
-    logger.info('POST /api/ai/topics');
     return withTokenDeduction(
         request,
         {
-            operation: 'GENERATE_TEXT',
+            operation: 'GENERATE_TOPICS',
             description: 'Generate presentation topics',
-            calculateTokens: TokenCalculators.generateText,
+            calculateTokens: TokenCalculators.generateTopics,
             metadata: MetadataExtractors.topics,
         },
         async (session, requestData) => {
@@ -22,24 +21,29 @@ export async function POST(request: NextRequest) {
                 throw new Error('Description is required');
             }
 
-            const { title, topics } = await generateTopics(
-                session.user.id,
-                {
+            try {
+                const { title, topics } = await generateTopics(
+                    session.user.id,
+                    {
+                        description,
+                        numSlides,
+                        tone,
+                        durationMinutes,
+                        goal,
+                        audience,
+                    },
+                    requestId
+                );
+    
+                return {
+                    title,
                     description,
-                    numSlides,
-                    tone,
-                    durationMinutes,
-                    goal,
-                    audience,
-                },
-                requestId
-            );
-
-            return {
-                title,
-                description,
-                topics,
-            };
+                    topics,
+                };
+            } catch (error) {
+                logger.error('Error generating topics:', error.message);
+                throw error;
+            }
         }
     );
 }

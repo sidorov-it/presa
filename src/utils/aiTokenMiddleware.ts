@@ -42,10 +42,6 @@ export async function withTokenDeduction<T>(
         // Calculate required tokens server-side only
         const requiredTokens = config.calculateTokens(requestData);
 
-        if (requiredTokens <= 0) {
-            return NextResponse.json({ error: 'Invalid token calculation' }, { status: 400 });
-        }
-
         // Check if user has enough tokens
         const hasTokens = await hasEnoughTokens(session.user.id, requiredTokens);
         if (!hasTokens) {
@@ -126,6 +122,10 @@ export const TokenCalculators = {
         return getTokenCostForOperation('GENERATE_TEXT');
     },
 
+    generateTopics: (_requestData: any): number => {
+        return getTokenCostForOperation('GENERATE_TOPICS');
+    },
+
     /**
      * Fixed token cost for content improvement
      */
@@ -138,13 +138,6 @@ export const TokenCalculators = {
      */
     generateImage: (_requestData: any): number => {
         return getTokenCostForOperation('GENERATE_IMAGE');
-    },
-
-    /**
-     * Fixed token cost for theme generation
-     */
-    generateTheme: (_requestData: any): number => {
-        return getTokenCostForOperation('GENERATE_THEME');
     },
 };
 

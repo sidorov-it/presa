@@ -8,6 +8,7 @@ import { generateId } from '@/utils/id';
 import { ElementType } from '@/types/elements';
 import { TextType } from '@/types';
 import logger from '@/utils/logger';
+import { markdownToHtml } from '@/utils/markdownToHtml';
 
 // Placeholder content generators based on element type and context
 const generatePlaceholderContent = (type: string, description?: string, purpose?: string): string => {
@@ -19,11 +20,14 @@ const generatePlaceholderContent = (type: string, description?: string, purpose?
             'Главная мысль',
             'Центральная концепция',
         ],
-        heading: ['Важный раздел', 'Ключевая информация', 'Основные моменты', 'Главные аспекты', 'Центральные идеи'],
+        heading: ['## Важный раздел', 'Ключевая информация', 'Основные моменты', 'Главные аспекты', 'Центральные идеи'],
         content: [
-            'Это пример содержимого для демонстрации структуры шаблона. Здесь может быть размещен любой текст, который поможет понять, как будет выглядеть готовый слайд.',
-            'Демонстрационный контент показывает, как информация будет представлена в данном разделе слайда. Это помогает оценить визуальную структуру.',
-            'Тестовое содержимое для проверки макета и расположения элементов. Позволяет увидеть финальный вид слайда перед добавлением реального контента.',
+            // 'Это пример содержимого для демонстрации структуры шаблона. Здесь может быть размещен любой текст, который поможет понять, как будет выглядеть готовый слайд.',
+            // 'Демонстрационный контент показывает, как информация будет представлена в данном разделе слайда. Это помогает оценить визуальную структуру.',
+            // 'Тестовое содержимое для проверки макета и расположения элементов. Позволяет увидеть финальный вид слайда перед добавлением реального контента.',
+            '# Спасибо за внимание!\n\nВаше время ценно, и я рад, что смог поделиться с вами прогнозами и тенденциями в области искусственного интеллекта на ближайшие годы.',
+            '### Что делать дальше?\n- Изучите материалы по ИИ и машинному обучению.\n- Подпишитесь на наши обновления, чтобы быть в курсе последних новостей.\n- Присоединяйтесь к нашим семинарам и вебинарам.',
+            '### Свяжитесь со мной:\n📧 Email: example@example.com\n📞 Телефон: +123456789\n🌐 Сайт: www.example.com',
         ],
         description: [
             'Краткое описание или пояснение к основному контенту',
@@ -82,12 +86,12 @@ const generatePlaceholderSmartLayoutItems = (itemsSchema: any[], count: number =
                 if (schemaItem.variant === TextType.HEADING3) {
                     result[key] = `Заголовок ${i + 1}`;
                 } else {
-                    result[key] = generatePlaceholderContent('content', schemaItem.description);
+                    result[key] = markdownToHtml(generatePlaceholderContent('content', schemaItem.description));
                 }
             } else if (schemaItem.type === ElementType.IMAGE) {
                 result[key] = '/uploads/fbv8kc60ab1n7s95m3l5.jpg';
             } else {
-                result[key] = generatePlaceholderContent('content', schemaItem.description);
+                result[key] = markdownToHtml(generatePlaceholderContent('content', schemaItem.description));
             }
         });
     }
@@ -168,7 +172,7 @@ export async function POST(request: NextRequest) {
                     const chartData = generatePlaceholderChartData('bar');
                     placeholderArgs[key] = JSON.stringify(chartData);
                 } else {
-                    placeholderArgs[key] = generatePlaceholderContent('content', description, purpose);
+                    placeholderArgs[key] = markdownToHtml(generatePlaceholderContent('content', description, purpose));
                 }
             }
         }

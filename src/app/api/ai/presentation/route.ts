@@ -86,7 +86,6 @@ export async function POST(request: NextRequest) {
                     where: {
                         isActive: true,
                         isDefault: true,
-                        userId,
                     },
                     select: {
                         id: true,

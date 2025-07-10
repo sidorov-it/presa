@@ -1,7 +1,9 @@
 import { MongoClient, Db } from 'mongodb';
 import fs from 'fs';
 import path from 'path';
+require('dotenv').config()
 
+console.log('process.env', process.env);
 const MONGO_URL = process.env.DATABASE_URL!;
 const MIGRATIONS_DIR = path.join(__dirname, 'migrations');
 
@@ -19,6 +21,7 @@ async function applyMigration(db: Db, file: string) {
 }
 
 async function main() {
+    console.log('MONGO_URL', MONGO_URL);
     const client = new MongoClient(MONGO_URL);
     await client.connect();
     const db = client.db();

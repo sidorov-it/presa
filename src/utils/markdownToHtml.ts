@@ -88,7 +88,7 @@ export const markdownToHtml = (raw: string): string => {
 
         // Default paragraph line
         closeList();
-        htmlParts.push(`<p>${applyInlineFormatting(line)}</p>`);
+        htmlParts.push(`${applyInlineFormatting(line)}`);
     }
 
     // Close any open list at EOF

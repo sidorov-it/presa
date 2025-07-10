@@ -96,7 +96,7 @@ const TokenPackageCard = ({ package: pkg, onPurchase, isLoading }: TokenPackageC
                     ) : (
                         <>
                             <FaCreditCard />
-                            Оплатить через YooKassa
+                            Купить
                         </>
                     )}
                 </button>
@@ -112,7 +112,7 @@ const TokenPackageCard = ({ package: pkg, onPurchase, isLoading }: TokenPackageC
 const Tokens = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { balance, loading, packages, transactions, refreshBalance, refreshTransactions, purchaseTokens } =
+    const { balance, loading, packages, transactions, refreshBalance, purchaseTokens } =
         useTokens();
     const [purchaseLoading, setPurchaseLoading] = useState<string | null>(null);
     const [activePurchaseId, setActivePurchaseId] = useState<string | null>(null);
@@ -156,7 +156,7 @@ const Tokens = () => {
 
         // Обновляем данные
         refreshBalance();
-        refreshTransactions();
+        // refreshTransactions();
 
         // Убираем purchaseId из URL
         router.replace('/tokens');
@@ -255,7 +255,7 @@ const Tokens = () => {
                 </div>
 
                 {/* Transaction History */}
-                <div className={styles.transactionsCard}>
+                {/* <div className={styles.transactionsCard}>
                     <div className={styles.transactionsHeader}>
                         <h2 className={styles.transactionsTitle}>
                             <FaHistory />
@@ -271,7 +271,7 @@ const Tokens = () => {
                             <div className={styles.emptyState}>Нет транзакций</div>
                         )}
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     );

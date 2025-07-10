@@ -18,7 +18,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "db:seed": "tsx prisma/seed.ts",
-    "migrate": "ts-node prisma/migrate.ts"
+    "migrate": "tsx prisma/migrate.ts"
   },
   "dependencies": {
     "@chakra-ui/next-js": "^2.4.2",
@@ -80,6 +80,7 @@
     "deep-diff": "^1.0.2",
     "deep-equal": "^2.2.3",
     "dom-to-image": "^2.6.0",
+    "dotenv": "^17.2.0",
     "eslint-plugin-unused-imports": "^4.1.4",
     "framer-motion": "^12.7.4",
     "gigachat": "^0.0.14",
