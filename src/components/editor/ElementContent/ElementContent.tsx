@@ -336,19 +336,24 @@ export const ElementContent = ({
                                     // Get the text content from current editor to merge
                                     const currentTextContent = currentEditor.editor.getText();
 
+                                    useHistoryStore.getState().beginTransaction(presentationId, 'merge content');
+
                                     // Insert the text content at the end of previous editor
                                     editorInPreviousLayout.editor
                                         .chain()
+                                        .setMeta('transaction', true)
                                         .focus('end')
                                         .insertContent(currentTextContent)
                                         .run();
 
-                                    useHistoryStore.getState().beginTransaction(presentationId, 'merge content');
                                     // Delete current element and layout
+                                    // usePresentationStore
+                                    //     .getState()
+                                    //     .deleteElement(presentationId, slideId, layoutId, elementId);
                                     usePresentationStore
                                         .getState()
-                                        .deleteElement(presentationId, slideId, layoutId, elementId);
-                                    usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+                                        .deleteLayout(presentationId, slideId, layoutId, true);
+
                                     useHistoryStore.getState().commitTransaction(presentationId);
 
                                     setTimeout(() => {
@@ -439,12 +444,22 @@ export const ElementContent = ({
                             // Get the text content from current editor to merge
                             const currentTextContent = currentEditor.editor.getText();
 
+                            useHistoryStore.getState().beginTransaction(presentationId, 'merge content');
                             // Insert the text content at the end of previous editor
-                            editorInPreviousLayout.editor.chain().focus('end').insertContent(currentTextContent).run();
+                            editorInPreviousLayout.editor
+                                .chain()
+                                .setMeta('transaction', true)
+                                .focus('end')
+                                .insertContent(currentTextContent)
+                                .run();
 
                             // Delete current element and layout
-                            usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, elementId);
-                            usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+                            // usePresentationStore
+                            //     .getState()
+                            //     .deleteElement(presentationId, slideId, layoutId, elementId, true);
+                            usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId, true);
+
+                            useHistoryStore.getState().commitTransaction(presentationId);
 
                             setTimeout(() => {
                                 const updatedEditor = tiptapRefs.current?.editors[previousElement.id];
@@ -593,10 +608,18 @@ export const ElementContent = ({
                             // Get the text content from current editor to merge
                             const currentTextContent = currentEditor.editor.getText();
 
+                            useHistoryStore.getState().beginTransaction(presentationId, 'merge content');
                             // Insert the text content at the end of previous editor
-                            editorToUpdate.editor.chain().focus('end').insertContent(currentTextContent).run();
+                            editorToUpdate.editor
+                                .chain()
+                                .setMeta('transaction', true)
+                                .focus('end')
+                                .insertContent(currentTextContent)
+                                .run();
 
-                            usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+                            usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId, true);
+
+                            useHistoryStore.getState().commitTransaction(presentationId);
 
                             setTimeout(() => {
                                 const updatedEditor = tiptapRefs.current?.editors[elementInPreviousLayout.id];

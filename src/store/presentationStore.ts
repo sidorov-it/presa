@@ -103,7 +103,12 @@ export interface PresentationState {
     deleteColumnFromTable: (presentationId: string, slideId: string, layoutId: string, columnIndex: number) => void;
     deleteRowFromTable: (presentationId: string, slideId: string, layoutId: string, rowIndex: number) => void;
 
-    deleteLayout: (presentationId: string, slideId: string, layoutId: string) => void;
+    deleteLayout: (
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        isForceRecodrTransaction?: boolean
+    ) => void;
 
     updateAlignLayout: (
         presentationId: string,
@@ -1476,7 +1481,7 @@ export const usePresentationStore = create<PresentationState>()(
                 get().saveChanges(presentationId);
             },
 
-            deleteLayout: (presentationId, slideId, layoutId) => {
+            deleteLayout: (presentationId, slideId, layoutId, isForceRecodrTransaction = false) => {
                 const beforeState = { ...get() };
 
                 const currentPresentation = get().getPresentation(presentationId);
@@ -1518,15 +1523,18 @@ export const usePresentationStore = create<PresentationState>()(
                         }),
                     };
 
-                    get().recordAction({
-                        type: 'layout',
-                        description: 'Delete layout',
-                        presentationId,
-                        slideId,
-                        layoutId,
-                        before: { presentations: beforeState.presentations },
-                        after: updatedState,
-                    });
+                    get().recordAction(
+                        {
+                            type: 'layout',
+                            description: 'Delete layout',
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            before: { presentations: beforeState.presentations },
+                            after: updatedState,
+                        },
+                        isForceRecodrTransaction
+                    );
 
                     return updatedState;
                 });
