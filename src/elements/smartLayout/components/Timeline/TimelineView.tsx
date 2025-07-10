@@ -285,7 +285,7 @@ export default function TimelineView({
 
                             const position = elementPositions[index];
                             if (!position) return null; // Skip if position not calculated yet
-                            
+
                             const isOnLeft = position.side === 'left';
 
                             return (

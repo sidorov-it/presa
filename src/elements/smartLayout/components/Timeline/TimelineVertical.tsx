@@ -550,7 +550,10 @@ export default function TimelineVertical({
         sides === 'two' ? styles.verticalTwoSides : styles.verticalOneSide,
     ].join(' ');
 
-    const timelineHeight = elementPositions[elementPositions.length - 1].top + elementPositions[elementPositions.length - 1].height;
+    const timelineHeight =
+        elementPositions.length > 0
+            ? elementPositions[elementPositions.length - 1].top + elementPositions[elementPositions.length - 1].height
+            : 0;
 
     return (
         <div className={containerClasses} style={{ '--item-count': itemsIds.length } as React.CSSProperties}>

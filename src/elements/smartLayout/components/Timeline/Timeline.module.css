@@ -22,9 +22,9 @@
 }
 
 .focused {
-    outline: 2px solid var(--presentation-primary-accent);
+    outline: 1px solid #999;
     outline-offset: 0.25em;
-    border-radius: var(--presentation-slide-border-radius);
+    /* border-radius: var(--presentation-slide-border-radius); */
 }
 
 .itemContainer {
@@ -177,6 +177,16 @@
     width: 100%;
 }
 
+.focused .textBox {
+    outline: 1px solid var(--color-border);
+    border-radius: var(--presentation-slide-border-radius);
+}
+
+.textBox:focus-visible,
+.textBox:focus {
+    outline: none;
+}
+
 .addButton {
     position: absolute;
     opacity: 0;
@@ -209,8 +219,8 @@
     border-radius: 9999px;
 }
 
-.focused .itemContainer:last-child .addButton,
-.itemContainer:hover .addButton {
+.focused .verticalTimelineItem:last-child .addButton,
+.container:hover .addButton {
     opacity: 1;
 }
 /* 
