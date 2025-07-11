@@ -75,6 +75,8 @@ interface TiptapProps {
     isReadOnly?: boolean;
     isInTable?: boolean;
     isHideSlashMenu?: boolean;
+    // флаг, что редактор внутри другого элемента, например, smart layout
+    isInnerTiptap?: boolean;
     onEnterPressed?: (content?: any) => void;
     onBackspacePressed?: (isEmpty: boolean, textContent: string) => void;
     onDeletePressed?: (isEmpty: boolean, textContent: string) => void;
@@ -91,9 +93,9 @@ export interface TiptapRef {
 }
 
 const Tiptap = ({
+    id = '',
     isInTable = false,
     isHideSlashMenu = false,
-    id = '',
     autoFocus = false,
     customBubbleMenuTrigger,
     presentationId,
@@ -107,6 +109,7 @@ const Tiptap = ({
     isReadOnly = false,
     defaultContent,
     placeholder,
+    isInnerTiptap = false,
     onEnterPressed = () => {},
     onBackspacePressed = () => {},
     onDeletePressed = () => {},
@@ -556,14 +559,14 @@ const Tiptap = ({
             if (isEmpty && !hasInteraction) {
                 if (isTempEditor) {
                     usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, elementId);
-                } else if (isTempLayout) {
+                } else if (isTempLayout && !isInnerTiptap) {
                     usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
                 }
             }
 
             onBlur?.();
         }
-    }, [editor, elementId, hasInteraction, isTempEditor, isTempLayout, layoutId, onBlur, presentationId, slideId]);
+    }, [editor, elementId, hasInteraction, isTempEditor, isTempLayout, isInnerTiptap, layoutId, onBlur, presentationId, slideId]);
 
     return (
         <div className="not-prose" style={{ position: 'relative', width: '100%' }} data-editor-id={id}>

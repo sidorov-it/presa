@@ -75,7 +75,12 @@ export const BaseMenu: React.FC<BaseMenuProps> = ({ children, isForceOpen, posit
 
     // Render in portal to ensure proper z-index stacking
     return createPortal(
-        <div ref={menuRef} className={`${styles.layoutMenu}${className ? ` ${className}` : ''}`} style={menuStyle}>
+        <div
+            ref={menuRef}
+            data-is-menu="true"
+            className={`${styles.layoutMenu}${className ? ` ${className}` : ''}`}
+            style={menuStyle}
+        >
             <ul className={styles.layoutMenuList}>{children}</ul>
         </div>,
         document.body

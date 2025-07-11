@@ -369,7 +369,11 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
 
         useUIStateStore.getState().setSelectedLayoutId(layout.id);
         document.addEventListener('click', e => {
-            if (e.target instanceof HTMLElement && !e.target.closest('[data-layout-id]')) {
+            if (
+                e.target instanceof HTMLElement &&
+                !e.target.closest('[data-layout-id]') &&
+                !e.target.closest('[data-is-menu="true"]')
+            ) {
                 useUIStateStore.getState().resetSelectedLayoutId();
             }
         });

@@ -132,6 +132,7 @@ export default function Item({
                         layoutId={layoutId}
                         customRefKey={`title-${elementId}-${item.id}`}
                         isHideSlashMenu={true}
+                        isInnerTiptap={true}
                         standardEnterBehavior={true}
                     />
                 </div>
@@ -149,6 +150,7 @@ export default function Item({
                         onContentChange={handleTextChange}
                         customRefKey={`text-${elementId}-${item.id}`}
                         standardEnterBehavior={true}
+                        isInnerTiptap={true}
                         isHideSlashMenu={true}
                     />
                 </div>

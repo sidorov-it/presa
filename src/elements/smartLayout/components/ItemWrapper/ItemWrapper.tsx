@@ -61,7 +61,7 @@ export default function ItemWrapper({
 
     return (
         <div
-            className={`${styles.container} ${className ? className : ''} ${isSelected ? styles.selected : ''}`}
+            className={`${styles.container} ${className ? className : ''}`}
             ref={itemRef}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}

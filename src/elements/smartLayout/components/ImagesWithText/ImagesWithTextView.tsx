@@ -91,6 +91,7 @@ export default function ImagesWithTextView({
                                         layoutId={layoutId}
                                         // customRefKey={`title-${element.id}-${item.id}`}
                                         isHideSlashMenu={false}
+                                        isInnerTiptap={true}
                                     />
                                 </div>
                                 <div className={styles.text}>
@@ -107,6 +108,7 @@ export default function ImagesWithTextView({
                                         placeholder="Текст"
                                         onContentChange={() => {}}
                                         isHideSlashMenu={false}
+                                        isInnerTiptap={true}
                                     />
                                 </div>
                             </div>

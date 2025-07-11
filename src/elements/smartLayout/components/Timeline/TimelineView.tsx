@@ -321,6 +321,7 @@ export default function TimelineView({
                                             presentationId={presentationId}
                                             slideId={slideId}
                                             layoutId={layoutId}
+                                            isInnerTiptap={true}
                                             placeholder="Заголовок"
                                             onContentChange={() => {}}
                                         />
@@ -333,6 +334,7 @@ export default function TimelineView({
                                             presentationId={presentationId}
                                             slideId={slideId}
                                             layoutId={layoutId}
+                                            isInnerTiptap={true}
                                             placeholder="Текст"
                                             onContentChange={() => {}}
                                         />
@@ -473,6 +475,7 @@ export default function TimelineView({
                         id={`${element.id}-title-${index}`}
                         presentationId={presentationId}
                         slideId={slideId}
+                        isInnerTiptap={true}
                         layoutId={layoutId}
                         placeholder="Заголовок"
                         onContentChange={() => {}}
@@ -485,6 +488,7 @@ export default function TimelineView({
                         id={`${element.id}-text-${index}`}
                         presentationId={presentationId}
                         slideId={slideId}
+                        isInnerTiptap={true}
                         layoutId={layoutId}
                         placeholder="Текст"
                         onContentChange={() => {}}

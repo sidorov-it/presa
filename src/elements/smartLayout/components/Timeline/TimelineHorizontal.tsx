@@ -312,7 +312,8 @@ export default function TimelineHorizontal({
 
         secondLineItems = Array(totalSlots)
             .fill(null)
-            .map((_, i) => (i < evenIndexedItems.length ? evenIndexedItems[i] : null));
+            .map((_, i) => (i < evenIndexedItems.length ? evenIndexedItems[i] : null))
+            // .filter(item => !!item);
 
         maxItemsCount = totalSlots;
     }
@@ -334,6 +335,8 @@ export default function TimelineHorizontal({
 
         return baseStyle;
     };
+
+    const lastItemId = itemsIds[itemsIds.length - 1];
 
     return (
         <div className={containerClasses.join(' ')} style={{ '--item-count': itemsIds.length } as React.CSSProperties}>
@@ -368,6 +371,7 @@ export default function TimelineHorizontal({
                                 sides={sides}
                                 className={styles.itemWrapperAlignBottom}
                                 elementRef={elementRefs.current[itemId || '']}
+                                isLastItem={itemId === lastItemId}
                             />
                         );
                     })}
@@ -455,6 +459,7 @@ export default function TimelineHorizontal({
                                 isSecondLine={true}
                                 className={styles.itemWrapperAlignTop}
                                 elementRef={elementRefs.current[itemId || '']}
+                                isLastItem={itemId === lastItemId}
                             />
                         );
                     })}

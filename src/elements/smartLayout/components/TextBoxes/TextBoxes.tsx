@@ -331,6 +331,7 @@ export default function TextBoxes({
                                         layoutId={layoutId}
                                         customRefKey={`title-${elementId}-${itemId}`}
                                         isHideSlashMenu={true}
+                                        isInnerTiptap={true}
                                         standardEnterBehavior={true}
                                     />
                                 </div>
@@ -347,6 +348,7 @@ export default function TextBoxes({
                                         onContentChange={handleContentChange(itemId, 'text')}
                                         customRefKey={`text-${elementId}-${itemId}`}
                                         isHideSlashMenu={true}
+                                        isInnerTiptap={true}
                                         standardEnterBehavior={true}
                                     />
                                 </div>

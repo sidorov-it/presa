@@ -126,6 +126,7 @@ const TimelineVerticalContent = ({
                         placeholder="Заголовок"
                         onContentChange={handleContentChange(itemId, 'title')}
                         customRefKey={`title-${elementId}-${itemId}`}
+                        isInnerTiptap={true}
                         isHideSlashMenu={true}
                         standardEnterBehavior={true}
                     />
@@ -140,6 +141,7 @@ const TimelineVerticalContent = ({
                         placeholder="Текст"
                         onContentChange={handleContentChange(itemId, 'text')}
                         customRefKey={`text-${elementId}-${itemId}`}
+                        isInnerTiptap={true}
                         isHideSlashMenu={true}
                         standardEnterBehavior={true}
                     />

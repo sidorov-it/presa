@@ -93,6 +93,7 @@ export default function BoxComponent({
                 onContentChange={content => {
                     onContentChange?.(content);
                 }}
+                isInnerTiptap={true}
             />
         </Box>
     );

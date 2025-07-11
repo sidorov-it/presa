@@ -126,6 +126,7 @@ export default function TextBoxesView({
                                     slideId={slideId}
                                     layoutId={layoutId}
                                     isHideSlashMenu={false}
+                                    isInnerTiptap={true}
                                 />
                             </div>
                             <div className={styles.content}>
@@ -140,6 +141,7 @@ export default function TextBoxesView({
                                     layoutId={layoutId}
                                     placeholder="Текст"
                                     onContentChange={() => {}}
+                                    isInnerTiptap={true}
                                     isHideSlashMenu={false}
                                     onEnterPressed={() => {
                                         return true;

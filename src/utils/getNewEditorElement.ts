@@ -1,7 +1,6 @@
 import { EditorElement, TextType } from '@/types';
 import { generateId } from './id';
 import { ElementType } from '@/types/elements';
-import { getHeadingLevel } from './getHeadingLevel';
 
 export const getNewEditorElement = (
     content?: string,
