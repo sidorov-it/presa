@@ -32,7 +32,9 @@ const ThemeSelectPanel: React.FC<ThemeSelectPanelProps> = ({ onCloseMenu, presen
                 setTabIndex(0);
             }
             setTimeout(() => {
-                document.getElementById(`theme-${currentTheme.id}`)?.scrollIntoView({ behavior: 'smooth' });
+                document
+                    .getElementById(`theme-${currentTheme.id}`)
+                    ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 200);
         }
     }, [currentTheme?.id, currentTheme?.isDefault]);

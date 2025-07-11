@@ -3,6 +3,7 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { Editor } from '@tiptap/react';
 import { SmartLayoutElement, TipTapRefs } from '@/types';
 import { RefObject } from 'react';
+import { useUIStateStore } from '@/store/uiStateStore';
 
 export interface EditorWithMethods {
     editor: Editor;
@@ -85,15 +86,22 @@ export const ArrowNavigationExtension = (
                                         if (element) {
                                             console.log(`Focusing non-editor element: ${targetElementId}`);
                                             // Add a focus visual indicator class
-                                            element.classList.add('element-focus');
+                                            // element.classList.add('element-focus');
                                             // Set focus on the element for keyboard navigation
                                             (element as HTMLElement).tabIndex = 0;
                                             (element as HTMLElement).focus();
 
+                                            useUIStateStore.getState().setSelectedData({
+                                                elementId: targetElementId,
+                                                slideId: targetSlideId,
+                                                layoutId: layoutId,
+                                            });
+                                            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
                                             // Remove the focus class after animation completes
-                                            setTimeout(() => {
-                                                element.classList.remove('element-focus');
-                                            }, 1000);
+                                            // setTimeout(() => {
+                                            //     element.classList.remove('element-focus');
+                                            // }, 1000);
                                         } else {
                                             console.warn(`Element not found in DOM: ${targetElementId}`);
                                         }
@@ -180,15 +188,22 @@ export const ArrowNavigationExtension = (
                                         if (element) {
                                             console.log(`Focusing non-editor element: ${targetElementId}`);
                                             // Add a focus visual indicator class
-                                            element.classList.add('element-focus');
+                                            // element.classList.add('element-focus');
                                             // Set focus on the element for keyboard navigation
                                             (element as HTMLElement).tabIndex = 0;
                                             (element as HTMLElement).focus();
 
+                                            useUIStateStore.getState().setSelectedData({
+                                                elementId: targetElementId,
+                                                slideId: targetSlideId,
+                                                layoutId: layoutId,
+                                            });
+                                            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
                                             // Remove the focus class after animation completes
-                                            setTimeout(() => {
-                                                element.classList.remove('element-focus');
-                                            }, 1000);
+                                            // setTimeout(() => {
+                                            //     element.classList.remove('element-focus');
+                                            // }, 1000);
                                         } else {
                                             console.warn(`Element not found in DOM: ${targetElementId}`);
                                         }
@@ -283,15 +298,21 @@ export const ArrowNavigationExtension = (
                                         if (element) {
                                             console.log(`Focusing non-editor element: ${targetElementId}`);
                                             // Add a focus visual indicator class
-                                            element.classList.add('element-focus');
+                                            // element.classList.add('element-focus');
                                             // Set focus on the element for keyboard navigation
                                             (element as HTMLElement).tabIndex = 0;
                                             (element as HTMLElement).focus();
 
+                                            useUIStateStore.getState().setSelectedData({
+                                                elementId: targetElementId,
+                                                slideId: targetSlideId,
+                                                layoutId: layoutId,
+                                            });
+                                            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                             // Remove the focus class after animation completes
-                                            setTimeout(() => {
-                                                element.classList.remove('element-focus');
-                                            }, 1000);
+                                            // setTimeout(() => {
+                                            //     element.classList.remove('element-focus');
+                                            // }, 1000);
                                         } else {
                                             console.warn(`Element not found in DOM: ${targetElementId}`);
                                         }
@@ -382,15 +403,22 @@ export const ArrowNavigationExtension = (
                                         if (element) {
                                             console.log(`Focusing non-editor element: ${targetElementId}`);
                                             // Add a focus visual indicator class
-                                            element.classList.add('element-focus');
+                                            // element.classList.add('element-focus');
                                             // Set focus on the element for keyboard navigation
                                             (element as HTMLElement).tabIndex = 0;
                                             (element as HTMLElement).focus();
 
+                                            useUIStateStore.getState().setSelectedData({
+                                                elementId: targetElementId,
+                                                slideId: targetSlideId,
+                                                layoutId: layoutId,
+                                            });
+                                            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
                                             // Remove the focus class after animation completes
-                                            setTimeout(() => {
-                                                element.classList.remove('element-focus');
-                                            }, 1000);
+                                            // setTimeout(() => {
+                                            //     element.classList.remove('element-focus');
+                                            // }, 1000);
                                         } else {
                                             console.warn(`Element not found in DOM: ${targetElementId}`);
                                         }

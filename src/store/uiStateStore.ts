@@ -259,7 +259,12 @@ export const useUIStateStore = create<UIState>()(
                     });
                 },
 
-                setSelectedData: (data: any) => {
+                setSelectedData: (data: {
+                    slideId: string | null;
+                    elementId: string | null;
+                    layoutId: string | null;
+                    cellId: string | null;
+                }) => {
                     set({
                         selectedSlideId: data.slideId ?? null,
                         selectedElementId: data.elementId ?? null,
