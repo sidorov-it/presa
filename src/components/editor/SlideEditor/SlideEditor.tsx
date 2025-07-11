@@ -25,22 +25,12 @@ import TemplateTestModal from '../TemplateTestModal';
 interface SlideEditorProps {
     slideLayoutIds: string[];
     presentationId: string;
-    isSelected: boolean;
     tiptapRefs: MutableRefObject<TipTapRefs>;
     slideId: string;
-    handleSelectSlide: (slideId: string) => void;
     isLast: boolean;
 }
 
-const SlideEditor: React.FC<SlideEditorProps> = ({
-    slideLayoutIds,
-    slideId,
-    tiptapRefs,
-    presentationId,
-    handleSelectSlide,
-    isSelected,
-    isLast,
-}) => {
+const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tiptapRefs, presentationId, isLast }) => {
     const editorRef = useRef<HTMLDivElement>(null);
     const [isHovered, setIsHovered] = useState(false);
     const [showHeightIndicator, setShowHeightIndicator] = useState(false);
@@ -63,6 +53,9 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     const addEmptySlideSelector = useCallback((state: PresentationState) => state.addEmptySlide, []);
     const addEmptySlide = usePresentationStore(addEmptySlideSelector);
+
+    const selectedSlideId = useUIStateStore(state => state.selectedSlideId);
+    const isSelected = selectedSlideId === slideId;
 
     const [showAIGenerator, setShowAIGenerator] = useState(false);
     const [showTemplateTestModal, setShowTemplateTestModal] = useState(false);
@@ -135,6 +128,10 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         },
         [presentationId, slideId]
     );
+
+    const handleSelectSlide = useCallback((slideId: string) => {
+        useUIStateStore.getState().setSelectedSlideId(slideId);
+    }, []);
 
     const handleOpenSlideMenu = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
@@ -629,7 +626,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 export default memo(SlideEditor, (prevProps, nextProps) => {
     return (
         deepEqual(prevProps.slideLayoutIds, nextProps.slideLayoutIds) &&
-        prevProps.isSelected === nextProps.isSelected &&
         prevProps.presentationId === nextProps.presentationId &&
         prevProps.slideId === nextProps.slideId &&
         prevProps.isLast === nextProps.isLast

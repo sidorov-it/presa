@@ -46,6 +46,8 @@ export interface UIState {
     // Presentation context
     currentPresentationId: string | null;
 
+    setSelectedSlideId: (slideId: string) => void;
+
     // Actions for presentation context
     setCurrentPresentationId: (presentationId: string) => void;
 
@@ -193,6 +195,10 @@ export const useUIStateStore = create<UIState>()(
                     set({ selectedLayoutId: null });
                 },
 
+                setSelectedSlideId: (slideId: string) => {
+                    set({ selectedSlideId: slideId });
+                },
+
                 // Actions for context menu control
                 openContextMenu: menuData => {
                     const presentationState = usePresentationStore.getState();
@@ -263,7 +269,8 @@ export const useUIStateStore = create<UIState>()(
                         state.selectedSlideId === slideId &&
                         state.selectedElementId === null &&
                         state.selectedLayoutId === null &&
-                        state.selectedSmartLayoutItemId === null
+                        state.selectedSmartLayoutItemId === null &&
+                        state.isContextMenuOpen
                     );
                 },
 

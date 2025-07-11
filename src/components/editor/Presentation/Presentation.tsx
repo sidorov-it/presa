@@ -10,8 +10,6 @@ import SlidesList from '../SlidesList';
 import SlideDropIndicator from '@/components/SlideDropIndicator';
 interface PresentationProps {
     presentationId: string;
-    activeSlideId: string | null;
-    onSlideSelect: (slideId: string) => void;
     tiptapRefs: MutableRefObject<TipTapRefs>;
 }
 
@@ -20,19 +18,14 @@ const SlideEditorWrapper = memo(
     ({
         slideId,
         presentationId,
-        isSelected,
-        onSlideSelect,
         tiptapRefs,
         isLast,
     }: {
         slideId: string;
         presentationId: string;
-        isSelected: boolean;
-        onSlideSelect: (slideId: string) => void;
         tiptapRefs: MutableRefObject<TipTapRefs>;
         isLast: boolean;
     }) => {
-        const isReadOnly = useReadOnly();
         const slideLayoutIds = usePresentationStore(
             useShallow((state: PresentationState) => {
                 const presentation = state.presentations.find((p: IPresentation) => p.id === presentationId);
@@ -51,8 +44,6 @@ const SlideEditorWrapper = memo(
                 slideLayoutIds={slideLayoutIds}
                 presentationId={presentationId}
                 slideId={slideId}
-                handleSelectSlide={onSlideSelect}
-                isSelected={isSelected && !isReadOnly}
                 isLast={isLast}
             />
         );
@@ -61,7 +52,7 @@ const SlideEditorWrapper = memo(
 
 SlideEditorWrapper.displayName = 'SlideEditorWrapper';
 
-function Presentation({ presentationId, activeSlideId, onSlideSelect, tiptapRefs }: PresentationProps) {
+function Presentation({ presentationId, tiptapRefs }: PresentationProps) {
     const isReadOnly = useReadOnly();
 
     const slideIds = usePresentationStore(
@@ -85,8 +76,6 @@ function Presentation({ presentationId, activeSlideId, onSlideSelect, tiptapRefs
                     key={slideId}
                     slideId={slideId}
                     presentationId={presentationId}
-                    isSelected={activeSlideId === slideId}
-                    onSlideSelect={onSlideSelect}
                     tiptapRefs={tiptapRefs}
                     isLast={index === slideIds.length - 1}
                 />
@@ -94,7 +83,7 @@ function Presentation({ presentationId, activeSlideId, onSlideSelect, tiptapRefs
 
             {!isReadOnly && (
                 <>
-                    <SlidesList presentationId={presentationId} activeSlideId={activeSlideId} onSlideSelect={onSlideSelect} />
+                    <SlidesList presentationId={presentationId} />
                     <SlideDropIndicator />
                 </>
             )}

@@ -11,6 +11,7 @@ import styles from './SlidesList.module.css';
 import Portal from '@/components/Portal';
 import { useColorMode } from '@/components/ui/color-mode';
 import SlidesListDropIndicator from './SlidesListDropIndicator';
+import { useUIStateStore } from '@/store/uiStateStore';
 
 const COPIED_SLIDE_STORAGE_KEY = 'copiedSlide';
 
@@ -21,14 +22,12 @@ const SlideItem = memo(
         index,
         // isActive,
         isLastSlide,
-        onSlideSelect,
         onContextMenu,
     }: {
         slide: Slide;
         index: number;
         isActive: boolean;
         isLastSlide: boolean;
-        onSlideSelect: (slideId: string, scroll: boolean) => void;
         onContextMenu: (e: React.MouseEvent, slide: Slide) => void;
     }) => {
         // const { colorMode } = useColorMode();
@@ -54,17 +53,22 @@ const SlideItem = memo(
         const slideTitle = getSlideTitle();
 
         const handleItemClick = useCallback(() => {
-            onSlideSelect(slide.id, true);
-        }, [slide.id, onSlideSelect]);
+            useUIStateStore.getState().setSelectedSlideId(slide.id);
+
+            document.querySelector(`[data-slide-id="${slide.id}"]`)?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+            });
+        }, [slide.id]);
 
         const handleItemKeyDown = useCallback(
             (e: React.KeyboardEvent) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    onSlideSelect(slide.id, true);
+                    useUIStateStore.getState().setSelectedSlideId(slide.id);
                 }
             },
-            [slide.id, onSlideSelect]
+            [slide.id]
         );
 
         const isReordering = slideDragState === 'dragging';
@@ -148,16 +152,16 @@ SlideItem.displayName = 'SlideItem';
 
 interface SlidesListProps {
     presentationId: string;
-    activeSlideId: string | null;
-    onSlideSelect: (slideId: string, scroll: boolean) => void;
 }
 
-const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlideId, onSlideSelect }) => {
+const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId }) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [copiedSlide, setCopiedSlide] = useState<Slide | null>(null);
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number; slide: Slide } | null>(null);
     const panelRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
+
+    const selectedSlideId = useUIStateStore(state => state.selectedSlideId);
 
     const { colorMode } = useColorMode();
 
@@ -420,9 +424,8 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId, activeSlid
                                 key={slide.id}
                                 slide={slide}
                                 index={index}
-                                isActive={slide.id === activeSlideId}
+                                isActive={slide.id === selectedSlideId}
                                 isLastSlide={index === slides.length - 1}
-                                onSlideSelect={onSlideSelect}
                                 onContextMenu={handleContextMenu}
                             />
                         ))}
