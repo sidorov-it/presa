@@ -754,7 +754,6 @@ export const ElementContent = ({
             handleBackspacePressed,
             handleDeletePressed,
             handleEditorContentChange,
-            handleBlur,
             dragHandleRef,
             memoizedOnAddElement,
             presentationId,
@@ -774,6 +773,7 @@ export const ElementContent = ({
             key={elementId}
             className={`${styles.elementContent} ${isElementSelected ? styles.elementContentSelected : ''}`}
             data-element-id={elementId}
+            {...(isElementSelected ? { 'data-element-selected': true } : {})}
             style={{
                 fontSize: 'var(--font-size)',
             }}
@@ -786,6 +786,14 @@ export const ElementContent = ({
                 if (elementIsHovered && !isReadOnly) {
                     setElementIsHovered(false);
                 }
+            }}
+            onClick={() => {
+                useUIStateStore.getState().setSelectedData({
+                    elementId,
+                    elementType: elementTypeId,
+                    layoutId,
+                    cellId,
+                });
             }}
         >
             <div className={`${styles.elementWrapper}`}>

@@ -154,6 +154,11 @@ export const ColorPicker = ({
         );
     };
 
+    const handlePresetClick = (event: React.MouseEvent<HTMLButtonElement>, color: string) => {
+        event.stopPropagation();
+        handleColorSelect(color);
+    };
+
     return (
         <div className={`${styles.colorPickerContainer} light-theme-only`} ref={colorPickerRef}>
             {renderTriggerButton()}
@@ -170,7 +175,7 @@ export const ColorPicker = ({
                                 key={color}
                                 className={styles.colorPreset}
                                 style={{ backgroundColor: color }}
-                                onClick={() => handleColorSelect(color)}
+                                onClick={ev => handlePresetClick(ev, color)}
                                 aria-label={`Выбрать цвет ${color}`}
                             />
                         ))}

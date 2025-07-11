@@ -15,6 +15,12 @@
     border-radius: var(--presentation-slide-border-radius);
 }
 
+/* [data-element-selected='true'] .container {
+    outline: 1px solid #999;
+    outline-offset: 4px;
+    border-radius: var(--presentation-slide-border-radius);
+} */
+
 .container {
     position: relative;
     /* height: 100%; */

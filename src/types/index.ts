@@ -144,6 +144,7 @@ export interface SmartLayoutElement extends BaseElement {
     showNumbers?: boolean;
     showLines?: boolean;
     timelineColor?: string;
+    numbersColor?: string;
 }
 
 // Элемент редактора Tiptap

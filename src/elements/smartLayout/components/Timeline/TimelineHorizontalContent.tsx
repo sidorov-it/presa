@@ -6,7 +6,7 @@ import ItemWrapper from '../ItemWrapper/ItemWrapper';
 
 import styles from './Timeline.module.css';
 
-const TimelineContent = ({
+const TimelineHorizontalContent = ({
     itemId,
     direction,
     itemsIds,
@@ -216,4 +216,4 @@ const TimelineContent = ({
     );
 };
 
-export default TimelineContent;
+export default TimelineHorizontalContent;

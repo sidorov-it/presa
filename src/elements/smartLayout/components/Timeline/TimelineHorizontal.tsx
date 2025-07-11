@@ -7,7 +7,7 @@ import React, { RefObject, useState, useRef, useEffect, useCallback } from 'reac
 import { useShallow } from 'zustand/react/shallow';
 
 import styles from './Timeline.module.css';
-import TimelineContent from './TimelineContent';
+import TimelineHorizontalContent from './TimelineHorizontalContent';
 
 export default function TimelineHorizontal({
     elementId,
@@ -40,13 +40,15 @@ export default function TimelineHorizontal({
     const containerRef = useRef<HTMLDivElement>(null);
     const elementRefs = useRef<{ [key: string]: RefObject<HTMLDivElement> }>({});
 
-    const { direction, sides, showLines, timelineColor } = usePresentationStore(
+    const { direction, sides, showLines, timelineColor, showNumbers, numbersColor } = usePresentationStore(
         useShallow(state => {
             const element = state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement & {
                 direction?: 'horizontal' | 'vertical';
                 sides?: 'one' | 'two';
                 showLines?: boolean;
                 timelineColor?: string;
+                numbersColor?: string;
+                showNumbers?: boolean;
             };
             return {
                 direction: element.direction || 'horizontal',
@@ -54,6 +56,8 @@ export default function TimelineHorizontal({
                 showLines: element.showLines !== false, // Default to true
                 timelineColor:
                     element.timelineColor || 'var(--presentation-primary-accent, var(--color-primary, #1e88e5))',
+                numbersColor: element.numbersColor || 'var(--color-text, #000)',
+                showNumbers: element.showNumbers || false,
             };
         })
     );
@@ -312,8 +316,7 @@ export default function TimelineHorizontal({
 
         secondLineItems = Array(totalSlots)
             .fill(null)
-            .map((_, i) => (i < evenIndexedItems.length ? evenIndexedItems[i] : null))
-            // .filter(item => !!item);
+            .map((_, i) => (i < evenIndexedItems.length ? evenIndexedItems[i] : null));
 
         maxItemsCount = totalSlots;
     }
@@ -347,7 +350,7 @@ export default function TimelineHorizontal({
                 <div className={styles.firstLine}>
                     {firstLineItems.map((itemId, index) => {
                         return (
-                            <TimelineContent
+                            <TimelineHorizontalContent
                                 key={itemId || `first-empty-${index}`}
                                 itemId={itemId}
                                 direction={direction}
@@ -382,6 +385,7 @@ export default function TimelineHorizontal({
                     style={
                         {
                             '--timeline-color': timelineColor,
+                            '--numbers-color': numbersColor,
                             ...(direction === 'vertical' && { height: containerRef.current?.clientHeight }),
                         } as React.CSSProperties
                     }
@@ -402,6 +406,13 @@ export default function TimelineHorizontal({
                                 } else if (direction === 'vertical' && sides === 'two') {
                                     classNames.push(styles.verticalTwoSidesConnectionLine);
                                 }
+                            }
+
+                            const attributes = {};
+
+                            if (showNumbers) {
+                                classNames.push(styles.timelineLineItemNumber);
+                                attributes['data-number'] = index + 1;
                             }
 
                             // Different positioning logic for "one side" vs "two sides" and direction
@@ -427,14 +438,21 @@ export default function TimelineHorizontal({
                                 }
                             }
 
-                            return <div key={index} className={classNames.join(' ')} style={positionStyle} />;
+                            return (
+                                <div
+                                    key={index}
+                                    className={classNames.join(' ')}
+                                    style={positionStyle}
+                                    {...attributes}
+                                />
+                            );
                         })}
                     <div className={styles.timelineLineItemInvisible}></div>
                 </div>
                 <div className={styles.secondLine} style={getSecondLineStyle()}>
                     {secondLineItems.map((itemId, index) => {
                         return (
-                            <TimelineContent
+                            <TimelineHorizontalContent
                                 key={itemId || `second-empty-${index}`}
                                 itemId={itemId}
                                 direction={direction}

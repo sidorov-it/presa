@@ -1,18 +1,20 @@
 'use client';
-import SmartLayoutColumnSizeSelector from '@/components/settings/SmartLayoutColumnSizeSelector/SmartLayoutColumnSizeSelector';
 import SmartLayoutTemplateSelector from '@/components/settings/SmartLayoutTemplateSelector/SmartLayoutTemplateSelector';
-import SmartLayoutDirectionSelector from '@/components/settings/SmartLayoutDirectionSelector/SmartLayoutDirectionSelector';
-import TimelineSidesSelector from '@/components/settings/TimelineSidesSelector/TimelineSidesSelector';
-import TimelineNumberingSelector from '@/components/settings/TimelineNumberingSelector/TimelineNumberingSelector';
-import TimelineLinesSelector from '@/components/settings/TimelineLinesSelector/TimelineLinesSelector';
-import TimelineColorSelector from '@/components/settings/TimelineColorSelector/TimelineColorSelector';
 import { usePresentationStore } from '@/store/presentationStore';
 import { SmartLayoutElement, SmartLayoutType, TipTapRefs } from '@/types';
-import { MutableRefObject } from 'react';
+import { MutableRefObject, useCallback, useMemo } from 'react';
 import { MenuItem } from '@/components/editor/SlideMenu/BaseMenu';
-import AlignmentGroup from '@/components/settings/AlignmentGroup/AlignmentGroup';
 import { DeleteIcon } from '@/components/icons';
 import { useHistoryStore } from '@/store/historyStore';
+import IconToggle from '@/components/settings/IconToggle/IconToggle';
+import { FaTimeline } from 'react-icons/fa6';
+import { GoHorizontalRule } from 'react-icons/go';
+
+import styles from './TimelineSettings.module.css';
+import { LuArrowDown, LuArrowRight, LuListOrdered } from 'react-icons/lu';
+import { ColorPicker } from '@/components/tiptap/ColorPicker';
+import { getContrastingTextColor } from '@/utils/themeUtils';
+import { ElementRegistry } from '@/elements/commonRegisrty';
 
 export default function TimelineSettings({
     element,
@@ -30,38 +32,46 @@ export default function TimelineSettings({
     tiptapRefs: MutableRefObject<TipTapRefs>;
 }) {
     const updateElement = usePresentationStore(state => state.updateElement);
+    const elementConfig = useMemo(
+        () => Object.values(ElementRegistry).find(el => element.elementVariant === el.props.elementVariant),
+        [element.elementVariant]
+    );
 
-    const handleAlignment = (alignment: 'left' | 'center' | 'right') => {
-        useHistoryStore.getState().beginTransaction(presentationId, 'Change alignment');
+    const handleColorChange = (timelineColor: string) => {
+        const element = usePresentationStore
+            .getState()
+            .getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement;
+        if (!element) return;
+
+        const numbersColor = getContrastingTextColor(timelineColor);
+
+        usePresentationStore.getState().updateElement({
+            presentationId,
+            slideId,
+            layoutId,
+            elementId,
+            data: {
+                timelineColor,
+                numbersColor,
+            },
+        });
+    };
+
+    const handleColorReset = useCallback(() => {
+        const defaultTimelineColor = elementConfig?.props?.backgroundColor;
+        const defaultNumbersColor = getContrastingTextColor(defaultTimelineColor);
+
         updateElement({
             presentationId,
             slideId,
             layoutId,
             elementId,
             data: {
-                align: alignment,
+                timelineColor: defaultTimelineColor,
+                numbersColor: defaultNumbersColor,
             },
         });
-
-        element.items?.forEach(item => {
-            tiptapRefs.current.editors[`title-${elementId}-${item.id}`]?.editor
-                .chain()
-                .setMeta('transaction', true)
-                .focus()
-                .setTextAlign(alignment)
-                .blur()
-                .run();
-
-            tiptapRefs.current.editors[`text-${elementId}-${item.id}`]?.editor
-                .chain()
-                .setMeta('transaction', true)
-                .focus()
-                .setTextAlign(alignment)
-                .blur()
-                .run();
-        });
-        useHistoryStore.getState().commitTransaction(presentationId);
-    };
+    }, [elementConfig, presentationId, slideId, layoutId, elementId, updateElement]);
 
     return (
         <>
@@ -78,97 +88,136 @@ export default function TimelineSettings({
                 }}
             />
 
-            <SmartLayoutColumnSizeSelector
-                columnSize={element.columnSize}
-                step={1}
-                min={1}
-                max={4}
-                defaultValue={1}
-                setColumnSize={value => {
-                    updateElement({
-                        presentationId,
-                        slideId,
-                        layoutId,
-                        elementId,
-                        data: { columnSize: value },
-                    });
-                }}
-            />
+            <div className={styles.buttons}>
+                <IconToggle
+                    icon={element.direction === 'horizontal' ? <LuArrowDown /> : <LuArrowRight />}
+                    isEnabled={false}
+                    onToggle={() => {
+                        updateElement({
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            elementId,
+                            data: { direction: element.direction === 'horizontal' ? 'vertical' : 'horizontal' },
+                        });
+                    }}
+                    ariaLabel={element.direction === 'horizontal' ? 'Горизонтально' : 'Вертикально'}
+                />
 
-            <SmartLayoutDirectionSelector
-                direction={(element as any).direction || 'horizontal'}
-                setDirection={value => {
-                    updateElement({
-                        presentationId,
-                        slideId,
-                        layoutId,
-                        elementId,
-                        data: { direction: value },
-                    });
-                }}
-            />
+                {/* <SmartLayoutDirectionSelector
+                    direction={(element as any).direction || 'horizontal'}
+                    setDirection={value => {
+                        updateElement({
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            elementId,
+                            data: { direction: value },
+                        });
+                    }}
+                /> */}
+                {/*
+                <TimelineSidesSelector
+                    sides={element.sides || 'one'}
+                    setSides={value => {
+                        updateElement({
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            elementId,
+                            data: { sides: value },
+                        });
+                    }}
+                /> */}
 
-            <TimelineSidesSelector
-                sides={element.sides || 'one'}
-                setSides={value => {
-                    updateElement({
-                        presentationId,
-                        slideId,
-                        layoutId,
-                        elementId,
-                        data: { sides: value },
-                    });
-                }}
-            />
+                <IconToggle
+                    // icon={<SidesIcon />}
+                    icon={<FaTimeline />}
+                    isEnabled={element.sides === 'one'}
+                    onToggle={() => {
+                        updateElement({
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            elementId,
+                            data: { sides: element.sides === 'one' ? 'two' : 'one' },
+                        });
+                    }}
+                    ariaLabel={'С двух сторон'}
+                />
 
-            <TimelineNumberingSelector
-                showNumbers={element.showNumbers || false}
-                setShowNumbers={value => {
-                    updateElement({
-                        presentationId,
-                        slideId,
-                        layoutId,
-                        elementId,
-                        data: { showNumbers: value },
-                    });
-                }}
-            />
+                <IconToggle
+                    icon={<LuListOrdered />}
+                    isEnabled={element.showNumbers || false}
+                    onToggle={() => {
+                        updateElement({
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            elementId,
+                            data: { showNumbers: !element.showNumbers },
+                        });
+                    }}
+                    ariaLabel="Показывать нумерацию"
+                />
+                {/* <TimelineNumberingSelector
+                    showNumbers={element.showNumbers || false}
+                    setShowNumbers={value => {
+                        updateElement({
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            elementId,
+                            data: { showNumbers: value },
+                        });
+                    }}
+                />*/}
 
-            <TimelineLinesSelector
-                showLines={element.showLines !== false} // Default to true
-                setShowLines={value => {
-                    updateElement({
-                        presentationId,
-                        slideId,
-                        layoutId,
-                        elementId,
-                        data: { showLines: value },
-                    });
-                }}
-            />
+                <IconToggle
+                    icon={<GoHorizontalRule />}
+                    isEnabled={!!element.showLines}
+                    onToggle={() => {
+                        updateElement({
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            elementId,
+                            data: { showLines: !element.showLines },
+                        });
+                    }}
+                    ariaLabel="Показывать линии"
+                />
+                {/* <TimelineLinesSelector
+                    icon={<RiLine />}
+                    showLines={element.showLines !== false} // Default to true
+                    setShowLines={value => {
+                        updateElement({
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            elementId,
+                            data: { showLines: value },
+                        });
+                    }}
+                /> */}
 
-            <TimelineColorSelector
-                color={element.timelineColor || '#1e88e5'}
-                setColor={value => {
-                    updateElement({
-                        presentationId,
-                        slideId,
-                        layoutId,
-                        elementId,
-                        data: { timelineColor: value },
-                    });
-                }}
-            />
+                <ColorPicker
+                    initialColor={element.timelineColor}
+                    onColorChange={handleColorChange}
+                    mode="icon"
+                    className={styles.button}
+                    isShowResetColor={true}
+                    onColorReset={handleColorReset}
+                />
 
-            <AlignmentGroup element={element} handleChange={handleAlignment} />
-
-            <MenuItem
-                icon={<DeleteIcon />}
-                label="Удалить элемент"
-                onClick={() => {
-                    usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, elementId);
-                }}
-            />
+                <MenuItem
+                    icon={<DeleteIcon />}
+                    label="Удалить элемент"
+                    onClick={() => {
+                        usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, elementId);
+                    }}
+                />
+            </div>
         </>
     );
 }

@@ -47,6 +47,7 @@ export interface UIState {
     currentPresentationId: string | null;
 
     setSelectedSlideId: (slideId: string) => void;
+    setSelectedData: (data: any) => void;
 
     // Actions for presentation context
     setCurrentPresentationId: (presentationId: string) => void;
@@ -245,6 +246,14 @@ export const useUIStateStore = create<UIState>()(
                     });
                 },
 
+                setSelectedData: (data: any) => {
+                    set({
+                        selectedSlideId: data.slideId ?? null,
+                        selectedElementId: data.elementId ?? null,
+                        selectedLayoutId: data.layoutId ?? null,
+                        selectedCellId: data.cellId ?? null,
+                    });
+                },
                 closeContextMenu: () => {
                     console.log('closeContextMenu');
                     set({

@@ -374,6 +374,8 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 !e.target.closest('[data-layout-id]') &&
                 !e.target.closest('[data-is-menu="true"]')
             ) {
+                e.preventDefault();
+                e.stopPropagation();
                 useUIStateStore.getState().resetSelectedLayoutId();
             }
         });

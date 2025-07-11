@@ -27,6 +27,7 @@ export default function TimelineView({
     const showNumbers = element.showNumbers || false;
     const showLines = element.showLines !== false; // Default to true
     const timelineColor = element.timelineColor || 'var(--presentation-primary-accent, var(--color-primary, #1e88e5))';
+    const numbersColor = element.numbersColor || 'var(--color-text, #000)';
 
     const itemsIds = element.items?.map(item => item.id) || [];
     const [elementPositions, setElementPositions] = useState<
@@ -237,6 +238,7 @@ export default function TimelineView({
                         style={
                             {
                                 '--timeline-color': timelineColor,
+                                '--numbers-color': numbersColor,
                                 height:
                                     elementPositions.length > 0
                                         ? `${Math.max(...elementPositions.map(p => p.top + p.minHeight)) + 40}px`
