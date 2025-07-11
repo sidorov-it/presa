@@ -6,6 +6,7 @@ import { useUIStateStore } from '@/store/uiStateStore';
 import styles from './ItemWrapper.module.css';
 import { useDnd } from '@/contexts/DragDropContext';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
+import { useShallow } from 'zustand/react/shallow';
 
 export default function ItemWrapper({
     children,
@@ -28,8 +29,10 @@ export default function ItemWrapper({
     const isReadOnly = useReadOnly();
 
     const [hovered, setHovered] = useState(false);
-    const isSelected = useUIStateStore(state => state.selectedSmartLayoutItemId === itemId);
-    const isMenuOpen = useUIStateStore(state => state.isContextMenuOpen && state.selectedSmartLayoutItemId === itemId);
+    const isSelected = useUIStateStore(useShallow(state => state.selectedSmartLayoutItemId === itemId));
+    const isMenuOpen = useUIStateStore(
+        useShallow(state => state.isContextMenuOpen && state.selectedSmartLayoutItemId === itemId)
+    );
     const itemRef = useRef<HTMLDivElement>(null);
     const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
     const { handleDragStart } = useDnd();
@@ -79,7 +82,15 @@ export default function ItemWrapper({
                     slideId={slideId}
                     isActive={isMenuOpen}
                     ariaLabel="Перетащить"
-                    handleClick={() => useUIStateStore.getState().openContextMenu({ smartLayoutItemId: itemId })}
+                    handleClick={() =>
+                        useUIStateStore.getState().openContextMenu({
+                            smartLayoutItemId: itemId,
+                            layoutId,
+                            elementId,
+                            slideId,
+                            elementType: 'smart-layout-item',
+                        })
+                    }
                     handleKeyDown={() => {}}
                     handleDragStart={handleItemDragStart}
                     dataAttributes={{

@@ -69,6 +69,7 @@ interface TiptapProps {
     layoutId: string;
     tiptapRefs: RefObject<TipTapRefs> | null;
     elementId: string;
+    smartLayoutItemId?: string;
     elementConfig?: ElementConfig;
     customRefKey?: string;
     standardEnterBehavior?: boolean;
@@ -103,6 +104,7 @@ const Tiptap = ({
     layoutId,
     tiptapRefs,
     elementId,
+    smartLayoutItemId,
     elementConfig,
     customRefKey,
     standardEnterBehavior = false,
@@ -157,6 +159,7 @@ const Tiptap = ({
             tiptapRefs,
             standardEnterBehavior,
             isHideSlashMenu,
+            smartLayoutItemId,
             editor: undefined,
         }),
         content: initialContent,
@@ -249,6 +252,7 @@ const Tiptap = ({
                     slideId,
                     layoutId,
                     elementId,
+                    smartLayoutItemId,
                     tiptapRefs,
                     standardEnterBehavior,
                     isHideSlashMenu,

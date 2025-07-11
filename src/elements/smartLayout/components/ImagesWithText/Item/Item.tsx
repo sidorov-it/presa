@@ -131,6 +131,7 @@ export default function Item({
                         slideId={slideId}
                         layoutId={layoutId}
                         customRefKey={`title-${elementId}-${item.id}`}
+                        smartLayoutItemId={`title-${elementId}-${item.id}`}
                         isHideSlashMenu={true}
                         isInnerTiptap={true}
                         standardEnterBehavior={true}
@@ -149,6 +150,7 @@ export default function Item({
                         placeholder="Текст"
                         onContentChange={handleTextChange}
                         customRefKey={`text-${elementId}-${item.id}`}
+                        smartLayoutItemId={`text-${elementId}-${item.id}`}
                         standardEnterBehavior={true}
                         isInnerTiptap={true}
                         isHideSlashMenu={true}

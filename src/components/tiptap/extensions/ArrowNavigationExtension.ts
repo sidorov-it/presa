@@ -1,7 +1,7 @@
 import { Extension } from '@tiptap/core';
 import { usePresentationStore } from '@/store/presentationStore';
 import { Editor } from '@tiptap/react';
-import { TipTapRefs } from '@/types';
+import { SmartLayoutElement, TipTapRefs } from '@/types';
 import { RefObject } from 'react';
 
 export interface EditorWithMethods {
@@ -16,7 +16,8 @@ export const ArrowNavigationExtension = (
     slideId: string,
     layoutId: string,
     elementId: string,
-    tiptapRefs: RefObject<TipTapRefs>
+    tiptapRefs: RefObject<TipTapRefs>,
+    smartLayoutItemId?: string
 ) => {
     return Extension.create({
         name: 'arrowNavigation',
@@ -30,7 +31,14 @@ export const ArrowNavigationExtension = (
                     // Check if cursor is at the end of the document
                     if (selection.$anchor.pos >= docLength - 1) {
                         // Find the next editor element in the same layout or in the next layout
-                        const targetInfo = findNextEditor(presentationId, slideId, layoutId, elementId, 'right');
+                        const targetInfo = findNextEditor(
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            elementId,
+                            'right',
+                            smartLayoutItemId
+                        );
 
                         if (targetInfo) {
                             const { targetElementId, targetType, targetSlideId } = targetInfo;
@@ -118,7 +126,14 @@ export const ArrowNavigationExtension = (
                     // Check if cursor is at the beginning of the document
                     if (selection.$anchor.pos === 1) {
                         // Find the previous editor element
-                        const targetInfo = findNextEditor(presentationId, slideId, layoutId, elementId, 'left');
+                        const targetInfo = findNextEditor(
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            elementId,
+                            'left',
+                            smartLayoutItemId
+                        );
 
                         if (targetInfo) {
                             const { targetElementId, targetType, targetSlideId } = targetInfo;
@@ -201,6 +216,7 @@ export const ArrowNavigationExtension = (
                 },
 
                 ArrowDown: ({ editor }) => {
+                    console.log('ArrowDown', smartLayoutItemId);
                     const { selection } = editor.state;
                     const position = selection.$anchor.pos;
                     const docLength = editor.state.doc.content.size;
@@ -212,7 +228,14 @@ export const ArrowNavigationExtension = (
 
                     if (position >= lastLineStart || position >= docLength - 1) {
                         // Find the editor element below this one
-                        const targetInfo = findNextEditor(presentationId, slideId, layoutId, elementId, 'down');
+                        const targetInfo = findNextEditor(
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            elementId,
+                            'down',
+                            smartLayoutItemId
+                        );
 
                         if (targetInfo) {
                             const { targetElementId, targetType, targetSlideId } = targetInfo;
@@ -295,81 +318,102 @@ export const ArrowNavigationExtension = (
                     return false;
                 },
 
-                ArrowUp: () => {
-                    // Find the editor element above this one
-                    const targetInfo = findNextEditor(presentationId, slideId, layoutId, elementId, 'up');
+                ArrowUp: ({ editor }) => {
+                    const { selection } = editor.state;
+                    const position = selection.$anchor.pos;
+                    const docLength = editor.state.doc.content.size;
+                    console.log('ArrowUp', smartLayoutItemId);
 
-                    if (targetInfo) {
-                        const { targetElementId, targetType, targetSlideId } = targetInfo;
-                        console.log(`Navigating up to: ${targetElementId} (${targetType}) in slide ${targetSlideId}`);
+                    // Check if cursor is on the last line (approximation)
+                    // We're assuming if the user presses down and there's no line below, they want to navigate down
+                    const text = editor.getText();
+                    const firstLineEnd = text.indexOf('\n');
 
-                        // Check if we're moving to a different slide
-                        const isCrossingSlides = targetSlideId !== slideId;
+                    if (position <= firstLineEnd || position === 1) {
+                        // Find the editor element above this one
+                        const targetInfo = findNextEditor(
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            elementId,
+                            'up',
+                            smartLayoutItemId
+                        );
 
-                        if (targetType === 'editor') {
-                            // Focus the target editor
-                            setTimeout(
-                                () => {
-                                    const targetEditor = tiptapRefs.current?.editors[targetElementId];
-                                    if (targetEditor) {
-                                        console.log(`Focusing editor: ${targetElementId}`);
-                                        // When navigating up, move cursor to the end of the previous editor's content
-                                        targetEditor.editor.commands.focus('end');
-                                        // targetEditor.focus();
-                                    } else {
-                                        console.warn(`Editor not found in refs: ${targetElementId}`);
-                                        // If the editor ref isn't available yet (due to slide change),
-                                        // we can try to find it in the DOM and focus it
-                                        const editorElement = document.querySelector(
+                        if (targetInfo) {
+                            const { targetElementId, targetType, targetSlideId } = targetInfo;
+
+                            // Check if we're moving to a different slide
+                            const isCrossingSlides = targetSlideId !== slideId;
+
+                            if (targetType === 'editor') {
+                                // Focus the target editor
+                                setTimeout(
+                                    () => {
+                                        const targetEditor = tiptapRefs.current?.editors[targetElementId];
+                                        if (targetEditor) {
+                                            console.log(`Focusing editor: ${targetElementId}`);
+                                            // When navigating up, move cursor to the end of the previous editor's content
+                                            targetEditor.editor.commands.focus('end');
+                                            // targetEditor.focus();
+                                        } else {
+                                            console.warn(`Editor not found in refs: ${targetElementId}`);
+                                            // If the editor ref isn't available yet (due to slide change),
+                                            // we can try to find it in the DOM and focus it
+                                            const editorElement = document.querySelector(
+                                                `[data-element-id="${targetElementId}"]`
+                                            );
+                                            if (editorElement) {
+                                                console.log(`Found editor in DOM: ${targetElementId}`);
+                                                (editorElement as HTMLElement).click();
+                                            }
+                                        }
+                                    },
+                                    isCrossingSlides ? 100 : 10
+                                ); // Wait longer for slide changes
+                            } else {
+                                // Wait a bit longer for slide changes before focusing non-editor elements
+                                setTimeout(
+                                    () => {
+                                        // Find and focus the element by its ID
+                                        const element = document.querySelector(
                                             `[data-element-id="${targetElementId}"]`
                                         );
-                                        if (editorElement) {
-                                            console.log(`Found editor in DOM: ${targetElementId}`);
-                                            (editorElement as HTMLElement).click();
+                                        if (element) {
+                                            console.log(`Focusing non-editor element: ${targetElementId}`);
+                                            // Add a focus visual indicator class
+                                            element.classList.add('element-focus');
+                                            // Set focus on the element for keyboard navigation
+                                            (element as HTMLElement).tabIndex = 0;
+                                            (element as HTMLElement).focus();
+
+                                            // Remove the focus class after animation completes
+                                            setTimeout(() => {
+                                                element.classList.remove('element-focus');
+                                            }, 1000);
+                                        } else {
+                                            console.warn(`Element not found in DOM: ${targetElementId}`);
                                         }
+                                    },
+                                    isCrossingSlides ? 100 : 10
+                                ); // Wait longer for slide changes
+                            }
+
+                            if (isCrossingSlides) {
+                                // Try to find and click the slide in the slidesList
+                                setTimeout(() => {
+                                    const slideElement = document.querySelector(`[data-slide-id="${targetSlideId}"]`);
+                                    if (slideElement && slideElement.parentElement) {
+                                        console.log(`Clicking slide in list: ${targetSlideId}`);
+                                        (slideElement.parentElement as HTMLElement).click();
                                     }
-                                },
-                                isCrossingSlides ? 100 : 10
-                            ); // Wait longer for slide changes
-                        } else {
-                            // Wait a bit longer for slide changes before focusing non-editor elements
-                            setTimeout(
-                                () => {
-                                    // Find and focus the element by its ID
-                                    const element = document.querySelector(`[data-element-id="${targetElementId}"]`);
-                                    if (element) {
-                                        console.log(`Focusing non-editor element: ${targetElementId}`);
-                                        // Add a focus visual indicator class
-                                        element.classList.add('element-focus');
-                                        // Set focus on the element for keyboard navigation
-                                        (element as HTMLElement).tabIndex = 0;
-                                        (element as HTMLElement).focus();
+                                }, 0);
+                            }
 
-                                        // Remove the focus class after animation completes
-                                        setTimeout(() => {
-                                            element.classList.remove('element-focus');
-                                        }, 1000);
-                                    } else {
-                                        console.warn(`Element not found in DOM: ${targetElementId}`);
-                                    }
-                                },
-                                isCrossingSlides ? 100 : 10
-                            ); // Wait longer for slide changes
+                            return true;
                         }
-
-                        if (isCrossingSlides) {
-                            // Try to find and click the slide in the slidesList
-                            setTimeout(() => {
-                                const slideElement = document.querySelector(`[data-slide-id="${targetSlideId}"]`);
-                                if (slideElement && slideElement.parentElement) {
-                                    console.log(`Clicking slide in list: ${targetSlideId}`);
-                                    (slideElement.parentElement as HTMLElement).click();
-                                }
-                            }, 0);
-                        }
-
-                        return true;
                     }
+
                     // }
 
                     return false;
@@ -385,13 +429,15 @@ function findNextEditor(
     slideId: string,
     layoutId: string,
     elementId: string,
-    direction: 'left' | 'right' | 'up' | 'down'
+    direction: 'left' | 'right' | 'up' | 'down',
+    smartLayoutItemId?: string
 ): {
     targetElementId: string;
     targetLayoutId: string;
     targetCellId: string;
     targetSlideId: string;
     targetType: 'editor' | 'video' | 'other';
+    focusPosition?: 'start' | 'end';
 } | null {
     const store = usePresentationStore.getState();
     const presentation = store.getPresentation(presentationId);
@@ -433,6 +479,33 @@ function findNextEditor(
 
     // Handle different directions
     if (direction === 'right') {
+        if (smartLayoutItemId) {
+            const [type, elementId, itemId] = smartLayoutItemId.split('-');
+
+            const currentItemIndex = (currentElement as SmartLayoutElement).items.findIndex(item => item.id === itemId);
+
+            if (type === 'title') {
+                return {
+                    targetElementId: `text-${elementId}-${itemId}`,
+                    targetLayoutId: layoutId,
+                    targetCellId: currentElement.cellId,
+                    targetSlideId: slideId,
+                    targetType: 'editor',
+                    focusPosition: 'start',
+                };
+            } else if (currentItemIndex < (currentElement as SmartLayoutElement).items.length - 1) {
+                const nextItem = (currentElement as SmartLayoutElement).items[currentItemIndex + 1];
+                return {
+                    targetElementId: `title-${elementId}-${nextItem.id}`,
+                    targetLayoutId: layoutId,
+                    targetCellId: currentElement.cellId,
+                    targetSlideId: slideId,
+                    targetType: 'editor',
+                    focusPosition: 'start',
+                };
+            }
+        }
+
         // Check if there's an element to the right in the same cell
         const elementsInCell = currentLayout.elements.filter(el => el.cellId === currentElement.cellId);
         const currentElementIndex = elementsInCell.findIndex(el => el.id === elementId);
@@ -446,6 +519,7 @@ function findNextEditor(
                 targetCellId: currentElement.cellId,
                 targetSlideId: slideId,
                 targetType: getElementType(nextElement),
+                focusPosition: 'start',
             };
         }
 
@@ -468,6 +542,7 @@ function findNextEditor(
                         targetCellId: nextCell.id,
                         targetSlideId: slideId,
                         targetType: getElementType(firstElementInNextCell),
+                        focusPosition: 'start',
                     };
                 }
             }
@@ -490,6 +565,7 @@ function findNextEditor(
                     targetCellId: firstCell.id,
                     targetSlideId: slideId,
                     targetType: getElementType(firstElement),
+                    focusPosition: 'start',
                 };
             }
         }
@@ -514,11 +590,41 @@ function findNextEditor(
                         targetCellId: firstCell.id,
                         targetSlideId: nextSlide.id,
                         targetType: getElementType(firstElement),
+                        focusPosition: 'start',
                     };
                 }
             }
         }
     } else if (direction === 'left') {
+        if (smartLayoutItemId) {
+            const [type, elementId, itemId] = smartLayoutItemId.split('-');
+
+            const currentItemIndex = (currentElement as SmartLayoutElement).items.findIndex(item => item.id === itemId);
+
+            if (type === 'text') {
+                return {
+                    targetElementId: `title-${elementId}-${itemId}`,
+                    targetLayoutId: layoutId,
+                    targetCellId: currentElement.cellId,
+                    targetSlideId: slideId,
+                    targetType: 'editor',
+                    focusPosition: 'end',
+                };
+            }
+
+            if (currentItemIndex > 0) {
+                const prevItem = (currentElement as SmartLayoutElement).items[currentItemIndex - 1];
+                return {
+                    targetElementId: `text-${elementId}-${prevItem.id}`,
+                    targetLayoutId: layoutId,
+                    targetCellId: currentElement.cellId,
+                    targetSlideId: slideId,
+                    targetType: 'editor',
+                    focusPosition: 'start',
+                };
+            }
+        }
+
         // Check if there's an element to the left in the same cell
         const elementsInCell = currentLayout.elements.filter(el => el.cellId === currentElement.cellId);
         const currentElementIndex = elementsInCell.findIndex(el => el.id === elementId);
@@ -532,6 +638,7 @@ function findNextEditor(
                 targetCellId: currentElement.cellId,
                 targetSlideId: slideId,
                 targetType: getElementType(prevElement),
+                focusPosition: 'end',
             };
         }
 
@@ -555,6 +662,7 @@ function findNextEditor(
                         targetCellId: previousCell.id,
                         targetSlideId: slideId,
                         targetType: getElementType(lastElement),
+                        focusPosition: 'end',
                     };
                 }
             }
@@ -579,6 +687,7 @@ function findNextEditor(
                     targetCellId: lastCell.id,
                     targetSlideId: slideId,
                     targetType: getElementType(lastElement),
+                    focusPosition: 'end',
                 };
             }
         }
@@ -605,12 +714,42 @@ function findNextEditor(
                         targetCellId: lastCell.id,
                         targetSlideId: previousSlide.id,
                         targetType: getElementType(lastElement),
+                        focusPosition: 'end',
                     };
                 }
             }
         }
     } else if (direction === 'down') {
-        // Check if there's an element below in the same cell
+        if (smartLayoutItemId) {
+            const [type, elementId, itemId] = smartLayoutItemId.split('-');
+            if (type === 'title') {
+                return {
+                    targetElementId: `text-${elementId}-${itemId}`,
+                    targetLayoutId: layoutId,
+                    targetCellId: currentElement.cellId,
+                    targetSlideId: slideId,
+                    targetType: 'editor',
+                    focusPosition: 'start',
+                };
+            } else if (type === 'text') {
+                const currentItemIndex = (currentElement as SmartLayoutElement).items.findIndex(
+                    item => item.id === itemId
+                );
+
+                if (currentItemIndex < (currentElement as SmartLayoutElement).items.length - 1) {
+                    const nextItem = (currentElement as SmartLayoutElement).items[currentItemIndex + 1];
+                    return {
+                        targetElementId: `title-${elementId}-${nextItem.id}`,
+                        targetLayoutId: layoutId,
+                        targetCellId: currentElement.cellId,
+                        targetSlideId: slideId,
+                        targetType: 'editor',
+                        focusPosition: 'start',
+                    };
+                }
+            }
+        }
+
         const elementsInCell = currentLayout.elements.filter(el => el.cellId === currentElement.cellId);
         const currentElementIndex = elementsInCell.findIndex(el => el.id === elementId);
 
@@ -623,6 +762,7 @@ function findNextEditor(
                 targetCellId: currentElement.cellId,
                 targetSlideId: slideId,
                 targetType: getElementType(nextElement),
+                focusPosition: 'start',
             };
         }
 
@@ -643,6 +783,7 @@ function findNextEditor(
                     targetCellId: firstCell.id,
                     targetSlideId: slideId,
                     targetType: getElementType(firstElement),
+                    focusPosition: 'start',
                 };
             }
         }
@@ -667,11 +808,42 @@ function findNextEditor(
                         targetCellId: firstCell.id,
                         targetSlideId: nextSlide.id,
                         targetType: getElementType(firstElement),
+                        focusPosition: 'start',
                     };
                 }
             }
         }
     } else if (direction === 'up') {
+        if (smartLayoutItemId) {
+            const [type, elementId, itemId] = smartLayoutItemId.split('-');
+            if (type === 'text') {
+                return {
+                    targetElementId: `title-${elementId}-${itemId}`,
+                    targetLayoutId: layoutId,
+                    targetCellId: currentElement.cellId,
+                    targetSlideId: slideId,
+                    targetType: 'editor',
+                    focusPosition: 'start',
+                };
+            } else if (type === 'title') {
+                const currentItemIndex = (currentElement as SmartLayoutElement).items.findIndex(
+                    item => item.id === itemId
+                );
+
+                if (currentItemIndex > 0) {
+                    const prevItem = (currentElement as SmartLayoutElement).items[currentItemIndex - 1];
+                    return {
+                        targetElementId: `text-${elementId}-${prevItem.id}`,
+                        targetLayoutId: layoutId,
+                        targetCellId: currentElement.cellId,
+                        targetSlideId: slideId,
+                        targetType: 'editor',
+                        focusPosition: 'start',
+                    };
+                }
+            }
+        }
+
         // Check if there's an element above in the same cell
         const elementsInCell = currentLayout.elements.filter(el => el.cellId === currentElement.cellId);
         const currentElementIndex = elementsInCell.findIndex(el => el.id === elementId);
@@ -685,6 +857,7 @@ function findNextEditor(
                 targetCellId: currentElement.cellId,
                 targetSlideId: slideId,
                 targetType: getElementType(prevElement),
+                focusPosition: 'end',
             };
         }
 
@@ -707,6 +880,7 @@ function findNextEditor(
                     targetCellId: lastCell.id,
                     targetSlideId: slideId,
                     targetType: getElementType(lastElement),
+                    focusPosition: 'end',
                 };
             }
         }
@@ -733,6 +907,7 @@ function findNextEditor(
                         targetCellId: lastCell.id,
                         targetSlideId: previousSlide.id,
                         targetType: getElementType(lastElement),
+                        focusPosition: 'end',
                     };
                 }
             }

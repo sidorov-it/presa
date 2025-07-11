@@ -13,8 +13,8 @@
 }
 
 .multiCellLayout {
-    margin-inline-start: calc(-1* var(--grid-padding));
-    margin-inline-end: calc(-1* var(--grid-padding));
+    /* margin-inline-start: calc(-1* var(--grid-padding));
+    margin-inline-end: calc(-1* var(--grid-padding)); */
 }
 
 .layoutContentEven {

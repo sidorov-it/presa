@@ -113,12 +113,12 @@ const UIStateDebugButton: React.FC = () => {
                                     <span className={styles.label}>contextMenuColumnIndex:</span>
                                     <span className={styles.value}>{uiState.contextMenuColumnIndex ?? 'null'}</span>
                                 </div>
-                                <div className={styles.stateItem}>
+                                {/* <div className={styles.stateItem}>
                                     <span className={styles.label}>contextMenuSmartLayoutItemId:</span>
                                     <span className={styles.value}>
                                         {uiState.contextMenuSmartLayoutItemId || 'null'}
                                     </span>
-                                </div>
+                                </div> */}
                                 <div className={styles.stateItem}>
                                     <span className={styles.label}>isContextMenuOnTextEditor:</span>
                                     <span className={styles.value}>

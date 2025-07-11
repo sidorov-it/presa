@@ -1,10 +1,14 @@
 import { Tiptap } from '@/components/tiptap/Tiptap';
-import { TipTapRefs } from '@/types';
+import { SmartLayoutElement, TipTapRefs } from '@/types';
 import { RefObject, useMemo } from 'react';
 import { HiPlus } from 'react-icons/hi';
 import ItemWrapper from '../ItemWrapper/ItemWrapper';
+import TimelineMenu from './TimelineMenu';
+import { usePresentationStore } from '@/store/presentationStore';
+import { getContrastingTextColor } from '@/utils/themeUtils';
 
 import styles from './Timeline.module.css';
+import { useUIStateStore } from '@/store/uiStateStore';
 
 const TimelineHorizontalContent = ({
     itemId,
@@ -57,6 +61,19 @@ const TimelineHorizontalContent = ({
     elementRef?: RefObject<HTMLDivElement>;
     isLastItem: boolean;
 }) => {
+    // Get current item data for styling
+    // const element = usePresentationStore(
+    //     state => state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement
+    // );
+    const currentItem = usePresentationStore(state =>
+        (state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement).items?.find(
+            item => item.id === itemId
+        )
+    );
+
+    const isSelected = useUIStateStore(state => state.selectedSmartLayoutItemId === itemId);
+    // const currentItem = element?;
+
     // Calculate the position for the second line items in two sides mode
     // to align them with their corresponding timeline points
     const itemStyle = useMemo(() => {
@@ -84,6 +101,8 @@ const TimelineHorizontalContent = ({
                     } else {
                         // First line (top): right margin at the end
                         return {
+                            display: 'flex',
+                            alignItems: 'flex-end',
                             width: elementWidth,
                             marginLeft: '0',
                             marginRight: index === maxItemsCount - 1 ? `calc(100% / ${totalElements / 2} / 2)` : '0',
@@ -103,6 +122,8 @@ const TimelineHorizontalContent = ({
                     } else {
                         // First line (top): full width
                         return {
+                            display: 'flex',
+                            alignItems: 'flex-end',
                             width: elementWidth,
                             marginLeft: '0',
                             marginRight: '0',
@@ -133,11 +154,30 @@ const TimelineHorizontalContent = ({
         return baseStyle;
     }, [direction, sides, maxItemsCount, itemsIds, index, isSecondLine]);
 
+    // Apply background color and text color styles
+    const colorStyle: React.CSSProperties = {};
+    if (currentItem?.backgroundColor) {
+        colorStyle.backgroundColor = currentItem.backgroundColor;
+        const contrastColor = getContrastingTextColor(currentItem.backgroundColor);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        colorStyle['--presentation-text-color'] = contrastColor;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        colorStyle['--presentation-heading-color'] = contrastColor;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        colorStyle['--presentation-block-background-subtle'] = currentItem.backgroundColor;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        colorStyle['--presentation-block-text-color-subtle'] = contrastColor;
+    }
+
     if (itemId === null) {
         // Return an empty div with the same width as content items to maintain spacing
         return (
             <div
-                className={styles.itemContainer}
+                className={`${styles.itemContainer} ${isSelected ? styles.selected : ''}`}
                 style={{
                     width: direction === 'horizontal' ? `calc(100% / ${maxItemsCount} - 1em)` : '100%',
                     visibility: 'hidden',
@@ -149,7 +189,7 @@ const TimelineHorizontalContent = ({
     return (
         <div
             key={itemId}
-            className={styles.itemContainer}
+            className={`${styles.itemContainer} ${isSelected ? styles.selected : ''}`}
             onDragOver={e => handleDragOver(e, itemId)}
             onDragLeave={handleDragLeave}
             onDrop={e => handleDrop(e, itemId)}
@@ -170,11 +210,24 @@ const TimelineHorizontalContent = ({
                 slideId={slideId}
                 layoutId={layoutId}
                 elementId={elementId}
-                renderMenuComponent={_menuPosition => {
-                    return <div>Menu timeline</div>;
+                renderMenuComponent={menuPosition => {
+                    return menuPosition ? (
+                        <TimelineMenu
+                            presentationId={presentationId}
+                            position={menuPosition}
+                            itemId={itemId}
+                            slideId={slideId}
+                            layoutId={layoutId}
+                            elementId={elementId}
+                            direction="horizontal"
+                        />
+                    ) : null;
                 }}
             >
-                <div className={`${styles.textBox} ${align ? styles[align] : ''}`} style={{ position: 'relative' }}>
+                <div
+                    className={`${styles.textBox} ${align ? styles[align] : ''}`}
+                    style={{ position: 'relative', ...colorStyle }}
+                >
                     <Tiptap
                         isReadOnly={isReadOnly}
                         elementId={elementId}
@@ -186,6 +239,7 @@ const TimelineHorizontalContent = ({
                         placeholder="Заголовок"
                         onContentChange={handleContentChange(itemId, 'title')}
                         customRefKey={`title-${elementId}-${itemId}`}
+                        smartLayoutItemId={`title-${elementId}-${itemId}`}
                         isInnerTiptap={true}
                         isHideSlashMenu={true}
                         standardEnterBehavior={true}
@@ -194,13 +248,14 @@ const TimelineHorizontalContent = ({
                         isReadOnly={isReadOnly}
                         elementId={elementId}
                         tiptapRefs={tiptapRefs}
-                        id={`${elementId}-text`}
+                        id={`${elementId}-{}-text`}
                         presentationId={presentationId}
                         slideId={slideId}
                         layoutId={layoutId}
                         placeholder="Текст"
                         onContentChange={handleContentChange(itemId, 'text')}
                         customRefKey={`text-${elementId}-${itemId}`}
+                        smartLayoutItemId={`text-${elementId}-${itemId}`}
                         isInnerTiptap={true}
                         isHideSlashMenu={true}
                         standardEnterBehavior={true}

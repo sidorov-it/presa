@@ -31,6 +31,7 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
         contextMenuColumnIndex,
         contextMenuTableColumnIndex,
         contextMenuTableRowIndex,
+        selectedSmartLayoutItemId,
         closeContextMenu,
     } = useUIStateStore();
 
@@ -347,6 +348,10 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
     }
 
     if (elementType === 'chart') {
+        return null;
+    }
+
+    if (elementType === 'smart-layout-item') {
         return null;
     }
 

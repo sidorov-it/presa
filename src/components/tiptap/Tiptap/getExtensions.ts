@@ -59,6 +59,7 @@ interface GetExtensionsProps {
     onBackspacePressed: (isEmpty: boolean, textContent: string) => void;
     onAddElement?: (menuItem: MenuItem) => void;
     editor?: any;
+    smartLayoutItemId?: string;
 }
 // Определяем массив расширений
 const getExtensions = ({
@@ -75,6 +76,7 @@ const getExtensions = ({
     onBackspacePressed,
     onAddElement,
     editor,
+    smartLayoutItemId,
 }: GetExtensionsProps) => [
     // Базовый набор расширений
     StarterKit.configure({
@@ -302,7 +304,7 @@ const getExtensions = ({
 
     // Arrow key navigation between editors
     ...(presentationId && slideId && layoutId && elementId && tiptapRefs
-        ? [ArrowNavigationExtension(presentationId, slideId, layoutId, elementId, tiptapRefs)]
+        ? [ArrowNavigationExtension(presentationId, slideId, layoutId, elementId, tiptapRefs, smartLayoutItemId)]
         : []),
     // Slash command
     ...(isHideSlashMenu

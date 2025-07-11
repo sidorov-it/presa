@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import React, { RefObject, useState, useCallback, useMemo, memo, useRef } from 'react';
 import tinycolor from 'tinycolor2';
 import { GridRow, GridCell, TipTapRefs } from '@/types';
@@ -374,8 +375,8 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 !e.target.closest('[data-layout-id]') &&
                 !e.target.closest('[data-is-menu="true"]')
             ) {
-                e.preventDefault();
-                e.stopPropagation();
+                // e.preventDefault();
+                // e.stopPropagation();
                 useUIStateStore.getState().resetSelectedLayoutId();
             }
         });
@@ -393,7 +394,7 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 aria-label={`Макет ${layout.id}`}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
-                onClickCapture={handleLayoutClick}
+                onClick={handleLayoutClick}
             >
                 {/* {isSelected && <div className={styles.layoutSelected} />} */}
 

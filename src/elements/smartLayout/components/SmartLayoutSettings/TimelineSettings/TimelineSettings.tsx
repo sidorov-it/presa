@@ -5,7 +5,6 @@ import { SmartLayoutElement, SmartLayoutType, TipTapRefs } from '@/types';
 import { MutableRefObject, useCallback, useMemo } from 'react';
 import { MenuItem } from '@/components/editor/SlideMenu/BaseMenu';
 import { DeleteIcon } from '@/components/icons';
-import { useHistoryStore } from '@/store/historyStore';
 import IconToggle from '@/components/settings/IconToggle/IconToggle';
 import { FaTimeline } from 'react-icons/fa6';
 import { GoHorizontalRule } from 'react-icons/go';
@@ -22,7 +21,6 @@ export default function TimelineSettings({
     layoutId,
     elementId,
     presentationId,
-    tiptapRefs,
 }: {
     element: SmartLayoutElement & { direction?: 'horizontal' | 'vertical' };
     slideId: string;

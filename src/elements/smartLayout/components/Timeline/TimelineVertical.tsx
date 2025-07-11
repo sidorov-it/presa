@@ -49,13 +49,14 @@ export default function TimelineVertical({
     const containerRef = useRef<HTMLDivElement>(null);
     const elementRefs = useRef<{ [key: string]: RefObject<HTMLDivElement> }>({});
 
-    const { sides, showLines, timelineColor, numbersColor } = usePresentationStore(
+    const { sides, showLines, timelineColor, numbersColor, showNumbers } = usePresentationStore(
         useShallow(state => {
             const element = state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement & {
                 sides?: 'one' | 'two';
                 showLines?: boolean;
                 timelineColor?: string;
                 numbersColor?: string;
+                showNumbers?: boolean;
             };
             return {
                 sides: element.sides || 'one',
@@ -63,6 +64,7 @@ export default function TimelineVertical({
                 numbersColor: element.numbersColor || 'var(--color-text, #000)',
                 timelineColor:
                     element.timelineColor || 'var(--presentation-primary-accent, var(--color-primary, #1e88e5))',
+                showNumbers: element.showNumbers || false,
             };
         })
     );
@@ -441,11 +443,12 @@ export default function TimelineVertical({
                     {elementPositions.map((position, index) => (
                         <div
                             key={index}
-                            className={styles.verticalTimelinePoint}
+                            className={`${styles.verticalTimelinePoint} ${showNumbers ? styles.verticalTimelinePointNumber : ''}`}
                             style={{
                                 backgroundColor: timelineColor,
                                 top: `${position.top + 2}px`, // Align with element top + 20px offset to be slightly below top border
                             }}
+                            data-number={index + 1}
                         />
                     ))}
                 </div>

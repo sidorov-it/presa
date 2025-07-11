@@ -4,7 +4,17 @@ import { usePresentationStore } from './presentationStore';
 import { useShallow } from 'zustand/react/shallow';
 
 // Define UI element types for context menus
-export type UIElementType = 'element' | 'cell' | 'layout' | 'slide' | 'editor' | 'row' | 'table' | 'column' | 'chart';
+export type UIElementType =
+    | 'element'
+    | 'cell'
+    | 'layout'
+    | 'slide'
+    | 'editor'
+    | 'row'
+    | 'table'
+    | 'column'
+    | 'chart'
+    | 'smart-layout-item';
 
 export interface UIState {
     // Selection state - tracks what elements are currently selected/focused
@@ -32,7 +42,7 @@ export interface UIState {
     contextMenuTableColumnIndex: number | null;
     contextMenuTableId: string | null;
     contextMenuColumnIndex: number | null;
-    contextMenuSmartLayoutItemId: string | null;
+    // contextMenuSmartLayoutItemId: string | null;
     isContextMenuOnTextEditor: boolean;
     isContextMenuInTable: boolean;
 
@@ -144,7 +154,7 @@ export const useUIStateStore = create<UIState>()(
                 contextMenuTableColumnIndex: null,
                 contextMenuTableId: null,
                 contextMenuColumnIndex: null,
-                contextMenuSmartLayoutItemId: null,
+                // contextMenuSmartLayoutItemId: null,
                 isContextMenuOnTextEditor: false,
                 isContextMenuInTable: false,
 
@@ -218,11 +228,12 @@ export const useUIStateStore = create<UIState>()(
                         contextMenuElementType: menuData.elementType ?? null,
                         selectedLayoutId: menuData.layoutId ?? null,
                         selectedCellId: menuData.cellId ?? null,
+                        selectedSmartLayoutItemId: menuData.smartLayoutItemId ?? null,
                         isContextMenuOnTextEditor: menuData.isTextEditor ?? false,
                         contextMenuTableRowIndex: menuData.tableRowIndex ?? null,
                         contextMenuTableColumnIndex: menuData.tableColumnIndex ?? null,
                         contextMenuTableId: menuData.tableId ?? null,
-                        contextMenuSmartLayoutItemId: menuData.smartLayoutItemId ?? null,
+                        // contextMenuSmartLayoutItemId: menuData.smartLayoutItemId ?? null,
                         isContextMenuInTable: isInTable ?? false,
                         contextMenuColumnIndex: menuData.columnIndex ?? null,
                         currentPresentationId: currentPresentationId ?? null,
@@ -239,10 +250,12 @@ export const useUIStateStore = create<UIState>()(
                         contextMenuTableRowIndex: menuData.tableRowIndex ?? null,
                         contextMenuTableColumnIndex: menuData.tableColumnIndex ?? null,
                         contextMenuTableId: menuData.tableId ?? null,
-                        contextMenuSmartLayoutItemId: menuData.smartLayoutItemId ?? null,
+                        selectedSmartLayoutItemId: menuData.smartLayoutItemId ?? null,
+                        // contextMenuSmartLayoutItemId: menuData.smartLayoutItemId ?? null,
                         isContextMenuInTable: isInTable ?? false,
                         contextMenuColumnIndex: menuData.columnIndex ?? null,
                         currentPresentationId: currentPresentationId ?? null,
+                        elementType: menuData.elementType ?? null,
                     });
                 },
 
@@ -267,7 +280,7 @@ export const useUIStateStore = create<UIState>()(
                         contextMenuTableColumnIndex: null,
                         contextMenuTableId: null,
                         selectedCellId: null,
-                        contextMenuSmartLayoutItemId: null,
+                        // contextMenuSmartLayoutItemId: null,
                         contextMenuColumnIndex: null,
                     });
                 },

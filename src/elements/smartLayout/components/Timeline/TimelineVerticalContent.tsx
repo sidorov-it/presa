@@ -1,11 +1,15 @@
 import { Tiptap } from '@/components/tiptap/Tiptap';
-import { TipTapRefs } from '@/types';
+import { TipTapRefs, SmartLayoutElement } from '@/types';
 import { RefObject } from 'react';
 import { HiPlus } from 'react-icons/hi';
 import ItemWrapper from '../ItemWrapper/ItemWrapper';
+import TimelineMenu from './TimelineMenu';
+import { usePresentationStore } from '@/store/presentationStore';
+import { getContrastingTextColor } from '@/utils/themeUtils';
 
 import styles from './Timeline.module.css';
 import { TimelineElementPosition } from './TimelineVertical';
+import { useUIStateStore } from '@/store/uiStateStore';
 
 const TimelineVerticalContent = ({
     itemId,
@@ -54,6 +58,13 @@ const TimelineVerticalContent = ({
     position?: TimelineElementPosition;
     sides: 'one' | 'two';
 }) => {
+    // Get current item data for styling
+    const element = usePresentationStore(
+        state => state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement
+    );
+    const currentItem = element?.items?.find(item => item.id === itemId);
+
+    const isSelected = useUIStateStore(state => state.selectedSmartLayoutItemId === itemId);
     // Determine connection line direction based on layout
     const getConnectionLineClass = () => {
         if (sides === 'one') {
@@ -65,9 +76,30 @@ const TimelineVerticalContent = ({
         }
     };
 
+    // Apply background color and text color styles
+    const itemStyle: React.CSSProperties = {};
+    if (currentItem?.backgroundColor) {
+        itemStyle.backgroundColor = currentItem.backgroundColor;
+        const contrastColor = getContrastingTextColor(currentItem.backgroundColor);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        itemStyle['--presentation-text-color'] = contrastColor;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        itemStyle['--presentation-heading-color'] = contrastColor;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        itemStyle['--presentation-block-background-subtle'] = currentItem.backgroundColor;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        itemStyle['--presentation-block-text-color-subtle'] = contrastColor;
+    }
+
     return (
         <div
-            className={`${styles.verticalTimelineItem} ${isOnLeft ? styles.leftSide : styles.rightSide}`}
+            className={`${styles.verticalTimelineItem} ${isOnLeft ? styles.leftSide : styles.rightSide} ${
+                isSelected ? styles.selected : ''
+            }`}
             onDragOver={e => handleDragOver(e, itemId)}
             onDragLeave={handleDragLeave}
             onDrop={e => handleDrop(e, itemId)}
@@ -98,11 +130,21 @@ const TimelineVerticalContent = ({
                 slideId={slideId}
                 layoutId={layoutId}
                 elementId={elementId}
-                renderMenuComponent={_menuPosition => {
-                    return <div>Menu timeline</div>;
+                renderMenuComponent={menuPosition => {
+                    return menuPosition ? (
+                        <TimelineMenu
+                            presentationId={presentationId}
+                            position={menuPosition}
+                            itemId={itemId}
+                            slideId={slideId}
+                            layoutId={layoutId}
+                            elementId={elementId}
+                            direction="vertical"
+                        />
+                    ) : null;
                 }}
             >
-                <div className={`${styles.textBox}`} style={{ position: 'relative' }}>
+                <div className={`${styles.textBox}`} style={{ position: 'relative', ...itemStyle }}>
                     <Tiptap
                         isReadOnly={isReadOnly}
                         elementId={elementId}
@@ -114,6 +156,7 @@ const TimelineVerticalContent = ({
                         placeholder="Заголовок"
                         onContentChange={handleContentChange(itemId, 'title')}
                         customRefKey={`title-${elementId}-${itemId}`}
+                        smartLayoutItemId={`title-${elementId}-${itemId}`}
                         isInnerTiptap={true}
                         isHideSlashMenu={true}
                         standardEnterBehavior={true}
@@ -129,6 +172,7 @@ const TimelineVerticalContent = ({
                         placeholder="Текст"
                         onContentChange={handleContentChange(itemId, 'text')}
                         customRefKey={`text-${elementId}-${itemId}`}
+                        smartLayoutItemId={`text-${elementId}-${itemId}`}
                         isInnerTiptap={true}
                         isHideSlashMenu={true}
                         standardEnterBehavior={true}

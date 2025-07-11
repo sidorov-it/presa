@@ -36,6 +36,11 @@
     min-height: 5em;
 }
 
+.itemContainer.selected,
+.verticalTimelineItem.selected {
+    border-color: var(--color-primary);
+}
+
 /* View mode specific styles - clean presentation without editor borders */
 .container[data-read-only="true"] .itemContainer,
 .container[data-read-only=true] .itemContainer {
@@ -174,6 +179,10 @@
     gap: 0;
     padding: 0 0.625em;
     width: 100%;
+    /* border-radius: var(--presentation-slide-border-radius);
+    border-width: var(--presentation-block-border-width);
+    border-color: var(--presentation-block-border-color, var(--color-border)); */
+    color: var(--presentation-block-text-color, var(--color-text));
 }
 
 /* .focused .textBox {
@@ -474,14 +483,33 @@
 .verticalTimelinePoint {
     position: absolute;
     left: 50%;
-    width: 1.25em;
-    height: 1.25em;
-    border-radius: 50%;
+    width: 2em;
+    height: 2em;
+    background-color: var(--timeline-color);
+    border-radius: 0.35em;
+    /* top: -1em; */
+
+
     transform: translateX(-50%);
     z-index: 3;
-    border: 3px solid white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* border: 3px solid white; */
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
 }
+
+.verticalTimelinePointNumber::after {
+    content: attr(data-number);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--numbers-color);
+    /* background-color: var(--timeline-color); */
+}
+
 
 .verticalTimelineContent {
     position: relative;
@@ -492,7 +520,7 @@
 
 .verticalTimelineItem {
     position: absolute;
-    width: calc(50% - 1.25em);
+    width: calc(50% - 2.25em);
     padding: 0;
     /* border-radius: 0; */
     background: transparent;
@@ -527,25 +555,25 @@
 .verticalTimelineItem .verticalConnectionLine {
     position: absolute;
     top: 0.6em; /* Align with middle of first line of text */
-    width: 1em; /* Reduced width for better alignment */
+    width: 2em; /* Reduced width for better alignment */
     height: 2px;
     background-color: var(--timeline-color);
     z-index: 2;
 }
 
 .verticalTimelineItem.leftSide .verticalConnectionLine.toRight {
-    right: -1em; /* Position line to connect to the right (timeline) */
+    right: -2em; /* Position line to connect to the right (timeline) */
     left: unset;
 }
 
 .verticalTimelineItem.rightSide .verticalConnectionLine.toLeft {
-    left: -1em; /* Position line to connect to the left (timeline) */
+    left: -2em; /* Position line to connect to the left (timeline) */
 }
 
 /* One side vertical timeline */
 .verticalTimelineContainer.verticalOneSide .verticalTimelineContent {
     padding-left: 5em;
-    padding-right: 1.25em;
+    padding-right: 2.25em;
 }
 
 .verticalTimelineContainer.verticalOneSide .verticalTimelineLine {

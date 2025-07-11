@@ -330,6 +330,7 @@ export default function TextBoxes({
                                         slideId={slideId}
                                         layoutId={layoutId}
                                         customRefKey={`title-${elementId}-${itemId}`}
+                                        smartLayoutItemId={`title-${elementId}-${itemId}`}
                                         isHideSlashMenu={true}
                                         isInnerTiptap={true}
                                         standardEnterBehavior={true}
@@ -347,6 +348,7 @@ export default function TextBoxes({
                                         placeholder="Текст"
                                         onContentChange={handleContentChange(itemId, 'text')}
                                         customRefKey={`text-${elementId}-${itemId}`}
+                                        smartLayoutItemId={`text-${elementId}-${itemId}`}
                                         isHideSlashMenu={true}
                                         isInnerTiptap={true}
                                         standardEnterBehavior={true}

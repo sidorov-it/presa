@@ -67,7 +67,9 @@ export const ElementContent = ({
     const elementConfig = useMemo(() => getElementConfig(elementTypeId), [elementTypeId]);
     const slideBackground = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background?.value);
 
-    const isElementSelected = useUIStateStore(state => state.selectedElementId === elementId);
+    const isElementSelected = useUIStateStore(
+        state => state.selectedElementId === elementId && elementTypeId !== ElementType.TEXT
+    );
 
     const isMenuOpenOnCurrentElement = useUIStateStore(
         useShallow(
