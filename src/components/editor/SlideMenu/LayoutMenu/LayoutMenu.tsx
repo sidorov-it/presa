@@ -3,7 +3,6 @@ import { useSelectedState, useUIStateStore } from '@/store/uiStateStore';
 import { BaseMenu, MenuItem } from '../BaseMenu';
 import { AlignTopIcon, AlignCenterIcon, AlignBottomIcon, DeleteIcon } from '@/components/icons';
 
-// import { useMenuSelectedSlide } from '@/store/menuStore';
 import { usePresentationStore } from '@/store/presentationStore';
 import { LayoutType } from '@/types';
 import LayoutTemplateDropdown from '../LayoutTemplateDropdown/LayoutTemplateDropdown';

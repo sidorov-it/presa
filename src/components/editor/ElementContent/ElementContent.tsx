@@ -67,10 +67,13 @@ export const ElementContent = ({
     const elementConfig = useMemo(() => getElementConfig(elementTypeId), [elementTypeId]);
     const slideBackground = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background?.value);
 
+    const isElementSelected = useUIStateStore(state => state.selectedElementId === elementId);
+
     const isMenuOpenOnCurrentElement = useUIStateStore(
         useShallow(
             state =>
                 state.selectedElementId === elementId &&
+                state.isContextMenuOpen === true &&
                 (elementTypeId !== 'smart-layout' || state.selectedSmartLayoutItemId === null)
         )
     );
@@ -687,7 +690,7 @@ export const ElementContent = ({
                         onBackspacePressed={handleBackspacePressed}
                         onDeletePressed={handleDeletePressed}
                         onContentChange={handleEditorContentChange}
-                        onBlur={handleBlur}
+                        // onBlur={handleBlur}
                         customBubbleMenuTrigger={dragHandleRef}
                         onAddElement={memoizedOnAddElement}
                         presentationId={presentationId}
@@ -769,7 +772,7 @@ export const ElementContent = ({
     return (
         <div
             key={elementId}
-            className={`${styles.elementContent}`}
+            className={`${styles.elementContent} ${isElementSelected ? styles.elementContentSelected : ''}`}
             data-element-id={elementId}
             style={{
                 fontSize: 'var(--font-size)',

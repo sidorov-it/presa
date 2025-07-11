@@ -23,7 +23,7 @@ import HistoryDebugPopup from '@/components/ui/HistoryDebugPopup';
 import DragDropDebugInfo from '@/components/DragDropDebugInfo';
 import NotFoundPage from '@/components/NotFoundPage/NotFoundPage';
 import { useColorMode } from '@/components/ui/color-mode';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
@@ -232,10 +232,10 @@ const Header = ({
                         className={styles.themeButton}
                         role="button"
                         aria-label="Открыть выбор темы"
-                        onClick={() => useMenuStore.getState().openSideMenu('theme-select', { presentationId })}
+                        onClick={() => useUIStateStore.getState().openSideMenu('theme-select', { presentationId })}
                         onKeyDown={e => {
                             if (e.key === 'Enter') {
-                                useMenuStore.getState().openSideMenu('theme-select', { presentationId });
+                                useUIStateStore.getState().openSideMenu('theme-select', { presentationId });
                             }
                         }}
                     >

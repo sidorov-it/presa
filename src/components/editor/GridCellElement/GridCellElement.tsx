@@ -20,14 +20,6 @@ import { useReadOnly } from '@/contexts/ReadOnlyContext';
 import { getNewEditorElement } from '@/utils/getNewEditorElement';
 import { ElementType } from '@/types/elements';
 
-export const useIsSelectedRow = (tableId: string, rowIndex: number) =>
-    useUIStateStore(state => state.contextMenuTableRowIndex === rowIndex && state.contextMenuTableId === tableId);
-
-export const useIsSelectedColumn = (tableId: string, columnIndex: number) =>
-    useUIStateStore(state => {
-        return state.contextMenuTableColumnIndex === columnIndex && state.contextMenuTableId === tableId;
-    });
-
 export const useIsHoveredRow = (tableId: string, rowIndex: number, columnIndex: number) =>
     useUIStateStore(
         state => columnIndex === 0 && state.hoveredRowIndex === rowIndex && state.hoveredTableId === tableId
@@ -37,9 +29,6 @@ export const useIsHoveredColumn = (tableId: string, rowIndex: number, columnInde
     useUIStateStore(
         state => rowIndex === 0 && state.hoveredColumnIndex === columnIndex && state.hoveredTableId === tableId
     );
-
-export const useMenuElementId = () => useUIStateStore(state => state.selectedElementId);
-
 interface GridCellElementProps {
     cell: GridCell;
     // elements: Element[];
@@ -71,7 +60,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 }) => {
     const isReadOnly = useReadOnly();
 
-    const isSelectedColumn = useIsSelectedColumn(layoutId, columnIndex);
+    // const isSelectedColumn = useIsSelectedColumn(layoutId, columnIndex);
     const isHoveredColumn = useIsHoveredColumn(layoutId, rowIndex, columnIndex);
     const isMenuCurrentColumn = useUIStateStore(state => {
         return state.contextMenuTableColumnIndex === columnIndex && state.contextMenuTableId === layoutId;
@@ -114,10 +103,23 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         layoutId: storeLayoutId,
     } = usePresentationStore(state => state.resizeState);
 
-    const menuCellId = useUIStateStore(state => state.selectedCellId);
+    const isCellMenuOpen = useUIStateStore(state => state.selectedCellId === cell.id && state.isContextMenuOpen);
+    const isRowMenuOpen = useUIStateStore(
+        state =>
+            state.contextMenuTableRowIndex === rowIndex &&
+            state.contextMenuTableId === layoutId &&
+            state.isContextMenuOpen
+    );
+
+    const isColumnMenuOpen = useUIStateStore(
+        state =>
+            state.contextMenuTableColumnIndex === columnIndex &&
+            state.contextMenuTableId === layoutId &&
+            state.isContextMenuOpen
+    );
 
     const isHoveredRow = useIsHoveredRow(layoutId, rowIndex, columnIndex);
-    const isSelectedRow = useIsSelectedRow(layoutId, rowIndex);
+    // const isSelectedRow = useIsSelectedRow(layoutId, rowIndex);
     const dragHandleRef = useRef<HTMLDivElement>(null);
     const resizeBorderRef = useRef<HTMLDivElement>(null);
 
@@ -125,7 +127,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     const handleDragStart = useHandleDragStart();
 
-    const layoutIsFocused = useUIStateStore(state => state.focusedLayoutId === layoutId);
+    const layoutIsFocused = useUIStateStore(state => state.selectedLayoutId === layoutId);
 
     // const [elementIsHovered, setElementIsHovered] = useState(false);
     const [cellIsHovered, setCellIsHovered] = useState(false);
@@ -593,11 +595,11 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
 
     const isShowRowDragHandler =
         isTable &&
-        ((deferredIsHoveredRow && !isSelectedRow && !hasSelectedRow) || (isSelectedRow && columnIndex === 0));
+        ((deferredIsHoveredRow && !isRowMenuOpen && !hasSelectedRow) || (isRowMenuOpen && columnIndex === 0));
 
     const isShowColumnDragHandler =
         isTable &&
-        ((deferredIsHoveredColumn && !isSelectedColumn && !hasSelectedColumn) || (isSelectedColumn && rowIndex === 0));
+        ((deferredIsHoveredColumn && !isColumnMenuOpen && !hasSelectedColumn) || (isColumnMenuOpen && rowIndex === 0));
 
     const handleAddColumn = useCallback(() => {
         usePresentationStore.getState().addColumnRight(presentationId, slideId, layoutId, columnIndex);
@@ -607,7 +609,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
     return (
         <div
             className={`${className} 
-                ${isSelectedRow || isSelectedColumn ? styles.selectedCell : ''}
+                ${isRowMenuOpen || isColumnMenuOpen ? styles.selectedCell : ''}
                 ${hasMultipleCells && !isTable && (cellIsHovered || layoutIsHovered || layoutIsFocused) ? styles.cellBorderVisible : ''}`}
             data-cell-id={cell.id}
             data-cell="true"
@@ -636,10 +638,10 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
             {!isReadOnly &&
                 !isTable &&
                 hasMultipleCells &&
-                (isMenuCurrentColumn || cellIsHovered || menuCellId === cell.id) && (
+                (isMenuCurrentColumn || cellIsHovered || isCellMenuOpen) && (
                     <DragHandler
                         slideId={slideId}
-                        isActive={menuCellId === cell.id}
+                        isActive={isCellMenuOpen}
                         ariaLabel="Перетащить эту ячейку"
                         className={styles.cellDragHandle}
                         dataAttributes={{
@@ -700,7 +702,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 <DragHandler
                     className={styles.tableRowDragHandle}
                     slideId={slideId}
-                    isActive={isSelectedRow}
+                    isActive={isRowMenuOpen}
                     ariaLabel="Перетащить эту строку"
                     dataAttributes={{ 'data-row-drag-handle': `${layoutId}-${rowIndex}` }}
                     handleClick={handleOpenRowMenu}
@@ -719,7 +721,7 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                 <DragHandler
                     className={styles.columnDragHandle}
                     slideId={slideId}
-                    isActive={isSelectedColumn}
+                    isActive={isColumnMenuOpen}
                     ariaLabel="Перетащить этот столбец"
                     dataAttributes={{ 'data-column-drag-handle': `${layoutId}-${columnIndex}` }}
                     handleClick={handleOpenColumnMenu}

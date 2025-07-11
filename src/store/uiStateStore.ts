@@ -13,10 +13,10 @@ export interface UIState {
     selectedLayoutId: string | null;
     selectedCellId: string | null;
     selectedSmartLayoutItemId: string | null;
-    focusedLayoutId: string | null;
+    // focusedLayoutId: string | null;
 
     // Table selection state
-    selectedTableId: string | null;
+    // selectedTableId: string | null;
     selectedRowIndex: number | null;
     selectedColumnIndex: number | null;
 
@@ -53,8 +53,8 @@ export interface UIState {
     setSelectedSmartLayoutItemId: (layoutId: string, elementId: string, smartLayoutItemId: string) => void;
     setSelectedRowIndex: (tableId: string, rowIndex: number | null) => void;
     setSelectedColumnIndex: (tableId: string, columnIndex: number | null) => void;
-    setFocusedLayoutId: (layoutId: string) => void;
-    resetFocusedLayoutId: () => void;
+    setSelectedLayoutId: (layoutId: string) => void;
+    resetSelectedLayoutId: () => void;
 
     // Actions for context menu control
     openContextMenu: (menuData: {
@@ -91,205 +91,229 @@ export interface SelectedState {
     presentationId: string | null;
 }
 
+// Add logger middleware
+const logger = config => (set, get, api) => {
+    const result = config(set, get, api);
+    return Object.fromEntries(
+        Object.entries(result).map(([key, value]) => {
+            if (typeof value === 'function') {
+                return [
+                    key,
+                    (...args) => {
+                        if (key === 'checkSlideContextMenuIsOpen') {
+                            return value(...args);
+                        }
+                        console.log(`[Zustand] Calling action: ${key} with args:`, args);
+                        return value(...args);
+                    },
+                ];
+            }
+            return [key, value];
+        })
+    );
+};
+
 export const useUIStateStore = create<UIState>()(
     devtools(
-        (set, get) => ({
-            // Initial selection state
-            selectedSlideId: null,
-            selectedElementId: null,
-            selectedLayoutId: null,
-            selectedCellId: null,
-            selectedSmartLayoutItemId: null,
-            focusedLayoutId: null,
+        logger(
+            (set, get) => ({
+                // Initial selection state
+                selectedSlideId: null,
+                selectedElementId: null,
+                selectedLayoutId: null,
+                selectedCellId: null,
+                selectedSmartLayoutItemId: null,
+                // focusedLayoutId: null,
 
-            // Initial table selection state
-            selectedTableId: null,
-            selectedRowIndex: null,
-            selectedColumnIndex: null,
+                // Initial table selection state
+                selectedRowIndex: null,
+                selectedColumnIndex: null,
 
-            // Initial table hover state
-            hoveredTableId: null,
-            hoveredRowIndex: null,
-            hoveredColumnIndex: null,
+                // Initial table hover state
+                hoveredTableId: null,
+                hoveredRowIndex: null,
+                hoveredColumnIndex: null,
 
-            // Initial context menu state
-            isContextMenuOpen: false,
-            contextMenuElementType: null,
-            contextMenuTableRowIndex: null,
-            contextMenuTableColumnIndex: null,
-            contextMenuTableId: null,
-            contextMenuColumnIndex: null,
-            contextMenuSmartLayoutItemId: null,
-            isContextMenuOnTextEditor: false,
-            isContextMenuInTable: false,
+                // Initial context menu state
+                isContextMenuOpen: false,
+                contextMenuElementType: null,
+                contextMenuTableRowIndex: null,
+                contextMenuTableColumnIndex: null,
+                contextMenuTableId: null,
+                contextMenuColumnIndex: null,
+                contextMenuSmartLayoutItemId: null,
+                isContextMenuOnTextEditor: false,
+                isContextMenuInTable: false,
 
-            // Initial side menu state
-            sideMenuState: {
-                isOpen: false,
-                sideMenuId: null,
-                sideMenuData: null,
-            },
+                // Initial side menu state
+                sideMenuState: {
+                    isOpen: false,
+                    sideMenuId: null,
+                    sideMenuData: null,
+                },
 
-            // Initial presentation context
-            currentPresentationId: null,
+                // Initial presentation context
+                currentPresentationId: null,
 
-            // Actions for presentation context
-            setCurrentPresentationId: (presentationId: string) => set({ currentPresentationId: presentationId }),
+                // Actions for presentation context
+                setCurrentPresentationId: (presentationId: string) => set({ currentPresentationId: presentationId }),
 
-            // Actions for element selection
-            setSelectedSmartLayoutItemId: (layoutId: string, elementId: string, smartLayoutItemId: string) =>
-                set({
-                    selectedSmartLayoutItemId: smartLayoutItemId,
-                    focusedLayoutId: layoutId,
-                    selectedElementId: elementId,
-                }),
+                // Actions for element selection
+                setSelectedSmartLayoutItemId: (layoutId: string, elementId: string, smartLayoutItemId: string) =>
+                    set({
+                        selectedSmartLayoutItemId: smartLayoutItemId,
+                        selectedLayoutId: layoutId,
+                        selectedElementId: elementId,
+                    }),
 
-            setSelectedRowIndex: (tableId: string, rowIndex: number | null) => {
-                const { selectedTableId } = get();
-                if (selectedTableId !== tableId) {
-                    set({ selectedRowIndex: rowIndex, selectedTableId: tableId });
-                } else {
+                setSelectedRowIndex: (tableId: string, rowIndex: number | null) => {
                     set({ selectedRowIndex: rowIndex });
-                }
-            },
+                },
 
-            setSelectedColumnIndex: (tableId: string, columnIndex: number | null) => {
-                const { selectedTableId } = get();
-                if (selectedTableId !== tableId) {
-                    set({ selectedColumnIndex: columnIndex, selectedTableId: tableId });
-                } else {
+                setSelectedColumnIndex: (tableId: string, columnIndex: number | null) => {
                     set({ selectedColumnIndex: columnIndex });
-                }
-            },
+                },
 
-            setFocusedLayoutId: (layoutId: string) => {
-                set({ focusedLayoutId: layoutId, selectedElementId: null, selectedSmartLayoutItemId: null });
-            },
+                setSelectedLayoutId: (layoutId: string) => {
+                    set({
+                        selectedLayoutId: layoutId,
+                        selectedCellId: null,
+                        selectedRowIndex: null,
+                        selectedColumnIndex: null,
+                        selectedSmartLayoutItemId: null,
+                        selectedElementId: null,
+                    });
+                },
 
-            resetFocusedLayoutId: () => {
-                set({ focusedLayoutId: null });
-            },
+                // setFocusedLayoutId: (layoutId: string) => {
+                //     set({ focusedLayoutId: layoutId, selectedElementId: null, selectedSmartLayoutItemId: null });
+                // },
 
-            // Actions for context menu control
-            openContextMenu: menuData => {
-                const presentationState = usePresentationStore.getState();
-                const currentPresentationId = get().currentPresentationId;
-                const layout = presentationState.getLayout(
-                    currentPresentationId!,
-                    menuData.slideId!,
-                    menuData.layoutId!
-                );
-                const isInTable = layout?.isTable;
+                resetSelectedLayoutId: () => {
+                    set({ selectedLayoutId: null });
+                },
 
-                console.log('openContextMenu', {
-                    isContextMenuOpen: true,
-                    selectedSlideId: menuData.slideId ?? null,
-                    selectedElementId: menuData.elementId ?? null,
-                    contextMenuElementType: menuData.elementType ?? null,
-                    selectedLayoutId: menuData.layoutId ?? null,
-                    selectedCellId: menuData.cellId ?? null,
-                    isContextMenuOnTextEditor: menuData.isTextEditor ?? false,
-                    contextMenuTableRowIndex: menuData.tableRowIndex ?? null,
-                    contextMenuTableColumnIndex: menuData.tableColumnIndex ?? null,
-                    contextMenuTableId: menuData.tableId ?? null,
-                    contextMenuSmartLayoutItemId: menuData.smartLayoutItemId ?? null,
-                    isContextMenuInTable: isInTable ?? false,
-                    contextMenuColumnIndex: menuData.columnIndex ?? null,
-                    currentPresentationId: currentPresentationId ?? null,
-                });
+                // Actions for context menu control
+                openContextMenu: menuData => {
+                    const presentationState = usePresentationStore.getState();
+                    const currentPresentationId = get().currentPresentationId;
+                    const layout = presentationState.getLayout(
+                        currentPresentationId!,
+                        menuData.slideId!,
+                        menuData.layoutId!
+                    );
+                    const isInTable = layout?.isTable;
 
-                set({
-                    isContextMenuOpen: true,
-                    selectedSlideId: menuData.slideId ?? null,
-                    selectedElementId: menuData.elementId ?? null,
-                    contextMenuElementType: menuData.elementType ?? null,
-                    selectedLayoutId: menuData.layoutId ?? null,
-                    selectedCellId: menuData.cellId ?? null,
-                    isContextMenuOnTextEditor: menuData.isTextEditor ?? false,
-                    contextMenuTableRowIndex: menuData.tableRowIndex ?? null,
-                    contextMenuTableColumnIndex: menuData.tableColumnIndex ?? null,
-                    contextMenuTableId: menuData.tableId ?? null,
-                    contextMenuSmartLayoutItemId: menuData.smartLayoutItemId ?? null,
-                    isContextMenuInTable: isInTable ?? false,
-                    contextMenuColumnIndex: menuData.columnIndex ?? null,
-                    currentPresentationId: currentPresentationId ?? null,
-                });
-            },
+                    console.log('openContextMenu', {
+                        isContextMenuOpen: true,
+                        selectedSlideId: menuData.slideId ?? null,
+                        selectedElementId: menuData.elementId ?? null,
+                        contextMenuElementType: menuData.elementType ?? null,
+                        selectedLayoutId: menuData.layoutId ?? null,
+                        selectedCellId: menuData.cellId ?? null,
+                        isContextMenuOnTextEditor: menuData.isTextEditor ?? false,
+                        contextMenuTableRowIndex: menuData.tableRowIndex ?? null,
+                        contextMenuTableColumnIndex: menuData.tableColumnIndex ?? null,
+                        contextMenuTableId: menuData.tableId ?? null,
+                        contextMenuSmartLayoutItemId: menuData.smartLayoutItemId ?? null,
+                        isContextMenuInTable: isInTable ?? false,
+                        contextMenuColumnIndex: menuData.columnIndex ?? null,
+                        currentPresentationId: currentPresentationId ?? null,
+                    });
 
-            closeContextMenu: () => {
-                console.log('closeContextMenu');
-                set({
-                    isContextMenuOpen: false,
-                    selectedSlideId: null,
-                    selectedElementId: null,
-                    contextMenuElementType: null,
-                    selectedLayoutId: null,
-                    isContextMenuOnTextEditor: false,
-                    contextMenuTableRowIndex: null,
-                    contextMenuTableColumnIndex: null,
-                    contextMenuTableId: null,
-                    selectedCellId: null,
-                    contextMenuSmartLayoutItemId: null,
-                    contextMenuColumnIndex: null,
-                });
-            },
+                    set({
+                        isContextMenuOpen: true,
+                        selectedSlideId: menuData.slideId ?? null,
+                        selectedElementId: menuData.elementId ?? null,
+                        contextMenuElementType: menuData.elementType ?? null,
+                        selectedLayoutId: menuData.layoutId ?? null,
+                        selectedCellId: menuData.cellId ?? null,
+                        isContextMenuOnTextEditor: menuData.isTextEditor ?? false,
+                        contextMenuTableRowIndex: menuData.tableRowIndex ?? null,
+                        contextMenuTableColumnIndex: menuData.tableColumnIndex ?? null,
+                        contextMenuTableId: menuData.tableId ?? null,
+                        contextMenuSmartLayoutItemId: menuData.smartLayoutItemId ?? null,
+                        isContextMenuInTable: isInTable ?? false,
+                        contextMenuColumnIndex: menuData.columnIndex ?? null,
+                        currentPresentationId: currentPresentationId ?? null,
+                    });
+                },
 
-            checkSlideContextMenuIsOpen: slideId => {
-                const state = get();
-                return (
-                    state.selectedSlideId === slideId &&
-                    state.selectedElementId === null &&
-                    state.selectedLayoutId === null &&
-                    state.selectedSmartLayoutItemId === null
-                );
-            },
+                closeContextMenu: () => {
+                    console.log('closeContextMenu');
+                    set({
+                        isContextMenuOpen: false,
+                        selectedSlideId: null,
+                        selectedElementId: null,
+                        contextMenuElementType: null,
+                        selectedLayoutId: null,
+                        isContextMenuOnTextEditor: false,
+                        contextMenuTableRowIndex: null,
+                        contextMenuTableColumnIndex: null,
+                        contextMenuTableId: null,
+                        selectedCellId: null,
+                        contextMenuSmartLayoutItemId: null,
+                        contextMenuColumnIndex: null,
+                    });
+                },
 
-            // Actions for side menu control
-            openSideMenu: (sideMenuId: string, sideMenuData: any) => {
-                console.log('openSideMenu', {
-                    sideMenuId,
-                    sideMenuData,
-                });
-                set({
-                    sideMenuState: {
-                        isOpen: true,
+                checkSlideContextMenuIsOpen: slideId => {
+                    const state = get();
+                    return (
+                        state.selectedSlideId === slideId &&
+                        state.selectedElementId === null &&
+                        state.selectedLayoutId === null &&
+                        state.selectedSmartLayoutItemId === null
+                    );
+                },
+
+                // Actions for side menu control
+                openSideMenu: (sideMenuId: string, sideMenuData: any) => {
+                    console.log('openSideMenu', {
                         sideMenuId,
                         sideMenuData,
-                    },
-                });
-            },
+                    });
+                    set({
+                        sideMenuState: {
+                            isOpen: true,
+                            sideMenuId,
+                            sideMenuData,
+                        },
+                    });
+                },
 
-            closeSideMenu: () => {
-                set({
-                    sideMenuState: {
-                        isOpen: false,
-                        sideMenuId: null,
-                        sideMenuData: null,
-                    },
-                });
-            },
+                closeSideMenu: () => {
+                    set({
+                        sideMenuState: {
+                            isOpen: false,
+                            sideMenuId: null,
+                            sideMenuData: null,
+                        },
+                    });
+                },
 
-            // Actions for table hover state
-            hoverTableCell: (tableId: string, rowIndex: number | null, columnIndex: number | null) =>
-                set(state => {
-                    if (
-                        state.hoveredRowIndex === rowIndex &&
-                        state.hoveredColumnIndex === columnIndex &&
-                        state.hoveredTableId === tableId
-                    ) {
-                        return state; // No change needed
-                    }
-                    return {
-                        hoveredRowIndex: rowIndex,
-                        hoveredColumnIndex: columnIndex,
-                        hoveredTableId: tableId,
-                    };
-                }),
-        }),
-        {
-            name: 'ui-state-store',
-            enabled: true,
-        }
+                // Actions for table hover state
+                hoverTableCell: (tableId: string, rowIndex: number | null, columnIndex: number | null) =>
+                    set(state => {
+                        if (
+                            state.hoveredRowIndex === rowIndex &&
+                            state.hoveredColumnIndex === columnIndex &&
+                            state.hoveredTableId === tableId
+                        ) {
+                            return state; // No change needed
+                        }
+                        return {
+                            hoveredRowIndex: rowIndex,
+                            hoveredColumnIndex: columnIndex,
+                            hoveredTableId: tableId,
+                        };
+                    }),
+            }),
+            {
+                name: 'ui-state-store',
+                enabled: true,
+            }
+        )
     )
 );
 
@@ -315,7 +339,7 @@ export const useSelectedState = () =>
             selectedLayoutId: state.selectedLayoutId,
             selectedCellId: state.selectedCellId,
             selectedSmartLayoutItemId: state.selectedSmartLayoutItemId,
-            focusedLayoutId: state.focusedLayoutId,
+            // focusedLayoutId: state.focusedLayoutId,
             presentationId: state.currentPresentationId,
         }))
     );

@@ -49,10 +49,11 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
 
     const isReadOnly = useReadOnly();
 
-    const menuLayoutId = useSelectedLayoutId();
-    const menuElementId = useSelectedElementId();
-    const menuCellId = useSelectedCellId();
+    const selectedLayoutId = useSelectedLayoutId();
+    const selectedElementId = useSelectedElementId();
+    const selectedCellId = useSelectedCellId();
 
+    const isContextMenuOpen = useUIStateStore(state => state.isContextMenuOpen);
     const themeSlideBackground = useThemeStore(useShallow(state => state.getCurrentThemeSlideBackground()));
 
     const isTableContentSelected = useUIStateStore(
@@ -356,8 +357,8 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
         [handleResizeMoveTableColumn, handleResizeEndTableColumn, presentationId, slideId, layoutId]
     );
 
-    const isSelected = menuLayoutId === layout.id && menuElementId === null && menuCellId === null;
-    const isFocused = useUIStateStore(state => state.focusedLayoutId === layout.id);
+    const isSelected = selectedLayoutId === layout.id && selectedElementId === null && selectedCellId === null;
+    const isFocused = useUIStateStore(state => state.selectedLayoutId === layout.id);
 
     // const isHovered = isLayoutHovered || isSelected;
 
@@ -366,10 +367,10 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
             return;
         }
 
-        useUIStateStore.getState().setFocusedLayoutId(layout.id);
+        useUIStateStore.getState().setSelectedLayoutId(layout.id);
         document.addEventListener('click', e => {
             if (e.target instanceof HTMLElement && !e.target.closest('[data-layout-id]')) {
-                useUIStateStore.getState().resetFocusedLayoutId();
+                useUIStateStore.getState().resetSelectedLayoutId();
             }
         });
     }, [layout.id, isReadOnly]);
@@ -381,19 +382,20 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 className={`${styles.layout}`}
                 data-layout-id={layout.id}
                 data-is-single-element-layout={isSingleElementSingleCellLayout ? 'true' : 'false'}
+                data-is-selected-layout={selectedLayoutId === layout.id ? 'true' : ''}
                 role="region"
                 aria-label={`Макет ${layout.id}`}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
                 onClickCapture={handleLayoutClick}
             >
-                {isSelected && <div className={styles.layoutSelected} />}
+                {/* {isSelected && <div className={styles.layoutSelected} />} */}
 
                 {!isReadOnly && layout.elements.length > 1 && (isLayoutHovered || isSelected) && (
                     <DragHandler
                         className={styles.layoutDragHandle}
                         slideId={slideId}
-                        isActive={isSelected && !isTableContentSelected}
+                        isActive={isSelected && isContextMenuOpen && !isTableContentSelected}
                         ariaLabel="Перетащить этот макет"
                         dataAttributes={{
                             'data-layout-drag-handle': layout.id,

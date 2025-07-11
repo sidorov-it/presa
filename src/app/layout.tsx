@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google';
 import { NextAuthProvider } from '@/components/providers/NextAuthProvider';
 import { Provider } from '@/components/ui/provider';
 import SideMenuRenderer from '@/components/editor/Menus/SideMenuRenderer/SideMenuRenderer';
+import UIStateDebugButton from '@/components/debug/UIStateDebugButton';
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] });
 
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <Provider>
                         {children}
                         <SideMenuRenderer />
+                        {process.env.NODE_ENV === 'development' && <UIStateDebugButton />}
                     </Provider>
                 </NextAuthProvider>
             </body>
