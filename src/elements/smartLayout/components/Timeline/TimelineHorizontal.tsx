@@ -351,6 +351,7 @@ export default function TimelineHorizontal({
                     {firstLineItems.map((itemId, index) => {
                         return (
                             <TimelineHorizontalContent
+                                className={`${styles.itemWrapperAlignBottom} ${styles.horizontalItem}`}
                                 key={itemId || `first-empty-${index}`}
                                 itemId={itemId}
                                 direction={direction}
@@ -372,7 +373,6 @@ export default function TimelineHorizontal({
                                 maxItemsCount={maxItemsCount}
                                 index={index}
                                 sides={sides}
-                                className={styles.itemWrapperAlignBottom}
                                 elementRef={elementRefs.current[itemId || '']}
                                 isLastItem={itemId === lastItemId}
                             />
@@ -453,6 +453,7 @@ export default function TimelineHorizontal({
                     {secondLineItems.map((itemId, index) => {
                         return (
                             <TimelineHorizontalContent
+                                className={`${styles.itemWrapperAlignTop} ${styles.horizontalItem}`}
                                 key={itemId || `second-empty-${index}`}
                                 itemId={itemId}
                                 direction={direction}
@@ -475,7 +476,6 @@ export default function TimelineHorizontal({
                                 index={index}
                                 sides={sides}
                                 isSecondLine={true}
-                                className={styles.itemWrapperAlignTop}
                                 elementRef={elementRefs.current[itemId || '']}
                                 isLastItem={itemId === lastItemId}
                             />

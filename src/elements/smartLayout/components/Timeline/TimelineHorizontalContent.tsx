@@ -95,7 +95,7 @@ const TimelineHorizontalContent = ({
                         // Second line (bottom): offset by 2/3 of element width
                         return {
                             width: elementWidth,
-                            marginLeft: index === 0 ? `calc(100% / ${totalElements / 2} / 2)` : '0',
+                            marginLeft: index === 0 ? `calc(100% / (${totalElements / 2} + 0.5) / 2)` : '0',
                             marginRight: '0',
                         };
                     } else {
@@ -189,7 +189,7 @@ const TimelineHorizontalContent = ({
     return (
         <div
             key={itemId}
-            className={`${styles.itemContainer} ${isSelected ? styles.selected : ''}`}
+            className={styles.itemContainer}
             onDragOver={e => handleDragOver(e, itemId)}
             onDragLeave={handleDragLeave}
             onDrop={e => handleDrop(e, itemId)}
@@ -204,7 +204,8 @@ const TimelineHorizontalContent = ({
                 />
             )}
             <ItemWrapper
-                className={className}
+                className={`${className} ${isSelected ? styles.selected : ''}`}
+                dragHandlerClassName={styles.dragHandler}
                 presentationId={presentationId}
                 itemId={itemId}
                 slideId={slideId}

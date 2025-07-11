@@ -103,7 +103,7 @@ export const EnterHandlerExtension = (
                     });
 
                     // Если курсор в начале первого содержимого
-                    if ($head.pos <= firstTextPos) {
+                    if ($head.pos <= 1) {
                         onBackspacePressed(false, editor.getHTML());
                         return true;
                     }

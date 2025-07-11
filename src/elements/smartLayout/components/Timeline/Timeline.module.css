@@ -31,12 +31,15 @@
     flex: 1 1 auto;
     box-sizing: border-box;
     transition: box-shadow 0.2s ease;
-    border-radius: var(--presentation-slide-border-radius);
-    border-width: 1px;
     min-height: 5em;
 }
 
-.itemContainer.selected,
+.horizontalItem {
+    border-radius: var(--presentation-slide-border-radius);
+    border-width: 1px;
+}
+
+.horizontalItem.selected,
 .verticalTimelineItem.selected {
     border-color: var(--color-primary);
 }
@@ -447,6 +450,11 @@
     justify-content: center;
 }
 
+.itemWrapperAlignBottom,
+.itemWrapperAlignTop {
+    width: 100%;
+}
+
 /* Vertical Timeline Specific Styles */
 .verticalTimelineContainer {
     min-height: 30em;
@@ -605,4 +613,8 @@
 .leftSide,
 .rightSide {
     position: absolute;
+}
+
+.dragHandler {
+    top: -14px;
 }

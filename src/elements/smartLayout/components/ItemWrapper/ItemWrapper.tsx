@@ -13,6 +13,7 @@ export default function ItemWrapper({
     itemId,
     slideId,
     className,
+    dragHandlerClassName,
     layoutId,
     elementId,
     renderMenuComponent,
@@ -22,6 +23,7 @@ export default function ItemWrapper({
     itemId: string;
     slideId: string;
     className?: string;
+    dragHandlerClassName?: string;
     layoutId: string;
     elementId: string;
     renderMenuComponent: (menuPosition: { x: number; y: number }) => React.ReactNode;
@@ -77,7 +79,7 @@ export default function ItemWrapper({
         >
             {!isReadOnly && (hovered || isSelected) && (
                 <DragHandler
-                    className={styles.dragHandler}
+                    className={`${styles.dragHandler} ${dragHandlerClassName ? dragHandlerClassName : ''}`}
                     horizontal={true}
                     slideId={slideId}
                     isActive={isMenuOpen}
