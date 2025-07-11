@@ -18,6 +18,7 @@ import { HiOutlineCreditCard } from 'react-icons/hi2';
 import BackgroundSettingsModal from '@/components/editor/BackgroundSettingsModal/BackgroundSettingsModal';
 import styles from './page.module.css';
 import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
+import FontLoader from '@/components/theme/components/Fonts/FontLoader';
 import ThemeDebugButton from '@/components/debug/ThemeDebugButton';
 import HistoryDebugPopup from '@/components/ui/HistoryDebugPopup';
 import DragDropDebugInfo from '@/components/DragDropDebugInfo';
@@ -580,6 +581,7 @@ export default function PresentationEditorPage() {
                     className={styles.container}
                     colorMode={colorMode}
                 >
+                    <FontLoader theme={currentTheme} />
                     {/* <MobileWarningOverlay /> */}
                     <div ref={containerRef} className={colorMode === 'dark' ? 'dark' : ''} style={slideLayoutVars}>
                         <Header
