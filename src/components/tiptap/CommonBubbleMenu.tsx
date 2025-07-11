@@ -1,3 +1,4 @@
+'use client';
 import { BubbleMenu, Editor } from '@tiptap/react';
 import { ColorPicker } from './ColorPicker';
 import styles from './BubbleMenu.module.css';
@@ -112,6 +113,10 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
         },
         [editor]
     );
+
+    if (typeof window === 'undefined') {
+        return null;
+    }
 
     return (
         <BubbleMenu

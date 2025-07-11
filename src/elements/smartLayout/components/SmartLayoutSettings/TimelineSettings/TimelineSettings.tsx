@@ -131,7 +131,7 @@ export default function TimelineSettings({
                 <IconToggle
                     // icon={<SidesIcon />}
                     icon={<FaTimeline />}
-                    isEnabled={element.sides === 'one'}
+                    isEnabled={element.sides === 'two'}
                     onToggle={() => {
                         updateElement({
                             presentationId,

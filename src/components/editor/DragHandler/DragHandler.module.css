@@ -7,7 +7,7 @@
     align-items: center;
     justify-content: center;
     font-weight: 900;
-    font-family: Inter, sans-serif;
+    /* font-family: Inter, sans-serif; */
     border-width: 1px;
     border-style: solid;
     border-color: var(--color-border);
