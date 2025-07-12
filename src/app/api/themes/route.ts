@@ -6,7 +6,52 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 export async function GET(request: Request) {
     try {
-        return NextResponse.json(process.env, { status: 200 });
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.id) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const url = new URL(request.url);
+        const onlyDefaultParam = url.searchParams.get('default');
+
+        // If only default themes are requested
+        if (onlyDefaultParam === 'true') {
+            const defaultThemes = await prisma.theme.findMany({
+                where: {
+                    isDefault: true,
+                    isActive: true,
+                },
+                orderBy: {
+                    createdAt: 'desc',
+                },
+            });
+            return NextResponse.json(defaultThemes);
+        }
+
+        // Get both user's themes and default themes
+        const [userThemes, defaultThemes] = await Promise.all([
+            prisma.theme.findMany({
+                where: {
+                    userId: session.user.id,
+                    isActive: true,
+                },
+                orderBy: {
+                    createdAt: 'desc',
+                },
+            }),
+            prisma.theme.findMany({
+                where: {
+                    isDefault: true,
+                    isActive: true,
+                },
+                orderBy: {
+                    createdAt: 'desc',
+                },
+            }),
+        ]);
+
+        // Combine and return both sets of themes
+        return NextResponse.json([...userThemes, ...defaultThemes]);
     } catch (error) {
         logger.error('Failed to fetch themes:', error);
         return NextResponse.json({ error: 'Failed to fetch themes' }, { status: 500 });
