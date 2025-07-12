@@ -5,6 +5,7 @@ import { Theme } from '@/types/theme';
 import styles from './ThemePreviewBlock.module.css';
 import { FaCopy, FaEye, FaTrash } from 'react-icons/fa';
 import { HiOutlineDotsVertical } from 'react-icons/hi';
+import { getRequiredFontsFromTheme, loadFontsInContainer, unloadFontsFromContainer } from '@/utils/fontLoader';
 
 interface ThemePreviewProps {
     theme: Theme;
@@ -24,8 +25,10 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
     onClickDelete,
 }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const menuButtonRef = useRef<HTMLButtonElement>(null);
     const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | null>(null);
+    const menuButtonRef = useRef<HTMLButtonElement>(null);
+    const previewRef = useRef<HTMLDivElement>(null);
+    const [fontStyles, setFontStyles] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
         if (menuButtonRef.current) {
@@ -49,6 +52,28 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
             setMenuPosition({ top, left, right, bottom });
         }
     }, [menuButtonRef]);
+
+    useEffect(() => {
+        if (previewRef.current) {
+            const rect = previewRef.current.getBoundingClientRect();
+            console.log(rect);
+        }
+    }, [previewRef]);
+
+    useEffect(() => {
+        if (!theme || !previewRef.current) return;
+
+        // Get required font URLs from theme
+        const fontUrls = getRequiredFontsFromTheme(theme);
+
+        // Load the fonts in the preview container
+        loadFontsInContainer(fontUrls, previewRef.current);
+
+        setFontStyles({
+            '--presentation-body-font': `'${theme.typography.bodyFont}', sans-serif`,
+            '--presentation-heading-font': `'${theme.typography.headingFont}', sans-serif`,
+        });
+    }, [theme]);
 
     const handleMenuClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -80,9 +105,11 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
 
     return (
         <div
+            ref={previewRef}
             className={`${styles.themeCard} ${isSelected ? styles.selected : ''}`}
-            onClick={onClick}
             id={`theme-${theme.id}`}
+            style={fontStyles}
+            onClick={onClick}
         >
             <div className={styles.cardContent}>
                 {/* Theme Preview */}
@@ -120,7 +147,7 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
                             <h3
                                 className={styles.slideTitle}
                                 style={{
-                                    fontFamily: theme.typography.headingFont,
+                                    fontFamily: 'var(--presentation-heading-font)',
                                     fontWeight: theme.typography.headingWeight,
                                     color: theme.typography.headingColor,
                                     lineHeight: theme.typography.headingLineHeight,
@@ -133,7 +160,7 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
                             <p
                                 className={styles.slideText}
                                 style={{
-                                    fontFamily: theme.typography.bodyFont,
+                                    fontFamily: 'var(--presentation-body-font)',
                                     fontWeight: theme.typography.bodyWeight,
                                     color: theme.typography.bodyColor,
                                     lineHeight: theme.typography.bodyLineHeight,

@@ -80,6 +80,41 @@ export const FONT_URLS: Record<string, string> = {
 // Keep track of loaded fonts to avoid duplicate loading
 const loadedFonts = new Set<string>();
 
+// Загружает шрифты и вставляет @font-face в указанный контейнер
+const loadedFontsByContainer = new WeakMap<HTMLElement, Set<string>>();
+
+export async function loadFontsInContainer(fontUrls: string[], container: HTMLElement): Promise<void> {
+    if (!container) return;
+    let loaded = loadedFontsByContainer.get(container);
+    if (!loaded) {
+        loaded = new Set();
+        loadedFontsByContainer.set(container, loaded);
+    }
+    for (const url of fontUrls) {
+        if (loaded.has(url)) continue;
+        try {
+            const css = await fetch(url).then(r => r.text());
+            // Извлекаем все @font-face
+            const fontFaceBlocks = css.match(/@font-face\s*{[^}]+}/g);
+            if (fontFaceBlocks) {
+                const style = document.createElement('style');
+                style.setAttribute('data-font-loader', url);
+                style.textContent = fontFaceBlocks.join('\n');
+                container.appendChild(style);
+            }
+            loaded.add(url);
+        } catch (e) {
+            // fail silently
+        }
+    }
+}
+
+export function unloadFontsFromContainer(container: HTMLElement): void {
+    if (!container) return;
+    container.querySelectorAll('style[data-font-loader]').forEach(el => el.remove());
+    loadedFontsByContainer.delete(container);
+}
+
 export function getRequiredFontsFromTheme(theme: Theme): string[] {
     const fonts = new Set<string>();
 
@@ -100,7 +135,7 @@ export function getRequiredFontsFromTheme(theme: Theme): string[] {
     return Array.from(fonts);
 }
 
-export function loadFonts(fontUrls: string[]): void {
+export function loadFonts(fontUrls: string[], targetContainer?: HTMLElement): void {
     fontUrls.forEach(url => {
         if (loadedFonts.has(url)) return;
 
@@ -108,7 +143,7 @@ export function loadFonts(fontUrls: string[]): void {
         link.href = url;
         link.rel = 'stylesheet';
         link.crossOrigin = 'anonymous';
-        document.head.appendChild(link);
+        (targetContainer || document.head).appendChild(link);
         loadedFonts.add(url);
     });
 }
