@@ -2,7 +2,7 @@ import Portal from '@/components/Portal';
 import { BsMagic } from 'react-icons/bs';
 import { FaFlask } from 'react-icons/fa';
 import { useColorMode } from '@/components/ui/color-mode';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import styles from './SlideBottomButtons.module.css';
 
@@ -27,12 +27,12 @@ export default function SlideBottomButtons({
     const [buttonPosition, setButtonPosition] = useState(0);
 
     // Функция для пересчета позиции кнопок
-    const updateButtonPosition = () => {
+    const updateButtonPosition = useCallback(() => {
         if (slideRef.current) {
             const position = slideRef.current.getBoundingClientRect().bottom + window.scrollY - (isLast ? 58 : 34);
             setButtonPosition(position);
         }
-    };
+    }, [slideRef, isLast]);
 
     useEffect(() => {
         if (!slideRef.current) return;
@@ -71,7 +71,7 @@ export default function SlideBottomButtons({
             window.removeEventListener('resize', updateButtonPosition);
             window.removeEventListener('scroll', updateButtonPosition);
         };
-    }, [slideRef, isLast]);
+    }, [slideRef, isLast, updateButtonPosition]);
 
     return (
         <Portal>
