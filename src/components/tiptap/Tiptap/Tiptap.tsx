@@ -120,6 +120,66 @@ const Tiptap = ({
     onAddElement,
 }: TiptapProps) => {
     const [hasInteraction, setHasInteraction] = useState(false);
+    
+    // Helper function to extract styles from initialContent
+    const extractStylesFromInitialContent = (content: string) => {
+        if (!content) return null;
+        
+        // Parse HTML to extract classes from span tags
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(content, 'text/html');
+        const spans = doc.querySelectorAll('span');
+        
+        if (spans.length === 0) return null;
+        
+        // Get classes from the first span (assuming it contains the styling info)
+        const firstSpan = spans[0];
+        const classList = Array.from(firstSpan.classList);
+        
+        if (classList.length === 0) return null;
+        
+        // Map classes to level
+        let level = NORMAL_TEXT_LEVEL;
+        if (classList.includes('heading-text')) {
+            if (classList.includes('very-big-heading')) level = VERY_BIG_HEADING_LEVEL;
+            else if (classList.includes('big-heading')) level = BIG_HEADING_LEVEL;
+            else if (classList.includes('title-text')) level = TITLE_LEVEL;
+            else if (classList.includes('heading-1')) level = HEADING_1_LEVEL;
+            else if (classList.includes('heading-2')) level = HEADING_2_LEVEL;
+            else if (classList.includes('heading-3')) level = HEADING_3_LEVEL;
+            else if (classList.includes('heading-4')) level = HEADING_4_LEVEL;
+        } else if (classList.includes('body-text')) {
+            if (classList.includes('big-text')) level = BIG_TEXT_LEVEL;
+            else if (classList.includes('small-text')) level = SMALL_TEXT_LEVEL;
+            else level = NORMAL_TEXT_LEVEL;
+        }
+        
+        // Extract color from style attribute
+        const style = firstSpan.getAttribute('style');
+        let color = null;
+        if (style) {
+            const colorMatch = style.match(/color:\s*([^;]+)/);
+            if (colorMatch) {
+                color = colorMatch[1].trim();
+            }
+        }
+        
+        // Extract other styles (bold, italic, etc.)
+        const bold = classList.includes('font-bold') || (style && style.includes('font-weight: bold'));
+        const italic = classList.includes('italic') || (style && style.includes('font-style: italic'));
+        const underline = classList.includes('underline') || (style && style.includes('text-decoration: underline'));
+        const strike = classList.includes('line-through') || (style && style.includes('text-decoration: line-through'));
+        
+        return {
+            level,
+            color,
+            bold,
+            italic,
+            underline,
+            strike,
+        };
+    };
+    
     const lastStyleRef = useRef({
         level: NORMAL_TEXT_LEVEL,
         color: null as string | null,
@@ -145,6 +205,12 @@ const Tiptap = ({
         initialContent = defaultContent;
     }
 
+    // Extract styles from initialContent and initialize lastStyleRef
+    const extractedStyles = extractStylesFromInitialContent(initialContent);
+    if (extractedStyles) {
+        lastStyleRef.current = extractedStyles;
+    }
+
     const editor = useEditor({
         extensions: getExtensions({
             onEnterPressed,
@@ -161,6 +227,7 @@ const Tiptap = ({
             isHideSlashMenu,
             smartLayoutItemId,
             editor: undefined,
+            initialStyle: extractedStyles,
         }),
         content: initialContent,
         editorProps: {
@@ -257,10 +324,11 @@ const Tiptap = ({
                     standardEnterBehavior,
                     isHideSlashMenu,
                     editor,
+                    initialStyle: extractedStyles,
                 }),
             });
         }
-    }, [editor]);
+    }, [editor, elementId, isHideSlashMenu, layoutId, onAddElement, onBackspacePressed, onDeletePressed, onEnterPressed, placeholder, presentationId, slideId, smartLayoutItemId, standardEnterBehavior, tiptapRefs, extractedStyles, extractStylesFromInitialContent]);
 
     // Update editor content when initialContent changes (including undo/redo operations)
     useEffect(() => {
@@ -269,15 +337,26 @@ const Tiptap = ({
             // Only update if content actually changed to avoid cursor position issues
             if (currentContent !== initialContent) {
                 editor.commands.setContent(initialContent, false);
+                
+                // Update lastStyleRef with styles from new content
+                const newExtractedStyles = extractStylesFromInitialContent(initialContent);
+                if (newExtractedStyles) {
+                    lastStyleRef.current = newExtractedStyles;
+                    
+                    // Update CustomPlaceholderExtension with new styles
+                    if (editor.extensionManager.extensions.find(ext => ext.name === 'customPlaceholder')) {
+                        editor.commands.updatePlaceholderStyle(newExtractedStyles);
+                    }
+                }
             }
         }
     }, [editor, initialContent]);
 
-    // Initialize CustomPlaceholderExtension with default styles
+    // Initialize CustomPlaceholderExtension with styles from initialContent
     useEffect(() => {
         if (!editor) return;
 
-        // Initialize placeholder extension with default styles on editor creation
+        // Initialize placeholder extension with styles from initialContent or default styles
         if (editor.extensionManager.extensions.find(ext => ext.name === 'customPlaceholder')) {
             editor.commands.updatePlaceholderStyle(lastStyleRef.current);
         }
@@ -356,7 +435,7 @@ const Tiptap = ({
             } else {
                 // Reset editor classes when not empty
                 updateEditorClasses();
-                
+
                 if (empty) {
                     // Store current styles when cursor is positioned but editor has content
                     const currentLevel = getHeadingLevel(editor);
@@ -496,7 +575,7 @@ const Tiptap = ({
 
     // Expose the focus method via ref
     // useImperativeHandle(ref, () => {
-    if (tiptapRefs?.current) {
+    if (tiptapRefs?.current && editor) {
         // tiptapRefs.current.editors[elementId] = editor;
         tiptapRefs.current.editors[customRefKey || elementId] = {
             editor,
@@ -574,7 +653,7 @@ const Tiptap = ({
 
     return (
         <div className="not-prose" style={{ position: 'relative', width: '100%' }} data-editor-id={id}>
-            {!elementConfig?.customMenu && <CommonBubbleMenu editor={editor} data-element-id={elementId} />}
+            {!elementConfig?.customMenu && editor && <CommonBubbleMenu editor={editor} data-element-id={elementId} />}
             <div className="tiptap-editor-wrapper" style={{ width: '100%' }}>
                 {editor && (
                     <EditorContent

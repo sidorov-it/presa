@@ -60,6 +60,14 @@ interface GetExtensionsProps {
     onAddElement?: (menuItem: MenuItem) => void;
     editor?: any;
     smartLayoutItemId?: string;
+    initialStyle?: {
+        level: number;
+        color: string | null;
+        bold: boolean;
+        italic: boolean;
+        underline: boolean;
+        strike: boolean;
+    };
 }
 // Определяем массив расширений
 const getExtensions = ({
@@ -77,6 +85,7 @@ const getExtensions = ({
     onAddElement,
     editor,
     smartLayoutItemId,
+    initialStyle,
 }: GetExtensionsProps) => [
     // Базовый набор расширений
     StarterKit.configure({
@@ -278,6 +287,7 @@ const getExtensions = ({
                     placeholder,
                     onAddElement,
                     isHideSlashMenu,
+                    initialStyle,
                 })
             );
             const htmlAfterCursor = generateHTML(
@@ -289,6 +299,7 @@ const getExtensions = ({
                     placeholder,
                     onAddElement,
                     isHideSlashMenu,
+                    initialStyle,
                 })
             );
             onEnterPressed(htmlBeforeCursor, htmlAfterCursor);
@@ -317,6 +328,7 @@ const getExtensions = ({
     // Custom placeholder with dynamic styling
     CustomPlaceholderExtension.configure({
         placeholder,
+        initialStyle,
     }),
     ButtonNode,
     // Details.configure({

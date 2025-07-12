@@ -672,11 +672,6 @@ export const ElementContent = ({
         [presentationId, slideId, layoutId, elementId]
     );
 
-    const handleBlur = useCallback(() => {
-        useEditorStore.getState().setActiveEditor(null);
-        useUIStateStore.getState().closeContextMenu();
-    }, []);
-
     const renderElementContent = useCallback(
         (elementId: string, isFocused: boolean) => {
             if (elementConfig!.hasTextEditor) {

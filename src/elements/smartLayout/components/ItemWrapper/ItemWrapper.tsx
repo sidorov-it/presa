@@ -9,20 +9,20 @@ import { useReadOnly } from '@/contexts/ReadOnlyContext';
 import { useShallow } from 'zustand/react/shallow';
 
 export default function ItemWrapper({
+    className,
     children,
     itemId,
     slideId,
-    className,
     dragHandlerClassName,
     layoutId,
     elementId,
     renderMenuComponent,
 }: {
+    className?: string;
     children: React.ReactNode;
     presentationId: string;
     itemId: string;
     slideId: string;
-    className?: string;
     dragHandlerClassName?: string;
     layoutId: string;
     elementId: string;

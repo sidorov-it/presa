@@ -177,7 +177,7 @@ export default function TimelineHorizontal({
         const newItem: SmartLayoutItem = {
             id: newItemId,
             title: '<p><span class="heading-text heading-3"></span></p>',
-            text: '<p><span></span></p>',
+            text: '<p><span class="body-text normal-text"></span></p>',
         };
         const element = usePresentationStore
             .getState()

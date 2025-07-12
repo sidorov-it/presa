@@ -34,6 +34,7 @@ import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
 import { LuEye, LuSettings, LuUser, LuHouse } from 'react-icons/lu';
 import Popover from '@/components/ui/Popover';
 import { useShallow } from 'zustand/react/shallow';
+import FontLoader from '@/components/theme/components/Fonts/FontLoader';
 
 const Header = ({
     presentationId,
@@ -580,6 +581,7 @@ export default function PresentationEditorPage() {
                     className={styles.container}
                     colorMode={colorMode}
                 >
+                    <FontLoader theme={currentTheme} />
                     {/* <MobileWarningOverlay /> */}
                     <div ref={containerRef} className={colorMode === 'dark' ? 'dark' : ''} style={slideLayoutVars}>
                         <Header

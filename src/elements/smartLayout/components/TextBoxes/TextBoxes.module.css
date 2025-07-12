@@ -23,7 +23,7 @@
     /* overflow: hidden; */
 }
 
-.itemContainer::before {
+.itemBackground::before {
     content: '';
     position: absolute;
     top: 0;
@@ -34,10 +34,6 @@
     opacity: var(--presentation-block-background-opacity, 0);
     border-radius: var(--presentation-slide-border-radius);
     z-index: -1;
-}
-
-.itemContainer:hover {
-    box-shadow: var(--presentation-box-shadow-hover, 0 4px 6px rgba(0, 0, 0, 0.2));
 }
 
 .dropIndicator {

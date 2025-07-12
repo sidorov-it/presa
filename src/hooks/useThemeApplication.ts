@@ -91,10 +91,16 @@ const applyThemeStyles = ({
     previousTheme?: Theme | null;
 }) => {
     // Helper function to set CSS variable only if it changed
-    const setCSSVariableIfChanged = (property: string, newValue: string, oldValue?: string) => {
-        // Force set on first render (when previousTheme is null) or when values actually changed
+    const setCSSVariableIfChanged = (
+        property: string,
+        newValue: string,
+        oldValue?: string
+    ) => {
+        // Force set on first render (when previousTheme is null)
+        // or when values actually changed
         if (previousTheme === null || newValue !== oldValue) {
             container.style.setProperty(property, newValue);
+            document.documentElement.style.setProperty(property, newValue);
         }
     };
 

@@ -296,6 +296,7 @@ export default function TextBoxes({
                             />
                         )}
                         <ItemWrapper
+                            className={styles.itemBackground}
                             presentationId={presentationId}
                             itemId={itemId}
                             slideId={slideId}
