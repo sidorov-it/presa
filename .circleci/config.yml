@@ -120,12 +120,25 @@ workflows:
       - build:
           filters:
             branches:
-              only:
-                - main
-                - master
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+
       - deploy:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+
           requires:
             - build
       - health-check:
           requires:
             - deploy 
+
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
