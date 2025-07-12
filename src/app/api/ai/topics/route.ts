@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
                     },
                     requestId
                 );
-    
+
                 return {
                     title,
                     description,

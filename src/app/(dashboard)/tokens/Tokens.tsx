@@ -6,67 +6,66 @@ import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
 import { TokenPackage } from '@/types/tokens';
 import { FaCreditCard, FaCoins, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
-import { HiOutlineCreditCard } from 'react-icons/hi2';
 import { PaymentStatus } from '@/components/tokens/PaymentStatus';
 import { Heading } from '@/components/ui/heading';
 import styles from './page.module.css';
 
-interface TransactionRowProps {
-    transaction: any;
-}
+// interface TransactionRowProps {
+//     transaction: any;
+// }
 
-const TransactionRow = ({ transaction }: TransactionRowProps) => {
-    const isPositive = transaction.amount > 0;
-    const date = new Date(transaction.createdAt).toLocaleDateString('ru-RU', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
+// const TransactionRow = ({ transaction }: TransactionRowProps) => {
+//     const isPositive = transaction.amount > 0;
+//     const date = new Date(transaction.createdAt).toLocaleDateString('ru-RU', {
+//         year: 'numeric',
+//         month: 'short',
+//         day: 'numeric',
+//         hour: '2-digit',
+//         minute: '2-digit',
+//     });
 
-    const getTypeLabel = (type: string) => {
-        switch (type) {
-            case 'purchase':
-                return 'Покупка';
-            case 'usage':
-                return 'Использование';
-            case 'bonus':
-                return 'Бонус';
-            case 'refund':
-                return 'Возврат';
-            default:
-                return type;
-        }
-    };
+//     const getTypeLabel = (type: string) => {
+//         switch (type) {
+//             case 'purchase':
+//                 return 'Покупка';
+//             case 'usage':
+//                 return 'Использование';
+//             case 'bonus':
+//                 return 'Бонус';
+//             case 'refund':
+//                 return 'Возврат';
+//             default:
+//                 return type;
+//         }
+//     };
 
-    return (
-        <div className={styles.transactionRow}>
-            <div className={styles.transactionLeft}>
-                <div
-                    className={`${styles.transactionIcon} ${isPositive ? styles.transactionIconPositive : styles.transactionIconNegative}`}
-                >
-                    <HiOutlineCreditCard />
-                </div>
-                <div className={styles.transactionDetails}>
-                    <p className={styles.transactionDescription}>{transaction.description}</p>
-                    <p className={styles.transactionMeta}>
-                        {getTypeLabel(transaction.type)} • {date}
-                    </p>
-                </div>
-            </div>
-            <div className={styles.transactionRight}>
-                <p
-                    className={`${styles.transactionAmount} ${isPositive ? styles.transactionAmountPositive : styles.transactionAmountNegative}`}
-                >
-                    {isPositive ? '+' : ''}
-                    {formatTokenAmount(Math.abs(transaction.amount))}
-                </p>
-                <p className={styles.transactionBalance}>Баланс: {formatTokenAmount(transaction.balanceAfter)}</p>
-            </div>
-        </div>
-    );
-};
+//     return (
+//         <div className={styles.transactionRow}>
+//             <div className={styles.transactionLeft}>
+//                 <div
+//                     className={`${styles.transactionIcon} ${isPositive ? styles.transactionIconPositive : styles.transactionIconNegative}`}
+//                 >
+//                     <HiOutlineCreditCard />
+//                 </div>
+//                 <div className={styles.transactionDetails}>
+//                     <p className={styles.transactionDescription}>{transaction.description}</p>
+//                     <p className={styles.transactionMeta}>
+//                         {getTypeLabel(transaction.type)} • {date}
+//                     </p>
+//                 </div>
+//             </div>
+//             <div className={styles.transactionRight}>
+//                 <p
+//                     className={`${styles.transactionAmount} ${isPositive ? styles.transactionAmountPositive : styles.transactionAmountNegative}`}
+//                 >
+//                     {isPositive ? '+' : ''}
+//                     {formatTokenAmount(Math.abs(transaction.amount))}
+//                 </p>
+//                 <p className={styles.transactionBalance}>Баланс: {formatTokenAmount(transaction.balanceAfter)}</p>
+//             </div>
+//         </div>
+//     );
+// };
 
 interface TokenPackageCardProps {
     package: TokenPackage;
@@ -113,7 +112,7 @@ const TokenPackageCard = ({ package: pkg, onPurchase, isLoading }: TokenPackageC
 const Tokens = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { balance, loading, packages, transactions, refreshBalance, purchaseTokens } = useTokens();
+    const { balance, loading, packages, refreshBalance, purchaseTokens } = useTokens();
     const [purchaseLoading, setPurchaseLoading] = useState<string | null>(null);
     const [activePurchaseId, setActivePurchaseId] = useState<string | null>(null);
     const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);

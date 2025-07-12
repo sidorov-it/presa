@@ -15,13 +15,9 @@ export default function TimelineLinesSelector({
 
     return (
         <div className={styles.container}>
-            <Checkbox
-                id="timeline-lines"
-                checked={showLines}
-                onChange={handleChange}
-            >
+            <Checkbox id="timeline-lines" checked={showLines} onChange={handleChange}>
                 Показывать линии
             </Checkbox>
         </div>
     );
-} 
+}

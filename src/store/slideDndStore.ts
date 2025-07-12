@@ -79,7 +79,7 @@ export const useSlideDndStore = create<SlideDndStore>(set => ({
 
     handleDocumentDrop: (e: DragEvent) => {
         const state = useSlideDndStore.getState();
-        
+
         if (state.dragState === 'dragging' && state.indicators.slideIndicator && state.indicators.slidePosition) {
             e.preventDefault();
             state.completeDrop();

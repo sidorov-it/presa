@@ -1,11 +1,5 @@
 'use client';
-import {
-    Box,
-    Text,
-    Code,
-    Accordion,
-    Stack,
-} from '@chakra-ui/react';
+import { Box, Text, Code, Accordion, Stack } from '@chakra-ui/react';
 import testData from '../../../test/recordings/test.json';
 
 // Типизация для данных (адаптируйте под структуру test.json при необходимости)
@@ -39,7 +33,7 @@ function parseLlmRequests(data: any[]): LlmRequest[] {
             (item.inputTokens || 0) + (item.outputTokens || 0) || item.tokens || item.usage?.total_tokens || 0;
 
         let cost;
-        
+
         if (item.response.type === 'image') {
             cost = IMAGE_GENERATION_COST;
         } else {
@@ -149,7 +143,13 @@ const TechLlmAnalyticsPage = () => {
                                                     <Text fontWeight="semibold" mb={1}>
                                                         Function Calls:
                                                     </Text>
-                                                    <Code width="100%" whiteSpace="pre-wrap" display="block" mb={2} p={2}>
+                                                    <Code
+                                                        width="100%"
+                                                        whiteSpace="pre-wrap"
+                                                        display="block"
+                                                        mb={2}
+                                                        p={2}
+                                                    >
                                                         {JSON.stringify(req.functionCalls, null, 2)}
                                                     </Code>
                                                 </>

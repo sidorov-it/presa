@@ -8,50 +8,6 @@ import { Button } from '@/components/ui/Button';
 import { Check } from 'lucide-react';
 import styles from './page.module.css';
 
-// Sample plan data
-const PLANS = [
-    {
-        id: 'free',
-        name: 'Бесплатный',
-        price: 0,
-        billing: 'навсегда',
-        features: ['До 3 презентаций', 'Базовые шаблоны', 'Экспорт в PDF', 'Поддержка сообщества'],
-        limitations: ['Без генерации ИИ', 'Ограничение до 20 слайдов на презентацию', 'Только стандартные темы'],
-    },
-    {
-        id: 'pro',
-        name: 'Профессиональный',
-        price: 9.99,
-        billing: 'ежемесячно',
-        popular: true,
-        features: [
-            'Неограниченное количество презентаций',
-            'Генерация контента с помощью ИИ',
-            'Все шаблоны и темы',
-            'Экспорт в PDF, PPTX',
-            'Приоритетная поддержка по email',
-            'Без водяных знаков',
-        ],
-        limitations: [],
-    },
-    {
-        id: 'enterprise',
-        name: 'Корпоративный',
-        price: 29.99,
-        billing: 'ежемесячно',
-        features: [
-            'Все возможности Профессионального тарифа',
-            'Командное сотрудничество',
-            'Расширенная аналитика',
-            'Индивидуальный брендинг',
-            'Выделенный менеджер аккаунта',
-            'Доступ к API',
-            'SSO аутентификация',
-        ],
-        limitations: [],
-    },
-];
-
 // export const metadata = {
 //     title: "Payment",
 //     description: "Choose your subscription plan"

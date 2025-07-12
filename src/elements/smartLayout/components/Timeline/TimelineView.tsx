@@ -108,7 +108,7 @@ export default function TimelineView({
                 console.log('TimelineView: Refs not ready, retrying...', {
                     itemsIds,
                     refs: Object.keys(elementRefs.current),
-                    attachedRefs: itemsIds.map(id => ({ id, attached: !!elementRefs.current[id]?.current }))
+                    attachedRefs: itemsIds.map(id => ({ id, attached: !!elementRefs.current[id]?.current })),
                 });
                 setTimeout(updatePositions, 50);
                 return;

@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useMemo, MutableRefObject } from 'react';
+import React, { useEffect, useMemo, MutableRefObject } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import ElementsPanel from '@/components/editor/ElementsPanel/ElementsPanel';
 import { DndProvider } from '@/contexts/DragDropContext';

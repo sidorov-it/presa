@@ -16,12 +16,9 @@ export interface PdfExportResult {
     error?: string;
 }
 
-export const startPdfExport = async (
-    presentationId: string,
-    slideIndex?: number
-): Promise<string> => {
+export const startPdfExport = async (presentationId: string, slideIndex?: number): Promise<string> => {
     const url = `/api/presentations/${presentationId}/export/pdf${slideIndex !== undefined ? `?slideIndex=${slideIndex}` : ''}`;
-    
+
     const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -38,10 +35,7 @@ export const startPdfExport = async (
     return result.taskId;
 };
 
-export const checkPdfExportStatus = async (
-    presentationId: string,
-    taskId: string
-): Promise<PdfExportProgress> => {
+export const checkPdfExportStatus = async (presentationId: string, taskId: string): Promise<PdfExportProgress> => {
     const response = await fetch(`/api/presentations/${presentationId}/export/pdf/status?taskId=${taskId}`);
 
     if (!response.ok) {
@@ -66,7 +60,7 @@ export const exportPresentationToPdfAsync = async (
             const pollInterval = setInterval(async () => {
                 try {
                     const status = await checkPdfExportStatus(presentationId, taskId);
-                    
+
                     // Call progress callback if provided
                     if (onProgress) {
                         onProgress(status);
@@ -94,10 +88,13 @@ export const exportPresentationToPdfAsync = async (
             }, 2000); // Poll every 2 seconds
 
             // Set timeout to prevent infinite polling
-            setTimeout(() => {
-                clearInterval(pollInterval);
-                reject(new Error('Export timeout - please try again'));
-            }, 5 * 60 * 1000); // 5 minutes timeout
+            setTimeout(
+                () => {
+                    clearInterval(pollInterval);
+                    reject(new Error('Export timeout - please try again'));
+                },
+                5 * 60 * 1000
+            ); // 5 minutes timeout
         });
     } catch (error) {
         return {
@@ -112,8 +109,8 @@ export const downloadPdfFile = (downloadUrl: string, fileName: string = 'present
     link.href = downloadUrl;
     link.download = fileName;
     link.target = '_blank';
-    
+
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-}; 
+};

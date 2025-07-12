@@ -30,6 +30,4 @@ export function getTokenCostForOperation(operation: keyof typeof TOKEN_COSTS): n
 
 // 100 токенов - 100 руб
 
-
 // ------------------------------------------------------------ //
-

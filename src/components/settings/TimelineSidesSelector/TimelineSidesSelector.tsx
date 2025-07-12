@@ -18,4 +18,4 @@ export default function TimelineSidesSelector({
     };
 
     return <SettingsSelector value={sides} setValue={handleSelect} options={SIDES_OPTIONS} />;
-} 
+}

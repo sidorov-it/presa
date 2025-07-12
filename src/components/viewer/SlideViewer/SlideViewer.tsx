@@ -238,7 +238,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         }
 
         return baseStyle;
-    }, [slide, fullPage]);
+    }, [slide]);
 
     let height;
     let width;

@@ -67,9 +67,9 @@ export default function ThemesPage() {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <Heading 
-                    title="Темы" 
-                    description="Создавайте и настраивайте темы для ваших презентаций" 
+                <Heading
+                    title="Темы"
+                    description="Создавайте и настраивайте темы для ваших презентаций"
                     withoutMargin={true}
                 />
                 <Link href="/themes/new">

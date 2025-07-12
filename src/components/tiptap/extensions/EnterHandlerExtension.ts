@@ -86,17 +86,17 @@ export const EnterHandlerExtension = (
 
                     // Проверяем, находится ли курсор в начале первого текстового содержимого
                     // Находим первую позицию с текстовым содержимым
-                    let firstTextPos = 1; // Начинаем с позиции 1 (после корневого узла)
+                    // let firstTextPos = 1; // Начинаем с позиции 1 (после корневого узла)
 
                     // Проходим по документу, чтобы найти первую позицию с текстом
-                    state.doc.descendants((node, pos) => {
+                    state.doc.descendants(node => {
                         if (node.isText && node.text && node.text.length > 0) {
-                            firstTextPos = pos;
+                            // firstTextPos = pos;
                             return false; // Останавливаем поиск
                         }
                         if (node.isBlock && node.content.size === 0) {
                             // Пустой блок - курсор может быть в начале
-                            firstTextPos = pos + 1;
+                            // firstTextPos = pos + 1;
                             return false;
                         }
                         return true;

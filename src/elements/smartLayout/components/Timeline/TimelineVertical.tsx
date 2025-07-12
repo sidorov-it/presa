@@ -153,7 +153,10 @@ export default function TimelineVertical({
                 // For two sides, implement overlapping logic
                 let leftBottom = 0; // Bottom position of the last left element
                 let rightBottom = 0; // Bottom position of the last right element
+
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 let lastLeftStart = 0; // Start position of the last left element
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 let lastRightStart = 0; // Start position of the last right element
 
                 itemsIds.forEach((itemId, index) => {

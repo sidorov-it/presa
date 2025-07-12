@@ -124,9 +124,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {/* Main content */}
             <div className={styles.mainContent}>
                 <main className={styles.mainArea}>
-                    <div className={styles.contentWrapper}>
-                        {children}
-                    </div>
+                    <div className={styles.contentWrapper}>{children}</div>
                 </main>
             </div>
         </div>

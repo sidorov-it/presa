@@ -120,24 +120,24 @@ const Tiptap = ({
     onAddElement,
 }: TiptapProps) => {
     const [hasInteraction, setHasInteraction] = useState(false);
-    
+
     // Helper function to extract styles from initialContent
-    const extractStylesFromInitialContent = (content: string) => {
+    const extractStylesFromInitialContent = useCallback((content: string) => {
         if (!content) return null;
-        
+
         // Parse HTML to extract classes from span tags
         const parser = new DOMParser();
         const doc = parser.parseFromString(content, 'text/html');
         const spans = doc.querySelectorAll('span');
-        
+
         if (spans.length === 0) return null;
-        
+
         // Get classes from the first span (assuming it contains the styling info)
         const firstSpan = spans[0];
         const classList = Array.from(firstSpan.classList);
-        
+
         if (classList.length === 0) return null;
-        
+
         // Map classes to level
         let level = NORMAL_TEXT_LEVEL;
         if (classList.includes('heading-text')) {
@@ -153,7 +153,7 @@ const Tiptap = ({
             else if (classList.includes('small-text')) level = SMALL_TEXT_LEVEL;
             else level = NORMAL_TEXT_LEVEL;
         }
-        
+
         // Extract color from style attribute
         const style = firstSpan.getAttribute('style');
         let color = null;
@@ -163,13 +163,13 @@ const Tiptap = ({
                 color = colorMatch[1].trim();
             }
         }
-        
+
         // Extract other styles (bold, italic, etc.)
         const bold = classList.includes('font-bold') || (style && style.includes('font-weight: bold'));
         const italic = classList.includes('italic') || (style && style.includes('font-style: italic'));
         const underline = classList.includes('underline') || (style && style.includes('text-decoration: underline'));
         const strike = classList.includes('line-through') || (style && style.includes('text-decoration: line-through'));
-        
+
         return {
             level,
             color,
@@ -178,8 +178,8 @@ const Tiptap = ({
             underline,
             strike,
         };
-    };
-    
+    }, []);
+
     const lastStyleRef = useRef({
         level: NORMAL_TEXT_LEVEL,
         color: null as string | null,
@@ -337,12 +337,12 @@ const Tiptap = ({
             // Only update if content actually changed to avoid cursor position issues
             if (currentContent !== initialContent) {
                 editor.commands.setContent(initialContent, false);
-                
+
                 // Update lastStyleRef with styles from new content
                 const newExtractedStyles = extractStylesFromInitialContent(initialContent);
                 if (newExtractedStyles) {
                     lastStyleRef.current = newExtractedStyles;
-                    
+
                     // Update CustomPlaceholderExtension with new styles
                     if (editor.extensionManager.extensions.find(ext => ext.name === 'customPlaceholder')) {
                         editor.commands.updatePlaceholderStyle(newExtractedStyles);

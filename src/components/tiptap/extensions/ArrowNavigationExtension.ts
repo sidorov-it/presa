@@ -342,8 +342,6 @@ export const ArrowNavigationExtension = (
                 ArrowUp: ({ editor }) => {
                     const { selection } = editor.state;
                     const position = selection.$anchor.pos;
-                    const docLength = editor.state.doc.content.size;
-                    console.log('ArrowUp', smartLayoutItemId);
 
                     // Check if cursor is on the last line (approximation)
                     // We're assuming if the user presses down and there's no line below, they want to navigate down

@@ -408,7 +408,7 @@ export default function TimelineHorizontal({
                                 }
                             }
 
-                            const attributes = {};
+                            const attributes: { [key: string]: number } = {};
 
                             if (showNumbers) {
                                 classNames.push(styles.timelineLineItemNumber);

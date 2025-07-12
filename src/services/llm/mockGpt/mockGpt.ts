@@ -190,7 +190,8 @@ export class MockGptService implements LLMService {
                             name: functionName,
                             arguments: {
                                 templateId: 'two-columns',
-                                explanation: 'Универсальный двухколоночный шаблон подходит для большинства типов контента',
+                                explanation:
+                                    'Универсальный двухколоночный шаблон подходит для большинства типов контента',
                             },
                         },
                     };
@@ -229,7 +230,9 @@ export class MockGptService implements LLMService {
                                 const chartData = generatePlaceholderChartData('bar');
                                 placeholderArgs[key] = JSON.stringify(chartData);
                             } else {
-                                placeholderArgs[key] = markdownToHtml(generatePlaceholderContent('content', description));
+                                placeholderArgs[key] = markdownToHtml(
+                                    generatePlaceholderContent('content', description)
+                                );
                             }
                         }
                     }
@@ -274,7 +277,7 @@ export class MockGptService implements LLMService {
                         } else {
                             // String content - генерируем улучшенные версии
                             const description = typedPropertySchema.description;
-                            
+
                             if (key.includes('chart') || description?.includes('диаграмм')) {
                                 const chartData = generatePlaceholderChartData('bar');
                                 placeholderArgs[key] = JSON.stringify(chartData);
@@ -285,7 +288,9 @@ export class MockGptService implements LLMService {
                                     '### Ключевые моменты\n- Первый важный аспект с детальным объяснением\n- Второй существенный элемент с примерами\n- Третий критический фактор с практическими выводами',
                                     '**Заключение:** Данный контент был значительно улучшен для лучшего восприятия и понимания аудиторией.',
                                 ];
-                                placeholderArgs[key] = markdownToHtml(improvedContent[Math.floor(Math.random() * improvedContent.length)]);
+                                placeholderArgs[key] = markdownToHtml(
+                                    improvedContent[Math.floor(Math.random() * improvedContent.length)]
+                                );
                             }
                         }
                     }
@@ -323,8 +328,8 @@ export class MockGptService implements LLMService {
     }
 
     async generateImage(
-        prompt: string,
-        options: { presentationId?: string; userId: string }
+        _prompt: string,
+        _options: { presentationId?: string; userId: string }
     ): Promise<{ imageUrl: string; imageId: string }> {
         return {
             imageUrl: MOCK_IMAGE_URL,

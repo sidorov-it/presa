@@ -12,11 +12,7 @@ export default function TimelineColorSelector({
     return (
         <div className={styles.container}>
             <div className={styles.label}>Цвет линии</div>
-            <ColorPicker
-                value={color || '#1e88e5'}
-                onChange={setColor}
-                className={styles.colorPicker}
-            />
+            <ColorPicker value={color || '#1e88e5'} onChange={setColor} className={styles.colorPicker} />
         </div>
     );
-} 
+}

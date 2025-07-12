@@ -411,7 +411,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tipt
 
             // Convert ratios to CSS values
             const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
-            const imageHeightVw = `calc(64.5em * ${currentImageHeightRatio})`;
             const paddingTopVw = `calc(64.5em * ${currentImageHeightRatio} + 1em)`;
 
             const remainingWidth = `${(1 - currentImageWidthRatio) * 100}%`;

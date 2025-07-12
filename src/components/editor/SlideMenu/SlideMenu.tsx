@@ -31,7 +31,6 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
         contextMenuColumnIndex,
         contextMenuTableColumnIndex,
         contextMenuTableRowIndex,
-        selectedSmartLayoutItemId,
         closeContextMenu,
     } = useUIStateStore();
 

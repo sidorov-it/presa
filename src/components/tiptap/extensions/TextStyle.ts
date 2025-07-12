@@ -106,7 +106,7 @@ export const TextStyle = Mark.create<TextStyleOptions>({
         ];
     },
 
-        renderHTML({ HTMLAttributes }) {
+    renderHTML({ HTMLAttributes }) {
         const attrs: any = { ...HTMLAttributes };
 
         // Если есть color атрибут, добавляем его в style

@@ -114,13 +114,13 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                         parseHTML: element => {
                             // Try to extract fontSize from style attribute or custom data attribute
                             const dataFontSize = element.getAttribute('data-font-size');
-                            
+
                             const classList = element.classList;
-                            
+
                             // Если есть классы, всегда сохраняем их
                             if (classList && classList.length > 0) {
                                 const classes = Array.from(classList);
-                                
+
                                 // Пытаемся найти соответствующий fontSize по классам
                                 let fontSize;
                                 if (!dataFontSize) {

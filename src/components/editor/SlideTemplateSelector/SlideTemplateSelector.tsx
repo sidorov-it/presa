@@ -20,7 +20,6 @@ interface SlideTemplateSelectorProps {
     tiptapRefs: MutableRefObject<TipTapRefs>;
 }
 
-const DEFAULT_HEIGHT_PX = 200;
 const DEFAULT_BACKGROUND_COLOR = '#ffffff';
 const DEFAULT_TEXT_COLOR = '#000000';
 
@@ -93,10 +92,6 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
         } else {
             updateSlide(presentationId, slideId, updateData, true);
         }
-
-        // Determine if the selected template will have a resizable image component rendered
-        const templateNeedsImage =
-            ['imageTop', 'imageLeft', 'imageRight'].includes(value) || (value === 'imageBackground' && !!imageUrl);
 
         useHistoryStore.getState().commitTransaction(presentationId);
     };

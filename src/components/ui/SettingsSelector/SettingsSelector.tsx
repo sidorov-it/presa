@@ -56,7 +56,7 @@ const SettingsSelector: React.FC<SettingsSelectorProps> = ({ value, setValue, op
                         <button
                             key={option.id}
                             className={`${styles.shapeOption} ${value === option.id ? styles.selected : ''}`}
-                            onClick={(ev) => handleSelect(ev, option)}
+                            onClick={ev => handleSelect(ev, option)}
                             aria-label={`Select ${option.label} shape`}
                         >
                             {option.Icon && (

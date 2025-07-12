@@ -641,7 +641,7 @@ export const useThemeApplication = (options: UseThemeApplicationOptions) => {
             // Cancel any pending debounced calls
             debouncedApplyTheme.cancel?.();
         };
-    }, [setColorMode]);
+    }, [containerRef, debouncedApplyTheme, setColorMode, theme]);
 
     return { containerRef: internalRef, applyTheme };
 };
