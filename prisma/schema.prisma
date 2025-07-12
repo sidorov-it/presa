@@ -89,6 +89,9 @@ model User {
   name                 String
   image                String?
   isVerified           Boolean           @default(false)
+  emailVerified        DateTime?
+  verificationToken    String?
+  verificationTokenExpires DateTime?
   role                 String            @default("user")
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
