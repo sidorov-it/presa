@@ -2,7 +2,7 @@
 
 import React, { CSSProperties, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import styles from './BaseMenu.module.css';
 
 export interface BaseMenuProps {
@@ -16,7 +16,7 @@ export interface BaseMenuProps {
 
 export const BaseMenu: React.FC<BaseMenuProps> = ({ children, isForceOpen, position, className, style, onClose }) => {
     const menuRef = useRef<HTMLDivElement>(null);
-    const isOpen = useMenuStore(state => state.isOpen) || isForceOpen;
+    const isOpen = useUIStateStore(state => state.isContextMenuOpen) || isForceOpen;
 
     const baseStyle = {
         backgroundColor: 'var(--color-surface)',
@@ -48,7 +48,7 @@ export const BaseMenu: React.FC<BaseMenuProps> = ({ children, isForceOpen, posit
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
                 onClose?.();
-                useMenuStore.getState().closeMenu();
+                useUIStateStore.getState().closeContextMenu();
             }
         };
 
@@ -75,7 +75,12 @@ export const BaseMenu: React.FC<BaseMenuProps> = ({ children, isForceOpen, posit
 
     // Render in portal to ensure proper z-index stacking
     return createPortal(
-        <div ref={menuRef} className={`${styles.layoutMenu}${className ? ` ${className}` : ''}`} style={menuStyle}>
+        <div
+            ref={menuRef}
+            data-is-menu="true"
+            className={`${styles.layoutMenu}${className ? ` ${className}` : ''}`}
+            style={menuStyle}
+        >
             <ul className={styles.layoutMenuList}>{children}</ul>
         </div>,
         document.body

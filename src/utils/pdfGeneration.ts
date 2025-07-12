@@ -205,7 +205,9 @@ export const generatePdfAsync = async (
                     },
                 });
 
-                logger.debug(`Generated PDF for slide ${i}, total completed: ${pdfPages.length}/${slidesToProcess.length}`);
+                logger.debug(
+                    `Generated PDF for slide ${i}, total completed: ${pdfPages.length}/${slidesToProcess.length}`
+                );
             } catch (error) {
                 logger.error(`Error generating PDF for slide ${i}:`, error instanceof Error ? error.message : error);
                 // Continue with other slides even if one fails
@@ -231,9 +233,10 @@ export const generatePdfAsync = async (
 
         // Generate filename
         const baseFileName = presentation.title || 'presentation';
-        const fileName = slideIndex !== null 
-            ? `${encodeRFC5987(baseFileName)}-slide-${slideIndex}-${taskId}.pdf`
-            : `${encodeRFC5987(baseFileName)}-${taskId}.pdf`;
+        const fileName =
+            slideIndex !== null
+                ? `${encodeRFC5987(baseFileName)}-slide-${slideIndex}-${taskId}.pdf`
+                : `${encodeRFC5987(baseFileName)}-${taskId}.pdf`;
 
         // Save PDF to public directory
         const filePath = path.join(publicPdfDir, fileName);
@@ -264,4 +267,4 @@ export const generatePdfAsync = async (
             },
         });
     }
-}; 
+};

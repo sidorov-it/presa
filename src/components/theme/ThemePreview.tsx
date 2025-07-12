@@ -21,13 +21,13 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
                 const rect = containerRef.current.getBoundingClientRect();
                 setContainerDimensions({
                     width: rect.width,
-                    height: rect.height
+                    height: rect.height,
                 });
             }
         };
 
         updateDimensions();
-        
+
         const resizeObserver = new ResizeObserver(updateDimensions);
         if (containerRef.current) {
             resizeObserver.observe(containerRef.current);
@@ -630,6 +630,7 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
             style: {},
             contentAlignment: 'center',
             templateType: 'imageLeft',
+            // eslint-disable-next-line no-loss-of-precision
             imageWidthRatio: 0.20387116286103122,
             imageUrl: '',
         },

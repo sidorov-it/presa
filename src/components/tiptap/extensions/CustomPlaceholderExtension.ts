@@ -20,6 +20,7 @@ export interface CustomPlaceholderOptions {
     showOnlyWhenEditable?: boolean;
     showOnlyCurrent?: boolean;
     includeChildren?: boolean;
+    initialStyle?: StoredStyle;
 }
 
 export interface StoredStyle {
@@ -67,6 +68,7 @@ export const CustomPlaceholderExtension = Extension.create<CustomPlaceholderOpti
             showOnlyWhenEditable: true,
             showOnlyCurrent: true,
             includeChildren: false,
+            initialStyle: undefined,
         };
     },
 
@@ -150,7 +152,7 @@ export const CustomPlaceholderExtension = Extension.create<CustomPlaceholderOpti
 
     addStorage() {
         return {
-            storedStyle: {
+            storedStyle: this.options.initialStyle || {
                 level: NORMAL_TEXT_LEVEL,
                 color: null,
                 bold: false,

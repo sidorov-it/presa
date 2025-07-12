@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { BiBold, BiItalic, BiUnderline, BiX, BiArrowToLeft, BiArrowToRight } from 'react-icons/bi';
-import { useMenuStore } from '@/store/menuStore';
+import { useSelectedState, useUIStateStore } from '@/store/uiStateStore';
 import { TipTapRefs } from '@/types';
 import { MutableRefObject } from 'react';
 import { MenuItem } from '../BaseMenu';
@@ -11,6 +11,8 @@ import { ColorPicker } from '@/components/tiptap/ColorPicker';
 import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
 import DeleteIcon from '@/components/icons/DeleteIcon';
 import { useHistoryStore } from '@/store/historyStore';
+import { usePresentationStore } from '@/store/presentationStore';
+import { NORMAL_TEXT_LEVEL } from '@/constants/consts';
 interface ColumnTableMenuProps {
     elementId?: string;
     presentationId: string;
@@ -22,8 +24,31 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({ tableColumnIndex, pre
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
 
-    const tableColumnElements = useMenuStore(useShallow(state => state.getTableColumnElements()));
-    const currentHeadingLevel = useMenuStore(state => state.getCommonColumnHeadingLevel(tiptapRefs));
+    const selectedColumnIndex = useUIStateStore(state => state.contextMenuTableColumnIndex);
+
+    const selectedState = useSelectedState();
+
+    const tableColumnElements = usePresentationStore(
+        useShallow(state =>
+            state.getTableColumnElements(
+                selectedState.presentationId!,
+                selectedState.selectedSlideId!,
+                selectedState.selectedLayoutId!,
+                selectedColumnIndex!
+            )
+        )
+    );
+    const currentHeadingLevel = usePresentationStore(
+        useShallow(state =>
+            state.getCommonColumnHeadingLevel(
+                tiptapRefs,
+                selectedState.presentationId!,
+                selectedState.selectedSlideId!,
+                selectedState.selectedLayoutId!,
+                selectedColumnIndex!
+            )
+        )
+    );
 
     const [localHeadingLevel, setLocalHeadingLevel] = useState<number>(currentHeadingLevel || 0);
 
@@ -149,7 +174,13 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({ tableColumnIndex, pre
         tableColumnElements.forEach(element => {
             const editor = tiptapRefs.current.editors[element.id]?.editor;
             if (editor) {
-                editor.chain().setMeta('transaction', true).clearNodes().unsetAllMarks().run();
+                editor
+                    .chain()
+                    .setMeta('transaction', true)
+                    .clearNodes()
+                    .unsetAllMarks()
+                    .setFontSize(NORMAL_TEXT_LEVEL)
+                    .run();
             }
         });
         useHistoryStore.getState().commitTransaction(presentationId);
@@ -157,24 +188,45 @@ const ColumnTableMenu: React.FC<ColumnTableMenuProps> = ({ tableColumnIndex, pre
 
     const handleAddColumnLeft = useCallback(() => {
         if (Number.isInteger(tableColumnIndex)) {
-            useMenuStore.getState().addColumnToTable(tableColumnIndex!);
-            useMenuStore.getState().closeMenu();
+            usePresentationStore
+                .getState()
+                .addColumnToTable(
+                    selectedState.presentationId!,
+                    selectedState.selectedSlideId!,
+                    selectedState.selectedLayoutId!,
+                    tableColumnIndex!
+                );
+            useUIStateStore.getState().closeContextMenu();
         }
-    }, [tableColumnIndex]);
+    }, [selectedState.presentationId, selectedState.selectedLayoutId, selectedState.selectedSlideId, tableColumnIndex]);
 
     const handleAddColumnRight = useCallback(() => {
         if (Number.isInteger(tableColumnIndex)) {
-            useMenuStore.getState().addColumnToTable(tableColumnIndex! + 1);
-            useMenuStore.getState().closeMenu();
+            usePresentationStore
+                .getState()
+                .addColumnToTable(
+                    selectedState.presentationId!,
+                    selectedState.selectedSlideId!,
+                    selectedState.selectedLayoutId!,
+                    tableColumnIndex! + 1
+                );
+            useUIStateStore.getState().closeContextMenu();
         }
-    }, [tableColumnIndex]);
+    }, [selectedState.presentationId, selectedState.selectedLayoutId, selectedState.selectedSlideId, tableColumnIndex]);
 
     const handleDeleteColumn = useCallback(() => {
         if (Number.isInteger(tableColumnIndex)) {
-            useMenuStore.getState().deleteColumnFromTable(tableColumnIndex!);
-            useMenuStore.getState().closeMenu();
+            usePresentationStore
+                .getState()
+                .deleteColumnFromTable(
+                    selectedState.presentationId!,
+                    selectedState.selectedSlideId!,
+                    selectedState.selectedLayoutId!,
+                    tableColumnIndex!
+                );
+            useUIStateStore.getState().closeContextMenu();
         }
-    }, [tableColumnIndex]);
+    }, [selectedState.presentationId, selectedState.selectedLayoutId, selectedState.selectedSlideId, tableColumnIndex]);
 
     const handleColorReset = useCallback(() => {
         useHistoryStore.getState().beginTransaction(presentationId, 'Reset color');

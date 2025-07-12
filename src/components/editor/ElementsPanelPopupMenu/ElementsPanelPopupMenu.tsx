@@ -7,24 +7,17 @@ import { getNewElement } from '@/utils/getNewElement';
 import { getNewLayoutWithTable } from '@/utils/getNewLayoutWithTable';
 
 import styles from './ElementsPanelPopupMenu.module.css';
+import { useUIStateStore } from '@/store/uiStateStore';
 
 export type CategoryType = 'basic' | 'media' | 'charts' | 'smart-layouts';
 
 interface PElementsPanelPopupMenuProps {
     isOpen: boolean;
     category: CategoryType | null;
-    presentationId: string;
-    slideId: string;
     onClose: () => void;
 }
 
-const ElementsPanelPopupMenu: React.FC<PElementsPanelPopupMenuProps> = ({
-    isOpen,
-    category,
-    onClose,
-    slideId,
-    presentationId,
-}) => {
+const ElementsPanelPopupMenu: React.FC<PElementsPanelPopupMenuProps> = ({ isOpen, category, onClose }) => {
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>, element: MenuItem) => {
         e.stopPropagation();
 
@@ -38,6 +31,12 @@ const ElementsPanelPopupMenu: React.FC<PElementsPanelPopupMenuProps> = ({
         const isSlideTemplate = !!element.templateConfig;
 
         const isTable = element.elementTypeId.startsWith('table');
+        const slideId = useUIStateStore.getState().selectedSlideId;
+        const presentationId = useUIStateStore.getState().currentPresentationId;
+
+        if (!slideId || !presentationId) {
+            return;
+        }
 
         if (isSlideTemplate) {
             // TODO: Implement slide template click
@@ -61,8 +60,7 @@ const ElementsPanelPopupMenu: React.FC<PElementsPanelPopupMenuProps> = ({
             //     });
             // }
         } else if (isTable) {
-            // TODO: Implement table click
-            const tableLayout = getNewLayoutWithTable(element);
+            const tableLayout = getNewLayoutWithTable(element.props?.columns, element.props?.rows);
             usePresentationStore.getState().addTableLayout(presentationId, slideId, tableLayout);
         } else {
             // Normal element click

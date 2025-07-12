@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { LuDownload, LuLoader } from 'react-icons/lu';
 import Tooltip from '@/components/tooltip/Tooltip';
 import styles from './SimplePdfExportButton.module.css';
@@ -7,22 +7,13 @@ import { exportPresentationToPdfAsync, downloadPdfFile, PdfExportProgress } from
 
 interface SimplePdfExportButtonProps {
     presentationId: string;
-    presentationTitle?: string;
     className?: string;
     slideIndex?: number;
 }
 
-const SimplePdfExportButton: React.FC<SimplePdfExportButtonProps> = ({
-    presentationId,
-    presentationTitle = 'presentation',
-    slideIndex,
-}) => {
+const SimplePdfExportButton: React.FC<SimplePdfExportButtonProps> = ({ presentationId, slideIndex }) => {
     const [isExporting, setIsExporting] = useState(false);
     const [exportProgress, setExportProgress] = useState<PdfExportProgress | null>(null);
-
-    const handleProgressUpdate = useCallback((progress: PdfExportProgress) => {
-        setExportProgress(progress);
-    }, []);
 
     const handleExportToPdf = async () => {
         if (!presentationId) {
@@ -34,23 +25,16 @@ const SimplePdfExportButton: React.FC<SimplePdfExportButtonProps> = ({
         setExportProgress(null);
 
         // Создаем toast и сохраняем его ID для обновления
-        let toastId = toast.loading('Начинаем генерацию PDF...');
+        const toastId = toast.loading('Начинаем генерацию PDF...');
 
         try {
-            const result = await exportPresentationToPdfAsync(
-                presentationId,
-                slideIndex,
-                (progress) => {
-                    setExportProgress(progress);
-                    
-                    // Обновляем toast с новым прогрессом
-                    toast.loading(
-                        `Создаем pdf ${progress.progress}%`,
-                        { id: toastId }
-                    );
-                }
-            );
-            
+            const result = await exportPresentationToPdfAsync(presentationId, slideIndex, progress => {
+                setExportProgress(progress);
+
+                // Обновляем toast с новым прогрессом
+                toast.loading(`Создаем pdf ${progress.progress}%`, { id: toastId });
+            });
+
             if (result.success) {
                 if (result.downloadUrl && result.fileName) {
                     // Автоматически скачиваем файл
@@ -62,10 +46,9 @@ const SimplePdfExportButton: React.FC<SimplePdfExportButtonProps> = ({
             } else {
                 throw new Error(result.error || 'Export failed');
             }
-            
         } catch (error) {
             console.error('PDF export error:', error);
-            
+
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             toast.error(`Ошибка при экспорте: ${errorMessage}`, { id: toastId });
         } finally {
@@ -95,25 +78,18 @@ const SimplePdfExportButton: React.FC<SimplePdfExportButtonProps> = ({
                     ) : (
                         <LuDownload className={styles.downloadIcon} aria-hidden="true" />
                     )}
-                    
+
                     {/* Прогресс-бар */}
                     {isExporting && exportProgress && (
                         <div className={styles.progressContainer}>
-                            <div 
-                                className={styles.progressBar}
-                                style={{ width: `${exportProgress.progress}%` }}
-                            />
+                            <div className={styles.progressBar} style={{ width: `${exportProgress.progress}%` }} />
                         </div>
                     )}
                 </button>
             </Tooltip>
-            
+
             {/* Дополнительный текст с прогрессом */}
-            {isExporting && exportProgress && (
-                <div className={styles.exportingText}>
-                    {exportProgress.progress}%
-                </div>
-            )}
+            {isExporting && exportProgress && <div className={styles.exportingText}>{exportProgress.progress}%</div>}
         </div>
     );
 };

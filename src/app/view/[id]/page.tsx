@@ -28,8 +28,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 function PresentationLoader() {
     return (
         <>
-            <style dangerouslySetInnerHTML={{
-                __html: `
+            <style
+                dangerouslySetInnerHTML={{
+                    __html: `
                     @keyframes presentation-loader-spin {
                         to {
                             transform: rotate(360deg);
@@ -38,9 +39,10 @@ function PresentationLoader() {
                     .presentation-loader-spinner {
                         animation: presentation-loader-spin 1s linear infinite;
                     }
-                `
-            }} />
-            <div 
+                `,
+                }}
+            />
+            <div
                 data-server-loader
                 style={{
                     position: 'fixed',
@@ -52,17 +54,17 @@ function PresentationLoader() {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    zIndex: 1000
+                    zIndex: 1000,
                 }}
             >
-                <div 
+                <div
                     className="presentation-loader-spinner"
                     style={{
                         width: '3rem',
                         height: '3rem',
                         borderRadius: '50%',
                         border: '2px solid #e2e8f0',
-                        borderTop: '2px solid #3b82f6'
+                        borderTop: '2px solid #3b82f6',
                     }}
                 />
             </div>
@@ -92,12 +94,12 @@ export default async function PresentationViewWrapper({ params }: Props) {
         <>
             {/* Server-side loader - shown immediately */}
             <PresentationLoader />
-            
+
             {/* Client-side presentation - will replace loader after hydration */}
             <ServerThemeStylesApplier theme={serializedTheme as Theme}>
-                <PresentationView 
-                    presentation={serializedPresentation as IPresentation} 
-                    theme={serializedTheme as Theme} 
+                <PresentationView
+                    presentation={serializedPresentation as IPresentation}
+                    theme={serializedTheme as Theme}
                 />
             </ServerThemeStylesApplier>
         </>

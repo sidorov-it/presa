@@ -31,9 +31,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
             description: templateData.description || '',
             slides: templateData.slides,
             userId: session.user.id,
-            themeId: typeof templateData.themeId === 'object' && templateData.themeId?.$oid 
-                ? templateData.themeId.$oid 
-                : templateData.themeId,
+            themeId:
+                typeof templateData.themeId === 'object' && templateData.themeId?.$oid
+                    ? templateData.themeId.$oid
+                    : templateData.themeId,
             durationMinutes: templateData.durationMinutes,
             goal: templateData.goal,
             audience: templateData.audience,

@@ -167,11 +167,7 @@ export const getBlockColors = (
  * Ensures each color is harmonious with the primary color and readable on the background.
  * Always returns unique, non-black, non-white colors.
  */
-export const getChartColors = (
-    slideBgColor: string,
-    primaryColor: string,
-    count = 5
-): string[] => {
+export const getChartColors = (slideBgColor: string, primaryColor: string, count = 5): string[] => {
     const bg = tinycolor(slideBgColor);
     const primary = tinycolor(primaryColor);
     const step = 360 / count;
@@ -181,16 +177,13 @@ export const getChartColors = (
     const MIN_HUE_DIFF = 30; // минимальная разница по hue
 
     // Helper to check contrast
-    const isReadableStrict = (fg: string) =>
-        tinycolor.isReadable(fg, slideBgColor, { level: 'AA', size: 'small' });
-    const isReadableLoose = (fg: string) =>
-        tinycolor.readability(fg, slideBgColor) > 2.5; // looser than AA
+    const isReadableStrict = (fg: string) => tinycolor.isReadable(fg, slideBgColor, { level: 'AA', size: 'small' });
+    const isReadableLoose = (fg: string) => tinycolor.readability(fg, slideBgColor) > 2.5; // looser than AA
     const isBlackOrWhite = (color: string) => {
         const c = tinycolor(color);
-        return c.isDark() && c.getBrightness() < 10 || c.isLight() && c.getBrightness() > 245;
+        return (c.isDark() && c.getBrightness() < 10) || (c.isLight() && c.getBrightness() > 245);
     };
-    const isDuplicate = (color: string) =>
-        palette.some(existing => tinycolor.equals(existing, color));
+    const isDuplicate = (color: string) => palette.some(existing => tinycolor.equals(existing, color));
     const getHue = (color: string) => tinycolor(color).toHsl().h;
     const isHueTooClose = (color: string) =>
         palette.some(existing => {
@@ -236,8 +229,16 @@ export const getChartColors = (
     }
     // Fallback: if not enough, fill with default accessible colors (но не дублировать и не близко по hue)
     const fallbackColors = [
-        '#3366CC', '#DC3912', '#FF9900', '#109618', '#990099',
-        '#0099C6', '#DD4477', '#66AA00', '#B82E2E', '#316395',
+        '#3366CC',
+        '#DC3912',
+        '#FF9900',
+        '#109618',
+        '#990099',
+        '#0099C6',
+        '#DD4477',
+        '#66AA00',
+        '#B82E2E',
+        '#316395',
     ];
     let fallbackIdx = 0;
     while (palette.length < count && fallbackIdx < fallbackColors.length) {

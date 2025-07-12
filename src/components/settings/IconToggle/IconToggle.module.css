@@ -1,0 +1,22 @@
+.toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.toggle:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.enabled {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.enabled:hover {
+  background-color: rgba(0, 0, 0, 0.15);
+} 

@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { ImagePlaceholder } from '../ImagePlaceholder/ImagePlaceholder';
 import React, { useCallback } from 'react';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 
 export type ImageProps = {
     imageUrl: string;
@@ -39,7 +39,7 @@ export const Image: React.FC<ImageProps> = ({
 }) => {
     const handleImageClick = useCallback(() => {
         if (isWidthRightMenu && !isReadOnly) {
-            useMenuStore.getState().openSideMenu('image-edit', {
+            useUIStateStore.getState().openSideMenu('image-edit', {
                 imageUrl,
                 onClearImage,
                 onUpdateLink,

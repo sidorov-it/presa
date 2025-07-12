@@ -3,11 +3,11 @@
     gap: 3em 1.5em;
 }
 
-.focused {
+/* .focused {
     outline: 2px solid var(--color-primary);
     outline-offset: 0.25em;
     border-radius: var(--presentation-slide-border-radius);
-}
+} */
 
 .itemContainer {
     position: relative;

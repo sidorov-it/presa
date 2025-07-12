@@ -81,6 +81,7 @@ export default function StepsView({
                                 onContentChange={() => {}}
                                 presentationId={presentationId}
                                 slideId={slideId}
+                                isInnerTiptap={true}
                                 layoutId={layoutId}
                             />
                             <Tiptap
@@ -93,6 +94,7 @@ export default function StepsView({
                                 slideId={slideId}
                                 layoutId={layoutId}
                                 placeholder="Текст"
+                                isInnerTiptap={true}
                                 onContentChange={() => {}}
                             />
                         </div>

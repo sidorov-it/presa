@@ -11,7 +11,6 @@ export interface CheckboxProps {
     disabled?: boolean;
     required?: boolean;
     invalid?: boolean;
-    indeterminate?: boolean;
     colorScheme?: string;
     size?: 'sm' | 'md' | 'lg';
     spacing?: string;
@@ -32,7 +31,6 @@ export const Checkbox = ({
     disabled = false,
     required = false,
     invalid = false,
-    indeterminate = false,
     colorScheme = 'blue',
     size = 'md',
     spacing,
@@ -54,7 +52,6 @@ export const Checkbox = ({
             disabled={disabled}
             required={required}
             invalid={invalid}
-            indeterminate={indeterminate}
             colorScheme={colorScheme}
             size={size}
             onChange={onChange}

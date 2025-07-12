@@ -7,7 +7,7 @@ import { FiUpload, FiLoader, FiZap } from 'react-icons/fi';
 
 import styles from './ImageEditBox.module.css';
 import { Button } from '@/components/ui/Button';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import { Select } from '@/components/ui/Select';
 import { Popover } from '@/components/ui/Popover/Popover';
 import { Textarea } from '@/components/ui/Textarea';
@@ -606,7 +606,7 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({
         <div className={styles.container}>
             <h3 className={styles.title}>Редактирование изображения</h3>
             <div className={styles.closeButton}>
-                <Button variant="outline" size="sm" onClick={() => useMenuStore.getState().closeSideMenu()}>
+                <Button variant="outline" size="sm" onClick={() => useUIStateStore.getState().closeSideMenu()}>
                     ×
                 </Button>
             </div>

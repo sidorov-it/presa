@@ -1,6 +1,6 @@
 import { ImageElement } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import { useAIImageStore } from '@/store/aiImageStore';
 import ImageComponent from './ImageComponent';
 
@@ -26,7 +26,7 @@ export default function Image({
     ) as ImageElement;
     const updateElement = usePresentationStore(state => state.updateElement);
     const addColumnsAroundImage = usePresentationStore(state => state.addColumnsAroundImage);
-    const openMenu = useMenuStore(state => state.openMenu);
+    const openMenu = useUIStateStore.getState().openContextMenu;
     const aiImageStore = useAIImageStore();
     const isGenerating = aiImageStore.isGenerating(elementId);
 

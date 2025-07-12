@@ -27,9 +27,9 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
         // Fetch task from database
         const task = await prisma.pdfGenerationTask.findUnique({
             where: { id: taskId },
-            include: { 
+            include: {
                 user: true,
-                presentation: true 
+                presentation: true,
             },
         });
 
@@ -48,9 +48,8 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
         }
 
         // Calculate progress percentage
-        const progressPercentage = task.totalSlides > 0 
-            ? Math.round((task.completedSlides / task.totalSlides) * 100)
-            : 0;
+        const progressPercentage =
+            task.totalSlides > 0 ? Math.round((task.completedSlides / task.totalSlides) * 100) : 0;
 
         // Return status based on task state
         switch (task.status) {
@@ -76,7 +75,7 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
                 if (!task.filePath) {
                     return NextResponse.json({ error: 'PDF file not found' }, { status: 500 });
                 }
-                
+
                 return NextResponse.json({
                     status: 'completed',
                     message: 'PDF generation completed successfully',
@@ -111,4 +110,4 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
 export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
     return handleRequest(request, { params });
-} 
+}

@@ -65,7 +65,9 @@ export default function Step({
                     slideId={slideId}
                     layoutId={layoutId}
                     customRefKey={`title-${elementId}-${itemId}`}
+                    smartLayoutItemId={`title-${elementId}-${itemId}`}
                     isHideSlashMenu={true}
+                    isInnerTiptap={true}
                     standardEnterBehavior={true}
                 />
                 <Tiptap
@@ -79,7 +81,9 @@ export default function Step({
                     placeholder="Текст"
                     onContentChange={handleContentChange(itemId, 'text')}
                     customRefKey={`text-${elementId}-${itemId}`}
+                    smartLayoutItemId={`text-${elementId}-${itemId}`}
                     isHideSlashMenu={true}
+                    isInnerTiptap={true}
                     standardEnterBehavior={true}
                 />
             </div>

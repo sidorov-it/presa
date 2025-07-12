@@ -3,13 +3,15 @@ import { BiBold, BiItalic, BiUnderline, BiX, BiArrowToTop, BiArrowToBottom } fro
 import bubbleStyles from '@/components/tiptap/BubbleMenu.module.css';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
 import HeadingSelector from '@/components/settings/HeadingSelector/HeadingSelector';
-import { useMenuStore } from '@/store/menuStore';
+import { useSelectedState, useUIStateStore } from '@/store/uiStateStore';
 import { TipTapRefs } from '@/types';
 import { MenuItem } from '../BaseMenu';
 import { useShallow } from 'zustand/react/shallow';
 import isEditorPropertyConsistent from '@/utils/isEditorPropertyConsistent';
 import DeleteIcon from '@/components/icons/DeleteIcon';
 import { useHistoryStore } from '@/store/historyStore';
+import { usePresentationStore } from '@/store/presentationStore';
+import { NORMAL_TEXT_LEVEL } from '@/constants/consts';
 interface RowTableMenuProps {
     elementId?: string;
     tableRowIndex?: number;
@@ -21,8 +23,32 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, presentation
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
     const headingMenuRef = useRef<HTMLDivElement>(null);
 
-    const tableRowElements = useMenuStore(useShallow(state => state.getTableRowElements()));
-    const currentHeadingLevel = useMenuStore(useShallow(state => state.getCommonRowHeadingLevel(tiptapRefs) || 0));
+    const selectedState = useSelectedState();
+
+    const selectedRowIndex = useUIStateStore(state => state.contextMenuTableRowIndex);
+
+    const tableRowElements = usePresentationStore(
+        useShallow(state =>
+            state.getTableRowElements(
+                selectedState.presentationId!,
+                selectedState.selectedSlideId!,
+                selectedState.selectedLayoutId!,
+                selectedRowIndex!
+            )
+        )
+    );
+    const currentHeadingLevel = usePresentationStore(
+        useShallow(
+            state =>
+                state.getCommonRowHeadingLevel(
+                    tiptapRefs,
+                    selectedState.presentationId!,
+                    selectedState.selectedSlideId!,
+                    selectedState.selectedLayoutId!,
+                    selectedRowIndex!
+                ) || 0
+        )
+    );
 
     const [localHeadingLevel, setLocalHeadingLevel] = useState<number>(currentHeadingLevel || 0);
 
@@ -182,7 +208,13 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, presentation
         tableRowElements.forEach(element => {
             const editor = tiptapRefs.current.editors[element.id]?.editor;
             if (editor) {
-                editor.chain().setMeta('transaction', true).clearNodes().unsetAllMarks().run();
+                editor
+                    .chain()
+                    .setMeta('transaction', true)
+                    .clearNodes()
+                    .unsetAllMarks()
+                    .setFontSize(NORMAL_TEXT_LEVEL)
+                    .run();
             }
         });
         useHistoryStore.getState().commitTransaction(presentationId);
@@ -191,24 +223,45 @@ const RowTableMenu: React.FC<RowTableMenuProps> = ({ tableRowIndex, presentation
     // Table row operations
     const handleAddRowAbove = useCallback(() => {
         if (Number.isInteger(tableRowIndex)) {
-            useMenuStore.getState().addRowToTable(tableRowIndex!);
-            useMenuStore.getState().closeMenu();
+            usePresentationStore
+                .getState()
+                .addRowToTable(
+                    selectedState.presentationId!,
+                    selectedState.selectedSlideId!,
+                    selectedState.selectedLayoutId!,
+                    tableRowIndex!
+                );
+            useUIStateStore.getState().closeContextMenu();
         }
-    }, [tableRowIndex]);
+    }, [selectedState.presentationId, selectedState.selectedLayoutId, selectedState.selectedSlideId, tableRowIndex]);
 
     const handleAddRowBelow = useCallback(() => {
         if (Number.isInteger(tableRowIndex)) {
-            useMenuStore.getState().addRowToTable(tableRowIndex! + 1);
-            useMenuStore.getState().closeMenu();
+            usePresentationStore
+                .getState()
+                .addRowToTable(
+                    selectedState.presentationId!,
+                    selectedState.selectedSlideId!,
+                    selectedState.selectedLayoutId!,
+                    tableRowIndex! + 1
+                );
+            useUIStateStore.getState().closeContextMenu();
         }
-    }, [tableRowIndex]);
+    }, [selectedState.presentationId, selectedState.selectedLayoutId, selectedState.selectedSlideId, tableRowIndex]);
 
     const handleDeleteRow = useCallback(() => {
         if (Number.isInteger(tableRowIndex)) {
-            useMenuStore.getState().deleteRowFromTable(tableRowIndex!);
-            useMenuStore.getState().closeMenu();
+            usePresentationStore
+                .getState()
+                .deleteRowFromTable(
+                    selectedState.presentationId!,
+                    selectedState.selectedSlideId!,
+                    selectedState.selectedLayoutId!,
+                    tableRowIndex!
+                );
+            useUIStateStore.getState().closeContextMenu();
         }
-    }, [tableRowIndex]);
+    }, [selectedState.presentationId, selectedState.selectedLayoutId, selectedState.selectedSlideId, tableRowIndex]);
 
     const handleColorReset = useCallback(() => {
         useHistoryStore.getState().beginTransaction(presentationId, 'Reset color');

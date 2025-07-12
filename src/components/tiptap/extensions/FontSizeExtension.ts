@@ -114,32 +114,63 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                         parseHTML: element => {
                             // Try to extract fontSize from style attribute or custom data attribute
                             const dataFontSize = element.getAttribute('data-font-size');
-                            // if (dataFontSize) return dataFontSize;
 
                             const classList = element.classList;
-                            // if (classList) return classList;
 
-                            let fontSize;
-                            if (!dataFontSize) {
-                                const classes = classList.value.split(' ');
+                            // Если есть классы, всегда сохраняем их
+                            if (classList && classList.length > 0) {
+                                const classes = Array.from(classList);
 
-                                const fontSizeInfo = fontSizeMapping.find(mapping =>
-                                    classes.includes(mapping.className)
-                                );
+                                // Пытаемся найти соответствующий fontSize по классам
+                                let fontSize;
+                                if (!dataFontSize) {
+                                    const fontSizeInfo = fontSizeMapping.find(mapping => {
+                                        // Проверяем, содержит ли элемент нужные классы
+                                        if (mapping.className.includes(' ')) {
+                                            // Для составных классов (например, 'heading-text heading-3')
+                                            const mappingClasses = mapping.className.split(' ');
+                                            return mappingClasses.every(cls => classes.includes(cls));
+                                        } else {
+                                            // Для одиночных классов
+                                            return classes.includes(mapping.className);
+                                        }
+                                    });
 
-                                if (fontSizeInfo) {
-                                    fontSize = fontSizeInfo.fontSize;
+                                    if (fontSizeInfo) {
+                                        fontSize = fontSizeInfo.fontSize;
+                                    }
                                 }
+
+                                // Всегда возвращаем результат если есть классы, даже если fontSize не найден
+                                return {
+                                    dataFontSize,
+                                    fontSize,
+                                    classList,
+                                    // Добавляем флаг, что классы были взяты из HTML
+                                    preserveOriginalClasses: true,
+                                };
                             }
 
-                            return {
-                                dataFontSize,
-                                fontSize,
-                                classList,
-                            };
-                            // return element.style.fontSize?.replace(/['"]+/g, '');
+                            // Если нет классов, возвращаем null чтобы не создавать пустой textStyle mark
+                            return null;
                         },
                         renderHTML: attributes => {
+                            // Сначала проверяем, есть ли уже классы из парсинга HTML и флаг preserveOriginalClasses
+                            if (attributes.fontSize?.classList && attributes.fontSize?.preserveOriginalClasses) {
+                                return {
+                                    class: attributes.fontSize.classList.toString(),
+                                };
+                            }
+
+                            // Если есть classList без preserveOriginalClasses, но с fontSize undefined,
+                            // это означает, что мы не смогли определить fontSize по классам,
+                            // но классы все равно должны быть сохранены
+                            if (attributes.fontSize?.classList && attributes.fontSize?.fontSize === undefined) {
+                                return {
+                                    class: attributes.fontSize.classList.toString(),
+                                };
+                            }
+
                             // Гарантируем, что для обычного текста всегда возвращается класс 'body-text normal-text'
                             let className;
 
@@ -184,11 +215,6 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                             } else {
                                 // Если fontSize не задан — это обычный текст
                                 className = 'body-text normal-text';
-                            }
-
-                            // Если явно передан classList, используем его (например, при парсинге из HTML)
-                            if (attributes.fontSize?.classList) {
-                                className = attributes.fontSize.classList.toString();
                             }
 
                             return {

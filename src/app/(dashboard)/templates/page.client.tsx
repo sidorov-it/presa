@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card/Card';
-import SlidePreview from '../dashboard/components/SlidePreview';
 import { PresentationTemplates, PresentationTemplateKeys } from '@/presentationTemplates';
 import styles from './page.module.css';
 import { useThemeStore } from '@/store/themeStore';
@@ -55,10 +54,7 @@ const TemplatesPage = () => {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <Heading 
-                    title="Шаблоны" 
-                    description="Выберите готовый шаблон для быстрого создания презентации" 
-                />
+                <Heading title="Шаблоны" description="Выберите готовый шаблон для быстрого создания презентации" />
             </div>
 
             {isLoading ? (

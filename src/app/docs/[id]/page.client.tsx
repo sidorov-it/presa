@@ -8,7 +8,7 @@ import { useParams } from 'next/navigation';
 import { PresentationState, usePresentationStore } from '@/store/presentationStore';
 import { useSession, signOut } from 'next-auth/react';
 import Editor from '@/components/editor/Editor/Editor';
-import { TipTapRefs } from '@/types';
+import { EditorElement, TipTapRefs } from '@/types';
 import UndoRedoControls from '@/components/UndoRedoControls/UndoRedoControls';
 import { ThemeIcon } from '@/components/icons';
 import { useThemeStore } from '@/store/themeStore';
@@ -23,7 +23,7 @@ import HistoryDebugPopup from '@/components/ui/HistoryDebugPopup';
 import DragDropDebugInfo from '@/components/DragDropDebugInfo';
 import NotFoundPage from '@/components/NotFoundPage/NotFoundPage';
 import { useColorMode } from '@/components/ui/color-mode';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
@@ -34,6 +34,8 @@ import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
 import { LuEye, LuSettings, LuUser, LuHouse } from 'react-icons/lu';
 import Popover from '@/components/ui/Popover';
 import { useShallow } from 'zustand/react/shallow';
+import FontLoader from '@/components/theme/components/Fonts/FontLoader';
+import { Content } from '@tiptap/react';
 
 const Header = ({
     presentationId,
@@ -83,10 +85,10 @@ const Header = ({
             const firstLayout = slide.layouts[0];
             if (firstLayout && firstLayout.elements.length > 0) {
                 const firstElement = firstLayout.elements[0];
-                if (firstElement.elementTypeId === 'text' && firstElement.content) {
+                if (firstElement.elementTypeId === 'text' && (firstElement as EditorElement).content) {
                     // Extract plain text from HTML content
                     const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = firstElement.content;
+                    tempDiv.innerHTML = (firstElement as EditorElement).content;
                     const plainText = tempDiv.textContent || tempDiv.innerText || '';
                     return (
                         plainText.slice(0, 50) + (plainText.length > 50 ? '...' : '') ||
@@ -217,7 +219,8 @@ const Header = ({
                             onChange={handleTitleChange}
                             onBlur={handleTitleBlur}
                             onKeyDown={handleTitleKeyDown}
-                            autoFocus
+                            // eslint-disable-next-line jsx-a11y/no-autofocus
+                            autoFocus={true}
                             placeholder="Новая презентация"
                         />
                     ) : (
@@ -232,10 +235,10 @@ const Header = ({
                         className={styles.themeButton}
                         role="button"
                         aria-label="Открыть выбор темы"
-                        onClick={() => useMenuStore.getState().openSideMenu('theme-select', { presentationId })}
+                        onClick={() => useUIStateStore.getState().openSideMenu('theme-select', { presentationId })}
                         onKeyDown={e => {
                             if (e.key === 'Enter') {
-                                useMenuStore.getState().openSideMenu('theme-select', { presentationId });
+                                useUIStateStore.getState().openSideMenu('theme-select', { presentationId });
                             }
                         }}
                     >
@@ -253,7 +256,7 @@ const Header = ({
                         </button>
                     </Tooltip>
 
-                    <SimplePdfExportButton presentationId={presentationId} presentationTitle={''} />
+                    <SimplePdfExportButton presentationId={presentationId} />
 
                     <div className={styles.headerDivider} />
                     <UndoRedoControls presentationId={presentationId} tiptapRefs={tiptapRefs} />
@@ -358,7 +361,9 @@ export default function PresentationEditorPage() {
     // Mobile detection state
     const [isMobile, setIsMobile] = useState(false);
 
-    const [slideLayoutVars, setSlideLayoutVars] = useState<React.CSSProperties>({});
+    const [slideLayoutVars, setSlideLayoutVars] = useState<React.CSSProperties & { [key: string]: string | number }>(
+        {}
+    );
 
     // Access store values individually to prevent unnecessary re-renders
     const loadPresentation = usePresentationStore(state => state.loadPresentation);
@@ -393,6 +398,7 @@ export default function PresentationEditorPage() {
             clearAllThemeStyles();
             clearCurrentPresentationMeta();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Mobile detection effect
@@ -454,7 +460,7 @@ export default function PresentationEditorPage() {
             if (e.detail.type === 'remove') {
                 delete tiptapRefs.current.editors[e.detail.elementId];
             } else if (e.detail.type === 'update') {
-                tiptapRefs.current.editors[e.detail.elementId].editor.commands.setContent(e.detail.content);
+                tiptapRefs.current.editors[e.detail.elementId].editor.commands.setContent(e.detail.content as Content);
             }
         };
 
@@ -580,6 +586,7 @@ export default function PresentationEditorPage() {
                     className={styles.container}
                     colorMode={colorMode}
                 >
+                    <FontLoader theme={currentTheme} />
                     {/* <MobileWarningOverlay /> */}
                     <div ref={containerRef} className={colorMode === 'dark' ? 'dark' : ''} style={slideLayoutVars}>
                         <Header

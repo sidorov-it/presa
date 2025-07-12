@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
 import { exportPresentationToPdfAsync, downloadPdfFile, PdfExportProgress } from '@/utils/asyncPdfExport';
@@ -10,18 +10,9 @@ interface PdfExportButtonProps {
     slideIndex?: number;
 }
 
-const PdfExportButton: React.FC<PdfExportButtonProps> = ({
-    presentationId,
-    presentationTitle = 'presentation',
-    className = '',
-    slideIndex,
-}) => {
+const PdfExportButton: React.FC<PdfExportButtonProps> = ({ presentationId, className = '', slideIndex }) => {
     const [isExporting, setIsExporting] = useState(false);
     const [exportProgress, setExportProgress] = useState<PdfExportProgress | null>(null);
-
-    const handleProgressUpdate = useCallback((progress: PdfExportProgress) => {
-        setExportProgress(progress);
-    }, []);
 
     const handleExportToPdf = async () => {
         if (!presentationId) {
@@ -33,23 +24,16 @@ const PdfExportButton: React.FC<PdfExportButtonProps> = ({
         setExportProgress(null);
 
         // Создаем toast и сохраняем его ID для обновления
-        let toastId = toast.loading('Начинаем генерацию PDF...');
+        const toastId = toast.loading('Начинаем генерацию PDF...');
 
         try {
-            const result = await exportPresentationToPdfAsync(
-                presentationId,
-                slideIndex,
-                (progress) => {
-                    setExportProgress(progress);
-                    
-                    // Обновляем toast с новым прогрессом
-                    toast.loading(
-                        `${progress.message} (${progress.progress}%)`,
-                        { id: toastId }
-                    );
-                }
-            );
-            
+            const result = await exportPresentationToPdfAsync(presentationId, slideIndex, progress => {
+                setExportProgress(progress);
+
+                // Обновляем toast с новым прогрессом
+                toast.loading(`${progress.message} (${progress.progress}%)`, { id: toastId });
+            });
+
             if (result.success) {
                 if (result.downloadUrl && result.fileName) {
                     // Автоматически скачиваем файл
@@ -61,10 +45,9 @@ const PdfExportButton: React.FC<PdfExportButtonProps> = ({
             } else {
                 throw new Error(result.error || 'Export failed');
             }
-            
         } catch (error) {
             console.error('PDF export error:', error);
-            
+
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             toast.error(`Ошибка при экспорте: ${errorMessage}`, { id: toastId });
         } finally {
@@ -85,22 +68,22 @@ const PdfExportButton: React.FC<PdfExportButtonProps> = ({
 
     return (
         <div style={{ position: 'relative' }}>
-            <Button 
-                onClick={handleExportToPdf} 
-                disabled={isExporting} 
-                className={className} 
+            <Button
+                onClick={handleExportToPdf}
+                disabled={isExporting}
+                className={className}
                 type="button"
-                style={{ 
-                    position: 'relative', 
+                style={{
+                    position: 'relative',
                     overflow: 'hidden',
-                    minWidth: '140px' 
+                    minWidth: '140px',
                 }}
             >
                 {getButtonText()}
-                
+
                 {/* Прогресс-бар внизу кнопки */}
                 {isExporting && exportProgress && (
-                    <div 
+                    <div
                         style={{
                             position: 'absolute',
                             bottom: 0,
@@ -108,15 +91,15 @@ const PdfExportButton: React.FC<PdfExportButtonProps> = ({
                             right: 0,
                             height: '2px',
                             backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                            overflow: 'hidden'
+                            overflow: 'hidden',
                         }}
                     >
-                        <div 
+                        <div
                             style={{
                                 height: '100%',
                                 backgroundColor: 'rgba(255, 255, 255, 0.8)',
                                 transition: 'width 0.3s ease',
-                                width: `${exportProgress.progress}%`
+                                width: `${exportProgress.progress}%`,
                             }}
                         />
                     </div>

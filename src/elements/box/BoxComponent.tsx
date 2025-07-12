@@ -2,7 +2,7 @@ import { BoxElement, TipTapRefs } from '@/types';
 import { Theme } from '@/types/theme';
 import { Box } from '@chakra-ui/react';
 import Tiptap from '@/components/tiptap/Tiptap/Tiptap';
-import { CSSProperties, RefObject, useEffect, useMemo, useState } from 'react';
+import { CSSProperties, RefObject, useMemo } from 'react';
 import { BoxIconOptions } from '@/components/editor/Menus/BubbleMenus/BoxBubbleMenu/BoxIconOptions';
 import styles from './Box.module.css';
 import { getBlockColors } from '@/utils/colors';
@@ -32,17 +32,6 @@ export default function BoxComponent({
 }: BoxComponentProps) {
     const isReadOnly = useReadOnly();
     const { elementTypeId, iconType, customBackgroundColor } = element;
-
-    const [fontSize, setFontSize] = useState<string>('1.125em');
-
-    useEffect(() => {
-        const newFontSize = tiptapRefs.current?.editors[element.id]?.editor.getAttributes('textStyle').fontSize;
-        if (typeof newFontSize === 'string') {
-            setFontSize(newFontSize);
-        } else if (newFontSize) {
-            setFontSize(newFontSize?.fontSize);
-        }
-    }, [element.content, element.id, tiptapRefs]);
 
     // const slideBgColor = theme?.colors.slideBackground;
     const { blockBgColor, iconColor, textColor } = useMemo(
@@ -93,6 +82,7 @@ export default function BoxComponent({
                 onContentChange={content => {
                     onContentChange?.(content);
                 }}
+                isInnerTiptap={true}
             />
         </Box>
     );

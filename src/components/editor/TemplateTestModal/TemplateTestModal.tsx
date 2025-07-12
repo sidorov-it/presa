@@ -18,14 +18,17 @@ const TemplateTestModal: React.FC<TemplateTestModalProps> = ({ isOpen, onClose, 
     const availableTemplates = Object.values(SlideTemplatesRegistry).filter(template => !template.disabled);
 
     // Group templates by category
-    const templatesByCategory = availableTemplates.reduce((acc, template) => {
-        const category = template.ui.category || 'other';
-        if (!acc[category]) {
-            acc[category] = [];
-        }
-        acc[category].push(template);
-        return acc;
-    }, {} as Record<string, SlideTemplateCore[]>);
+    const templatesByCategory = availableTemplates.reduce(
+        (acc, template) => {
+            const category = template.ui.category || 'other';
+            if (!acc[category]) {
+                acc[category] = [];
+            }
+            acc[category].push(template);
+            return acc;
+        },
+        {} as Record<string, SlideTemplateCore[]>
+    );
 
     const categoryLabels = {
         'basic-templates': 'Базовые шаблоны',
@@ -36,7 +39,7 @@ const TemplateTestModal: React.FC<TemplateTestModalProps> = ({ isOpen, onClose, 
         'accent-templates': 'Акценты',
         'intro-templates': 'Приветствие',
         'table-templates': 'Таблицы',
-        'other': 'Другие',
+        other: 'Другие',
     };
 
     const handleTemplateSelect = (templateId: string) => {
@@ -46,17 +49,17 @@ const TemplateTestModal: React.FC<TemplateTestModalProps> = ({ isOpen, onClose, 
 
     const handleConfirm = async () => {
         if (!selectedTemplate) return;
-        
+
         setIsLoading(true);
         setFeedback(null);
-        
+
         try {
             await onSelectTemplate(selectedTemplate);
             setFeedback({
                 type: 'success',
-                message: 'Тестовый слайд успешно создан! Слайд добавлен в презентацию с заполненным шаблоном.'
+                message: 'Тестовый слайд успешно создан! Слайд добавлен в презентацию с заполненным шаблоном.',
             });
-            
+
             // Auto-close after success with delay
             setTimeout(() => {
                 onClose();
@@ -65,7 +68,7 @@ const TemplateTestModal: React.FC<TemplateTestModalProps> = ({ isOpen, onClose, 
             console.error('Error testing template:', error);
             setFeedback({
                 type: 'error',
-                message: 'Произошла ошибка при создании тестового слайда. Попробуйте еще раз.'
+                message: 'Произошла ошибка при создании тестового слайда. Попробуйте еще раз.',
             });
         } finally {
             setIsLoading(false);
@@ -91,8 +94,8 @@ const TemplateTestModal: React.FC<TemplateTestModalProps> = ({ isOpen, onClose, 
             <div className={styles.modalContent}>
                 <div className={styles.modalHeader}>
                     <h2 className={styles.modalTitle}>Выберите шаблон для тестирования</h2>
-                    <button 
-                        className={styles.closeButton} 
+                    <button
+                        className={styles.closeButton}
                         onClick={handleClose}
                         disabled={isLoading}
                         aria-label="Закрыть модальное окно"
@@ -103,29 +106,23 @@ const TemplateTestModal: React.FC<TemplateTestModalProps> = ({ isOpen, onClose, 
 
                 <div className={styles.modalBody}>
                     <p className={styles.description}>
-                        Выберите шаблон слайда для заполнения тестовыми данными. 
-                        Это поможет проверить корректность отображения и структуры шаблона.
+                        Выберите шаблон слайда для заполнения тестовыми данными. Это поможет проверить корректность
+                        отображения и структуры шаблона.
                     </p>
 
                     {feedback && (
                         <div className={`${styles.feedback} ${styles[feedback.type]}`}>
-                            <div className={styles.feedbackIcon}>
-                                {feedback.type === 'success' ? '✓' : '⚠'}
-                            </div>
-                            <div className={styles.feedbackMessage}>
-                                {feedback.message}
-                            </div>
+                            <div className={styles.feedbackIcon}>{feedback.type === 'success' ? '✓' : '⚠'}</div>
+                            <div className={styles.feedbackMessage}>{feedback.message}</div>
                         </div>
                     )}
 
                     <div className={styles.templatesContainer}>
                         {Object.entries(templatesByCategory).map(([category, templates]) => (
                             <div key={category} className={styles.categorySection}>
-                                <h3 className={styles.categoryTitle}>
-                                    {categoryLabels[category] || category}
-                                </h3>
+                                <h3 className={styles.categoryTitle}>{categoryLabels[category] || category}</h3>
                                 <div className={styles.templatesGrid}>
-                                    {templates.map((template) => {
+                                    {templates.map(template => {
                                         const IconComponent = template.ui.icon;
                                         return (
                                             <button
@@ -155,15 +152,11 @@ const TemplateTestModal: React.FC<TemplateTestModalProps> = ({ isOpen, onClose, 
                 </div>
 
                 <div className={styles.modalFooter}>
-                    <button 
-                        className={styles.cancelButton} 
-                        onClick={handleClose}
-                        disabled={isLoading}
-                    >
+                    <button className={styles.cancelButton} onClick={handleClose} disabled={isLoading}>
                         Отмена
                     </button>
-                    <button 
-                        className={styles.confirmButton} 
+                    <button
+                        className={styles.confirmButton}
                         onClick={handleConfirm}
                         disabled={!selectedTemplate || isLoading}
                     >
@@ -182,4 +175,4 @@ const TemplateTestModal: React.FC<TemplateTestModalProps> = ({ isOpen, onClose, 
     );
 };
 
-export default TemplateTestModal; 
+export default TemplateTestModal;

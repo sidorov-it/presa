@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Tabs as ChakraTabs } from '@chakra-ui/react';
 import { useThemeStore } from '@/store/themeStore';
 import { usePresentationStore } from '@/store/presentationStore';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import ThemePreviewBlock from '@/app/(dashboard)/themes/components/ThemePreviewBlock';
 import styles from './ThemeSelectPanel.module.css';
 import Link from 'next/link';
@@ -32,7 +32,9 @@ const ThemeSelectPanel: React.FC<ThemeSelectPanelProps> = ({ onCloseMenu, presen
                 setTabIndex(0);
             }
             setTimeout(() => {
-                document.getElementById(`theme-${currentTheme.id}`)?.scrollIntoView({ behavior: 'smooth' });
+                document
+                    .getElementById(`theme-${currentTheme.id}`)
+                    ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 200);
         }
     }, [currentTheme?.id, currentTheme?.isDefault]);
@@ -46,14 +48,14 @@ const ThemeSelectPanel: React.FC<ThemeSelectPanelProps> = ({ onCloseMenu, presen
             if (presentationId) {
                 setTheme(presentationId, theme.id);
             }
-            useMenuStore.getState().closeSideMenu();
+            useUIStateStore.getState().closeSideMenu();
             onCloseMenu?.();
         },
         [allThemes, setCurrentTheme, setTheme, presentationId, onCloseMenu]
     );
 
     const handleCloseMenu = useCallback(() => {
-        useMenuStore.getState().closeSideMenu();
+        useUIStateStore.getState().closeSideMenu();
         onCloseMenu?.();
     }, []);
 
@@ -62,7 +64,7 @@ const ThemeSelectPanel: React.FC<ThemeSelectPanelProps> = ({ onCloseMenu, presen
             <div className={styles.header}>
                 <h3 className={styles.title}>Выберите тему</h3>
                 <div className={styles.closeButton}>
-                    <button onClick={() => useMenuStore.getState().closeSideMenu()}>×</button>
+                    <button onClick={() => useUIStateStore.getState().closeSideMenu()}>×</button>
                 </div>
             </div>
             <ChakraTabs.Root

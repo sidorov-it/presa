@@ -11,7 +11,7 @@ import DragHandler from '../DragHandler';
 import TemplateButton from '../TemplateButton/TemplateButton';
 import AIEditButton from '../AIEditButton/AIEditButton';
 import ResizableTemplateImage from '../ResizableTemplateImage';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import deepEqual from 'deep-equal';
 import { useDnd } from '@/contexts/DragDropContext';
 import { TEXT_ELEMENT_TYPES } from '@/elements/menuRegistry';
@@ -25,27 +25,17 @@ import TemplateTestModal from '../TemplateTestModal';
 interface SlideEditorProps {
     slideLayoutIds: string[];
     presentationId: string;
-    isSelected: boolean;
     tiptapRefs: MutableRefObject<TipTapRefs>;
     slideId: string;
-    handleSelectSlide: (slideId: string) => void;
     isLast: boolean;
 }
 
-const SlideEditor: React.FC<SlideEditorProps> = ({
-    slideLayoutIds,
-    slideId,
-    tiptapRefs,
-    presentationId,
-    handleSelectSlide,
-    isSelected,
-    isLast,
-}) => {
+const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tiptapRefs, presentationId, isLast }) => {
     const editorRef = useRef<HTMLDivElement>(null);
     const [isHovered, setIsHovered] = useState(false);
     const [showHeightIndicator, setShowHeightIndicator] = useState(false);
     const [standardHeight, setStandardHeight] = useState(0);
-    const openMenu = useMenuStore.getState().openMenu;
+    const openMenu = useUIStateStore.getState().openContextMenu;
 
     const slideRef = useRef<HTMLDivElement>(null);
 
@@ -63,6 +53,9 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
     const addEmptySlideSelector = useCallback((state: PresentationState) => state.addEmptySlide, []);
     const addEmptySlide = usePresentationStore(addEmptySlideSelector);
+
+    const selectedSlideId = useUIStateStore(state => state.selectedSlideId);
+    const isSelected = selectedSlideId === slideId;
 
     const [showAIGenerator, setShowAIGenerator] = useState(false);
     const [showTemplateTestModal, setShowTemplateTestModal] = useState(false);
@@ -96,13 +89,10 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         setShowAIGenerator(true);
     };
 
-    const handleTestTemplate = useCallback(
-        (e: React.MouseEvent<HTMLButtonElement>) => {
-            e.stopPropagation();
-            setShowTemplateTestModal(true);
-        },
-        []
-    );
+    const handleTestTemplate = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        setShowTemplateTestModal(true);
+    }, []);
 
     const handleTemplateTest = useCallback(
         async (templateId: string) => {
@@ -120,11 +110,11 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                 }
 
                 const result = await response.json();
-                
+
                 // Add the test slide after the current slide
                 const getSlideIndex = usePresentationStore.getState().getSlideIndex;
                 const slideIndex = getSlideIndex(presentationId, slideId);
-                
+
                 if (slideIndex !== -1) {
                     const newSlideIndex = slideIndex + 1;
                     usePresentationStore.getState().addSlide(presentationId, result.slide, newSlideIndex);
@@ -138,6 +128,10 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         },
         [presentationId, slideId]
     );
+
+    const handleSelectSlide = useCallback((slideId: string) => {
+        useUIStateStore.getState().setSelectedSlideId(slideId);
+    }, []);
 
     const handleOpenSlideMenu = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
@@ -175,7 +169,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         return style;
     }, [imageUrl, templateType, backgroundType, backgroundValue]);
 
-    const slideMenuOpen = useMenuStore(state => state.checkSlideMenuIsOpen(slideId));
+    const slideMenuOpen = useUIStateStore(state => state.checkSlideContextMenuIsOpen(slideId));
 
     const handleSlideWrapperClick = useCallback(
         (e: React.MouseEvent) => {
@@ -417,7 +411,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
             // Convert ratios to CSS values
             const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
-            const imageHeightVw = `calc(64.5em * ${currentImageHeightRatio})`;
             const paddingTopVw = `calc(64.5em * ${currentImageHeightRatio} + 1em)`;
 
             const remainingWidth = `${(1 - currentImageWidthRatio) * 100}%`;
@@ -632,7 +625,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 export default memo(SlideEditor, (prevProps, nextProps) => {
     return (
         deepEqual(prevProps.slideLayoutIds, nextProps.slideLayoutIds) &&
-        prevProps.isSelected === nextProps.isSelected &&
         prevProps.presentationId === nextProps.presentationId &&
         prevProps.slideId === nextProps.slideId &&
         prevProps.isLast === nextProps.isLast

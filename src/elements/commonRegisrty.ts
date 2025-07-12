@@ -45,7 +45,6 @@ interface ElementRegistryElement {
 export const ElementRegistry: Record<string, ElementRegistryElement> = {
     SmartLayoutImagesWithText: {
         elementTypeId: ElementType.SMART_LAYOUT,
-        // MenuComponent: SmartLayoutSettings,
         Icon: FaRegAddressCard,
         label: 'Изображения с текстом',
         elementVariant: 'images-with-text',
@@ -132,7 +131,6 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
     },
     SmartLayoutTextBlocks: {
         elementTypeId: ElementType.SMART_LAYOUT,
-        // MenuComponent: SmartLayoutSettings,
         Icon: FaRegAddressCard,
         label: 'Текстовые блоки',
         elementVariant: 'text-boxes',

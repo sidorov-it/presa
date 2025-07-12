@@ -117,6 +117,7 @@ export interface SmartLayoutItem {
     imageUrl?: string;
     iconUrl?: string;
     backgroundColor?: string;
+    textColor?: string;
     stats?: { value: string; label: string };
     metadata?: Record<string, unknown>;
     // AI generation fields for images (isGenerating хранится только на клиенте)
@@ -139,6 +140,12 @@ export interface SmartLayoutElement extends BaseElement {
     direction?: 'horizontal' | 'vertical';
     backgroundColor?: string;
     textColor?: string;
+    // Timeline specific settings
+    sides?: 'one' | 'two';
+    showNumbers?: boolean;
+    showLines?: boolean;
+    timelineColor?: string;
+    numbersColor?: string;
 }
 
 // Элемент редактора Tiptap

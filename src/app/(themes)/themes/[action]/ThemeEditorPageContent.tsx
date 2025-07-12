@@ -129,13 +129,13 @@ const ThemeEditorPageContent = (props: { params: { action: string } }) => {
                 const rect = previewContainerRef.current.getBoundingClientRect();
                 setContainerDimensions({
                     width: rect.width,
-                    height: rect.height
+                    height: rect.height,
                 });
             }
         };
 
         updateDimensions();
-        
+
         const resizeObserver = new ResizeObserver(updateDimensions);
         if (previewContainerRef.current) {
             resizeObserver.observe(previewContainerRef.current);

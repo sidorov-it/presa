@@ -3,11 +3,11 @@
 import React from 'react';
 import { BiAlignLeft, BiAlignMiddle, BiAlignRight, BiEdit } from 'react-icons/bi';
 import { usePresentationStore } from '@/store/presentationStore';
-import { useMenuStore } from '@/store/menuStore';
 import { ImageElement } from '@/types';
 
 import styles from './ImageBubbleMenu.module.css';
 import DeleteIcon from '@/components/icons/DeleteIcon';
+import { useUIStateStore } from '@/store/uiStateStore';
 
 interface ImageBubbleMenuProps {
     presentationId: string;
@@ -23,8 +23,6 @@ const ImageBubbleMenu: React.FC<ImageBubbleMenuProps> = ({ presentationId, slide
 
     const updateElement = usePresentationStore(state => state.updateElement);
     const deleteElement = usePresentationStore(state => state.deleteElement);
-    // const openSidePanel = useMenuStore(state => state.openSidePanel);
-    // const closeBubbleMenu = useMenuStore(state => state.closeBubbleMenu);
 
     const handleAlignment = (alignment: 'left' | 'center' | 'right') => {
         updateElement({
@@ -37,8 +35,8 @@ const ImageBubbleMenu: React.FC<ImageBubbleMenuProps> = ({ presentationId, slide
     };
 
     const handleEdit = () => {
-        useMenuStore.getState().closeMenu();
-        useMenuStore.getState().openSideMenu('image-edit', {
+        useUIStateStore.getState().closeContextMenu();
+        useUIStateStore.getState().openSideMenu('image-edit', {
             imageUrl: element.src,
             elementId,
             presentationId,
@@ -67,7 +65,7 @@ const ImageBubbleMenu: React.FC<ImageBubbleMenuProps> = ({ presentationId, slide
 
     const handleDelete = () => {
         deleteElement(presentationId, slideId, layoutId, elementId);
-        useMenuStore.getState().closeMenu();
+        useUIStateStore.getState().closeContextMenu();
     };
 
     return (

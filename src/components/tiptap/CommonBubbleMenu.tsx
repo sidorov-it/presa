@@ -1,3 +1,4 @@
+'use client';
 import { BubbleMenu, Editor } from '@tiptap/react';
 import { ColorPicker } from './ColorPicker';
 import styles from './BubbleMenu.module.css';
@@ -19,7 +20,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { EditorView } from '@tiptap/pm/view';
 import { EditorState } from '@tiptap/pm/state';
 import HeadingSelector from '../settings/HeadingSelector/HeadingSelector';
-import { HEADING_LEVELS } from '@/constants/consts';
+import { HEADING_LEVELS, NORMAL_TEXT_LEVEL } from '@/constants/consts';
 import getHeadingLevel from '@/utils/getHeadingLevel';
 
 export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
@@ -64,7 +65,7 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
     );
 
     const handleClearStyles = useCallback(() => {
-        editor.chain().focus().clearNodes().unsetAllMarks().run();
+        editor.chain().focus().clearNodes().unsetAllMarks().setFontSize(NORMAL_TEXT_LEVEL).run();
     }, [editor]);
 
     // Force light theme styles for bubble menu
@@ -112,6 +113,10 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
         },
         [editor]
     );
+
+    if (typeof window === 'undefined') {
+        return null;
+    }
 
     return (
         <BubbleMenu

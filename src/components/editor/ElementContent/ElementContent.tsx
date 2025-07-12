@@ -10,7 +10,7 @@ import { useEditorStore } from '@/store/editorStore';
 import { useHistoryStore } from '@/store/historyStore';
 
 import Image from '@/elements/image';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import { useShallow } from 'zustand/react/shallow';
 import Chart from '@/elements/chart';
 import SmartLayout from '@/elements/smartLayout/SmartLayout';
@@ -67,10 +67,15 @@ export const ElementContent = ({
     const elementConfig = useMemo(() => getElementConfig(elementTypeId), [elementTypeId]);
     const slideBackground = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background?.value);
 
-    const isMenuOpenOnCurrentElement = useMenuStore(
+    const isElementSelected = useUIStateStore(
+        state => state.selectedElementId === elementId && elementTypeId !== ElementType.TEXT
+    );
+
+    const isMenuOpenOnCurrentElement = useUIStateStore(
         useShallow(
             state =>
-                state.elementId === elementId &&
+                state.selectedElementId === elementId &&
+                state.isContextMenuOpen === true &&
                 (elementTypeId !== 'smart-layout' || state.selectedSmartLayoutItemId === null)
         )
     );
@@ -336,19 +341,24 @@ export const ElementContent = ({
                                     // Get the text content from current editor to merge
                                     const currentTextContent = currentEditor.editor.getText();
 
+                                    useHistoryStore.getState().beginTransaction(presentationId, 'merge content');
+
                                     // Insert the text content at the end of previous editor
                                     editorInPreviousLayout.editor
                                         .chain()
+                                        .setMeta('transaction', true)
                                         .focus('end')
                                         .insertContent(currentTextContent)
                                         .run();
 
-                                    useHistoryStore.getState().beginTransaction(presentationId, 'merge content');
                                     // Delete current element and layout
+                                    // usePresentationStore
+                                    //     .getState()
+                                    //     .deleteElement(presentationId, slideId, layoutId, elementId);
                                     usePresentationStore
                                         .getState()
-                                        .deleteElement(presentationId, slideId, layoutId, elementId);
-                                    usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+                                        .deleteLayout(presentationId, slideId, layoutId, true);
+
                                     useHistoryStore.getState().commitTransaction(presentationId);
 
                                     setTimeout(() => {
@@ -439,12 +449,22 @@ export const ElementContent = ({
                             // Get the text content from current editor to merge
                             const currentTextContent = currentEditor.editor.getText();
 
+                            useHistoryStore.getState().beginTransaction(presentationId, 'merge content');
                             // Insert the text content at the end of previous editor
-                            editorInPreviousLayout.editor.chain().focus('end').insertContent(currentTextContent).run();
+                            editorInPreviousLayout.editor
+                                .chain()
+                                .setMeta('transaction', true)
+                                .focus('end')
+                                .insertContent(currentTextContent)
+                                .run();
 
                             // Delete current element and layout
-                            usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, elementId);
-                            usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+                            // usePresentationStore
+                            //     .getState()
+                            //     .deleteElement(presentationId, slideId, layoutId, elementId, true);
+                            usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId, true);
+
+                            useHistoryStore.getState().commitTransaction(presentationId);
 
                             setTimeout(() => {
                                 const updatedEditor = tiptapRefs.current?.editors[previousElement.id];
@@ -593,10 +613,18 @@ export const ElementContent = ({
                             // Get the text content from current editor to merge
                             const currentTextContent = currentEditor.editor.getText();
 
+                            useHistoryStore.getState().beginTransaction(presentationId, 'merge content');
                             // Insert the text content at the end of previous editor
-                            editorToUpdate.editor.chain().focus('end').insertContent(currentTextContent).run();
+                            editorToUpdate.editor
+                                .chain()
+                                .setMeta('transaction', true)
+                                .focus('end')
+                                .insertContent(currentTextContent)
+                                .run();
 
-                            usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId);
+                            usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId, true);
+
+                            useHistoryStore.getState().commitTransaction(presentationId);
 
                             setTimeout(() => {
                                 const updatedEditor = tiptapRefs.current?.editors[elementInPreviousLayout.id];
@@ -644,11 +672,6 @@ export const ElementContent = ({
         [presentationId, slideId, layoutId, elementId]
     );
 
-    const handleBlur = useCallback(() => {
-        useEditorStore.getState().setActiveEditor(null);
-        useMenuStore.getState().closeMenu();
-    }, []);
-
     const renderElementContent = useCallback(
         (elementId: string, isFocused: boolean) => {
             if (elementConfig!.hasTextEditor) {
@@ -664,7 +687,7 @@ export const ElementContent = ({
                         onBackspacePressed={handleBackspacePressed}
                         onDeletePressed={handleDeletePressed}
                         onContentChange={handleEditorContentChange}
-                        onBlur={handleBlur}
+                        // onBlur={handleBlur}
                         customBubbleMenuTrigger={dragHandleRef}
                         onAddElement={memoizedOnAddElement}
                         presentationId={presentationId}
@@ -728,7 +751,6 @@ export const ElementContent = ({
             handleBackspacePressed,
             handleDeletePressed,
             handleEditorContentChange,
-            handleBlur,
             dragHandleRef,
             memoizedOnAddElement,
             presentationId,
@@ -746,8 +768,9 @@ export const ElementContent = ({
     return (
         <div
             key={elementId}
-            className={`${styles.elementContent}`}
+            className={`${styles.elementContent} ${isElementSelected ? styles.elementContentSelected : ''}`}
             data-element-id={elementId}
+            {...(isElementSelected ? { 'data-element-selected': true } : {})}
             style={{
                 fontSize: 'var(--font-size)',
             }}
@@ -760,6 +783,14 @@ export const ElementContent = ({
                 if (elementIsHovered && !isReadOnly) {
                     setElementIsHovered(false);
                 }
+            }}
+            onClick={() => {
+                useUIStateStore.getState().setSelectedData({
+                    elementId,
+                    elementType: elementTypeId,
+                    layoutId,
+                    cellId,
+                });
             }}
         >
             <div className={`${styles.elementWrapper}`}>

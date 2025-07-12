@@ -83,7 +83,7 @@ export default function ImagesWithTextView({
                                         defaultContent={item.title || ''}
                                         elementId={element.id}
                                         tiptapRefs={tiptapRefs}
-                                        id={element.id}
+                                        id={`${element.id}-${item.id}-title`}
                                         placeholder="Заголовок"
                                         onContentChange={() => {}}
                                         presentationId={presentationId}
@@ -91,6 +91,7 @@ export default function ImagesWithTextView({
                                         layoutId={layoutId}
                                         // customRefKey={`title-${element.id}-${item.id}`}
                                         isHideSlashMenu={false}
+                                        isInnerTiptap={true}
                                     />
                                 </div>
                                 <div className={styles.text}>
@@ -100,13 +101,14 @@ export default function ImagesWithTextView({
                                         defaultContent={item.text || ''}
                                         elementId={element.id}
                                         tiptapRefs={tiptapRefs}
-                                        id={element.id}
+                                        id={`${element.id}-${item.id}-text`}
                                         presentationId={presentationId}
                                         slideId={slideId}
                                         layoutId={layoutId}
                                         placeholder="Текст"
                                         onContentChange={() => {}}
                                         isHideSlashMenu={false}
+                                        isInnerTiptap={true}
                                     />
                                 </div>
                             </div>

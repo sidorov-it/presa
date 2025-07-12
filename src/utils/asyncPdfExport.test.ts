@@ -19,15 +19,12 @@ describe('asyncPdfExport', () => {
 
             const taskId = await startPdfExport('test-presentation-id');
 
-            expect(fetch).toHaveBeenCalledWith(
-                '/api/presentations/test-presentation-id/export/pdf',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
+            expect(fetch).toHaveBeenCalledWith('/api/presentations/test-presentation-id/export/pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
 
             expect(taskId).toBe('test-task-id');
         });
@@ -42,15 +39,12 @@ describe('asyncPdfExport', () => {
 
             const taskId = await startPdfExport('test-presentation-id', 2);
 
-            expect(fetch).toHaveBeenCalledWith(
-                '/api/presentations/test-presentation-id/export/pdf?slideIndex=2',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
+            expect(fetch).toHaveBeenCalledWith('/api/presentations/test-presentation-id/export/pdf?slideIndex=2', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
 
             expect(taskId).toBe('test-task-id');
         });
@@ -106,4 +100,4 @@ describe('asyncPdfExport', () => {
             );
         });
     });
-}); 
+});

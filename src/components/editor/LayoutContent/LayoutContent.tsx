@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import React, { RefObject, useState, useCallback, useMemo, memo, useRef } from 'react';
 import tinycolor from 'tinycolor2';
 import { GridRow, GridCell, TipTapRefs } from '@/types';
@@ -6,7 +7,7 @@ import GridCellElement from '../GridCellElement';
 import styles from './LayoutContent.module.css';
 import { usePresentationStore } from '@/store/presentationStore';
 import DragHandler from '../DragHandler';
-import { useMenuSelectedCell, useMenuSelectedElement, useMenuSelectedLayout, useMenuStore } from '@/store/menuStore';
+import { useSelectedCellId, useSelectedElementId, useSelectedLayoutId, useUIStateStore } from '@/store/uiStateStore';
 import { useShallow } from 'zustand/react/shallow';
 import adjustWidths from '@/utils/adjustWidths';
 import { LayoutHoverEvent } from '@/customEvents/LayoutHoverEvent';
@@ -45,18 +46,20 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
     // Get resize state from the store for smooth column resizing
     const resizeState = usePresentationStore(useShallow(state => state.resizeState));
 
-    const openMenu = useMenuStore.getState().openMenu;
+    const openMenu = useUIStateStore.getState().openContextMenu;
 
     const isReadOnly = useReadOnly();
 
-    const menuLayoutId = useMenuSelectedLayout();
-    const menuElementId = useMenuSelectedElement();
-    const menuCellId = useMenuSelectedCell();
+    const selectedLayoutId = useSelectedLayoutId();
+    const selectedElementId = useSelectedElementId();
+    const selectedCellId = useSelectedCellId();
 
+    const isContextMenuOpen = useUIStateStore(state => state.isContextMenuOpen);
     const themeSlideBackground = useThemeStore(useShallow(state => state.getCurrentThemeSlideBackground()));
 
-    const isTableContentSelected = useMenuStore(
-        state => state.tableColumnIndex !== null || state.tableRowIndex !== null
+    const isTableContentSelected = useUIStateStore(
+        state => state.selectedColumnIndex !== null || state.selectedRowIndex !== null
+        // state => state.selectedTableColumnIndex !== null || state.selectedTableRowIndex !== null
     );
 
     // Retrieve slide background color (if any)
@@ -355,8 +358,8 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
         [handleResizeMoveTableColumn, handleResizeEndTableColumn, presentationId, slideId, layoutId]
     );
 
-    const isSelected = menuLayoutId === layout.id && menuElementId === null && menuCellId === null;
-    const isFocused = useMenuStore(state => state.focusedLayoutId === layout.id);
+    const isSelected = selectedLayoutId === layout.id && selectedElementId === null && selectedCellId === null;
+    const isFocused = useUIStateStore(state => state.selectedLayoutId === layout.id);
 
     // const isHovered = isLayoutHovered || isSelected;
 
@@ -365,10 +368,16 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
             return;
         }
 
-        useMenuStore.getState().setFocusedLayoutId(layout.id);
+        useUIStateStore.getState().setSelectedLayoutId(layout.id);
         document.addEventListener('click', e => {
-            if (e.target instanceof HTMLElement && !e.target.closest('[data-layout-id]')) {
-                useMenuStore.getState().resetFocusedLayoutId();
+            if (
+                e.target instanceof HTMLElement &&
+                !e.target.closest('[data-layout-id]') &&
+                !e.target.closest('[data-is-menu="true"]')
+            ) {
+                // e.preventDefault();
+                // e.stopPropagation();
+                useUIStateStore.getState().resetSelectedLayoutId();
             }
         });
     }, [layout.id, isReadOnly]);
@@ -380,19 +389,20 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                 className={`${styles.layout}`}
                 data-layout-id={layout.id}
                 data-is-single-element-layout={isSingleElementSingleCellLayout ? 'true' : 'false'}
+                data-is-selected-layout={selectedLayoutId === layout.id ? 'true' : ''}
                 role="region"
                 aria-label={`Макет ${layout.id}`}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
-                onClickCapture={handleLayoutClick}
+                onClick={handleLayoutClick}
             >
-                {isSelected && <div className={styles.layoutSelected} />}
+                {/* {isSelected && <div className={styles.layoutSelected} />} */}
 
                 {!isReadOnly && layout.elements.length > 1 && (isLayoutHovered || isSelected) && (
                     <DragHandler
                         className={styles.layoutDragHandle}
                         slideId={slideId}
-                        isActive={isSelected && !isTableContentSelected}
+                        isActive={isSelected && isContextMenuOpen && !isTableContentSelected}
                         ariaLabel="Перетащить этот макет"
                         dataAttributes={{
                             'data-layout-drag-handle': layout.id,

@@ -1088,6 +1088,7 @@ button[data-type="button"]:hover {
     line-height: var(--presentation-body-line-height);
     color: var(--presentation-text-color);
     caret-color: var(--presentation-text-color);
+    font-family: var(--presentation-body-font);
 }
 
 /* --presentation-heading-capitaliza    tion
@@ -1116,6 +1117,7 @@ none
     /* margin-top: 0.375em !important;
     margin-bottom: 0.375em !important; */
     font-weight: var(--presentation-heading-weight) !important;
+    font-family: var(--presentation-heading-font) !important;
     text-transform: var(--presentation-heading-capitalization) !important;
     color: var(--presentation-heading-color);
     caret-color: var(--presentation-heading-color);

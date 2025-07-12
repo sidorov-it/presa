@@ -14,10 +14,10 @@ export interface TooltipProps extends ChakraTooltip.RootProps {
 export default function Tooltip(props: TooltipProps) {
     const { showArrow, children, disabled, portalled = true, content, contentProps, ref, portalRef, ...rest } = props;
 
-    if (disabled) return children;
+    if (disabled || !content) return children;
 
     return (
-        <ChakraTooltip.Root {...rest}>
+        <ChakraTooltip.Root openDelay={500} closeDelay={100} {...rest}>
             <ChakraTooltip.Trigger asChild>{children}</ChakraTooltip.Trigger>
             <Portal disabled={!portalled} container={portalRef}>
                 <ChakraTooltip.Positioner>

@@ -7,14 +7,7 @@ import { menuRegistry } from '@/elements/menuRegistry';
 import { useDndStore } from '@/store/dndStore';
 import ElementsPanelPopupMenu, { CategoryType } from '../ElementsPanelPopupMenu/ElementsPanelPopupMenu';
 
-interface ElementsPanelProps {
-    presentationId: string;
-    slideId: string;
-}
-
-
-
-const ElementsPanel: React.FC<ElementsPanelProps> = ({ presentationId, slideId }) => {
+const ElementsPanel: React.FC = () => {
     const [activeCategory, setActiveCategory] = useState<CategoryType | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -73,7 +66,7 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ presentationId, slideId }
         if (!activeCategory) return;
         if (dragState !== 'dragging' || !dragFromPanel) return;
 
-        const unsubscribe = useDndStore.subscribe((state, prevState) => {
+        const unsubscribe = useDndStore.subscribe((state) => {
             const indicators = state.state.indicators;
             const hasIndicator =
                 indicators.elementIndicator ||
@@ -125,8 +118,6 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ presentationId, slideId }
                 isOpen={activeCategory !== null}
                 category={activeCategory}
                 onClose={handleClose}
-                presentationId={presentationId}
-                slideId={slideId}
             />
         </div>
     );

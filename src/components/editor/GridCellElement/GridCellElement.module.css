@@ -215,6 +215,10 @@
     outline: 1px solid #999;
 }
 
+[data-is-selected-layout='true'] .cellBorderVisible {
+    outline: 1px solid var(--color-primary);;
+}
+
 .elementContainer {
     margin: 0.9em 0;
 }

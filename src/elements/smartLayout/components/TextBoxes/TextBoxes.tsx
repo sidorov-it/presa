@@ -296,6 +296,7 @@ export default function TextBoxes({
                             />
                         )}
                         <ItemWrapper
+                            className={styles.itemBackground}
                             presentationId={presentationId}
                             itemId={itemId}
                             slideId={slideId}
@@ -330,7 +331,9 @@ export default function TextBoxes({
                                         slideId={slideId}
                                         layoutId={layoutId}
                                         customRefKey={`title-${elementId}-${itemId}`}
+                                        smartLayoutItemId={`title-${elementId}-${itemId}`}
                                         isHideSlashMenu={true}
+                                        isInnerTiptap={true}
                                         standardEnterBehavior={true}
                                     />
                                 </div>
@@ -346,7 +349,9 @@ export default function TextBoxes({
                                         placeholder="Текст"
                                         onContentChange={handleContentChange(itemId, 'text')}
                                         customRefKey={`text-${elementId}-${itemId}`}
+                                        smartLayoutItemId={`text-${elementId}-${itemId}`}
                                         isHideSlashMenu={true}
+                                        isInnerTiptap={true}
                                         standardEnterBehavior={true}
                                     />
                                 </div>

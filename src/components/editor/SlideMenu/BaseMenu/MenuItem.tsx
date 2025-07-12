@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styles from './MenuItem.module.css';
 
 export interface MenuItemProps {
@@ -27,11 +27,19 @@ export const MenuItem: React.FC<MenuItemProps> = ({
         }
     };
 
+    const handleClick = useCallback(
+        (e: React.MouseEvent<HTMLButtonElement>) => {
+            e.stopPropagation();
+            onClick();
+        },
+        [onClick]
+    );
+
     return (
         <li>
             <button
                 className={`${styles.menuItem}${active ? ` ${styles.active}` : ''}${color === '#f00' ? ` ${styles.danger}` : ''}${className ? ` ${className}` : ''}`}
-                onClick={disabled ? undefined : onClick}
+                onClick={disabled ? undefined : handleClick}
                 aria-label={label}
                 tabIndex={disabled ? -1 : 0}
                 onKeyDown={disabled ? undefined : handleKeyDown}
