@@ -134,6 +134,25 @@ export class MockGptService implements LLMService {
             requestId?: string;
         }
     ): Promise<LLMResponse> {
+        const log = async (response: LLMResponse): Promise<LLMResponse> => {
+            await LLMHistoryService.logRequest({
+                userId: this.userId,
+                provider: 'mock',
+                presentationId: options?.presentationId,
+                requestType: 'generate_content',
+                prompt,
+                inputTokens: 0,
+                outputTokens: 0,
+                totalTokens: 0,
+                duration: 0,
+                cached: false,
+                cost: 0,
+                success: true,
+                metadata: {},
+                responseContent: JSON.stringify(response),
+            });
+            return response;
+        };
         // Если требуется function_call, генерируем соответствующий ответ
         if (options?.function_call && options.functions) {
             const functionName = options.function_call.name;
@@ -149,7 +168,7 @@ export class MockGptService implements LLMService {
                         instructions: `Использовать шаблон: ${template.id}`,
                     }));
 
-                    return {
+                    return await log({
                         elements: [],
                         function_call: {
                             name: functionName,
@@ -158,7 +177,7 @@ export class MockGptService implements LLMService {
                                 topics: mockTopics,
                             },
                         },
-                    };
+                    });
                 }
 
                 // Специальная обработка для select_slide_templates
@@ -171,7 +190,7 @@ export class MockGptService implements LLMService {
                         explanation: `Демонстрация шаблона ${template.id}`,
                     }));
 
-                    return {
+                    return await log({
                         elements: [],
                         function_call: {
                             name: functionName,
@@ -179,12 +198,12 @@ export class MockGptService implements LLMService {
                                 templateSelections: mockTemplateSelections,
                             },
                         },
-                    };
+                    });
                 }
 
                 // Специальная обработка для select_slide_template (единичный выбор)
                 if (functionName === 'select_slide_template') {
-                    return {
+                    return await log({
                         elements: [],
                         function_call: {
                             name: functionName,
@@ -194,7 +213,7 @@ export class MockGptService implements LLMService {
                                     'Универсальный двухколоночный шаблон подходит для большинства типов контента',
                             },
                         },
-                    };
+                    });
                 }
 
                 // Обработка для generate_slide_text (генерация контента слайда)
@@ -237,13 +256,13 @@ export class MockGptService implements LLMService {
                         }
                     }
 
-                    return {
+                    return await log({
                         elements: [],
                         function_call: {
                             name: functionName,
                             arguments: placeholderArgs,
                         },
-                    };
+                    });
                 }
 
                 // Обработка для rewrite_slide_text (переписывание контента слайда)
@@ -295,28 +314,28 @@ export class MockGptService implements LLMService {
                         }
                     }
 
-                    return {
+                    return await log({
                         elements: [],
                         function_call: {
                             name: functionName,
                             arguments: placeholderArgs,
                         },
-                    };
+                    });
                 }
 
                 // Fallback для других function_call
-                return {
+                return await log({
                     elements: [],
                     function_call: {
                         name: functionName,
                         arguments: { result: 'Mock response for ' + functionName },
                     },
-                };
+                });
             }
         }
 
         // Обычный текстовый ответ
-        return {
+        return await log({
             elements: [
                 {
                     type: 'text',
@@ -324,13 +343,29 @@ export class MockGptService implements LLMService {
                     metadata: {},
                 },
             ],
-        };
+        });
     }
 
     async generateImage(
         _prompt: string,
         _options: { presentationId?: string; userId: string }
     ): Promise<{ imageUrl: string; imageId: string }> {
+        await LLMHistoryService.logRequest({
+            userId: this.userId,
+            provider: 'mock',
+            presentationId: _options.presentationId,
+            requestType: 'generate_image',
+            prompt: _prompt,
+            inputTokens: 0,
+            outputTokens: 0,
+            totalTokens: 0,
+            duration: 0,
+            cached: false,
+            cost: 0,
+            success: true,
+            metadata: {},
+            responseContent: JSON.stringify({ imageUrl: MOCK_IMAGE_URL, imageId: MOCK_IMAGE_ID }),
+        });
         return {
             imageUrl: MOCK_IMAGE_URL,
             imageId: MOCK_IMAGE_ID,

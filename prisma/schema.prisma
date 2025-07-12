@@ -214,6 +214,7 @@ model LLMRequestHistory {
   presentation   Presentation? @relation(fields: [presentationId], references: [id])
 
   // Request details
+  provider    String
   requestType String // e.g. 'generate_slides', 'generate_image'
   prompt      String // Original prompt
   timestamp   DateTime @default(now())

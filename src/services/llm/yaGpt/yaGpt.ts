@@ -214,6 +214,7 @@ export class YaGptService implements LLMService {
 
         const logData: LLMRequestData = {
             userId: this.userId,
+            provider: 'yagpt',
             presentationId: options.presentationId,
             requestType: 'generate_content',
             prompt,
@@ -229,8 +230,6 @@ export class YaGptService implements LLMService {
                 provider: 'yagpt',
             },
         };
-
-        await LLMHistoryService.logRequest(logData);
 
         // Check if function call is required but absent
         if (requireFunctionCall && !functionCall) {
@@ -268,6 +267,9 @@ export class YaGptService implements LLMService {
         };
 
         logger.debug('YaGPT generate: response data', { responseData });
+
+        logData.responseContent = JSON.stringify(responseData);
+        await LLMHistoryService.logRequest(logData);
 
         // Save recording if enabled
         if (this.recordingOptions.enabled && this.recordingService) {
@@ -449,6 +451,7 @@ export class YaGptService implements LLMService {
 
             const logMessage: LLMRequestData = {
                 userId: this.userId,
+                provider: 'yagpt',
                 presentationId: options.presentationId,
                 requestType: 'generate_image',
                 prompt,

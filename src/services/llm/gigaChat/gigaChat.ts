@@ -194,6 +194,7 @@ export class GigaChatService implements LLMService {
 
                 const logMessage: LLMRequestData = {
                     userId: this.userId,
+                    provider: 'gigachat',
                     presentationId: options.presentationId,
                     requestType: 'generate_content',
                     prompt,
@@ -337,6 +338,7 @@ export class GigaChatService implements LLMService {
 
                 const logMessage: LLMRequestData = {
                     userId: this.userId,
+                    provider: 'gigachat',
                     presentationId: options?.presentationId,
                     requestType: 'generate_image',
                     prompt,
