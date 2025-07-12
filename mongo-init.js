@@ -37,6 +37,6 @@ try {
 }
 
 // Create a test database and collection to verify functionality
-db = db.getSiblingDB('presa3');
+db = db.getSiblingDB('slydle');
 db.createCollection('test');
-print("Created test collection in presa3 database"); 
+print("Created test collection in slydle database"); 

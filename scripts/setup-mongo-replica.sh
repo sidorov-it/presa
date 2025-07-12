@@ -65,19 +65,19 @@ if [ -f "$ENV_FILE" ]; then
     # Check if DATABASE_URL exists
     if grep -q "DATABASE_URL" "$ENV_FILE"; then
         # Replace the existing DATABASE_URL
-        sed -i.bak "s|DATABASE_URL=.*|DATABASE_URL=\"mongodb://localhost:27017/presa3?replicaSet=rs0\"|g" "$ENV_FILE"
+        sed -i.bak "s|DATABASE_URL=.*|DATABASE_URL=\"mongodb://localhost:27017/slydle?replicaSet=rs0\"|g" "$ENV_FILE"
         rm -f "$ENV_FILE.bak"
     else
         # Add DATABASE_URL to the end of the file
-        echo "DATABASE_URL=\"mongodb://localhost:27017/presa3?replicaSet=rs0\"" >> "$ENV_FILE"
+        echo "DATABASE_URL=\"mongodb://localhost:27017/slydle?replicaSet=rs0\"" >> "$ENV_FILE"
     fi
     echo -e "${GREEN}Updated $ENV_FILE with replica set connection string${NC}"
 else
     # Create a new .env file
-    echo "DATABASE_URL=\"mongodb://localhost:27017/presa3?replicaSet=rs0\"" > "$ENV_FILE"
+    echo "DATABASE_URL=\"mongodb://localhost:27017/slydle?replicaSet=rs0\"" > "$ENV_FILE"
     echo -e "${GREEN}Created $ENV_FILE with replica set connection string${NC}"
 fi
 
 echo -e "${GREEN}MongoDB replica set setup complete!${NC}"
 echo -e "${YELLOW}To verify the replica set status, run: ${NC}mongosh --eval \"rs.status()\""
-echo -e "${YELLOW}Your MongoDB connection string is now: ${NC}mongodb://localhost:27017/presa3?replicaSet=rs0" 
+echo -e "${YELLOW}Your MongoDB connection string is now: ${NC}mongodb://localhost:27017/slydle?replicaSet=rs0" 
