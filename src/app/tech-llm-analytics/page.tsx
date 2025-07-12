@@ -1,7 +1,10 @@
 'use client';
 import { Box, Text, Code, Accordion, Stack } from '@chakra-ui/react';
-import testData from '../../../test/recordings/test.json';
+// import testData from '../../../test/recordings/test.json';
 
+const testData = {
+    recordings: [],
+};
 // Типизация для данных (адаптируйте под структуру test.json при необходимости)
 type LlmRequest = {
     user: string;
