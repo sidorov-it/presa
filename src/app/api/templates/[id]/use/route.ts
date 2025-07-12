@@ -25,16 +25,30 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
         const templateData = createPresentationFromTemplate(templateId);
 
+        const theme = await prisma.theme.findFirst({
+            where: {
+                AND: [
+                    {
+                        name: descriptor.themeName,
+                    },
+                    {
+                        isDefault: true,
+                    },
+                ],
+            },
+        });
+
+        if (!theme) {
+            return NextResponse.json({ message: 'Theme not found' }, { status: 404 });
+        }
+
         // Преобразуем данные шаблона в формат для Prisma
         const presentationData = {
             title: templateData.title,
             description: templateData.description || '',
             slides: templateData.slides,
             userId: session.user.id,
-            themeId:
-                typeof templateData.themeId === 'object' && templateData.themeId?.$oid
-                    ? templateData.themeId.$oid
-                    : templateData.themeId,
+            themeId: theme.id,
             durationMinutes: templateData.durationMinutes,
             goal: templateData.goal,
             audience: templateData.audience,
