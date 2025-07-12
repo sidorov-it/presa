@@ -1,7 +1,7 @@
 .logo {
     width: 300px;
     height: 60px;
-    background: url('./logo.webp') no-repeat center center;
+    background: url('./logofull.svg') no-repeat center center;
     background-size: contain;
 }
 

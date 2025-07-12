@@ -36,6 +36,7 @@ import Popover from '@/components/ui/Popover';
 import { useShallow } from 'zustand/react/shallow';
 import FontLoader from '@/components/theme/components/Fonts/FontLoader';
 import { Content } from '@tiptap/react';
+import UIStateDebugButton from '@/components/debug/UIStateDebugButton';
 
 const Header = ({
     presentationId,
@@ -612,6 +613,7 @@ export default function PresentationEditorPage() {
                                     <HistoryDebugPopup />
                                     <ThemeDebugButton />
                                     <DragDropDebugInfo />
+                                    <UIStateDebugButton />
                                 </>
                             )}
                         </main>

@@ -31,7 +31,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <Provider>
                         {children}
                         <SideMenuRenderer />
-                        {process.env.NODE_ENV === 'development' && <UIStateDebugButton />}
                     </Provider>
                 </NextAuthProvider>
             </body>
