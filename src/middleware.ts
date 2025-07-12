@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { NextRequest } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
 export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
 
     // Define which paths are public (no auth needed)
-    const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password'];
+    const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password', '/email-not-verified'];
     const isPublicPath = publicPaths.some(pp => path === pp || path.startsWith(pp));
 
     // Get the token
@@ -50,5 +51,6 @@ export const config = {
         '/templates',
         '/themes',
         '/payment',
+        '/email-not-verified',
     ],
 };

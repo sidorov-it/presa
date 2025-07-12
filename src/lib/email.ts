@@ -22,3 +22,12 @@ export async function sendEmail({ to, subject, text }: SendEmailOptions): Promis
 
     await transporter.sendMail(mailOptions);
 }
+
+export async function sendVerificationEmail(email: string, token: string): Promise<void> {
+    const verifyUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${token}`;
+    await sendEmail({
+        to: email,
+        subject: 'Подтвердите почту',
+        text: `Чтобы подтвердить адрес электронной почты, перейдите по ссылке: ${verifyUrl}`,
+    });
+}
