@@ -1,1124 +1,1121 @@
 {
-    "title": "Startup Pitch Deck Template",
-    "description": "",
-    "slides": [
-      {
-        "id": "sddz43xuazo",
-        "templateType": "imageTop",
-        "contentAlignment": "center",
-        "layouts": [
-          {
-            "id": "6hwrzqx8ixl",
-            "type": "blank",
-            "elements": [
-              {
-                "id": "k8k1m5",
-                "elementTypeId": "text",
-                "elementVariant": "heading",
-                "textType": "heading",
-                "level": 1,
-                "content": "<p><span class=\"heading-text title-text\">Startup Pitch<br>Deck Template</span></p>",
-                "cellId": "v7z9nsqm9w9"
-              }
-            ],
-            "style": {},
-            "gridStructure": {
-              "rows": [
-                {
-                  "id": "l1rk0og18o8",
-                  "cells": [
-                    {
-                      "id": "v7z9nsqm9w9",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columns": 1,
-              "columnWidths": []
+  "_id": "6872980cc80634567cf6cc39",
+  "title": "[ШАБЛОН] Startup Pitch Deck Template",
+  "description": "",
+  "themeId": "6872a06e312e30e904094588",
+  "themeName": "Атакама",
+  "createdAt": "2025-07-06T17:07:08.344Z",
+  "updatedAt": "2025-07-12T17:51:11.835Z",
+  "slides": [
+    {
+      "id": "sddz43xuazo",
+      "templateType": "imageTop",
+      "contentAlignment": "center",
+      "layouts": [
+        {
+          "id": "6hwrzqx8ixl",
+          "type": "blank",
+          "elements": [
+            {
+              "id": "k8k1m5",
+              "elementTypeId": "text",
+              "elementVariant": "heading",
+              "textType": "heading",
+              "level": 1,
+              "content": "<p><span class=\"heading-text title-text\">Startup Pitch<br>Deck Template</span></p>",
+              "cellId": "v7z9nsqm9w9"
             }
-          },
-          {
-            "id": "q6ovxp",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "rhs5xj",
-                  "cells": [
-                    {
-                      "id": "kcczhs",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
+          ],
+          "style": {},
+          "gridStructure": {
+            "rows": [
               {
-                "id": "ateq19biian",
-                "content": "<p><span class=\"body-text big-text\">For founders &amp; startups looking to raise their next round of funding</span><span class=\"body-text big-text\">&nbsp;</span></p>",
-                "elementTypeId": "text",
-                "cellId": "kcczhs"
-              }
-            ]
-          },
-          {
-            "id": "xiqa2e0xf4d",
-            "elements": [
-              {
-                "id": "vrg4mwj171q",
-                "content": "<p><span class=\"body-text normal-text\">&nbsp;</span></p>",
-                "elementTypeId": "text",
-                "cellId": "pccg5uk89lq"
-              }
-            ],
-            "gridStructure": {
-              "rows": [
-                {
-                  "id": "20ocnyy6tar",
-                  "cells": [
-                    {
-                      "id": "pccg5uk89lq",
-                      "row": 0,
-                      "column": 0
-                    }
-                  ]
-                }
-              ],
-              "columns": 1,
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "style": {}
-          }
-        ],
-        "imageHeightRatio": 0.2325341130604289,
-        "imageUrl": "/uploads/674b72ab-ceff-483c-bfb6-898a2b623ebf.jpeg"
-      },
-      {
-        "id": "gyy4v5xuw8r",
-        "title": "Слайд 2",
-        "layouts": [
-          {
-            "id": "le4pv6xjjqf",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "pmg8ai",
-                  "cells": [
-                    {
-                      "id": "wnppls",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "s6ugqwbg4qs",
-                "content": "<p><span class=\"heading-text title-text\" style=\"color: #ffffff\">Before We Begin</span></p>",
-                "elementTypeId": "text",
-                "cellId": "wnppls"
-              }
-            ]
-          },
-          {
-            "id": "nxzw55",
-            "gridStructure": {
-              "columns": 3,
-              "rows": [
-                {
-                  "id": "ytcdz2",
-                  "cells": [
-                    {
-                      "id": "n1z5zz",
-                      "row": 1,
-                      "column": 1
-                    },
-                    {
-                      "id": "u9ju1u597dt",
-                      "row": 1,
-                      "column": 2
-                    },
-                    {
-                      "id": "ij9dn7pnt1",
-                      "row": 1,
-                      "column": 3
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "33%",
-                "34%",
-                "33%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "pffpp0suzp",
-                "content": "<p><span class=\"emoji\" style=\"color: #ffffff\">💡</span><span class=\"body-text normal-text\" style=\"color: #ffffff\"><strong> Tip #1 </strong></span></p>",
-                "elementTypeId": "text",
-                "cellId": "n1z5zz"
-              },
-              {
-                "id": "v4po1xlyl9",
-                "content": "<p><span class=\"body-text normal-text\" style=\"color: #ffffff\">Tell recipients how to read and comment on this memo</span><span class=\"body-text normal-text\" style=\"color: #ffffff\">&nbsp;</span></p>",
-                "elementTypeId": "text",
-                "cellId": "n1z5zz"
-              },
-              {
-                "id": "opnmm8zxowf",
-                "content": "<p><span class=\"emoji\" style=\"color: #ffffff\">💡</span><span class=\"body-text normal-text\" style=\"color: #ffffff\"><strong> Tip #2</strong></span></p>",
-                "elementTypeId": "text",
-                "cellId": "u9ju1u597dt"
-              },
-              {
-                "id": "izts75v16mj",
-                "content": "<p><span class=\"body-text normal-text\" style=\"color: #ffffff\">Replace generic headings below  (like \"Team\") with something more specific that can stand on its own, e.g. <em>The Team that built Uber's Machine Learning infrastructure</em></span><span class=\"body-text normal-text\" style=\"color: #ffffff\">&nbsp;</span></p>",
-                "elementTypeId": "text",
-                "cellId": "u9ju1u597dt"
-              },
-              {
-                "id": "su24ytwepa",
-                "content": "<p><span class=\"emoji\" style=\"color: #ffffff\">💡</span><span class=\"body-text normal-text\" style=\"color: #ffffff\"><strong> Tip #3</strong></span><span class=\"body-text normal-text\" style=\"color: #ffffff\">&nbsp;</span></p>",
-                "elementTypeId": "text",
-                "cellId": "ij9dn7pnt1"
-              },
-              {
-                "id": "fx0kjg9y4lu",
-                "content": "<p><span class=\"body-text normal-text\" style=\"color: #ffffff\">To add a personalized touch, try dropping in a recorded video intro by using </span><code class=\"custom-code\">/Loom</code><span class=\"body-text normal-text\" style=\"color: #ffffff\"> </span><span class=\"body-text normal-text\" style=\"color: #ffffff\">&nbsp;</span></p>",
-                "elementTypeId": "text",
-                "cellId": "ij9dn7pnt1"
-              }
-            ]
-          },
-          {
-            "id": "g6vj3cc465r",
-            "gridStructure": {
-              "columns": 1,
-              "columnWidths": [
-                "100%"
-              ],
-              "rows": [
-                {
-                  "id": "5j5cm3cismr",
-                  "cells": [
-                    {
-                      "id": "nvz3ogrcm3g",
-                      "row": 0,
-                      "column": 1
-                    }
-                  ]
-                }
-              ]
-            },
-            "type": "blank",
-            "elements": [
-              {
-                "id": "kk1wr73ddga",
-                "content": "<p><span class=\"body-text normal-text\" style=\"color: #ffffff\">&nbsp;</span></p>",
-                "elementTypeId": "text",
-                "tempLayout": true,
-                "cellId": "nvz3ogrcm3g"
-              }
-            ],
-            "style": {}
-          }
-        ],
-        "style": {},
-        "contentAlignment": "top",
-        "templateType": "standard",
-        "textColor": "#ffffff"
-      },
-      {
-        "id": "pov4buqxq3q",
-        "title": "Слайд 3",
-        "layouts": [
-          {
-            "id": "090vze803oub",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "49mbar",
-                  "cells": [
-                    {
-                      "id": "d5b1my",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "nu5erko6y1",
-                "content": "<p><span class=\"heading-text title-text\" style=\"color: #ffffff\"><strong>Team</strong></span></p>",
-                "elementTypeId": "text",
-                "cellId": "d5b1my"
-              }
-            ]
-          },
-          {
-            "id": "u9hc2g",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "zl0i2k",
-                  "cells": [
-                    {
-                      "id": "hib4ep",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "piksr3b5fr",
-                "content": "<p><span class=\"body-text big-text\" style=\"color: #ffffff\">🧑‍🚀 Who are you and what makes your team special?&nbsp;</span></p>",
-                "elementTypeId": "text",
-                "cellId": "hib4ep"
-              }
-            ]
-          },
-          {
-            "id": "dhbpwv",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "qbkcs0",
-                  "cells": [
-                    {
-                      "id": "f2zumh",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "y94s4suayue",
-                "content": "<p><span class=\"body-text normal-text\">/&nbsp;</span></p>",
-                "elementTypeId": "smart-layout",
-                "cellId": "f2zumh",
-                "elementVariant": "images-with-text",
-                "items": [
+                "id": "l1rk0og18o8",
+                "cells": [
                   {
-                    "title": "<p><span class=\"heading-text heading-3\">Nikola <br>Tesla</span></p>",
-                    "text": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"><strong>Inventor</strong><br>@ Tesla Inc. </span></p>",
-                    "imageUrl": "/uploads/a474dc0c-011e-4408-b5d9-bb2d8879e730.jpeg",
-                    "iconUrl": "",
-                    "id": "irz0jf16dq",
-                    "uploaded": true
-                  },
-                  {
-                    "title": "<p><span class=\"heading-text heading-3\">Marie <br>Curie</span></p>",
-                    "text": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"><strong>Physicist and Chemist</strong><br>@ Radioactivity</span></p>",
-                    "imageUrl": "/uploads/cb7a3031-de4a-4866-8a05-a6b2784739ba.jpeg",
-                    "iconUrl": "",
-                    "id": "p88yiu3mnqa",
-                    "uploaded": true
-                  },
-                  {
-                    "title": "<p><span class=\"heading-text heading-3\">Thomas Edison</span></p>",
-                    "text": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"><strong>Inventor </strong><br>@ Light bulb </span></p>",
-                    "imageUrl": "/uploads/324a9a4a-7cf6-45ca-aa90-91c8ac4a34cb.webp",
-                    "iconUrl": "",
-                    "id": "ie0h82slkvc",
-                    "uploaded": true
-                  },
-                  {
-                    "id": "1v94dwm56t2",
-                    "title": "<p><span class=\"heading-text heading-3\">Albert Einstein</span></p>",
-                    "text": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"><strong>Theoretical Physicist</strong><br>@ EMC2 </span></p>",
-                    "imageUrl": "/uploads/44e90c71-5195-47e5-afc2-6ee703dd99c7.jpeg",
-                    "uploaded": true
+                    "id": "v7z9nsqm9w9",
+                    "row": 1,
+                    "column": 1
                   }
-                ],
-                "columnSize": 3,
-                "align": "center",
-                "imageShape": "square",
-                "imageSize": 5
-              }
-            ]
-          }
-        ],
-        "style": {},
-        "contentAlignment": "top",
-        "templateType": "standard",
-        "textColor": "#ffffff"
-      },
-      {
-        "id": "a0hos432brt",
-        "title": "Слайд 4",
-        "layouts": [
-          {
-            "id": "4yjome0e9sr",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "95bgbk",
-                  "cells": [
-                    {
-                      "id": "7akt4f",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "8h9nzpfbpt6",
-                "content": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"><strong>Mission Statement</strong></span></p>",
-                "elementTypeId": "text",
-                "cellId": "7akt4f"
-              }
-            ]
-          },
-          {
-            "id": "w4mai7",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "ugbbz2",
-                  "cells": [
-                    {
-                      "id": "5xc8gn",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "tkplcdqslhg",
-                "content": "<blockquote class=\"blockquote\"><p><span class=\"heading-text heading-3\">Overarching objective of the organization; should be measurable, achievable, and ideally inspirational. Brief, easy to remember, and uniquely identifiable to the company.</span><span class=\"heading-text heading-3\">&nbsp;</span></p></blockquote>",
-                "elementTypeId": "text",
-                "cellId": "5xc8gn"
-              }
-            ]
-          },
-          {
-            "id": "qq2u05jnde9",
-            "type": "blank",
-            "elements": [
-              {
-                "id": "4ugezl",
-                "elementTypeId": "text",
-                "elementVariant": "text",
-                "textType": "text",
-                "level": 7,
-                "content": "<p style=\"text-align: left\"><span class=\"emoji\" style=\"color: #FFFFFF\">💡</span><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"> Tip: Help your text stand out by using </span><code class=\"custom-code\">/Blockquote</code></p>",
-                "cellId": "51qwnrkw224"
+                ]
               }
             ],
-            "style": {},
-            "gridStructure": {
-              "rows": [
-                {
-                  "id": "31zoyzs819j",
-                  "cells": [
-                    {
-                      "id": "51qwnrkw224",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columns": 1,
-              "columnWidths": []
+            "columns": 1,
+            "columnWidths": []
+          }
+        },
+        {
+          "id": "q6ovxp",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "rhs5xj",
+                "cells": [
+                  {
+                    "id": "kcczhs",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "ateq19biian",
+              "content": "<p><span class=\"body-text big-text\">For founders &amp; startups looking to raise their next round of funding</span><span class=\"body-text big-text\">&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "cellId": "kcczhs"
             }
-          }
-        ],
-        "style": {},
-        "contentAlignment": "center",
-        "templateType": "imageRight",
-        "imageWidthRatio": 0.33,
-        "imageUrl": "/uploads/390063e9-7928-462a-a34d-279a1eba435d.jpeg"
-      },
-      {
-        "id": "zrmmdl6ykx",
-        "title": "Слайд 5",
-        "layouts": [
-          {
-            "id": "7o0u2xlwu",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "h35feq",
-                  "cells": [
-                    {
-                      "id": "0f9ktg",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
+          ]
+        },
+        {
+          "id": "xiqa2e0xf4d",
+          "elements": [
+            {
+              "id": "vrg4mwj171q",
+              "content": "<p><span class=\"body-text normal-text\">&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "cellId": "pccg5uk89lq"
+            }
+          ],
+          "gridStructure": {
+            "rows": [
               {
-                "id": "80ixsr4r5ak",
-                "content": "<p><span class=\"heading-text big-heading\" style=\"color: #ffffff\">Product Demo</span></p>",
-                "elementTypeId": "text",
-                "cellId": "0f9ktg"
-              }
-            ]
-          },
-          {
-            "id": "jk46g1",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "8u2ws3",
-                  "cells": [
-                    {
-                      "id": "gygxpa",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "0k0qiojrsgx8",
-                "content": "<p><span class=\"body-text normal-text\" style=\"color: #ffffff\">Insert a demo video or embed your prototype / demo</span></p>",
-                "elementTypeId": "text",
-                "cellId": "gygxpa"
-              }
-            ]
-          },
-          {
-            "id": "fm63do",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "nysepf",
-                  "cells": [
-                    {
-                      "id": "z2k3kb",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "1kstan53xu5",
-                "content": "<p><span class=\"body-text normal-text\" style=\"color: #ffffff\">Компонент video</span></p>",
-                "elementTypeId": "text",
-                "cellId": "z2k3kb"
-              }
-            ]
-          },
-          {
-            "id": "nl6v6r",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "a3sswc",
-                  "cells": [
-                    {
-                      "id": "0f3o92",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "4ln5lrsnfhd",
-                "content": "<p><span class=\"emoji\" style=\"color: #ffffff\">💡</span><span class=\"body-text normal-text\" style=\"color: #ffffff\"> Tip: while typing, try typing </span><code class=\"custom-code\">/Loom</code><span class=\"body-text normal-text\" style=\"color: #ffffff\"> and create a screen recording of your product demo directly in Gamma. Or try </span><code class=\"custom-code\">/Embed</code><span class=\"body-text normal-text\" style=\"color: #ffffff\"> or </span><code class=\"custom-code\">/Youtube</code><span class=\"body-text normal-text\" style=\"color: #ffffff\"> if you've already saved your recording somewhere online</span><span class=\"body-text normal-text\" style=\"color: #ffffff\">&nbsp;</span></p>",
-                "elementTypeId": "text",
-                "cellId": "0f3o92"
-              }
-            ]
-          }
-        ],
-        "style": {},
-        "contentAlignment": "top",
-        "templateType": "standard",
-        "textColor": "#ffffff"
-      },
-      {
-        "id": "v4qz30cvxnq",
-        "title": "Слайд 4",
-        "layouts": [
-          {
-            "id": "bzmzfgn0cl",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "uit6ss",
-                  "cells": [
-                    {
-                      "id": "y4tke8",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "tot3aun023",
-                "content": "<p><span class=\"heading-text big-heading\"><strong>Metrics</strong></span></p>",
-                "elementTypeId": "text",
-                "cellId": "y4tke8"
-              }
-            ]
-          },
-          {
-            "id": "ayczk7",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "j5zkis",
-                  "cells": [
-                    {
-                      "id": "1l65j2",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "vo1owyv3o7p",
-                "content": "<p><span class=\"body-text normal-text\">/image&nbsp;</span></p>",
-                "elementTypeId": "image",
-                "cellId": "1l65j2",
-                "src": "/uploads/a6946660-8254-4e53-b721-9366747d5fa4.avif",
-                "alt": "Image",
-                "alignment": "center",
-                "uploaded": true
-              }
-            ]
-          },
-          {
-            "id": "vpirv8",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "fslh0t",
-                  "cells": [
-                    {
-                      "id": "imbd1a",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "wbmuj583mfs",
-                "content": "<p><span class=\"body-text normal-text\">/im&nbsp;</span></p>",
-                "elementTypeId": "image",
-                "cellId": "imbd1a",
-                "src": "/uploads/d4bf8a43-5483-4ebf-a109-a1eb198c739a.avif",
-                "alt": "Image",
-                "alignment": "center",
-                "uploaded": true
-              }
-            ]
-          },
-          {
-            "id": "f17i9vvcnhc",
-            "gridStructure": {
-              "columns": 1,
-              "columnWidths": [
-                "100%"
-              ],
-              "rows": [
-                {
-                  "id": "qbkarwi4u4",
-                  "cells": [
-                    {
-                      "id": "0owytnbabqve",
-                      "row": 0,
-                      "column": 1
-                    }
-                  ]
-                }
-              ]
-            },
-            "type": "blank",
-            "elements": [
-              {
-                "id": "suchfmlc7g",
-                "content": "<p><span class=\"emoji\" style=\"color: #FFFFFF\">💡</span><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"><em> </em>Tip: Trying copying and pasting charts from Google Sheets</span><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">&nbsp;</span></p>",
-                "elementTypeId": "text",
-                "tempLayout": true,
-                "cellId": "0owytnbabqve"
+                "id": "20ocnyy6tar",
+                "cells": [
+                  {
+                    "id": "pccg5uk89lq",
+                    "row": 0,
+                    "column": 0
+                  }
+                ]
               }
             ],
-            "style": {}
-          }
-        ],
-        "style": {},
-        "contentAlignment": "top",
-        "templateType": "standard"
-      },
-      {
-        "id": "s48sk46nc0s",
-        "title": "Слайд 7",
-        "layouts": [
-          {
-            "id": "0f3opm4u3qsn",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "7rv9pt",
-                  "cells": [
-                    {
-                      "id": "yhfdu0",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "uostxrdp0q",
-                "content": "<p><span class=\"heading-text big-heading\"><strong>Future States</strong></span><span class=\"heading-text big-heading\">&nbsp;</span></p>",
-                "elementTypeId": "text",
-                "cellId": "yhfdu0"
-              }
+            "columns": 1,
+            "columnWidths": [
+              "100%"
             ]
           },
-          {
-            "id": "m5nrtz",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "ysyip6",
-                  "cells": [
-                    {
-                      "id": "cuufzr",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
+          "style": {}
+        }
+      ],
+      "imageHeightRatio": 0.2325341130604289,
+      "imageUrl": "/uploads/674b72ab-ceff-483c-bfb6-898a2b623ebf.jpeg"
+    },
+    {
+      "id": "gyy4v5xuw8r",
+      "title": "Слайд 2",
+      "layouts": [
+        {
+          "id": "le4pv6xjjqf",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
               {
-                "id": "u6gllufgfbs",
-                "content": "<p><span class=\"body-text normal-text\">SMART LAYOUT шаги</span></p>",
-                "elementTypeId": "text",
-                "cellId": "cuufzr"
-              }
-            ]
-          },
-          {
-            "id": "7aynik",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "pvceqr",
-                  "cells": [
-                    {
-                      "id": "bg0dm3",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "f84epq7gucr",
-                "content": "<p><span class=\"heading-text heading-3\">What happens to the market?</span><span class=\"heading-text heading-3\">&nbsp;</span></p>",
-                "elementTypeId": "text",
-                "cellId": "bg0dm3"
-              }
-            ]
-          },
-          {
-            "id": "k11rjq",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "403ai0",
-                  "cells": [
-                    {
-                      "id": "b7os97",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "tamvoyuyvwc",
-                "content": "<p><span class=\"body-text normal-text\">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Volutpat odio facilisis mauris sit amet massa vitae.</span><span class=\"body-text normal-text\">&nbsp;</span></p>",
-                "elementTypeId": "text",
-                "cellId": "b7os97"
-              }
-            ]
-          },
-          {
-            "id": "nt21q4",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "er6ek1",
-                  "cells": [
-                    {
-                      "id": "wedijz",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "okaqtusa849",
-                "content": "<p><span class=\"heading-text heading-3\">How do you change the market?</span></p>",
-                "elementTypeId": "text",
-                "cellId": "wedijz"
-              }
-            ]
-          },
-          {
-            "id": "7rwmlp",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "lti733",
-                  "cells": [
-                    {
-                      "id": "1psdfx",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "bq3ucx6o07v",
-                "content": "<p><span class=\"body-text normal-text\">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Volutpat odio facilisis mauris sit amet massa vitae. Tristique senectus et netus et.</span><span class=\"body-text normal-text\">&nbsp;</span></p>",
-                "elementTypeId": "text",
-                "cellId": "1psdfx"
-              }
-            ]
-          }
-        ],
-        "style": {},
-        "contentAlignment": "top",
-        "templateType": "imageLeft",
-        "imageWidthRatio": 0.33,
-        "imageUrl": "/uploads/bbee135c-c4c5-4bc3-a29e-ea30218274b0.jpeg"
-      },
-      {
-        "id": "wx4ty6s7s3",
-        "title": "Слайд 7",
-        "layouts": [
-          {
-            "id": "8bv6p4o08ux",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "aeodqy",
-                  "cells": [
-                    {
-                      "id": "ubuwak",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "78binj2gbpb",
-                "content": "<p><span class=\"heading-text big-heading\"><strong>The Competition</strong></span><span class=\"heading-text big-heading\">&nbsp;</span></p>",
-                "elementTypeId": "text",
-                "cellId": "ubuwak"
-              }
-            ]
-          },
-          {
-            "id": "miierj",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "sejwze",
-                  "cells": [
-                    {
-                      "id": "eqhdtm",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "mru16bk6xm8",
-                "content": "<p><span class=\"heading-text heading-3\">⚔️</span><span class=\"heading-text heading-3\"> Who are they and how do we beat them?</span><span class=\"heading-text heading-3\">&nbsp;</span></p>",
-                "elementTypeId": "text",
-                "cellId": "eqhdtm"
-              }
-            ]
-          },
-          {
-            "id": "gma62o",
-            "gridStructure": {
-              "columns": 1,
-              "rows": [
-                {
-                  "id": "2ey3y0",
-                  "cells": [
-                    {
-                      "id": "rnogc9",
-                      "row": 1,
-                      "column": 1
-                    }
-                  ]
-                }
-              ],
-              "columnWidths": [
-                "100%"
-              ]
-            },
-            "type": "blank",
-            "style": {},
-            "elements": [
-              {
-                "id": "1bbaqdcb3uk",
-                "content": "<p><span class=\"body-text normal-text\">/</span></p>",
-                "elementTypeId": "smart-layout",
-                "cellId": "rnogc9",
-                "elementVariant": "text-boxes",
-                "items": [
+                "id": "pmg8ai",
+                "cells": [
                   {
-                    "title": "<p style=\"text-align: left\"><span class=\"heading-text heading-3\"><strong>Competitor 1</strong></span></p>",
-                    "text": "<p style=\"text-align: left\">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor</p>",
-                    "imageUrl": "",
-                    "iconUrl": "",
-                    "id": "tqppox6pvfb"
-                  },
-                  {
-                    "title": "<p style=\"text-align: left\"><span class=\"heading-text heading-3\"><strong>Competitor 3</strong></span></p>",
-                    "text": "<p style=\"text-align: left\">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim </p>",
-                    "imageUrl": "",
-                    "iconUrl": "",
-                    "id": "ffwhp26w8z"
-                  },
-                  {
-                    "title": "<p style=\"text-align: left\"><span class=\"heading-text heading-3\"><strong>Competitor 2</strong></span></p>",
-                    "text": "<p style=\"text-align: left\">Sed ut perspiciatis unde omnis iste natus error sit volupta tem accusa ntium eius modi tempora</p>",
-                    "imageUrl": "",
-                    "iconUrl": "",
-                    "id": "wkqfw00d8vp"
-                  },
-                  {
-                    "id": "9obuwdnxenn",
-                    "title": "<p style=\"text-align: left\"><span class=\"heading-text heading-3\"><strong>Competitor 4</strong></span></p>",
-                    "text": "<p style=\"text-align: left\">Foste natus error sit volupta tem accusa ntium eius modi tempora</p>"
+                    "id": "wnppls",
+                    "row": 1,
+                    "column": 1
                   }
-                ],
-                "columnSize": 3,
-                "align": "left",
-                "imageShape": "square",
-                "imageSize": 5
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "s6ugqwbg4qs",
+              "content": "<p><span class=\"heading-text title-text\" style=\"color: #ffffff\">Before We Begin</span></p>",
+              "elementTypeId": "text",
+              "cellId": "wnppls"
+            }
+          ]
+        },
+        {
+          "id": "nxzw55",
+          "gridStructure": {
+            "columns": 3,
+            "rows": [
+              {
+                "id": "ytcdz2",
+                "cells": [
+                  {
+                    "id": "n1z5zz",
+                    "row": 1,
+                    "column": 1
+                  },
+                  {
+                    "id": "u9ju1u597dt",
+                    "row": 1,
+                    "column": 2
+                  },
+                  {
+                    "id": "ij9dn7pnt1",
+                    "row": 1,
+                    "column": 3
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "33%",
+              "34%",
+              "33%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "pffpp0suzp",
+              "content": "<p><span class=\"emoji\" style=\"color: #ffffff\">💡</span><span class=\"body-text normal-text\" style=\"color: #ffffff\"><strong> Tip #1 </strong></span></p>",
+              "elementTypeId": "text",
+              "cellId": "n1z5zz"
+            },
+            {
+              "id": "v4po1xlyl9",
+              "content": "<p><span class=\"body-text normal-text\" style=\"color: #ffffff\">Tell recipients how to read and comment on this memo</span><span class=\"body-text normal-text\" style=\"color: #ffffff\">&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "cellId": "n1z5zz"
+            },
+            {
+              "id": "opnmm8zxowf",
+              "content": "<p><span class=\"emoji\" style=\"color: #ffffff\">💡</span><span class=\"body-text normal-text\" style=\"color: #ffffff\"><strong> Tip #2</strong></span></p>",
+              "elementTypeId": "text",
+              "cellId": "u9ju1u597dt"
+            },
+            {
+              "id": "izts75v16mj",
+              "content": "<p><span class=\"body-text normal-text\" style=\"color: #ffffff\">Replace generic headings below  (like \"Team\") with something more specific that can stand on its own, e.g. <em>The Team that built Uber's Machine Learning infrastructure</em></span><span class=\"body-text normal-text\" style=\"color: #ffffff\">&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "cellId": "u9ju1u597dt"
+            },
+            {
+              "id": "su24ytwepa",
+              "content": "<p><span class=\"emoji\" style=\"color: #ffffff\">💡</span><span class=\"body-text normal-text\" style=\"color: #ffffff\"><strong> Tip #3</strong></span><span class=\"body-text normal-text\" style=\"color: #ffffff\">&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "cellId": "ij9dn7pnt1"
+            },
+            {
+              "id": "fx0kjg9y4lu",
+              "content": "<p><span class=\"body-text normal-text\" style=\"color: #ffffff\">To add a personalized touch, try dropping in a recorded video intro by using </span><code class=\"custom-code\">/Loom</code><span class=\"body-text normal-text\" style=\"color: #ffffff\"> </span><span class=\"body-text normal-text\" style=\"color: #ffffff\">&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "cellId": "ij9dn7pnt1"
+            }
+          ]
+        },
+        {
+          "id": "g6vj3cc465r",
+          "gridStructure": {
+            "columns": 1,
+            "columnWidths": [
+              "100%"
+            ],
+            "rows": [
+              {
+                "id": "5j5cm3cismr",
+                "cells": [
+                  {
+                    "id": "nvz3ogrcm3g",
+                    "row": 0,
+                    "column": 1
+                  }
+                ]
               }
             ]
+          },
+          "type": "blank",
+          "elements": [
+            {
+              "id": "kk1wr73ddga",
+              "content": "<p><span class=\"body-text normal-text\" style=\"color: #ffffff\">&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "tempLayout": true,
+              "cellId": "nvz3ogrcm3g"
+            }
+          ],
+          "style": {}
+        }
+      ],
+      "style": {},
+      "contentAlignment": "top",
+      "templateType": "standard",
+      "textColor": "#ffffff"
+    },
+    {
+      "id": "pov4buqxq3q",
+      "title": "Слайд 3",
+      "layouts": [
+        {
+          "id": "090vze803oub",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "49mbar",
+                "cells": [
+                  {
+                    "id": "d5b1my",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "nu5erko6y1",
+              "content": "<p><span class=\"heading-text title-text\" style=\"color: #ffffff\"><strong>Team</strong></span></p>",
+              "elementTypeId": "text",
+              "cellId": "d5b1my"
+            }
+          ]
+        },
+        {
+          "id": "u9hc2g",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "zl0i2k",
+                "cells": [
+                  {
+                    "id": "hib4ep",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "piksr3b5fr",
+              "content": "<p><span class=\"body-text big-text\" style=\"color: #ffffff\">🧑‍🚀 Who are you and what makes your team special?&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "cellId": "hib4ep"
+            }
+          ]
+        },
+        {
+          "id": "dhbpwv",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "qbkcs0",
+                "cells": [
+                  {
+                    "id": "f2zumh",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "y94s4suayue",
+              "content": "<p><span class=\"body-text normal-text\">/&nbsp;</span></p>",
+              "elementTypeId": "smart-layout",
+              "cellId": "f2zumh",
+              "elementVariant": "images-with-text",
+              "items": [
+                {
+                  "title": "<p><span class=\"heading-text heading-3\">Nikola <br>Tesla</span></p>",
+                  "text": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"><strong>Inventor</strong><br>@ Tesla Inc. </span></p>",
+                  "imageUrl": "/uploads/a474dc0c-011e-4408-b5d9-bb2d8879e730.jpeg",
+                  "iconUrl": "",
+                  "id": "irz0jf16dq",
+                  "uploaded": true
+                },
+                {
+                  "title": "<p><span class=\"heading-text heading-3\">Marie <br>Curie</span></p>",
+                  "text": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"><strong>Physicist and Chemist</strong><br>@ Radioactivity</span></p>",
+                  "imageUrl": "/uploads/cb7a3031-de4a-4866-8a05-a6b2784739ba.jpeg",
+                  "iconUrl": "",
+                  "id": "p88yiu3mnqa",
+                  "uploaded": true
+                },
+                {
+                  "title": "<p><span class=\"heading-text heading-3\">Thomas Edison</span></p>",
+                  "text": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"><strong>Inventor </strong><br>@ Light bulb </span></p>",
+                  "imageUrl": "/uploads/324a9a4a-7cf6-45ca-aa90-91c8ac4a34cb.webp",
+                  "iconUrl": "",
+                  "id": "ie0h82slkvc",
+                  "uploaded": true
+                },
+                {
+                  "id": "1v94dwm56t2",
+                  "title": "<p><span class=\"heading-text heading-3\">Albert Einstein</span></p>",
+                  "text": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"><strong>Theoretical Physicist</strong><br>@ EMC2 </span></p>",
+                  "imageUrl": "/uploads/44e90c71-5195-47e5-afc2-6ee703dd99c7.jpeg",
+                  "uploaded": true
+                }
+              ],
+              "columnSize": 3,
+              "align": "center",
+              "imageShape": "square",
+              "imageSize": 5
+            }
+          ]
+        }
+      ],
+      "style": {},
+      "contentAlignment": "top",
+      "templateType": "standard",
+      "textColor": "#ffffff"
+    },
+    {
+      "id": "a0hos432brt",
+      "title": "Слайд 4",
+      "layouts": [
+        {
+          "id": "4yjome0e9sr",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "95bgbk",
+                "cells": [
+                  {
+                    "id": "7akt4f",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "8h9nzpfbpt6",
+              "content": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"><strong>Mission Statement</strong></span></p>",
+              "elementTypeId": "text",
+              "cellId": "7akt4f"
+            }
+          ]
+        },
+        {
+          "id": "w4mai7",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "ugbbz2",
+                "cells": [
+                  {
+                    "id": "5xc8gn",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "tkplcdqslhg",
+              "content": "<blockquote class=\"blockquote\"><p><span class=\"heading-text heading-3\">Overarching objective of the organization; should be measurable, achievable, and ideally inspirational. Brief, easy to remember, and uniquely identifiable to the company.</span><span class=\"heading-text heading-3\">&nbsp;</span></p></blockquote>",
+              "elementTypeId": "text",
+              "cellId": "5xc8gn"
+            }
+          ]
+        },
+        {
+          "id": "qq2u05jnde9",
+          "type": "blank",
+          "elements": [
+            {
+              "id": "4ugezl",
+              "elementTypeId": "text",
+              "elementVariant": "text",
+              "textType": "text",
+              "level": 7,
+              "content": "<p style=\"text-align: left\"><span class=\"emoji\" style=\"color: #FFFFFF\">💡</span><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"> Tip: Help your text stand out by using </span><code class=\"custom-code\">/Blockquote</code></p>",
+              "cellId": "51qwnrkw224"
+            }
+          ],
+          "style": {},
+          "gridStructure": {
+            "rows": [
+              {
+                "id": "31zoyzs819j",
+                "cells": [
+                  {
+                    "id": "51qwnrkw224",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columns": 1,
+            "columnWidths": []
           }
-        ],
-        "style": {},
-        "contentAlignment": "top",
-        "templateType": "standard"
-      }
-    ],
-    "userId": null,
-    "isDeleted": false,
-    "createdAt": {
-      "$date": "2025-07-06T17:07:08.344Z"
+        }
+      ],
+      "style": {},
+      "contentAlignment": "center",
+      "templateType": "imageRight",
+      "imageWidthRatio": 0.33,
+      "imageUrl": "/uploads/390063e9-7928-462a-a34d-279a1eba435d.jpeg"
     },
-    "updatedAt": {
-      "$date": "2025-07-06T18:15:48.329Z"
+    {
+      "id": "zrmmdl6ykx",
+      "title": "Слайд 5",
+      "layouts": [
+        {
+          "id": "7o0u2xlwu",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "h35feq",
+                "cells": [
+                  {
+                    "id": "0f9ktg",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "80ixsr4r5ak",
+              "content": "<p><span class=\"heading-text big-heading\" style=\"color: #ffffff\">Product Demo</span></p>",
+              "elementTypeId": "text",
+              "cellId": "0f9ktg"
+            }
+          ]
+        },
+        {
+          "id": "jk46g1",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "8u2ws3",
+                "cells": [
+                  {
+                    "id": "gygxpa",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "0k0qiojrsgx8",
+              "content": "<p><span class=\"body-text normal-text\" style=\"color: #ffffff\">Insert a demo video or embed your prototype / demo</span></p>",
+              "elementTypeId": "text",
+              "cellId": "gygxpa"
+            }
+          ]
+        },
+        {
+          "id": "fm63do",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "nysepf",
+                "cells": [
+                  {
+                    "id": "z2k3kb",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "1kstan53xu5",
+              "content": "<p><span class=\"body-text normal-text\" style=\"color: #ffffff\">Компонент video</span></p>",
+              "elementTypeId": "text",
+              "cellId": "z2k3kb"
+            }
+          ]
+        },
+        {
+          "id": "nl6v6r",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "a3sswc",
+                "cells": [
+                  {
+                    "id": "0f3o92",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "4ln5lrsnfhd",
+              "content": "<p><span class=\"emoji\" style=\"color: #ffffff\">💡</span><span class=\"body-text normal-text\" style=\"color: #ffffff\"> Tip: while typing, try typing </span><code class=\"custom-code\">/Loom</code><span class=\"body-text normal-text\" style=\"color: #ffffff\"> and create a screen recording of your product demo directly in Gamma. Or try </span><code class=\"custom-code\">/Embed</code><span class=\"body-text normal-text\" style=\"color: #ffffff\"> or </span><code class=\"custom-code\">/Youtube</code><span class=\"body-text normal-text\" style=\"color: #ffffff\"> if you've already saved your recording somewhere online</span><span class=\"body-text normal-text\" style=\"color: #ffffff\">&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "cellId": "0f3o92"
+            }
+          ]
+        }
+      ],
+      "style": {},
+      "contentAlignment": "top",
+      "templateType": "standard",
+      "textColor": "#ffffff"
     },
-    "durationMinutes": null,
-    "goal": null,
-    "audience": null,
-    "tone": null,
-    "themeId": "686944e7b3ebb23e20fdab41",
-    "themeName": "Атакама",
-    "deletedAt": null,
-    "backgroundSettings": null
-  }
+    {
+      "id": "v4qz30cvxnq",
+      "title": "Слайд 4",
+      "layouts": [
+        {
+          "id": "bzmzfgn0cl",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "uit6ss",
+                "cells": [
+                  {
+                    "id": "y4tke8",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "tot3aun023",
+              "content": "<p><span class=\"heading-text big-heading\"><strong>Metrics</strong></span></p>",
+              "elementTypeId": "text",
+              "cellId": "y4tke8"
+            }
+          ]
+        },
+        {
+          "id": "ayczk7",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "j5zkis",
+                "cells": [
+                  {
+                    "id": "1l65j2",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "vo1owyv3o7p",
+              "content": "<p><span class=\"body-text normal-text\">/image&nbsp;</span></p>",
+              "elementTypeId": "image",
+              "cellId": "1l65j2",
+              "src": "/uploads/a6946660-8254-4e53-b721-9366747d5fa4.avif",
+              "alt": "Image",
+              "alignment": "center",
+              "uploaded": true
+            }
+          ]
+        },
+        {
+          "id": "vpirv8",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "fslh0t",
+                "cells": [
+                  {
+                    "id": "imbd1a",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "wbmuj583mfs",
+              "content": "<p><span class=\"body-text normal-text\">/im&nbsp;</span></p>",
+              "elementTypeId": "image",
+              "cellId": "imbd1a",
+              "src": "/uploads/d4bf8a43-5483-4ebf-a109-a1eb198c739a.avif",
+              "alt": "Image",
+              "alignment": "center",
+              "uploaded": true
+            }
+          ]
+        },
+        {
+          "id": "f17i9vvcnhc",
+          "gridStructure": {
+            "columns": 1,
+            "columnWidths": [
+              "100%"
+            ],
+            "rows": [
+              {
+                "id": "qbkarwi4u4",
+                "cells": [
+                  {
+                    "id": "0owytnbabqve",
+                    "row": 0,
+                    "column": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "type": "blank",
+          "elements": [
+            {
+              "id": "suchfmlc7g",
+              "content": "<p><span class=\"emoji\" style=\"color: #FFFFFF\">💡</span><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"><em> </em>Tip: Trying copying and pasting charts from Google Sheets</span><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "tempLayout": true,
+              "cellId": "0owytnbabqve"
+            }
+          ],
+          "style": {}
+        }
+      ],
+      "style": {},
+      "contentAlignment": "top",
+      "templateType": "standard"
+    },
+    {
+      "id": "s48sk46nc0s",
+      "title": "Слайд 7",
+      "layouts": [
+        {
+          "id": "0f3opm4u3qsn",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "7rv9pt",
+                "cells": [
+                  {
+                    "id": "yhfdu0",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "uostxrdp0q",
+              "content": "<p><span class=\"heading-text big-heading\"><strong>Future States</strong></span><span class=\"heading-text big-heading\">&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "cellId": "yhfdu0"
+            }
+          ]
+        },
+        {
+          "id": "m5nrtz",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "ysyip6",
+                "cells": [
+                  {
+                    "id": "cuufzr",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "u6gllufgfbs",
+              "content": "<p><span class=\"body-text normal-text\">SMART LAYOUT шаги</span></p>",
+              "elementTypeId": "text",
+              "cellId": "cuufzr"
+            }
+          ]
+        },
+        {
+          "id": "7aynik",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "pvceqr",
+                "cells": [
+                  {
+                    "id": "bg0dm3",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "f84epq7gucr",
+              "content": "<p><span class=\"heading-text heading-3\">What happens to the market?</span><span class=\"heading-text heading-3\">&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "cellId": "bg0dm3"
+            }
+          ]
+        },
+        {
+          "id": "k11rjq",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "403ai0",
+                "cells": [
+                  {
+                    "id": "b7os97",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "tamvoyuyvwc",
+              "content": "<p><span class=\"body-text normal-text\">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Volutpat odio facilisis mauris sit amet massa vitae.</span><span class=\"body-text normal-text\">&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "cellId": "b7os97"
+            }
+          ]
+        },
+        {
+          "id": "nt21q4",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "er6ek1",
+                "cells": [
+                  {
+                    "id": "wedijz",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "okaqtusa849",
+              "content": "<p><span class=\"heading-text heading-3\">How do you change the market?</span></p>",
+              "elementTypeId": "text",
+              "cellId": "wedijz"
+            }
+          ]
+        },
+        {
+          "id": "7rwmlp",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "lti733",
+                "cells": [
+                  {
+                    "id": "1psdfx",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "bq3ucx6o07v",
+              "content": "<p><span class=\"body-text normal-text\">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Volutpat odio facilisis mauris sit amet massa vitae. Tristique senectus et netus et.</span><span class=\"body-text normal-text\">&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "cellId": "1psdfx"
+            }
+          ]
+        }
+      ],
+      "style": {},
+      "contentAlignment": "top",
+      "templateType": "imageLeft",
+      "imageWidthRatio": 0.33,
+      "imageUrl": "/uploads/bbee135c-c4c5-4bc3-a29e-ea30218274b0.jpeg"
+    },
+    {
+      "id": "wx4ty6s7s3",
+      "title": "Слайд 7",
+      "layouts": [
+        {
+          "id": "8bv6p4o08ux",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "aeodqy",
+                "cells": [
+                  {
+                    "id": "ubuwak",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "78binj2gbpb",
+              "content": "<p><span class=\"heading-text big-heading\"><strong>The Competition</strong></span><span class=\"heading-text big-heading\">&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "cellId": "ubuwak"
+            }
+          ]
+        },
+        {
+          "id": "miierj",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "sejwze",
+                "cells": [
+                  {
+                    "id": "eqhdtm",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "mru16bk6xm8",
+              "content": "<p><span class=\"heading-text heading-3\">⚔️</span><span class=\"heading-text heading-3\"> Who are they and how do we beat them?</span><span class=\"heading-text heading-3\">&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "cellId": "eqhdtm"
+            }
+          ]
+        },
+        {
+          "id": "gma62o",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "2ey3y0",
+                "cells": [
+                  {
+                    "id": "rnogc9",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "1bbaqdcb3uk",
+              "content": "<p><span class=\"body-text normal-text\">/</span></p>",
+              "elementTypeId": "smart-layout",
+              "cellId": "rnogc9",
+              "elementVariant": "text-boxes",
+              "items": [
+                {
+                  "title": "<p style=\"text-align: left\"><span class=\"heading-text heading-3\"><strong>Competitor 1</strong></span></p>",
+                  "text": "<p style=\"text-align: left\">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor</p>",
+                  "imageUrl": "",
+                  "iconUrl": "",
+                  "id": "tqppox6pvfb"
+                },
+                {
+                  "title": "<p style=\"text-align: left\"><span class=\"heading-text heading-3\"><strong>Competitor 3</strong></span></p>",
+                  "text": "<p style=\"text-align: left\">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim </p>",
+                  "imageUrl": "",
+                  "iconUrl": "",
+                  "id": "ffwhp26w8z"
+                },
+                {
+                  "title": "<p style=\"text-align: left\"><span class=\"heading-text heading-3\"><strong>Competitor 2</strong></span></p>",
+                  "text": "<p style=\"text-align: left\">Sed ut perspiciatis unde omnis iste natus error sit volupta tem accusa ntium eius modi tempora</p>",
+                  "imageUrl": "",
+                  "iconUrl": "",
+                  "id": "wkqfw00d8vp"
+                },
+                {
+                  "id": "9obuwdnxenn",
+                  "title": "<p style=\"text-align: left\"><span class=\"heading-text heading-3\"><strong>Competitor 4</strong></span></p>",
+                  "text": "<p style=\"text-align: left\">Foste natus error sit volupta tem accusa ntium eius modi tempora</p>"
+                }
+              ],
+              "columnSize": 3,
+              "align": "left",
+              "imageShape": "square",
+              "imageSize": 5
+            }
+          ]
+        }
+      ],
+      "style": {},
+      "contentAlignment": "top",
+      "templateType": "standard"
+    }
+  ],
+  "durationMinutes": null,
+  "goal": null,
+  "audience": null,
+  "tone": null,
+  "id": "686aad3c33e739ad3874e80c",
+  "userId": "687296818352d4f203efdf5f",
+  "isDeleted": false,
+  "deletedAt": null
+}

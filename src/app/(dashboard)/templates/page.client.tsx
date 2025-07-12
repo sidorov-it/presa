@@ -52,7 +52,10 @@ const TemplatesPage = () => {
     }, [loadThemes]);
 
     return (
-        <div className={styles.container}>
+        <div className={styles.container} style={{
+            '--card-width': 'min(100vw, calc(100vh * 1.7777777777777777))',
+            '--card-height': 'calc(var(--card-width) / 1.7777777777777777 - 64px)',
+        }}>
             <div className={styles.header}>
                 <Heading title="Шаблоны" description="Выберите готовый шаблон для быстрого создания презентации" />
             </div>

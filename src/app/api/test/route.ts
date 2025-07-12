@@ -39,8 +39,8 @@ function getFirstColor(colorString: string): string {
 
 // Helper function to download image
 async function downloadImage(url: string): Promise<string> {
-    const filename = `${uuidv4()}.${url.split('.').pop()}`;
-    const filePath = path.join(UPLOAD_DIR, filename);
+    const filename = uuidv4();
+    // const filePath = path.join(UPLOAD_DIR, filename);
 
     await fs.mkdir(UPLOAD_DIR, { recursive: true });
 
@@ -52,11 +52,16 @@ async function downloadImage(url: string): Promise<string> {
                     return;
                 }
 
-                const fileStream = fsSync.createWriteStream(filePath);
+                const contentType = response.headers['content-type'];
+
+                const fileExtension = contentType?.split('/')[1];
+                const newFilePath = path.join(UPLOAD_DIR, `${filename}.${fileExtension}`);
+
+                const fileStream = fsSync.createWriteStream(newFilePath);
                 response.pipe(fileStream);
 
                 fileStream.on('finish', () => {
-                    resolve(`/uploads/${filename}`);
+                    resolve(`/uploads/${filename}.${fileExtension}`);
                 });
 
                 fileStream.on('error', (error: Error) => {

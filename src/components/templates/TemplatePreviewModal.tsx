@@ -101,7 +101,22 @@ export default function TemplatePreviewModal({
     return (
         <Portal>
             <ThemeStylesApplier theme={theme}>
-                <div className={styles.modal} tabIndex={-1} role="dialog" aria-modal="true" onKeyDown={handleKeyDown}>
+                <div
+                    className={styles.modal}
+                    tabIndex={-1}
+                    role="dialog"
+                    aria-modal="true"
+                    onKeyDown={handleKeyDown}
+                    style={
+                        {
+                            '--card-width': 'min(100vw, calc(100vh * 1.7777777777777777))',
+                            '--card-height': 'calc(var(--card-width) / 1.7777777777777777 - 64px)',
+                        } as React.CSSProperties & {
+                            '--card-width': string;
+                            '--card-height': string;
+                        }
+                    }
+                >
                     <div className={styles.backdrop} onClick={onClose} aria-label="Закрыть" />
                     <div ref={modalRef} className={styles.content} tabIndex={0}>
                         <div className={styles.header}>

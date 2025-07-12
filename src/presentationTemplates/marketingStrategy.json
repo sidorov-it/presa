@@ -1,2308 +1,2305 @@
 {
-    "title": "Quarterly Marketing Strategy",
+    "_id": "6872980cc80634567cf6cc5d",
+    "title": "[Шаблон] Quarterly Marketing Strategy",
     "description": "",
+    "themeId": "6872a06e312e30e904094598",
+    "themeName": "Мох и туман",
+    "createdAt": "2025-06-26T16:47:00.116Z",
+    "updatedAt": "2025-07-12T17:53:08.449Z",
     "slides": [
-        {
-            "id": "901hvjykhtf",
-            "templateType": "standard",
-            "contentAlignment": "center",
-            "layouts": [
-                {
-                    "id": "1qhyigp6k6r",
-                    "elements": [
-                        {
-                            "id": "hbm9sykkvgr",
-                            "content": "<p><span class=\"heading-text heading-1\">Q3</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "7bvhx2l2xc5"
-                        }
-                    ],
-                    "gridStructure": {
-                        "rows": [
-                            {
-                                "id": "frbx9xyi7h5",
-                                "cells": [
-                                    {
-                                        "id": "7bvhx2l2xc5",
-                                        "row": 0,
-                                        "column": 0
-                                    }
-                                ]
-                            }
-                        ],
-                        "columns": 1,
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "style": {}
-                },
-                {
-                    "id": "iq5x18se9za",
-                    "gridStructure": {
-                        "columns": 2,
-                        "rows": [
-                            {
-                                "id": "rlkkbb",
-                                "cells": [
-                                    {
-                                        "id": "dbwtfo",
-                                        "row": 1,
-                                        "column": 1
-                                    },
-                                    {
-                                        "id": "nuqc2d8fp4c",
-                                        "row": 1,
-                                        "column": 2,
-                                        "alignment": "bottom"
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "73.79%",
-                            "26.21%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "krvzhuajxlm",
-                            "content": "<p style=\"text-align: right\"><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">&nbsp;</span><span class=\"heading-text heading-2\" style=\"color: #FFFFFF\"><strong>Company</strong></span></p>",
-                            "elementTypeId": "text",
-                            "tempEditor": true,
-                            "cellId": "nuqc2d8fp4c"
-                        },
-                        {
-                            "id": "tmjhqwgduj",
-                            "content": "<p style=\"text-align: right\"><span class=\"body-text normal-text\" style=\"color: rgb(255, 255, 255)\"><strong>Date</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "nuqc2d8fp4c"
-                        },
-                        {
-                            "id": "tnt8rmaeixc",
-                            "content": "<p><span class=\"heading-text big-heading\"><strong>Marketing strategy</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "dbwtfo"
-                        }
-                    ]
-                },
-                {
-                    "id": "v2vcuwigee",
-                    "gridStructure": {
-                        "columns": 1,
-                        "columnWidths": [
-                            "100%"
-                        ],
-                        "rows": [
-                            {
-                                "id": "ja3h3oxgo3",
-                                "cells": [
-                                    {
-                                        "id": "aabn7gdazgr",
-                                        "row": 0,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    "type": "blank",
-                    "elements": [
-                        {
-                            "id": "ngzyagmzgjs",
-                            "content": "<p><span class=\"body-text normal-text\">&nbsp;</span></p>",
-                            "elementTypeId": "text",
-                            "tempLayout": true,
-                            "cellId": "aabn7gdazgr"
-                        }
-                    ],
-                    "style": {}
-                }
+      {
+        "id": "901hvjykhtf",
+        "templateType": "standard",
+        "contentAlignment": "center",
+        "layouts": [
+          {
+            "id": "1qhyigp6k6r",
+            "elements": [
+              {
+                "id": "hbm9sykkvgr",
+                "content": "<p><span class=\"heading-text heading-1\">Q3</span></p>",
+                "elementTypeId": "text",
+                "cellId": "7bvhx2l2xc5"
+              }
             ],
-            "background": {
-                "type": "color",
-                "value": "#1f2d1b"
-            },
-            "title": "undefined (копия)"
-        },
-        {
-            "id": "amd5thkdb64",
-            "title": "Слайд 2 (копия)",
-            "layouts": [
+            "gridStructure": {
+              "rows": [
                 {
-                    "id": "2th9vzt8tyl",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "7zqge5",
-                                "cells": [
-                                    {
-                                        "id": "9fmbg0",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "5rs8tf4fkgu",
-                            "content": "<p>нужен шаблон иконки + текст</p>",
-                            "elementTypeId": "text",
-                            "cellId": "9fmbg0"
-                        }
-                    ]
-                }
-            ],
-            "style": {},
-            "contentAlignment": "center",
-            "templateType": "standard"
-        },
-        {
-            "id": "7sngkhkr2ev",
-            "title": "Слайд 3 (копия)",
-            "layouts": [
-                {
-                    "id": "lmgvm6nstpl",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "zl0gb1",
-                                "cells": [
-                                    {
-                                        "id": "ylf15u",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "7sfdg5nllx",
-                            "content": "<p><span class=\"heading-text heading-1\">Executive summary</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "ylf15u"
-                        }
-                    ]
-                },
-                {
-                    "id": "ctbslfjm9ec",
-                    "gridStructure": {
-                        "columns": 2,
-                        "rows": [
-                            {
-                                "id": "p2mfsg",
-                                "cells": [
-                                    {
-                                        "id": "q5x8at",
-                                        "row": 1,
-                                        "column": 1
-                                    },
-                                    {
-                                        "id": "i3kr78m9j",
-                                        "row": 1,
-                                        "column": 2
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "50%",
-                            "50%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "8rl3rk2h9pf",
-                            "content": "<p><span class=\"textColor\" style=\"color: #D32F2F\">The challenge</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "q5x8at"
-                        },
-                        {
-                            "id": "w4bt4zdixm8",
-                            "content": "<p><span class=\"body-text small-text\">Short summary of key challenge your team is facing this quarter</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "q5x8at"
-                        },
-                        {
-                            "id": "mkbga82g4x",
-                            "content": "<p><span class=\"textColor\" style=\"color: #388E3C\">The solution</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "i3kr78m9j"
-                        },
-                        {
-                            "id": "serriw47vpd",
-                            "content": "<p><span class=\"body-text small-text\">Short summary of how your team will tackle this challenge</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "i3kr78m9j"
-                        }
-                    ]
-                },
-                {
-                    "id": "ge5dnucgzj",
-                    "gridStructure": {
-                        "columns": 1,
-                        "columnWidths": [
-                            "100%"
-                        ],
-                        "rows": [
-                            {
-                                "id": "49ekwpugp4p",
-                                "cells": [
-                                    {
-                                        "id": "36xotbg6s25",
-                                        "row": 0,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    "type": "blank",
-                    "elements": [
-                        {
-                            "id": "onmla8dj0y",
-                            "content": "<p>Q3 goals</p><p></p><ul><li><p>Description of goal</p></li><li><p>Description of goal</p></li><li><p>Description of goal</p></li></ul>",
-                            "elementTypeId": "box",
-                            "tempLayout": true,
-                            "cellId": "36xotbg6s25",
-                            "elementVariant": "note-box",
-                            "iconType": "caution-box",
-                            "darkBackgroundColor": "#01004d",
-                            "customBackgroundColor": "#000000",
-                            "backgroundColor": "#ffb3b3"
-                        }
-                    ],
-                    "style": {}
-                }
-            ],
-            "style": {},
-            "contentAlignment": "center",
-            "templateType": "standard"
-        },
-        {
-            "id": "u8rmwld6soq",
-            "title": "Слайд 4 (копия)",
-            "layouts": [
-                {
-                    "id": "8wpvdicnx8c",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "z6zych",
-                                "cells": [
-                                    {
-                                        "id": "0a34hg",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "8oy57ngckxc",
-                            "content": "<p><span class=\"heading-text title-text\"><strong>Strategic framework</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "0a34hg"
-                        }
-                    ]
-                }
-            ],
-            "style": {},
-            "contentAlignment": "center",
-            "templateType": "standard",
-            "background": {
-                "type": "color",
-                "value": "#1f2d1b"
-            }
-        },
-        {
-            "id": "gq5iw7ksujd",
-            "title": "Слайд 5 (копия)",
-            "layouts": [
-                {
-                    "id": "b7o8ojide7",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "q1f5zm",
-                                "cells": [
-                                    {
-                                        "id": "r73cbg",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "v0q6xjubewa",
-                            "content": "<p><span class=\"heading-text heading-2\"><strong>Core mission</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "r73cbg"
-                        }
-                    ]
-                },
-                {
-                    "id": "p23hn9zb3k",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "vyi9xa",
-                                "cells": [
-                                    {
-                                        "id": "wo9tw6",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "k0affyvrvq8",
-                            "content": "<p><span class=\"heading-text heading-1\"><strong>State the core mission for your company, product, or the current quarter/year</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "wo9tw6"
-                        }
-                    ]
-                }
-            ],
-            "style": {},
-            "contentAlignment": "center",
-            "templateType": "standard"
-        },
-        {
-            "id": "c9r8ah4a77g",
-            "title": "Слайд 6 (копия)",
-            "layouts": [
-                {
-                    "id": "aqj0nbnc9m",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "ygfskh",
-                                "cells": [
-                                    {
-                                        "id": "5fljwh",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "c2zuwoidpg4",
-                            "content": "<p><span class=\"heading-text heading-1\">Strategic pillars</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "5fljwh"
-                        }
-                    ]
-                },
-                {
-                    "id": "muta9xsxga",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "jrai58",
-                                "cells": [
-                                    {
-                                        "id": "ow1ncm",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "wpd80kzluzd",
-                            "content": "<p>шаблон stats</p>",
-                            "elementTypeId": "text",
-                            "cellId": "ow1ncm"
-                        }
-                    ]
-                }
-            ],
-            "style": {},
-            "contentAlignment": "top",
-            "templateType": "imageTop",
-            "imageSize": {
-                "height": "796px"
-            },
-            "imageUrl": "/uploads/471eeef1-0a15-4f23-8a47-053559de3df9.jpeg"
-        },
-        {
-            "id": "8o46q5ty9gq",
-            "title": "Слайд 2 (копия)",
-            "layouts": [
-                {
-                    "id": "t8ahc1qg1e",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "7zqge5",
-                                "cells": [
-                                    {
-                                        "id": "9fmbg0",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "ymxg2p3d4d",
-                            "content": "<p>нужен шаблон иконки + текст</p>",
-                            "elementTypeId": "text",
-                            "cellId": "9fmbg0"
-                        }
-                    ]
-                }
-            ],
-            "style": {},
-            "contentAlignment": "center",
-            "templateType": "standard"
-        },
-        {
-            "id": "mzmqa98ufm",
-            "templateType": "standard",
-            "contentAlignment": "center",
-            "layouts": [
-                {
-                    "id": "4ik36gmnsdm",
-                    "elements": [
-                        {
-                            "id": "u4mxjwny4jm",
-                            "content": "<p><span class=\"heading-text heading-1\">Q3</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "7bvhx2l2xc5"
-                        }
-                    ],
-                    "gridStructure": {
-                        "rows": [
-                            {
-                                "id": "frbx9xyi7h5",
-                                "cells": [
-                                    {
-                                        "id": "7bvhx2l2xc5",
-                                        "row": 0,
-                                        "column": 0
-                                    }
-                                ]
-                            }
-                        ],
-                        "columns": 1,
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "style": {}
-                },
-                {
-                    "id": "rwivt9sxb9b",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "rlkkbb",
-                                "cells": [
-                                    {
-                                        "id": "dbwtfo",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "ynuueo668l",
-                            "content": "<p><span class=\"heading-text title-text\"><strong>[Strategic focus]</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "dbwtfo"
-                        }
-                    ]
-                }
-            ],
-            "background": {
-                "type": "color",
-                "value": "#1f2d1b"
-            },
-            "title": "undefined (копия)"
-        },
-        {
-            "id": "zlj8lzwoj4e",
-            "layouts": [
-                {
-                    "id": "2vw8b7odp6",
-                    "type": "heading",
-                    "elements": [
-                        {
-                            "id": "veg2ncn3cif",
-                            "elementTypeId": "text",
-                            "textType": "heading1",
-                            "content": "<p><span class=\"heading-text heading-1\">Campaign strategy</span></p>",
-                            "cellId": "1aj8yq65ipr"
-                        }
-                    ],
-                    "style": {},
-                    "gridStructure": {
-                        "rows": [
-                            {
-                                "id": "19edisozaprh",
-                                "cells": [
-                                    {
-                                        "id": "1aj8yq65ipr",
-                                        "row": 0,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columns": 1,
-                        "columnWidths": [
-                            "100%"
-                        ]
+                  "id": "frbx9xyi7h5",
+                  "cells": [
+                    {
+                      "id": "7bvhx2l2xc5",
+                      "row": 0,
+                      "column": 0
                     }
-                },
+                  ]
+                }
+              ],
+              "columns": 1,
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "style": {}
+          },
+          {
+            "id": "iq5x18se9za",
+            "gridStructure": {
+              "columns": 2,
+              "rows": [
                 {
-                    "id": "c03qqqbcjz",
-                    "type": "three-columns",
-                    "elements": [
-                        {
-                            "id": "ugluelvzho",
-                            "elementTypeId": "text",
-                            "textType": "default",
-                            "content": "<p><strong>July</strong></p>",
-                            "cellId": "pwbzg6rc2n"
-                        },
-                        {
-                            "id": "72tk88s1ghy",
-                            "content": "<p><strong>Title of initiative</strong></p>",
-                            "elementTypeId": "text",
-                            "cellId": "pwbzg6rc2n"
-                        },
-                        {
-                            "id": "u6z7wwzwbxp",
-                            "content": "<p>/smart</p>",
-                            "elementTypeId": "smart-layout",
-                            "cellId": "pwbzg6rc2n",
-                            "elementVariant": "text-boxes",
-                            "items": [
-                                {
-                                    "title": "<p style=\"text-align: left\"><span style=\"color: #000000\"><strong>Goal</strong></span></p>",
-                                    "text": "<p style=\"text-align: left\"><span style=\"color: #000000\">Description of goal</span></p>",
-                                    "imageUrl": "",
-                                    "iconUrl": "",
-                                    "id": "pasb5x6onj8"
-                                },
-                                {
-                                    "title": "<p style=\"text-align: left\"><span style=\"color: #000000\"><strong>Content</strong></span></p>",
-                                    "text": "<p style=\"text-align: left\"><span style=\"color: #000000\">Description of content</span></p>",
-                                    "imageUrl": "",
-                                    "iconUrl": "",
-                                    "id": "7py3f1sqrcn"
-                                },
-                                {
-                                    "title": "<p style=\"text-align: left\"><span style=\"color: #000000\"><strong>Target</strong></span></p>",
-                                    "text": "<p style=\"text-align: left\"><span style=\"color: #000000\">Description of target</span></p>",
-                                    "imageUrl": "",
-                                    "iconUrl": "",
-                                    "id": "yso0jqv2yz"
-                                }
-                            ],
-                            "columnSize": 1,
-                            "align": "left",
-                            "imageShape": "square",
-                            "imageSize": 5
-                        },
-                        {
-                            "id": "5obc0ghdey5",
-                            "elementTypeId": "text",
-                            "textType": "default",
-                            "content": "<p>August</p>",
-                            "cellId": "3u6yi2v1ysy"
-                        },
-                        {
-                            "id": "aeya0pga6p",
-                            "content": "<p>Title of initiative</p>",
-                            "elementTypeId": "text",
-                            "cellId": "3u6yi2v1ysy"
-                        },
-                        {
-                            "id": "c3spgi22vzf",
-                            "content": "<p>/</p>",
-                            "elementTypeId": "smart-layout",
-                            "cellId": "3u6yi2v1ysy",
-                            "elementVariant": "text-boxes",
-                            "items": [
-                                {
-                                    "title": "<p style=\"text-align: left\"><span style=\"color: #000000\"><strong>Goal</strong></span></p>",
-                                    "text": "<p style=\"text-align: left\"><span style=\"color: #000000\">Description of goal</span></p>",
-                                    "imageUrl": "",
-                                    "iconUrl": "",
-                                    "id": "3csvy2kca8v"
-                                },
-                                {
-                                    "title": "<p style=\"text-align: left\"><span style=\"color: #000000\"><strong>Content</strong></span></p>",
-                                    "text": "<p style=\"text-align: left\"><span style=\"color: #000000\">Description of content</span></p>",
-                                    "imageUrl": "",
-                                    "iconUrl": "",
-                                    "id": "7kn0nk21b07"
-                                },
-                                {
-                                    "title": "<p style=\"text-align: left\"><span style=\"color: #000000\"><strong>Target</strong></span></p>",
-                                    "text": "<p style=\"text-align: left\"><span style=\"color: #000000\">Description of target</span></p>",
-                                    "imageUrl": "",
-                                    "iconUrl": "",
-                                    "id": "89bpfenus0x"
-                                }
-                            ],
-                            "columnSize": 1,
-                            "align": "left",
-                            "imageShape": "square",
-                            "imageSize": 5
-                        },
-                        {
-                            "id": "q4bqtx2go7r",
-                            "elementTypeId": "text",
-                            "textType": "default",
-                            "content": "<p>September</p>",
-                            "cellId": "me0pbbsmox"
-                        },
-                        {
-                            "id": "aurdb8t3pv",
-                            "content": "<p>Title of initiative</p>",
-                            "elementTypeId": "text",
-                            "cellId": "me0pbbsmox"
-                        },
-                        {
-                            "id": "bdto6hfe8k",
-                            "content": "<p>/</p>",
-                            "elementTypeId": "smart-layout",
-                            "cellId": "me0pbbsmox",
-                            "elementVariant": "text-boxes",
-                            "items": [
-                                {
-                                    "title": "<p style=\"text-align: left\"><span style=\"color: #000000\"><strong>Goal</strong></span></p>",
-                                    "text": "<p style=\"text-align: left\"><span style=\"color: #000000\">Description of goal</span></p>",
-                                    "imageUrl": "",
-                                    "iconUrl": "",
-                                    "id": "ny823whgiyf"
-                                },
-                                {
-                                    "title": "<p style=\"text-align: left\"><span style=\"color: #000000\"><strong>Content</strong></span></p>",
-                                    "text": "<p style=\"text-align: left\"><span style=\"color: #000000\">Description of content</span></p>",
-                                    "imageUrl": "",
-                                    "iconUrl": "",
-                                    "id": "ws17j3dgi0d"
-                                },
-                                {
-                                    "title": "<p style=\"text-align: left\"><span style=\"color: #000000\"><strong>Target</strong></span></p>",
-                                    "text": "<p style=\"text-align: left\"><span style=\"color: #000000\">Description of target</span></p>",
-                                    "imageUrl": "",
-                                    "iconUrl": "",
-                                    "id": "06alnhz79lll"
-                                }
-                            ],
-                            "columnSize": 1,
-                            "align": "left",
-                            "imageShape": "square",
-                            "imageSize": 5
-                        }
-                    ],
-                    "style": {},
-                    "gridStructure": {
-                        "rows": [
-                            {
-                                "id": "ckemygt4txd",
-                                "cells": [
-                                    {
-                                        "id": "pwbzg6rc2n",
-                                        "row": 0,
-                                        "column": 1
-                                    },
-                                    {
-                                        "id": "3u6yi2v1ysy",
-                                        "row": 0,
-                                        "column": 2
-                                    },
-                                    {
-                                        "id": "me0pbbsmox",
-                                        "row": 0,
-                                        "column": 3
-                                    }
-                                ]
-                            }
-                        ],
-                        "columns": 3,
-                        "columnWidths": [
-                            "33%",
-                            "34%",
-                            "33%"
-                        ]
+                  "id": "rlkkbb",
+                  "cells": [
+                    {
+                      "id": "dbwtfo",
+                      "row": 1,
+                      "column": 1
+                    },
+                    {
+                      "id": "nuqc2d8fp4c",
+                      "row": 1,
+                      "column": 2,
+                      "alignment": "bottom"
                     }
+                  ]
                 }
-            ],
-            "title": "undefined (копия)"
-        },
-        {
-            "id": "qupknrl3hyi",
-            "title": "Слайд 11 (копия)",
-            "layouts": [
-                {
-                    "id": "21w5905kj6c",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "tqcndt",
-                                "cells": [
-                                    {
-                                        "id": "rm2wfz",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "ffa51lbvkhi",
-                            "content": "<p><span class=\"heading-text heading-2\">Channel strategy</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "rm2wfz"
-                        }
-                    ]
-                },
-                {
-                    "id": "s4evlo5v3x",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "ydvg5y",
-                                "cells": [
-                                    {
-                                        "id": "4n82n3",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "7v9pl47716g",
-                            "content": "<p>/</p>",
-                            "elementTypeId": "smart-layout",
-                            "cellId": "4n82n3",
-                            "elementVariant": "text-boxes",
-                            "items": [
-                                {
-                                    "title": "<p style=\"text-align: left\"><span class=\"body-text big-text\"><strong>Platform 1</strong></span></p>",
-                                    "text": "<p><strong>Strategy approach</strong></p><ul><li><p><strong>Shift:</strong> Current approach → New direction with specific focus</p></li><li><p><strong>Content:</strong> Main coфыntent types, educational elements</p></li><li><p style=\"text-align: left\"><strong>Mix:</strong> Percentage breakdown of content types</p></li></ul>",
-                                    "imageUrl": "/uploads/0c169360-0c3e-46d3-b914-0476b543be2d.jpeg",
-                                    "iconUrl": "",
-                                    "id": "8fnaplw783e",
-                                    "uploaded": true,
-                                    "backgroundColor": "#000000",
-                                    "textColor": "#FFFFFF"
-                                },
-                                {
-                                    "title": "<p style=\"text-align: left\"><span class=\"body-text big-text\"><strong>Platform 2</strong></span></p>",
-                                    "text": "<p><strong>Strategy approach</strong></p><ul><li><p><strong>Focus:</strong> Main objective and target showcase</p></li><li><p><strong>Content:</strong> Specific content formats and examples</p></li><li><p style=\"text-align: left\"><strong>Strategy:</strong> How content serves business goals</p></li></ul>",
-                                    "imageUrl": "",
-                                    "iconUrl": "",
-                                    "id": "vod4ml8jtis",
-                                    "backgroundColor": "#F57C00",
-                                    "textColor": "#FFFFFF"
-                                },
-                                {
-                                    "title": "<p><strong>Platform 3</strong></p>",
-                                    "text": "<p><strong>Strategy approach</strong></p><ul><li><p><strong>Approach:</strong> Methodology and targeting criteria</p></li><li><p><strong>Content:</strong> Email types and sequence structure</p></li><li><p><strong>Key Flows:</strong> Specific trigger points and timing</p></li></ul>",
-                                    "imageUrl": "",
-                                    "iconUrl": "",
-                                    "id": "w9o83lrnvpl",
-                                    "backgroundColor": "#000000",
-                                    "textColor": "#FFFFFF"
-                                },
-                                {
-                                    "id": "at9eczsc7ib",
-                                    "title": "<p><strong>Platform 4</strong></p>",
-                                    "text": "<p><strong>Strategy approach</strong></p><ul><li><p><strong>Goal:</strong> Primary objective and user outcome</p></li><li><p><strong>Content:</strong> Community content types and activities</p></li><li><p><strong>Features:</strong> Specific engagement mechanisms</p></li></ul>",
-                                    "backgroundColor": "#000000",
-                                    "textColor": "#FFFFFF"
-                                }
-                            ],
-                            "columnSize": 2,
-                            "align": "left",
-                            "imageShape": "square",
-                            "imageSize": 5,
-                            "backgroundColor": "#FFFFFF",
-                            "textColor": "#000000"
-                        }
-                    ]
-                },
-                {
-                    "id": "i5govhmzt",
-                    "gridStructure": {
-                        "columns": 1,
-                        "columnWidths": [
-                            "100%"
-                        ],
-                        "rows": [
-                            {
-                                "id": "bu36zw9hkvn",
-                                "cells": [
-                                    {
-                                        "id": "y4j7ite7f8p",
-                                        "row": 0,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    "type": "blank",
-                    "elements": [
-                        {
-                            "id": "h9eyasz79x",
-                            "content": "<p><span class=\"body-text normal-text\">&nbsp;</span></p>",
-                            "elementTypeId": "text",
-                            "tempLayout": true,
-                            "cellId": "y4j7ite7f8p"
-                        }
-                    ],
-                    "style": {}
-                }
-            ],
-            "style": {},
-            "contentAlignment": "top",
-            "templateType": "standard"
-        },
-        {
-            "id": "fzmbgvjih75",
-            "templateType": "standard",
-            "contentAlignment": "center",
-            "layouts": [
-                {
-                    "id": "hq8r9ja2xb6",
-                    "elements": [
-                        {
-                            "id": "3iizrmcgp18",
-                            "content": "<p><span class=\"heading-text heading-1\"><strong>Q3</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "7bvhx2l2xc5"
-                        }
-                    ],
-                    "gridStructure": {
-                        "rows": [
-                            {
-                                "id": "frbx9xyi7h5",
-                                "cells": [
-                                    {
-                                        "id": "7bvhx2l2xc5",
-                                        "row": 0,
-                                        "column": 0
-                                    }
-                                ]
-                            }
-                        ],
-                        "columns": 1,
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "style": {}
-                },
-                {
-                    "id": "arukrhl3fu6",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "rlkkbb",
-                                "cells": [
-                                    {
-                                        "id": "dbwtfo",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "za93wg0nge",
-                            "content": "<p><span class=\"heading-text title-text\"><strong>[Strategic focus]</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "dbwtfo"
-                        }
-                    ]
-                }
-            ],
-            "background": {
-                "type": "color",
-                "value": "#1f2d1b"
+              ],
+              "columnWidths": [
+                "73.79%",
+                "26.21%"
+              ]
             },
-            "title": "undefined (копия) (копия)"
-        },
-        {
-            "id": "cnyxiyxikas",
-            "layouts": [
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "krvzhuajxlm",
+                "content": "<p style=\"text-align: right\"><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">&nbsp;</span><span class=\"heading-text heading-2\" style=\"color: #FFFFFF\"><strong>Company</strong></span></p>",
+                "elementTypeId": "text",
+                "tempEditor": true,
+                "cellId": "nuqc2d8fp4c"
+              },
+              {
+                "id": "tmjhqwgduj",
+                "content": "<p style=\"text-align: right\"><span class=\"body-text normal-text\" style=\"color: rgb(255, 255, 255)\"><strong>Date</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "nuqc2d8fp4c"
+              },
+              {
+                "id": "tnt8rmaeixc",
+                "content": "<p><span class=\"heading-text big-heading\"><strong>Marketing strategy</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "dbwtfo"
+              }
+            ]
+          },
+          {
+            "id": "v2vcuwigee",
+            "gridStructure": {
+              "columns": 1,
+              "columnWidths": [
+                "100%"
+              ],
+              "rows": [
                 {
-                    "id": "511vbs31ry9",
-                    "type": "two-columns-equal",
-                    "elements": [
-                        {
-                            "id": "2z7r066u0qv",
-                            "elementTypeId": "text",
-                            "textType": "default",
-                            "content": "<p><span class=\"body-text big-text\">[Strategic focus]</span></p>",
-                            "cellId": "yjhic2hbrc"
-                        },
-                        {
-                            "id": "avzbnzvzrfo",
-                            "content": "<p><span class=\"heading-text heading-2\"><strong>[Strategy type]</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "yjhic2hbrc"
-                        },
-                        {
-                            "id": "vqkqa3xe879",
-                            "elementTypeId": "text",
-                            "textType": "default",
-                            "content": "<p><strong>Heading</strong></p>",
-                            "cellId": "lti1lewrpce"
-                        },
-                        {
-                            "id": "zfg20us1n1e",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">smartlayout timeline</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "lti1lewrpce"
-                        }
-                    ],
-                    "style": {},
-                    "gridStructure": {
-                        "rows": [
-                            {
-                                "id": "kv0mu98q18i",
-                                "cells": [
-                                    {
-                                        "id": "yjhic2hbrc",
-                                        "row": 0,
-                                        "column": 1
-                                    },
-                                    {
-                                        "id": "lti1lewrpce",
-                                        "row": 0,
-                                        "column": 2
-                                    }
-                                ]
-                            }
-                        ],
-                        "columns": 2,
-                        "columnWidths": [
-                            "50%",
-                            "50%"
-                        ]
+                  "id": "ja3h3oxgo3",
+                  "cells": [
+                    {
+                      "id": "aabn7gdazgr",
+                      "row": 0,
+                      "column": 1
                     }
-                },
-                {
-                    "id": "02mxvj3vnig5",
-                    "gridStructure": {
-                        "columns": 1,
-                        "columnWidths": [
-                            "100%"
-                        ],
-                        "rows": [
-                            {
-                                "id": "2j9q1jvpy36",
-                                "cells": [
-                                    {
-                                        "id": "tqqmf3k4vei",
-                                        "row": 0,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    "type": "blank",
-                    "elements": [
-                        {
-                            "id": "aop9gtqd7hd",
-                            "content": "<p><span class=\"body-text normal-text\">&nbsp;</span></p>",
-                            "elementTypeId": "text",
-                            "tempLayout": true,
-                            "cellId": "tqqmf3k4vei"
-                        }
-                    ],
-                    "style": {}
+                  ]
                 }
-            ],
-            "title": "undefined (копия) (копия)"
-        },
-        {
-            "id": "gch1bc9d3s9",
-            "title": "Слайд 13 (копия) (копия)",
-            "layouts": [
-                {
-                    "id": "tz4txw670il",
-                    "gridStructure": {
-                        "columns": 2,
-                        "rows": [
-                            {
-                                "id": "ciwblf",
-                                "cells": [
-                                    {
-                                        "id": "4iy7cs",
-                                        "row": 1,
-                                        "column": 1
-                                    },
-                                    {
-                                        "id": "3a483al4rea",
-                                        "row": 1,
-                                        "column": 2
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "50%",
-                            "50%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "vn4gc82bclq",
-                            "content": "<p><span class=\"body-text big-text\" style=\"color: #ffffff\">[Strategic focus]</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "4iy7cs"
-                        },
-                        {
-                            "id": "klww7fq4x6",
-                            "content": "<p><span class=\"heading-text heading-1\" style=\"color: #ffffff\"><strong>[Integration type]</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "4iy7cs"
-                        },
-                        {
-                            "id": "nilngtxoo4",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #ffffff\">smart layout текст с иконками</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "3a483al4rea"
-                        }
-                    ]
-                }
-            ],
-            "style": {},
-            "contentAlignment": "center",
-            "templateType": "imageTop",
-            "imageSize": {
-                "width": "20%"
+              ]
             },
-            "imageUrl": "/uploads/d73f9ff0-ee9b-4319-964f-b5cb92b02476.jpeg",
-            "textColor": "#ffffff",
-            "imageHeightRatio": 0.139108527131783
-        },
-        {
-            "id": "5qk23v7ez2p",
-            "title": "Слайд 14 (копия) (копия)",
-            "layouts": [
-                {
-                    "id": "3dmpcohc74i",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "rxy5cf",
-                                "cells": [
-                                    {
-                                        "id": "0dcfdj",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "ss6xtv4vgj",
-                            "content": "<p><span class=\"heading-text heading-1\" style=\"color: #fcfcfc\">Q3</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "0dcfdj"
-                        }
-                    ]
-                },
-                {
-                    "id": "odq8p2ld02d",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "2dtral",
-                                "cells": [
-                                    {
-                                        "id": "hown52",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "gwfi6i4472f",
-                            "content": "<p><span class=\"heading-text title-text\" style=\"color: #fcfcfc\"><strong>Budget and resources</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "hown52"
-                        }
-                    ]
-                },
-                {
-                    "id": "cqnf4uvgg8f",
-                    "gridStructure": {
-                        "rows": [
-                            {
-                                "id": "f726ddrer8m",
-                                "cells": [
-                                    {
-                                        "id": "cvj9k3lewr",
-                                        "row": 0,
-                                        "column": 0
-                                    },
-                                    {
-                                        "id": "wqo55arsrp",
-                                        "row": 0,
-                                        "column": 1
-                                    }
-                                ]
-                            },
-                            {
-                                "id": "kizqanch36b",
-                                "cells": [
-                                    {
-                                        "id": "68xdq3ie2ne",
-                                        "row": 1,
-                                        "column": 0
-                                    },
-                                    {
-                                        "id": "h570e6drhfo",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            },
-                            {
-                                "id": "3fhqa0",
-                                "cells": [
-                                    {
-                                        "id": "ivv9sh",
-                                        "column": 0,
-                                        "row": 2
-                                    },
-                                    {
-                                        "id": "ix5me9",
-                                        "column": 1,
-                                        "row": 2
-                                    }
-                                ]
-                            },
-                            {
-                                "id": "ia9jja",
-                                "cells": [
-                                    {
-                                        "id": "omkz5f",
-                                        "column": 0,
-                                        "row": 3
-                                    },
-                                    {
-                                        "id": "41o5ja",
-                                        "column": 1,
-                                        "row": 3
-                                    }
-                                ]
-                            },
-                            {
-                                "id": "6u7ni6",
-                                "cells": [
-                                    {
-                                        "id": "q6tobo",
-                                        "column": 0,
-                                        "row": 4
-                                    },
-                                    {
-                                        "id": "0gdl3o",
-                                        "column": 1,
-                                        "row": 4
-                                    }
-                                ]
-                            },
-                            {
-                                "id": "nbiv3u",
-                                "cells": [
-                                    {
-                                        "id": "t7bg6v",
-                                        "column": 0,
-                                        "row": 5
-                                    },
-                                    {
-                                        "id": "85evml",
-                                        "column": 1,
-                                        "row": 5
-                                    }
-                                ]
-                            }
-                        ],
-                        "columns": 2,
-                        "columnWidths": [
-                            "50%",
-                            "50%"
-                        ]
-                    },
-                    "type": "table",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "jp6oz1uq8xe",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\"><strong>Paid social</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "cvj9k3lewr"
-                        },
-                        {
-                            "id": "1djdzic4t23",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\">$$</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "wqo55arsrp"
-                        },
-                        {
-                            "id": "ept2mbwtr18",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\"><strong>Influencer partnerships</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "68xdq3ie2ne"
-                        },
-                        {
-                            "id": "kowiu35uxxc",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\">$$</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "h570e6drhfo"
-                        },
-                        {
-                            "id": "6z3oefrjk",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\"><strong>Content production</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "ivv9sh"
-                        },
-                        {
-                            "id": "m8fc93umamp",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\">$$</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "ix5me9"
-                        },
-                        {
-                            "id": "qfc77qofd19",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\"><strong>Community platform</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "omkz5f"
-                        },
-                        {
-                            "id": "cxbc28y7rf",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\">$$</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "41o5ja"
-                        },
-                        {
-                            "id": "6032ezeklsl",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\"><strong>Email &amp; automation</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "q6tobo"
-                        },
-                        {
-                            "id": "l0su0kdokke",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\">$$</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "0gdl3o"
-                        },
-                        {
-                            "id": "qp1slfnzv9",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\"><strong>Team &amp; operations</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "t7bg6v"
-                        },
-                        {
-                            "id": "illkwobqo8m",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\">$$</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "85evml"
-                        }
-                    ],
-                    "isTable": true
-                }
+            "type": "blank",
+            "elements": [
+              {
+                "id": "ngzyagmzgjs",
+                "content": "<p><span class=\"body-text normal-text\">&nbsp;</span></p>",
+                "elementTypeId": "text",
+                "tempLayout": true,
+                "cellId": "aabn7gdazgr"
+              }
             ],
-            "style": {},
-            "contentAlignment": "top",
-            "templateType": "standard",
-            "textColor": "#fcfcfc",
-            "background": {
-                "type": "color",
-                "value": "#1F2D1B"
-            }
+            "style": {}
+          }
+        ],
+        "background": {
+          "type": "color",
+          "value": "#1f2d1b"
         },
-        {
-            "id": "a7d4sc4ljgl",
-            "templateType": "standard",
-            "contentAlignment": "center",
-            "layouts": [
+        "title": "undefined (копия)"
+      },
+      {
+        "id": "amd5thkdb64",
+        "title": "Слайд 2 (копия)",
+        "layouts": [
+          {
+            "id": "2th9vzt8tyl",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
                 {
-                    "id": "4zxvtjxli6n",
-                    "elements": [
-                        {
-                            "id": "5xkhficd12y",
-                            "content": "<p><span class=\"heading-text big-heading\">Conclusion</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "7bvhx2l2xc5"
-                        }
-                    ],
-                    "gridStructure": {
-                        "rows": [
-                            {
-                                "id": "frbx9xyi7h5",
-                                "cells": [
-                                    {
-                                        "id": "7bvhx2l2xc5",
-                                        "row": 0,
-                                        "column": 0
-                                    }
-                                ]
-                            }
-                        ],
-                        "columns": 1,
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "style": {}
-                },
-                {
-                    "id": "y88ishjiofl",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "rlkkbb",
-                                "cells": [
-                                    {
-                                        "id": "dbwtfo",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "lhrqoz29xrc",
-                            "content": "<p><span class=\"heading-text heading-2\">Subheadings</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "dbwtfo"
-                        }
-                    ]
-                }
-            ],
-            "background": {
-                "type": "color",
-                "value": "#1f2d1b"
-            },
-            "title": "undefined (копия)"
-        },
-        {
-            "id": "8yghidhoxkb",
-            "title": "Слайд 16 (копия)",
-            "layouts": [
-                {
-                    "id": "vksjwagzv7n",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "iuuw9c",
-                                "cells": [
-                                    {
-                                        "id": "3l4p47",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "kct2mm32wls",
-                            "content": "<p><span class=\"textColor\" style=\"color: #FFFFFF\">Metrics and timeline</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "3l4p47"
-                        }
-                    ]
-                },
-                {
-                    "id": "vqbkvlwb5o8",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "3t8ufc",
-                                "cells": [
-                                    {
-                                        "id": "i9cbmi",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "9yv2lqiitto",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">Key metrics (monthly)</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "i9cbmi"
-                        }
-                    ]
-                },
-                {
-                    "id": "7gb9bbrheis",
-                    "gridStructure": {
-                        "columns": 2,
-                        "rows": [
-                            {
-                                "id": "kzu1n2",
-                                "cells": [
-                                    {
-                                        "id": "toi3lj",
-                                        "row": 1,
-                                        "column": 1
-                                    },
-                                    {
-                                        "id": "ohh1tjorco",
-                                        "row": 1,
-                                        "column": 2
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "50%",
-                            "50%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "ooft890ykr7",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">Metric #1</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "toi3lj"
-                        },
-                        {
-                            "id": "22y82ni8fti",
-                            "content": "<p>/chart</p>",
-                            "elementTypeId": "chart",
-                            "cellId": "toi3lj",
-                            "elementVariant": "line",
-                            "data": [
-                                {
-                                    "name": "July",
-                                    "value": 32
-                                },
-                                {
-                                    "name": "September",
-                                    "value": 38
-                                }
-                            ],
-                            "series": [
-                                {
-                                    "key": "value",
-                                    "label": "value"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "osguykm4gqi",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">Metric #2</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "ohh1tjorco"
-                        },
-                        {
-                            "id": "h786w9jtzce",
-                            "content": "<p><span class=\"body-text normal-text\">/chart</span></p>",
-                            "elementTypeId": "chart",
-                            "cellId": "ohh1tjorco",
-                            "elementVariant": "bar",
-                            "data": [
-                                {
-                                    "name": "Q1",
-                                    "value": 220
-                                },
-                                {
-                                    "name": "Q2",
-                                    "value": 458
-                                },
-                                {
-                                    "name": "Q3",
-                                    "value": 359
-                                },
-                                {
-                                    "name": "Q4",
-                                    "value": 500
-                                }
-                            ],
-                            "series": [
-                                {
-                                    "key": "value",
-                                    "label": "value"
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "id": "6ixtwt3tsgr",
-                    "type": "blank",
-                    "elements": [
-                        {
-                            "id": "kzgdpg",
-                            "elementTypeId": "chart",
-                            "elementVariant": "bar",
-                            "data": [
-                                {
-                                    "name": "Q1",
-                                    "value": 220
-                                },
-                                {
-                                    "name": "Q2",
-                                    "value": 458
-                                },
-                                {
-                                    "name": "Q3",
-                                    "value": 359
-                                },
-                                {
-                                    "name": "Q4",
-                                    "value": 500
-                                }
-                            ],
-                            "series": [
-                                {
-                                    "key": "value",
-                                    "label": "value"
-                                }
-                            ],
-                            "cellId": "ogpg4bpyyns"
-                        },
-                        {
-                            "id": "sy8y47",
-                            "elementTypeId": "chart",
-                            "elementVariant": "pie",
-                            "data": [
-                                {
-                                    "name": "Q1",
-                                    "value": 220
-                                },
-                                {
-                                    "name": "Q2",
-                                    "value": 458
-                                },
-                                {
-                                    "name": "Q3",
-                                    "value": 359
-                                },
-                                {
-                                    "name": "Q4",
-                                    "value": 500
-                                }
-                            ],
-                            "series": [
-                                {
-                                    "key": "value",
-                                    "label": "value"
-                                }
-                            ],
-                            "cellId": "pa36qc8frih"
-                        }
-                    ],
-                    "style": {},
-                    "gridStructure": {
-                        "rows": [
-                            {
-                                "id": "yf572s7f47r",
-                                "cells": [
-                                    {
-                                        "id": "ogpg4bpyyns",
-                                        "row": 1,
-                                        "column": 1
-                                    },
-                                    {
-                                        "id": "pa36qc8frih",
-                                        "row": 1,
-                                        "column": 2
-                                    }
-                                ]
-                            }
-                        ],
-                        "columns": 2,
-                        "columnWidths": [
-                            "50%",
-                            "50%"
-                        ]
+                  "id": "7zqge5",
+                  "cells": [
+                    {
+                      "id": "9fmbg0",
+                      "row": 1,
+                      "column": 1
                     }
-                },
-                {
-                    "id": "2ietvff9rhs",
-                    "gridStructure": {
-                        "columns": 1,
-                        "columnWidths": [
-                            "100%"
-                        ],
-                        "rows": [
-                            {
-                                "id": "6iiww8xvbn",
-                                "cells": [
-                                    {
-                                        "id": "uxv9syuyr6a",
-                                        "row": 0,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    "type": "blank",
-                    "elements": [
-                        {
-                            "id": "wrfiepgueeo",
-                            "content": "<p><span class=\"body-text normal-text\">&nbsp;</span></p>",
-                            "elementTypeId": "text",
-                            "tempLayout": true,
-                            "cellId": "uxv9syuyr6a"
-                        }
-                    ],
-                    "style": {}
+                  ]
                 }
-            ],
-            "style": {},
-            "contentAlignment": "top",
-            "templateType": "standard"
-        },
-        {
-            "id": "wjcmbdoa2qo",
-            "title": "Слайд 17 (копия) (копия)",
-            "layouts": [
-                {
-                    "id": "4403eaoqnik",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "st40x9",
-                                "cells": [
-                                    {
-                                        "id": "2nwpm9",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "jwic8hm38nm",
-                            "content": "<p><span class=\"textColor\" style=\"color: #FFFFFF\">Metrics and timeline</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "2nwpm9"
-                        }
-                    ]
-                },
-                {
-                    "id": "tckno9ga5x",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "bbnb4g",
-                                "cells": [
-                                    {
-                                        "id": "zv3jk9",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "h2rw9fxqsc",
-                            "content": "<p><span class=\"heading-text heading-3\"><strong>Timeline &amp; checkpoints</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "zv3jk9"
-                        }
-                    ]
-                },
-                {
-                    "id": "uxcnb15hqy",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "0ud4co",
-                                "cells": [
-                                    {
-                                        "id": "fhf3yd",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "15jhge5t1q8",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">smartlayout timeline</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "fhf3yd"
-                        }
-                    ]
-                },
-                {
-                    "id": "70afcsqhhgo",
-                    "gridStructure": {
-                        "columns": 2,
-                        "rows": [
-                            {
-                                "id": "uaitd9",
-                                "cells": [
-                                    {
-                                        "id": "d1r7ah",
-                                        "row": 1,
-                                        "column": 1
-                                    },
-                                    {
-                                        "id": "vltfb9cz19i",
-                                        "row": 1,
-                                        "column": 2
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "50%",
-                            "50%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "6h4xlnts59p",
-                            "content": "<p><span class=\"body-text big-text\"><strong>Monthly checkpoints</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "d1r7ah"
-                        },
-                        {
-                            "id": "gskasfton8h",
-                            "content": "<p><span class=\"body-text small-text\"><strong>Mid-month: </strong>Description of checkpoint</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "vltfb9cz19i"
-                        },
-                        {
-                            "id": "bi0ssm2xvik",
-                            "content": "<p><span class=\"body-text small-text\"><strong>Month-end:</strong> Description of checkpoint</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "vltfb9cz19i"
-                        },
-                        {
-                            "id": "uhfpyb8r28",
-                            "content": "<p><span class=\"body-text small-text\"><strong>Board updates: </strong>Description of checkpoint</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "vltfb9cz19i"
-                        }
-                    ]
-                }
-            ],
-            "style": {},
-            "contentAlignment": "top",
-            "templateType": "standard"
-        },
-        {
-            "id": "xkf7grajw2",
-            "title": "Слайд 18 (копия)",
-            "layouts": [
-                {
-                    "id": "salt0vaxeg",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "6dgt2z",
-                                "cells": [
-                                    {
-                                        "id": "tocpgn",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "p6z5o3qz2u",
-                            "content": "<p><span class=\"heading-text heading-2\"><strong>Primary risks</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "tocpgn"
-                        }
-                    ]
-                },
-                {
-                    "id": "htzxtwupgg",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "iwlp5m",
-                                "cells": [
-                                    {
-                                        "id": "0xk47o",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "lkkzmaxngk",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">s-l текст с иконками</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "0xk47o"
-                        }
-                    ]
-                },
-                {
-                    "id": "z8dm1p4fm",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "ymfxcr",
-                                "cells": [
-                                    {
-                                        "id": "vu23dh",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "5bo4tp21igq",
-                            "content": "<p><span class=\"heading-text heading-2\"><strong>Success scenarios</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "vu23dh"
-                        }
-                    ]
-                },
-                {
-                    "id": "gzbgwuuhzun",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "t0kvdd",
-                                "cells": [
-                                    {
-                                        "id": "e3cwiw",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "vdsora90qqa",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">s-l текст с иконками</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "e3cwiw"
-                        }
-                    ]
-                }
-            ],
-            "style": {},
-            "contentAlignment": "top",
-            "templateType": "imageLeft",
-            "imageSize": {
-                "width": "20%"
+              ],
+              "columnWidths": [
+                "100%"
+              ]
             },
-            "imageUrl": "/uploads/c9148225-c7d7-4ef1-9f0e-eff560f2822f.jpeg"
-        },
-        {
-            "id": "m4s0jd5sgg",
-            "templateType": "standard",
-            "contentAlignment": "center",
-            "layouts": [
-                {
-                    "id": "6du3k85lw6w",
-                    "elements": [
-                        {
-                            "id": "i4aiyjjscb",
-                            "content": "<p><span class=\"heading-text big-heading\"><strong>Conclusion</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "7bvhx2l2xc5"
-                        }
-                    ],
-                    "gridStructure": {
-                        "rows": [
-                            {
-                                "id": "frbx9xyi7h5",
-                                "cells": [
-                                    {
-                                        "id": "7bvhx2l2xc5",
-                                        "row": 0,
-                                        "column": 0
-                                    }
-                                ]
-                            }
-                        ],
-                        "columns": 1,
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "style": {}
-                },
-                {
-                    "id": "7vemfs",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "rlkkbb",
-                                "cells": [
-                                    {
-                                        "id": "dbwtfo",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "ean129ektfu",
-                            "content": "<p><span class=\"heading-text heading-2\">Subheading</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "dbwtfo"
-                        }
-                    ]
-                },
-                {
-                    "id": "upr5in",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "jffd0b",
-                                "cells": [
-                                    {
-                                        "id": "6cjwkw",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "wxucu9zmxwk",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">Supporting copy thatdes</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "6cjwkw"
-                        }
-                    ]
-                }
-            ],
-            "background": {
-                "type": "color",
-                "value": "#1f2d1b"
-            }
-        },
-        {
-            "id": "xause7armn",
-            "title": "Слайд 20",
-            "layouts": [
-                {
-                    "id": "7foge4hgzsl",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "hofbkk",
-                                "cells": [
-                                    {
-                                        "id": "wn8rkx",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "af7o8fqctre",
-                            "content": "<p><span class=\"heading-text heading-2\"><strong>Next steps</strong></span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "wn8rkx"
-                        }
-                    ]
-                },
-                {
-                    "id": "3qvql4",
-                    "gridStructure": {
-                        "columns": 1,
-                        "rows": [
-                            {
-                                "id": "hkh6qv",
-                                "cells": [
-                                    {
-                                        "id": "yn6x62",
-                                        "row": 1,
-                                        "column": 1
-                                    }
-                                ]
-                            }
-                        ],
-                        "columnWidths": [
-                            "100%"
-                        ]
-                    },
-                    "type": "blank",
-                    "style": {},
-                    "elements": [
-                        {
-                            "id": "vtocckvkot",
-                            "content": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">s-l bulltes</span></p>",
-                            "elementTypeId": "text",
-                            "cellId": "yn6x62"
-                        }
-                    ]
-                }
-            ],
+            "type": "blank",
             "style": {},
-            "contentAlignment": "top",
-            "templateType": "imageTop",
-            "imageSize": {
-                "width": "20%"
+            "elements": [
+              {
+                "id": "5rs8tf4fkgu",
+                "content": "<p><span class=\"body-text normal-text\">нужен шаблон иконки + текст</span></p>",
+                "elementTypeId": "text",
+                "cellId": "9fmbg0"
+              }
+            ]
+          }
+        ],
+        "style": {},
+        "contentAlignment": "center",
+        "templateType": "standard"
+      },
+      {
+        "id": "7sngkhkr2ev",
+        "title": "Слайд 3 (копия)",
+        "layouts": [
+          {
+            "id": "lmgvm6nstpl",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "zl0gb1",
+                  "cells": [
+                    {
+                      "id": "ylf15u",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
             },
-            "imageUrl": "/uploads/b9b59513-2cde-4ea9-a5d9-cf0af2a549ef.jpeg"
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "7sfdg5nllx",
+                "content": "<p><span class=\"heading-text heading-1\">Executive summary</span></p>",
+                "elementTypeId": "text",
+                "cellId": "ylf15u"
+              }
+            ]
+          },
+          {
+            "id": "ctbslfjm9ec",
+            "gridStructure": {
+              "columns": 2,
+              "rows": [
+                {
+                  "id": "p2mfsg",
+                  "cells": [
+                    {
+                      "id": "q5x8at",
+                      "row": 1,
+                      "column": 1
+                    },
+                    {
+                      "id": "i3kr78m9j",
+                      "row": 1,
+                      "column": 2
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "50%",
+                "50%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "8rl3rk2h9pf",
+                "content": "<p><span class=\"textColor\" style=\"color: #D32F2F\">The challenge</span></p>",
+                "elementTypeId": "text",
+                "cellId": "q5x8at"
+              },
+              {
+                "id": "w4bt4zdixm8",
+                "content": "<p><span class=\"body-text small-text\">Short summary of key challenge your team is facing this quarter</span></p>",
+                "elementTypeId": "text",
+                "cellId": "q5x8at"
+              },
+              {
+                "id": "mkbga82g4x",
+                "content": "<p><span class=\"textColor\" style=\"color: #388E3C\">The solution</span></p>",
+                "elementTypeId": "text",
+                "cellId": "i3kr78m9j"
+              },
+              {
+                "id": "serriw47vpd",
+                "content": "<p><span class=\"body-text small-text\">Short summary of how your team will tackle this challenge</span></p>",
+                "elementTypeId": "text",
+                "cellId": "i3kr78m9j"
+              }
+            ]
+          },
+          {
+            "id": "ge5dnucgzj",
+            "gridStructure": {
+              "columns": 1,
+              "columnWidths": [
+                "100%"
+              ],
+              "rows": [
+                {
+                  "id": "49ekwpugp4p",
+                  "cells": [
+                    {
+                      "id": "36xotbg6s25",
+                      "row": 0,
+                      "column": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            "type": "blank",
+            "elements": [
+              {
+                "id": "onmla8dj0y",
+                "content": "<p>Q3 goals</p><p></p><ul><li><p>Description of goal</p></li><li><p>Description of goal</p></li><li><p>Description of goal</p></li></ul>",
+                "elementTypeId": "box",
+                "tempLayout": true,
+                "cellId": "36xotbg6s25",
+                "elementVariant": "note-box",
+                "iconType": "caution-box",
+                "darkBackgroundColor": "#01004d",
+                "customBackgroundColor": "#000000",
+                "backgroundColor": "#ffb3b3"
+              }
+            ],
+            "style": {}
+          }
+        ],
+        "style": {},
+        "contentAlignment": "center",
+        "templateType": "standard"
+      },
+      {
+        "id": "u8rmwld6soq",
+        "title": "Слайд 4 (копия)",
+        "layouts": [
+          {
+            "id": "8wpvdicnx8c",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "z6zych",
+                  "cells": [
+                    {
+                      "id": "0a34hg",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "8oy57ngckxc",
+                "content": "<p><span class=\"heading-text title-text\"><strong>Strategic framework</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "0a34hg"
+              }
+            ]
+          }
+        ],
+        "style": {},
+        "contentAlignment": "center",
+        "templateType": "standard",
+        "background": {
+          "type": "color",
+          "value": "#1f2d1b"
         }
+      },
+      {
+        "id": "gq5iw7ksujd",
+        "title": "Слайд 5 (копия)",
+        "layouts": [
+          {
+            "id": "b7o8ojide7",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "q1f5zm",
+                  "cells": [
+                    {
+                      "id": "r73cbg",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "v0q6xjubewa",
+                "content": "<p><span class=\"heading-text heading-2\"><strong>Core mission</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "r73cbg"
+              }
+            ]
+          },
+          {
+            "id": "p23hn9zb3k",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "vyi9xa",
+                  "cells": [
+                    {
+                      "id": "wo9tw6",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "k0affyvrvq8",
+                "content": "<p><span class=\"heading-text heading-1\"><strong>State the core mission for your company, product, or the current quarter/year</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "wo9tw6"
+              }
+            ]
+          }
+        ],
+        "style": {},
+        "contentAlignment": "center",
+        "templateType": "standard"
+      },
+      {
+        "id": "c9r8ah4a77g",
+        "title": "Слайд 6 (копия)",
+        "layouts": [
+          {
+            "id": "aqj0nbnc9m",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "ygfskh",
+                  "cells": [
+                    {
+                      "id": "5fljwh",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "c2zuwoidpg4",
+                "content": "<p><span class=\"heading-text heading-1\">Strategic pillars</span></p>",
+                "elementTypeId": "text",
+                "cellId": "5fljwh"
+              }
+            ]
+          },
+          {
+            "id": "muta9xsxga",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "jrai58",
+                  "cells": [
+                    {
+                      "id": "ow1ncm",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "wpd80kzluzd",
+                "content": "<p>шаблон stats</p>",
+                "elementTypeId": "text",
+                "cellId": "ow1ncm"
+              }
+            ]
+          }
+        ],
+        "style": {},
+        "contentAlignment": "top",
+        "templateType": "imageTop",
+        "imageSize": {
+          "height": "796px"
+        },
+        "imageUrl": "/uploads/471eeef1-0a15-4f23-8a47-053559de3df9.jpeg"
+      },
+      {
+        "id": "8o46q5ty9gq",
+        "title": "Слайд 2 (копия)",
+        "layouts": [
+          {
+            "id": "t8ahc1qg1e",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "7zqge5",
+                  "cells": [
+                    {
+                      "id": "9fmbg0",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "ymxg2p3d4d",
+                "content": "<p><span class=\"body-text normal-text\">нужен шаблон иконки + текст</span></p>",
+                "elementTypeId": "text",
+                "cellId": "9fmbg0"
+              }
+            ]
+          }
+        ],
+        "style": {},
+        "contentAlignment": "center",
+        "templateType": "standard"
+      },
+      {
+        "id": "mzmqa98ufm",
+        "templateType": "standard",
+        "contentAlignment": "center",
+        "layouts": [
+          {
+            "id": "4ik36gmnsdm",
+            "elements": [
+              {
+                "id": "u4mxjwny4jm",
+                "content": "<p><span class=\"heading-text heading-1\">Q3</span></p>",
+                "elementTypeId": "text",
+                "cellId": "7bvhx2l2xc5"
+              }
+            ],
+            "gridStructure": {
+              "rows": [
+                {
+                  "id": "frbx9xyi7h5",
+                  "cells": [
+                    {
+                      "id": "7bvhx2l2xc5",
+                      "row": 0,
+                      "column": 0
+                    }
+                  ]
+                }
+              ],
+              "columns": 1,
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "style": {}
+          },
+          {
+            "id": "rwivt9sxb9b",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "rlkkbb",
+                  "cells": [
+                    {
+                      "id": "dbwtfo",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "ynuueo668l",
+                "content": "<p><span class=\"heading-text title-text\"><strong>[Strategic focus]</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "dbwtfo"
+              }
+            ]
+          }
+        ],
+        "background": {
+          "type": "color",
+          "value": "#1f2d1b"
+        },
+        "title": "undefined (копия)"
+      },
+      {
+        "id": "zlj8lzwoj4e",
+        "layouts": [
+          {
+            "id": "2vw8b7odp6",
+            "type": "heading",
+            "elements": [
+              {
+                "id": "veg2ncn3cif",
+                "elementTypeId": "text",
+                "textType": "heading1",
+                "content": "<p><span class=\"heading-text heading-1\">Campaign strategy</span></p>",
+                "cellId": "1aj8yq65ipr"
+              }
+            ],
+            "style": {},
+            "gridStructure": {
+              "rows": [
+                {
+                  "id": "19edisozaprh",
+                  "cells": [
+                    {
+                      "id": "1aj8yq65ipr",
+                      "row": 0,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columns": 1,
+              "columnWidths": [
+                "100%"
+              ]
+            }
+          },
+          {
+            "id": "c03qqqbcjz",
+            "type": "three-columns",
+            "elements": [
+              {
+                "id": "ugluelvzho",
+                "elementTypeId": "text",
+                "textType": "default",
+                "content": "<p><strong>July</strong></p>",
+                "cellId": "pwbzg6rc2n"
+              },
+              {
+                "id": "72tk88s1ghy",
+                "content": "<p><strong>Title of initiative</strong></p>",
+                "elementTypeId": "text",
+                "cellId": "pwbzg6rc2n"
+              },
+              {
+                "id": "u6z7wwzwbxp",
+                "content": "<p>/smart</p>",
+                "elementTypeId": "smart-layout",
+                "cellId": "pwbzg6rc2n",
+                "elementVariant": "text-boxes",
+                "items": [
+                  {
+                    "title": "<p style=\"text-align: left\"><span style=\"color: #000000\"><strong>Goal</strong></span></p>",
+                    "text": "<p style=\"text-align: left\"><span style=\"color: #000000\">Description of goal</span></p>",
+                    "imageUrl": "",
+                    "iconUrl": "",
+                    "id": "pasb5x6onj8"
+                  },
+                  {
+                    "title": "<p style=\"text-align: left\"><span style=\"color: #000000\"><strong>Content</strong></span></p>",
+                    "text": "<p style=\"text-align: left\"><span style=\"color: #000000\">Description of content</span></p>",
+                    "imageUrl": "",
+                    "iconUrl": "",
+                    "id": "7py3f1sqrcn"
+                  },
+                  {
+                    "title": "<p style=\"text-align: left\"><span style=\"color: #000000\"><strong>Target</strong></span></p>",
+                    "text": "<p style=\"text-align: left\"><span style=\"color: #000000\">Description of target</span></p>",
+                    "imageUrl": "",
+                    "iconUrl": "",
+                    "id": "yso0jqv2yz"
+                  }
+                ],
+                "columnSize": 1,
+                "align": "left",
+                "imageShape": "square",
+                "imageSize": 5
+              },
+              {
+                "id": "5obc0ghdey5",
+                "elementTypeId": "text",
+                "textType": "default",
+                "content": "<p>August</p>",
+                "cellId": "3u6yi2v1ysy"
+              },
+              {
+                "id": "aeya0pga6p",
+                "content": "<p>Title of initiative</p>",
+                "elementTypeId": "text",
+                "cellId": "3u6yi2v1ysy"
+              },
+              {
+                "id": "c3spgi22vzf",
+                "content": "<p>/</p>",
+                "elementTypeId": "smart-layout",
+                "cellId": "3u6yi2v1ysy",
+                "elementVariant": "text-boxes",
+                "items": [
+                  {
+                    "title": "<p style=\"text-align: left\"><span style=\"color: #000000\"><strong>Goal</strong></span></p>",
+                    "text": "<p style=\"text-align: left\"><span style=\"color: #000000\">Description of goal</span></p>",
+                    "imageUrl": "",
+                    "iconUrl": "",
+                    "id": "3csvy2kca8v"
+                  },
+                  {
+                    "title": "<p style=\"text-align: left\"><span style=\"color: #000000\"><strong>Content</strong></span></p>",
+                    "text": "<p style=\"text-align: left\"><span style=\"color: #000000\">Description of content</span></p>",
+                    "imageUrl": "",
+                    "iconUrl": "",
+                    "id": "7kn0nk21b07"
+                  },
+                  {
+                    "title": "<p style=\"text-align: left\"><span style=\"color: #000000\"><strong>Target</strong></span></p>",
+                    "text": "<p style=\"text-align: left\"><span style=\"color: #000000\">Description of target</span></p>",
+                    "imageUrl": "",
+                    "iconUrl": "",
+                    "id": "89bpfenus0x"
+                  }
+                ],
+                "columnSize": 1,
+                "align": "left",
+                "imageShape": "square",
+                "imageSize": 5
+              },
+              {
+                "id": "q4bqtx2go7r",
+                "elementTypeId": "text",
+                "textType": "default",
+                "content": "<p>September</p>",
+                "cellId": "me0pbbsmox"
+              },
+              {
+                "id": "aurdb8t3pv",
+                "content": "<p>Title of initiative</p>",
+                "elementTypeId": "text",
+                "cellId": "me0pbbsmox"
+              },
+              {
+                "id": "bdto6hfe8k",
+                "content": "<p>/</p>",
+                "elementTypeId": "smart-layout",
+                "cellId": "me0pbbsmox",
+                "elementVariant": "text-boxes",
+                "items": [
+                  {
+                    "title": "<p style=\"text-align: left\"><span style=\"color: #000000\"><strong>Goal</strong></span></p>",
+                    "text": "<p style=\"text-align: left\"><span style=\"color: #000000\">Description of goal</span></p>",
+                    "imageUrl": "",
+                    "iconUrl": "",
+                    "id": "ny823whgiyf"
+                  },
+                  {
+                    "title": "<p style=\"text-align: left\"><span style=\"color: #000000\"><strong>Content</strong></span></p>",
+                    "text": "<p style=\"text-align: left\"><span style=\"color: #000000\">Description of content</span></p>",
+                    "imageUrl": "",
+                    "iconUrl": "",
+                    "id": "ws17j3dgi0d"
+                  },
+                  {
+                    "title": "<p style=\"text-align: left\"><span style=\"color: #000000\"><strong>Target</strong></span></p>",
+                    "text": "<p style=\"text-align: left\"><span style=\"color: #000000\">Description of target</span></p>",
+                    "imageUrl": "",
+                    "iconUrl": "",
+                    "id": "06alnhz79lll"
+                  }
+                ],
+                "columnSize": 1,
+                "align": "left",
+                "imageShape": "square",
+                "imageSize": 5
+              }
+            ],
+            "style": {},
+            "gridStructure": {
+              "rows": [
+                {
+                  "id": "ckemygt4txd",
+                  "cells": [
+                    {
+                      "id": "pwbzg6rc2n",
+                      "row": 0,
+                      "column": 1
+                    },
+                    {
+                      "id": "3u6yi2v1ysy",
+                      "row": 0,
+                      "column": 2
+                    },
+                    {
+                      "id": "me0pbbsmox",
+                      "row": 0,
+                      "column": 3
+                    }
+                  ]
+                }
+              ],
+              "columns": 3,
+              "columnWidths": [
+                "33%",
+                "34%",
+                "33%"
+              ]
+            }
+          }
+        ],
+        "title": "undefined (копия)"
+      },
+      {
+        "id": "qupknrl3hyi",
+        "title": "Слайд 11 (копия)",
+        "layouts": [
+          {
+            "id": "21w5905kj6c",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "tqcndt",
+                  "cells": [
+                    {
+                      "id": "rm2wfz",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "ffa51lbvkhi",
+                "content": "<p><span class=\"heading-text heading-2\">Channel strategy</span></p>",
+                "elementTypeId": "text",
+                "cellId": "rm2wfz"
+              }
+            ]
+          },
+          {
+            "id": "s4evlo5v3x",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "ydvg5y",
+                  "cells": [
+                    {
+                      "id": "4n82n3",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "7v9pl47716g",
+                "content": "<p>/</p>",
+                "elementTypeId": "smart-layout",
+                "cellId": "4n82n3",
+                "elementVariant": "text-boxes",
+                "items": [
+                  {
+                    "title": "<p style=\"text-align: left\"><span class=\"body-text big-text\"><strong>Platform 1</strong></span></p>",
+                    "text": "<p><strong>Strategy approach</strong></p><ul><li><p><strong>Shift:</strong> Current approach → New direction with specific focus</p></li><li><p><strong>Content:</strong> Main coфыntent types, educational elements</p></li><li><p style=\"text-align: left\"><strong>Mix:</strong> Percentage breakdown of content types</p></li></ul>",
+                    "imageUrl": "/uploads/0c169360-0c3e-46d3-b914-0476b543be2d.jpeg",
+                    "iconUrl": "",
+                    "id": "8fnaplw783e",
+                    "uploaded": true,
+                    "backgroundColor": "#000000",
+                    "textColor": "#FFFFFF"
+                  },
+                  {
+                    "title": "<p style=\"text-align: left\"><span class=\"body-text big-text\"><strong>Platform 2</strong></span></p>",
+                    "text": "<p><strong>Strategy approach</strong></p><ul><li><p><strong>Focus:</strong> Main objective and target showcase</p></li><li><p><strong>Content:</strong> Specific content formats and examples</p></li><li><p style=\"text-align: left\"><strong>Strategy:</strong> How content serves business goals</p></li></ul>",
+                    "imageUrl": "",
+                    "iconUrl": "",
+                    "id": "vod4ml8jtis",
+                    "backgroundColor": "#F57C00",
+                    "textColor": "#FFFFFF"
+                  },
+                  {
+                    "title": "<p><strong>Platform 3</strong></p>",
+                    "text": "<p><strong>Strategy approach</strong></p><ul><li><p><strong>Approach:</strong> Methodology and targeting criteria</p></li><li><p><strong>Content:</strong> Email types and sequence structure</p></li><li><p><strong>Key Flows:</strong> Specific trigger points and timing</p></li></ul>",
+                    "imageUrl": "",
+                    "iconUrl": "",
+                    "id": "w9o83lrnvpl",
+                    "backgroundColor": "#000000",
+                    "textColor": "#FFFFFF"
+                  },
+                  {
+                    "id": "at9eczsc7ib",
+                    "title": "<p><strong>Platform 4</strong></p>",
+                    "text": "<p><strong>Strategy approach</strong></p><ul><li><p><strong>Goal:</strong> Primary objective and user outcome</p></li><li><p><strong>Content:</strong> Community content types and activities</p></li><li><p><strong>Features:</strong> Specific engagement mechanisms</p></li></ul>",
+                    "backgroundColor": "#000000",
+                    "textColor": "#FFFFFF"
+                  }
+                ],
+                "columnSize": 2,
+                "align": "left",
+                "imageShape": "square",
+                "imageSize": 5,
+                "backgroundColor": "#FFFFFF",
+                "textColor": "#000000"
+              }
+            ]
+          },
+          {
+            "id": "i5govhmzt",
+            "gridStructure": {
+              "columns": 1,
+              "columnWidths": [
+                "100%"
+              ],
+              "rows": [
+                {
+                  "id": "bu36zw9hkvn",
+                  "cells": [
+                    {
+                      "id": "y4j7ite7f8p",
+                      "row": 0,
+                      "column": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            "type": "blank",
+            "elements": [
+              {
+                "id": "h9eyasz79x",
+                "content": "<p><span class=\"body-text normal-text\">&nbsp;</span></p>",
+                "elementTypeId": "text",
+                "tempLayout": true,
+                "cellId": "y4j7ite7f8p"
+              }
+            ],
+            "style": {}
+          }
+        ],
+        "style": {},
+        "contentAlignment": "top",
+        "templateType": "standard"
+      },
+      {
+        "id": "fzmbgvjih75",
+        "templateType": "standard",
+        "contentAlignment": "center",
+        "layouts": [
+          {
+            "id": "hq8r9ja2xb6",
+            "elements": [
+              {
+                "id": "3iizrmcgp18",
+                "content": "<p><span class=\"heading-text heading-1\"><strong>Q3</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "7bvhx2l2xc5"
+              }
+            ],
+            "gridStructure": {
+              "rows": [
+                {
+                  "id": "frbx9xyi7h5",
+                  "cells": [
+                    {
+                      "id": "7bvhx2l2xc5",
+                      "row": 0,
+                      "column": 0
+                    }
+                  ]
+                }
+              ],
+              "columns": 1,
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "style": {}
+          },
+          {
+            "id": "arukrhl3fu6",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "rlkkbb",
+                  "cells": [
+                    {
+                      "id": "dbwtfo",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "za93wg0nge",
+                "content": "<p><span class=\"heading-text title-text\"><strong>[Strategic focus]</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "dbwtfo"
+              }
+            ]
+          }
+        ],
+        "background": {
+          "type": "color",
+          "value": "#1f2d1b"
+        },
+        "title": "undefined (копия) (копия)"
+      },
+      {
+        "id": "cnyxiyxikas",
+        "layouts": [
+          {
+            "id": "511vbs31ry9",
+            "type": "two-columns-equal",
+            "elements": [
+              {
+                "id": "2z7r066u0qv",
+                "elementTypeId": "text",
+                "textType": "default",
+                "content": "<p><span class=\"body-text big-text\">[Strategic focus]</span></p>",
+                "cellId": "yjhic2hbrc"
+              },
+              {
+                "id": "avzbnzvzrfo",
+                "content": "<p><span class=\"heading-text heading-2\"><strong>[Strategy type]</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "yjhic2hbrc"
+              },
+              {
+                "id": "vqkqa3xe879",
+                "elementTypeId": "text",
+                "textType": "default",
+                "content": "<p><strong>Heading</strong></p>",
+                "cellId": "lti1lewrpce"
+              },
+              {
+                "id": "zfg20us1n1e",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">smartlayout timeline</span></p>",
+                "elementTypeId": "text",
+                "cellId": "lti1lewrpce"
+              }
+            ],
+            "style": {},
+            "gridStructure": {
+              "rows": [
+                {
+                  "id": "kv0mu98q18i",
+                  "cells": [
+                    {
+                      "id": "yjhic2hbrc",
+                      "row": 0,
+                      "column": 1
+                    },
+                    {
+                      "id": "lti1lewrpce",
+                      "row": 0,
+                      "column": 2
+                    }
+                  ]
+                }
+              ],
+              "columns": 2,
+              "columnWidths": [
+                "50%",
+                "50%"
+              ]
+            }
+          },
+          {
+            "id": "02mxvj3vnig5",
+            "gridStructure": {
+              "columns": 1,
+              "columnWidths": [
+                "100%"
+              ],
+              "rows": [
+                {
+                  "id": "2j9q1jvpy36",
+                  "cells": [
+                    {
+                      "id": "tqqmf3k4vei",
+                      "row": 0,
+                      "column": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            "type": "blank",
+            "elements": [
+              {
+                "id": "aop9gtqd7hd",
+                "content": "<p><span class=\"body-text normal-text\">&nbsp;</span></p>",
+                "elementTypeId": "text",
+                "tempLayout": true,
+                "cellId": "tqqmf3k4vei"
+              }
+            ],
+            "style": {}
+          }
+        ],
+        "title": "undefined (копия) (копия)"
+      },
+      {
+        "id": "gch1bc9d3s9",
+        "title": "Слайд 13 (копия) (копия)",
+        "layouts": [
+          {
+            "id": "tz4txw670il",
+            "gridStructure": {
+              "columns": 2,
+              "rows": [
+                {
+                  "id": "ciwblf",
+                  "cells": [
+                    {
+                      "id": "4iy7cs",
+                      "row": 1,
+                      "column": 1
+                    },
+                    {
+                      "id": "3a483al4rea",
+                      "row": 1,
+                      "column": 2
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "50%",
+                "50%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "vn4gc82bclq",
+                "content": "<p><span class=\"body-text big-text\" style=\"color: #ffffff\">[Strategic focus]</span></p>",
+                "elementTypeId": "text",
+                "cellId": "4iy7cs"
+              },
+              {
+                "id": "klww7fq4x6",
+                "content": "<p><span class=\"heading-text heading-1\" style=\"color: #ffffff\"><strong>[Integration type]</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "4iy7cs"
+              },
+              {
+                "id": "nilngtxoo4",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #ffffff\">smart layout текст с иконками</span></p>",
+                "elementTypeId": "text",
+                "cellId": "3a483al4rea"
+              }
+            ]
+          }
+        ],
+        "style": {},
+        "contentAlignment": "center",
+        "templateType": "imageTop",
+        "imageSize": {
+          "width": "20%"
+        },
+        "imageUrl": "/uploads/d73f9ff0-ee9b-4319-964f-b5cb92b02476.jpeg",
+        "textColor": "#ffffff",
+        "imageHeightRatio": 0.139108527131783
+      },
+      {
+        "id": "5qk23v7ez2p",
+        "title": "Слайд 14 (копия) (копия)",
+        "layouts": [
+          {
+            "id": "3dmpcohc74i",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "rxy5cf",
+                  "cells": [
+                    {
+                      "id": "0dcfdj",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "ss6xtv4vgj",
+                "content": "<p><span class=\"heading-text heading-1\" style=\"color: #fcfcfc\">Q3</span></p>",
+                "elementTypeId": "text",
+                "cellId": "0dcfdj"
+              }
+            ]
+          },
+          {
+            "id": "odq8p2ld02d",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "2dtral",
+                  "cells": [
+                    {
+                      "id": "hown52",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "gwfi6i4472f",
+                "content": "<p><span class=\"heading-text title-text\" style=\"color: #fcfcfc\"><strong>Budget and resources</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "hown52"
+              }
+            ]
+          },
+          {
+            "id": "cqnf4uvgg8f",
+            "gridStructure": {
+              "rows": [
+                {
+                  "id": "f726ddrer8m",
+                  "cells": [
+                    {
+                      "id": "cvj9k3lewr",
+                      "row": 0,
+                      "column": 0
+                    },
+                    {
+                      "id": "wqo55arsrp",
+                      "row": 0,
+                      "column": 1
+                    }
+                  ]
+                },
+                {
+                  "id": "kizqanch36b",
+                  "cells": [
+                    {
+                      "id": "68xdq3ie2ne",
+                      "row": 1,
+                      "column": 0
+                    },
+                    {
+                      "id": "h570e6drhfo",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                },
+                {
+                  "id": "3fhqa0",
+                  "cells": [
+                    {
+                      "id": "ivv9sh",
+                      "column": 0,
+                      "row": 2
+                    },
+                    {
+                      "id": "ix5me9",
+                      "column": 1,
+                      "row": 2
+                    }
+                  ]
+                },
+                {
+                  "id": "ia9jja",
+                  "cells": [
+                    {
+                      "id": "omkz5f",
+                      "column": 0,
+                      "row": 3
+                    },
+                    {
+                      "id": "41o5ja",
+                      "column": 1,
+                      "row": 3
+                    }
+                  ]
+                },
+                {
+                  "id": "6u7ni6",
+                  "cells": [
+                    {
+                      "id": "q6tobo",
+                      "column": 0,
+                      "row": 4
+                    },
+                    {
+                      "id": "0gdl3o",
+                      "column": 1,
+                      "row": 4
+                    }
+                  ]
+                },
+                {
+                  "id": "nbiv3u",
+                  "cells": [
+                    {
+                      "id": "t7bg6v",
+                      "column": 0,
+                      "row": 5
+                    },
+                    {
+                      "id": "85evml",
+                      "column": 1,
+                      "row": 5
+                    }
+                  ]
+                }
+              ],
+              "columns": 2,
+              "columnWidths": [
+                "50%",
+                "50%"
+              ]
+            },
+            "type": "table",
+            "style": {},
+            "elements": [
+              {
+                "id": "jp6oz1uq8xe",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\"><strong>Paid social</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "cvj9k3lewr"
+              },
+              {
+                "id": "1djdzic4t23",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\">$$</span></p>",
+                "elementTypeId": "text",
+                "cellId": "wqo55arsrp"
+              },
+              {
+                "id": "ept2mbwtr18",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\"><strong>Influencer partnerships</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "68xdq3ie2ne"
+              },
+              {
+                "id": "kowiu35uxxc",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\">$$</span></p>",
+                "elementTypeId": "text",
+                "cellId": "h570e6drhfo"
+              },
+              {
+                "id": "6z3oefrjk",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\"><strong>Content production</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "ivv9sh"
+              },
+              {
+                "id": "m8fc93umamp",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\">$$</span></p>",
+                "elementTypeId": "text",
+                "cellId": "ix5me9"
+              },
+              {
+                "id": "qfc77qofd19",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\"><strong>Community platform</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "omkz5f"
+              },
+              {
+                "id": "cxbc28y7rf",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\">$$</span></p>",
+                "elementTypeId": "text",
+                "cellId": "41o5ja"
+              },
+              {
+                "id": "6032ezeklsl",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\"><strong>Email &amp; automation</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "q6tobo"
+              },
+              {
+                "id": "l0su0kdokke",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\">$$</span></p>",
+                "elementTypeId": "text",
+                "cellId": "0gdl3o"
+              },
+              {
+                "id": "qp1slfnzv9",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\"><strong>Team &amp; operations</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "t7bg6v"
+              },
+              {
+                "id": "illkwobqo8m",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #fcfcfc\">$$</span></p>",
+                "elementTypeId": "text",
+                "cellId": "85evml"
+              }
+            ],
+            "isTable": true
+          }
+        ],
+        "style": {},
+        "contentAlignment": "top",
+        "templateType": "standard",
+        "textColor": "#fcfcfc",
+        "background": {
+          "type": "color",
+          "value": "#1F2D1B"
+        }
+      },
+      {
+        "id": "a7d4sc4ljgl",
+        "templateType": "standard",
+        "contentAlignment": "center",
+        "layouts": [
+          {
+            "id": "4zxvtjxli6n",
+            "elements": [
+              {
+                "id": "5xkhficd12y",
+                "content": "<p><span class=\"heading-text big-heading\">Conclusion</span></p>",
+                "elementTypeId": "text",
+                "cellId": "7bvhx2l2xc5"
+              }
+            ],
+            "gridStructure": {
+              "rows": [
+                {
+                  "id": "frbx9xyi7h5",
+                  "cells": [
+                    {
+                      "id": "7bvhx2l2xc5",
+                      "row": 0,
+                      "column": 0
+                    }
+                  ]
+                }
+              ],
+              "columns": 1,
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "style": {}
+          },
+          {
+            "id": "y88ishjiofl",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "rlkkbb",
+                  "cells": [
+                    {
+                      "id": "dbwtfo",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "lhrqoz29xrc",
+                "content": "<p><span class=\"heading-text heading-2\">Subheadings</span></p>",
+                "elementTypeId": "text",
+                "cellId": "dbwtfo"
+              }
+            ]
+          }
+        ],
+        "background": {
+          "type": "color",
+          "value": "#1f2d1b"
+        },
+        "title": "undefined (копия)"
+      },
+      {
+        "id": "8yghidhoxkb",
+        "title": "Слайд 16 (копия)",
+        "layouts": [
+          {
+            "id": "vksjwagzv7n",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "iuuw9c",
+                  "cells": [
+                    {
+                      "id": "3l4p47",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "kct2mm32wls",
+                "content": "<p><span class=\"textColor\" style=\"color: #FFFFFF\">Metrics and timeline</span></p>",
+                "elementTypeId": "text",
+                "cellId": "3l4p47"
+              }
+            ]
+          },
+          {
+            "id": "vqbkvlwb5o8",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "3t8ufc",
+                  "cells": [
+                    {
+                      "id": "i9cbmi",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "9yv2lqiitto",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">Key metrics (monthly)</span></p>",
+                "elementTypeId": "text",
+                "cellId": "i9cbmi"
+              }
+            ]
+          },
+          {
+            "id": "7gb9bbrheis",
+            "gridStructure": {
+              "columns": 2,
+              "rows": [
+                {
+                  "id": "kzu1n2",
+                  "cells": [
+                    {
+                      "id": "toi3lj",
+                      "row": 1,
+                      "column": 1
+                    },
+                    {
+                      "id": "ohh1tjorco",
+                      "row": 1,
+                      "column": 2
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "50%",
+                "50%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "ooft890ykr7",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">Metric #1</span></p>",
+                "elementTypeId": "text",
+                "cellId": "toi3lj"
+              },
+              {
+                "id": "22y82ni8fti",
+                "content": "<p>/chart</p>",
+                "elementTypeId": "chart",
+                "cellId": "toi3lj",
+                "elementVariant": "line",
+                "data": [
+                  {
+                    "name": "July",
+                    "value": 32
+                  },
+                  {
+                    "name": "September",
+                    "value": 38
+                  }
+                ],
+                "series": [
+                  {
+                    "key": "value",
+                    "label": "value"
+                  }
+                ]
+              },
+              {
+                "id": "osguykm4gqi",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">Metric #2</span></p>",
+                "elementTypeId": "text",
+                "cellId": "ohh1tjorco"
+              },
+              {
+                "id": "h786w9jtzce",
+                "content": "<p><span class=\"body-text normal-text\">/chart</span></p>",
+                "elementTypeId": "chart",
+                "cellId": "ohh1tjorco",
+                "elementVariant": "bar",
+                "data": [
+                  {
+                    "name": "Q1",
+                    "value": 220
+                  },
+                  {
+                    "name": "Q2",
+                    "value": 458
+                  },
+                  {
+                    "name": "Q3",
+                    "value": 359
+                  },
+                  {
+                    "name": "Q4",
+                    "value": 500
+                  }
+                ],
+                "series": [
+                  {
+                    "key": "value",
+                    "label": "value"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "6ixtwt3tsgr",
+            "type": "blank",
+            "elements": [
+              {
+                "id": "kzgdpg",
+                "elementTypeId": "chart",
+                "elementVariant": "bar",
+                "data": [
+                  {
+                    "name": "Q1",
+                    "value": 220
+                  },
+                  {
+                    "name": "Q2",
+                    "value": 458
+                  },
+                  {
+                    "name": "Q3",
+                    "value": 359
+                  },
+                  {
+                    "name": "Q4",
+                    "value": 500
+                  }
+                ],
+                "series": [
+                  {
+                    "key": "value",
+                    "label": "value"
+                  }
+                ],
+                "cellId": "ogpg4bpyyns"
+              },
+              {
+                "id": "sy8y47",
+                "elementTypeId": "chart",
+                "elementVariant": "pie",
+                "data": [
+                  {
+                    "name": "Q1",
+                    "value": 220
+                  },
+                  {
+                    "name": "Q2",
+                    "value": 458
+                  },
+                  {
+                    "name": "Q3",
+                    "value": 359
+                  },
+                  {
+                    "name": "Q4",
+                    "value": 500
+                  }
+                ],
+                "series": [
+                  {
+                    "key": "value",
+                    "label": "value"
+                  }
+                ],
+                "cellId": "pa36qc8frih"
+              }
+            ],
+            "style": {},
+            "gridStructure": {
+              "rows": [
+                {
+                  "id": "yf572s7f47r",
+                  "cells": [
+                    {
+                      "id": "ogpg4bpyyns",
+                      "row": 1,
+                      "column": 1
+                    },
+                    {
+                      "id": "pa36qc8frih",
+                      "row": 1,
+                      "column": 2
+                    }
+                  ]
+                }
+              ],
+              "columns": 2,
+              "columnWidths": [
+                "50%",
+                "50%"
+              ]
+            }
+          },
+          {
+            "id": "2ietvff9rhs",
+            "gridStructure": {
+              "columns": 1,
+              "columnWidths": [
+                "100%"
+              ],
+              "rows": [
+                {
+                  "id": "6iiww8xvbn",
+                  "cells": [
+                    {
+                      "id": "uxv9syuyr6a",
+                      "row": 0,
+                      "column": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            "type": "blank",
+            "elements": [
+              {
+                "id": "wrfiepgueeo",
+                "content": "<p><span class=\"body-text normal-text\">&nbsp;</span></p>",
+                "elementTypeId": "text",
+                "tempLayout": true,
+                "cellId": "uxv9syuyr6a"
+              }
+            ],
+            "style": {}
+          }
+        ],
+        "style": {},
+        "contentAlignment": "top",
+        "templateType": "standard"
+      },
+      {
+        "id": "wjcmbdoa2qo",
+        "title": "Слайд 17 (копия) (копия)",
+        "layouts": [
+          {
+            "id": "4403eaoqnik",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "st40x9",
+                  "cells": [
+                    {
+                      "id": "2nwpm9",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "jwic8hm38nm",
+                "content": "<p><span class=\"textColor\" style=\"color: #FFFFFF\">Metrics and timeline</span></p>",
+                "elementTypeId": "text",
+                "cellId": "2nwpm9"
+              }
+            ]
+          },
+          {
+            "id": "tckno9ga5x",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "bbnb4g",
+                  "cells": [
+                    {
+                      "id": "zv3jk9",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "h2rw9fxqsc",
+                "content": "<p><span class=\"heading-text heading-3\"><strong>Timeline &amp; checkpoints</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "zv3jk9"
+              }
+            ]
+          },
+          {
+            "id": "uxcnb15hqy",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "0ud4co",
+                  "cells": [
+                    {
+                      "id": "fhf3yd",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "15jhge5t1q8",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">smartlayout timeline</span></p>",
+                "elementTypeId": "text",
+                "cellId": "fhf3yd"
+              }
+            ]
+          },
+          {
+            "id": "70afcsqhhgo",
+            "gridStructure": {
+              "columns": 2,
+              "rows": [
+                {
+                  "id": "uaitd9",
+                  "cells": [
+                    {
+                      "id": "d1r7ah",
+                      "row": 1,
+                      "column": 1
+                    },
+                    {
+                      "id": "vltfb9cz19i",
+                      "row": 1,
+                      "column": 2
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "50%",
+                "50%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "6h4xlnts59p",
+                "content": "<p><span class=\"body-text big-text\"><strong>Monthly checkpoints</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "d1r7ah"
+              },
+              {
+                "id": "gskasfton8h",
+                "content": "<p><span class=\"body-text small-text\"><strong>Mid-month: </strong>Description of checkpoint</span></p>",
+                "elementTypeId": "text",
+                "cellId": "vltfb9cz19i"
+              },
+              {
+                "id": "bi0ssm2xvik",
+                "content": "<p><span class=\"body-text small-text\"><strong>Month-end:</strong> Description of checkpoint</span></p>",
+                "elementTypeId": "text",
+                "cellId": "vltfb9cz19i"
+              },
+              {
+                "id": "uhfpyb8r28",
+                "content": "<p><span class=\"body-text small-text\"><strong>Board updates: </strong>Description of checkpoint</span></p>",
+                "elementTypeId": "text",
+                "cellId": "vltfb9cz19i"
+              }
+            ]
+          }
+        ],
+        "style": {},
+        "contentAlignment": "top",
+        "templateType": "standard"
+      },
+      {
+        "id": "xkf7grajw2",
+        "title": "Слайд 18 (копия)",
+        "layouts": [
+          {
+            "id": "salt0vaxeg",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "6dgt2z",
+                  "cells": [
+                    {
+                      "id": "tocpgn",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "p6z5o3qz2u",
+                "content": "<p><span class=\"heading-text heading-2\"><strong>Primary risks</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "tocpgn"
+              }
+            ]
+          },
+          {
+            "id": "htzxtwupgg",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "iwlp5m",
+                  "cells": [
+                    {
+                      "id": "0xk47o",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "lkkzmaxngk",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">s-l текст с иконками</span></p>",
+                "elementTypeId": "text",
+                "cellId": "0xk47o"
+              }
+            ]
+          },
+          {
+            "id": "z8dm1p4fm",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "ymfxcr",
+                  "cells": [
+                    {
+                      "id": "vu23dh",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "5bo4tp21igq",
+                "content": "<p><span class=\"heading-text heading-2\"><strong>Success scenarios</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "vu23dh"
+              }
+            ]
+          },
+          {
+            "id": "gzbgwuuhzun",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "t0kvdd",
+                  "cells": [
+                    {
+                      "id": "e3cwiw",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "vdsora90qqa",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">s-l текст с иконками</span></p>",
+                "elementTypeId": "text",
+                "cellId": "e3cwiw"
+              }
+            ]
+          }
+        ],
+        "style": {},
+        "contentAlignment": "top",
+        "templateType": "imageLeft",
+        "imageSize": {
+          "width": "20%"
+        },
+        "imageUrl": "/uploads/c9148225-c7d7-4ef1-9f0e-eff560f2822f.jpeg"
+      },
+      {
+        "id": "m4s0jd5sgg",
+        "templateType": "standard",
+        "contentAlignment": "center",
+        "layouts": [
+          {
+            "id": "6du3k85lw6w",
+            "elements": [
+              {
+                "id": "i4aiyjjscb",
+                "content": "<p><span class=\"heading-text big-heading\"><strong>Conclusion</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "7bvhx2l2xc5"
+              }
+            ],
+            "gridStructure": {
+              "rows": [
+                {
+                  "id": "frbx9xyi7h5",
+                  "cells": [
+                    {
+                      "id": "7bvhx2l2xc5",
+                      "row": 0,
+                      "column": 0
+                    }
+                  ]
+                }
+              ],
+              "columns": 1,
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "style": {}
+          },
+          {
+            "id": "7vemfs",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "rlkkbb",
+                  "cells": [
+                    {
+                      "id": "dbwtfo",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "ean129ektfu",
+                "content": "<p><span class=\"heading-text heading-2\">Subheading</span></p>",
+                "elementTypeId": "text",
+                "cellId": "dbwtfo"
+              }
+            ]
+          },
+          {
+            "id": "upr5in",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "jffd0b",
+                  "cells": [
+                    {
+                      "id": "6cjwkw",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "wxucu9zmxwk",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">Supporting copy thatdes</span></p>",
+                "elementTypeId": "text",
+                "cellId": "6cjwkw"
+              }
+            ]
+          }
+        ],
+        "background": {
+          "type": "color",
+          "value": "#1f2d1b"
+        }
+      },
+      {
+        "id": "xause7armn",
+        "title": "Слайд 20",
+        "layouts": [
+          {
+            "id": "7foge4hgzsl",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "hofbkk",
+                  "cells": [
+                    {
+                      "id": "wn8rkx",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "af7o8fqctre",
+                "content": "<p><span class=\"heading-text heading-2\"><strong>Next steps</strong></span></p>",
+                "elementTypeId": "text",
+                "cellId": "wn8rkx"
+              }
+            ]
+          },
+          {
+            "id": "3qvql4",
+            "gridStructure": {
+              "columns": 1,
+              "rows": [
+                {
+                  "id": "hkh6qv",
+                  "cells": [
+                    {
+                      "id": "yn6x62",
+                      "row": 1,
+                      "column": 1
+                    }
+                  ]
+                }
+              ],
+              "columnWidths": [
+                "100%"
+              ]
+            },
+            "type": "blank",
+            "style": {},
+            "elements": [
+              {
+                "id": "vtocckvkot",
+                "content": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">s-l bulltes</span></p>",
+                "elementTypeId": "text",
+                "cellId": "yn6x62"
+              }
+            ]
+          }
+        ],
+        "style": {},
+        "contentAlignment": "top",
+        "templateType": "imageTop",
+        "imageSize": {
+          "width": "20%"
+        },
+        "imageUrl": "/uploads/b9b59513-2cde-4ea9-a5d9-cf0af2a549ef.jpeg"
+      }
     ],
-    "userId": null,
-    "isDeleted": false,
-    "createdAt": {
-        "$date": "2025-06-26T16:47:00.116Z"
-    },
-    "updatedAt": {
-        "$date": "2025-07-08T05:26:19.018Z"
-    },
     "durationMinutes": null,
     "goal": null,
     "audience": null,
     "tone": null,
-    "themeId": "686944e7b3ebb23e20fdab53",
-    "themeName": "Мох и туман",
-    "deletedAt": null,
-    "backgroundSettings": null
-}
+    "id": "685d79849cdceb71de5ff49c",
+    "userId": "687296818352d4f203efdf5f",
+    "isDeleted": false,
+    "deletedAt": null
+  }
