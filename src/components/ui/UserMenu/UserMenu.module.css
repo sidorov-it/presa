@@ -12,6 +12,21 @@
     transition: background-color 150ms;
 }
 
+.avatar {
+    width: 1.5rem;
+    height: 1.5rem;
+    min-width: 1.5rem;
+    margin-right: 0.5rem;
+    border-radius: 9999px;
+    background-color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
 .userButton:hover {
     background-color: var(--color-background);
 }
@@ -73,6 +88,27 @@
 .signOutIcon {
     width: 1rem;
     height: 1rem;
+}
+
+.userEmail {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--color-text-light);
+    text-align: center;
+    word-break: break-all;
+}
+
+.popoverOverride {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: auto !important;
+    max-width: none !important;
+    padding: 0 !important;
+}
+
+.popoverOverride :global(.chakra-popover__body) {
+    padding: 0 !important;
 }
 
 :global(.dark) .userButton:hover,

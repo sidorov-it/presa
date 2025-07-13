@@ -17,8 +17,18 @@ export default function UserMenu() {
         await signOut({ callbackUrl: '/login' });
     };
 
+    const initials = (
+        session?.user?.name
+            ?.split(/\s+/)
+            .map(w => w.charAt(0))
+            .join('') || session?.user?.email?.charAt(0) || ''
+    ).toUpperCase();
+
+    const userLabel = session?.user?.name || session?.user?.email || '';
+
     return (
         <Popover
+            className={styles.popoverOverride}
             isOpen={isOpen}
             onOpen={() => setIsOpen(true)}
             onClose={() => setIsOpen(false)}
@@ -28,7 +38,8 @@ export default function UserMenu() {
                     onClick={() => setIsOpen(!isOpen)}
                     aria-label="Открыть меню пользователя"
                 >
-                    <span className={styles.userName}>{session?.user?.name || session?.user?.email}</span>
+                    <span className={styles.avatar}>{initials}</span>
+                    <span className={styles.userName}>{userLabel}</span>
                 </button>
             }
             content={
@@ -43,6 +54,7 @@ export default function UserMenu() {
                         <FaSignOutAlt size={14} className={styles.signOutIcon} />
                         <span>Выйти</span>
                     </button>
+                    <div className={styles.userEmail}>{userLabel}</div>
                 </div>
             }
         />
