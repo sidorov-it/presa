@@ -1,0 +1,118 @@
+.userButton {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    background: none;
+    border: none;
+    color: var(--color-text);
+    cursor: pointer;
+    text-align: left;
+    border-radius: var(--radius-md);
+    transition: background-color 150ms;
+}
+
+.avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    min-width: 2.5rem;
+    margin-right: 0.5rem;
+    border-radius: 9999px;
+    background-color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+.userButton:hover {
+    background-color: var(--color-background);
+}
+
+.userName {
+    font-size: 0.875rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.menu {
+    width: 12rem;
+    padding: 0.75rem;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+}
+
+.balance {
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.balanceLink {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--color-text);
+    text-decoration: none;
+    /* color: var(--color-text-light); */
+}
+
+.balanceIcon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.signOut {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    width: 100%;
+    background: none;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: #ef4444;
+    /* padding: 0.5rem 0; */
+    cursor: pointer;
+    transition: background-color 150ms;
+}
+
+.signOut:hover {
+    background-color: var(--color-background);
+}
+
+.signOutIcon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.userEmail {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--color-text);
+    text-align: center;
+    word-break: break-all;
+}
+
+.popoverOverride {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: auto !important;
+    max-width: none !important;
+    padding: 0 !important;
+}
+
+.popoverOverride :global(.chakra-popover__body) {
+    padding: 0 !important;
+}
+
+:global(.dark) .userButton:hover,
+:global(.dark) .signOut:hover {
+    background-color: var(--color-background);
+}

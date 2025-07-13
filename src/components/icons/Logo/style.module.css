@@ -5,6 +5,13 @@
     background-size: contain;
 }
 
+.sm {
+    background: url('./logosmall.svg') no-repeat center center;
+    width: 32px;
+    height: 32px;
+    background-size: contain;
+}
+
 .md {
     width: 200px;
     height: 40px;

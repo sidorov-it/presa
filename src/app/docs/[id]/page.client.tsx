@@ -14,7 +14,6 @@ import { ThemeIcon } from '@/components/icons';
 import { useThemeStore } from '@/store/themeStore';
 import Link from 'next/link';
 import { FaSignOutAlt, FaCog } from 'react-icons/fa';
-import { HiOutlineCreditCard } from 'react-icons/hi2';
 import BackgroundSettingsModal from '@/components/editor/BackgroundSettingsModal/BackgroundSettingsModal';
 import styles from './page.module.css';
 import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
@@ -31,7 +30,7 @@ import { Tooltip } from '@/components/ui/tooltip';
 import { clearAllThemeStyles, getSlideLayoutVars } from '@/utils/themeUtils';
 import { SimplePdfExportButton } from '@/components/export';
 import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
-import { LuEye, LuSettings, LuUser, LuHouse } from 'react-icons/lu';
+import { LuEye, LuSettings, LuUser, LuHouse, LuCoins } from 'react-icons/lu';
 import Popover from '@/components/ui/Popover';
 import { useShallow } from 'zustand/react/shallow';
 import FontLoader from '@/components/theme/components/Fonts/FontLoader';
@@ -279,6 +278,8 @@ const Header = ({
 
                     <Popover
                         isOpen={isUserMenuOpen}
+                        className={styles.popoverOverride}
+                        classNamePositioner={styles.popoverOverridePositioner}
                         onOpen={() => setIsUserMenuOpen(true)}
                         onClose={() => setIsUserMenuOpen(false)}
                         trigger={
@@ -300,7 +301,7 @@ const Header = ({
                                         {session?.user?.email || 'user@example.com'}
                                     </div>
                                     <Link href="/tokens" className={styles.userMenuCredits}>
-                                        <HiOutlineCreditCard className={styles.creditsIcon} />
+                                        <LuCoins className={styles.creditsIcon} />
                                         <span>{tokensLoading ? '...' : formatTokenAmount(tokenBalance)} токенов</span>
                                     </Link>
                                 </div>

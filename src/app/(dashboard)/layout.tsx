@@ -3,20 +3,10 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { signOut } from 'next-auth/react';
 import styles from './layout.module.css';
-import {
-    FaChalkboard,
-    FaHome,
-    FaPalette,
-    FaTrash,
-    FaCog,
-    FaCreditCard,
-    FaSignOutAlt,
-    FaBars,
-    FaTimes,
-} from 'react-icons/fa';
+import { FaChalkboard, FaHome, FaPalette, FaTrash, FaCog, FaCreditCard, FaBars, FaTimes } from 'react-icons/fa';
 import Logo from '@/components/icons/Logo/Logo';
+import UserMenu from '@/components/ui/UserMenu/UserMenu';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     // const { data: session } = useSession();
@@ -66,29 +56,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         setSidebarOpen(!sidebarOpen);
     };
 
-    const handleSignOut = async () => {
-        await signOut({ callbackUrl: '/login' });
-    };
-
     return (
-        <div className={styles.container}>
-            {/* Mobile sidebar toggle */}
-            <div className={styles.mobileToggle}>
-                <button onClick={toggleSidebar} className={styles.toggleButton}>
-                    {sidebarOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
-                </button>
-            </div>
-
-            {/* Sidebar */}
-            <div className={`${styles.sidebar}${sidebarOpen ? ` ${styles.sidebarOpen}` : ''}`}>
-                <div className={styles.logo}>
-                    <div className={styles.logoText}>
-                        <Logo />
-                    </div>
+        <div className={styles.wrapper}>
+            {/* Mobile header */}
+            <header className={styles.mobileHeader}>
+                <div className={styles.mobileHeaderContent}>
+                    <span className={styles.mobileLogo}>
+                        <Logo size="sm" href="/dashboard" />
+                    </span>
+                    <button onClick={toggleSidebar} className={styles.toggleButton} aria-label="Открыть меню">
+                        {sidebarOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+                    </button>
                 </div>
+            </header>
 
-                <nav className={styles.nav}>
-                    {/* <div className={styles.userProfile}>
+            <div className={styles.container}>
+                {/* Sidebar */}
+                <div className={`${styles.sidebar}${sidebarOpen ? ` ${styles.sidebarOpen}` : ''}`}>
+                    <div className={styles.logo}>
+                        <div className={styles.logoText}>
+                            <Logo />
+                        </div>
+                    </div>
+
+                    <nav className={styles.nav}>
+                        {/* <div className={styles.userProfile}>
                         <div className={styles.userProfileCard}>
                             <div className={styles.userAvatar}>{session?.user?.name?.charAt(0)}</div>
                             <div>
@@ -98,34 +90,32 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         </div>
                     </div> */}
 
-                    {menuItems.map(item => {
-                        const isActive = pathname === item.path;
-                        return (
-                            <Link
-                                key={item.path}
-                                href={item.path}
-                                className={`${styles.menuItem}${isActive ? ` ${styles.menuItemActive}` : ''}`}
-                            >
-                                <span className={styles.menuIcon}>{item.icon}</span>
-                                <span>{item.label}</span>
-                            </Link>
-                        );
-                    })}
+                        <div className={styles.menu}>
+                            {menuItems.map(item => {
+                                const isActive = pathname === item.path;
+                                return (
+                                    <Link
+                                        key={item.path}
+                                        href={item.path}
+                                        className={`${styles.menuItem}${isActive ? ` ${styles.menuItemActive}` : ''}`}
+                                    >
+                                        <span className={styles.menuIcon}>{item.icon}</span>
+                                        <span>{item.label}</span>
+                                    </Link>
+                                );
+                            })}
+                        </div>
 
-                    <button onClick={handleSignOut} className={styles.signOutButton}>
-                        <span className={styles.menuIcon}>
-                            <FaSignOutAlt size={20} />
-                        </span>
-                        <span>Выйти</span>
-                    </button>
-                </nav>
-            </div>
+                        <UserMenu />
+                    </nav>
+                </div>
 
-            {/* Main content */}
-            <div className={styles.mainContent}>
-                <main className={styles.mainArea}>
-                    <div className={styles.contentWrapper}>{children}</div>
-                </main>
+                {/* Main content */}
+                <div className={styles.mainContent}>
+                    <main className={styles.mainArea}>
+                        <div className={styles.contentWrapper}>{children}</div>
+                    </main>
+                </div>
             </div>
         </div>
     );
