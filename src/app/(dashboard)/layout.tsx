@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { signOut } from 'next-auth/react';
 import styles from './layout.module.css';
 import {
     FaChalkboard,
@@ -12,11 +11,11 @@ import {
     FaTrash,
     FaCog,
     FaCreditCard,
-    FaSignOutAlt,
     FaBars,
     FaTimes,
 } from 'react-icons/fa';
 import Logo from '@/components/icons/Logo/Logo';
+import UserMenu from '@/components/ui/UserMenu/UserMenu';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     // const { data: session } = useSession();
@@ -66,18 +65,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         setSidebarOpen(!sidebarOpen);
     };
 
-    const handleSignOut = async () => {
-        await signOut({ callbackUrl: '/login' });
-    };
 
     return (
-        <div className={styles.container}>
-            {/* Mobile sidebar toggle */}
-            <div className={styles.mobileToggle}>
-                <button onClick={toggleSidebar} className={styles.toggleButton}>
-                    {sidebarOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
-                </button>
-            </div>
+        <div className={styles.wrapper}>
+            {/* Mobile header */}
+            <header className={styles.mobileHeader}>
+                <div className={styles.mobileHeaderContent}>
+                    <Link href="/dashboard" className={styles.mobileLogo} aria-label="Домой">
+                        <Logo size="md" />
+                    </Link>
+                    <button
+                        onClick={toggleSidebar}
+                        className={styles.toggleButton}
+                        aria-label="Открыть меню"
+                    >
+                        {sidebarOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+                    </button>
+                </div>
+            </header>
+
+            <div className={styles.container}>
 
             {/* Sidebar */}
             <div className={`${styles.sidebar}${sidebarOpen ? ` ${styles.sidebarOpen}` : ''}`}>
@@ -112,12 +119,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         );
                     })}
 
-                    <button onClick={handleSignOut} className={styles.signOutButton}>
-                        <span className={styles.menuIcon}>
-                            <FaSignOutAlt size={20} />
-                        </span>
-                        <span>Выйти</span>
-                    </button>
+                    <UserMenu />
                 </nav>
             </div>
 
@@ -128,5 +130,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </main>
             </div>
         </div>
+    </div>
     );
 }
