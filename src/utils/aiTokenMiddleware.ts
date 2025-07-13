@@ -68,6 +68,7 @@ export async function withTokenDeduction<T>(
                 amount: requiredTokens,
                 description: config.description,
                 metadata,
+                // llmrequestId: request.headers.get('x-llm-request-id') || '',
             });
         } catch (tokenError) {
             logger.error(`Error deducting tokens: ${String(tokenError)}`);

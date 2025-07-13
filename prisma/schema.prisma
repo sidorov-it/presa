@@ -214,6 +214,7 @@ model LLMRequestHistory {
   presentation   Presentation? @relation(fields: [presentationId], references: [id])
 
   // Request details
+  provider    String
   requestType String // e.g. 'generate_slides', 'generate_image'
   prompt      String // Original prompt
   timestamp   DateTime @default(now())
@@ -254,6 +255,7 @@ model UserTokens {
 
 model TokenPackage {
   id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  packageType String  @unique
   name        String // e.g. "Starter Pack", "Professional Pack"
   description String?
   tokens      Int // Number of tokens in the package
@@ -261,8 +263,7 @@ model TokenPackage {
   currency    String  @default("RUB")
   isActive    Boolean @default(true)
   isPopular   Boolean @default(false) // For highlighting popular packages
-  // createdAt   DateTime @default(now())
-  // updatedAt   DateTime @updatedAt
+  isHidden    Boolean @default(false) // For hiding packages from the UI
 
   purchases TokenPurchase[]
 }
@@ -276,11 +277,12 @@ enum PurchaseStatus {
 }
 
 model TokenPurchase {
-  id        String       @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String       @db.ObjectId
-  user      User         @relation(fields: [userId], references: [id])
-  packageId String       @db.ObjectId
-  package   TokenPackage @relation(fields: [packageId], references: [id])
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String       @db.ObjectId
+  user        User         @relation(fields: [userId], references: [id])
+  packageId   String       @db.ObjectId
+  packageType String       @default("welcome")
+  package     TokenPackage @relation(fields: [packageId], references: [id])
 
   // Purchase details
   tokensAmount Int // Number of tokens purchased

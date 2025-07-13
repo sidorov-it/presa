@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 
 export interface LLMRequestData {
     userId: string;
+    provider: string;
     presentationId?: string;
     requestType: string;
     prompt: string;
@@ -29,6 +30,7 @@ export class LLMHistoryService {
             return await prisma.lLMRequestHistory.create({
                 data: {
                     userId: data.userId,
+                    provider: data.provider,
                     presentationId: data.presentationId,
                     requestType: data.requestType,
                     prompt: data.prompt,
@@ -40,7 +42,10 @@ export class LLMHistoryService {
                     cost: data.cost,
                     success: data.success ?? true,
                     errorMessage: data.errorMessage,
-                    // metadata: data.metadata || {},
+                    metadata: data.metadata || {},
+                    functionCall: data.functionCall,
+                    functionArguments: data.functionArguments,
+                    responseContent: data.responseContent,
                 },
             });
         } catch (error) {
@@ -134,6 +139,32 @@ export class LLMHistoryService {
                 tokens: type._sum.totalTokens || 0,
                 cost: type._sum.cost || 0,
             })),
+        };
+    }
+
+    /** Get full history */
+    static async getAllHistory(options?: { limit?: number; offset?: number }) {
+        return prisma.lLMRequestHistory.findMany({
+            orderBy: { timestamp: 'desc' },
+            skip: options?.offset ?? 0,
+            take: options?.limit ?? 50,
+        });
+    }
+
+    /** Get global stats */
+    static async getGlobalStats() {
+        const totalRequests = await prisma.lLMRequestHistory.count();
+        const [byProvider, byType, errorCount] = await Promise.all([
+            prisma.lLMRequestHistory.groupBy({ by: ['provider'], _count: true }),
+            prisma.lLMRequestHistory.groupBy({ by: ['requestType'], _count: true }),
+            prisma.lLMRequestHistory.count({ where: { success: false } }),
+        ]);
+        return {
+            totalRequests,
+            errorCount,
+            errorRate: totalRequests ? errorCount / totalRequests : 0,
+            byProvider: byProvider.map(p => ({ provider: p.provider, count: p._count })),
+            byType: byType.map(t => ({ type: t.requestType, count: t._count })),
         };
     }
 

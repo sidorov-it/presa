@@ -16,7 +16,7 @@ export async function getUserTokenBalance(userId: string): Promise<number> {
 /**
  * Create or update user tokens record
  */
-export async function ensureUserTokensRecord(userId: string) {
+export async function ensureUserTokensRecord(userId: string, initialBalance = 0) {
     const existingRecord = await prisma.userTokens.findUnique({
         where: { userId },
     });
@@ -25,7 +25,7 @@ export async function ensureUserTokensRecord(userId: string) {
         await prisma.userTokens.create({
             data: {
                 userId,
-                balance: 0,
+                balance: initialBalance,
                 totalUsed: 0,
             },
         });
