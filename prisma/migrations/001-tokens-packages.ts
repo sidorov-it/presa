@@ -3,6 +3,18 @@ import { Db } from 'mongodb';
 export async function up(db: Db) {
     await db.collection('TokenPackage').insertMany([
         {
+            packageType: 'welcome',
+            name: 'Приветственный',
+            description: 'Для ознакомления',
+            tokens: 200,
+            price: 0,
+            currency: 'RUB',
+            isActive: true,
+            isPopular: false,
+            isHidden: true,
+        },
+        {
+            packageType: 'base',
             name: 'Базовый',
             description: 'Идеально для начала работы',
             tokens: 200,
@@ -12,6 +24,7 @@ export async function up(db: Db) {
             isPopular: false,
         },
         {
+            packageType: 'advanced',
             name: 'Продвинутый',
             description: 'Для активных пользователей',
             tokens: 400,
@@ -21,6 +34,7 @@ export async function up(db: Db) {
             isPopular: true,
         },
         {
+            packageType: 'professional',
             name: 'Профессиональный',
             description: 'Максимум возможностей',
             tokens: 600,

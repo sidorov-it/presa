@@ -1,4 +1,4 @@
-import { Box, Text, Table, Thead, Tbody, Tr, Th, Td, List, ListItem } from '@chakra-ui/react';
+import { Box, Text, Table, DataList } from '@chakra-ui/react';
 import { LLMHistoryService } from '@/services/llm/history/llmHistoryService';
 
 export default async function TechLlmAnalyticsPage() {
@@ -16,50 +16,53 @@ export default async function TechLlmAnalyticsPage() {
                 <Text>Total requests: {stats.totalRequests}</Text>
                 <Text>Error rate: {(stats.errorRate * 100).toFixed(2)}%</Text>
                 <Text mt={2}>Requests per provider:</Text>
-                <List styleType="disc" pl={4}>
+
+                <DataList.Root>
                     {stats.byProvider.map(p => (
-                        <ListItem key={p.provider}>
-                            {p.provider}: {p.count}
-                        </ListItem>
+                        <DataList.Item key={p.provider}>
+                            <DataList.ItemLabel>{p.provider}</DataList.ItemLabel>
+                            <DataList.ItemValue>{p.count}</DataList.ItemValue>
+                        </DataList.Item>
                     ))}
-                </List>
+                </DataList.Root>
                 <Text mt={2}>Requests per type:</Text>
-                <List styleType="disc" pl={4}>
+                <DataList.Root>
                     {stats.byType.map(t => (
-                        <ListItem key={t.type}>
-                            {t.type}: {t.count}
-                        </ListItem>
+                        <DataList.Item key={t.type}>
+                            <DataList.ItemLabel>{t.type}</DataList.ItemLabel>
+                            <DataList.ItemValue>{t.count}</DataList.ItemValue>
+                        </DataList.Item>
                     ))}
-                </List>
+                </DataList.Root>
             </Box>
-            <Table variant="simple" size="sm">
-                <Thead>
-                    <Tr>
-                        <Th>Timestamp</Th>
-                        <Th>User</Th>
-                        <Th>Provider</Th>
-                        <Th>Type</Th>
-                        <Th>Prompt</Th>
-                        <Th>Response</Th>
-                        <Th>Status</Th>
-                        <Th>Error</Th>
-                    </Tr>
-                </Thead>
-                <Tbody>
+            <Table.Root variant="outline" size="sm">
+                <Table.Header>
+                    <Table.Row>
+                        <Table.ColumnHeader>Timestamp</Table.ColumnHeader>
+                        <Table.ColumnHeader>User</Table.ColumnHeader>
+                        <Table.ColumnHeader>Provider</Table.ColumnHeader>
+                        <Table.ColumnHeader>Type</Table.ColumnHeader>
+                        <Table.ColumnHeader>Prompt</Table.ColumnHeader>
+                        <Table.ColumnHeader>Response</Table.ColumnHeader>
+                        <Table.ColumnHeader>Status</Table.ColumnHeader>
+                        <Table.ColumnHeader>Error</Table.ColumnHeader>
+                    </Table.Row>
+                </Table.Header>
+                <Table.Body>
                     {history.map(req => (
-                        <Tr key={req.id}>
-                            <Td>{req.timestamp.toISOString()}</Td>
-                            <Td>{req.userId}</Td>
-                            <Td>{req.provider}</Td>
-                            <Td>{req.requestType}</Td>
-                            <Td whiteSpace="pre-wrap">{req.prompt}</Td>
-                            <Td whiteSpace="pre-wrap">{req.responseContent}</Td>
-                            <Td>{req.success ? 'ok' : 'fail'}</Td>
-                            <Td whiteSpace="pre-wrap">{req.errorMessage}</Td>
-                        </Tr>
+                        <Table.Row key={req.id}>
+                            <Table.Cell>{req.timestamp.toISOString()}</Table.Cell>
+                            <Table.Cell>{req.userId}</Table.Cell>
+                            <Table.Cell>{req.provider}</Table.Cell>
+                            <Table.Cell>{req.requestType}</Table.Cell>
+                            <Table.Cell whiteSpace="pre-wrap">{req.prompt}</Table.Cell>
+                            <Table.Cell whiteSpace="pre-wrap">{req.responseContent}</Table.Cell>
+                            <Table.Cell>{req.success ? 'ok' : 'fail'}</Table.Cell>
+                            <Table.Cell whiteSpace="pre-wrap">{req.errorMessage}</Table.Cell>
+                        </Table.Row>
                     ))}
-                </Tbody>
-            </Table>
+                </Table.Body>
+            </Table.Root>
         </Box>
     );
 }

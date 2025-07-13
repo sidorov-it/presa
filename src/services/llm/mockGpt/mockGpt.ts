@@ -3,6 +3,7 @@ import { ElementType } from '@/types/elements';
 import { TextType } from '@/types';
 import { markdownToHtml } from '@/utils/markdownToHtml';
 import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
+import { LLMHistoryService } from '../history/llmHistoryService';
 
 // Placeholder content generators based on element type and context
 const generatePlaceholderContent = (type: string, description?: string, purpose?: string): string => {

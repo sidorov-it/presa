@@ -12,6 +12,7 @@ import {
     Select,
     Textarea,
     createListCollection,
+    Link,
 } from '@chakra-ui/react';
 // import * as Select from '@chakra-ui/react/components/select';
 import { Portal } from '@chakra-ui/react';
@@ -53,7 +54,7 @@ const AiPresentationPage = () => {
     const [numSlides, setNumSlides] = useState(5);
     const [tone, setTone] = useState('professional');
 
-    const [durationMinutes, setDurationMinutes] = useState(0);
+    const [durationMinutes, setDurationMinutes] = useState('');
     const [goal, setGoal] = useState('');
     const [audience, setAudience] = useState('');
 
@@ -156,7 +157,24 @@ const AiPresentationPage = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to create presentation');
+                if (response.status === 402) {
+                    toast.error(
+                        <Box>
+                            Недостаточно средств для создания презентации.{' '}
+                            <Link
+                                href="/tokens"
+                                target="_blank"
+                                style={{ color: '#a20101', textDecoration: 'underline' }}
+                            >
+                                Пополните баланс
+                            </Link>
+                            .
+                        </Box>
+                    );
+                    return;
+                }
+
+                throw new Error('Ошибка при создании презентации. Попробуйте еще раз.');
             }
 
             const data = await response.json();
@@ -302,7 +320,7 @@ const AiPresentationPage = () => {
                                     Длительность презентации
                                 </Text>
                                 <Input
-                                    value={durationMinutes}
+                                    value={durationMinutes || ''}
                                     onChange={e => setDurationMinutes(Number(e.target.value))}
                                     placeholder="Сколько времени будет длиться презентация"
                                     aria-label="Длительность презентации"
