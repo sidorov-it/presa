@@ -235,6 +235,22 @@ sudo -u deploy npx prisma db push
 sudo -u deploy pm2 restart slydle
 ```
 
+### Локальный скрипт деплоя
+Для запуска деплоя прямо со своей машины используйте `scripts/deploy-local.sh`.
+Перед запуском задайте переменные окружения с параметрами сервера и приложения:
+
+```bash
+export SERVER_HOST=your.server
+export SERVER_USER=deploy
+export SERVER_PORT=22
+export SERVER_PASSWORD=your_password
+export DATABASE_URL="mongodb://..."
+export NEXTAUTH_SECRET="secret"
+export NEXTAUTH_URL="https://example.com"
+
+bash scripts/deploy-local.sh
+```
+
 ## 📊 Мониторинг
 
 ### Основные метрики для отслеживания
