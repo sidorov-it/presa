@@ -18,13 +18,6 @@ export async function GET() {
 
         const userId = session.user.id;
 
-        const all = await prisma.presentation.findMany({
-            where: {
-                isDeleted: false,
-            },
-        });
-        console.log(all);
-
         // Find presentations that belong to the user and are not deleted
         const presentations = await prisma.presentation.findMany({
             where: {

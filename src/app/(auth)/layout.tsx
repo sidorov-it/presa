@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import Logo from '@/components/icons/Logo/Logo';
 import styles from './layout.module.css';
 
@@ -7,9 +6,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className={styles.container}>
             <header className={styles.header}>
                 <div className={styles.headerContent}>
-                    <Link href="/" className={styles.logo}>
-                        <Logo size="md" />
-                    </Link>
+                    <Logo size="md" href="/" />
                 </div>
             </header>
             <main className={styles.main}>{children}</main>

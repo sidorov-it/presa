@@ -9,12 +9,22 @@ interface PopoverProps {
     content: React.ReactNode;
     isOpen?: boolean;
     className?: string;
+    classNamePositioner?: string;
     forceColorMode?: ColorMode;
     onOpen?: () => void;
     onClose?: () => void;
 }
 
-export const Popover = ({ className, trigger, content, isOpen, forceColorMode, onOpen, onClose }: PopoverProps) => {
+export const Popover = ({
+    className,
+    classNamePositioner,
+    trigger,
+    content,
+    isOpen,
+    forceColorMode,
+    onOpen,
+    onClose,
+}: PopoverProps) => {
     const { colorMode } = useColorMode();
     const [currentColorMode, setCurrentColorMode] = useState<ColorMode>(colorMode);
 
@@ -30,7 +40,9 @@ export const Popover = ({ className, trigger, content, isOpen, forceColorMode, o
         <ChakraPopover.Root open={isOpen} onOpenChange={e => (e.open ? onOpen?.() : onClose?.())}>
             <ChakraPopover.Trigger asChild>{trigger}</ChakraPopover.Trigger>
             <Portal>
-                <ChakraPopover.Positioner className={styles.popoverPositioner}>
+                <ChakraPopover.Positioner
+                    className={`${styles.popoverPositioner} ${classNamePositioner ? ` ${classNamePositioner}` : ''}`}
+                >
                     <ChakraPopover.Content
                         className={`${styles.popover}${className ? ` ${className}` : ''}${currentColorMode === 'dark' ? ' dark' : ''}`}
                     >

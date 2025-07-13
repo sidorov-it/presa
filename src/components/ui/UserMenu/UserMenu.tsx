@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { FaSignOutAlt } from 'react-icons/fa';
-import { HiOutlineCreditCard } from 'react-icons/hi2';
-import { Popover } from '../Popover';
+import Popover from '../Popover';
 import { useTokens } from '@/hooks/useTokens';
 import TokenBalance from '@/components/tokens/TokenBalance';
 import styles from './UserMenu.module.css';
+import { LuCoins } from 'react-icons/lu';
 
 export default function UserMenu() {
     const { data: session } = useSession();
@@ -21,7 +21,9 @@ export default function UserMenu() {
         session?.user?.name
             ?.split(/\s+/)
             .map(w => w.charAt(0))
-            .join('') || session?.user?.email?.charAt(0) || ''
+            .join('') ||
+        session?.user?.email?.charAt(0) ||
+        ''
     ).toUpperCase();
 
     const userLabel = session?.user?.name || session?.user?.email || '';
@@ -46,15 +48,15 @@ export default function UserMenu() {
                 <div className={styles.menu}>
                     <div className={styles.balance}>
                         <Link href="/tokens" className={styles.balanceLink}>
-                            <HiOutlineCreditCard className={styles.balanceIcon} />
-                            <TokenBalance balance={balance} loading={loading} variant="compact" showIcon={false} />
+                            <LuCoins className={styles.balanceIcon} />
+                            <TokenBalance balance={balance} loading={loading} variant="large" showIcon={false} />
                         </Link>
                     </div>
                     <button onClick={handleSignOut} className={styles.signOut} aria-label="Выйти">
                         <FaSignOutAlt size={14} className={styles.signOutIcon} />
                         <span>Выйти</span>
                     </button>
-                    <div className={styles.userEmail}>{userLabel}</div>
+                    {/* <div className={styles.userEmail}>{userLabel}</div> */}
                 </div>
             }
         />

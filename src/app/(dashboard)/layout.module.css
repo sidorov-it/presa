@@ -8,7 +8,6 @@
     min-height: 100vh;
 }
 
-
 .mobileHeader {
     display: flex;
     align-items: center;
@@ -18,7 +17,7 @@
     left: 0;
     right: 0;
     z-index: 20;
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 1rem;
     background-color: var(--color-surface);
     border-bottom: 1px solid var(--color-border);
 }
@@ -64,14 +63,14 @@
     z-index: 10;
     width: 16rem;
     transition: transform 0.3s;
-    transform: translateX(-100%);
+    transform: translateX(100vw);
     background-color: var(--color-surface);
     overflow-y: auto;
-    border-right: 1px solid var(--color-border);
+    border-left: 1px solid var(--color-border);
 }
 
 .sidebarOpen {
-    transform: translateX(0);
+    transform: translateX(calc(100vw - 100%));
 }
 
 @media (min-width: 1024px) {
@@ -82,14 +81,21 @@
         top: 0;
         bottom: 0;
         flex-shrink: 0;
+        border-right: 1px solid var(--color-border);
     }
 }
 
 .logo {
-    display: flex;
+    display: none;
     margin-top: 20px;
     justify-content: center;
     align-items: center;
+}
+
+@media (min-width: 1024px) {
+    .logo {
+        display: flex;
+    }
 }
 
 .logoText {
@@ -100,13 +106,23 @@
 }
 
 .nav {
-    margin-top: 2.5rem;
+    margin-top: calc(40px + 1rem + 0.5rem);
+    height: calc(100% - 40px - 20px - 40px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+@media (min-width: 1024px) {
+    .nav {
+        margin-top: 2.5rem;
+    }
 }
 
 .userProfile {
     padding-left: 1rem;
     padding-right: 1rem;
-    margin-bottom: 2rem;
+    margin-bottom: 20px;
 }
 
 .userProfileCard {
@@ -214,3 +230,8 @@
     background-color: rgba(59, 130, 246, 0.2);
 }
 
+.menu {
+    display: flex;
+    flex-direction: column;
+    /* gap: 0.5rem; */
+}

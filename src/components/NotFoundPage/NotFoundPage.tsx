@@ -8,9 +8,9 @@ export default function NotFoundPage() {
         <div className={styles.container}>
             <header className={styles.header}>
                 <div className={styles.headerContent}>
-                    <Link href="/" className={styles.logo}>
-                        <Logo size="md" />
-                    </Link>
+                    <span className={styles.logo}>
+                        <Logo size="md" href="/dashboard" />
+                    </span>
                 </div>
             </header>
             <main className={styles.main}>
