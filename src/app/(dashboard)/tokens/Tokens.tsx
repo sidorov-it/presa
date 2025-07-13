@@ -6,7 +6,7 @@ import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
 import { TokenPackage } from '@/types/tokens';
 import { FaCreditCard, FaCoins, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
-import { PaymentStatus } from '@/components/tokens/PaymentStatus';
+// import { PaymentStatus } from '@/components/tokens/PaymentStatus';
 import { Heading } from '@/components/ui/heading';
 import styles from './page.module.css';
 
@@ -208,7 +208,7 @@ const Tokens = () => {
                 )}
 
                 {/* Payment Status */}
-                {activePurchaseId && (
+                {/* {activePurchaseId && (
                     <div className={styles.paymentStatusCard}>
                         <h2 className={styles.sectionTitle}>Статус платежа</h2>
                         <PaymentStatus
@@ -217,7 +217,7 @@ const Tokens = () => {
                             onError={handlePaymentError}
                         />
                     </div>
-                )}
+                )} */}
 
                 {/* Current Balance */}
                 <div className={styles.balanceCard}>
@@ -232,7 +232,7 @@ const Tokens = () => {
                         </div>
                         <div className={styles.balanceRight}>
                             <p className={styles.usageLabel}>Примерное использование:</p>
-                            <p className={styles.usageAmount}>~{Math.floor(balance / 50)} слайдов</p>
+                            <p className={styles.usageAmount}>~{Math.floor(balance / 5)} слайдов</p>
                         </div>
                     </div>
                 </div>

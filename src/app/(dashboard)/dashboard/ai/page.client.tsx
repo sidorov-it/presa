@@ -54,7 +54,7 @@ const AiPresentationPage = () => {
     const [numSlides, setNumSlides] = useState(5);
     const [tone, setTone] = useState('professional');
 
-    const [durationMinutes, setDurationMinutes] = useState('');
+    const [durationMinutes, setDurationMinutes] = useState(null);
     const [goal, setGoal] = useState('');
     const [audience, setAudience] = useState('');
 

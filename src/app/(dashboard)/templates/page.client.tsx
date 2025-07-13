@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePresentationStore } from '@/store/presentationStore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card/Card';
-import { PresentationTemplates, PresentationTemplateKeys } from '@/presentationTemplates';
+import { PresentationTemplates, PresentationTemplateKeys, PreviewTemplateImages } from '@/presentationTemplates';
 import styles from './page.module.css';
 import { useThemeStore } from '@/store/themeStore';
 import TemplatePreviewModal from '@/components/templates/TemplatePreviewModal';
@@ -12,6 +12,7 @@ import { Heading } from '@/components/ui/heading';
 
 import FullPageLoader from '@/components/FullPageLoader/FullPageLoader';
 import { LuFileImage } from 'react-icons/lu';
+import Image from 'next/image';
 
 const TEMPLATE_KEYS = Object.keys(PresentationTemplates) as PresentationTemplateKeys[];
 
@@ -52,10 +53,15 @@ const TemplatesPage = () => {
     }, [loadThemes]);
 
     return (
-        <div className={styles.container} style={{
-            '--card-width': 'min(100vw, calc(100vh * 1.7777777777777777))',
-            '--card-height': 'calc(var(--card-width) / 1.7777777777777777 - 64px)',
-        }}>
+        <div
+            className={styles.container}
+            style={
+                {
+                    '--card-width': 'min(100vw, calc(100vh * 1.7777777777777777))',
+                    '--card-height': 'calc(var(--card-width) / 1.7777777777777777 - 64px)',
+                } as React.CSSProperties & { '--card-width': string; '--card-height': string }
+            }
+        >
             <div className={styles.header}>
                 <Heading title="Шаблоны" description="Выберите готовый шаблон для быстрого создания презентации" />
             </div>
@@ -79,7 +85,7 @@ const TemplatesPage = () => {
                                 </CardHeader>
                                 <CardContent>
                                     <div className={styles.templatePreview}>
-                                        <LuFileImage size={48} />
+                                        <Image src={PreviewTemplateImages[key]} alt={template.title} />
                                     </div>
                                     <div className={styles.templateActions}>
                                         <button

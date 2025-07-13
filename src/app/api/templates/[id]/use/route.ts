@@ -44,7 +44,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
         // Преобразуем данные шаблона в формат для Prisma
         const presentationData = {
-            title: templateData.title,
+            title: `[Копия] ${templateData.title}`,
             description: templateData.description || '',
             slides: templateData.slides,
             userId: session.user.id,

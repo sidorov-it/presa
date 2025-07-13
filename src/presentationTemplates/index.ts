@@ -4,6 +4,11 @@ import projectKickoffDescriptor from './projectKickoff.json';
 import startapPitchDeckDescriptor from './startapPitchDeck.json';
 import marketingAgencyDescriptor from './marketingAgency.json';
 
+import marketingStrategyImage from './images/marketingStrategy.png';
+import projectKickoffImage from './images/projectKickoff.png';
+import startapPitchDeckImage from './images/startapPitchDeck.png';
+import marketingAgencyImage from './images/marketingAgency.png';
+
 // export const marketingStrategyDescriptor: PresentationDescriptor = {
 //     title: 'Портфолио',
 //     description: 'Простое портфолио для демонстрации ваших работ и навыков.',
@@ -148,12 +153,19 @@ export const PresentationTemplateDescriptors = {
     // personalPortfolio: personalPortfolioDescriptor,
 };
 
+export const PreviewTemplateImages = {
+    marketingStrategy: marketingStrategyImage,
+    projectKickoff: projectKickoffImage,
+    startapPitchDeck: startapPitchDeckImage,
+    marketingAgency: marketingAgencyImage,
+};
+
 export type PresentationTemplateKeys = keyof typeof PresentationTemplateDescriptors;
 
 export const PresentationTemplates = Object.fromEntries(
     Object.entries(PresentationTemplateDescriptors).map(([key, desc]) => [
         key,
-        generatePresentationTemplate(desc as PresentationDescriptor),
+        generatePresentationTemplate(desc as unknown as PresentationDescriptor),
     ])
 ) as Record<PresentationTemplateKeys, ReturnType<typeof generatePresentationTemplate>>;
 
