@@ -11,6 +11,9 @@ export DATABASE_URL="$1"
 export NEXTAUTH_SECRET="$2"
 export NEXTAUTH_URL="$3"
 
+# Останавливаем текущее приложение
+pm2 stop slydle || true
+
 # Создаем директории
 mkdir -p /var/www/slydle
 cd /var/www/slydle
