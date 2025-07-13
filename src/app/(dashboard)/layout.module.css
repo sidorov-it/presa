@@ -1,20 +1,42 @@
+
+.wrapper {
+    min-height: 100vh;
+}
+
 .container {
     display: flex;
     min-height: 100vh;
 }
 
-.mobileToggle {
+
+.mobileHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     position: fixed;
-    top: 2rem;
-    left: 1rem;
+    top: 0;
+    left: 0;
+    right: 0;
     z-index: 20;
+    padding: 0.75rem 1rem;
     background-color: var(--color-surface);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-md);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.mobileHeaderContent {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.mobileLogo {
+    display: flex;
+    align-items: center;
 }
 
 @media (min-width: 1024px) {
-    .mobileToggle {
+    .mobileHeader {
         display: none;
     }
 }
@@ -54,8 +76,11 @@
 
 @media (min-width: 1024px) {
     .sidebar {
-        position: static;
+        position: fixed;
         transform: none;
+        left: 0;
+        top: 0;
+        bottom: 0;
         flex-shrink: 0;
     }
 }
@@ -144,20 +169,6 @@
     margin-right: 0.75rem;
 }
 
-.signOutButton {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem 1.5rem;
-    margin-top: 2.5rem;
-    color: var(--color-text);
-    width: 100%;
-    transition: all 0.2s ease;
-}
-
-.signOutButton:hover {
-    background-color: rgba(239, 68, 68, 0.1);
-    color: #DC2626;
-}
 
 .mainContent {
     flex: 1;
@@ -165,6 +176,18 @@
     flex-direction: column;
     overflow: hidden;
     background-color: #f3f4f6; /* Gray background for content area */
+}
+
+@media (min-width: 1024px) {
+    .mainContent {
+        margin-left: 16rem;
+    }
+}
+
+@media (max-width: 1023px) {
+    .container {
+        padding-top: 3.5rem;
+    }
 }
 
 .mainArea {
@@ -191,7 +214,3 @@
     background-color: rgba(59, 130, 246, 0.2);
 }
 
-:global(.dark) .signOutButton:hover {
-    background-color: rgba(239, 68, 68, 0.2);
-    color: #F87171;
-}
