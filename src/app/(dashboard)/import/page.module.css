@@ -1,0 +1,363 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 100vh;
+    background: var(--background-color);
+}
+
+.header {
+    margin-bottom: 2rem;
+}
+
+.backLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    transition: color 0.2s ease;
+}
+
+.backLink:hover {
+    color: var(--primary-color);
+}
+
+.title {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.content {
+    background: var(--surface-color);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.description {
+    margin-bottom: 2rem;
+    text-align: center;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.dropZone {
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--background-color);
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.dropZone:hover {
+    border-color: var(--primary-color);
+    background: var(--background-hover);
+}
+
+.dropZone.hasFile {
+    border-color: var(--success-color);
+    background: var(--success-bg);
+}
+
+.dropZone.valid {
+    border-color: var(--success-color);
+    background: var(--success-bg);
+}
+
+.dropZone.invalid {
+    border-color: var(--error-color);
+    background: var(--error-bg);
+}
+
+.fileInput {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.dropZoneContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.uploadIcon {
+    font-size: 3rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.fileIcon {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.dropZoneText {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.dropZoneSubtext {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.fileName {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-color);
+    margin: 0;
+    word-break: break-all;
+}
+
+.fileSize {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.validationStatus {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.validationStatus.valid {
+    background: var(--success-color);
+    color: white;
+}
+
+.validationStatus.invalid {
+    background: var(--error-color);
+    color: white;
+}
+
+.preview {
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.preview h3 {
+    margin: 0 0 1rem 0;
+    color: var(--text-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.previewContent {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.previewContent p {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 0.95rem;
+}
+
+.previewContent strong {
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.importButton {
+    min-width: 200px;
+    height: 48px;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.resetButton {
+    min-width: 180px;
+    height: 48px;
+    font-size: 1rem;
+}
+
+.successMessage {
+    text-align: center;
+    padding: 2rem;
+}
+
+.successIcon {
+    font-size: 4rem;
+    color: var(--success-color);
+    margin-bottom: 1rem;
+}
+
+.successMessage h2 {
+    margin: 0 0 1rem 0;
+    color: var(--text-color);
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.successMessage p {
+    margin: 0 0 2rem 0;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.successActions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.openButton {
+    min-width: 180px;
+    height: 48px;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.backToDashboardButton {
+    min-width: 180px;
+    height: 48px;
+    font-size: 1rem;
+}
+
+.errorMessage {
+    text-align: center;
+    padding: 2rem;
+    background: var(--error-bg);
+    border: 1px solid var(--error-color);
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.errorIcon {
+    font-size: 3rem;
+    color: var(--error-color);
+    margin-bottom: 1rem;
+}
+
+.errorMessage h3 {
+    margin: 0 0 1rem 0;
+    color: var(--error-color);
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.errorMessage p {
+    margin: 0 0 1.5rem 0;
+    color: var(--text-color);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.tryAgainButton {
+    min-width: 150px;
+    height: 44px;
+    font-size: 1rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .content {
+        padding: 1.5rem;
+    }
+
+    .dropZone {
+        padding: 2rem 1rem;
+    }
+
+    .title {
+        font-size: 1.5rem;
+    }
+
+    .actions {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .importButton,
+    .resetButton,
+    .openButton,
+    .backToDashboardButton {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .successActions {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .validationStatus {
+        position: static;
+        margin-top: 1rem;
+        justify-content: center;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .container {
+        --background-color: #1a1a1a;
+        --surface-color: #2d2d2d;
+        --text-color: #ffffff;
+        --text-secondary: #b0b0b0;
+        --border-color: #404040;
+        --background-hover: #353535;
+        --success-color: #10b981;
+        --success-bg: rgba(16, 185, 129, 0.1);
+        --error-color: #ef4444;
+        --error-bg: rgba(239, 68, 68, 0.1);
+        --primary-color: #3b82f6;
+    }
+}
+
+/* Light mode */
+@media (prefers-color-scheme: light) {
+    .container {
+        --background-color: #ffffff;
+        --surface-color: #f8f9fa;
+        --text-color: #1a1a1a;
+        --text-secondary: #6b7280;
+        --border-color: #d1d5db;
+        --background-hover: #f3f4f6;
+        --success-color: #10b981;
+        --success-bg: rgba(16, 185, 129, 0.1);
+        --error-color: #ef4444;
+        --error-bg: rgba(239, 68, 68, 0.1);
+        --primary-color: #3b82f6;
+    }
+} 

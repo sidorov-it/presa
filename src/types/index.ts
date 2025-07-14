@@ -374,3 +374,31 @@ export interface GeneratedContent {
     content: string | Record<string, string>;
     imageUrl?: string;
 }
+
+// Export/Import types
+export interface ExportPresentationData {
+    version: string;
+    exportedAt: string;
+    presentation: {
+        title: string;
+        description?: string;
+        slides: Slide[];
+        themeId?: string;
+        backgroundSettings?: BackgroundSettings;
+        durationMinutes?: number;
+        goal?: string;
+        audience?: string;
+        tone?: string;
+    };
+}
+
+export interface ImportPresentationResponse {
+    message: string;
+    presentation: {
+        id: string;
+        title: string;
+        description?: string;
+        createdAt: Date;
+        updatedAt: Date;
+    };
+}

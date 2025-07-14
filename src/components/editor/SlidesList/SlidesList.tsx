@@ -344,6 +344,10 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId }) => {
     //     );
     // }
 
+    const handleAddSlide = useCallback(() => {
+        usePresentationStore.getState().addEmptySlide(presentationId, slides.length);
+    }, [presentationId, slides.length]);
+
     // Collapsed view - just show the expand button
     if (isCollapsed) {
         return (
@@ -409,7 +413,7 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId }) => {
             <SlidesListDropIndicator />
 
             <div ref={panelRef} className={styles.leftPanelContent}>
-                <button className={styles.createButton} onClick={() => usePresentationStore.getState().addEmptySlide(presentationId, slides.length)}>
+                <button className={styles.createButton} onClick={handleAddSlide}>
                     + Добавить
                 </button>
                 {slides.length === 0 && (

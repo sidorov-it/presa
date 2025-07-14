@@ -45,7 +45,7 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
                     elements: [
                         {
                             id: 'codhq1g5at',
-                            content: '<p><strong>Hello</strong> <span class="emoji">👋</span></p>',
+                            content: '<p><strong>Привет</strong> <span class="emoji">👋</span></p>',
                             cellId: '73uronundiv',
                             elementTypeId: ElementType.TEXT,
                         } as EditorElement,
@@ -121,7 +121,7 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
                         {
                             id: 'mzfzkn9f73',
                             content:
-                                '<p>Here\'s an example of body text. You can change its font and the color. <a target="_blank" rel="noopener noreferrer" class="link" href="http://gamma.app">Your accent color will be used for links.</a> It will also be used for layouts and buttons. </p><p></p>',
+                                '<p>Это пример основного текста. Вы можете изменить его шрифт и цвет. <a target="_blank" rel="noopener noreferrer" class="link" href="http://gamma.app">Ваш акцентный цвет будет использоваться для ссылок.</a> Он также будет использоваться для макетов и кнопок. </p><p></p>',
                             cellId: '3891ja',
                             elementTypeId: ElementType.TEXT,
                         } as EditorElement,

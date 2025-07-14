@@ -681,6 +681,10 @@ export const usePresentationStore = create<PresentationState>()(
                 // Add auto-save after completing the operation
                 get().saveChanges(presentationId);
 
+                setTimeout(() => {
+                    document.querySelector(`[data-slide-id="${slideId}"]`)?.scrollIntoView({ behavior: 'smooth' });
+                }, 200);
+
                 return slideId;
             },
 

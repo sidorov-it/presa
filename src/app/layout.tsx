@@ -33,9 +33,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                         {children}
                         <SideMenuRenderer />
                     </Provider>
-                    <Suspense fallback={null}>
-                        <YaMetrika />
-                    </Suspense>
+                    {process.env.NODE_ENV === 'production' && (
+                        <Suspense fallback={null}>
+                            <YaMetrika />
+                        </Suspense>
+                    )}
                 </NextAuthProvider>
             </body>
         </html>

@@ -35,7 +35,7 @@ const EditorContent: React.FC<{
                 <Presentation presentationId={presentationId} tiptapRefs={tiptapRefs} />
 
                 {/* Tools panel */}
-                {!isReadOnly && useUIStateStore.getState().selectedSlideId && <ElementsPanel />}
+                {!isReadOnly && <ElementsPanel />}
             </div>
             {!isReadOnly && <SlideMenu tiptapRefs={tiptapRefs} />}
             {!isReadOnly && <DragDropIndicator />}

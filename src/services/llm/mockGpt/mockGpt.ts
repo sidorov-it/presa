@@ -164,7 +164,14 @@ export class MockGptService implements LLMService {
                 if (functionName === 'generate_presentation_topics') {
                     // Получаем все доступные шаблоны (не disabled)
                     const templates = Object.values(SlideTemplatesRegistry).filter(t => !t.disabled);
-                    const mockTopics = templates.map(template => ({
+                    
+                    const filteredTemplates = templates.filter(t => [
+                        'welcome-slide',
+                        'final-slide-contacts',
+                        'final-slide-contacts-qr'
+                    ].includes(t.id));
+
+                    const mockTopics = filteredTemplates.map(template => ({
                         title: `Слайд для шаблона ${template.name}`,
                         instructions: `Использовать шаблон: ${template.id}`,
                     }));
@@ -185,7 +192,12 @@ export class MockGptService implements LLMService {
                 if (functionName === 'select_slide_templates') {
                     // Получаем все доступные шаблоны (не disabled)
                     const templates = Object.values(SlideTemplatesRegistry).filter(t => !t.disabled);
-                    const mockTemplateSelections = templates.map((template, idx) => ({
+                    const filteredTemplates = templates.filter(t => [
+                        'welcome-slide',
+                        'final-slide-contacts',
+                        'final-slide-contacts-qr'
+                    ].includes(t.id));
+                    const mockTemplateSelections = filteredTemplates.map((template, idx) => ({
                         topicIndex: idx,
                         templateId: template.id,
                         explanation: `Демонстрация шаблона ${template.id}`,
