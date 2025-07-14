@@ -23,7 +23,11 @@
     /* overflow: hidden; */
 }
 
-.itemBackground::before {
+.item {
+    height: 100%;
+}
+
+.item::before {
     content: '';
     position: absolute;
     top: 0;
