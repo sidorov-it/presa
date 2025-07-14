@@ -14,3 +14,7 @@ logs/
 .secrets
 test/recordings/test.json
 docs
+scripts
+deploy-package.tar.gz
+deploy-package/
+deploy.env

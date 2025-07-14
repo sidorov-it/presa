@@ -240,15 +240,23 @@ sudo -u deploy pm2 restart slydle
 Перед запуском задайте переменные окружения с параметрами сервера и приложения:
 
 ```bash
-export SERVER_HOST=your.server
-export SERVER_USER=deploy
-export SERVER_PORT=22
-export SERVER_PASSWORD=your_password
-export DATABASE_URL="mongodb://..."
-export NEXTAUTH_SECRET="secret"
-export NEXTAUTH_URL="https://example.com"
-
+SERVER_HOST=your.server \
+SERVER_USER=deploy \
+SERVER_PORT=22 \
+SERVER_PASSWORD=your_password \
+DATABASE_URL="mongodb://..." \
+NEXTAUTH_SECRET="secret" \
+NEXTAUTH_URL="https://example.com" \
 bash scripts/deploy-local.sh
+# export SERVER_HOST=your.server
+# export SERVER_USER=deploy
+# export SERVER_PORT=22
+# export SERVER_PASSWORD=your_password
+# export DATABASE_URL="mongodb://..."
+# export NEXTAUTH_SECRET="secret"
+# export NEXTAUTH_URL="https://example.com"
+
+# bash scripts/deploy-local.sh
 ```
 
 ## 📊 Мониторинг
