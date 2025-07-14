@@ -1,3 +1,4 @@
+import { withLogging } from '@/hooks/withLoging';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
@@ -119,7 +120,7 @@ const generatePlaceholderChartData = (chartType: string) => {
     }
 };
 
-export async function POST(request: NextRequest) {
+async function POSTHandler(request: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
 
@@ -207,3 +208,4 @@ export async function POST(request: NextRequest) {
         );
     }
 }
+export const POST = withLogging(POSTHandler);

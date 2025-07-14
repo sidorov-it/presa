@@ -1,10 +1,11 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
-export async function GET(request: Request) {
+async function GETHandler(request: Request) {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
@@ -58,7 +59,7 @@ export async function GET(request: Request) {
     }
 }
 
-export async function POST(request: Request) {
+async function POSTHandler(request: Request) {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
@@ -101,3 +102,5 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Failed to create theme' }, { status: 500 });
     }
 }
+export const GET = withLogging(GETHandler);
+export const POST = withLogging(POSTHandler);

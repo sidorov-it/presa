@@ -1,10 +1,11 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { getUserTokenBalance, ensureUserTokensRecord } from '@/utils/tokens';
 
-export async function GET(_request: NextRequest) {
+async function GETHandler(_request: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
 
@@ -27,3 +28,4 @@ export async function GET(_request: NextRequest) {
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
+export const GET = withLogging(GETHandler);

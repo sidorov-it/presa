@@ -1,3 +1,4 @@
+import { withLogging } from '@/hooks/withLoging';
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import rewriteSlideContent from '@/services/llm/rewriteSlideContent';
@@ -10,7 +11,7 @@ interface RequestBody {
     presentationId: string;
 }
 
-export async function POST(request: NextRequest) {
+async function POSTHandler(request: NextRequest) {
     const requestId = uuidv4();
 
     logger.info('POST /api/ai/translate');
@@ -54,3 +55,4 @@ export async function POST(request: NextRequest) {
         }
     );
 }
+export const POST = withLogging(POSTHandler);

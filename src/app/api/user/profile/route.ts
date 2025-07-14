@@ -1,3 +1,4 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
@@ -5,7 +6,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 // Get user profile
-export async function GET() {
+async function GETHandler() {
     try {
         const session = await getServerSession(authOptions);
 
@@ -47,7 +48,7 @@ export async function GET() {
 }
 
 // Update user profile (name only)
-export async function PUT(req: NextRequest) {
+async function PUTHandler(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
         logger.debug('PUT /api/user/profile - Session:', session?.user ? 'Authenticated' : 'Not authenticated');
@@ -156,3 +157,5 @@ export async function PUT(req: NextRequest) {
         return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }
+export const GET = withLogging(GETHandler);
+export const PUT = withLogging(PUTHandler);

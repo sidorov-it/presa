@@ -1,3 +1,4 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
@@ -5,7 +6,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../auth/[...nextauth]/route';
 import { generateId } from '@/utils/id';
 
-export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+async function POSTHandler(req: NextRequest, props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
     try {
         const session = await getServerSession(authOptions);
@@ -74,3 +75,4 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
         return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }
+export const POST = withLogging(POSTHandler);

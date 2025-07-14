@@ -1,3 +1,4 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
@@ -107,7 +108,8 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
     }
 };
 
-export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+async function GETHandler(request: NextRequest, props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
     return handleRequest(request, { params });
 }
+export const GET = withLogging(GETHandler);

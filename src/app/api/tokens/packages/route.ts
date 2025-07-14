@@ -1,8 +1,9 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { getTokenPackages } from '@/utils/tokens';
 
-export async function GET(_request: NextRequest) {
+async function GETHandler(_request: NextRequest) {
     try {
         const packages = await getTokenPackages();
 
@@ -14,3 +15,4 @@ export async function GET(_request: NextRequest) {
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
+export const GET = withLogging(GETHandler);

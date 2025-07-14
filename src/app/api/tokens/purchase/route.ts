@@ -1,3 +1,4 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
@@ -5,7 +6,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { addTokens, getTokenPackages } from '@/utils/tokens';
 import { TransactionType } from '@prisma/client';
 
-export async function POST(request: NextRequest) {
+async function POSTHandler(request: NextRequest) {
     try {
         // Проверяем авторизацию
         const session = await getServerSession(authOptions);
@@ -56,3 +57,4 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
+export const POST = withLogging(POSTHandler);

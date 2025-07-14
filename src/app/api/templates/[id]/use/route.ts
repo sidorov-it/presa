@@ -1,3 +1,4 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
@@ -9,7 +10,7 @@ import {
 } from '@/presentationTemplates';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
-export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+async function POSTHandler(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user) {
@@ -67,3 +68,4 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }
+export const POST = withLogging(POSTHandler);

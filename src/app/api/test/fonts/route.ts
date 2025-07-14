@@ -1,3 +1,4 @@
+import { withLogging } from '@/hooks/withLoging';
 import { NextResponse } from 'next/server';
 // import { FONT_URLS } from '@/utils/fontLoader';
 
@@ -229,7 +230,7 @@ export async function getFontMetadata(fontFamily: string) {
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-export async function GET() {
+async function GETHandler() {
     const result = [];
 
     for (let i = 0; i < FONT_URLS.length; i++) {
@@ -248,3 +249,4 @@ export async function GET() {
 
     return NextResponse.json(result);
 }
+export const GET = withLogging(GETHandler);

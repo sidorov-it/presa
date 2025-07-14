@@ -1,3 +1,4 @@
+import { withLogging } from '@/hooks/withLoging';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
@@ -141,7 +142,7 @@ async function transformTheme(basicTheme: any): Promise<Theme> {
     };
 }
 
-export async function GET(_request: NextRequest, _props: { params: Promise<{ default: string }> }) {
+async function GETHandler(_request: NextRequest, _props: { params: Promise<{ default: string }> }) {
     try {
         // if (params?.default === 'true') {
         const transformedTheme = await transformTheme(defaultTheme);
@@ -169,3 +170,4 @@ export async function GET(_request: NextRequest, _props: { params: Promise<{ def
         return NextResponse.json({ error: 'Failed to import themes' }, { status: 500 });
     }
 }
+export const GET = withLogging(GETHandler);

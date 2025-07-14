@@ -1,3 +1,4 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
 /* eslint-disable prettier/prettier */
 /* eslint-disable indent */
@@ -13,7 +14,7 @@ interface RouteParams {
     }>;
 }
 
-export async function GET(request: NextRequest, props: RouteParams) {
+async function GETHandler(request: NextRequest, props: RouteParams) {
     const params = await props.params;
     try {
         const session = await getServerSession(authOptions);
@@ -105,3 +106,4 @@ export async function GET(request: NextRequest, props: RouteParams) {
         );
     }
 }
+export const GET = withLogging(GETHandler);

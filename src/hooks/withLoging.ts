@@ -1,11 +1,10 @@
-import { NextApiResponse } from 'next';
 import logger from '@/utils/logger';
 import { getToken } from 'next-auth/jwt';
 import { NextRequest } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 
-export const withLogging = (handler: (req: NextRequest, res: NextApiResponse) => Promise<any>) => {
-    return async (request: NextRequest, res: NextApiResponse) => {
+export const withLogging = (handler: (req: NextRequest, props: { params: Promise<any> }) => Promise<Response>) => {
+    return async (request: NextRequest, props: { params: Promise<any> }) => {
         const timestamp = new Date().toISOString();
         const requestId = uuidv4();
         const method = request.method;
@@ -17,7 +16,7 @@ export const withLogging = (handler: (req: NextRequest, res: NextApiResponse) =>
             secret: process.env.NEXTAUTH_SECRET,
         });
         const userId = token?.id as string | undefined;
-        let response: any;
+        let response: Response;
 
         try {
             logger.info(
@@ -31,7 +30,7 @@ export const withLogging = (handler: (req: NextRequest, res: NextApiResponse) =>
                     method,
                 })
             );
-            response = await handler(request, res);
+            response = await handler(request, props);
             logger.info(
                 JSON.stringify({
                     type: 'response',
@@ -52,7 +51,7 @@ export const withLogging = (handler: (req: NextRequest, res: NextApiResponse) =>
                     timestamp,
                     address,
                     userId: userId ?? null,
-                    status: res.status,
+                    status: 500,
                     requestId,
                     method,
                     error: error instanceof Error ? error.message : 'Unknown error',

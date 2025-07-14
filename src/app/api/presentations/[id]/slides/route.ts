@@ -1,3 +1,4 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
@@ -5,7 +6,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/prisma';
 import { Slide } from '@/types';
 
-export async function PUT(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+async function PUTHandler(req: NextRequest, props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
     try {
         const session = await getServerSession(authOptions);
@@ -60,3 +61,4 @@ export async function PUT(req: NextRequest, props: { params: Promise<{ id: strin
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
+export const PUT = withLogging(PUTHandler);
