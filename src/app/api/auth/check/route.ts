@@ -1,9 +1,10 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
-export async function GET() {
+async function GETHandler() {
     try {
         const session = await getServerSession(authOptions);
 
@@ -35,3 +36,4 @@ export async function GET() {
         );
     }
 }
+export const GET = withLogging(GETHandler);

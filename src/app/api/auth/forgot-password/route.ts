@@ -1,10 +1,11 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
 import { sendEmail } from '@/lib/email';
 
-export async function POST(req: NextRequest) {
+async function POSTHandler(req: NextRequest) {
     try {
         // Parse the request body
         const { email } = await req.json();
@@ -66,3 +67,4 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: 'Внутренняя ошибка сервера' }, { status: 500 });
     }
 }
+export const POST = withLogging(POSTHandler);

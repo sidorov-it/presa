@@ -1,3 +1,4 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
@@ -8,7 +9,7 @@ import { getNewEditorElement } from '@/utils/getNewEditorElement';
 import { parsePresentation } from '@/utils/json';
 
 // Get a specific presentation
-export async function GET(request: Request, props: { params: Promise<{ id: string }> }) {
+async function GETHandler(request: Request, props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
     try {
         const presentationData = await prisma.presentation.findUnique({
@@ -30,7 +31,7 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
 }
 
 // Update a presentation
-export async function PUT(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+async function PUTHandler(request: NextRequest, props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
     try {
         const id = params.id;
@@ -61,7 +62,7 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ id: s
 }
 
 // Delete a presentation (soft delete)
-export async function DELETE(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+async function DELETEHandler(req: NextRequest, props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
     try {
         const session = await getServerSession(authOptions);
@@ -104,7 +105,7 @@ export async function DELETE(req: NextRequest, props: { params: Promise<{ id: st
     }
 }
 
-export async function POST(req: NextRequest) {
+async function POSTHandler(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
 
@@ -172,3 +173,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }
+export const GET = withLogging(GETHandler);
+export const POST = withLogging(POSTHandler);
+export const PUT = withLogging(PUTHandler);
+export const DELETE = withLogging(DELETEHandler);

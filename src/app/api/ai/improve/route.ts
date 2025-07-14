@@ -1,3 +1,4 @@
+import { withLogging } from '@/hooks/withLoging';
 import { prisma } from '@/lib/prisma';
 import rewriteSlideContent from '@/services/llm/rewriteSlideContent';
 import { withTokenDeduction, TokenCalculators, MetadataExtractors } from '@/utils/aiTokenMiddleware';
@@ -77,7 +78,7 @@ interface RewriteRequestBody {
     comment?: string;
 }
 
-export async function POST(request: NextRequest) {
+async function POSTHandler(request: NextRequest) {
     logger.info('POST /api/ai/improve');
     const requestId = uuidv4();
     return withTokenDeduction(
@@ -117,3 +118,4 @@ export async function POST(request: NextRequest) {
         }
     );
 }
+export const POST = withLogging(POSTHandler);

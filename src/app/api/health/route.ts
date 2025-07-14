@@ -1,7 +1,8 @@
+import { withLogging } from '@/hooks/withLoging';
 import { NextResponse } from 'next/server';
 import logger from '@/utils/logger';
 
-export async function GET() {
+async function GETHandler() {
     try {
         // Проверяем подключение к базе данных
         const { PrismaClient } = await import('@prisma/client');
@@ -30,3 +31,4 @@ export async function GET() {
         );
     }
 }
+export const GET = withLogging(GETHandler);

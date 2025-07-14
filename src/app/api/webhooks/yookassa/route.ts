@@ -1,3 +1,4 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { getYooKassaService } from '@/services/payments/yookassa';
@@ -23,7 +24,7 @@ interface YooKassaWebhookEvent {
     };
 }
 
-export async function POST(request: NextRequest) {
+async function POSTHandler(request: NextRequest) {
     try {
         // Получаем тело запроса как текст для валидации подписи
         const body = await request.text();
@@ -214,3 +215,4 @@ async function handleWaitingForCapture(purchase: any, payment: any) {
         throw error;
     }
 }
+export const POST = withLogging(POSTHandler);

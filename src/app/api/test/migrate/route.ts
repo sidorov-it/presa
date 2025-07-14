@@ -1,7 +1,8 @@
+import { withLogging } from '@/hooks/withLoging';
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
-export async function GET() {
+async function GETHandler() {
     const presentations = await prisma.presentation.findMany({
         where: {
             createdAt: {
@@ -25,3 +26,4 @@ export async function GET() {
 
     return NextResponse.json(presentations);
 }
+export const GET = withLogging(GETHandler);

@@ -1,3 +1,4 @@
+import { withLogging } from '@/hooks/withLoging';
 /* eslint-disable prettier/prettier */
 import logger from '@/utils/logger';
 import { NextRequest } from 'next/server';
@@ -10,7 +11,7 @@ import { withTokenDeduction, TokenCalculators, MetadataExtractors } from '@/util
 import extractTextFromElement from '@/utils/extractTextFromElement';
 import { v4 as uuidv4 } from 'uuid';
 
-export async function POST(request: NextRequest) {
+async function POSTHandler(request: NextRequest) {
     const requestId = uuidv4();
     return withTokenDeduction(
         request,
@@ -179,3 +180,4 @@ export async function POST(request: NextRequest) {
         }
     );
 }
+export const POST = withLogging(POSTHandler);

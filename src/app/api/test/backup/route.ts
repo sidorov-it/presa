@@ -1,7 +1,8 @@
+import { withLogging } from '@/hooks/withLoging';
 import { prisma } from '@/lib/prisma';
 import { NextRequest } from 'next/server';
 
-export async function GET(request: NextRequest) {
+async function GETHandler(request: NextRequest) {
     const allThemes = await prisma.theme.findMany({
         where: {
             isDefault: true,
@@ -17,3 +18,4 @@ export async function GET(request: NextRequest) {
         },
     });
 }
+export const GET = withLogging(GETHandler);

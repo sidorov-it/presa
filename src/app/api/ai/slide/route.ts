@@ -1,3 +1,4 @@
+import { withLogging } from '@/hooks/withLoging';
 import { NextRequest } from 'next/server';
 import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
 import generateSlideTemplate from '@/services/llm/generateSlideTemplate';
@@ -24,7 +25,7 @@ interface RequestBody {
     }[];
 }
 
-export async function POST(request: NextRequest) {
+async function POSTHandler(request: NextRequest) {
     logger.info('POST /api/ai/slide');
     const requestId = uuidv4();
     return withTokenDeduction(
@@ -138,3 +139,4 @@ ${surroundingSlides[1]?.text ? `Текст следующего слайда: ${
         }
     );
 }
+export const POST = withLogging(POSTHandler);
