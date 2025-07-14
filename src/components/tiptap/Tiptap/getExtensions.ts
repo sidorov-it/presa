@@ -276,10 +276,14 @@ const getExtensions = ({
     PreventDropExtension,
 
     EnterHandlerExtension(
-        (contentBeforeCursor, contentAfterCursor) => {
-            if (!contentBeforeCursor && !contentAfterCursor) return;
-            const htmlBeforeCursor = generateHTML(
-                contentBeforeCursor!,
+        (contentBeforeCursor, contentAfterCursor, preservedStyles) => {
+            if (!contentBeforeCursor && !contentAfterCursor && !preservedStyles) return;
+            
+            // Используем сохраненные стили, если они есть, иначе используем initialStyle
+            const stylesToUse = preservedStyles || initialStyle;
+            
+            const htmlBeforeCursor = contentBeforeCursor ? generateHTML(
+                contentBeforeCursor,
                 getExtensions({
                     onEnterPressed,
                     onBackspacePressed,
@@ -287,11 +291,12 @@ const getExtensions = ({
                     placeholder,
                     onAddElement,
                     isHideSlashMenu,
-                    initialStyle,
+                    initialStyle: stylesToUse,
                 })
-            );
-            const htmlAfterCursor = generateHTML(
-                contentAfterCursor!,
+            ) : undefined;
+            
+            const htmlAfterCursor = contentAfterCursor ? generateHTML(
+                contentAfterCursor,
                 getExtensions({
                     onEnterPressed,
                     onBackspacePressed,
@@ -299,9 +304,10 @@ const getExtensions = ({
                     placeholder,
                     onAddElement,
                     isHideSlashMenu,
-                    initialStyle,
+                    initialStyle: stylesToUse,
                 })
-            );
+            ) : undefined;
+            
             onEnterPressed(htmlBeforeCursor, htmlAfterCursor);
         },
         (isEmpty, textContent) => {

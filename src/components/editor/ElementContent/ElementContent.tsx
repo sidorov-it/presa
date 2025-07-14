@@ -83,7 +83,7 @@ export const ElementContent = ({
     const [elementIsHovered, setElementIsHovered] = useState(false);
 
     const handleEnterPressed = useCallback(
-        (contentBeforeCursor?: string, contentAfterCursor?: string) => {
+        (contentBeforeCursor?: string, contentAfterCursor?: string, preservedStyles?: any) => {
             // Start transaction at the beginning of the operation
             // Получаем текущий макет
 
@@ -114,7 +114,7 @@ export const ElementContent = ({
                 const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures(defaultGridType);
 
                 const newElement = {
-                    ...getNewEditorElement(contentAfterCursor),
+                    ...getNewEditorElement(contentAfterCursor, { preservedStyles }),
                     cellId: defaultLayoutGridStructure.rows[0].cells[0].id,
                 };
 
@@ -172,7 +172,7 @@ export const ElementContent = ({
                 const newElementIndex = layout.elements.findIndex(e => e.id === elementId);
 
                 const newElement = {
-                    ...getNewEditorElement(contentAfterCursor),
+                    ...getNewEditorElement(contentAfterCursor, { preservedStyles }),
                     cellId: cell.id,
                 };
 

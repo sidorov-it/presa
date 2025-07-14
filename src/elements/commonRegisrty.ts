@@ -395,7 +395,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'quote',
         props: {
             textType: 'quote',
-            content: '<blockquote>Цитата</blockquote>',
+            content: 'Цитата',
         },
         slots: [{ slot: 'content', llmHint: 'Текст цитаты', type: 'text' }],
         llmHints: {

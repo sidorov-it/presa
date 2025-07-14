@@ -2,7 +2,7 @@ import { Extension, JSONContent } from '@tiptap/core';
 
 // Создаем расширение для обработки нажатия Enter и Backspace
 export const EnterHandlerExtension = (
-    onEnterPressed: (contentBeforeCursor?: JSONContent, contentAfterCursor?: JSONContent) => void,
+    onEnterPressed: (contentBeforeCursor?: JSONContent, contentAfterCursor?: JSONContent, preservedStyles?: any) => void,
     onBackspacePressed: (isEmpty: boolean, content: string) => void,
     onDeletePressed: (isEmpty: boolean, content: string) => void,
     standardEnterBehavior: boolean = false
@@ -17,7 +17,7 @@ export const EnterHandlerExtension = (
                     }
                     const { state } = editor;
                     const { selection } = state;
-                    const { $head } = selection;
+                    const { $head, $anchor } = selection;
 
                     // Проверяем, находится ли курсор внутри списка, поднимаясь по дереву узлов
                     let isInList = false;
@@ -43,30 +43,69 @@ export const EnterHandlerExtension = (
                         return false; // Передаем управление стандартному обработчику списков Tiptap
                     }
 
-                    // Get the current cursor position
-                    const cursorPos = $head.pos;
+                    // Проверяем, есть ли выделенный текст
+                    const hasSelection = !selection.empty;
+                    const selectionStart = hasSelection ? Math.min($head.pos, $anchor.pos) : $head.pos;
+                    const selectionEnd = hasSelection ? Math.max($head.pos, $anchor.pos) : $head.pos;
 
-                    // Get the content after the cursor
-                    const contentAfterCursor = state.doc.cut(cursorPos).toJSON();
+                    // Проверяем, выделен ли весь текст (от начала до конца документа)
+                    const isFullSelection = hasSelection && selectionStart <= 1 && selectionEnd >= state.doc.content.size - 1;
 
-                    const contentBeforeCursor = state.doc.cut(0, cursorPos).toJSON();
+                    // Сохраняем стили перед удалением текста, если выделен весь текст
+                    let preservedStyles = null;
+                    if (isFullSelection) {
+                        // Получаем текущие стили из редактора
+                        const currentLevel = editor.isActive('fontSize') ? editor.getAttributes('fontSize').level : 1;
+                        const currentColor = editor.getAttributes('textStyle').color || null;
+                        const currentBold = editor.isActive('bold');
+                        const currentItalic = editor.isActive('italic');
+                        const currentUnderline = editor.isActive('underline');
+                        const currentStrike = editor.isActive('strike');
 
-                    // If there's content after the cursor, pass it to the callback
-                    if (contentAfterCursor && contentAfterCursor.content?.length > 0) {
-                        // Delete the content after cursor in current editor
-                        // вызывает handleEditorContentChange в ElementContent
+                        preservedStyles = {
+                            level: currentLevel,
+                            color: currentColor,
+                            bold: currentBold,
+                            italic: currentItalic,
+                            underline: currentUnderline,
+                            strike: currentStrike,
+                        };
+
+                        // Сохраняем стили в CustomPlaceholderExtension для текущего редактора
+                        if (editor.extensionManager.extensions.find(ext => ext.name === 'customPlaceholder')) {
+                            (editor.commands as any).customPlaceholder?.updatePlaceholderStyle(preservedStyles);
+                        }
+                    }
+
+                    // Получаем контент до выделения
+                    const contentBeforeSelection = state.doc.cut(0, selectionStart).toJSON();
+                    
+                    // Получаем контент после выделения
+                    const contentAfterSelection = state.doc.cut(selectionEnd).toJSON();
+
+                    // Удаляем выделенный текст из текущего редактора
+                    if (hasSelection) {
                         editor
                             .chain()
                             .setMeta('handleEnter', true)
                             .focus()
-                            .deleteRange({ from: cursorPos, to: state.doc.content.size })
+                            .deleteRange({ from: selectionStart, to: selectionEnd })
                             .run();
+                    }
 
-                        // Pass the remaining content to create a new editor
-                        onEnterPressed(contentBeforeCursor, contentAfterCursor);
+                    // Определяем, нужно ли создавать новые редакторы
+                    const hasContentBefore = contentBeforeSelection && contentBeforeSelection.content?.length > 0;
+                    const hasContentAfter = contentAfterSelection && contentAfterSelection.content?.length > 0;
+
+                    if (hasContentBefore && hasContentAfter) {
+                        // Есть контент до и после выделения - разбиваем на 2 редактора
+                        onEnterPressed(contentBeforeSelection, contentAfterSelection, preservedStyles);
+                    } else if (hasContentAfter) {
+                        // Есть только контент после выделения - создаем один новый редактор
+                        onEnterPressed(undefined, contentAfterSelection, preservedStyles);
                     } else {
-                        // If no content after cursor, just create a new empty editor
-                        onEnterPressed();
+                        // Нет контента после выделения - создаем пустой редактор
+                        onEnterPressed(undefined, undefined, preservedStyles);
                     }
 
                     return true;

@@ -165,10 +165,10 @@ const Tiptap = ({
         }
 
         // Extract other styles (bold, italic, etc.)
-        const bold = classList.includes('font-bold') || (style && style.includes('font-weight: bold'));
-        const italic = classList.includes('italic') || (style && style.includes('font-style: italic'));
-        const underline = classList.includes('underline') || (style && style.includes('text-decoration: underline'));
-        const strike = classList.includes('line-through') || (style && style.includes('text-decoration: line-through'));
+        const bold = Boolean(classList.includes('font-bold') || (style && style.includes('font-weight: bold')));
+        const italic = Boolean(classList.includes('italic') || (style && style.includes('font-style: italic')));
+        const underline = Boolean(classList.includes('underline') || (style && style.includes('text-decoration: underline')));
+        const strike = Boolean(classList.includes('line-through') || (style && style.includes('text-decoration: line-through')));
 
         return {
             level,
