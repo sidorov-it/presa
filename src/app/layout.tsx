@@ -4,7 +4,8 @@ import type { Metadata } from 'next';
 import { NextAuthProvider } from '@/components/providers/NextAuthProvider';
 import { Provider } from '@/components/ui/provider';
 import SideMenuRenderer from '@/components/editor/Menus/SideMenuRenderer/SideMenuRenderer';
-import UIStateDebugButton from '@/components/debug/UIStateDebugButton';
+import YaMetrika from '@/components/metrika';
+import { Suspense } from 'react';
 
 // const inter = Inter({ subsets: ['latin', 'cyrillic'] });
 
@@ -32,6 +33,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                         {children}
                         <SideMenuRenderer />
                     </Provider>
+                    <Suspense fallback={null}>
+                        <YaMetrika />
+                    </Suspense>
                 </NextAuthProvider>
             </body>
         </html>
