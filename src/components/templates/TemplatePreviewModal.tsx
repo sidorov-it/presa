@@ -42,7 +42,7 @@ export default function TemplatePreviewModal({
         };
     }, [templateId]);
 
-    const theme = allThemes.find(theme => theme.id === presentation?.themeId) || defaultThemes[0];
+    const theme = allThemes.find(theme => theme.name === presentation?.themeName) || defaultThemes[0];
 
     useEffect(() => {
         if (isOpen) {

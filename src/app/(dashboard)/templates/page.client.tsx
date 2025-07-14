@@ -2,17 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { usePresentationStore } from '@/store/presentationStore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card/Card';
 import { PresentationTemplates, PresentationTemplateKeys, PreviewTemplateImages } from '@/presentationTemplates';
-import styles from './page.module.css';
 import { useThemeStore } from '@/store/themeStore';
 import TemplatePreviewModal from '@/components/templates/TemplatePreviewModal';
 import { Heading } from '@/components/ui/heading';
 
 import FullPageLoader from '@/components/FullPageLoader/FullPageLoader';
-import { LuFileImage } from 'react-icons/lu';
-import Image from 'next/image';
+import styles from './page.module.css';
 
 const TEMPLATE_KEYS = Object.keys(PresentationTemplates) as PresentationTemplateKeys[];
 
@@ -72,7 +71,7 @@ const TemplatesPage = () => {
                 <div className={styles.cardsContainer}>
                     {TEMPLATE_KEYS.map(key => {
                         const template = PresentationTemplates[key];
-                        const theme = defaultThemes.find(t => t.id === template.themeId) || defaultThemes[0];
+                        const theme = defaultThemes.find(t => t.name === template.themeName) || defaultThemes[0];
 
                         if (!theme) {
                             return null;
