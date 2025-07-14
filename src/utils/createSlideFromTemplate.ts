@@ -17,6 +17,7 @@ export const createSlideFromTemplate = (templateConfig: SlideTemplateConfig): Sl
     const newSlide: Slide = {
         id: newSlideId,
         layouts: [],
+        contentAlignment: templateConfig.contentAlignment || 'center',
     };
 
     // Process each layout in the template

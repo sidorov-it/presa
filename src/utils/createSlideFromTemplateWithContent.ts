@@ -43,6 +43,7 @@ export const createSlideFromTemplateWithContent = async ({
         id: newSlideId,
         title,
         layouts: [],
+        contentAlignment: template.contentAlignment || 'center',
     };
 
     // First create the slide structure based on template
@@ -223,7 +224,8 @@ export const createSlideFromTemplateWithContent = async ({
                     // const content = elementContent[mapping.items?.[0]?.key] || '';
                     newElement = getNewEditorElementFromMarkdown(
                         elementContent || elementConfig.props?.content || '',
-                        elementConfig.props?.textType
+                        elementConfig.props?.textType,
+                        elementConfig.props?.style?.textAlign
                     );
                 }
 

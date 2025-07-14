@@ -59,6 +59,7 @@ export interface SlideTemplateCore {
     id: string;
     name: string;
     disabled?: boolean;
+    contentAlignment?: 'top' | 'center' | 'bottom';
     layouts: Array<{
         layout: LayoutType;
         columnsCount: number;

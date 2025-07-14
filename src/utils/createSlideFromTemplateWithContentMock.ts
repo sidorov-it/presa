@@ -39,6 +39,7 @@ export const createSlideFromTemplateWithContent = async ({
         id: newSlideId,
         title,
         layouts: [],
+        contentAlignment: template.contentAlignment || 'center',
     };
 
     // First create the slide structure based on template

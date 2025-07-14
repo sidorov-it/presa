@@ -13,7 +13,7 @@ export class TemplateTransformers {
             Icon: template.ui.icon,
             elementVariant: template.id,
             templateConfig: {
-                contentAlignment: 'center',
+                contentAlignment: template.contentAlignment || 'center',
                 layouts: template.layouts.map(layout => ({
                     layout: layout.layout,
                     columnsCount: layout.columnsCount,

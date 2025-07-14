@@ -715,6 +715,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
     'title-bullets': {
         id: 'title-bullets',
         name: 'Заголовок с пунктами',
+        contentAlignment: 'top',
         layouts: [
             {
                 layout: 'heading',
@@ -2391,6 +2392,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
     'welcome-slide': {
         id: 'welcome-slide',
         name: 'Приветственный слайд с темой',
+        contentAlignment: 'center',
         layouts: [
             {
                 layout: 'welcome-slide',
@@ -2505,6 +2507,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
     'final-slide-contacts': {
         id: 'final-slide-contacts',
         name: 'Заключительный слайд с контактами',
+        contentAlignment: 'center',
         layouts: [
             {
                 layout: 'final-slide-contacts',
@@ -2618,6 +2621,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
     'final-slide-contacts-qr': {
         id: 'final-slide-contacts-qr',
         name: 'Заключительный слайд с контактами и QR-кодом',
+        contentAlignment: 'center',
         layouts: [
             {
                 layout: 'final-slide-contacts-qr',
