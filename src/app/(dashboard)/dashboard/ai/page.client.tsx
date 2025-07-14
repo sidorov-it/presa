@@ -20,6 +20,7 @@ import { FaPlus, FaTrash } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { generateId } from '@/utils/id';
+import GenerationLoader from '@/components/ui/GenerationLoader';
 
 interface SlideTopic {
     id: string;
@@ -47,14 +48,15 @@ const AiPresentationPage = () => {
     const [step, setStep] = useState<'form' | 'topics'>('form');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-    const [generationProgress, setGenerationProgress] = useState(0);
+
+    const [isShowGenerationLoader, setIsShowGenerationLoader] = useState(false);
 
     // Form state
     const [description, setDescription] = useState('');
     const [numSlides, setNumSlides] = useState(5);
     const [tone, setTone] = useState('professional');
 
-    const [durationMinutes, setDurationMinutes] = useState(null);
+    const [durationMinutes, setDurationMinutes] = useState<number | null>(null);
     const [goal, setGoal] = useState('');
     const [audience, setAudience] = useState('');
 
@@ -95,6 +97,7 @@ const AiPresentationPage = () => {
             setError('Ошибка генерации тем слайдов. Попробуйте еще раз.');
         } finally {
             setIsLoading(false);
+            setIsShowGenerationLoader(false);
         }
     };
 
@@ -134,7 +137,7 @@ const AiPresentationPage = () => {
         }
 
         setIsLoading(true);
-        setGenerationProgress(0);
+        setIsShowGenerationLoader(true);
         try {
             // Generate the entire presentation in one request
             const response = await fetch('/api/ai/presentation', {
@@ -187,7 +190,7 @@ const AiPresentationPage = () => {
             toast.error('Ошибка при создании презентации. Попробуйте еще раз.');
         } finally {
             setIsLoading(false);
-            setGenerationProgress(0);
+            setIsShowGenerationLoader(false);
         }
     };
 
@@ -321,7 +324,7 @@ const AiPresentationPage = () => {
                                 </Text>
                                 <Input
                                     value={durationMinutes || ''}
-                                    onChange={e => setDurationMinutes(Number(e.target.value))}
+                                    onChange={e => setDurationMinutes(e.target.value ? Number(e.target.value) : null)}
                                     placeholder="Сколько времени будет длиться презентация"
                                     aria-label="Длительность презентации"
                                     type="number"
@@ -444,12 +447,7 @@ const AiPresentationPage = () => {
                             Добавить слайд
                         </Button>
                     </Stack>
-                    {isLoading && (
-                        <Box marginY="16px">
-                            <Text marginBottom="8px">Генерация слайдов: {Math.round(generationProgress)}%</Text>
-                            {/* <Progress value={generationProgress} /> */}
-                        </Box>
-                    )}
+
                     <Flex justifyContent="flex-end" marginTop="24px">
                         <Button
                             colorScheme="blue"
@@ -458,13 +456,12 @@ const AiPresentationPage = () => {
                             aria-label="Создать презентацию"
                             tabIndex={0}
                         >
-                            {isLoading
-                                ? `Создание презентации (${Math.round(generationProgress)}%)`
-                                : 'Создать презентацию'}
+                            Создать презентацию
                         </Button>
                     </Flex>
                 </Box>
             )}
+            {isShowGenerationLoader && <GenerationLoader isVisible={isShowGenerationLoader} />}
         </Box>
     );
 };
