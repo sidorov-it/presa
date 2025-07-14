@@ -16,7 +16,7 @@ import { TextType } from '@/types';
 //     className = 'body-text normal-text';
 //     break;
 
-export const getTextContent = (textType: TextType, text: string | string[]) => {
+export const getTextContent = (textType: TextType, text: string | string[], textAlign?: string) => {
     switch (textType) {
         case TextType.TITLE:
             return `<span class="heading-text title-text">${text}</span>`;
@@ -92,8 +92,9 @@ export const getTextContent = (textType: TextType, text: string | string[]) => {
                 return convertAiTextToHtml(text);
             }
 
+            const pStyle = textAlign ? `style="text-align: ${textAlign};"` : '';
             // Fallback to simple paragraph handling
-            return `<p>${Array.isArray(text) ? text.join(' ') : text}</p>`;
+            return `<p ${pStyle}>${Array.isArray(text) ? text.join(' ') : text}</p>`;
     }
 };
 

@@ -4,7 +4,7 @@ import { ElementType } from '@/types/elements';
 
 export const getNewEditorElement = (
     content?: string,
-    options: { tempEditor?: boolean; tempLayout?: boolean; textType?: string } = {}
+    options: { tempEditor?: boolean; tempLayout?: boolean; textType?: string; textAlign?: string } = {}
 ): Omit<EditorElement, 'cellId'> => {
     // Если контент не передан или пустой, создаем контент по умолчанию с правильными классами
     let defaultContent = '';
@@ -53,7 +53,8 @@ export const getNewEditorElement = (
     }
 
     if (options.textType && className) {
-        defaultContent = `<p><span class="${className}">${defaultContent}</span></p>`;
+        const pStyle = options.textAlign ? `style="text-align: ${options.textAlign};"` : '';
+        defaultContent = `<p ${pStyle}><span class="${className}">${defaultContent}</span></p>`;
     }
 
     const newEditor: Omit<EditorElement, 'cellId'> = {
