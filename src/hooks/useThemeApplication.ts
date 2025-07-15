@@ -4,7 +4,7 @@ import { Theme } from '@/types/theme';
 import getContrastTextColor from '@/utils/getContrastTextColor';
 import getHoverColor from '@/utils/getHoverColor';
 import { BackgroundSettings } from '@/types';
-import { getBorderColorForBackground, getSubtleColor } from '@/utils/themeUtils';
+import { getBorderColorForBackground, getContrastingTextColor, getSubtleColor } from '@/utils/themeUtils';
 import { ColorMode } from '@/components/ui/color-mode';
 
 interface UseThemeApplicationOptions {
@@ -111,6 +111,7 @@ const applyThemeStyles = ({
 
     // Base colors
     setCSSVariableIfChanged('--presentation-primary-accent', theme.colors.primaryAccent, prevColors?.primaryAccent);
+    setCSSVariableIfChanged('--presentation-primary-accent-contrast-text-color', getContrastingTextColor(theme.colors.primaryAccent), prevColors?.primaryAccent);
     setCSSVariableIfChanged(
         '--presentation-accent-blocks-color',
         theme.colors.primaryAccent,

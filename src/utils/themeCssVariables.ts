@@ -2,7 +2,7 @@ import { Theme } from '@/types/theme';
 import { BackgroundSettings } from '@/types';
 import getContrastTextColor from './getContrastTextColor';
 import getHoverColor from './getHoverColor';
-import { getBorderColorForBackground, getSubtleColor } from './themeUtils';
+import { getBorderColorForBackground, getContrastingTextColor, getSubtleColor } from './themeUtils';
 
 /**
  * Convert theme settings to a style object with CSS variables.
@@ -16,6 +16,8 @@ export function themeToCSSVariables(theme: Theme, backgroundSettings?: Backgroun
 
     // Base colors
     set('--presentation-primary-accent', theme.colors.primaryAccent);
+    set('--presentation-primary-accent-contrast-text-color', getContrastingTextColor(theme.colors.primaryAccent));
+    
     set('--presentation-accent-blocks-color', theme.colors.primaryAccent);
 
     // Text colors

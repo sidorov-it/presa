@@ -61,7 +61,7 @@ export default function TimelineVertical({
             return {
                 sides: element.sides || 'one',
                 showLines: element.showLines !== false,
-                numbersColor: element.numbersColor || 'var(--color-text, #000)',
+                numbersColor: element.numbersColor || 'var(--presentation-primary-accent-contrast-text-color, #000)',
                 timelineColor:
                     element.timelineColor || 'var(--presentation-primary-accent, var(--color-primary, #1e88e5))',
                 showNumbers: element.showNumbers || false,

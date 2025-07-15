@@ -155,25 +155,6 @@ const TimelineHorizontalContent = ({
         return baseStyle;
     }, [direction, sides, maxItemsCount, itemsIds, index, isSecondLine]);
 
-    // Apply background color and text color styles
-    const colorStyle: React.CSSProperties = {};
-    if (currentItem?.backgroundColor) {
-        colorStyle.backgroundColor = currentItem.backgroundColor;
-        const contrastColor = getContrastingTextColor(currentItem.backgroundColor);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        colorStyle['--presentation-text-color'] = contrastColor;
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        colorStyle['--presentation-heading-color'] = contrastColor;
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        colorStyle['--presentation-block-background-subtle'] = currentItem.backgroundColor;
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        colorStyle['--presentation-block-text-color-subtle'] = contrastColor;
-    }
-
     if (itemId === null) {
         // Return an empty div with the same width as content items to maintain spacing
         return (
@@ -232,7 +213,7 @@ const TimelineHorizontalContent = ({
             >
                 <div
                     className={`${styles.textBox} ${align ? styles[align] : ''}`}
-                    style={{ position: 'relative', ...colorStyle }}
+                    style={{ position: 'relative' }}
                 >
                     <Tiptap
                         isReadOnly={isReadOnly}

@@ -69,8 +69,8 @@ export default function TimelineSettings({
             layoutId,
             elementId,
             data: {
-                timelineColor: defaultTimelineColor,
-                numbersColor: defaultNumbersColor,
+                timelineColor: null,
+                numbersColor: null,
             },
         });
     }, [elementConfig, presentationId, slideId, layoutId, elementId, updateElement]);
