@@ -265,6 +265,7 @@
     width: 2em;
     height: 2em;
     background-color: var(--timeline-color);
+    color: var(--numbers-color);
     border-radius: 0.35em;
     position: absolute;
     top: -1em;
@@ -296,7 +297,7 @@
     top: 1.25em;
     width: 2px;
     /* height: var(--line-size); */
-    height: 2.1875em;
+    height: 2em;
     background-color: var(--timeline-color);
     display: block;
     margin-left: calc(1em - 1px);
@@ -374,7 +375,7 @@
 .secondLine {
     display: flex;
     flex-direction: row;
-    gap: 2px;
+    gap: 1em;
     width: 100%;
     position: relative;
 }

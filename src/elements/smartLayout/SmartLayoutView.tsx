@@ -15,6 +15,7 @@ interface SmartLayoutViewProps {
     blockFillColorsType?: string;
     blockBackgroundCustomColors?: string[];
     primaryAccentColor?: string;
+    backgroundBlockFillType?: string;
 }
 
 const SmartLayoutView: React.FC<SmartLayoutViewProps> = ({
@@ -27,6 +28,7 @@ const SmartLayoutView: React.FC<SmartLayoutViewProps> = ({
     blockFillColorsType,
     blockBackgroundCustomColors,
     primaryAccentColor,
+    backgroundBlockFillType
 }) => {
     const elementVariant = element.elementVariant;
 
@@ -55,6 +57,7 @@ const SmartLayoutView: React.FC<SmartLayoutViewProps> = ({
                         blockFillColorsType={blockFillColorsType}
                         primaryAccentColor={primaryAccentColor}
                         blockBackgroundCustomColors={blockBackgroundCustomColors}
+                        backgroundBlockFillType={backgroundBlockFillType}
                     />
                 );
             case 'steps':

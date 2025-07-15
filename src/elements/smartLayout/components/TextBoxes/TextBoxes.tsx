@@ -43,7 +43,7 @@ export default function TextBoxes({
             !!state.state.source.smartLayoutItemId
     );
 
-    const customColors: string[] = useThemeStore(
+    const customTextColors: string[] = useThemeStore(
         useShallow(state => {
             if (
                 state.currentTheme?.design?.blocks?.blockFillColorsType === 'custom' &&
@@ -267,11 +267,11 @@ export default function TextBoxes({
                     style['--presentation-block-text-color-subtle'] = contrastColor;
                 }
 
-                const color = customColors[index % customColors.length];
+                const color = customTextColors[index % customTextColors.length];
                 return (
                     <div
                         key={itemId}
-                        className={styles.itemContainer}
+                        className={styles.itemBackground}
                         data-smart-layout-item-id={itemId}
                         style={
                             {

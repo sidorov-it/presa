@@ -661,8 +661,6 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         },
     },
 
-
-
     NoteBox: {
         elementTypeId: ElementType.BOX,
         MenuComponent: BubbleMenus['box-bubble'],

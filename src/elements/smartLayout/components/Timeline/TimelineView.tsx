@@ -21,6 +21,7 @@ export default function TimelineView({
     isFocused: boolean;
 }) {
     const isReadOnly = true;
+    const timelineLineItemsRef = useRef<HTMLDivElement>(null);
 
     const direction = element.direction || 'horizontal';
     const sides = element.sides || 'one';
@@ -356,9 +357,8 @@ export default function TimelineView({
                             return (
                                 <div
                                     key={itemId}
-                                    className={`${styles.verticalTimelineItem} ${
-                                        isOnLeft ? styles.leftSide : styles.rightSide
-                                    }`}
+                                    className={`${styles.verticalTimelineItem} ${isOnLeft ? styles.leftSide : styles.rightSide
+                                        }`}
                                     style={{
                                         top: position ? `${position.top}px` : 0,
                                         height: position ? `${position.minHeight}px` : 'auto',
@@ -369,9 +369,8 @@ export default function TimelineView({
                                     {/* Connection line */}
                                     {showLines && (
                                         <div
-                                            className={`${styles.verticalConnectionLine} ${
-                                                sides === 'one' || isOnLeft ? styles.toRight : styles.toLeft
-                                            }`}
+                                            className={`${styles.verticalConnectionLine} ${sides === 'one' || isOnLeft ? styles.toRight : styles.toLeft
+                                                }`}
                                             style={{ backgroundColor: timelineColor }}
                                         />
                                     )}
@@ -388,7 +387,7 @@ export default function TimelineView({
                                             layoutId={layoutId}
                                             isInnerTiptap={true}
                                             placeholder="Заголовок"
-                                            // onContentChange={null}
+                                        // onContentChange={null}
                                         />
                                         <Tiptap
                                             isReadOnly={isReadOnly}
@@ -401,7 +400,7 @@ export default function TimelineView({
                                             layoutId={layoutId}
                                             isInnerTiptap={true}
                                             placeholder="Текст"
-                                            // onContentChange={() => {}}
+                                        // onContentChange={() => {}}
                                         />
                                     </div>
                                 </div>
@@ -450,7 +449,7 @@ export default function TimelineView({
 
     // Helper function to get item styling based on position and sides
     const getItemStyle = (index: number, isSecondLine: boolean) => {
-        const baseStyle = { width: `calc(100% / ${maxItemsCount} - 1em)` };
+        const baseStyle = { width: `calc(100% / ${maxItemsCount} - 2em)` };
 
         if (sides === 'two') {
             // Two-sides mode: elements are distributed across two lines
@@ -458,7 +457,7 @@ export default function TimelineView({
             const isEvenTotal = totalElements % 2 === 0;
 
             if (isEvenTotal) {
-                const elementWidth = `calc(100% / (${totalElements / 2} + 0.5))`;
+                const elementWidth = `calc(100% / (${totalElements / 2} + 0.5) - 2em)`;
 
                 // Even number of elements
                 if (isSecondLine) {
@@ -480,12 +479,12 @@ export default function TimelineView({
                 }
             } else {
                 // Odd number of elements
-                const elementWidth = `calc(100% / ${Math.ceil(totalElements / 2)})`;
+                const elementWidth = `calc(100% / ${Math.ceil(totalElements / 2)} - 2em)`;
                 if (isSecondLine) {
                     // Second line (bottom): offset by half element width
                     return {
                         width: elementWidth,
-                        marginLeft: index === 0 ? `calc(${elementWidth} / 2)` : '0',
+                        marginLeft: index === 0 ? `calc(${elementWidth} / 2 + 2.5em)` : '1em',
                         marginRight: '0',
                     };
                 } else {
@@ -503,13 +502,13 @@ export default function TimelineView({
             // One-side mode: all elements on one line or centered under timeline points
             if (isSecondLine) {
                 // Center elements under timeline points
-                const elementWidth = `(100% / ${maxItemsCount})`;
+                const elementWidth = `(100% / ${maxItemsCount} - 2em)`;
                 const timelinePointPosition = `((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2)`;
-                const leftMargin = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
+                const marginLeft = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
 
                 return {
                     ...baseStyle,
-                    marginLeft: index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
+                    marginLeft: index === 0 ? marginLeft : ``,
                     marginRight: 0,
                 };
             }
@@ -525,7 +524,7 @@ export default function TimelineView({
                     key={`empty-${index}`}
                     className={styles.itemContainer}
                     style={{
-                        width: `calc(100% / ${maxItemsCount} - 1em)`,
+                        width: `calc(100% / ${maxItemsCount} - 2em)`,
                         visibility: 'hidden',
                     }}
                 />
@@ -538,7 +537,14 @@ export default function TimelineView({
         const itemStyle = getItemStyle(index, isSecondLine);
 
         return (
-            <div key={itemId} className={styles.itemContainer} data-smart-layout-item-id={itemId} style={itemStyle}>
+            <div key={itemId} className={styles.itemContainer} data-smart-layout-item-id={itemId}
+
+                data-item-index={`${element.id}-${index}-${isSecondLine ? 'second' : 'first'}`}
+                style={{
+                    ...itemStyle,
+                    marginLeft: index === 0 && !isSecondLine ? '1em' : itemStyle.marginLeft,
+                }}
+            >
                 <div className={`${styles.textBox}`} style={{ position: 'relative' }}>
                     {/* Connection line between timeline and content */}
                     {/* {showLines && (
@@ -559,7 +565,7 @@ export default function TimelineView({
                         isInnerTiptap={true}
                         layoutId={layoutId}
                         placeholder="Заголовок"
-                        onContentChange={() => {}}
+                        onContentChange={() => { }}
                     />
                     <Tiptap
                         isReadOnly={isReadOnly}
@@ -572,7 +578,7 @@ export default function TimelineView({
                         isInnerTiptap={true}
                         layoutId={layoutId}
                         placeholder="Текст"
-                        onContentChange={() => {}}
+                        onContentChange={() => { }}
                     />
                 </div>
             </div>
@@ -593,6 +599,7 @@ export default function TimelineView({
 
                 <div
                     className={styles.timelineLineItems}
+                    ref={timelineLineItemsRef}
                     style={
                         {
                             '--timeline-color': timelineColor,
@@ -621,8 +628,8 @@ export default function TimelineView({
                             // Different positioning logic for "one side" vs "two sides"
                             const timelinePointPosition =
                                 sides === 'one'
-                                    ? `calc((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2 - 13px)` // Center of each block
-                                    : `calc((100% / ${itemsIds.length + 1}) * ${index + 1} - 13px)`; // Equal distances from borders
+                                    ? `calc((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2 - 0.5em)` // Center of each block
+                                    : `calc((100% / ${itemsIds.length + 1}) * ${index + 1} - 0.5em)`; // Equal distances from borders
                             const positionStyle = { left: timelinePointPosition };
 
                             const attributes = showNumbers ? { 'data-number': index + 1 } : {};

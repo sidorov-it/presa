@@ -143,6 +143,7 @@ const ElementViewer = ({
                         blockFillColorsType={blockFillColorsType}
                         blockBackgroundCustomColors={blockBackgroundCustomColors}
                         primaryAccentColor={primaryAccentColor}
+                        backgroundBlockFillType={theme.design.blocks.backgroundBlockFillType}
                     />
                 );
             }

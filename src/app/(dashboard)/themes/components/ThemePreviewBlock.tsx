@@ -184,7 +184,6 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
                     {!isLoaded && (
                         <div className={styles.loadingPlaceholder}>
                             <div className={styles.loadingSpinner}></div>
-                            <span>Загрузка темы...</span>
                         </div>
                     )}
 

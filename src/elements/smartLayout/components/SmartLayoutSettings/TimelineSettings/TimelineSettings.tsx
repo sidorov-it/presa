@@ -14,6 +14,7 @@ import { LuArrowDown, LuArrowRight, LuListOrdered } from 'react-icons/lu';
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
 import { getContrastingTextColor } from '@/utils/themeUtils';
 import { ElementRegistry } from '@/elements/commonRegisrty';
+import { useThemeStore } from '@/store/themeStore';
 
 export default function TimelineSettings({
     element,
@@ -31,7 +32,7 @@ export default function TimelineSettings({
 }) {
     const updateElement = usePresentationStore(state => state.updateElement);
     const elementConfig = useMemo(
-        () => Object.values(ElementRegistry).find(el => element.elementVariant === el.props.elementVariant),
+        () => Object.values(ElementRegistry).find(el => element.elementVariant === el.elementVariant),
         [element.elementVariant]
     );
 
@@ -56,7 +57,10 @@ export default function TimelineSettings({
     };
 
     const handleColorReset = useCallback(() => {
-        const defaultTimelineColor = elementConfig?.props?.backgroundColor;
+        const currentTheme = useThemeStore.getState().currentTheme;
+
+        const defaultTimelineColor =
+            elementConfig?.props?.backgroundColor || currentTheme?.colors.primaryAccent || '#000000';
         const defaultNumbersColor = getContrastingTextColor(defaultTimelineColor);
 
         updateElement({

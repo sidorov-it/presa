@@ -160,19 +160,40 @@ export function themeToCSSVariables(theme: Theme, backgroundSettings?: Backgroun
         // For primary type, use the primary accent color
         set('--presentation-block-background', theme.colors.primaryAccent);
         set('--presentation-block-border-color', getBorderColorForBackground(theme.colors.primaryAccent));
-        set('--presentation-block-text-color', getContrastTextColor(theme.colors.primaryAccent));
+
+        if (theme.design.blocks.backgroundBlockFillType === 'none') {
+            set('--presentation-block-text-color', theme.typography.bodyColor);
+        } else {
+            set('--presentation-block-text-color', getContrastTextColor(theme.colors.primaryAccent));
+        }
+
+
+
     } else if (theme.design.blocks.blockFillColorsType === 'subtle') {
         const subtleBackground = getSubtleColor(theme.colors.slideBackground);
         set('--presentation-block-background-subtle', subtleBackground);
         set('--presentation-block-border-color-subtle', getBorderColorForBackground(subtleBackground));
-        set('--presentation-block-text-color-subtle', getContrastTextColor(subtleBackground));
+
+        if (theme.design.blocks.backgroundBlockFillType === 'none') {
+            set('--presentation-block-text-color', theme.typography.bodyColor);
+        } else {
+            set('--presentation-block-text-color-subtle', getContrastTextColor(subtleBackground));
+        }
+
+
+
+
     } else if (theme.design.blocks.blockFillColorsType === 'custom') {
         // For custom type, use the custom colors
         if (theme.design.blocks.blockBackgroundCustomColors.length > 0) {
             theme.design.blocks.blockBackgroundCustomColors.forEach((color, idx) => {
                 set(`--presentation-block-background-custom-${idx + 1}`, color);
                 set(`--presentation-block-border-color-custom-${idx + 1}`, getBorderColorForBackground(color));
-                set(`--presentation-block-text-color-custom-${idx + 1}`, getContrastTextColor(color));
+                if (theme.design.blocks.backgroundBlockFillType === 'none') {
+                    set(`--presentation-block-text-color-custom-${idx + 1}`, theme.typography.bodyColor);
+                } else {
+                    set(`--presentation-block-text-color-custom-${idx + 1}`, getContrastTextColor(color));
+                }
             });
             // Set the first custom color as default background
             set('--presentation-block-background', theme.design.blocks.blockBackgroundCustomColors[0]);
@@ -188,11 +209,23 @@ export function themeToCSSVariables(theme: Theme, backgroundSettings?: Backgroun
             // Fallback to primary accent if no custom colors are defined
             set('--presentation-block-background', theme.colors.primaryAccent);
             set('--presentation-block-border-color', getBorderColorForBackground(theme.colors.primaryAccent));
+            if (theme.design.blocks.backgroundBlockFillType === 'none') {
+                set('--presentation-block-text-color', theme.typography.bodyColor);
+            } else {
+                set('--presentation-block-text-color', getContrastTextColor(theme.colors.primaryAccent));
+            }
         }
     } else {
         // Fallback for any other case
         set('--presentation-block-background', theme.colors.primaryAccent);
         set('--presentation-block-border-color', getBorderColorForBackground(theme.colors.primaryAccent));
+
+        if (theme.design.blocks.backgroundBlockFillType === 'none') {
+            set('--presentation-block-text-color', theme.typography.bodyColor);
+        } else {
+            set('--presentation-block-text-color', getContrastTextColor(theme.colors.primaryAccent));
+        }
+
     }
 
     const blockShadowMap: Record<string, string> = {

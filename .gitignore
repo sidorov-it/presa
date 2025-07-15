@@ -18,3 +18,4 @@ scripts
 deploy-package.tar.gz
 deploy-package/
 deploy.env
+deploy.env.example

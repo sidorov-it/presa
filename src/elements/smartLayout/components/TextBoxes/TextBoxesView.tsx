@@ -5,7 +5,7 @@ import { SmartLayoutElement, TipTapRefs } from '@/types';
 import Tiptap from '@/components/tiptap/Tiptap/Tiptap';
 
 import styles from './TextBoxes.module.css';
-import { getContrastingTextColor } from '@/utils/themeUtils';
+import { getContrastingTextColor, getSubtleColor } from '@/utils/themeUtils';
 
 export default function TextBoxesView({
     element,
@@ -17,6 +17,7 @@ export default function TextBoxesView({
     blockFillColorsType = 'primary',
     blockBackgroundCustomColors = [],
     primaryAccentColor,
+    backgroundBlockFillType,
 }: {
     element: SmartLayoutElement;
     tiptapRefs: RefObject<TipTapRefs> | null;
@@ -27,6 +28,7 @@ export default function TextBoxesView({
     blockFillColorsType?: string;
     blockBackgroundCustomColors?: string[];
     primaryAccentColor?: string;
+    backgroundBlockFillType?: string;
 }) {
     const isReadOnly = true;
     let columnSize = element.columnSize;
@@ -41,6 +43,9 @@ export default function TextBoxesView({
     }
 
     const customColors: string[] = useMemo(() => {
+        if (backgroundBlockFillType === 'none') {
+            return [];
+        }
         if (blockFillColorsType === 'custom' && blockBackgroundCustomColors?.length > 0) {
             const colors: string[] = [];
             blockBackgroundCustomColors.map(color => {
@@ -48,6 +53,9 @@ export default function TextBoxesView({
                 colors.push(textColor);
             });
             return colors;
+        } else if (blockFillColorsType === 'subtle') {
+            const textColor = getContrastingTextColor(getSubtleColor(primaryAccentColor || '#ffffff'));
+            return [textColor];
         } else if (blockFillColorsType === 'primary') {
             const textColor = getContrastingTextColor(primaryAccentColor || '#ffffff');
             return [textColor];
@@ -86,26 +94,32 @@ export default function TextBoxesView({
                     style['--presentation-heading-color'] = contrastColor;
                     style['--presentation-block-text-color-subtle'] = contrastColor;
                 }
+
                 const color = customColors[index % customColors.length];
 
+                const colorsStyle = color ? {
+                    '--presentation-block-text-color': color,
+                    '--presentation-heading-color': color,
+                    '--presentation-text-color': color,
+                } : {};
                 return (
                     <div
                         key={itemId}
-                        className={styles.itemContainer}
+                        className={`${styles.itemContainer}`}
                         data-smart-layout-item-id={itemId}
                         style={
                             {
                                 width: `calc(${elementWidth} - 1em)`,
                                 backgroundColor: element.backgroundColor || undefined,
                                 color: element.textColor || undefined,
-                                '--presentation-block-text-color': color,
-                                '--presentation-heading-color': color,
-                                '--presentation-text-color': color,
+                                '--presentation-block-background-custom-type': blockFillColorsType,
+                                '--presentation-block-background-custom-count': String(items.length),
+                                ...colorsStyle,
                             } as React.CSSProperties & Record<string, string>
                         }
                     >
                         <div
-                            className={`${styles.textBox} ${styles.item} ${align ? styles[align] : ''}`}
+                            className={`${styles.textBox} ${styles.item} ${align ? styles[align] : ''} ${styles.itemBackground}`}
                             style={style}
                         >
                             <div className={styles.title}>

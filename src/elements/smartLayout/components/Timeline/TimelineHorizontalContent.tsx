@@ -76,10 +76,10 @@ const TimelineHorizontalContent = ({
 
     // Calculate the position for the second line items in two sides mode
     // to align them with their corresponding timeline points
-    const itemStyle = useMemo(() => {
+    const itemStyle: { width: string; marginLeft?: string; marginRight?: string | number } = useMemo(() => {
         // Base style depending on direction
         const baseStyle =
-            direction === 'horizontal' ? { width: `calc(100% / ${maxItemsCount} - 1em)` } : { width: '100%' };
+            direction === 'horizontal' ? { width: `calc(100% / ${maxItemsCount} - 2em)` } : { width: '100%' };
 
         if (direction === 'horizontal') {
             if (sides === 'two') {
@@ -88,7 +88,7 @@ const TimelineHorizontalContent = ({
                 const isEvenTotal = totalElements % 2 === 0;
 
                 if (isEvenTotal) {
-                    const elementWidth = `calc(100% / (${totalElements / 2} + 0.5))`;
+                    const elementWidth = `calc(100% / (${totalElements / 2} + 0.5) - 2em)`;
 
                     // Even number of elements
                     if (isSecondLine) {
@@ -110,13 +110,13 @@ const TimelineHorizontalContent = ({
                     }
                 } else {
                     // Odd number of elements
-                    const elementWidth = `calc(100% / ${Math.ceil(totalElements / 2)})`;
+                    const elementWidth = `calc(100% / ${Math.ceil(totalElements / 2)} - 2em)`;
                     if (isSecondLine) {
                         // Second line (bottom): offset by half element width
                         return {
                             width: elementWidth,
                             // maxWidth: elementWidth,
-                            marginLeft: index === 0 ? `calc(${elementWidth} / 2)` : '0',
+                            marginLeft: index === 0 ? `calc(${elementWidth} / 2 + 2.5em)` : '1em',
                             marginRight: '0',
                         };
                     } else {
@@ -134,14 +134,15 @@ const TimelineHorizontalContent = ({
                 // One-side mode: all elements on one line or centered under timeline points
                 if (isSecondLine) {
                     // Center elements under timeline points
-                    const elementWidth = `(100% / ${maxItemsCount})`;
+                    const elementWidth = `(100% / ${maxItemsCount} - 2em)`;
                     const timelinePointPosition = `((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2)`;
-                    const leftMargin = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
+                    const marginLeft = `calc(${timelinePointPosition} - ${elementWidth} / 2)`;
 
                     return {
                         ...baseStyle,
                         marginLeft:
-                            index === 0 ? leftMargin : `calc(${leftMargin} - (100% / ${maxItemsCount}) * ${index})`,
+                            // index === 0 ? marginLeft : `calc(${marginLeft} - (100% / ${maxItemsCount}) * ${index})`,
+                            index === 0 ? marginLeft : ``,
                         marginRight: 0,
                     };
                 }
@@ -179,7 +180,7 @@ const TimelineHorizontalContent = ({
             <div
                 className={`${styles.itemContainer} ${isSelected ? styles.selected : ''}`}
                 style={{
-                    width: direction === 'horizontal' ? `calc(100% / ${maxItemsCount} - 1em)` : '100%',
+                    width: direction === 'horizontal' ? `calc(100% / ${maxItemsCount} - 2em)` : '100%',
                     visibility: 'hidden',
                 }}
             />
@@ -194,7 +195,11 @@ const TimelineHorizontalContent = ({
             onDragLeave={handleDragLeave}
             onDrop={e => handleDrop(e, itemId)}
             data-smart-layout-item-id={itemId}
-            style={itemStyle}
+            data-item-index={`${elementId}-${index}-${isSecondLine ? 'second' : 'first'}`}
+            style={{
+                ...itemStyle,
+                marginLeft: index === 0 && !isSecondLine ? '1em' : itemStyle.marginLeft,
+            }}
             ref={elementRef}
         >
             {dropIndicator && dropIndicator.itemId === itemId && (

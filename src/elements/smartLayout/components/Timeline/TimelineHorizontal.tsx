@@ -8,6 +8,7 @@ import { useShallow } from 'zustand/react/shallow';
 
 import styles from './Timeline.module.css';
 import TimelineHorizontalContent from './TimelineHorizontalContent';
+import getContrastTextColor from '@/utils/getContrastTextColor';
 
 export default function TimelineHorizontal({
     elementId,
@@ -24,6 +25,7 @@ export default function TimelineHorizontal({
     layoutId: string;
     isFocused: boolean;
 }) {
+    const timelineLineItemsRef = useRef<HTMLDivElement>(null);
     const isReadOnly = useReadOnly();
     const smartLayoutItemId = useDndStore(state => state.state.source.smartLayoutItemId);
     const isDraggingFromSameLayout = useDndStore(
@@ -56,7 +58,7 @@ export default function TimelineHorizontal({
                 showLines: element.showLines !== false, // Default to true
                 timelineColor:
                     element.timelineColor || 'var(--presentation-primary-accent, var(--color-primary, #1e88e5))',
-                numbersColor: element.numbersColor || 'var(--color-text, #000)',
+                numbersColor: element.numbersColor || getContrastTextColor(element.timelineColor || ''),
                 showNumbers: element.showNumbers || false,
             };
         })
@@ -382,6 +384,7 @@ export default function TimelineHorizontal({
 
                 <div
                     className={styles.timelineLineItems}
+                    ref={timelineLineItemsRef}
                     style={
                         {
                             '--timeline-color': timelineColor,
@@ -419,11 +422,34 @@ export default function TimelineHorizontal({
                             let positionStyle;
 
                             if (direction === 'horizontal') {
-                                const timelinePointPosition =
-                                    sides === 'one'
-                                        ? `calc((100% / ${itemsIds.length}) * ${index} + (100% / ${itemsIds.length}) / 2 - 13px)` // Center of each block
-                                        : `calc((100% / ${itemsIds.length + 1}) * ${index + 1} - 13px)`; // Equal distances from borders
-                                positionStyle = { left: timelinePointPosition };
+                                let indexInRow;
+                                let isFirstLine;
+
+                                if (sides === 'one') {
+                                    indexInRow = index;
+                                    isFirstLine = false;
+                                } else {
+                                    indexInRow = Math.floor(index / 2);
+                                    isFirstLine = index % 2 === 0;
+                                }
+
+                                const selector = `[data-item-index="${elementId}-${indexInRow}-${isFirstLine ? 'first' : 'second'}"]`;
+                                // нужен реальный индекс элемента
+                                // если с 1 стороны, то просто индекст
+                                // если с 2 сторон, то индекс делим на 2 и 
+                                // нужно направление
+                                const itemElement = document.querySelector(
+                                    selector
+                                );
+
+                                const ems = parseInt(timelineLineItemsRef?.current ? getComputedStyle(timelineLineItemsRef?.current).fontSize : '18px', 10) ; 
+                                const itemBoundingRect = itemElement?.getBoundingClientRect();
+                                const left =
+                                    (itemBoundingRect?.left || 0) +
+                                    (itemBoundingRect?.width || 0) / 2 -
+                                    (timelineLineItemsRef.current?.getBoundingClientRect().left || 0) - ems * (1 );
+
+                                positionStyle = { left: left };
                             } else {
                                 // For vertical direction, position points at the top of corresponding elements
                                 if (timelinePoints[index]) {

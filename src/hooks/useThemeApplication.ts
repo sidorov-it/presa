@@ -388,13 +388,24 @@ const applyThemeStyles = ({
                 ? getBorderColorForBackground(theme.colors.primaryAccent || '')
                 : undefined
         );
-        setCSSVariableIfChanged(
-            '--presentation-block-text-color',
-            getContrastTextColor(theme.colors.primaryAccent),
-            prevDesign?.blocks.blockFillColorsType === 'primary'
-                ? getContrastTextColor(theme.colors.primaryAccent || '')
-                : undefined
-        );
+
+        if (theme.design.blocks.backgroundBlockFillType === 'none') {
+            setCSSVariableIfChanged(
+                '--presentation-block-text-color',
+                theme.typography.bodyColor,
+                prevDesign?.blocks.blockFillColorsType === 'primary'
+                    ? theme.typography.bodyColor
+                    : undefined
+            );
+        } else {
+            setCSSVariableIfChanged(
+                '--presentation-block-text-color',
+                getContrastTextColor(theme.colors.primaryAccent),
+                prevDesign?.blocks.blockFillColorsType === 'primary'
+                    ? getContrastTextColor(theme.colors.primaryAccent || '')
+                    : undefined
+            );
+        }
     } else if (theme.design.blocks.blockFillColorsType === 'subtle') {
         const subtleBackground = getSubtleColor(theme.colors.slideBackground);
         setCSSVariableIfChanged(
@@ -409,13 +420,24 @@ const applyThemeStyles = ({
                 ? getBorderColorForBackground(subtleBackground || '')
                 : undefined
         );
-        setCSSVariableIfChanged(
-            '--presentation-block-text-color-subtle',
-            getContrastTextColor(subtleBackground),
-            prevDesign?.blocks.blockFillColorsType === 'subtle'
-                ? getContrastTextColor(subtleBackground || '')
-                : undefined
-        );
+
+        if (theme.design.blocks.backgroundBlockFillType === 'none') {
+            setCSSVariableIfChanged(
+                '--presentation-block-text-color-subtle',
+                theme.typography.bodyColor,
+                prevDesign?.blocks.blockFillColorsType === 'subtle'
+                    ? theme.typography.bodyColor
+                    : undefined
+            );
+        } else {
+            setCSSVariableIfChanged(
+                '--presentation-block-text-color-subtle',
+                getContrastTextColor(subtleBackground),
+                prevDesign?.blocks.blockFillColorsType === 'subtle'
+                    ? getContrastTextColor(subtleBackground || '')
+                    : undefined
+            );
+        }
     } else if (theme.design.blocks.blockFillColorsType === 'custom') {
         theme.design.blocks.blockBackgroundCustomColors.forEach((color, index) => {
             const prevColor =
@@ -429,11 +451,19 @@ const applyThemeStyles = ({
                 prevColor ? getBorderColorForBackground(prevColor) : undefined
             );
 
-            setCSSVariableIfChanged(
-                `--presentation-block-text-color-custom-${index + 1}`,
-                getContrastTextColor(color),
-                prevColor ? getContrastTextColor(prevColor) : undefined
-            );
+            if (theme.design.blocks.backgroundBlockFillType === 'none') {
+                setCSSVariableIfChanged(
+                    `--presentation-block-text-color-custom-${index + 1}`,
+                    theme.typography.bodyColor,
+                    prevColor ? theme.typography.bodyColor : undefined
+                );
+            } else {
+                setCSSVariableIfChanged(
+                    `--presentation-block-text-color-custom-${index + 1}`,
+                    getContrastTextColor(color),
+                    prevColor ? getContrastTextColor(prevColor) : undefined
+                );
+            }
         });
         setCSSVariableIfChanged(
             '--presentation-block-background-custom-count',
@@ -514,7 +544,7 @@ const applyThemeStyles = ({
                     const b = parseInt(rgbValues[2]);
                     const brightness = (r * 299 + g * 587 + b * 114) / 1000;
                     return brightness < 128;
-              }
+                }
             }
             return false;
         })(theme.colors.slideBackground);
@@ -594,7 +624,7 @@ export const useThemeApplication = (options: UseThemeApplicationOptions) => {
                     setColorMode,
                     colorMode,
                     previousTheme: previousThemeRef.current,
-              });
+                });
                 appliedThemeHashRef.current = themeHash;
                 previousThemeRef.current = { ...activeTheme }; // Store deep copy
             } catch (error) {
