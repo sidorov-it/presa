@@ -408,7 +408,7 @@
     position: absolute;
     opacity: 0;
     top: 50%;
-    right: 0;
+    right: 8px;
     transform: translate(calc(50% + 6px), -50%);
     cursor: pointer;
     display: inline-flex;
@@ -441,8 +441,8 @@
     background: var(--color-background);
 } */
 
-.focused .itemContainer:last-child .addButton,
-.itemContainer:hover .addButton {
+.focused .itemBackground:last-child .addButton,
+.itemBackground:hover .addButton {
     opacity: 1;
 }
 
