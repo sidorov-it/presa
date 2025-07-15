@@ -15,7 +15,6 @@ import {
     BiAlignRight,
     BiAlignJustify,
     BiX,
-    BiQuoteAltLeft,
 } from 'react-icons/bi';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { EditorView } from '@tiptap/pm/view';
@@ -114,10 +113,6 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
         },
         [editor]
     );
-
-    const handleToggleBlockquote = useCallback(() => {
-        editor.chain().focus().selectAll().toggleBlockquote().run();
-    }, [editor]);
 
     if (typeof window === 'undefined') {
         return null;
@@ -238,14 +233,6 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
                     aria-label="Список задач"
                 >
                     <BiCheckSquare size={16} />
-                </button>
-
-                <button
-                    onClick={handleToggleBlockquote}
-                    className={`${styles.button} ${editor.isActive('blockquote') ? styles.active : ''}`}
-                    aria-label="Цитата"
-                >
-                    <BiQuoteAltLeft size={16} />
                 </button>
 
                 <div className={styles.alignmentGroup}>
