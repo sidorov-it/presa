@@ -1478,6 +1478,7 @@ export const usePresentationStore = create<PresentationState>()(
                         after: updatedState,
                     });
 
+                    console.log('updatedState', updatedState);
                     return updatedState;
                 });
 

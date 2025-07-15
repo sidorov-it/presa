@@ -113,8 +113,15 @@ export const EnterHandlerExtension = (
                 Backspace: ({ editor }) => {
                     const isEmpty = editor.isEmpty;
                     const textContent = editor.getText();
+                    const htmlContent = editor.getHTML();
 
-                    if (isEmpty || textContent.length === 0) {
+                    // Проверяем, действительно ли редактор пустой (только пустые параграфы или вообще ничего)
+                    const isActuallyEmpty = isEmpty || 
+                                          textContent.length === 0 || 
+                                          htmlContent === '<p></p>' || 
+                                          htmlContent === '';
+
+                    if (isActuallyEmpty) {
                         onBackspacePressed(true, '');
                         return true;
                     }
@@ -128,7 +135,7 @@ export const EnterHandlerExtension = (
                     // let firstTextPos = 1; // Начинаем с позиции 1 (после корневого узла)
 
                     // Проходим по документу, чтобы найти первую позицию с текстом
-                    state.doc.descendants(node => {
+                    state.doc.descendants((node: any) => {
                         if (node.isText && node.text && node.text.length > 0) {
                             // firstTextPos = pos;
                             return false; // Останавливаем поиск
@@ -152,8 +159,15 @@ export const EnterHandlerExtension = (
                 Delete: ({ editor }) => {
                     const isEmpty = editor.isEmpty;
                     const textContent = editor.getText();
+                    const htmlContent = editor.getHTML();
 
-                    if (isEmpty || textContent.length === 0) {
+                    // Проверяем, действительно ли редактор пустой (только пустые параграфы или вообще ничего)
+                    const isActuallyEmpty = isEmpty || 
+                                          textContent.length === 0 || 
+                                          htmlContent === '<p></p>' || 
+                                          htmlContent === '';
+
+                    if (isActuallyEmpty) {
                         onDeletePressed(true, '');
                         return true;
                     }

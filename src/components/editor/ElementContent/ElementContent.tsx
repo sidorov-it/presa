@@ -317,11 +317,25 @@ export const ElementContent = ({
             // If empty and not the last element, check what to do
             if (isEmpty) {
                 if (isMultiCellRow) {
-                    // Handle multi-cell row case
+                    if (elementsInCell.length === 1) {
+                        return;
+                    }
+
+                    let previousElement;
+                    const currentElementIndexInCell = elementsInCell.findIndex(e => e.id === elementId);
+                    if (currentElementIndexInCell > 0) {
+                        previousElement = elementsInCell[currentElementIndexInCell - 1];
+                    }
+
                     const updatedLayout = { ...layout };
                     const updatedElements = updatedLayout.elements.filter(e => e.id !== elementId);
                     updatedLayout.elements = updatedElements;
+
                     usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
+
+                    if (previousElement) {
+                        tiptapRefs.current?.editors[previousElement.id]?.editor.commands.focus('end');
+                    }
                 } else {
                     // Handle single-cell row case - check previous layout
                     if (layoutIndex > 0) {

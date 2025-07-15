@@ -104,6 +104,19 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key !== 'Delete' && e.key !== 'Backspace') return;
 
+            // Проверяем, что событие произошло не внутри текстового редактора
+            const target = e.target as HTMLElement;
+            const isInsideTextEditor = target.closest('[data-tiptap-editor]') || 
+                                     target.closest('.ProseMirror') || 
+                                     target.closest('[contenteditable="true"]') ||
+                                     target.closest('.tiptap-editor-wrapper') ||
+                                     target.closest('.tiptap') ||
+                                     target.closest('.custom-tiptap-editor');
+
+            if (isInsideTextEditor) {
+                return; // Не обрабатываем события внутри текстового редактора
+            }
+
             const {
                 selectedElementId: elementId,
                 selectedSlideId: slideId,
@@ -114,8 +127,12 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
             } = useUIStateStore.getState();
             const activeEditor = useEditorStore.getState().activeEditor;
 
+            // Дополнительная проверка: если есть активный TipTap редактор, не обрабатываем событие
+            if (activeEditor) {
+                return;
+            }
+
             if (
-                activeEditor ||
                 isReadOnly ||
                 !elementId ||
                 !slideId ||
