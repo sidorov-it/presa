@@ -6,7 +6,6 @@ import Tiptap from '@/components/tiptap/Tiptap/Tiptap';
 
 import styles from './TextBoxes.module.css';
 import { getContrastingTextColor } from '@/utils/themeUtils';
-// import wrapperStyles from '../ItemWrapper/ItemWrapper.module.css';
 
 export default function TextBoxesView({
     element,
@@ -79,21 +78,14 @@ export default function TextBoxesView({
                 if (!item) return null;
 
                 const backgroundColor = item?.backgroundColor;
-                const style: React.CSSProperties = {};
+                const style: React.CSSProperties & Record<string, string> = {};
                 if (backgroundColor) {
                     style.backgroundColor = backgroundColor;
                     const contrastColor = getContrastingTextColor(backgroundColor);
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-expect-error
                     style['--presentation-text-color'] = contrastColor;
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-expect-error
                     style['--presentation-heading-color'] = contrastColor;
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-expect-error
                     style['--presentation-block-text-color-subtle'] = contrastColor;
                 }
-
                 const color = customColors[index % customColors.length];
 
                 return (
@@ -112,7 +104,10 @@ export default function TextBoxesView({
                             } as React.CSSProperties & Record<string, string>
                         }
                     >
-                        <div className={`${styles.textBox} ${align ? styles[align] : ''}`} style={style}>
+                        <div
+                            className={`${styles.textBox} ${styles.item} ${align ? styles[align] : ''}`}
+                            style={style}
+                        >
                             <div className={styles.title}>
                                 <Tiptap
                                     isReadOnly={isReadOnly}
@@ -127,6 +122,7 @@ export default function TextBoxesView({
                                     layoutId={layoutId}
                                     isHideSlashMenu={false}
                                     isInnerTiptap={true}
+                                    isHideEmpty={true}
                                 />
                             </div>
                             <div className={styles.content}>
@@ -143,6 +139,7 @@ export default function TextBoxesView({
                                     onContentChange={() => {}}
                                     isInnerTiptap={true}
                                     isHideSlashMenu={false}
+                                    isHideEmpty={true}
                                     onEnterPressed={() => {
                                         return true;
                                     }}

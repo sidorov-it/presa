@@ -12,7 +12,16 @@
     /* line-height: var(--presentation-body-line-height) !important; */
     /* width: 1.25em;
     height: 1.25em; */
+    line-height: 1.5em;
+    /* margin-top: 0.2em; */
+    height: 1.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.iconContainer {
     display: inline-flex;
     align-items: baseline;
-    line-height: 1.25em;
 }

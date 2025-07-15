@@ -751,6 +751,7 @@ export const ElementContent = ({
                         slideId={slideId}
                         layoutId={layoutId}
                         tiptapRefs={tiptapRefs}
+                        slideBackground={slideBackground}
                     />
                 );
             }

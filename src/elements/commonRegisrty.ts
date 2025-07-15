@@ -660,6 +660,9 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
             contextRules: ['Список задач должен быть понятным и информативным'],
         },
     },
+
+
+
     NoteBox: {
         elementTypeId: ElementType.BOX,
         MenuComponent: BubbleMenus['box-bubble'],
@@ -668,7 +671,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'note-box',
         props: {
             iconType: 'note-box',
-            content: '<p>Простой блок текста</p>',
+            content: '<p><span class="body-text normal-text">Простой блок текста</span></p>',
             backgroundColor: '#bbb8fa',
             darkBackgroundColor: '#01004d',
         },
@@ -686,7 +689,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'info-box',
         props: {
             iconType: 'info-box',
-            content: '<p>Полезная информация</p>',
+            content: '<p><span class="body-text normal-text">Полезная информация</span></p>',
             backgroundColor: '#b6d6fc',
             darkBackgroundColor: '#032349',
         },
@@ -704,7 +707,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'warning-box',
         props: {
             iconType: 'warning-box',
-            content: '<p>Предупреждение</p>',
+            content: '<p><span class="body-text normal-text">Предупреждение</span></p>',
             backgroundColor: '#fcf2b5',
             darkBackgroundColor: '#032349',
         },
@@ -722,7 +725,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'caution-box',
         props: {
             iconType: 'caution-box',
-            content: '<p>Внимание!</p>',
+            content: '<p><span class="body-text normal-text">Внимание</span>!</p>',
             backgroundColor: '#ffb3b3',
             darkBackgroundColor: '#4a3f03',
         },
@@ -740,7 +743,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'success-box',
         props: {
             iconType: 'success-box',
-            content: '<p>Успешно выполнено</p>',
+            content: '<p><span class="body-text normal-text">Успешно выполнено</span></p>',
             backgroundColor: '#b5fcb8',
             darkBackgroundColor: '#183a13',
         },
@@ -758,8 +761,8 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'question-box',
         props: {
             iconType: 'question-box',
-            content: '<p>Частый вопрос</p>',
-            backgroundColor: '#b5fcb8',
+            content: '<p><span class="body-text normal-text">Частый вопрос</span></p>',
+            backgroundColor: '#e8f4fd',
             darkBackgroundColor: '#262626',
         },
         slots: [{ slot: 'content', llmHint: 'Текст блока', type: 'text' }],
@@ -768,6 +771,11 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
             contextRules: ['Блок текста должен быть понятным и информативным'],
         },
     },
+
+
+
+
+
     Image: {
         elementTypeId: ElementType.IMAGE,
         label: 'Изображение',

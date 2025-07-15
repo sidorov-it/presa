@@ -170,7 +170,7 @@ const ElementViewer = ({
                 const blockType = boxElement.iconType || element.elementVariant || 'info-box';
 
                 // Get colors using new logic
-                const blockColors = getBlockColors(primaryAccentColor!, blockType, {
+                const blockColors = getBlockColors(slideBackground || theme?.colors.slideBackground || '#000000', blockType, {
                     blockBgColor: boxElement.customBackgroundColor || boxElement.backgroundColor,
                     iconColor: (boxElement as any).iconColor,
                     textColor: (boxElement as any).textColor,

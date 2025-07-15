@@ -78,6 +78,7 @@ interface TiptapProps {
     isHideSlashMenu?: boolean;
     // флаг, что редактор внутри другого элемента, например, smart layout
     isInnerTiptap?: boolean;
+    isHideEmpty?: boolean;
     onEnterPressed?: (content?: any) => void;
     onBackspacePressed?: (isEmpty: boolean, textContent: string) => void;
     onDeletePressed?: (isEmpty: boolean, textContent: string) => void;
@@ -112,6 +113,7 @@ const Tiptap = ({
     defaultContent,
     placeholder,
     isInnerTiptap = false,
+    isHideEmpty = false,
     onEnterPressed = () => {},
     onBackspacePressed = () => {},
     onDeletePressed = () => {},
@@ -123,7 +125,7 @@ const Tiptap = ({
 
     // Helper function to extract styles from initialContent
     const extractStylesFromInitialContent = useCallback((content: string) => {
-        if (!content) return null;
+        if (!content || typeof DOMParser === 'undefined') return null;
 
         // Parse HTML to extract classes from span tags
         const parser = new DOMParser();
@@ -650,6 +652,10 @@ const Tiptap = ({
             onBlur?.();
         }
     }, [editor, elementId, hasInteraction, isTempEditor, isTempLayout, isInnerTiptap, layoutId, onBlur, presentationId, slideId]);
+
+    if (editor?.isEmpty && isHideEmpty) {
+        return null;
+    }
 
     return (
         <div className="not-prose" style={{ position: 'relative', width: '100%' }} data-editor-id={id}>

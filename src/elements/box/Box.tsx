@@ -12,9 +12,10 @@ interface BoxProps {
     layoutId: string;
     tiptapRefs: RefObject<TipTapRefs>;
     dragHandleRef?: RefObject<HTMLDivElement>;
+    slideBackground?: string;
 }
 
-export default function Box({ elementId, presentationId, slideId, layoutId, tiptapRefs, dragHandleRef }: BoxProps) {
+export default function Box({ elementId, presentationId, slideId, layoutId, tiptapRefs, dragHandleRef, slideBackground }: BoxProps) {
     const element = usePresentationStore(
         useShallow(state => state.getElement(presentationId, slideId, layoutId, elementId) as BoxElement)
     );
@@ -30,6 +31,7 @@ export default function Box({ elementId, presentationId, slideId, layoutId, tipt
             tiptapRefs={tiptapRefs}
             dragHandleRef={dragHandleRef}
             theme={currentTheme}
+            slideBackground={slideBackground}
             onContentChange={content =>
                 updateElement({
                     presentationId,

@@ -17,6 +17,7 @@ interface BoxComponentProps {
     tiptapRefs: RefObject<TipTapRefs>;
     dragHandleRef?: RefObject<HTMLDivElement>;
     theme: Theme | null | undefined;
+    slideBackground?: string;
     onContentChange?: (content: string) => void;
 }
 
@@ -28,6 +29,7 @@ export default function BoxComponent({
     tiptapRefs,
     dragHandleRef,
     theme,
+    slideBackground,
     onContentChange,
 }: BoxComponentProps) {
     const isReadOnly = useReadOnly();
@@ -36,10 +38,15 @@ export default function BoxComponent({
     // const slideBgColor = theme?.colors.slideBackground;
     const { blockBgColor, iconColor, textColor } = useMemo(
         () =>
-            getBlockColors(theme?.colors.primaryAccent || '#000000', iconType || 'info-box', {
-                blockBgColor: customBackgroundColor,
+            getBlockColors(slideBackground || theme?.colors.slideBackground || '#000000', iconType || 'info-box', {
+                // blockBgColor: customBackgroundColor,
+                blockBgColor: element.customBackgroundColor || element.backgroundColor,
+                iconColor: (element as any).iconColor,
+                textColor: (element as any).textColor,
+
+
             }),
-        [customBackgroundColor, iconType, theme]
+        [customBackgroundColor, iconType, theme, element.customBackgroundColor, element.backgroundColor, element.iconColor, element.textColor]
     );
 
     const elementConfig = getElementConfig(elementTypeId);
@@ -63,9 +70,11 @@ export default function BoxComponent({
             }
         >
             {IconComponent && (
-                <span className={styles.icon} style={{ fontSize: 'calc(1.125rem * var(--font-scale, 1))' }}>
-                    <IconComponent color={iconColor} width={1.25} height={1.25} />
-                </span>
+                <div className={styles.iconContainer}>
+                    <span className={styles.icon} style={{ fontSize: 'calc(1.125rem * var(--font-scale, 1))' }}>
+                        <IconComponent color={iconColor} width={1.25} height={1.25} />
+                    </span>
+                </div>
             )}
             <Tiptap
                 key={element.id}

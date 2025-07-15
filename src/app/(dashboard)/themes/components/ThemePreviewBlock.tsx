@@ -91,14 +91,14 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
     }, [isVisible, theme, isLoaded]);
 
     // Очистка ресурсов при размонтировании
-    useEffect(() => {
-        return () => {
-            if (previewRef.current && isLoaded) {
-                const fontUrls = getRequiredFontsFromTheme(theme);
-                unloadFontsFromContainer(fontUrls, previewRef.current);
-            }
-        };
-    }, [theme, isLoaded]);
+    // useEffect(() => {
+    //     return () => {
+    //         if (previewRef.current && isLoaded) {
+    //             const fontUrls = getRequiredFontsFromTheme(theme);
+    //             unloadFontsFromContainer(fontUrls, previewRef.current);
+    //         }
+    //     };
+    // }, [theme, isLoaded]);
 
     useEffect(() => {
         if (menuButtonRef.current) {

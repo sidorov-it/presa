@@ -182,13 +182,13 @@ const editorsDefaultContent = {
     <li data-type="taskItem" data-checked="true">Первый элемент списка</li>
     <li data-type="taskItem" data-checked="false">Второй элемент списка</li>
 </ul>`,
-    box: `<p>Простой блок текста</p>`,
-    noteBox: `<p>Важная заметка</p>`,
-    infoBox: `<p>Полезная информация</p>`,
-    warningBox: `<p>Предупреждение</p>`,
-    cautionBox: `<p>Внимание!</p>`,
-    successBox: `<p>Успешно выполнено</p>`,
-    questionBox: `<p>Частый вопрос</p>`,
+    box: `<p><span class="body-text normal-text">Простой блок текста</span></p>`,
+    noteBox: `<p><span class="body-text normal-text">Важная заметка</span></p>`,
+    infoBox: `<p><span class="body-text normal-text">Полезная информация</span></p>`,
+    warningBox: `<p><span class="body-text normal-text">Предупреждение</span></p>`,
+    cautionBox: `<p><span class="body-text normal-text">Внимание!</span></p>`,
+    successBox: `<p><span class="body-text normal-text">Успешно выполнено</span></p>`,
+    questionBox: `<p><span class="body-text normal-text">Частый вопрос</span></p>`,
     button: `<button data-type="button">Текст кнопки</button>`,
     toggle: `
       <details>
