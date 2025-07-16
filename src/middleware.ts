@@ -25,6 +25,13 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/login', request.url));
     }
 
+    if (token) {
+        const emailVerified = request.cookies.get('email-verified')?.value === 'true';
+        if (!emailVerified && path !== '/email-not-verified' && !isPublicPath) {
+            return NextResponse.redirect(new URL('/email-not-verified', request.url));
+        }
+    }
+
     return NextResponse.next();
 }
 
