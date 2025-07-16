@@ -419,4 +419,83 @@
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Info Card and Accordion Styles */
+.infoCard {
+    background-color: var(--chakra-colors-white);
+    border-radius: var(--chakra-radii-lg);
+    box-shadow: var(--chakra-shadows-sm);
+    margin-bottom: 2rem;
+    border: 1px solid var(--chakra-colors-gray-200);
+    overflow: hidden;
+}
+
+.accordionHeader {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background-color 150ms ease;
+    text-align: left;
+}
+
+.accordionHeader:hover {
+    background-color: var(--chakra-colors-gray-50);
+}
+
+.accordionHeader:focus {
+    outline: 2px solid var(--chakra-colors-blue-500);
+    outline-offset: -2px;
+}
+
+.infoTitle {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--chakra-colors-gray-900);
+    margin: 0;
+}
+
+.accordionIcon {
+    color: var(--chakra-colors-gray-500);
+    transition: transform 150ms ease;
+    flex-shrink: 0;
+    margin-left: 1rem;
+}
+
+.accordionContent {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 300ms ease, padding 300ms ease;
+    padding: 0 1.5rem;
+}
+
+.accordionContentOpen {
+    max-height: 500px;
+    padding: 0 1.5rem 1.5rem;
+}
+
+.infoText {
+    color: var(--chakra-colors-gray-700);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.infoText:last-child {
+    margin-bottom: 0;
+}
+
+.infoLink {
+    color: var(--chakra-colors-blue-500);
+    text-decoration: none;
+    transition: color 150ms ease;
+}
+
+.infoLink:hover {
+    color: var(--chakra-colors-blue-600);
+    text-decoration: underline;
 } 

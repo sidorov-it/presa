@@ -6,6 +6,7 @@ import { Provider } from '@/components/ui/provider';
 import SideMenuRenderer from '@/components/editor/Menus/SideMenuRenderer/SideMenuRenderer';
 import YaMetrika from '@/components/metrika';
 import { Suspense } from 'react';
+import Footer from '@/components/ui/Footer';
 
 // const inter = Inter({ subsets: ['latin', 'cyrillic'] });
 
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <Provider>
                         {children}
                         <SideMenuRenderer />
+                        <Footer />
                     </Provider>
                     {process.env.NODE_ENV === 'production' && (
                         <Suspense fallback={null}>

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
 import { TokenPackage } from '@/types/tokens';
-import { FaCreditCard, FaCoins, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { FaCreditCard, FaCoins, FaCheckCircle, FaTimesCircle, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 // import { PaymentStatus } from '@/components/tokens/PaymentStatus';
 import { Heading } from '@/components/ui/heading';
 import styles from './page.module.css';
@@ -116,6 +116,7 @@ const Tokens = () => {
     const [purchaseLoading, setPurchaseLoading] = useState<string | null>(null);
     const [activePurchaseId, setActivePurchaseId] = useState<string | null>(null);
     const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+    const [isAccordionOpen, setIsAccordionOpen] = useState(false);
 
     // Проверяем, есть ли purchaseId в URL для отслеживания статуса
     useEffect(() => {
@@ -178,6 +179,10 @@ const Tokens = () => {
         setTimeout(() => setNotification(null), 5000);
     };
 
+    const handleAccordionToggle = () => {
+        setIsAccordionOpen(!isAccordionOpen);
+    };
+
     if (loading) {
         return (
             <div className={styles.loadingContainer}>
@@ -219,6 +224,31 @@ const Tokens = () => {
                     </div>
                 )} */}
 
+                {/* Info about tokens */}
+                <div className={styles.infoCard}>
+                    <button 
+                        className={styles.accordionHeader}
+                        onClick={handleAccordionToggle}
+                        aria-expanded={isAccordionOpen}
+                        aria-controls="tokens-info-content"
+                    >
+                        <h2 className={styles.infoTitle}>Что такое токены</h2>
+                        <div className={styles.accordionIcon}>
+                            {isAccordionOpen ? <FaChevronUp /> : <FaChevronDown />}
+                        </div>
+                    </button>
+                    <div 
+                        id="tokens-info-content"
+                        className={`${styles.accordionContent} ${isAccordionOpen ? styles.accordionContentOpen : ''}`}
+                    >
+                        <p className={styles.infoText}>
+                            Токены — это внутренняя валюта для оплаты ИИ-функций в Slydle. Они используются для автоматической генерации текста, создания слайдов с помощью ИИ и других умных функций. Токены можно приобрести в личном кабинете после регистрации по доступным ценам.
+                        </p>
+                        <p className={styles.infoText}>
+                            Совершая покупку, пользователь соглашается с <a href="https://slydle.ru/offer.html" className={styles.infoLink} target="_blank" rel="noopener noreferrer">условиями публичной оферты</a>.
+                        </p>
+                    </div>
+                </div>
                 {/* Current Balance */}
                 <div className={styles.balanceCard}>
                     <div className={styles.balanceContent}>
