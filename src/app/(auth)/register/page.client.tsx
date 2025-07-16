@@ -11,6 +11,7 @@ export default function RegisterPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [agreeToTerms, setAgreeToTerms] = useState(false);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -29,6 +30,11 @@ export default function RegisterPage() {
 
         if (password.length < 8) {
             setError('Пароль должен содержать не менее 8 символов');
+            return;
+        }
+
+        if (!agreeToTerms) {
+            setError('Необходимо согласиться с правилами и дать согласие на обработку персональных данных');
             return;
         }
 
@@ -58,6 +64,8 @@ export default function RegisterPage() {
             setIsLoading(false);
         }
     };
+
+    const isFormValid = name && email && password && confirmPassword && password === confirmPassword && password.length >= 8 && agreeToTerms;
 
     return (
         <div className={styles.container}>
@@ -140,10 +148,37 @@ export default function RegisterPage() {
                         </div>
                     </div>
 
+                    <div className={styles.checkboxGroup}>
+                        <input
+                            id="agree-terms"
+                            name="agree-terms"
+                            type="checkbox"
+                            checked={agreeToTerms}
+                            onChange={e => setAgreeToTerms(e.target.checked)}
+                            className={styles.checkbox}
+                            required
+                        />
+                        <label htmlFor="agree-terms" className={styles.checkboxLabel}>
+                            Создавая аккаунт, я соглашаюсь с{' '}
+                            <Link href="/terms" className={styles.checkboxLink} target="_blank">
+                                пользовательским соглашением
+                            </Link>
+                            {' '}и даю согласие на{' '}
+                            <Link href="/privacy" className={styles.checkboxLink} target="_blank">
+                                обработку персональных данных
+                            </Link>
+                            .
+                        </label>
+                    </div>
+
                     {error && <div className={styles.error}>{error}</div>}
 
                     <div>
-                        <button type="submit" className={styles.submitButton} disabled={isLoading}>
+                        <button 
+                            type="submit" 
+                            className={styles.submitButton} 
+                            disabled={isLoading || !isFormValid}
+                        >
                             {isLoading ? 'Создаем аккаунт...' : 'Создать аккаунт'}
                         </button>
                     </div>
