@@ -16,10 +16,7 @@ export async function middleware(request: NextRequest) {
         secret: process.env.NEXTAUTH_SECRET,
     });
 
-    // If it's a public path and user is logged in, redirect to dashboard
-    if (isPublicPath && token) {
-        return NextResponse.redirect(new URL('/dashboard', request.url));
-    }
+    const emailVerified = request.cookies.get('email-verified')?.value === 'true';
 
     // If it's not a public path and no token, redirect to login
     if (!isPublicPath && !token) {
@@ -27,9 +24,10 @@ export async function middleware(request: NextRequest) {
     }
 
     if (token) {
-        const emailVerified = request.cookies.get('email-verified')?.value === 'true';
         if (!emailVerified && path !== '/email-not-verified' && !isPublicPath) {
             return NextResponse.redirect(new URL('/email-not-verified', request.url));
+        } else if (emailVerified && path === '/email-not-verified') {
+            return NextResponse.redirect(new URL('/dashboard', request.url));
         }
     }
 

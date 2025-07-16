@@ -1,12 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
 import styles from './page.module.css';
 
-export default function EmailNotVerifiedPage() {
-    const { data: session } = useSession();
-    const email = session?.user?.email || '';
+export default function EmailNotVerifiedPage({ email }: { email: string }) {
     const [status, setStatus] = useState<'idle' | 'loading' | 'sent' | 'error'>('idle');
     const [error, setError] = useState('');
 
