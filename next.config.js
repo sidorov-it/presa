@@ -3,6 +3,14 @@
 // eslint-disable-next-line no-undef
 const isProd = process.env.NODE_ENV === 'production';
 
+const securityHeaders = [
+    {
+      key: 'Content-Security-Policy',
+      value: "script-src 'self' https://widget.cloudpayments.ru 'unsafe-inline' 'unsafe-eval';"
+    }
+  ];
+  
+  
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     eslint: {
@@ -27,6 +35,14 @@ const nextConfig = {
             },
         ],
     },
+    async headers() {
+        return [
+          {
+            source: '/(.*)', // Применять ко всем страницам
+            headers: securityHeaders,
+          },
+        ];
+      },
     reactStrictMode: true,
     experimental: {
         // Оптимизируем импорты больших библиотек

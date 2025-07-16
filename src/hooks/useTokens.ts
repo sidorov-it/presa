@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { TokenPackage, TokenTransaction } from '@/types/tokens';
-import { useYooKassaPayment } from './useYooKassaPayment';
 
 interface UseTokensReturn {
     balance: number;
@@ -12,12 +11,10 @@ interface UseTokensReturn {
     refreshBalance: () => Promise<void>;
     refreshPackages: () => Promise<void>;
     refreshTransactions: () => Promise<void>;
-    purchaseTokens: (packageId: string) => Promise<{ confirmationUrl: string; purchaseId: string }>;
 }
 
 export const useTokens = (): UseTokensReturn => {
     const { data: session } = useSession();
-    const { createPayment } = useYooKassaPayment();
     const [balance, setBalance] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -65,28 +62,6 @@ export const useTokens = (): UseTokensReturn => {
         }
     }, [session?.user?.id]);
 
-    const purchaseTokens = useCallback(
-        async (packageId: string): Promise<{ confirmationUrl: string; purchaseId: string }> => {
-            if (!session?.user?.id) throw new Error('User not authenticated');
-
-            try {
-                // Создаем платеж через YooKassa
-                const paymentResponse = await createPayment({
-                    packageId,
-                    returnUrl: `${window.location.origin}/tokens`,
-                });
-
-                return {
-                    confirmationUrl: paymentResponse.confirmationUrl,
-                    purchaseId: paymentResponse.purchaseId,
-                };
-            } catch (err) {
-                throw new Error(err instanceof Error ? err.message : 'Purchase failed');
-            }
-        },
-        [session?.user?.id, createPayment]
-    );
-
     // Load initial data
     useEffect(() => {
         const loadInitialData = async () => {
@@ -114,6 +89,5 @@ export const useTokens = (): UseTokensReturn => {
         refreshBalance,
         refreshPackages,
         refreshTransactions,
-        purchaseTokens,
     };
 };

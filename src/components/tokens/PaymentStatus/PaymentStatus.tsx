@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
-import { useYooKassaPayment } from '@/hooks/useYooKassaPayment';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
+import { useCloudPaymentsPayment } from '@/hooks/useCloudPaymentsPayment';
+import styles from './PaymentStatus.module.css';
 
 interface PaymentStatusProps {
     purchaseId: string;
@@ -11,9 +12,10 @@ interface PaymentStatusProps {
 }
 
 export const PaymentStatus: React.FC<PaymentStatusProps> = ({ purchaseId, onSuccess, onError }) => {
-    const { checkPaymentStatus, loading, error } = useYooKassaPayment();
+    const { checkPaymentStatus, loading, error } = useCloudPaymentsPayment();
     const [status, setStatus] = useState<any>(null);
-    const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
+
+    const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     const checkStatus = useCallback(async () => {
         try {
@@ -22,17 +24,17 @@ export const PaymentStatus: React.FC<PaymentStatusProps> = ({ purchaseId, onSucc
 
             // Если платеж завершен, останавливаем опрос
             if (statusData.purchase.status === 'completed') {
-                if (pollingInterval) {
-                    clearInterval(pollingInterval);
-                    setPollingInterval(null);
+                if (pollingIntervalRef.current) {
+                    clearInterval(pollingIntervalRef.current);
+                    pollingIntervalRef.current = null;
                 }
                 if (onSuccess) {
                     onSuccess();
                 }
             } else if (statusData.purchase.status === 'failed' || statusData.purchase.status === 'canceled') {
-                if (pollingInterval) {
-                    clearInterval(pollingInterval);
-                    setPollingInterval(null);
+                if (pollingIntervalRef.current) {
+                    clearInterval(pollingIntervalRef.current);
+                    pollingIntervalRef.current = null;
                 }
                 if (onError) {
                     onError(`Платеж ${statusData.purchase.status === 'failed' ? 'не удался' : 'был отменен'}`);
@@ -44,7 +46,7 @@ export const PaymentStatus: React.FC<PaymentStatusProps> = ({ purchaseId, onSucc
                 onError(err instanceof Error ? err.message : 'Ошибка проверки статуса');
             }
         }
-    }, [purchaseId, checkPaymentStatus, onSuccess, onError, pollingInterval]);
+    }, [purchaseId, checkPaymentStatus, onSuccess, onError]);
 
     useEffect(() => {
         // Сразу проверяем статус
@@ -52,21 +54,21 @@ export const PaymentStatus: React.FC<PaymentStatusProps> = ({ purchaseId, onSucc
 
         // Устанавливаем интервал для опроса статуса каждые 5 секунд
         const interval = setInterval(checkStatus, 5000);
-        setPollingInterval(interval);
+        pollingIntervalRef.current = interval;
 
         // Очищаем интервал при размонтировании компонента
         return () => {
-            if (interval) {
-                clearInterval(interval);
+            if (pollingIntervalRef.current) {
+                clearInterval(pollingIntervalRef.current);
             }
         };
     }, [checkStatus]);
 
     if (loading && !status) {
         return (
-            <div className="flex items-center justify-center p-6">
-                <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+            <div className={styles.container}>
+                <div className={styles.loadingContainer}>
+                    <div className={styles.spinner} />
                     <span>Проверяем статус платежа...</span>
                 </div>
             </div>
@@ -75,15 +77,15 @@ export const PaymentStatus: React.FC<PaymentStatusProps> = ({ purchaseId, onSucc
 
     if (error) {
         return (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 text-red-600">❌</div>
-                    <div>
-                        <h3 className="font-medium text-red-800">Ошибка</h3>
-                        <p className="text-sm text-red-600">{error}</p>
+            <div className={styles.errorContainer}>
+                <div className={styles.errorContent}>
+                    <div className={styles.errorIcon}>❌</div>
+                    <div className={styles.errorText}>
+                        <h3 className={styles.errorTitle}>Ошибка</h3>
+                        <p className={styles.errorDescription}>{error}</p>
                     </div>
                 </div>
-                <Button onClick={() => checkStatus()} variant="outline" size="sm" className="mt-3">
+                <Button onClick={() => checkStatus()} variant="outline" size="sm" className={styles.retryButton}>
                     Попробовать снова
                 </Button>
             </div>
@@ -101,71 +103,65 @@ export const PaymentStatus: React.FC<PaymentStatusProps> = ({ purchaseId, onSucc
                     icon: '⏳',
                     title: 'Ожидание оплаты',
                     description: 'Платеж создан и ожидает подтверждения',
-                    color: 'yellow',
+                    statusClass: styles.statusPending,
                 };
             case 'completed':
                 return {
                     icon: '✅',
                     title: 'Платеж успешен',
                     description: `Токены (${status.purchase.tokensAmount}) добавлены на ваш счет`,
-                    color: 'green',
+                    statusClass: styles.statusCompleted,
                 };
             case 'failed':
                 return {
                     icon: '❌',
                     title: 'Платеж не удался',
                     description: 'Произошла ошибка при обработке платежа',
-                    color: 'red',
+                    statusClass: styles.statusFailed,
                 };
             case 'canceled':
                 return {
                     icon: '🚫',
                     title: 'Платеж отменен',
                     description: 'Платеж был отменен',
-                    color: 'gray',
+                    statusClass: styles.statusCanceled,
                 };
             default:
                 return {
                     icon: '❓',
                     title: 'Неизвестный статус',
                     description: 'Неизвестный статус платежа',
-                    color: 'gray',
+                    statusClass: styles.statusUnknown,
                 };
         }
     };
 
     const statusInfo = getStatusInfo();
-    const colorClasses: { [key: string]: string } = {
-        yellow: 'bg-yellow-50 border-yellow-200 text-yellow-800',
-        green: 'bg-green-50 border-green-200 text-green-800',
-        red: 'bg-red-50 border-red-200 text-red-800',
-        gray: 'bg-gray-50 border-gray-200 text-gray-800',
-    };
 
     return (
-        <div className={`border rounded-lg p-4 ${colorClasses[statusInfo.color]}`}>
-            <div className="flex items-start gap-3">
-                <div className="text-2xl">{statusInfo.icon}</div>
-                <div className="flex-1">
-                    <h3 className="font-medium">{statusInfo.title}</h3>
-                    <p className="text-sm mt-1">{statusInfo.description}</p>
+        <div className={`${styles.statusContainer} ${statusInfo.statusClass}`}>
+            <div className={styles.statusContent}>
+                <div className={styles.statusIcon}>{statusInfo.icon}</div>
+                <div className={styles.statusInfo}>
+                    <h3 className={styles.statusTitle}>{statusInfo.title}</h3>
+                    <p className={styles.statusDescription}>{statusInfo.description}</p>
 
                     {status.purchase.status === 'pending' && (
-                        <div className="mt-3 text-xs">Автоматическая проверка каждые 5 секунд...</div>
+                        <div className={styles.pendingInfo}>Автоматическая проверка каждые 5 секунд...</div>
                     )}
 
-                    <div className="mt-3 text-xs space-y-1">
-                        <div>Пакет: {status.purchase.package.name}</div>
-                        <div>
+                    <div className={styles.details}>
+                        <div className={styles.detailItem}>Пакет: {status.purchase.package.name}</div>
+                        <div className={styles.detailItem}>
                             Сумма: {status.purchase.price} {status.purchase.currency.toUpperCase()}
                         </div>
-                        <div>Создан: {new Date(status.purchase.createdAt).toLocaleString('ru-RU')}</div>
+                        <div className={styles.detailItem}>Создан: {new Date(status.purchase.createdAt).toLocaleString('ru-RU')}</div>
                         {status.purchase.completedAt && (
-                            <div>Завершен: {new Date(status.purchase.completedAt).toLocaleString('ru-RU')}</div>
+                            <div className={styles.detailItem}>Завершен: {new Date(status.purchase.completedAt).toLocaleString('ru-RU')}</div>
                         )}
                     </div>
                 </div>
             </div>
         </div>
     );
-};
+}; 

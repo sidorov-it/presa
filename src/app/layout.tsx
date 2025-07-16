@@ -7,6 +7,7 @@ import SideMenuRenderer from '@/components/editor/Menus/SideMenuRenderer/SideMen
 import YaMetrika from '@/components/metrika';
 import { Suspense } from 'react';
 import Footer from '@/components/ui/Footer';
+import Script from 'next/script';
 
 // const inter = Inter({ subsets: ['latin', 'cyrillic'] });
 
@@ -41,6 +42,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                         </Suspense>
                     )}
                 </NextAuthProvider>
+                <Script
+                    src="https://widget.cloudpayments.ru/bundles/cloudpayments.js"
+                    // strategy="afterInteractive"
+                />
             </body>
         </html>
     );

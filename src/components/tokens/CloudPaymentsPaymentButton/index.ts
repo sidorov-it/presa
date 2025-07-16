@@ -1,0 +1,1 @@
+export { CloudPaymentsPaymentButton } from './CloudPaymentsPaymentButton'; 

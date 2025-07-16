@@ -6,10 +6,10 @@ import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
 import { TokenPackage } from '@/types/tokens';
 import { FaCreditCard, FaCoins, FaCheckCircle, FaTimesCircle, FaChevronDown, FaChevronUp } from 'react-icons/fa';
-// import { PaymentStatus } from '@/components/tokens/PaymentStatus';
+import { PaymentStatus } from '@/components/tokens/PaymentStatus';
 import { Heading } from '@/components/ui/heading';
 import styles from './page.module.css';
-
+import { CloudPaymentsPaymentButton } from '@/components/tokens/CloudPaymentsPaymentButton';
 // interface TransactionRowProps {
 //     transaction: any;
 // }
@@ -69,7 +69,7 @@ import styles from './page.module.css';
 
 interface TokenPackageCardProps {
     package: TokenPackage;
-    onPurchase: () => void;
+    onPurchase: (purchaseId: string) => void;
     isLoading: boolean;
 }
 const TokenPackageCard = ({ package: pkg, onPurchase, isLoading }: TokenPackageCardProps) => {
@@ -90,16 +90,12 @@ const TokenPackageCard = ({ package: pkg, onPurchase, isLoading }: TokenPackageC
 
                 <div className={styles.packagePrice}>{pkg.price}₽</div>
 
-                <button onClick={onPurchase} disabled={isLoading} className={styles.purchaseButton}>
-                    {isLoading ? (
-                        <div className={styles.loadingSpinner}></div>
-                    ) : (
-                        <>
-                            <FaCreditCard />
-                            Купить
-                        </>
-                    )}
-                </button>
+                <CloudPaymentsPaymentButton
+                    packageId={pkg.id}
+                    onSuccess={(purchaseId) => onPurchase(purchaseId)}
+                    onError={(error) => console.error('Payment error:', error)}
+                    isLoading={isLoading}
+                />
 
                 <div className={styles.paymentInfo}>
                     <small>Безопасная оплата картой</small>
@@ -112,8 +108,7 @@ const TokenPackageCard = ({ package: pkg, onPurchase, isLoading }: TokenPackageC
 const Tokens = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { balance, loading, packages, refreshBalance, purchaseTokens } = useTokens();
-    const [purchaseLoading, setPurchaseLoading] = useState<string | null>(null);
+    const { balance, loading, packages, refreshBalance } = useTokens();
     const [activePurchaseId, setActivePurchaseId] = useState<string | null>(null);
     const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
     const [isAccordionOpen, setIsAccordionOpen] = useState(false);
@@ -126,25 +121,8 @@ const Tokens = () => {
         }
     }, [searchParams]);
 
-    const handlePurchase = async (packageId: string) => {
-        setPurchaseLoading(packageId);
-        try {
-            const paymentData = await purchaseTokens(packageId);
-
-            // Сохраняем ID покупки для отслеживания
-            setActivePurchaseId(paymentData.purchaseId);
-
-            // Перенаправляем пользователя на страницу оплаты YooKassa
-            window.location.href = paymentData.confirmationUrl;
-        } catch (error) {
-            console.error('Purchase failed:', error);
-            setNotification({
-                type: 'error',
-                message: error instanceof Error ? error.message : 'Ошибка при создании платежа',
-            });
-        } finally {
-            setPurchaseLoading(null);
-        }
+    const handlePurchase = (purchaseId: string) => {
+        setActivePurchaseId(purchaseId); // Устанавливаем активный ID покупки для отслеживания
     };
 
     const handlePaymentSuccess = () => {
@@ -213,7 +191,7 @@ const Tokens = () => {
                 )}
 
                 {/* Payment Status */}
-                {/* {activePurchaseId && (
+                {activePurchaseId && (
                     <div className={styles.paymentStatusCard}>
                         <h2 className={styles.sectionTitle}>Статус платежа</h2>
                         <PaymentStatus
@@ -222,7 +200,7 @@ const Tokens = () => {
                             onError={handlePaymentError}
                         />
                     </div>
-                )} */}
+                )}
 
                 {/* Info about tokens */}
                 <div className={styles.infoCard}>
@@ -275,8 +253,8 @@ const Tokens = () => {
                             <TokenPackageCard
                                 key={pkg.id}
                                 package={pkg}
-                                onPurchase={() => handlePurchase(pkg.id)}
-                                isLoading={purchaseLoading === pkg.id}
+                                onPurchase={handlePurchase}
+                                isLoading={false} // isLoading is no longer available from useTokens
                             />
                         ))}
                     </div>

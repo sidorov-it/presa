@@ -50,4 +50,4 @@ export const TokenBalance = ({ balance, loading = false, showIcon = true, classN
     );
 };
 
-export default TokenBalance;
+export default TokenBalance; 

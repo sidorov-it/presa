@@ -285,22 +285,21 @@ model TokenPurchase {
   package     TokenPackage @relation(fields: [packageId], references: [id])
 
   // Purchase details
-  tokensAmount Int // Number of tokens purchased
-  price        Float // Amount paid
+  tokensAmount Int
+  price        Float
   currency     String         @default("USD")
   status       PurchaseStatus @default(pending)
 
   // Payment details
-  paymentProvider String? // e.g. "stripe", "paypal"
-  paymentId       String? // External payment ID
-  sessionId       String? // Payment session ID
+  paymentProvider   String?
+  paymentId         String?
+  sessionId         String?
+  cloudpaymentsTxId String? // 🔸 больше не уникальное
 
-  // Timestamps
   purchasedAt DateTime  @default(now())
-  completedAt DateTime? // When the purchase was completed
+  completedAt DateTime?
 
-  // Metadata
-  metadata Json? // Additional payment data
+  metadata Json?
 }
 
 model TokenTransaction {
@@ -370,4 +369,16 @@ model PdfGenerationTask {
 
   // Metadata
   metadata Json? // Additional task data
+}
+
+model CloudPaymentsWebhookLog {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt     DateTime @default(now())
+  transactionId String
+  invoiceId     String
+  accountId     String
+  status        String
+  operationType String
+  rawData       Json // Полный JSON-пакет от CloudPayments
+  testMode      Boolean
 }
