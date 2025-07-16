@@ -242,7 +242,7 @@ const Tokens = () => {
                         className={`${styles.accordionContent} ${isAccordionOpen ? styles.accordionContentOpen : ''}`}
                     >
                         <p className={styles.infoText}>
-                            Токены — это внутренняя валюта для оплаты ИИ-функций в Slydle. Они используются для автоматической генерации текста, создания слайдов с помощью ИИ и других умных функций. Токены можно приобрести в личном кабинете после регистрации по доступным ценам.
+                            Токены — это внутренняя валюта для оплаты ИИ-функций в Slydle. Они используются для автоматической генерации текста, создания слайдов с помощью ИИ и других умных функций.
                         </p>
                         <p className={styles.infoText}>
                             Совершая покупку, пользователь соглашается с <a href="https://slydle.ru/offer.html" className={styles.infoLink} target="_blank" rel="noopener noreferrer">условиями публичной оферты</a>.
