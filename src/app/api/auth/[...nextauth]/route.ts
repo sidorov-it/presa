@@ -44,6 +44,7 @@ export const authOptions: NextAuthOptions = {
                     name: user.name,
                     image: user.image,
                     role: user.role,
+                    emailVerified: Boolean(user.emailVerified || user.isVerified),
                 };
             },
         }),
@@ -61,11 +62,27 @@ export const authOptions: NextAuthOptions = {
                 token.id = user.id;
                 token.role = user.role;
                 token.name = user.name;
+                token.emailVerified = (user as any).emailVerified ?? false;
             }
 
             // Update the name in the token when session is updated
             if (trigger === 'update' && session?.user?.name) {
                 token.name = session.user.name;
+            }
+
+            // Refresh email verification status from database on each token refresh
+            if (token.id && !token.emailVerified) {
+                try {
+                    const dbUser = await prisma.user.findUnique({
+                        where: { id: token.id as string },
+                        select: { isVerified: true, emailVerified: true }
+                    });
+                    if (dbUser) {
+                        token.emailVerified = Boolean(dbUser.emailVerified || dbUser.isVerified);
+                    }
+                } catch (error) {
+                    console.error('Error refreshing email verification status:', error);
+                }
             }
 
             return token;
@@ -75,6 +92,7 @@ export const authOptions: NextAuthOptions = {
                 session.user.id = token.id as string;
                 session.user.role = token.role as string;
                 session.user.name = token.name as string;
+                session.user.emailVerified = Boolean(token.emailVerified);
             }
             return session;
         },
