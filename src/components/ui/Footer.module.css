@@ -9,6 +9,9 @@
   font-size: 15px;
   color: #64748b;
   border-top: 1px solid #e5e7eb;
+  height: 96px;
+  z-index: 20;
+  position: relative;
 }
 
 .links {

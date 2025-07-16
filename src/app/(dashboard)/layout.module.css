@@ -1,11 +1,11 @@
 
 .wrapper {
-    min-height: 100vh;
+    min-height: calc(100vh - 96px);
 }
 
 .container {
     display: flex;
-    min-height: 100vh;
+    min-height: calc(100vh - 96px);
 }
 
 .mobileHeader {
@@ -222,7 +222,7 @@
 .contentWrapper {
     max-width: 1200px;
     margin: 0 auto;
-    min-height: calc(100vh - 4rem);
+    min-height: calc(100vh - 4rem - 96px);
 }
 
 /* Dark theme support */
