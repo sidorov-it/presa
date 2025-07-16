@@ -6,7 +6,7 @@ export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
 
     // Define which paths are public (no auth needed)
-    const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password', '/email-not-verified', '/verify-email'];
+    const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password'];
     const isPublicPath = publicPaths.some(pp => path === pp || path.startsWith(pp));
 
     // Get the token
@@ -15,28 +15,17 @@ export async function middleware(request: NextRequest) {
         secret: process.env.NEXTAUTH_SECRET,
     });
 
-    const emailVerified = token?.emailVerified === true;
+    // If it's a public path and user is logged in, redirect to dashboard
+    if (isPublicPath && token) {
+        return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
 
     // If it's not a public path and no token, redirect to login
     if (!isPublicPath && !token) {
         return NextResponse.redirect(new URL('/login', request.url));
     }
 
-    let response: NextResponse | null = null;
-
-    if (token) {
-        if (!emailVerified && path !== '/email-not-verified' && !isPublicPath) {
-            response = NextResponse.redirect(new URL('/email-not-verified', request.url));
-        } else if (emailVerified && path === '/email-not-verified') {
-            response = NextResponse.redirect(new URL('/dashboard', request.url));
-        }
-    }
-
-    if (!response) {
-        response = NextResponse.next();
-    }
-
-    return response;
+    return NextResponse.next();
 }
 
 // Configure which paths this middleware should run on
@@ -54,7 +43,5 @@ export const config = {
         '/templates',
         '/themes',
         '/payment',
-        '/email-not-verified',
-        '/verify-email',
     ],
 };

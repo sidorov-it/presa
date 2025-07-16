@@ -1,30 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
 export default function LoginPage() {
     const router = useRouter();
-    const searchParams = useSearchParams();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [successMessage, setSuccessMessage] = useState('');
-
-    useEffect(() => {
-        const emailVerified = searchParams.get('email-verified');
-        const registered = searchParams.get('registered');
-        
-        if (emailVerified === 'true') {
-            setSuccessMessage('Email успешно подтвержден!');
-        } else if (registered === 'true') {
-            setSuccessMessage('Проверьте вашу почту для подтверждения email.');
-        }
-    }, [searchParams]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -109,7 +96,6 @@ export default function LoginPage() {
                     </div>
 
                     {error && <div className={styles.loginFormError}>{error}</div>}
-                    {successMessage && <div className={styles.loginFormSuccess}>{successMessage}</div>}
 
                     <div className={styles.loginFormRemember}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>

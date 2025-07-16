@@ -5,8 +5,6 @@ import { prisma } from '@/lib/prisma';
 import { hashPassword } from '@/lib/auth';
 import { sendEmail } from '@/lib/email';
 import { PurchaseStatus } from '@prisma/client';
-import { sendVerificationEmail } from '@/lib/email';
-import { v4 as uuidv4 } from 'uuid';
 
 async function POSTHandler(req: NextRequest) {
     try {
@@ -33,8 +31,6 @@ async function POSTHandler(req: NextRequest) {
 
         // Hash the password
         const hashedPassword = await hashPassword(password);
-        const verificationToken = uuidv4();
-        const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
         const newUser = await prisma.$transaction(
             async (tx: any) => {
@@ -43,9 +39,8 @@ async function POSTHandler(req: NextRequest) {
                         name,
                         email,
                         password: hashedPassword,
-                        verificationToken,
-                        verificationTokenExpires: verificationExpires,
-                        isVerified: false,                        emailPreferences: { emailUpdates: true },
+                        isVerified: true, // For simplicity, we're setting users as verified by default
+                        emailPreferences: { emailUpdates: true },
                     },
                 });
 
@@ -92,9 +87,13 @@ async function POSTHandler(req: NextRequest) {
         // Create new user
         // Send welcome email (errors are logged but do not block registration)
         try {
-            await sendVerificationEmail(newUser.email, verificationToken);
+            await sendEmail({
+                to: newUser.email,
+                subject: 'Добро пожаловать в slydle.ru',
+                text: `Здравствуйте, ${newUser.name}! Вы успешно зарегистрировались на slydle.ru.`,
+            });
         } catch (emailError) {
-            logger.error('Failed to send verification email:', emailError);
+            logger.error('Failed to send registration email:', emailError);
         }
 
         // Return success response (without sensitive data)
