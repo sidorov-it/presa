@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/prisma';
 
 export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
@@ -27,8 +26,8 @@ export async function middleware(request: NextRequest) {
     }
 
     if (token) {
-        const user = await prisma.user.findUnique({ where: { id: token.id as string } });
-        if (user && !user.emailVerified && path !== '/email-not-verified') {
+        const emailVerified = request.cookies.get('email-verified')?.value === 'true';
+        if (!emailVerified && path !== '/email-not-verified' && !isPublicPath) {
             return NextResponse.redirect(new URL('/email-not-verified', request.url));
         }
     }
