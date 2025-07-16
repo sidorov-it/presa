@@ -24,7 +24,7 @@ export async function sendEmail({ to, subject, text }: SendEmailOptions): Promis
 }
 
 export async function sendVerificationEmail(email: string, token: string): Promise<void> {
-    const verifyUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${token}`;
+    const verifyUrl = `${process.env.NEXTAUTH_URL}/verify-email?token=${token}`;
     console.log('verifyUrl', verifyUrl);
     await sendEmail({
         to: email,
