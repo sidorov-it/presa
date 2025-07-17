@@ -1,5 +1,6 @@
 import Logo from '@/components/icons/Logo/Logo';
 import styles from './layout.module.css';
+import Footer from '@/components/ui/Footer';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
     return (
@@ -10,6 +11,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                 </div>
             </header>
             <main className={styles.main}>{children}</main>
+            <Footer />
         </div>
     );
 }
