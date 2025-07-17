@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useTokens } from '@/hooks/useTokens';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
 import { TokenPackage } from '@/types/tokens';
-import { FaCreditCard, FaCoins, FaCheckCircle, FaTimesCircle, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { FaCoins, FaCheckCircle, FaTimesCircle, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { PaymentStatus } from '@/components/tokens/PaymentStatus';
 import { Heading } from '@/components/ui/heading';
 import styles from './page.module.css';
@@ -88,12 +88,12 @@ const TokenPackageCard = ({ package: pkg, onPurchase, isLoading }: TokenPackageC
                     </div>
                 </div>
 
-                <div className={styles.packagePrice}>{pkg.price}₽</div>
+                <div className={styles.packagePrice}>{pkg.price} руб.</div>
 
                 <CloudPaymentsPaymentButton
                     packageId={pkg.id}
-                    onSuccess={(purchaseId) => onPurchase(purchaseId)}
-                    onError={(error) => console.error('Payment error:', error)}
+                    onSuccess={purchaseId => onPurchase(purchaseId)}
+                    onError={error => console.error('Payment error:', error)}
                     isLoading={isLoading}
                 />
 
@@ -204,7 +204,7 @@ const Tokens = () => {
 
                 {/* Info about tokens */}
                 <div className={styles.infoCard}>
-                    <button 
+                    <button
                         className={styles.accordionHeader}
                         onClick={handleAccordionToggle}
                         aria-expanded={isAccordionOpen}
@@ -215,15 +215,25 @@ const Tokens = () => {
                             {isAccordionOpen ? <FaChevronUp /> : <FaChevronDown />}
                         </div>
                     </button>
-                    <div 
+                    <div
                         id="tokens-info-content"
                         className={`${styles.accordionContent} ${isAccordionOpen ? styles.accordionContentOpen : ''}`}
                     >
                         <p className={styles.infoText}>
-                            Токены — это внутренняя валюта для оплаты ИИ-функций в Slydle. Они используются для автоматической генерации текста, создания слайдов с помощью ИИ и других умных функций.
+                            Токены — это внутренняя валюта для оплаты ИИ-функций в Slydle. Они используются для
+                            автоматической генерации текста, создания слайдов с помощью ИИ и других умных функций.
                         </p>
                         <p className={styles.infoText}>
-                            Совершая покупку, пользователь соглашается с <a href="https://slydle.ru/offer.html" className={styles.infoLink} target="_blank" rel="noopener noreferrer">условиями публичной оферты</a>.
+                            Совершая покупку, пользователь соглашается с{' '}
+                            <a
+                                href="https://slydle.ru/offer.html"
+                                className={styles.infoLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                условиями публичной оферты
+                            </a>
+                            .
                         </p>
                     </div>
                 </div>
