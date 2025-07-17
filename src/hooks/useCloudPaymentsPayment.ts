@@ -73,7 +73,7 @@ export const useCloudPaymentsPayment = () => {
             } else {
                 throw new Error('CloudPayments widget not loaded');
             }
-            
+
             return {
                 purchaseId: result.purchaseId,
                 // publicId: result.confirmationUrl,

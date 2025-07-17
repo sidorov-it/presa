@@ -1,3 +1,28 @@
+/**
+ * Enhanced Slide Generation with Content-Aware Processing
+ * 
+ * This file implements a solution to prevent double formatting issues when LLM-generated 
+ * markdown content is inserted into slide slots with predefined HTML tags.
+ * 
+ * PROBLEM SOLVED:
+ * - LLM returns markdown like "# Heading" 
+ * - markdownToHtml converts to "<span class='heading-text heading-1'>Heading</span>"
+ * - Slot with textType: HEADING1 would wrap it again: "<span class='heading-text heading-1'>...</span>"
+ * - Result: Double nested heading tags
+ * 
+ * SOLUTION:
+ * - getNewEditorElementFromMarkdown now detects existing HTML structure
+ * - If structured content exists, it skips additional textType wrapping
+ * - If plain text, it applies the slot's textType formatting
+ * 
+ * FLOW:
+ * 1. LLM content → markdownToHtml → detect structure
+ * 2. If structured: use as-is (no textType wrapping)
+ * 3. If plain text: apply textType formatting
+ * 
+ * @updated 2024 - Enhanced content-aware processing
+ */
+
 import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
 import { Slide, Layout, GridCell, BaseElement, TextType } from '@/types';
 import { ElementType } from '@/types/elements';
@@ -114,6 +139,7 @@ export const createSlideFromTemplateWithContent = async ({
                         }
                         newElement = getNewElement({
                             elementTypeId: elementConfig.elementTypeId,
+                            elementVariant: elementConfig.elementVariant,
                             props: {
                                 src: imageUrl,
                                 alt: elementConfig.props?.alt,
@@ -125,6 +151,7 @@ export const createSlideFromTemplateWithContent = async ({
                         // Fallback to empty image element
                         newElement = getNewElement({
                             elementTypeId: elementConfig.elementTypeId,
+                            elementVariant: elementConfig.elementVariant,
                             props: {
                                 src: '',
                                 alt: elementConfig.props?.alt,
@@ -140,6 +167,7 @@ export const createSlideFromTemplateWithContent = async ({
                     // const content = getTextContent(elementConfig.props.textType, elementContent);
                     newElement = getNewElement({
                         elementTypeId: elementConfig.elementTypeId,
+                        elementVariant: elementConfig.elementVariant,
                         props: {
                             ...elementConfig.props,
                             content: elementContent || '',
@@ -148,23 +176,28 @@ export const createSlideFromTemplateWithContent = async ({
                     });
                 } else if (elementConfig.elementTypeId === ElementType.SMART_LAYOUT) {
                     // Handle smart layout element
-                    const itemsCount = Math.max(...mapping.items.map(item => item.itemIndex));
+                    if (!mapping.items || !Array.isArray(mapping.items)) {
+                        console.warn('Smart layout mapping items not found');
+                        continue;
+                    }
+
+                    const itemsCount = Math.max(...mapping.items.map((item: any) => item.itemIndex));
 
                     const items = [];
 
                     for (let i = 0; i <= itemsCount; i++) {
-                        const itemProps = mapping.items.filter(item => item.itemIndex === i);
-                        const item = {};
+                        const itemProps = mapping.items.filter((item: any) => item.itemIndex === i);
+                        const item: any = {};
 
                         for (const itemProp of itemProps) {
                             const itemPropSchema = elementConfig.props.itemsSchema?.find(
-                                schema => schema.key === itemProp.originalKey
+                                schema => schema.key === (itemProp as any).originalKey
                             );
 
                             if (itemPropSchema && itemPropSchema.type !== ElementType.IMAGE) {
-                                item[itemProp.originalKey] = getTextContent(
+                                item[(itemProp as any).originalKey] = getTextContent(
                                     itemPropSchema.variant!,
-                                    elementContent[itemProp.key] || ''
+                                    elementContent[(itemProp as any).key] || ''
                                 );
                             }
                             // item[itemProp.originalKey] = elementContent[itemProp.key] || '';
@@ -177,11 +210,12 @@ export const createSlideFromTemplateWithContent = async ({
                             const { key: itemKey, linkedContentFields } = itemProp;
                             const mappedFieldsKeys = linkedContentFields
                                 ?.map(key => elementConfig.props.itemsSchema?.find(schema => schema.key === key))
-                                .map(el => el.key);
+                                .map(el => el?.key)
+                                .filter(Boolean);
 
                             const imageDescription = itemProps
-                                .filter(el => mappedFieldsKeys?.includes(el.originalKey))
-                                .map(el => elementContent[el.key])
+                                .filter((el: any) => mappedFieldsKeys?.includes(el.originalKey))
+                                .map((el: any) => elementContent[el.key])
                                 .join('\n');
                             const imageUrl = await generateImage(imageDescription, options);
                             item[itemKey] = imageUrl;
