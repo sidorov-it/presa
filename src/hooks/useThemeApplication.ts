@@ -275,12 +275,13 @@ const applyThemeStyles = ({
     }
 
     // Border width
-    const borderWidthMap = {
-        none: '0px',
-        thin: '3px',
-        medium: '4px',
-        thick: '5px',
+    const borderWidthMap: Record<string, string> = {
+        none: '0',
+        thin: '0.0625em',
+        medium: '0.125em',
+        thick: '0.175em',
     };
+
     setCSSVariableIfChanged(
         '--presentation-slide-border-width',
         borderWidthMap[theme.design.slide.borderWidth] || '0px',
@@ -356,10 +357,10 @@ const applyThemeStyles = ({
     );
 
     const blockBorderWidthMap = {
-        none: '0px',
-        thin: '3px',
-        medium: '4px',
-        thick: '5px',
+        none: '0',
+        thin: '0.0625em',
+        medium: '0.125em',
+        thick: '0.175em',
     };
 
     setCSSVariableIfChanged(
@@ -510,10 +511,10 @@ const applyThemeStyles = ({
 
     // Button shape
     const buttonRadiusMap = {
-        square: '1.5px',
+        square: '0.09375em',
         capsule: 'var(--chakra-radii-full)',
-        default: '4px',
-        rounded: '8px',
+        default: '0.25em',
+        rounded: '0.5em',
     };
     setCSSVariableIfChanged(
         '--presentation-button-radius',

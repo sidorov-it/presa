@@ -285,6 +285,10 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         }),
     };
 
+    if (isSlidePreview) {
+        slideWrapperStyle.border = 'none';
+    }
+
     // Slide content style
     const slideContentStyle: React.CSSProperties = {
         // backgroundColor: fullPage ? 'transparent' : 'var(--presentation-slide-background)',

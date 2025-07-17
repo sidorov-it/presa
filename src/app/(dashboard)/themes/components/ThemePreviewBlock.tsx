@@ -144,9 +144,9 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
 
     const getBorderWidth = (borderWidth: string) => {
         if (borderWidth === 'none') return '0';
-        if (borderWidth === 'thin') return '1px';
-        if (borderWidth === 'medium') return '2px';
-        return '3px';
+        if (borderWidth === 'thin') return '0.0625em';
+        if (borderWidth === 'medium') return '0.125em';
+        return '0.175em';
     };
 
     const getBoxShadow = (shadow: string) => {

@@ -101,12 +101,13 @@ export function themeToCSSVariables(theme: Theme, backgroundSettings?: Backgroun
     }
 
     const borderWidthMap: Record<string, string> = {
-        none: '0px',
-        thin: '3px',
-        medium: '4px',
-        thick: '5px',
+        none: '0',
+        thin: '0.0625em',
+        medium: '0.125em',
+        thick: '0.175em',
     };
-    set('--presentation-slide-border-width', borderWidthMap[theme.design.slide.borderWidth] || '0px');
+
+    set('--presentation-slide-border-width', borderWidthMap[theme.design.slide.borderWidth] || '0');
     set('--presentation-slide-border-color', theme.design.slide.borderColor);
 
     // Image masks
@@ -153,7 +154,7 @@ export function themeToCSSVariables(theme: Theme, backgroundSettings?: Backgroun
         set('--presentation-block-background-opacity', '0');
     }
 
-    set('--presentation-block-border-width', borderWidthMap[theme.design.blocks.borderWidth] || '0px');
+    set('--presentation-block-border-width', borderWidthMap[theme.design.blocks.borderWidth] || '0');
 
     // Set the block fill colors type
     set('--presentation-block-background-custom-type', theme.design.blocks.blockFillColorsType);
@@ -244,10 +245,10 @@ export function themeToCSSVariables(theme: Theme, backgroundSettings?: Backgroun
     }
 
     const buttonRadiusMap: Record<string, string> = {
-        square: '1.5px',
+        square: '0.09375em',
         capsule: 'var(--chakra-radii-full)',
-        default: '4px',
-        rounded: '8px',
+        default: '0.25em',
+        rounded: '0.5em',
     };
     set('--presentation-button-radius', buttonRadiusMap[theme.design.buttons.buttonShape] || '4px');
     set('--presentation-link-color', theme.design.buttons.linkColor || theme.colors.primaryAccent);

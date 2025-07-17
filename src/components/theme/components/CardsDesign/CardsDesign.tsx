@@ -35,16 +35,16 @@ export default function CardsDesign({
                                 handleDesignChange({
                                     slide: {
                                         ...theme.design.slide,
-                                        borderRadius: `${radius}px`,
+                                        borderRadius: `${(1 / 16) * radius}em`,
                                     },
                                 })
                             }
                             className={`${styles.radiusButton} ${
-                                theme.design.slide.borderRadius === `${radius}px` ? styles.radiusActive : ''
+                                theme.design.slide.borderRadius === `${(1 / 16) * radius}em` ? styles.radiusActive : ''
                             }`}
                             aria-label={`Скругление ${radius}px`}
                         >
-                            <div className={styles.radiusContent} style={{ borderRadius: `${radius}px` }} />
+                            <div className={styles.radiusContent} style={{ borderRadius: `${(1 / 16) * radius}em` }} />
                         </button>
                     ))}
                 </div>
