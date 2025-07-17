@@ -431,7 +431,8 @@ export class YaGptService implements LLMService {
             const buffer = Buffer.from(imageBase64, 'base64');
             const path = await import('path');
             const fs = await import('fs/promises');
-            const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
+            const { getUploadPath } = await import('@/utils/uploadPath');
+            const UPLOAD_DIR = getUploadPath();
             await fs.mkdir(UPLOAD_DIR, { recursive: true });
             const filePath = path.join(UPLOAD_DIR, `${imageId}.jpg`);
             await fs.writeFile(filePath, buffer, 'binary');

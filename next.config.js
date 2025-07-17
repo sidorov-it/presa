@@ -29,10 +29,7 @@ const nextConfig = {
     productionBrowserSourceMaps: false,
     images: {
         remotePatterns: [
-            {
-                protocol: 'https',
-                hostname: '**',
-            },
+            new URL('https://app.slydle.ru/uploads/**'),
         ],
     },
     async headers() {

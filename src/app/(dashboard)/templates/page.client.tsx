@@ -11,6 +11,7 @@ import TemplatePreviewModal from '@/components/templates/TemplatePreviewModal';
 import { Heading } from '@/components/ui/heading';
 
 import FullPageLoader from '@/components/FullPageLoader/FullPageLoader';
+import getImagePath from '@/utils/getImagePath';
 import styles from './page.module.css';
 
 const TEMPLATE_KEYS = Object.keys(PresentationTemplates) as PresentationTemplateKeys[];
@@ -84,7 +85,12 @@ const TemplatesPage = () => {
                                 </CardHeader>
                                 <CardContent>
                                     <div className={styles.templatePreview}>
-                                        <Image src={PreviewTemplateImages[key]} alt={template.title} />
+                                        <Image
+                                            src={getImagePath(PreviewTemplateImages[key].src)}
+                                            alt={template.title}
+                                            width={100}
+                                            height={100}
+                                        />
                                     </div>
                                     <div className={styles.templateActions}>
                                         <button

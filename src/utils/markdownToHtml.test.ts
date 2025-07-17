@@ -2,6 +2,11 @@ import { markdownToHtml } from './markdownToHtml';
 
 describe('markdownToHtml', () => {
 
+    it('test', () => {
+        const text = '# Заявка на грант Yandex Cloud Boost для AI-конструктора презентаций';
+        const html = markdownToHtml(text);
+        console.log(html);
+    })
     it('converts complex markdown cases', () => {
         const texts = [
             '# Спасибо за внимание!\n\nВаше время ценно, и я рад, что смог поделиться с вами прогнозами и тенденциями в области искусственного интеллекта на ближайшие годы.',

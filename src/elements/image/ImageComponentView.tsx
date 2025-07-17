@@ -4,6 +4,7 @@
 import React from 'react';
 import { ImageElement } from '@/types';
 import { default as NextImage } from 'next/image';
+import getImagePath from '@/utils/getImagePath';
 
 import styles from './Image.module.css';
 
@@ -53,7 +54,7 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ element, className = ''
                     <div className={`${styles.imageWrapper}`}>
                         <div style={{ position: 'relative' }}>
                             <NextImage
-                                src={element.src}
+                                src={getImagePath(element.src)}
                                 alt={element.alt || ''}
                                 width={0}
                                 height={0}

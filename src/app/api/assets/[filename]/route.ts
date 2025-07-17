@@ -3,8 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs/promises';
 import logger from '@/utils/logger';
+import { getUploadPath } from '@/utils/uploadPath';
 
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
+const UPLOAD_DIR = getUploadPath();
 const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
 const MIME_TYPES: Record<string, string> = {
     jpg: 'image/jpeg',

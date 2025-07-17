@@ -13,8 +13,9 @@ import themes from './themes.json';
 import defaultTheme from './defaultTheme.json';
 import { FONT_URLS } from '@/utils/fontLoader';
 import { Theme } from '@prisma/client';
+import { getUploadPath } from '@/utils/uploadPath';
 
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
+const UPLOAD_DIR = getUploadPath();
 
 // Helper function to get a random font from available fonts
 function getRandomFont(): string {

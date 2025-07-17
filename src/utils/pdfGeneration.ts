@@ -5,6 +5,7 @@ import { PDFDocument } from 'pdf-lib';
 import fs from 'fs';
 import path from 'path';
 import { PdfGenerationStatus } from '@prisma/client';
+import { getUploadPath } from './uploadPath';
 
 function encodeRFC5987(v: string) {
     return encodeURIComponent(v)
@@ -111,7 +112,7 @@ export const generatePdfAsync = async (
         });
 
         // Create public directory for PDFs
-        const publicPdfDir = path.join(process.cwd(), 'public', 'pdfs');
+        const publicPdfDir = path.join(getUploadPath(), 'pdfs');
         if (!fs.existsSync(publicPdfDir)) {
             fs.mkdirSync(publicPdfDir, { recursive: true });
         }
@@ -289,8 +290,8 @@ export const generatePdfAsync = async (
         const sanitizedFileName = sanitizeFileName(baseFileName);
         const fileName =
             slideIndex !== null
-                ? `${sanitizedFileName}-slide-${slideIndex}.pdf`
-                : `${sanitizedFileName}.pdf`;
+                ? `${sanitizedFileName}-slide-${slideIndex}-${taskId}.pdf`
+                : `${sanitizedFileName}-${taskId}.pdf`;
 
         // Save PDF to public directory
         const filePath = path.join(publicPdfDir, fileName);

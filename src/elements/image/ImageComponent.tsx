@@ -10,6 +10,7 @@ import type { useUIStateStore } from '@/store/uiStateStore';
 
 import styles from './Image.module.css';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
+import getImagePath from '@/utils/getImagePath';
 
 interface ImageComponentProps {
     element: ImageElement;
@@ -360,7 +361,7 @@ const ImageComponent: React.FC<ImageComponentProps> = ({
                         <div style={{ position: 'relative' }}>
                             <NextImage
                                 ref={imageRef}
-                                src={element.src}
+                                src={getImagePath(element.src)}
                                 alt={element.alt || ''}
                                 width={0}
                                 height={0}
