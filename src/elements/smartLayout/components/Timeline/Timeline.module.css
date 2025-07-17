@@ -615,3 +615,7 @@
 .dragHandler {
     top: -14px;
 }
+
+.title {
+    margin-bottom: 0.6em;
+}

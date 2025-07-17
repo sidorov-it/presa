@@ -581,9 +581,9 @@ const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tipt
                     </div>
 
                     {/* Standard height indicator */}
-                    {showHeightIndicator && !isReadOnly && (
+                    {/* {showHeightIndicator && !isReadOnly && (
                         <div className={styles.standardHeightIndicator} style={{ top: `${standardHeight}px` }} />
-                    )}
+                    )} */}
                 </div>
 
                 {!isReadOnly && (

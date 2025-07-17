@@ -5,7 +5,6 @@ import { HiPlus } from 'react-icons/hi';
 import ItemWrapper from '../ItemWrapper/ItemWrapper';
 import TimelineMenu from './TimelineMenu';
 import { usePresentationStore } from '@/store/presentationStore';
-import { getContrastingTextColor } from '@/utils/themeUtils';
 
 import styles from './Timeline.module.css';
 import { useUIStateStore } from '@/store/uiStateStore';
@@ -215,22 +214,24 @@ const TimelineHorizontalContent = ({
                     className={`${styles.textBox} ${align ? styles[align] : ''}`}
                     style={{ position: 'relative' }}
                 >
-                    <Tiptap
-                        isReadOnly={isReadOnly}
-                        elementId={elementId}
-                        tiptapRefs={tiptapRefs}
-                        id={`${elementId}-title`}
-                        presentationId={presentationId}
-                        slideId={slideId}
-                        layoutId={layoutId}
-                        placeholder="Заголовок"
-                        onContentChange={handleContentChange(itemId, 'title')}
-                        customRefKey={`title-${elementId}-${itemId}`}
-                        smartLayoutItemId={`title-${elementId}-${itemId}`}
-                        isInnerTiptap={true}
-                        isHideSlashMenu={true}
-                        standardEnterBehavior={true}
-                    />
+                    <div className={styles.title}>
+                        <Tiptap
+                            isReadOnly={isReadOnly}
+                            elementId={elementId}
+                            tiptapRefs={tiptapRefs}
+                            id={`${elementId}-title`}
+                            presentationId={presentationId}
+                            slideId={slideId}
+                            layoutId={layoutId}
+                            placeholder="Заголовок"
+                            onContentChange={handleContentChange(itemId, 'title')}
+                            customRefKey={`title-${elementId}-${itemId}`}
+                            smartLayoutItemId={`title-${elementId}-${itemId}`}
+                            isInnerTiptap={true}
+                            isHideSlashMenu={true}
+                            standardEnterBehavior={true}
+                        />
+                    </div>
                     <Tiptap
                         isReadOnly={isReadOnly}
                         elementId={elementId}

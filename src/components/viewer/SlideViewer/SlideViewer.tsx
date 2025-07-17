@@ -172,6 +172,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
             letterSpacing: 'var(--presentation-body-letter-spacing)',
             textTransform: 'var(--presentation-body-capitalization)' as any,
             minHeight: 'var(--card-height)',
+            margin: 'unset',
         };
 
         // Apply content alignment

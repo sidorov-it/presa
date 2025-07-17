@@ -160,11 +160,11 @@ export default function RegisterPage() {
                         />
                         <label htmlFor="agree-terms" className={styles.checkboxLabel}>
                             Создавая аккаунт, я соглашаюсь с{' '}
-                            <Link href="/terms" className={styles.checkboxLink} target="_blank">
+                            <Link href="https://slydle.ru/terms.html" className={styles.checkboxLink} target="_blank">
                                 пользовательским соглашением
                             </Link>
                             {' '}и даю согласие на{' '}
-                            <Link href="/privacy" className={styles.checkboxLink} target="_blank">
+                            <Link href="https://slydle.ru/privacy.html" className={styles.checkboxLink} target="_blank">
                                 обработку персональных данных
                             </Link>
                             .

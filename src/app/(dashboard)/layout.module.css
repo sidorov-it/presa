@@ -110,7 +110,7 @@
     height: calc(100% - 40px - 20px - 40px);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    /* justify-content: space-between; */
 }
 
 @media (min-width: 1024px) {

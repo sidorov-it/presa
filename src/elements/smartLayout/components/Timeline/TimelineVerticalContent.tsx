@@ -145,22 +145,24 @@ const TimelineVerticalContent = ({
                 }}
             >
                 <div className={`${styles.textBox}`} style={{ position: 'relative', ...itemStyle }}>
-                    <Tiptap
-                        isReadOnly={isReadOnly}
-                        elementId={elementId}
-                        tiptapRefs={tiptapRefs}
-                        id={`${elementId}-title`}
-                        presentationId={presentationId}
-                        slideId={slideId}
-                        layoutId={layoutId}
-                        placeholder="Заголовок"
-                        onContentChange={handleContentChange(itemId, 'title')}
-                        customRefKey={`title-${elementId}-${itemId}`}
-                        smartLayoutItemId={`title-${elementId}-${itemId}`}
-                        isInnerTiptap={true}
-                        isHideSlashMenu={true}
-                        standardEnterBehavior={true}
-                    />
+                    <div className={styles.title}>  
+                        <Tiptap
+                            isReadOnly={isReadOnly}
+                            elementId={elementId}
+                            tiptapRefs={tiptapRefs}
+                            id={`${elementId}-title`}
+                            presentationId={presentationId}
+                            slideId={slideId}
+                            layoutId={layoutId}
+                            placeholder="Заголовок"
+                            onContentChange={handleContentChange(itemId, 'title')}
+                            customRefKey={`title-${elementId}-${itemId}`}
+                            smartLayoutItemId={`title-${elementId}-${itemId}`}
+                            isInnerTiptap={true}
+                            isHideSlashMenu={true}
+                            standardEnterBehavior={true}
+                        />
+                    </div>
                     <Tiptap
                         isReadOnly={isReadOnly}
                         elementId={elementId}

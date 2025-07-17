@@ -48,6 +48,7 @@ export default function TextBoxes({
             if (
                 state.currentTheme?.design?.blocks?.blockFillColorsType === 'custom' &&
                 state.currentTheme?.design?.blocks?.blockBackgroundCustomColors?.length > 0
+                && state.currentTheme?.design?.blocks?.backgroundBlockFillType !== 'none'
             ) {
                 const colors: string[] = [];
                 state.currentTheme?.design?.blocks?.blockBackgroundCustomColors.map(color => {

@@ -376,19 +376,21 @@ export default function TimelineView({
                                     )}
 
                                     <div className={`${styles.textBox}`}>
-                                        <Tiptap
-                                            isReadOnly={isReadOnly}
-                                            defaultContent={item.title || ''}
-                                            elementId={element.id}
-                                            tiptapRefs={tiptapRefs}
-                                            id={`${element.id}-title-${itemId}`}
-                                            presentationId={presentationId}
-                                            slideId={slideId}
-                                            layoutId={layoutId}
-                                            isInnerTiptap={true}
-                                            placeholder="Заголовок"
-                                        // onContentChange={null}
-                                        />
+                                        <div className={styles.title}>
+                                            <Tiptap
+                                                isReadOnly={isReadOnly}
+                                                defaultContent={item.title || ''}
+                                                elementId={element.id}
+                                                tiptapRefs={tiptapRefs}
+                                                id={`${element.id}-title-${itemId}`}
+                                                presentationId={presentationId}
+                                                slideId={slideId}
+                                                layoutId={layoutId}
+                                                isInnerTiptap={true}
+                                                placeholder="Заголовок"
+                                            // onContentChange={null}
+                                            />
+                                        </div>
                                         <Tiptap
                                             isReadOnly={isReadOnly}
                                             defaultContent={item.text || ''}
@@ -554,19 +556,21 @@ export default function TimelineView({
                         />
                     )} */}
 
-                    <Tiptap
-                        isReadOnly={isReadOnly}
-                        defaultContent={item.title || ''}
-                        elementId={element.id}
-                        tiptapRefs={tiptapRefs}
-                        id={`${element.id}-title-${index}`}
-                        presentationId={presentationId}
-                        slideId={slideId}
-                        isInnerTiptap={true}
-                        layoutId={layoutId}
-                        placeholder="Заголовок"
-                        onContentChange={() => { }}
-                    />
+                    <div className={styles.title}>
+                        <Tiptap
+                            isReadOnly={isReadOnly}
+                            defaultContent={item.title || ''}
+                            elementId={element.id}
+                            tiptapRefs={tiptapRefs}
+                            id={`${element.id}-title-${index}`}
+                            presentationId={presentationId}
+                            slideId={slideId}
+                            isInnerTiptap={true}
+                            layoutId={layoutId}
+                            placeholder="Заголовок"
+                            onContentChange={() => { }}
+                        />
+                    </div>
                     <Tiptap
                         isReadOnly={isReadOnly}
                         defaultContent={item.text || ''}

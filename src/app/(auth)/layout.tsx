@@ -10,9 +10,6 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                 </div>
             </header>
             <main className={styles.main}>{children}</main>
-            <footer className={styles.footer}>
-                <div className={styles.footerContent}>Presa - Create beautiful presentations with AI</div>
-            </footer>
         </div>
     );
 }

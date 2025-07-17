@@ -130,6 +130,7 @@ const LayoutViewer = ({
                                         width: '100%',
                                         height: '100%',
                                         minHeight: layout.isTable ? '3em' : 'auto',
+                                        gap: '1em',
                                         ...(isSlidePreview && {
                                             overflow: 'hidden',
                                             maxWidth: '100%',
