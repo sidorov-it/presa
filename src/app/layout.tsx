@@ -13,6 +13,14 @@ import { Suspense } from 'react';
 export const metadata: Metadata = {
     title: 'Presa – создание презентаций с ИИ',
     description: 'Платформа для генерации и редактирования презентаций с помощью искусственного интеллекта',
+    icons: {
+        icon: [
+            { url: '/uploads/logo.svg', type: 'image/svg+xml' },
+            // { url: '/favicon.png', type: 'image/png' }
+        ],
+        shortcut: '/uploads/logo.svg',
+        apple: '/uploads/logo.svg',
+    },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
