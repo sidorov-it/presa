@@ -66,7 +66,7 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
         });
 
         // Get the base URL for the slide pages
-        const baseUrl = request.nextUrl.origin;
+        const baseUrl = 'http://localhost:3000';
 
         // Start async PDF generation (don't await)
         generatePdfAsync(task.id, presentationId, slideIndex, baseUrl).catch(error => {

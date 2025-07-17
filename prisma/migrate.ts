@@ -3,7 +3,6 @@ import fs from 'fs';
 import path from 'path';
 require('dotenv').config()
 
-console.log('process.env', process.env);
 const MONGO_URL = process.env.DATABASE_URL!;
 const MIGRATIONS_DIR = path.join(__dirname, 'migrations');
 
