@@ -874,386 +874,386 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
         },
     },
 
-    // FIXME акцент - не то, как тут используется
-    'accent-left': {
-        id: 'accent-left',
-        name: 'Акцент слева',
-        disabled: true,
-        layouts: [
-            {
-                layout: 'accent-left',
-                columnsCount: 2,
-                rowsCount: 1,
-                elements: [
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'accent',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.HEADING2,
-                            content: 'Акцентный текст',
-                            style: {
-                                fontSize: '2.5rem',
-                                fontWeight: 'bold',
-                                color: 'var(--accent-color)',
-                            },
-                        },
+    // // FIXME акцент - не то, как тут используется
+    // 'accent-left': {
+    //     id: 'accent-left',
+    //     name: 'Акцент слева',
+    //     disabled: true,
+    //     layouts: [
+    //         {
+    //             layout: 'accent-left',
+    //             columnsCount: 2,
+    //             rowsCount: 1,
+    //             elements: [
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'accent',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.HEADING2,
+    //                         content: 'Акцентный текст',
+    //                         style: {
+    //                             fontSize: '2.5rem',
+    //                             fontWeight: 'bold',
+    //                             color: 'var(--accent-color)',
+    //                         },
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Акцентный текст или заголовок',
-                            contextRules: [
-                                'Краткая, запоминающаяся фраза',
-                                'Ключевое сообщение или цифра',
-                                'Символ ## для заголовков в markdown',
-                            ],
-                        },
-                    },
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'main_content',
-                        row: 0,
-                        column: 1,
-                        props: {
-                            textType: TextType.DEFAULT,
-                            content: 'Основной текст слайда',
-                        },
+    //                     llmHints: {
+    //                         purpose: 'Акцентный текст или заголовок',
+    //                         contextRules: [
+    //                             'Краткая, запоминающаяся фраза',
+    //                             'Ключевое сообщение или цифра',
+    //                             'Символ ## для заголовков в markdown',
+    //                         ],
+    //                     },
+    //                 },
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'main_content',
+    //                     row: 0,
+    //                     column: 1,
+    //                     props: {
+    //                         textType: TextType.DEFAULT,
+    //                         content: 'Основной текст слайда',
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Детальное объяснение акцентного текста',
-                            contextRules: ['Раскрытие смысла акцентной фразы', 'Поддерживающие детали и объяснения'],
-                        },
-                    },
-                ],
-            },
-        ],
-        ui: {
-            category: 'accent-templates',
-            label: 'Акцент слева',
-            icon: FaHighlighter,
-            description: 'Шаблон с акцентным текстом слева',
-        },
-        llm: {
-            description: 'Шаблон для выделения важной информации с акцентом слева',
-            purpose: ['emphasis', 'key-message', 'statistics'],
-            useCases: ['Ключевые цифры', 'Важные утверждения', 'Статистика'],
-        },
-    },
+    //                     llmHints: {
+    //                         purpose: 'Детальное объяснение акцентного текста',
+    //                         contextRules: ['Раскрытие смысла акцентной фразы', 'Поддерживающие детали и объяснения'],
+    //                     },
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     ui: {
+    //         category: 'accent-templates',
+    //         label: 'Акцент слева',
+    //         icon: FaHighlighter,
+    //         description: 'Шаблон с акцентным текстом слева',
+    //     },
+    //     llm: {
+    //         description: 'Шаблон для выделения важной информации с акцентом слева',
+    //         purpose: ['emphasis', 'key-message', 'statistics'],
+    //         useCases: ['Ключевые цифры', 'Важные утверждения', 'Статистика'],
+    //     },
+    // },
 
-    // FIXME акцент - не то, как тут используется
-    'accent-right': {
-        id: 'accent-right',
-        name: 'Акцент справа',
-        disabled: true,
-        layouts: [
-            {
-                layout: 'accent-right',
-                columnsCount: 2,
-                rowsCount: 1,
-                elements: [
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'main_content',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.DEFAULT,
-                            content: 'Основной текст слайда',
-                        },
+    // // FIXME акцент - не то, как тут используется
+    // 'accent-right': {
+    //     id: 'accent-right',
+    //     name: 'Акцент справа',
+    //     disabled: true,
+    //     layouts: [
+    //         {
+    //             layout: 'accent-right',
+    //             columnsCount: 2,
+    //             rowsCount: 1,
+    //             elements: [
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'main_content',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.DEFAULT,
+    //                         content: 'Основной текст слайда',
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Основной контент, ведущий к акценту',
-                            contextRules: ['Логическое построение к акцентной части', 'Контекст для понимания акцента'],
-                        },
-                    },
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'accent',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.HEADING2,
-                            content: 'Акцентный текст',
-                            style: {
-                                fontSize: '2.5rem',
-                                fontWeight: 'bold',
-                                color: 'var(--accent-color)',
-                            },
-                        },
+    //                     llmHints: {
+    //                         purpose: 'Основной контент, ведущий к акценту',
+    //                         contextRules: ['Логическое построение к акцентной части', 'Контекст для понимания акцента'],
+    //                     },
+    //                 },
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'accent',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.HEADING2,
+    //                         content: 'Акцентный текст',
+    //                         style: {
+    //                             fontSize: '2.5rem',
+    //                             fontWeight: 'bold',
+    //                             color: 'var(--accent-color)',
+    //                         },
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Акцентный текст или заголовок',
-                            contextRules: ['Итоговая мысль или вывод', 'Ключевой результат'],
-                        },
-                    },
-                ],
-            },
-        ],
-        ui: {
-            category: 'accent-templates',
-            label: 'Акцент справа',
-            icon: FaHighlighter,
-            description: 'Шаблон с акцентным текстом справа',
-        },
-        llm: {
-            description: 'Шаблон для выделения важной информации с акцентом справа',
-            purpose: ['emphasis', 'conclusion', 'result'],
-            useCases: ['Выводы', 'Результаты', 'Ключевые достижения'],
-        },
-    },
+    //                     llmHints: {
+    //                         purpose: 'Акцентный текст или заголовок',
+    //                         contextRules: ['Итоговая мысль или вывод', 'Ключевой результат'],
+    //                     },
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     ui: {
+    //         category: 'accent-templates',
+    //         label: 'Акцент справа',
+    //         icon: FaHighlighter,
+    //         description: 'Шаблон с акцентным текстом справа',
+    //     },
+    //     llm: {
+    //         description: 'Шаблон для выделения важной информации с акцентом справа',
+    //         purpose: ['emphasis', 'conclusion', 'result'],
+    //         useCases: ['Выводы', 'Результаты', 'Ключевые достижения'],
+    //     },
+    // },
 
-    // FIXME акцент - не то, как тут используется
-    'accent-top': {
-        id: 'accent-top',
-        name: 'Акцент сверху',
-        disabled: true,
-        layouts: [
-            {
-                layout: 'accent-top',
-                columnsCount: 2,
-                rowsCount: 1,
-                elements: [
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'accent',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.HEADING2,
-                            content: 'Заголовок слайда',
-                            style: {
-                                fontSize: '3rem',
-                                fontWeight: 'bold',
-                                color: 'var(--accent-color)',
-                            },
-                        },
+    // // FIXME акцент - не то, как тут используется
+    // 'accent-top': {
+    //     id: 'accent-top',
+    //     name: 'Акцент сверху',
+    //     disabled: true,
+    //     layouts: [
+    //         {
+    //             layout: 'accent-top',
+    //             columnsCount: 2,
+    //             rowsCount: 1,
+    //             elements: [
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'accent',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.HEADING2,
+    //                         content: 'Заголовок слайда',
+    //                         style: {
+    //                             fontSize: '3rem',
+    //                             fontWeight: 'bold',
+    //                             color: 'var(--accent-color)',
+    //                         },
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Слайд с фоновым изоюражением сверху (изображение занимает 1/4 слайда)',
-                            contextRules: ['Основная мысль или тема', 'Привлекающий внимание заголовок'],
-                        },
-                    },
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'main_content',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.DEFAULT,
-                            content: 'Основной текст слайда',
-                        },
+    //                     llmHints: {
+    //                         purpose: 'Слайд с фоновым изоюражением сверху (изображение занимает 1/4 слайда)',
+    //                         contextRules: ['Основная мысль или тема', 'Привлекающий внимание заголовок'],
+    //                     },
+    //                 },
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'main_content',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.DEFAULT,
+    //                         content: 'Основной текст слайда',
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Раскрытие акцентной темы',
-                            contextRules: ['Подробное объяснение', 'Развитие основной мысли'],
-                        },
-                    },
-                ],
-            },
-        ],
-        ui: {
-            category: 'accent-templates',
-            label: 'Акцент сверху',
-            icon: FaHighlighter,
-            description: 'Шаблон с акцентным текстом сверху',
-        },
-        llm: {
-            description: 'Шаблон для выделения важной информации с акцентом сверху',
-            purpose: ['emphasis', 'introduction', 'topic'],
-            useCases: ['Заголовки разделов', 'Ключевые темы', 'Основные идеи'],
-        },
-    },
+    //                     llmHints: {
+    //                         purpose: 'Раскрытие акцентной темы',
+    //                         contextRules: ['Подробное объяснение', 'Развитие основной мысли'],
+    //                     },
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     ui: {
+    //         category: 'accent-templates',
+    //         label: 'Акцент сверху',
+    //         icon: FaHighlighter,
+    //         description: 'Шаблон с акцентным текстом сверху',
+    //     },
+    //     llm: {
+    //         description: 'Шаблон для выделения важной информации с акцентом сверху',
+    //         purpose: ['emphasis', 'introduction', 'topic'],
+    //         useCases: ['Заголовки разделов', 'Ключевые темы', 'Основные идеи'],
+    //     },
+    // },
 
-    // FIXME акцент - не то, как тут используется
-    'accent-right-fit': {
-        id: 'accent-right-fit',
-        name: 'Акцент справа (компактный)',
-        disabled: true,
-        layouts: [
-            {
-                layout: 'accent-right-fit',
-                columnsCount: 2,
-                rowsCount: 1,
-                elements: [
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'main_content',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.DEFAULT,
-                            content: 'Основной текст слайда',
-                        },
+    // // FIXME акцент - не то, как тут используется
+    // 'accent-right-fit': {
+    //     id: 'accent-right-fit',
+    //     name: 'Акцент справа (компактный)',
+    //     disabled: true,
+    //     layouts: [
+    //         {
+    //             layout: 'accent-right-fit',
+    //             columnsCount: 2,
+    //             rowsCount: 1,
+    //             elements: [
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'main_content',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.DEFAULT,
+    //                         content: 'Основной текст слайда',
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Детальное описание',
-                            contextRules: ['Подробное объяснение контекста', 'Развернутая информация'],
-                        },
-                    },
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'accent',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.HEADING3,
-                            content: 'Акцентный текст',
-                            style: {
-                                fontSize: '2rem',
-                                fontWeight: 'bold',
-                                color: 'var(--accent-color)',
-                            },
-                        },
+    //                     llmHints: {
+    //                         purpose: 'Детальное описание',
+    //                         contextRules: ['Подробное объяснение контекста', 'Развернутая информация'],
+    //                     },
+    //                 },
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'accent',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.HEADING3,
+    //                         content: 'Акцентный текст',
+    //                         style: {
+    //                             fontSize: '2rem',
+    //                             fontWeight: 'bold',
+    //                             color: 'var(--accent-color)',
+    //                         },
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Компактный акцент',
-                            contextRules: ['Краткое выделение важной информации', 'Ключевые моменты в сжатой форме'],
-                        },
-                    },
-                ],
-            },
-        ],
-        ui: {
-            category: 'accent-templates',
-            label: 'Акцент справа (компактный)',
-            icon: FaHighlighter,
-            description: 'Шаблон с компактным акцентным текстом справа',
-        },
-        llm: {
-            description: 'Шаблон для компактного выделения информации с акцентом справа',
-            purpose: ['emphasis', 'highlight', 'summary'],
-            useCases: ['Краткие выводы', 'Ключевые цитаты', 'Важные заметки'],
-        },
-    },
+    //                     llmHints: {
+    //                         purpose: 'Компактный акцент',
+    //                         contextRules: ['Краткое выделение важной информации', 'Ключевые моменты в сжатой форме'],
+    //                     },
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     ui: {
+    //         category: 'accent-templates',
+    //         label: 'Акцент справа (компактный)',
+    //         icon: FaHighlighter,
+    //         description: 'Шаблон с компактным акцентным текстом справа',
+    //     },
+    //     llm: {
+    //         description: 'Шаблон для компактного выделения информации с акцентом справа',
+    //         purpose: ['emphasis', 'highlight', 'summary'],
+    //         useCases: ['Краткие выводы', 'Ключевые цитаты', 'Важные заметки'],
+    //     },
+    // },
 
-    // FIXME акцент - не то, как тут используется
-    'accent-left-fit': {
-        id: 'accent-left-fit',
-        name: 'Акцент слева (компактный)',
-        disabled: true,
-        layouts: [
-            {
-                layout: 'accent-left-fit',
-                columnsCount: 2,
-                rowsCount: 1,
-                elements: [
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'accent',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.HEADING3,
-                            content: 'Акцентный текст',
-                            style: {
-                                fontSize: '2rem',
-                                fontWeight: 'bold',
-                                color: 'var(--accent-color)',
-                            },
-                        },
+    // // FIXME акцент - не то, как тут используется
+    // 'accent-left-fit': {
+    //     id: 'accent-left-fit',
+    //     name: 'Акцент слева (компактный)',
+    //     disabled: true,
+    //     layouts: [
+    //         {
+    //             layout: 'accent-left-fit',
+    //             columnsCount: 2,
+    //             rowsCount: 1,
+    //             elements: [
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'accent',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.HEADING3,
+    //                         content: 'Акцентный текст',
+    //                         style: {
+    //                             fontSize: '2rem',
+    //                             fontWeight: 'bold',
+    //                             color: 'var(--accent-color)',
+    //                         },
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Компактный акцент',
-                            contextRules: ['Краткое выделение важной информации', 'Ключевые моменты в сжатой форме'],
-                        },
-                    },
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'main_content',
-                        row: 0,
-                        column: 1,
-                        props: {
-                            textType: TextType.DEFAULT,
-                            content: 'Основной текст слайда',
-                        },
+    //                     llmHints: {
+    //                         purpose: 'Компактный акцент',
+    //                         contextRules: ['Краткое выделение важной информации', 'Ключевые моменты в сжатой форме'],
+    //                     },
+    //                 },
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'main_content',
+    //                     row: 0,
+    //                     column: 1,
+    //                     props: {
+    //                         textType: TextType.DEFAULT,
+    //                         content: 'Основной текст слайда',
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Детальное описание',
-                            contextRules: ['Подробное объяснение контекста', 'Развернутая информация'],
-                        },
-                    },
-                ],
-            },
-        ],
-        ui: {
-            category: 'accent-templates',
-            label: 'Акцент слева (компактный)',
-            icon: FaHighlighter,
-            description: 'Шаблон с компактным акцентным текстом слева',
-        },
-        llm: {
-            description: 'Шаблон для компактного выделения информации с акцентом слева',
-            purpose: ['emphasis', 'highlight', 'introduction'],
-            useCases: ['Вводные заметки', 'Ключевые определения', 'Важные термины'],
-        },
-    },
+    //                     llmHints: {
+    //                         purpose: 'Детальное описание',
+    //                         contextRules: ['Подробное объяснение контекста', 'Развернутая информация'],
+    //                     },
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     ui: {
+    //         category: 'accent-templates',
+    //         label: 'Акцент слева (компактный)',
+    //         icon: FaHighlighter,
+    //         description: 'Шаблон с компактным акцентным текстом слева',
+    //     },
+    //     llm: {
+    //         description: 'Шаблон для компактного выделения информации с акцентом слева',
+    //         purpose: ['emphasis', 'highlight', 'introduction'],
+    //         useCases: ['Вводные заметки', 'Ключевые определения', 'Важные термины'],
+    //     },
+    // },
 
-    // FIXME акцент - не то, как тут используется
-    'accent-background': {
-        id: 'accent-background',
-        name: 'Акцент на фоне',
-        disabled: true,
-        layouts: [
-            {
-                layout: 'accent-background',
-                columnsCount: 1,
-                rowsCount: 1,
-                elements: [
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'accent',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.HEADING2,
-                            content: 'Акцентный текст',
-                            style: {
-                                fontSize: '3.5rem',
-                                fontWeight: 'bold',
-                                color: 'var(--accent-color)',
-                                textShadow: '2px 2px 4px rgba(0,0,0,0.2)',
-                            },
-                        },
+    // // FIXME акцент - не то, как тут используется
+    // 'accent-background': {
+    //     id: 'accent-background',
+    //     name: 'Акцент на фоне',
+    //     disabled: true,
+    //     layouts: [
+    //         {
+    //             layout: 'accent-background',
+    //             columnsCount: 1,
+    //             rowsCount: 1,
+    //             elements: [
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'accent',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.HEADING2,
+    //                         content: 'Акцентный текст',
+    //                         style: {
+    //                             fontSize: '3.5rem',
+    //                             fontWeight: 'bold',
+    //                             color: 'var(--accent-color)',
+    //                             textShadow: '2px 2px 4px rgba(0,0,0,0.2)',
+    //                         },
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Главный акцент на всём слайде',
-                            contextRules: ['Одна ключевая мысль', 'Максимально сильный акцент'],
-                        },
-                    },
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'subtitle',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.DEFAULT,
-                            content: 'Поясняющий текст',
-                            style: {
-                                fontSize: '1.5rem',
-                                opacity: 0.9,
-                            },
-                        },
+    //                     llmHints: {
+    //                         purpose: 'Главный акцент на всём слайде',
+    //                         contextRules: ['Одна ключевая мысль', 'Максимально сильный акцент'],
+    //                     },
+    //                 },
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'subtitle',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.DEFAULT,
+    //                         content: 'Поясняющий текст',
+    //                         style: {
+    //                             fontSize: '1.5rem',
+    //                             opacity: 0.9,
+    //                         },
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Краткое пояснение к акценту',
-                            contextRules: ['Минимальное необходимое пояснение', 'Поддержка основного акцента'],
-                        },
-                    },
-                ],
-            },
-        ],
-        ui: {
-            category: 'accent-templates',
-            label: 'Акцент на фоне',
-            icon: FaHighlighter,
-            description: 'Шаблон с акцентным текстом на всём слайде',
-        },
-        llm: {
-            description: 'Шаблон для максимального акцента на важной информации',
-            purpose: ['emphasis', 'statement', 'quote'],
-            useCases: ['Ключевые заявления', 'Важные цитаты', 'Главные выводы'],
-        },
-    },
+    //                     llmHints: {
+    //                         purpose: 'Краткое пояснение к акценту',
+    //                         contextRules: ['Минимальное необходимое пояснение', 'Поддержка основного акцента'],
+    //                     },
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     ui: {
+    //         category: 'accent-templates',
+    //         label: 'Акцент на фоне',
+    //         icon: FaHighlighter,
+    //         description: 'Шаблон с акцентным текстом на всём слайде',
+    //     },
+    //     llm: {
+    //         description: 'Шаблон для максимального акцента на важной информации',
+    //         purpose: ['emphasis', 'statement', 'quote'],
+    //         useCases: ['Ключевые заявления', 'Важные цитаты', 'Главные выводы'],
+    //     },
+    // },
 
     'two-image-columns': {
         id: 'two-image-columns',

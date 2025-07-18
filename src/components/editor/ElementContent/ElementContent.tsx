@@ -719,6 +719,7 @@ export const ElementContent = ({
                         slideId={slideId}
                         layoutId={layoutId}
                         hasMultipleCells={hasMultipleCells}
+                        isWidthRightMenu={true}
                     />
                 );
             } else if (elementTypeId.includes('chart')) {

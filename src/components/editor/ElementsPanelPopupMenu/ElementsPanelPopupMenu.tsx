@@ -5,6 +5,7 @@ import { BaseElement } from '@/types';
 import { MenuItem } from '@/types/templates';
 import { getNewElement } from '@/utils/getNewElement';
 import { getNewLayoutWithTable } from '@/utils/getNewLayoutWithTable';
+import { Tooltip } from '@/components/ui/tooltip';
 
 import styles from './ElementsPanelPopupMenu.module.css';
 import { useUIStateStore } from '@/store/uiStateStore';
@@ -82,7 +83,7 @@ const ElementsPanelPopupMenu: React.FC<PElementsPanelPopupMenuProps> = ({ isOpen
             <div className={styles.popupMenuBody}>
                 {categoryData.subCategories ? (
                     // Для категорий с подкатегориями (например, basic)
-                    <div className={styles.subCategoriesContainer}>
+                    <div className={styles.subCategoriesContainer} key={categoryData.id}>
                         {categoryData.subCategories.map(subCategory => (
                             <div key={subCategory.id} className={styles.subCategoryWrapper}>
                                 {subCategory.label && (
@@ -90,23 +91,30 @@ const ElementsPanelPopupMenu: React.FC<PElementsPanelPopupMenuProps> = ({ isOpen
                                 )}
                                 <div className={styles.subCategoryElements}>
                                     {subCategory.elements.map(element => (
-                                        <div
+                                        <Tooltip
                                             key={element.label}
-                                            className={styles.elementItem}
-                                            draggable
-                                            onDragStart={e => handleDragStart(e, element)}
-                                            onClick={() => handleElementClick(element)}
-                                            aria-label={`${subCategory.label}: ${element.label}`}
-                                            onKeyDown={e => {
-                                                if (e.key === 'Enter' || e.key === ' ') {
-                                                    e.preventDefault();
-                                                    handleElementClick(element);
-                                                }
-                                            }}
+                                            content="Перетащите элемент на слайд"
+                                            openDelay={300}
+                                            closeDelay={100}
                                         >
-                                            {element.Icon && <element.Icon />}
-                                            <div className={styles.elementItemLabel}>{element.label}</div>
-                                        </div>
+                                            <div
+                                                key={element.label}
+                                                className={styles.elementItem}
+                                                draggable
+                                                onDragStart={e => handleDragStart(e, element)}
+                                                onClick={() => handleElementClick(element)}
+                                                aria-label={`${subCategory.label}: ${element.label}`}
+                                                onKeyDown={e => {
+                                                    if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.preventDefault();
+                                                        handleElementClick(element);
+                                                    }
+                                                }}
+                                            >
+                                                {element.Icon && <element.Icon />}
+                                                <div className={styles.elementItemLabel}>{element.label}</div>
+                                            </div>
+                                        </Tooltip>
                                     ))}
                                 </div>
                             </div>

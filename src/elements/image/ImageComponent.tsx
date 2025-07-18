@@ -20,7 +20,8 @@ interface ImageComponentProps {
     layoutId: string;
     hasMultipleCells?: boolean;
     isGenerating?: boolean;
-    openMenu?: ReturnType<typeof useUIStateStore>['openContextMenu'];
+    isWidthRightMenu?: boolean;
+    openMenu?: ReturnType<typeof useUIStateStore>['openSideMenu'];
     updateElement?: (data: Partial<ImageElement>) => void;
     addColumnsAroundImage?: (options: { width: number; direction?: 'right' | 'left' | 'both' }) => void;
 }
@@ -36,6 +37,7 @@ const ImageComponent: React.FC<ImageComponentProps> = ({
     hasMultipleCells,
     isGenerating = false,
     openMenu,
+    isWidthRightMenu,
     updateElement,
     addColumnsAroundImage,
 }) => {
@@ -340,6 +342,7 @@ const ImageComponent: React.FC<ImageComponentProps> = ({
                         onClearImage={() => {
                             updateElement?.({ src: '' });
                         }}
+                        isWidthRightMenu={isWidthRightMenu}
                         onUpdateLink={(link: string, uploaded: boolean) => handleUpdateLink(link, uploaded)}
                     />
                 )}

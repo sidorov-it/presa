@@ -11,6 +11,7 @@ interface ImageProps {
     slideId: string;
     layoutId: string;
     hasMultipleCells?: boolean;
+    isWidthRightMenu?: boolean;
 }
 
 export default function Image({
@@ -20,6 +21,7 @@ export default function Image({
     slideId,
     layoutId,
     hasMultipleCells,
+    isWidthRightMenu,
 }: ImageProps) {
     const element = usePresentationStore(state =>
         state.getElement(presentationId, slideId, layoutId, elementId)
@@ -40,6 +42,7 @@ export default function Image({
             hasMultipleCells={hasMultipleCells}
             isGenerating={isGenerating}
             openMenu={openMenu}
+            isWidthRightMenu={isWidthRightMenu}
             updateElement={(data: Partial<ImageElement>) =>
                 updateElement({
                     presentationId,
