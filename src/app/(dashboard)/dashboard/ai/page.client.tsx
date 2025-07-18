@@ -13,20 +13,174 @@ import {
     Textarea,
     createListCollection,
     Link,
+    Card,
 } from '@chakra-ui/react';
 // import * as Select from '@chakra-ui/react/components/select';
 import { Portal } from '@chakra-ui/react';
-import { FaPlus, FaTrash } from 'react-icons/fa';
+import { FaPlus, FaTrash, FaGripVertical } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { generateId } from '@/utils/id';
 import GenerationLoader from '@/components/ui/GenerationLoader';
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    DragEndEvent,
+} from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy,
+    useSortable,
+} from '@dnd-kit/sortable';
+import {
+    CSS,
+} from '@dnd-kit/utilities';
 
 interface SlideTopic {
     id: string;
     title: string;
     instructions: string;
 }
+
+// Sortable slide topic component
+const SortableSlideCard = ({ 
+    topic, 
+    index, 
+    onTopicChange, 
+    onInstructionsChange, 
+    onDelete 
+}: {
+    topic: SlideTopic;
+    index: number;
+    onTopicChange: (id: string, value: string) => void;
+    onInstructionsChange: (id: string, value: string) => void;
+    onDelete: (id: string) => void;
+}) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id: topic.id });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+    };
+
+    return (
+        <Card.Root 
+            ref={setNodeRef} 
+            style={style}
+            padding="16px"
+            border="1px solid"
+            borderColor="gray.200"
+            borderRadius="12px"
+            backgroundColor={isDragging ? "gray.50" : "white"}
+            boxShadow="sm"
+            _hover={{ boxShadow: "md" }}
+            transition="all 0.2s"
+        >
+            <Flex alignItems="flex-start" gap="12px">
+                {/* Drag handle */}
+                <Flex
+                    {...attributes}
+                    {...listeners}
+                    alignItems="center"
+                    justifyContent="center"
+                    width="24px"
+                    height="24px"
+                    color="gray.400"
+                    cursor="grab"
+                    _hover={{ color: "gray.600" }}
+                    _active={{ cursor: "grabbing" }}
+                    marginTop="32px"
+                    tabIndex={0}
+                    aria-label={`Перетащить слайд ${index + 1}`}
+                >
+                    <FaGripVertical />
+                </Flex>
+
+                {/* Slide number badge */}
+                <Flex
+                    alignItems="center"
+                    justifyContent="center"
+                    width="32px"
+                    height="32px"
+                    backgroundColor="blue.500"
+                    color="white"
+                    borderRadius="full"
+                    fontSize="sm"
+                    fontWeight="bold"
+                    marginTop="28px"
+                    flexShrink={0}
+                >
+                    {index + 1}
+                </Flex>
+
+                {/* Content */}
+                <Box flex="1">
+                    <Text as="label" fontWeight="bold" display="block" marginBottom="8px" color="gray.700">
+                        Тема слайда {index + 1}
+                    </Text>
+                    <Input
+                        value={topic.title}
+                        onChange={e => onTopicChange(topic.id, e.target.value)}
+                        aria-label={`Тема слайда ${index + 1}`}
+                        tabIndex={0}
+                        marginBottom="12px"
+                        borderColor="gray.300"
+                        _focus={{ borderColor: "blue.500", boxShadow: "0 0 0 1px #3182ce" }}
+                    />
+                    <Text
+                        as="label"
+                        fontWeight="bold"
+                        display="block"
+                        marginBottom="8px"
+                        color="gray.700"
+                    >
+                        Инструкции для слайда
+                    </Text>
+                    <Textarea
+                        value={topic.instructions}
+                        onChange={e => onInstructionsChange(topic.id, e.target.value)}
+                        aria-label={`Инструкции для слайда ${index + 1}`}
+                        tabIndex={0}
+                        rows={3}
+                        borderColor="gray.300"
+                        _focus={{ borderColor: "blue.500", boxShadow: "0 0 0 1px #3182ce" }}
+                        placeholder="Опишите, что должно быть на этом слайде..."
+                    />
+                </Box>
+
+                {/* Delete button */}
+                <Button
+                    variant="ghost"
+                    colorScheme="red"
+                    onClick={() => onDelete(topic.id)}
+                    aria-label={`Удалить слайд ${index + 1}`}
+                    tabIndex={0}
+                    marginTop="28px"
+                    padding="8px"
+                    minWidth="auto"
+                    height="32px"
+                    _hover={{ backgroundColor: "red.50" }}
+                >
+                    <FaTrash size="14px" />
+                </Button>
+            </Flex>
+        </Card.Root>
+    );
+};
 
 const EXAMPLES = [
     'Презентация о влиянии искусственного интеллекта на образование',
@@ -64,6 +218,14 @@ const AiPresentationPage = () => {
     const [presentationTitle, setPresentationTitle] = useState('');
     const [presentationDescription, setPresentationDescription] = useState('');
     const [topics, setTopics] = useState<SlideTopic[]>([]);
+
+    // DnD sensors
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
 
     // Handlers
     const handleExampleClick = (example: string) => setDescription(example);
@@ -113,6 +275,20 @@ const AiPresentationPage = () => {
     };
     const handleDeleteTopic = (id: string) => {
         setTopics(topics => topics.filter(t => t.id !== id));
+    };
+
+    // DnD handler
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+
+        if (over && active.id !== over.id) {
+            setTopics(topics => {
+                const oldIndex = topics.findIndex(topic => topic.id === active.id);
+                const newIndex = topics.findIndex(topic => topic.id === over.id);
+
+                return arrayMove(topics, oldIndex, newIndex);
+            });
+        }
     };
 
     const handleBack = () => setStep('form');
@@ -397,55 +573,56 @@ const AiPresentationPage = () => {
                                 tabIndex={0}
                             />
                         </Box>
-                        <Heading as="h2" size="md" marginBottom="8px">
-                            Темы слайдов
-                        </Heading>
-                        {topics.map((topic, idx) => (
-                            <Flex key={topic.id} alignItems="flex-start" gap="8px">
-                                <Box flex="1">
-                                    <Text as="label" fontWeight="bold" display="block" marginBottom="4px">
-                                        Тема слайда {idx + 1}
-                                    </Text>
-                                    <Input
-                                        value={topic.title}
-                                        onChange={e => handleTopicChange(topic.id, e.target.value)}
-                                        aria-label={`Тема слайда ${idx + 1}`}
-                                        tabIndex={0}
-                                    />
-                                    <Text
-                                        as="label"
-                                        fontWeight="bold"
-                                        display="block"
-                                        marginTop="8px"
-                                        marginBottom="4px"
-                                    >
-                                        Инструкции для слайда
-                                    </Text>
-                                    <Textarea
-                                        value={topic.instructions}
-                                        onChange={e => handleInstructionsChange(topic.id, e.target.value)}
-                                        aria-label={`Инструкции для слайда ${idx + 1}`}
-                                        tabIndex={0}
-                                        rows={2}
-                                    />
-                                </Box>
-                                <Button
-                                    variant="ghost"
-                                    colorScheme="red"
-                                    onClick={() => handleDeleteTopic(topic.id)}
-                                    aria-label="Удалить слайд"
-                                    tabIndex={0}
-                                    marginTop="32px"
-                                    padding="8px"
-                                >
-                                    <FaTrash />
-                                </Button>
+                        <Box>
+                            <Flex alignItems="center" justifyContent="space-between" marginBottom="16px">
+                                <Heading as="h2" size="md">
+                                    Темы слайдов
+                                </Heading>
+                                <Text fontSize="sm" color="gray.600">
+                                    Перетаскивайте слайды для изменения порядка
+                                </Text>
                             </Flex>
-                        ))}
-                        <Button onClick={handleAddTopic} aria-label="Добавить слайд" tabIndex={0}>
-                            <FaPlus />
-                            Добавить слайд
-                        </Button>
+                            
+                            <DndContext
+                                sensors={sensors}
+                                collisionDetection={closestCenter}
+                                onDragEnd={handleDragEnd}
+                            >
+                                <SortableContext
+                                    items={topics.map(topic => topic.id)}
+                                    strategy={verticalListSortingStrategy}
+                                >
+                                    <Stack gap="16px">
+                                        {topics.map((topic, idx) => (
+                                            <SortableSlideCard
+                                                key={topic.id}
+                                                topic={topic}
+                                                index={idx}
+                                                onTopicChange={handleTopicChange}
+                                                onInstructionsChange={handleInstructionsChange}
+                                                onDelete={handleDeleteTopic}
+                                            />
+                                        ))}
+                                    </Stack>
+                                </SortableContext>
+                            </DndContext>
+                            
+                            <Button 
+                                onClick={handleAddTopic} 
+                                aria-label="Добавить слайд" 
+                                tabIndex={0}
+                                marginTop="16px"
+                                variant="outline"
+                                width="100%"
+                                borderStyle="dashed"
+                                borderWidth="2px"
+                                borderColor="gray.300"
+                                _hover={{ borderColor: "blue.400", backgroundColor: "blue.50" }}
+                            >
+                                <FaPlus />
+                                Добавить слайд
+                            </Button>
+                        </Box>
                     </Stack>
 
                     <Flex justifyContent="flex-end" marginTop="24px">
