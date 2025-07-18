@@ -14,27 +14,46 @@ export default function RegisterPage() {
     const [agreeToTerms, setAgreeToTerms] = useState(false);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [nameError, setNameError] = useState('');
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState('Пароль должен содержать не менее 8 символов');
+    const [confirmPasswordError, setConfirmPasswordError] = useState('');
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const handleNameChange = (value: string) => {
+        setName(value);
+        setNameError(value.trim() ? '' : 'Имя обязательно');
+    };
+
+    const handleEmailChange = (value: string) => {
+        setEmail(value);
+        setEmailError(emailRegex.test(value) ? '' : 'Введите корректный email');
+    };
+
+    const handlePasswordChange = (value: string) => {
+        setPassword(value);
+        setPasswordError(value.length >= 8 ? '' : 'Пароль должен содержать не менее 8 символов');
+        if (confirmPassword) {
+            setConfirmPasswordError(value === confirmPassword ? '' : 'Пароли не совпадают');
+        }
+    };
+
+    const handleConfirmPasswordChange = (value: string) => {
+        setConfirmPassword(value);
+        setConfirmPasswordError(value === password ? '' : 'Пароли не совпадают');
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!name || !email || !password || !confirmPassword) {
-            setError('Пожалуйста, заполните все поля');
-            return;
-        }
-
-        if (password !== confirmPassword) {
-            setError('Пароли не совпадают');
-            return;
-        }
-
-        if (password.length < 8) {
-            setError('Пароль должен содержать не менее 8 символов');
-            return;
-        }
-
         if (!agreeToTerms) {
             setError('Необходимо согласиться с правилами и дать согласие на обработку персональных данных');
+            return;
+        }
+
+        if (!isFormValid) {
+            setError('Пожалуйста, исправьте ошибки в форме');
             return;
         }
 
@@ -65,7 +84,16 @@ export default function RegisterPage() {
         }
     };
 
-    const isFormValid = name && email && password && confirmPassword && password === confirmPassword && password.length >= 8 && agreeToTerms;
+    const isFormValid =
+        !nameError &&
+        !emailError &&
+        !passwordError &&
+        !confirmPasswordError &&
+        name !== '' &&
+        email !== '' &&
+        password !== '' &&
+        confirmPassword !== '' &&
+        agreeToTerms;
 
     return (
         <div className={styles.container}>
@@ -93,10 +121,11 @@ export default function RegisterPage() {
                                 autoComplete="name"
                                 required
                                 value={name}
-                                onChange={e => setName(e.target.value)}
-                                className={`${styles.input} ${styles.inputFirst}`}
+                                onChange={e => handleNameChange(e.target.value)}
+                                className={`${styles.input} ${styles.inputFirst} ${nameError ? styles.inputError : ''}`}
                                 placeholder="Имя"
                             />
+                            {nameError && <p className={styles.fieldError}>{nameError}</p>}
                         </div>
                         <div>
                             <label htmlFor="email-address" className="sr-only">
@@ -109,10 +138,11 @@ export default function RegisterPage() {
                                 autoComplete="email"
                                 required
                                 value={email}
-                                onChange={e => setEmail(e.target.value)}
-                                className={styles.input}
+                                onChange={e => handleEmailChange(e.target.value)}
+                                className={`${styles.input} ${emailError ? styles.inputError : ''}`}
                                 placeholder="Электронная почта"
                             />
+                            {emailError && <p className={styles.fieldError}>{emailError}</p>}
                         </div>
                         <div>
                             <label htmlFor="password" className="sr-only">
@@ -125,10 +155,11 @@ export default function RegisterPage() {
                                 autoComplete="new-password"
                                 required
                                 value={password}
-                                onChange={e => setPassword(e.target.value)}
-                                className={styles.input}
+                                onChange={e => handlePasswordChange(e.target.value)}
+                                className={`${styles.input} ${passwordError ? styles.inputError : ''}`}
                                 placeholder="Пароль"
                             />
+                            {passwordError && <p className={styles.fieldError}>{passwordError}</p>}
                         </div>
                         <div>
                             <label htmlFor="confirm-password" className="sr-only">
@@ -141,10 +172,13 @@ export default function RegisterPage() {
                                 autoComplete="new-password"
                                 required
                                 value={confirmPassword}
-                                onChange={e => setConfirmPassword(e.target.value)}
-                                className={`${styles.input} ${styles.inputLast}`}
+                                onChange={e => handleConfirmPasswordChange(e.target.value)}
+                                className={`${styles.input} ${styles.inputLast} ${confirmPasswordError ? styles.inputError : ''}`}
                                 placeholder="Подтвердить пароль"
                             />
+                            {confirmPasswordError && (
+                                <p className={styles.fieldError}>{confirmPasswordError}</p>
+                            )}
                         </div>
                     </div>
 
