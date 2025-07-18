@@ -87,6 +87,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tipt
     const handleAddSlideWithAI = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
         setShowAIGenerator(true);
+        // Prevent body scroll when modal is open
+        document.body.style.overflow = 'hidden';
     };
 
     const handleTestTemplate = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
@@ -493,6 +495,13 @@ const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tipt
         };
     }, [slideLayoutIds, isReadOnly]);
 
+    // Cleanup body scroll on unmount
+    useEffect(() => {
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, []);
+
     return (
         <div
             className={`${styles.slide} ${isDropTarget ? 'active-slide-drop-target' : ''} ${isLast ? styles.slideLast : ''}`}
@@ -598,12 +607,18 @@ const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tipt
                 )}
 
                 {showAIGenerator && (
-                    <div className={styles.aiGeneratorOverlay} onClick={() => setShowAIGenerator(false)}>
+                    <div className={styles.aiGeneratorOverlay} onClick={() => {
+                        setShowAIGenerator(false);
+                        document.body.style.overflow = '';
+                    }}>
                         <div onClick={e => e.stopPropagation()}>
                             <AISlideGenerator
                                 presentationId={presentationId}
                                 slideId={slideId}
-                                onClose={() => setShowAIGenerator(false)}
+                                onClose={() => {
+                                    setShowAIGenerator(false);
+                                    document.body.style.overflow = '';
+                                }}
                             />
                         </div>
                     </div>

@@ -1089,6 +1089,7 @@ button[data-type="button"]:hover {
     color: var(--presentation-text-color);
     caret-color: var(--presentation-text-color);
     font-family: var(--presentation-body-font);
+    margin-bottom: 2em;
 }
 
 /* --presentation-heading-capitaliza    tion
@@ -1123,6 +1124,7 @@ none
     caret-color: var(--presentation-heading-color);
     font-family: var(--presentation-heading-font) !important;
     letter-spacing: var(--presentation-heading-letter-spacing) !important;
+    margin-bottom: 2em;
 }
 
 a {

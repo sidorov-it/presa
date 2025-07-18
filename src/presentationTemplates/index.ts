@@ -4,10 +4,6 @@ import projectKickoffDescriptor from './projectKickoff.json';
 import startapPitchDeckDescriptor from './startapPitchDeck.json';
 import marketingAgencyDescriptor from './marketingAgency.json';
 
-import marketingStrategyImage from './images/marketingStrategy.png';
-import projectKickoffImage from './images/projectKickoff.png';
-import startapPitchDeckImage from './images/startapPitchDeck.png';
-import marketingAgencyImage from './images/marketingAgency.png';
 
 // export const marketingStrategyDescriptor: PresentationDescriptor = {
 //     title: 'Портфолио',
@@ -154,10 +150,10 @@ export const PresentationTemplateDescriptors = {
 };
 
 export const PreviewTemplateImages = {
-    marketingStrategy: marketingStrategyImage,
-    projectKickoff: projectKickoffImage,
-    startapPitchDeck: startapPitchDeckImage,
-    marketingAgency: marketingAgencyImage,
+    marketingStrategy: 'https://app.slydle.ru/uploads/images/marketingStrategy.png',
+    projectKickoff: 'https://app.slydle.ru/uploads/images/projectKickoff.png',
+    startapPitchDeck: 'https://app.slydle.ru/uploads/images/startapPitchDeck.png',
+    marketingAgency: 'https://app.slydle.ru/uploads/images/marketingAgency.png',
 };
 
 export type PresentationTemplateKeys = keyof typeof PresentationTemplateDescriptors;
