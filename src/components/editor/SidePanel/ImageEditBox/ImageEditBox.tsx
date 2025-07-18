@@ -47,23 +47,23 @@ type StyleOption =
     | 'texture';
 
 const styleOptions = [
-    { value: 'none', label: 'Без стиля', prompt: 'Стиль: none' },
-    { value: 'custom', label: 'Пользовательский', prompt: 'Стиль: custom' },
-    { value: 'realistic', label: 'Реалистичный', prompt: 'Стиль: realistic' },
-    { value: 'photography', label: 'Фотография', prompt: 'Стиль: photography' },
-    { value: 'analog-film', label: 'Аналоговая пленка', prompt: 'Стиль: analog-film' },
-    { value: 'artistic', label: 'Художественный', prompt: 'Стиль: artistic' },
-    { value: 'anime', label: 'Аниме', prompt: 'Стиль: anime' },
-    { value: 'digital-art', label: 'Цифровое искусство', prompt: 'Стиль: digital-art' },
-    { value: 'fantasy-art', label: 'Фэнтези арт', prompt: 'Стиль: fantasy-art' },
-    { value: 'vaporwave', label: 'Вейпорвейв', prompt: 'Стиль: vaporwave' },
-    { value: 'isometric', label: 'Изометрический', prompt: 'Стиль: isometric' },
-    { value: 'low-poly', label: 'Лоу-поли', prompt: 'Стиль: low-poly' },
-    { value: 'claymation', label: 'Пластилиновая анимация', prompt: 'Стиль: claymation' },
-    { value: 'origami', label: 'Оригами', prompt: 'Стиль: origami' },
-    { value: 'line-art', label: 'Линейная графика', prompt: 'Стиль: line-art' },
-    { value: 'pixel-art', label: 'Пиксель арт', prompt: 'Стиль: pixel-art' },
-    { value: 'texture', label: 'Текстура', prompt: 'Стиль: texture' },
+    { value: 'none', label: 'Без стиля', prompt: '' },
+    { value: 'custom', label: 'Пользовательский', prompt: '' },
+    { value: 'realistic', label: 'Реалистичный', prompt: 'фотореалистичный, высокое качество, детализированный, естественное освещение, четкий фокус' },
+    { value: 'photography', label: 'Фотография', prompt: 'профессиональная фотография, DSLR камера, естественное освещение, высокое разрешение, четкие детали' },
+    { value: 'analog-film', label: 'Аналоговая пленка', prompt: 'аналоговая пленочная фотография, винтажная зернистость пленки, теплые тона, ностальгическая атмосфера, 35мм пленка' },
+    { value: 'artistic', label: 'Художественный', prompt: 'художественный стиль, творческая композиция, выразительные мазки кисти, качество изобразительного искусства' },
+    { value: 'anime', label: 'Аниме', prompt: 'аниме стиль, манга иллюстрация, яркие цвета, четкие линии, японский анимационный стиль' },
+    { value: 'digital-art', label: 'Цифровое искусство', prompt: 'цифровое искусство, концепт-арт стиль, отполированная отделка, яркие цвета, современная иллюстрация' },
+    { value: 'fantasy-art', label: 'Фэнтези арт', prompt: 'фэнтези арт стиль, магическая атмосфера, эпическая композиция, мистические элементы, драматическое освещение' },
+    { value: 'vaporwave', label: 'Вейпорвейв', prompt: 'вейпорвейв эстетика, неоновые цвета, ретро-футуристический, синтвейв стиль, ностальгия по 80-м, фиолетовые и розовые тона' },
+    { value: 'isometric', label: 'Изометрический', prompt: 'изометрический вид, 3D перспектива, геометрические формы, четкие линии, архитектурный стиль' },
+    { value: 'low-poly', label: 'Лоу-поли', prompt: 'лоу-поли 3D стиль, геометрические формы, минималистичный дизайн, граненые поверхности, современное 3D искусство' },
+    { value: 'claymation', label: 'Пластилиновая анимация', prompt: 'стиль пластилиновой анимации, глиняная скульптура, вид покадровой анимации, рукотворный вид' },
+    { value: 'origami', label: 'Оригами', prompt: 'стиль оригами из бумаги, эстетика сложенной бумаги, геометрические бумажные формы, минималистичный дизайн' },
+    { value: 'line-art', label: 'Линейная графика', prompt: 'стиль линейной графики, черно-белый, четкие линии, минимальные тени, векторная иллюстрация' },
+    { value: 'pixel-art', label: 'Пиксель арт', prompt: 'стиль пиксель арт, 8-битная графика, ретро игровая эстетика, пиксельный дизайн, ограниченная цветовая палитра' },
+    { value: 'texture', label: 'Текстура', prompt: 'высококачественная текстура, детализированная поверхность, фокус на материале, тактильный вид, крупный план деталей' },
 ];
 
 const ImageEditBox: React.FC<ImageEditBoxProps> = ({
@@ -257,11 +257,11 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({
             // Add style to prompt
             if (selectedStyle !== 'none') {
                 if (selectedStyle === 'custom' && customStyle.trim()) {
-                    fullPrompt += `, стиль: ${customStyle.trim()}`;
+                    fullPrompt += `, ${customStyle.trim()}`;
                 } else if (selectedStyle !== 'custom') {
-                    const styleLabel = styleOptions.find(opt => opt.value === selectedStyle)?.label;
-                    if (styleLabel) {
-                        fullPrompt += `, стиль: ${styleLabel}`;
+                    const stylePrompt = styleOptions.find(opt => opt.value === selectedStyle)?.prompt;
+                    if (stylePrompt) {
+                        fullPrompt += `, ${stylePrompt}`;
                     }
                 }
             }
@@ -556,6 +556,7 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({
                             {styleOptions.find(opt => opt.value === selectedStyle)?.label || 'Выберите стиль'}
                         </Button>
                     }
+                    classNamePositioner={styles.stylePopoverPositioner}
                     content={renderStylePopoverContent()}
                     isOpen={isStylePopoverOpen}
                     onOpen={() => setIsStylePopoverOpen(true)}

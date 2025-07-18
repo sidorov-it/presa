@@ -4,13 +4,12 @@ import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { toast } from 'sonner';
 import * as detectBrowser from 'detect-browser';
-const browser = detectBrowser.detect();
-window.taoster = toast;
 
 const WARNING_KEY = 'chromeWarningShown';
 
 export default function BrowserWarning() {
     const pathname = usePathname();
+    const browser = detectBrowser.detect();
 
     useEffect(() => {
         if (!pathname) return;
@@ -44,7 +43,7 @@ export default function BrowserWarning() {
             }, 2000);
             sessionStorage.setItem(WARNING_KEY, 'true');
         }
-    }, [pathname]);
+    }, [browser?.name, pathname]);
 
     return null;
 }

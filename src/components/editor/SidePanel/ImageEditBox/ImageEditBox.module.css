@@ -253,3 +253,7 @@
 .generateButton {
     width: 100%;
 }
+
+.stylePopoverPositioner {
+    z-index: 340 !important;
+}
