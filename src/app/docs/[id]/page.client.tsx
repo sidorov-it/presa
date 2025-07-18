@@ -359,6 +359,7 @@ export default function PresentationEditorPage() {
     const id = params.id as string;
     const [isBgModalOpen, setIsBgModalOpen] = useState(false);
     const { status } = useSession();
+    const [isMobileEditNoticeClosed, setIsMobileEditNoticeClosed] = useState(false);
 
     // Mobile detection state
     const [isMobile, setIsMobile] = useState(false);
@@ -618,7 +619,11 @@ export default function PresentationEditorPage() {
                                 </>
                             )}
                         </main>
-
+                        {isMobile && !isMobileEditNoticeClosed && (
+                            <div className={styles.mobileEditNotice} onClick={() => setIsMobileEditNoticeClosed(true)}>
+                                Для редактирования презентации перейдите на компьютер
+                            </div>
+                        )}
                     </div>
                 </ThemeStylesApplier>
             </ReadOnlyProvider>

@@ -912,3 +912,31 @@
     background-color: var(--color-background);
     border-color: var(--color-border);
 }
+
+.mobileEditNotice {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 300px;
+    width: 300px;
+    background-color: #30a14e;
+    border-top: 1px solid var(--color-border);
+    color: #fff;
+    text-align: center;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    z-index: 500;
+}
+
+@media (max-width: 1023px) {
+    .mobileEditNotice {
+        display: block;
+    }
+}
+
+:global(.dark) .mobileEditNotice {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+}
