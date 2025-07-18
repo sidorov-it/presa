@@ -6,6 +6,7 @@ import { Provider } from '@/components/ui/provider';
 import SideMenuRenderer from '@/components/editor/Menus/SideMenuRenderer/SideMenuRenderer';
 import YaMetrika from '@/components/metrika';
 import BrowserWarning from '@/components/BrowserWarning';
+import EarlyTestBanner from '@/components/EarlyTestBanner';
 import { Suspense } from 'react';
 // import Footer from '@/components/ui/Footer';
 
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <NextAuthProvider>
                     <Provider>
                         <BrowserWarning />
+                        <EarlyTestBanner />
                         {children}
                         <SideMenuRenderer />
                         {/* <Footer /> */}

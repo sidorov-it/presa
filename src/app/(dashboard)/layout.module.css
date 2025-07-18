@@ -78,7 +78,7 @@
         position: fixed;
         transform: none;
         left: 0;
-        top: 0;
+        top: 37px;
         bottom: 0;
         flex-shrink: 0;
         border-right: 1px solid var(--color-border);
