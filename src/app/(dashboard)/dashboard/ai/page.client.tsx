@@ -64,6 +64,7 @@ const AiPresentationPage = () => {
     const [presentationTitle, setPresentationTitle] = useState('');
     const [presentationDescription, setPresentationDescription] = useState('');
     const [topics, setTopics] = useState<SlideTopic[]>([]);
+    const [draggingId, setDraggingId] = useState<string | null>(null);
 
     // Handlers
     const handleExampleClick = (example: string) => setDescription(example);
@@ -113,6 +114,42 @@ const AiPresentationPage = () => {
     };
     const handleDeleteTopic = (id: string) => {
         setTopics(topics => topics.filter(t => t.id !== id));
+    };
+
+    const handleDragStart = (id: string) => (e: React.DragEvent<HTMLDivElement>) => {
+        setDraggingId(id);
+        e.dataTransfer.effectAllowed = 'move';
+    };
+
+    const handleDragEnd = () => setDraggingId(null);
+
+    const handleDrop = (id: string) => (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        if (!draggingId || draggingId === id) return;
+
+        setTopics(topics => {
+            const updated = [...topics];
+            const dragIndex = updated.findIndex(t => t.id === draggingId);
+            const targetIndex = updated.findIndex(t => t.id === id);
+            if (dragIndex === -1 || targetIndex === -1) return updated;
+
+            const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
+            const insertAfter = e.clientY > rect.top + rect.height / 2;
+
+            const [dragged] = updated.splice(dragIndex, 1);
+
+            let insertIndex = insertAfter ? targetIndex + 1 : targetIndex;
+            if (dragIndex < targetIndex) insertIndex -= 1;
+            updated.splice(insertIndex, 0, dragged);
+
+            return updated;
+        });
+
+        setDraggingId(null);
+    };
+
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
     };
 
     const handleBack = () => setStep('form');
@@ -401,46 +438,63 @@ const AiPresentationPage = () => {
                             Темы слайдов
                         </Heading>
                         {topics.map((topic, idx) => (
-                            <Flex key={topic.id} alignItems="flex-start" gap="8px">
-                                <Box flex="1">
-                                    <Text as="label" fontWeight="bold" display="block" marginBottom="4px">
-                                        Тема слайда {idx + 1}
-                                    </Text>
-                                    <Input
-                                        value={topic.title}
-                                        onChange={e => handleTopicChange(topic.id, e.target.value)}
-                                        aria-label={`Тема слайда ${idx + 1}`}
+                            <Box
+                                key={topic.id}
+                                border="1px"
+                                borderColor="gray.200"
+                                borderRadius="md"
+                                padding="12px"
+                                background="gray.50"
+                                marginBottom="8px"
+                                onDragStart={handleDragStart(topic.id)}
+                                onDragEnd={handleDragEnd}
+                                onDrop={handleDrop(topic.id)}
+                                onDragOver={handleDragOver}
+                                draggable
+                                cursor="grab"
+                                opacity={draggingId === topic.id ? 0.5 : 1}
+                            >
+                                <Flex alignItems="flex-start" gap="8px">
+                                    <Box flex="1">
+                                        <Text as="label" fontWeight="bold" display="block" marginBottom="4px">
+                                            Тема слайда {idx + 1}
+                                        </Text>
+                                        <Input
+                                            value={topic.title}
+                                            onChange={e => handleTopicChange(topic.id, e.target.value)}
+                                            aria-label={`Тема слайда ${idx + 1}`}
+                                            tabIndex={0}
+                                        />
+                                        <Text
+                                            as="label"
+                                            fontWeight="bold"
+                                            display="block"
+                                            marginTop="8px"
+                                            marginBottom="4px"
+                                        >
+                                            Инструкции для слайда
+                                        </Text>
+                                        <Textarea
+                                            value={topic.instructions}
+                                            onChange={e => handleInstructionsChange(topic.id, e.target.value)}
+                                            aria-label={`Инструкции для слайда ${idx + 1}`}
+                                            tabIndex={0}
+                                            rows={2}
+                                        />
+                                    </Box>
+                                    <Button
+                                        variant="ghost"
+                                        colorScheme="red"
+                                        onClick={() => handleDeleteTopic(topic.id)}
+                                        aria-label="Удалить слайд"
                                         tabIndex={0}
-                                    />
-                                    <Text
-                                        as="label"
-                                        fontWeight="bold"
-                                        display="block"
-                                        marginTop="8px"
-                                        marginBottom="4px"
+                                        marginTop="32px"
+                                        padding="8px"
                                     >
-                                        Инструкции для слайда
-                                    </Text>
-                                    <Textarea
-                                        value={topic.instructions}
-                                        onChange={e => handleInstructionsChange(topic.id, e.target.value)}
-                                        aria-label={`Инструкции для слайда ${idx + 1}`}
-                                        tabIndex={0}
-                                        rows={2}
-                                    />
-                                </Box>
-                                <Button
-                                    variant="ghost"
-                                    colorScheme="red"
-                                    onClick={() => handleDeleteTopic(topic.id)}
-                                    aria-label="Удалить слайд"
-                                    tabIndex={0}
-                                    marginTop="32px"
-                                    padding="8px"
-                                >
-                                    <FaTrash />
-                                </Button>
-                            </Flex>
+                                        <FaTrash />
+                                    </Button>
+                                </Flex>
+                            </Box>
                         ))}
                         <Button onClick={handleAddTopic} aria-label="Добавить слайд" tabIndex={0}>
                             <FaPlus />
