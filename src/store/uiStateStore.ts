@@ -276,7 +276,7 @@ export const useUIStateStore = create<UIState>()(
                     console.log('closeContextMenu');
                     set({
                         isContextMenuOpen: false,
-                        selectedSlideId: null,
+                        // selectedSlideId: null,
                         selectedElementId: null,
                         contextMenuElementType: null,
                         selectedLayoutId: null,

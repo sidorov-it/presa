@@ -63,12 +63,27 @@ const ElementsPanelPopupMenu: React.FC<PElementsPanelPopupMenuProps> = ({ isOpen
         } else if (isTable) {
             const tableLayout = getNewLayoutWithTable(element.props?.columns, element.props?.rows);
             usePresentationStore.getState().addTableLayout(presentationId, slideId, tableLayout);
+
+            setTimeout(() => {
+                document.querySelector(`[data-layout-id="${tableLayout.id}"]`)?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                });
+            }, 300);
+
         } else {
             // Normal element click
             const newElement = getNewElement(element);
-            usePresentationStore
+            const { elementId } = usePresentationStore
                 .getState()
                 .addLayoutWithElement(presentationId, slideId, newElement as unknown as BaseElement);
+
+            setTimeout(() => {
+                document.querySelector(`[data-element-id="${elementId}"]`)?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                });
+            }, 300);
         }
     };
 

@@ -199,7 +199,14 @@ export interface PresentationState {
 
     addTableLayout: (presentationId: string, slideId: string, tableLayout: Layout) => void;
 
-    addLayoutWithElement: (presentationId: string, slideId: string, element: BaseElement) => void;
+    addLayoutWithElement: (
+        presentationId: string,
+        slideId: string,
+        element: BaseElement
+    ) => {
+        layoutId: string;
+        elementId: string;
+    };
 
     getTableElements: (presentationId: string, slideId: string, layoutId: string) => BaseElement[];
     getTableColumnElements: (
@@ -1209,6 +1216,8 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
                 if (!currentSlide) return;
 
+                const layoutId = generateId();
+                const elementId = generateId();
                 set(state => {
                     const gridStructure = getPredefinedGridStructures('blank');
 
@@ -1229,11 +1238,11 @@ export const usePresentationStore = create<PresentationState>()(
                                                 layouts: [
                                                     ...slide.layouts,
                                                     {
-                                                        id: generateId(),
+                                                        id: layoutId,
                                                         elements: [
                                                             {
                                                                 ...element,
-                                                                id: generateId(),
+                                                                id: elementId,
                                                                 cellId,
                                                             },
                                                         ],
@@ -1268,6 +1277,11 @@ export const usePresentationStore = create<PresentationState>()(
                 });
 
                 get().saveChanges(presentationId);
+
+                return {
+                    layoutId,
+                    elementId,
+                };
             },
 
             getTableElements: (presentationId, slideId, layoutId) => {
