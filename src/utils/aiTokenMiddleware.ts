@@ -20,9 +20,10 @@ interface AIOperationConfig {
 export async function withTokenDeduction<T>(
     request: NextRequest,
     config: AIOperationConfig,
-    operation: (session: any, requestData: any) => Promise<T>
+    operation: (session: any, requestData: any, formData?: FormData) => Promise<T>
 ): Promise<NextResponse> {
     let requestData: any;
+    let formData: FormData | undefined;
 
     try {
         // Check authentication
@@ -31,12 +32,32 @@ export async function withTokenDeduction<T>(
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Parse request data
-        try {
-            requestData = await request.json();
-        } catch (parseError) {
-            logger.error(`Error parsing request data: ${String(parseError)}`);
-            return NextResponse.json({ error: 'Invalid JSON data' }, { status: 400 });
+        // Parse request data - handle both JSON and FormData
+        const contentType = request.headers.get('content-type') || '';
+        
+        if (contentType.includes('multipart/form-data')) {
+            // Handle FormData (for file uploads)
+            try {
+                formData = await request.formData();
+                // For FormData, create a simple object with non-file fields for token calculation
+                requestData = {};
+                for (const [key, value] of formData.entries()) {
+                    if (typeof value === 'string') {
+                        requestData[key] = value;
+                    }
+                }
+            } catch (parseError) {
+                logger.error(`Error parsing FormData: ${String(parseError)}`);
+                return NextResponse.json({ error: 'Invalid form data' }, { status: 400 });
+            }
+        } else {
+            // Handle JSON data
+            try {
+                requestData = await request.json();
+            } catch (parseError) {
+                logger.error(`Error parsing request data: ${String(parseError)}`);
+                return NextResponse.json({ error: 'Invalid JSON data' }, { status: 400 });
+            }
         }
 
         // Calculate required tokens server-side only
@@ -57,7 +78,7 @@ export async function withTokenDeduction<T>(
         }
 
         // Execute the AI operation
-        const result = await operation(session, requestData);
+        const result = await operation(session, requestData, formData);
 
         // Deduct tokens after successful operation
         try {
