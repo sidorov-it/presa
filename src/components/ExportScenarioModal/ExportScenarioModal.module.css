@@ -1,0 +1,168 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modalHeader {
+    padding: 20px 24px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.modalTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a202c;
+    margin: 0;
+}
+
+.modalBody {
+    padding: 20px 24px;
+}
+
+.modalFooter {
+    padding: 0 24px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.formGroup {
+    margin-bottom: 16px;
+}
+
+.formLabel {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #2d3748;
+    margin-bottom: 8px;
+}
+
+.formInput {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.formInput:focus {
+    outline: none;
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.formTextarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 80px;
+    transition: border-color 0.2s;
+}
+
+.formTextarea:focus {
+    outline: none;
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.infoBox {
+    padding: 12px;
+    background-color: #ebf8ff;
+    border-radius: 6px;
+    margin-top: 16px;
+}
+
+.infoTitle {
+    font-size: 14px;
+    font-weight: 500;
+    color: #2b6cb0;
+    margin-bottom: 4px;
+}
+
+.infoText {
+    font-size: 12px;
+    color: #4a5568;
+    line-height: 1.4;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 12px;
+}
+
+.button {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    min-width: 100px;
+}
+
+.button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.buttonOutline {
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    color: #4a5568;
+}
+
+.buttonOutline:hover:not(:disabled) {
+    background: #f7fafc;
+    border-color: #cbd5e0;
+}
+
+.buttonPrimary {
+    background: #3182ce;
+    color: white;
+}
+
+.buttonPrimary:hover:not(:disabled) {
+    background: #2c5aa0;
+}
+
+.buttonSecondary {
+    background: #38a169;
+    color: white;
+}
+
+.buttonSecondary:hover:not(:disabled) {
+    background: #2f855a;
+}
+
+.description {
+    color: #718096;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+} 

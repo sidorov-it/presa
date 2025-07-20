@@ -63,6 +63,7 @@ export default async function generateSlide({
     // const functionArgs = response.function_call?.arguments;
 
     // создаем слайд из шаблона и аргументов
+    console.log('functionArgs', functionArgs);
     const slide = await createSlideFromTemplateWithContent({
         templateId: template.id,
         slotMapping,

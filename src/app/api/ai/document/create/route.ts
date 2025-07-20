@@ -2,7 +2,7 @@ import { withLogging } from '@/hooks/withLoging';
 import { NextRequest } from 'next/server';
 import { withTokenDeduction, TokenCalculators, MetadataExtractors } from '@/utils/aiTokenMiddleware';
 import logger from '@/utils/logger';
-import { v4 as uuidv4 } from 'uuid';
+import { generateRequestId } from '@/utils/requestId';
 import { prisma } from '@/lib/prisma';
 import { generateId } from '@/utils/id';
 import { generateSlidesTemplates } from '@/services/llm/gigaChat';
@@ -11,7 +11,7 @@ import { generateTopicsWithContent } from '@/services/llm/generateTopicsWithCont
 import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
 
 async function POSTHandler(request: NextRequest) {
-    const requestId = uuidv4();
+    const requestId = generateRequestId();
     return withTokenDeduction(
         request,
         {

@@ -1,12 +1,12 @@
 import { markdownToHtml } from './markdownToHtml';
 
 describe('markdownToHtml', () => {
-
     it('test', () => {
-        const text = '# Заявка на грант Yandex Cloud Boost для AI-конструктора презентаций';
+        const text = '## Электромагнитная природа света\n\nОсновы электромагнитной теории света были заложены Джеймсом Клерком Максвеллом. Из его теории следовало, что электромагнитные волны поперечны. Эксперименты Генриха Герца предоставили первое экспериментальное подтверждение этой теории. Было доказано, что электромагнитные волны при своём распространении обнаруживают те же свойства, что и световые волны. Это стало ключевым моментом в понимании природы света.';
         const html = markdownToHtml(text);
         console.log(html);
-    })
+    });
+
     it('converts complex markdown cases', () => {
         const texts = [
             '# Спасибо за внимание!\n\nВаше время ценно, и я рад, что смог поделиться с вами прогнозами и тенденциями в области искусственного интеллекта на ближайшие годы.',
@@ -15,7 +15,7 @@ describe('markdownToHtml', () => {
             '## Заголовок\n\nТекст параграфа\n\n### Подзаголовок\n\nЕще текст',
             '> Цитата\n\nОбычный текст\n\n**Жирный текст**',
             '1. Первый пункт\n2. Второй пункт\n\nТекст после списка',
-            '- Пункт 1\n- Пункт 2\n\n### Заголовок после списка'
+            '- Пункт 1\n- Пункт 2\n\n### Заголовок после списка',
         ];
 
         texts.forEach((text, index) => {
@@ -80,6 +80,22 @@ describe('markdownToHtml', () => {
         const md = '# Title\n\nParagraph with **bold** text.\n\n- List item 1\n- List item 2\n\n> Quote here';
         const html = markdownToHtml(md);
         console.log('\n=== Mixed content test ===');
+        console.log('Input:', JSON.stringify(md));
+        console.log('Output:', html);
+    });
+
+    it('wraps regular text in body-text normar-text span', () => {
+        const md = '## Заголовок\n\nОбычный текст параграфа.\n\nЕще один параграф с **жирным** текстом.';
+        const html = markdownToHtml(md);
+        
+        // Проверяем, что заголовок обрабатывается корректно
+        expect(html).toContain('<span class="heading-text heading-2">Заголовок</span>');
+        
+        // Проверяем, что обычный текст оборачивается в нужные классы
+        expect(html).toContain('<span class="body-text normar-text">Обычный текст параграфа.</span>');
+        expect(html).toContain('<span class="body-text normar-text">Еще один параграф с <strong>жирным</strong> текстом.</span>');
+        
+        console.log('\n=== Body text wrapping test ===');
         console.log('Input:', JSON.stringify(md));
         console.log('Output:', html);
     });
