@@ -34,10 +34,23 @@ const generateTopicsFunction = {
     },
 };
 
+const getContentAmountDescription = (contentAmount?: string) => {
+    switch (contentAmount) {
+        case 'concise':
+            return 'КРАТКИЙ контент - минимум текста, только ключевые моменты, тезисы и основные идеи';
+        case 'detailed':
+            return 'ПОДРОБНЫЙ контент - развернутые объяснения, детали, примеры, дополнительная информация';
+        case 'medium':
+        default:
+            return 'СРЕДНИЙ объем контента - баланс между краткостью и детальностью';
+    }
+};
+
 const getTopicsPrompt = ({
     description,
     numSlides,
     tone,
+    contentAmount,
     durationMinutes,
     goal,
     audience,
@@ -45,6 +58,7 @@ const getTopicsPrompt = ({
     description: string;
     numSlides: number;
     tone: string;
+    contentAmount?: string;
     durationMinutes?: number;
     goal?: string;
     audience?: string;
@@ -59,6 +73,7 @@ ${goal ? `• Цель: ${goal}` : ''}
 ${audience ? `• Аудитория: ${audience}` : ''}
 • Количество слайдов: ${numSlides}
 • Тон/стиль: ${tone}
+• Объем контента: ${getContentAmountDescription(contentAmount)}
 ${Number.isInteger(durationMinutes) ? `• Длительность доклада: ${durationMinutes} минут` : ''}
 
 Требования к результату:
@@ -66,7 +81,13 @@ ${Number.isInteger(durationMinutes) ? `• Длительность доклад
 2. Каждый слайд должен иметь **чёткое, сфокусированное название** и **цель**.
 3. Следуй логической арке "вступление → проблема → решение → результат → CTA".
 4. Учитывай аудиторию и цель при выборе акцентов и доказательств.
-5. **Формат ответа:** JSON-массив объектов со структурой
+5. **Важно**: Адаптируй инструкции под выбранный объем контента:
+   ${contentAmount === 'concise' 
+     ? '- Для КРАТКОГО формата: создавай инструкции для коротких, емких слайдов с минимумом текста'
+     : contentAmount === 'detailed'
+     ? '- Для ПОДРОБНОГО формата: создавай инструкции для развернутых слайдов с детальными объяснениями'
+     : '- Для СРЕДНЕГО формата: создавай инструкции для сбалансированных слайдов с умеренным количеством информации'
+   }
 
 Для генерации структуры презентации ОБЯЗАТЕЛЬНО ВЫЗОВИ фунцию generate_presentation_topics!
 
@@ -75,9 +96,11 @@ ${Number.isInteger(durationMinutes) ? `• Длительность доклад
 const getDocumentTopicsPrompt = ({
     content,
     fileName,
+    contentAmount,
 }: {
     content: string;
     fileName: string;
+    contentAmount?: string;
 }) =>
     `Проанализируй содержимое документа и создай структуру презентации на основе этого материала.
 
@@ -85,6 +108,7 @@ const getDocumentTopicsPrompt = ({
 
 Входные данные:
 • Имя файла: ${fileName}
+• Объем контента: ${getContentAmountDescription(contentAmount)}
 • Содержимое документа:
 ${content}
 
@@ -95,6 +119,13 @@ ${content}
 4. Каждый слайд должен иметь **чёткое, сфокусированное название** и **подробные инструкции**
 5. Следуй логической последовательности изложения материала
 6. Выдели введение, основные разделы и заключение
+7. **Важно**: Адаптируй инструкции под выбранный объем контента:
+   ${contentAmount === 'concise' 
+     ? '- Для КРАТКОГО формата: фокусируйся на ключевых идеях и основных выводах из документа'
+     : contentAmount === 'detailed'
+     ? '- Для ПОДРОБНОГО формата: включай детальные объяснения, примеры и дополнительную информацию из документа'
+     : '- Для СРЕДНЕГО формата: создавай сбалансированное изложение с умеренной детализацией'
+   }
 
 Для генерации структуры презентации ОБЯЗАТЕЛЬНО ВЫЗОВИ фунцию generate_presentation_topics!
 
@@ -103,12 +134,14 @@ ${content}
 const getPlanTopicsPrompt = ({
     plan,
     tone,
+    contentAmount,
     durationMinutes,
     goal,
     audience,
 }: {
     plan: string;
     tone?: string;
+    contentAmount?: string;
     durationMinutes?: number;
     goal?: string;
     audience?: string;
@@ -123,6 +156,7 @@ ${plan}
 ${goal ? `• Цель: ${goal}` : ''}
 ${audience ? `• Аудитория: ${audience}` : ''}
 ${tone ? `• Тон/стиль: ${tone}` : ''}
+• Объем контента: ${getContentAmountDescription(contentAmount)}
 ${Number.isInteger(durationMinutes) ? `• Длительность доклада: ${durationMinutes} минут` : ''}
 
 Требования к результату:
@@ -132,6 +166,13 @@ ${Number.isInteger(durationMinutes) ? `• Длительность доклад
 4. Сохрани логическую последовательность из исходного плана
 5. Добавь необходимые переходные слайды если нужно
 6. Учитывай цель, аудиторию и стиль при формулировке инструкций
+7. **Важно**: Адаптируй инструкции под выбранный объем контента:
+   ${contentAmount === 'concise' 
+     ? '- Для КРАТКОГО формата: создавай инструкции для лаконичных слайдов с основными тезисами'
+     : contentAmount === 'detailed'
+     ? '- Для ПОДРОБНОГО формата: создавай инструкции для развернутых слайдов с детальными разъяснениями'
+     : '- Для СРЕДНЕГО формата: создавай инструкции для сбалансированных слайдов с умеренной детализацией'
+   }
 
 Для генерации структуры презентации ОБЯЗАТЕЛЬНО ВЫЗОВИ фунцию generate_presentation_topics!
 
@@ -148,6 +189,7 @@ async function generateTopics(
         description,
         numSlides,
         tone,
+        contentAmount,
         durationMinutes,
         goal,
         audience,
@@ -155,6 +197,7 @@ async function generateTopics(
         description: string;
         numSlides: number;
         tone: string;
+        contentAmount?: string;
         durationMinutes?: number;
         goal?: string;
         audience?: string;
@@ -170,6 +213,7 @@ async function generateTopics(
                 description,
                 numSlides,
                 tone,
+                contentAmount,
                 durationMinutes,
                 goal,
                 audience,
@@ -211,9 +255,11 @@ export async function generateTopicsFromDocument(
     {
         content,
         fileName,
+        contentAmount,
     }: {
         content: string;
         fileName: string;
+        contentAmount?: string;
     },
     requestId: string
 ) {
@@ -225,6 +271,7 @@ export async function generateTopicsFromDocument(
             getDocumentTopicsPrompt({
                 content,
                 fileName,
+                contentAmount,
             }),
             {
                 ...topicsOptions,
@@ -254,12 +301,14 @@ export async function generateTopicsFromPlan(
     {
         plan,
         tone,
+        contentAmount,
         durationMinutes,
         goal,
         audience,
     }: {
         plan: string;
         tone?: string;
+        contentAmount?: string;
         durationMinutes?: number;
         goal?: string;
         audience?: string;
@@ -274,6 +323,7 @@ export async function generateTopicsFromPlan(
             getPlanTopicsPrompt({
                 plan,
                 tone,
+                contentAmount,
                 durationMinutes,
                 goal,
                 audience,

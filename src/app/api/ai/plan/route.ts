@@ -16,7 +16,7 @@ async function POSTHandler(request: NextRequest) {
             metadata: MetadataExtractors.topics,
         },
         async (session, requestData) => {
-            const { plan, tone, durationMinutes, goal, audience } = requestData;
+            const { plan, tone, contentAmount, durationMinutes, goal, audience } = requestData;
 
             if (!plan || typeof plan !== 'string') {
                 throw new Error('Plan is required and must be a string');
@@ -33,6 +33,7 @@ async function POSTHandler(request: NextRequest) {
                     {
                         plan: plan.trim(),
                         tone,
+                        contentAmount,
                         durationMinutes,
                         goal,
                         audience,

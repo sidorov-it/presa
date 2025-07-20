@@ -19,7 +19,7 @@ async function POSTHandler(request: NextRequest) {
             try {
                 // Get the uploaded file from form data
                 const file = formData?.get('file') as File;
-                
+
                 if (!file) {
                     throw new Error('No file provided');
                 }
@@ -43,7 +43,7 @@ async function POSTHandler(request: NextRequest) {
 
                 // Extract text content from file
                 let textContent = '';
-                
+
                 if (file.type === 'text/plain') {
                     textContent = await file.text();
                 } else if (file.type === 'application/pdf') {
@@ -66,12 +66,16 @@ async function POSTHandler(request: NextRequest) {
                     textContent = textContent.substring(0, maxContentLength) + '...';
                 }
 
+                // Get contentAmount from form data if provided
+                const contentAmount = (formData?.get('contentAmount') as string) || 'medium';
+
                 // Generate topics from document content
                 const { title, topics } = await generateTopicsFromDocument(
                     session.user.id,
                     {
                         content: textContent,
                         fileName: file.name,
+                        contentAmount,
                     },
                     requestId
                 );
@@ -89,4 +93,4 @@ async function POSTHandler(request: NextRequest) {
     );
 }
 
-export const POST = withLogging(POSTHandler); 
+export const POST = withLogging(POSTHandler);

@@ -34,7 +34,7 @@ export async function withTokenDeduction<T>(
 
         // Parse request data - handle both JSON and FormData
         const contentType = request.headers.get('content-type') || '';
-        
+
         if (contentType.includes('multipart/form-data')) {
             // Handle FormData (for file uploads)
             try {
@@ -89,7 +89,7 @@ export async function withTokenDeduction<T>(
                 amount: requiredTokens,
                 description: config.description,
                 metadata,
-                // llmrequestId: request.headers.get('x-llm-request-id') || '',
+                llmrequestId: request.headers.get('x-llm-request-id') || '',
             });
         } catch (tokenError) {
             logger.error(`Error deducting tokens: ${String(tokenError)}`);
@@ -103,7 +103,7 @@ export async function withTokenDeduction<T>(
             tokensUsed: requiredTokens,
         });
     } catch (error) {
-        logger.error(`Error in AI operation: ${String(error)}`);
+        logger.error(`Error in AI operation: ${error?.message}`);
         return NextResponse.json(
             {
                 error: 'Internal server error',

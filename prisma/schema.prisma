@@ -114,6 +114,7 @@ model Presentation {
   goal               String?
   audience           String?
   tone               String?
+  contentAmount      String?             @default("medium")
   slides             Json
   themeId            String?             @db.ObjectId
   userId             String              @db.ObjectId

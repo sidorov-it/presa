@@ -17,7 +17,7 @@ import {
 } from '@chakra-ui/react';
 // import * as Select from '@chakra-ui/react/components/select';
 import { Portal } from '@chakra-ui/react';
-import { FaPlus, FaTrash, FaGripVertical, FaFileAlt, FaEdit, FaPencilAlt, FaUpload, FaClipboardList } from 'react-icons/fa';
+import { FaPlus, FaTrash, FaGripVertical, FaFileAlt, FaEdit, FaUpload, FaClipboardList } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { generateId } from '@/utils/id';
@@ -208,6 +208,12 @@ export const TONE_OPTIONS = [
     { value: 'creative', label: 'Креативный' },
 ];
 
+export const CONTENT_AMOUNT_OPTIONS = [
+    { value: 'concise', label: 'Краткий' },
+    { value: 'medium', label: 'Средний' },
+    { value: 'detailed', label: 'Подробный' },
+];
+
 const SLIDES_OPTIONS = [3, 4, 5, 6, 7, 8, 9, 10];
 
 const AiPresentationPage = () => {
@@ -222,6 +228,7 @@ const AiPresentationPage = () => {
     const [description, setDescription] = useState('');
     const [numSlides, setNumSlides] = useState(5);
     const [tone, setTone] = useState('professional');
+    const [contentAmount, setContentAmount] = useState('medium');
     const [durationMinutes, setDurationMinutes] = useState<number | null>(null);
     const [goal, setGoal] = useState('');
     const [audience, setAudience] = useState('');
@@ -266,13 +273,14 @@ const AiPresentationPage = () => {
             'application/msword',
             'text/plain',
         ];
-        
+
         if (!allowedTypes.includes(file.type)) {
             toast.error('Поддерживаются только файлы PDF, DOCX, DOC и TXT');
             return;
         }
 
-        if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        if (file.size > 10 * 1024 * 1024) {
+            // 10MB limit
             toast.error('Размер файла не должен превышать 10 МБ');
             return;
         }
@@ -316,7 +324,7 @@ const AiPresentationPage = () => {
             });
 
             if (!res.ok) throw new Error('Ошибка обработки документа');
-            
+
             const data = await res.json();
             setPresentationTitle(data.title || 'Презентация из документа');
             setPresentationDescription(data.description || '');
@@ -351,19 +359,20 @@ const AiPresentationPage = () => {
             const res = await fetch('/api/ai/plan', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    plan: planText, 
-                    tone, 
-                    durationMinutes, 
-                    goal, 
-                    audience 
+                body: JSON.stringify({
+                    plan: planText,
+                    tone,
+                    contentAmount,
+                    durationMinutes,
+                    goal,
+                    audience,
                 }),
             });
 
             if (!res.ok) throw new Error('Ошибка обработки плана');
-            
+
             const data = await res.json();
-            
+
             // For plan-based creation, skip topics editing and go directly to generation
             const response = await fetch('/api/ai/presentation', {
                 method: 'POST',
@@ -381,6 +390,7 @@ const AiPresentationPage = () => {
                     goal,
                     audience,
                     tone,
+                    contentAmount,
                 }),
             });
 
@@ -429,7 +439,15 @@ const AiPresentationPage = () => {
             const res = await fetch('/api/ai/topics', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ description, numSlides, tone, durationMinutes, goal, audience }),
+                body: JSON.stringify({
+                    description,
+                    numSlides,
+                    tone,
+                    contentAmount,
+                    durationMinutes,
+                    goal,
+                    audience,
+                }),
             });
             if (!res.ok) throw new Error('Ошибка генерации тем слайдов');
             const data = await res.json();
@@ -502,6 +520,10 @@ const AiPresentationPage = () => {
         items: TONE_OPTIONS.map(opt => ({ value: opt.value, label: opt.label })),
     });
 
+    const contentAmountOptions = createListCollection({
+        items: CONTENT_AMOUNT_OPTIONS.map(opt => ({ value: opt.value, label: opt.label })),
+    });
+
     const handleGeneratePresentation = async () => {
         if (!presentationTitle.trim()) {
             toast.error('Пожалуйста, введите название презентации');
@@ -533,6 +555,7 @@ const AiPresentationPage = () => {
                     goal,
                     audience,
                     tone,
+                    contentAmount,
                 }),
             });
 
@@ -592,7 +615,7 @@ const AiPresentationPage = () => {
                         Выберите способ создания презентации
                     </Text>
                     <Stack gap="16px">
-                        {CREATION_METHODS.map((method) => {
+                        {CREATION_METHODS.map(method => {
                             const IconComponent = method.icon;
                             return (
                                 <Card.Root
@@ -612,7 +635,7 @@ const AiPresentationPage = () => {
                                     onClick={() => handleMethodSelect(method.id)}
                                     tabIndex={0}
                                     aria-label={`Выбрать метод: ${method.title}`}
-                                    onKeyDown={(e) => {
+                                    onKeyDown={e => {
                                         if (e.key === 'Enter' || e.key === ' ') {
                                             e.preventDefault();
                                             handleMethodSelect(method.id);
@@ -653,7 +676,7 @@ const AiPresentationPage = () => {
                     <Button onClick={handleBack} aria-label="Назад к выбору метода" tabIndex={0}>
                         ← Назад
                     </Button>
-                    
+
                     <Box>
                         <Text fontSize="xl" fontWeight="bold" marginBottom="16px">
                             Загрузка документа
@@ -661,7 +684,7 @@ const AiPresentationPage = () => {
                         <Text color="gray.600" marginBottom="24px">
                             Загрузите документ в формате PDF, DOCX, DOC или TXT для создания презентации
                         </Text>
-                        
+
                         {/* File upload area */}
                         <Box
                             border="2px dashed"
@@ -671,7 +694,7 @@ const AiPresentationPage = () => {
                             textAlign="center"
                             backgroundColor={isDragOver ? 'blue.50' : 'gray.50'}
                             transition="all 0.2s"
-                            onDragOver={(e) => {
+                            onDragOver={e => {
                                 e.preventDefault();
                                 setIsDragOver(true);
                             }}
@@ -685,11 +708,7 @@ const AiPresentationPage = () => {
                                     <Text fontSize="sm" color="gray.600">
                                         {(uploadedFile.size / 1024 / 1024).toFixed(2)} МБ
                                     </Text>
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => setUploadedFile(null)}
-                                        size="sm"
-                                    >
+                                    <Button variant="outline" onClick={() => setUploadedFile(null)} size="sm">
                                         Удалить файл
                                     </Button>
                                 </Stack>
@@ -702,27 +721,56 @@ const AiPresentationPage = () => {
                                     <Text fontSize="sm" color="gray.600">
                                         Поддерживаются PDF, DOCX, DOC, TXT (до 10 МБ)
                                     </Text>
-                                    <Button
-                                        as="label"
-                                        colorScheme="blue"
-                                        cursor="pointer"
-                                        htmlFor="file-input"
-                                    >
-                                        Выбрать файл
-                                    </Button>
-                                    <Input
-                                        id="file-input"
-                                        type="file"
-                                        accept=".pdf,.docx,.doc,.txt"
-                                        onChange={handleFileInputChange}
-                                        display="none"
-                                    />
+                                    <Box as="label" cursor="pointer">
+                                        <Button as="span" colorScheme="blue">
+                                            Выбрать файл
+                                        </Button>
+                                        <Input
+                                            id="file-input"
+                                            type="file"
+                                            accept=".pdf,.docx,.doc,.txt"
+                                            onChange={handleFileInputChange}
+                                            display="none"
+                                        />
+                                    </Box>
                                 </Stack>
                             )}
                         </Box>
 
                         {/* Additional options */}
                         <Stack gap="16px" marginTop="24px">
+                            <Box width="100%">
+                                <Select.Root
+                                    collection={contentAmountOptions}
+                                    value={[contentAmount]}
+                                    onValueChange={value => setContentAmount(value.value[0])}
+                                    size="sm"
+                                    width="100%"
+                                >
+                                    <Select.HiddenSelect />
+                                    <Select.Label>Объем контента</Select.Label>
+                                    <Select.Control>
+                                        <Select.Trigger>
+                                            <Select.ValueText placeholder="Выберите объем" />
+                                        </Select.Trigger>
+                                        <Select.IndicatorGroup>
+                                            <Select.Indicator />
+                                        </Select.IndicatorGroup>
+                                    </Select.Control>
+                                    <Portal>
+                                        <Select.Positioner>
+                                            <Select.Content>
+                                                {contentAmountOptions.items.map(option => (
+                                                    <Select.Item item={option} key={option.value}>
+                                                        {option.label}
+                                                        <Select.ItemIndicator />
+                                                    </Select.Item>
+                                                ))}
+                                            </Select.Content>
+                                        </Select.Positioner>
+                                    </Portal>
+                                </Select.Root>
+                            </Box>
                             <Flex gap="16px" flexDirection="column" alignItems="flex-start">
                                 <Box width="100%">
                                     <Text fontSize="sm" as="label" display="block" marginBottom="8px">
@@ -730,7 +778,9 @@ const AiPresentationPage = () => {
                                     </Text>
                                     <Input
                                         value={durationMinutes || ''}
-                                        onChange={e => setDurationMinutes(e.target.value ? Number(e.target.value) : null)}
+                                        onChange={e =>
+                                            setDurationMinutes(e.target.value ? Number(e.target.value) : null)
+                                        }
                                         placeholder="Сколько времени будет длиться презентация"
                                         aria-label="Длительность презентации"
                                         type="number"
@@ -764,8 +814,12 @@ const AiPresentationPage = () => {
                             </Flex>
                         </Stack>
 
-                        {error && <Text color="red.500" marginTop="16px">{error}</Text>}
-                        
+                        {error && (
+                            <Text color="red.500" marginTop="16px">
+                                {error}
+                            </Text>
+                        )}
+
                         <Button
                             onClick={handleDocumentUpload}
                             colorScheme="blue"
@@ -785,7 +839,7 @@ const AiPresentationPage = () => {
                     <Button onClick={handleBack} aria-label="Назад к выбору метода" tabIndex={0}>
                         ← Назад
                     </Button>
-                    
+
                     <Box>
                         <Text fontSize="xl" fontWeight="bold" marginBottom="16px">
                             Готовый план презентации
@@ -793,7 +847,7 @@ const AiPresentationPage = () => {
                         <Text color="gray.600" marginBottom="24px">
                             Вставьте готовый план или структуру презентации для быстрого создания
                         </Text>
-                        
+
                         <Box>
                             <Text as="label" fontWeight="bold" display="block" marginBottom="8px">
                                 План презентации
@@ -810,39 +864,73 @@ const AiPresentationPage = () => {
 
                         {/* Additional options */}
                         <Stack gap="16px" marginTop="24px">
-                            <Box width="100%">
-                                <Select.Root
-                                    collection={toneOptions}
-                                    value={[tone]}
-                                    onValueChange={value => setTone(value.value[0])}
-                                    size="sm"
-                                    width="100%"
-                                >
-                                    <Select.HiddenSelect />
-                                    <Select.Label>Стилистика</Select.Label>
-                                    <Select.Control>
-                                        <Select.Trigger>
-                                            <Select.ValueText placeholder="Выберите стиль" />
-                                        </Select.Trigger>
-                                        <Select.IndicatorGroup>
-                                            <Select.Indicator />
-                                        </Select.IndicatorGroup>
-                                    </Select.Control>
-                                    <Portal>
-                                        <Select.Positioner>
-                                            <Select.Content>
-                                                {toneOptions.items.map(option => (
-                                                    <Select.Item item={option} key={option.value}>
-                                                        {option.label}
-                                                        <Select.ItemIndicator />
-                                                    </Select.Item>
-                                                ))}
-                                            </Select.Content>
-                                        </Select.Positioner>
-                                    </Portal>
-                                </Select.Root>
-                            </Box>
-                            
+                            <Flex gap="16px" alignItems="flex-end">
+                                <Box flex="1">
+                                    <Select.Root
+                                        collection={toneOptions}
+                                        value={[tone]}
+                                        onValueChange={value => setTone(value.value[0])}
+                                        size="sm"
+                                        width="100%"
+                                    >
+                                        <Select.HiddenSelect />
+                                        <Select.Label>Стилистика</Select.Label>
+                                        <Select.Control>
+                                            <Select.Trigger>
+                                                <Select.ValueText placeholder="Выберите стиль" />
+                                            </Select.Trigger>
+                                            <Select.IndicatorGroup>
+                                                <Select.Indicator />
+                                            </Select.IndicatorGroup>
+                                        </Select.Control>
+                                        <Portal>
+                                            <Select.Positioner>
+                                                <Select.Content>
+                                                    {toneOptions.items.map(option => (
+                                                        <Select.Item item={option} key={option.value}>
+                                                            {option.label}
+                                                            <Select.ItemIndicator />
+                                                        </Select.Item>
+                                                    ))}
+                                                </Select.Content>
+                                            </Select.Positioner>
+                                        </Portal>
+                                    </Select.Root>
+                                </Box>
+                                <Box flex="1">
+                                    <Select.Root
+                                        collection={contentAmountOptions}
+                                        value={[contentAmount]}
+                                        onValueChange={value => setContentAmount(value.value[0])}
+                                        size="sm"
+                                        width="100%"
+                                    >
+                                        <Select.HiddenSelect />
+                                        <Select.Label>Объем контента</Select.Label>
+                                        <Select.Control>
+                                            <Select.Trigger>
+                                                <Select.ValueText placeholder="Выберите объем" />
+                                            </Select.Trigger>
+                                            <Select.IndicatorGroup>
+                                                <Select.Indicator />
+                                            </Select.IndicatorGroup>
+                                        </Select.Control>
+                                        <Portal>
+                                            <Select.Positioner>
+                                                <Select.Content>
+                                                    {contentAmountOptions.items.map(option => (
+                                                        <Select.Item item={option} key={option.value}>
+                                                            {option.label}
+                                                            <Select.ItemIndicator />
+                                                        </Select.Item>
+                                                    ))}
+                                                </Select.Content>
+                                            </Select.Positioner>
+                                        </Portal>
+                                    </Select.Root>
+                                </Box>
+                            </Flex>
+
                             <Flex gap="16px" flexDirection="column" alignItems="flex-start">
                                 <Box width="100%">
                                     <Text fontSize="sm" as="label" display="block" marginBottom="8px">
@@ -850,7 +938,9 @@ const AiPresentationPage = () => {
                                     </Text>
                                     <Input
                                         value={durationMinutes || ''}
-                                        onChange={e => setDurationMinutes(e.target.value ? Number(e.target.value) : null)}
+                                        onChange={e =>
+                                            setDurationMinutes(e.target.value ? Number(e.target.value) : null)
+                                        }
                                         placeholder="Сколько времени будет длиться презентация"
                                         aria-label="Длительность презентации"
                                         type="number"
@@ -864,7 +954,7 @@ const AiPresentationPage = () => {
                                     <Textarea
                                         value={goal}
                                         onChange={e => setGoal(e.target.value)}
-                                        placeholder="Какой цели должна служить презентация"
+                                        placeholder="Какой цели должна служить презентации"
                                         aria-label="Цель презентации"
                                         tabIndex={0}
                                     />
@@ -884,8 +974,12 @@ const AiPresentationPage = () => {
                             </Flex>
                         </Stack>
 
-                        {error && <Text color="red.500" marginTop="16px">{error}</Text>}
-                        
+                        {error && (
+                            <Text color="red.500" marginTop="16px">
+                                {error}
+                            </Text>
+                        )}
+
                         <Button
                             onClick={handlePlanSubmit}
                             colorScheme="blue"
@@ -1012,6 +1106,39 @@ const AiPresentationPage = () => {
                                 </Select.Root>
                             </Box>
                         </Flex>
+
+                        <Box width="100%">
+                            <Select.Root
+                                collection={contentAmountOptions}
+                                value={[contentAmount]}
+                                onValueChange={value => setContentAmount(value.value[0])}
+                                size="sm"
+                                width="100%"
+                            >
+                                <Select.HiddenSelect />
+                                <Select.Label>Объем контента</Select.Label>
+                                <Select.Control>
+                                    <Select.Trigger>
+                                        <Select.ValueText placeholder="Выберите объем контента" />
+                                    </Select.Trigger>
+                                    <Select.IndicatorGroup>
+                                        <Select.Indicator />
+                                    </Select.IndicatorGroup>
+                                </Select.Control>
+                                <Portal>
+                                    <Select.Positioner>
+                                        <Select.Content>
+                                            {contentAmountOptions.items.map(option => (
+                                                <Select.Item item={option} key={option.value}>
+                                                    {option.label}
+                                                    <Select.ItemIndicator />
+                                                </Select.Item>
+                                            ))}
+                                        </Select.Content>
+                                    </Select.Positioner>
+                                </Portal>
+                            </Select.Root>
+                        </Box>
 
                         <Flex gap="16px" flexDirection="column" alignItems="flex-start">
                             <Box width="100%">
