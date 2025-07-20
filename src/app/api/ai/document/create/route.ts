@@ -1,59 +1,69 @@
 import { withLogging } from '@/hooks/withLoging';
-/* eslint-disable prettier/prettier */
-import logger from '@/utils/logger';
 import { NextRequest } from 'next/server';
+import { withTokenDeduction, TokenCalculators, MetadataExtractors } from '@/utils/aiTokenMiddleware';
+import logger from '@/utils/logger';
+import { v4 as uuidv4 } from 'uuid';
 import { prisma } from '@/lib/prisma';
 import { generateId } from '@/utils/id';
-import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
 import { generateSlidesTemplates } from '@/services/llm/gigaChat';
 import generateSlide from '@/services/llm/generateSlide';
-import { withTokenDeduction, TokenCalculators, MetadataExtractors } from '@/utils/aiTokenMiddleware';
-import extractTextFromElement from '@/utils/extractTextFromElement';
-import { v4 as uuidv4 } from 'uuid';
+import { generateTopicsWithContent } from '@/services/llm/generateTopicsWithContent';
+import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
 
 async function POSTHandler(request: NextRequest) {
     const requestId = uuidv4();
     return withTokenDeduction(
         request,
         {
-            operation: 'GENERATE_SLIDE',
-            description: 'Generate presentation slides',
-            calculateTokens: TokenCalculators.generateSlides,
+            operation: 'GENERATE_PRESENTATION_FROM_DOCUMENT',
+            description: 'Generate presentation from document',
+            calculateTokens: TokenCalculators.generatePresentationFromDocument,
             metadata: MetadataExtractors.presentation,
         },
         async (session, requestData) => {
-            const { title, prompt, topics, durationMinutes, goal, audience, tone, contentAmount } = requestData;
+            const { extractedText, filename, numSlides, tone, contentAmount, durationMinutes, goal, audience } =
+                requestData;
 
-            if (!prompt || !topics || !Array.isArray(topics)) {
-                throw new Error('Invalid request data: prompt and topics are required');
+            if (!extractedText || !filename) {
+                throw new Error('Invalid request data: extractedText and filename are required');
             }
 
             const userId = session.user.id;
 
             try {
-                // Generate template suggestions for all slides
+                logger.info(`Starting document-based presentation generation for user ${userId}`);
+                logger.info(`Document: ${filename}, Content length: ${extractedText.length} chars`);
+
+                // First, generate topics from the document using full content
+                const { title, topics } = await generateTopicsWithContent(
+                    userId,
+                    {
+                        content: extractedText, // Use full content, not truncated
+                        numSlides,
+                        contentAmount,
+                    },
+                    requestId
+                );
+
                 const templateSuggestions = await generateSlidesTemplates({
                     title,
-                    prompt,
-                    topics,
-                    durationMinutes,
-                    goal,
-                    audience,
-                    tone,
+                    prompt: extractedText,
+                    topics: topics.map(t => ({
+                        title: t.title,
+                        instructions: `Контент для этого слайда: ${t.content}`,
+                    })),
                     contentAmount,
+                    durationMinutes,
                     options: {
                         userId,
                         requestId,
                     },
                 });
 
+                logger.info(`Generated ${templateSuggestions.length} template suggestions`);
+
                 // Generate slides using AI
                 const slides = [];
-                const extractSlidePlainText = (slide: any) =>
-                    (slide.layouts || [])
-                        .flatMap((layout: any) => layout.elements)
-                        .map((el: any) => extractTextFromElement(el as any))
-                        .join('\n');
 
                 for (let i = 0; i < topics.length; i++) {
                     const topic = topics[i];
@@ -63,20 +73,16 @@ async function POSTHandler(request: NextRequest) {
                     }
                     logger.info(`Generating slide ${i + 1} with template: ${template.id}`);
 
-                    // Get surrounding slides for context
-                    const surroundingSlides = slides
-                        .slice(Math.max(0, i - 2), i)
-                        .map((slide: any) => ({
-                            title: slide.title || '',
-                            content: extractSlidePlainText(slide),
-                        }));
+                    const previousSlide = topics[i - 1];
+                    const nextSlide = topics[i + 1];
 
+                    const surroundingSlides = [previousSlide, nextSlide].filter(Boolean);
                     const slide = await generateSlide({
                         topic: title,
                         index: i,
                         totalSlides: templateSuggestions.length,
                         templateId: template.id,
-                        instructions: topics[i]?.instructions || '',
+                        instructions: `Создай контент для слайда "${topic.title}", используя следующий контент: ${topic.content}`,
                         durationMinutes,
                         goal,
                         audience,
@@ -86,7 +92,8 @@ async function POSTHandler(request: NextRequest) {
                             userId,
                             requestId,
                         },
-                    });                    // Set slide title from topic
+                    });
+
                     slide.title = topic.title;
                     slides.push(slide);
 
@@ -104,7 +111,7 @@ async function POSTHandler(request: NextRequest) {
                 const presentation = await prisma.presentation.create({
                     data: {
                         title: title || 'AI Generated Presentation',
-                        description: prompt?.substring(0, 500) || '',
+                        // description: prompt?.substring(0, 500) || '',
                         userId,
                         slides: slidesData,
                         durationMinutes,
@@ -121,8 +128,10 @@ async function POSTHandler(request: NextRequest) {
                         slides: slidesData,
                     },
                 };
+
+                // return NextResponse.json(dataa);
             } catch (error) {
-                logger.error('Error generating presentation:', error);
+                logger.error('Error generating presentation from document:', error);
                 throw error;
             }
         }

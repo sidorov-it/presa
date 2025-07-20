@@ -56,6 +56,25 @@ export class YaGptService implements LLMService {
         }
     }
 
+    async getTokensCount(text: string): Promise<number> {
+        const apiKey = process.env.YAGPT_IAM_TOKEN;
+
+        const tokenResponse = await fetch('https://llm.api.cloud.yandex.net/foundationModels/v1/tokenize', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Api-Key ${apiKey}`,
+                'x-folder-id': this.folderId,
+            },
+            body: JSON.stringify({
+                modelUri: `gpt://${this.folderId}/yandexgpt-lite`,
+                text,
+            }),
+        });
+
+        const result = await tokenResponse.json();
+        return result.tokens.length;
+    }
     static createYaGptService(config: YaGptConfig) {
         return new YaGptService(config);
     }

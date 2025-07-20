@@ -124,6 +124,10 @@ export class MockGptService implements LLMService {
         this.userId = config.userId;
     }
 
+    async getTokensCount(_text: string): Promise<number> {
+        return 0;
+    }
+
     async generate(
         prompt: string,
         options?: {
@@ -164,12 +168,10 @@ export class MockGptService implements LLMService {
                 if (functionName === 'generate_presentation_topics') {
                     // Получаем все доступные шаблоны (не disabled)
                     const templates = Object.values(SlideTemplatesRegistry).filter(t => !t.disabled);
-                    
-                    const filteredTemplates = templates.filter(t => [
-                        'welcome-slide',
-                        'final-slide-contacts',
-                        'final-slide-contacts-qr'
-                    ].includes(t.id));
+
+                    const filteredTemplates = templates.filter(t =>
+                        ['welcome-slide', 'final-slide-contacts', 'final-slide-contacts-qr'].includes(t.id)
+                    );
 
                     const mockTopics = filteredTemplates.map(template => ({
                         title: `Слайд для шаблона ${template.name}`,
@@ -192,11 +194,9 @@ export class MockGptService implements LLMService {
                 if (functionName === 'select_slide_templates') {
                     // Получаем все доступные шаблоны (не disabled)
                     const templates = Object.values(SlideTemplatesRegistry).filter(t => !t.disabled);
-                    const filteredTemplates = templates.filter(t => [
-                        'welcome-slide',
-                        'final-slide-contacts',
-                        'final-slide-contacts-qr'
-                    ].includes(t.id));
+                    const filteredTemplates = templates.filter(t =>
+                        ['welcome-slide', 'final-slide-contacts', 'final-slide-contacts-qr'].includes(t.id)
+                    );
                     const mockTemplateSelections = filteredTemplates.map((template, idx) => ({
                         topicIndex: idx,
                         templateId: template.id,

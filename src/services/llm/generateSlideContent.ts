@@ -5,6 +5,7 @@ import { ElementType } from '@/types/elements';
 import getRandomString from '@/utils/getRandomString';
 import { LLMRequestContext, SlotKeyMapping } from '@/types/gigachat';
 import logger from '@/utils/logger';
+import { TextType } from '@/types';
 
 function generateUniqueSlotKeys(template: SlideTemplateCore): Map<string, SlotKeyMapping> {
     const mapping = new Map<string, SlotKeyMapping>();
@@ -25,60 +26,129 @@ function generateUniqueSlotKeys(template: SlideTemplateCore): Map<string, SlotKe
             [] as Array<Array<TemplateElement>>
         );
 
-        elementsByCell.forEach((elements, col) => {
-            elements.forEach((element) => {
+        elementsByCell.forEach(elements => {
+            elements.forEach((element, elementIndex) => {
                 if (element.elementTypeId === ElementType.SMART_LAYOUT) {
-                    const uniqueKey = `slot_${getRandomString(8)}`;
+                    const smartLayoutKey = getRandomString(10);
 
-                    const llmHints = element.llmHints || {};
+                    const items = element.props.items
+                        ?.flatMap((item, index) => {
+                            return Object.keys(item).flatMap(key => {
+                                if (!element.llmHints?.items?.[key]) {
+                                    return;
+                                }
 
-                    const items = element.slots?.map(slot => {
-                        const originalKey = slot;
-                        const key = `${uniqueKey}_${originalKey}`;
-                        const itemSchema = llmHints.items?.[originalKey];
-                        return {
-                            key,
-                            originalKey,
-                            type: itemSchema?.type || 'string',
-                            description: itemSchema?.description || 'Контент для элемента',
-                            contextRules: itemSchema?.contextRules,
-                        };
+                                const uniqueKey = getRandomString(10);
+                                return {
+                                    originalKey: key,
+                                    key: uniqueKey,
+                                    itemIndex: index,
+                                    type: element.llmHints?.items?.[key]?.type,
+                                    description: element.llmHints?.items?.[key]?.description,
+                                };
+                            });
+                        })
+                        .filter(Boolean);
+
+                    mapping.set(smartLayoutKey, {
+                        uniqueKey: smartLayoutKey,
+                        layoutIndex,
+                        elementIndex,
+                        column: element.column,
+                        llmHints: element.llmHints,
+                        items,
                     });
+                } else if (
+                    [TextType.BULLET_LIST, TextType.NUMERED_LIST, TextType.TODO_LIST].includes(element.props?.textType)
+                ) {
+                    let uniqueKey = element.slot;
+                    if (usedSlots.has(element.slot)) {
+                        uniqueKey = `${element.slot}-${layoutIndex}-${elementIndex}-${element.column}`;
+                    }
+                    usedSlots.add(element.slot);
 
                     mapping.set(uniqueKey, {
                         uniqueKey,
-                        originalSlot: 'items',
                         layoutIndex,
-                        items,
-                        elementTypeId: element.elementTypeId,
+                        elementIndex,
+                        column: element.column,
+                        originalSlot: element.slot,
                         llmHints: element.llmHints,
+                        textType: element.props?.textType,
                     });
-                } else if (element.slots && element.slots.length > 0) {
-                    element.slots.forEach(slot => {
-                        let uniqueKey = slot;
-                        let counter = 0;
+                } else if (element.slot) {
+                    let uniqueKey = element.slot;
+                    if (usedSlots.has(element.slot)) {
+                        uniqueKey = `${element.slot}-${layoutIndex}-${elementIndex}-${element.column}`;
+                    }
+                    usedSlots.add(element.slot);
 
-                        while (usedSlots.has(uniqueKey)) {
-                            counter++;
-                            uniqueKey = `${slot}_${counter}`;
-                        }
-
-                        usedSlots.add(uniqueKey);
-
-                        mapping.set(uniqueKey, {
-                            uniqueKey,
-                            originalSlot: slot,
-                            layoutIndex,
-                            elementTypeId: element.elementTypeId,
-                            textType: element.elementTypeId === ElementType.TEXT ? element.textType : undefined,
-                            llmHints: element.llmHints,
-                        });
+                    mapping.set(uniqueKey, {
+                        uniqueKey,
+                        layoutIndex,
+                        elementIndex,
+                        column: element.column,
+                        originalSlot: element.slot,
+                        llmHints: element.llmHints,
                     });
                 }
             });
+	
+            // elementsByCell.forEach((elements, col) => {
+            //     elements.forEach((element, elementIndex) => {
+            //         if (element.elementTypeId === ElementType.SMART_LAYOUT) {
+            //             const uniqueKey = `slot_${getRandomString(8)}`;
+
+            //             const llmHints = element.llmHints || {};
+
+            //             const items = element.props?.itemsSchema?.map(schema => {
+            //                 const originalKey = schema.key;
+            //                 const key = `${uniqueKey}_${originalKey}`;
+            //                 return {
+            //                     key,
+            //                     originalKey,
+            //                     type: schema.type || 'string',
+            //                     description: llmHints.items?.[originalKey]?.description || 'Контент для элемента',
+            //                     contextRules: llmHints.items?.[originalKey]?.contextRules,
+            //                 };
+            //             }) || [];
+
+            //             mapping.set(uniqueKey, {
+            //                 uniqueKey,
+            //                 originalSlot: 'items',
+            //                 layoutIndex,
+            //                 column: col,
+            //                 elementIndex,
+            //                 items,
+            //                 elementTypeId: element.elementTypeId,
+            //                 llmHints: element.llmHints,
+            //             });
+            //         } else if (element.slot) {
+            //             let uniqueKey = element.slot;
+            //             let counter = 0;
+
+            //             while (usedSlots.has(uniqueKey)) {
+            //                 counter++;
+            //                 uniqueKey = `${element.slot}_${counter}`;
+            //             }
+
+            //             usedSlots.add(uniqueKey);
+
+            //             mapping.set(uniqueKey, {
+            //                 uniqueKey,
+            //                 originalSlot: element.slot,
+            //                 layoutIndex,
+            //                 column: col,
+            //                 elementIndex,
+            //                 elementTypeId: element.elementTypeId,
+            //                 textType: element.elementTypeId === ElementType.TEXT ? element.props?.textType : undefined,
+            //                 llmHints: element.llmHints,
+            //             });
+            //         }
+            //     });
+            // });
         });
     });
-
     return mapping;
 }
 

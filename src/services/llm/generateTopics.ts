@@ -1,3 +1,6 @@
+/* eslint-disable no-nested-ternary */
+/* eslint-disable no-trailing-spaces */
+/* eslint-disable indent */
 import { createLLMService } from '@/services/llm';
 
 const generateTopicsFunction = {
@@ -82,49 +85,12 @@ ${Number.isInteger(durationMinutes) ? `• Длительность доклад
 3. Следуй логической арке "вступление → проблема → решение → результат → CTA".
 4. Учитывай аудиторию и цель при выборе акцентов и доказательств.
 5. **Важно**: Адаптируй инструкции под выбранный объем контента:
-   ${contentAmount === 'concise' 
-     ? '- Для КРАТКОГО формата: создавай инструкции для коротких, емких слайдов с минимумом текста'
-     : contentAmount === 'detailed'
-     ? '- Для ПОДРОБНОГО формата: создавай инструкции для развернутых слайдов с детальными объяснениями'
-     : '- Для СРЕДНЕГО формата: создавай инструкции для сбалансированных слайдов с умеренным количеством информации'
-   }
-
-Для генерации структуры презентации ОБЯЗАТЕЛЬНО ВЫЗОВИ фунцию generate_presentation_topics!
-
-`;
-
-const getDocumentTopicsPrompt = ({
-    content,
-    fileName,
-    contentAmount,
-}: {
-    content: string;
-    fileName: string;
-    contentAmount?: string;
-}) =>
-    `Проанализируй содержимое документа и создай структуру презентации на основе этого материала.
-
-ОБЯЗАТЕЛЬНО ВЫЗОВИ фунцию generate_presentation_topics!
-
-Входные данные:
-• Имя файла: ${fileName}
-• Объем контента: ${getContentAmountDescription(contentAmount)}
-• Содержимое документа:
-${content}
-
-Требования к результату:
-1. Проанализируй содержимое документа и выдели основные темы и ключевые моменты
-2. Создай логическую структуру презентации на основе содержания
-3. Количество слайдов должно соответствовать объему и структуре материала (обычно 5-10 слайдов)
-4. Каждый слайд должен иметь **чёткое, сфокусированное название** и **подробные инструкции**
-5. Следуй логической последовательности изложения материала
-6. Выдели введение, основные разделы и заключение
-7. **Важно**: Адаптируй инструкции под выбранный объем контента:
-   ${contentAmount === 'concise' 
-     ? '- Для КРАТКОГО формата: фокусируйся на ключевых идеях и основных выводах из документа'
-     : contentAmount === 'detailed'
-     ? '- Для ПОДРОБНОГО формата: включай детальные объяснения, примеры и дополнительную информацию из документа'
-     : '- Для СРЕДНЕГО формата: создавай сбалансированное изложение с умеренной детализацией'
+   ${
+       contentAmount === 'concise'
+           ? '- Для КРАТКОГО формата: создавай инструкции для коротких, емких слайдов с минимумом текста'
+           : contentAmount === 'detailed'
+             ? '- Для ПОДРОБНОГО формата: создавай инструкции для развернутых слайдов с детальными объяснениями'
+             : '- Для СРЕДНЕГО формата: создавай инструкции для сбалансированных слайдов с умеренным количеством информации'
    }
 
 Для генерации структуры презентации ОБЯЗАТЕЛЬНО ВЫЗОВИ фунцию generate_presentation_topics!
@@ -167,11 +133,12 @@ ${Number.isInteger(durationMinutes) ? `• Длительность доклад
 5. Добавь необходимые переходные слайды если нужно
 6. Учитывай цель, аудиторию и стиль при формулировке инструкций
 7. **Важно**: Адаптируй инструкции под выбранный объем контента:
-   ${contentAmount === 'concise' 
-     ? '- Для КРАТКОГО формата: создавай инструкции для лаконичных слайдов с основными тезисами'
-     : contentAmount === 'detailed'
-     ? '- Для ПОДРОБНОГО формата: создавай инструкции для развернутых слайдов с детальными разъяснениями'
-     : '- Для СРЕДНЕГО формата: создавай инструкции для сбалансированных слайдов с умеренной детализацией'
+   ${
+       contentAmount === 'concise'
+           ? '- Для КРАТКОГО формата: создавай инструкции для лаконичных слайдов с основными тезисами'
+           : contentAmount === 'detailed'
+             ? '- Для ПОДРОБНОГО формата: создавай инструкции для развернутых слайдов с детальными разъяснениями'
+             : '- Для СРЕДНЕГО формата: создавай инструкции для сбалансированных слайдов с умеренной детализацией'
    }
 
 Для генерации структуры презентации ОБЯЗАТЕЛЬНО ВЫЗОВИ фунцию generate_presentation_topics!
@@ -246,52 +213,6 @@ async function generateTopics(
         };
     } catch (error) {
         console.error('Error generating topics:', error);
-        throw error;
-    }
-}
-
-export async function generateTopicsFromDocument(
-    userId: string,
-    {
-        content,
-        fileName,
-        contentAmount,
-    }: {
-        content: string;
-        fileName: string;
-        contentAmount?: string;
-    },
-    requestId: string
-) {
-    try {
-        const llmService = createLLMService({ userId });
-
-        // Generate topics from document content using function calling
-        const topicsResponse = await llmService.generate(
-            getDocumentTopicsPrompt({
-                content,
-                fileName,
-                contentAmount,
-            }),
-            {
-                ...topicsOptions,
-                ...(requestId ? { requestId } : {}),
-            }
-        );
-
-        let topics = [];
-        if (topicsResponse.function_call?.arguments) {
-            topics = topicsResponse.function_call.arguments.topics;
-        }
-
-        const title = topicsResponse.function_call?.arguments?.presentationTitle;
-
-        return {
-            title,
-            topics,
-        };
-    } catch (error) {
-        console.error('Error generating topics from document:', error);
         throw error;
     }
 }

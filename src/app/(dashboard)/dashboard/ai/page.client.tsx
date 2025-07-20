@@ -46,8 +46,14 @@ interface SlideTopic {
     instructions: string;
 }
 
+interface DocumentInfo {
+    filename: string;
+    extractedText: string;
+    tokenCount: number;
+}
+
 type CreationMethod = 'description' | 'document' | 'plan';
-type Step = 'method' | 'form' | 'topics' | 'upload' | 'plan';
+type Step = 'method' | 'form' | 'topics' | 'upload' | 'document-form' | 'plan';
 
 // Method selection cards data
 const CREATION_METHODS = [
@@ -236,6 +242,7 @@ const AiPresentationPage = () => {
     // Document upload state
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
     const [isDragOver, setIsDragOver] = useState(false);
+    const [documentInfo, setDocumentInfo] = useState<DocumentInfo | null>(null);
 
     // Plan input state
     const [planText, setPlanText] = useState('');
@@ -312,32 +319,85 @@ const AiPresentationPage = () => {
 
         setError('');
         setIsLoading(true);
-        setIsShowGenerationLoader(true);
 
         try {
             const formData = new FormData();
             formData.append('file', uploadedFile);
 
-            const res = await fetch('/api/ai/document', {
+            const res = await fetch('/api/ai/document/upload', {
                 method: 'POST',
                 body: formData,
             });
 
-            if (!res.ok) throw new Error('Ошибка обработки документа');
+            if (!res.ok) throw new Error('Ошибка загрузки документа');
 
             const data = await res.json();
-            setPresentationTitle(data.title || 'Презентация из документа');
-            setPresentationDescription(data.description || '');
-            setTopics(
-                (data.topics || []).map((t: any) => ({
-                    id: generateId(),
-                    title: t.title,
-                    instructions: t.instructions || '',
-                }))
-            );
-            setStep('topics');
+
+            setDocumentInfo({
+                filename: uploadedFile.name,
+                extractedText: data.extractedText,
+                tokenCount: data.tokenCount,
+            });
+
+            setStep('document-form');
         } catch {
-            setError('Ошибка обработки документа. Попробуйте еще раз.');
+            setError('Ошибка загрузки документа. Попробуйте еще раз.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleDocumentPresentationCreate = async () => {
+        if (!documentInfo) {
+            setError('Информация о документе не найдена.');
+            return;
+        }
+
+        setError('');
+        setIsLoading(true);
+        setIsShowGenerationLoader(true);
+
+        try {
+            const response = await fetch('/api/ai/document/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    extractedText: documentInfo.extractedText,
+                    filename: documentInfo.filename,
+                    numSlides,
+                    tone,
+                    contentAmount,
+                    durationMinutes,
+                    goal,
+                    audience,
+                }),
+            });
+
+            if (!response.ok) {
+                if (response.status === 402) {
+                    toast.error(
+                        <Box>
+                            Недостаточно средств для создания презентации.{' '}
+                            <Link
+                                href="/tokens"
+                                target="_blank"
+                                style={{ color: '#a20101', textDecoration: 'underline' }}
+                            >
+                                Пополните баланс
+                            </Link>
+                            .
+                        </Box>
+                    );
+                    return;
+                }
+                throw new Error('Ошибка при создании презентации');
+            }
+
+            const presentationData = await response.json();
+            router.push(`/docs/${presentationData.presentation.id}`);
+            toast.success('Презентация успешно создана!');
+        } catch {
+            setError('Ошибка создания презентации. Попробуйте еще раз.');
         } finally {
             setIsLoading(false);
             setIsShowGenerationLoader(false);
@@ -502,10 +562,13 @@ const AiPresentationPage = () => {
             if (creationMethod === 'description') {
                 setStep('form');
             } else if (creationMethod === 'document') {
-                setStep('upload');
+                setStep('document-form');
             } else if (creationMethod === 'plan') {
                 setStep('plan');
             }
+        } else if (step === 'document-form') {
+            setStep('upload');
+            setDocumentInfo(null);
         } else {
             setStep('method');
             setCreationMethod(null);
@@ -737,8 +800,142 @@ const AiPresentationPage = () => {
                             )}
                         </Box>
 
-                        {/* Additional options */}
-                        <Stack gap="16px" marginTop="24px">
+                        {error && (
+                            <Text color="red.500" marginTop="16px">
+                                {error}
+                            </Text>
+                        )}
+
+                        <Button
+                            onClick={handleDocumentUpload}
+                            colorScheme="blue"
+                            disabled={isLoading || !uploadedFile}
+                            marginTop="24px"
+                            width="100%"
+                            size="lg"
+                        >
+                            {isLoading ? 'Загрузка...' : 'Загрузить'}
+                        </Button>
+                    </Box>
+                </Stack>
+            )}
+
+            {/* Document form step */}
+            {step === 'document-form' && documentInfo && (
+                <Stack gap="24px">
+                    <Button onClick={handleBack} aria-label="Назад к загрузке" tabIndex={0}>
+                        ← Назад
+                    </Button>
+
+                    <Box>
+                        <Text fontSize="xl" fontWeight="bold" marginBottom="16px">
+                            Информация о документе
+                        </Text>
+
+                        {/* Document info */}
+                        <Card.Root padding="16px" marginBottom="24px" backgroundColor="gray.50">
+                            <Stack gap="12px">
+                                <Flex alignItems="center" gap="12px">
+                                    <FaFileAlt size="20px" color="#4299e1" />
+                                    <Text fontWeight="bold">{documentInfo.filename}</Text>
+                                </Flex>
+                                <Text fontSize="sm" color="gray.600">
+                                    Токенов: {documentInfo.tokenCount.toLocaleString()}
+                                </Text>
+                            </Stack>
+                        </Card.Root>
+
+                        {/* Extracted text preview */}
+                        <Box marginBottom="24px">
+                            <Text fontWeight="bold" marginBottom="8px">
+                                Извлеченный текст:
+                            </Text>
+                            <Box
+                                maxHeight="200px"
+                                overflowY="auto"
+                                padding="12px"
+                                border="1px solid"
+                                borderColor="gray.300"
+                                borderRadius="8px"
+                                backgroundColor="gray.50"
+                            >
+                                <Text fontSize="sm" whiteSpace="pre-wrap">
+                                    {documentInfo.extractedText.length > 1000
+                                        ? `${documentInfo.extractedText.substring(0, 1000)}...`
+                                        : documentInfo.extractedText}
+                                </Text>
+                            </Box>
+                        </Box>
+
+                        {/* Form fields */}
+                        <Stack gap="16px">
+                            <Flex gap="16px" alignItems="flex-end">
+                                <Box flex="1">
+                                    <Select.Root
+                                        collection={slideOptions}
+                                        value={[String(numSlides)]}
+                                        onValueChange={value => setNumSlides(Number(value.value[0]))}
+                                        size="sm"
+                                        width="100%"
+                                    >
+                                        <Select.HiddenSelect />
+                                        <Select.Label>Количество слайдов</Select.Label>
+                                        <Select.Control>
+                                            <Select.Trigger>
+                                                <Select.ValueText placeholder="Выберите количество" />
+                                            </Select.Trigger>
+                                            <Select.IndicatorGroup>
+                                                <Select.Indicator />
+                                            </Select.IndicatorGroup>
+                                        </Select.Control>
+                                        <Portal>
+                                            <Select.Positioner>
+                                                <Select.Content>
+                                                    {slideOptions.items.map(option => (
+                                                        <Select.Item item={option} key={option.value}>
+                                                            {option.label}
+                                                            <Select.ItemIndicator />
+                                                        </Select.Item>
+                                                    ))}
+                                                </Select.Content>
+                                            </Select.Positioner>
+                                        </Portal>
+                                    </Select.Root>
+                                </Box>
+                                <Box flex="1">
+                                    <Select.Root
+                                        collection={toneOptions}
+                                        value={[tone]}
+                                        onValueChange={value => setTone(value.value[0])}
+                                        size="sm"
+                                        width="100%"
+                                    >
+                                        <Select.HiddenSelect />
+                                        <Select.Label>Стилистика</Select.Label>
+                                        <Select.Control>
+                                            <Select.Trigger>
+                                                <Select.ValueText placeholder="Выберите стиль" />
+                                            </Select.Trigger>
+                                            <Select.IndicatorGroup>
+                                                <Select.Indicator />
+                                            </Select.IndicatorGroup>
+                                        </Select.Control>
+                                        <Portal>
+                                            <Select.Positioner>
+                                                <Select.Content>
+                                                    {toneOptions.items.map(option => (
+                                                        <Select.Item item={option} key={option.value}>
+                                                            {option.label}
+                                                            <Select.ItemIndicator />
+                                                        </Select.Item>
+                                                    ))}
+                                                </Select.Content>
+                                            </Select.Positioner>
+                                        </Portal>
+                                    </Select.Root>
+                                </Box>
+                            </Flex>
+
                             <Box width="100%">
                                 <Select.Root
                                     collection={contentAmountOptions}
@@ -748,10 +945,10 @@ const AiPresentationPage = () => {
                                     width="100%"
                                 >
                                     <Select.HiddenSelect />
-                                    <Select.Label>Объем контента</Select.Label>
+                                    <Select.Label>Объем контента на слайдах</Select.Label>
                                     <Select.Control>
                                         <Select.Trigger>
-                                            <Select.ValueText placeholder="Выберите объем" />
+                                            <Select.ValueText placeholder="Выберите объем контента" />
                                         </Select.Trigger>
                                         <Select.IndicatorGroup>
                                             <Select.Indicator />
@@ -771,47 +968,46 @@ const AiPresentationPage = () => {
                                     </Portal>
                                 </Select.Root>
                             </Box>
-                            <Flex gap="16px" flexDirection="column" alignItems="flex-start">
-                                <Box width="100%">
-                                    <Text fontSize="sm" as="label" display="block" marginBottom="8px">
-                                        Длительность презентации
-                                    </Text>
-                                    <Input
-                                        value={durationMinutes || ''}
-                                        onChange={e =>
-                                            setDurationMinutes(e.target.value ? Number(e.target.value) : null)
-                                        }
-                                        placeholder="Сколько времени будет длиться презентация"
-                                        aria-label="Длительность презентации"
-                                        type="number"
-                                        tabIndex={0}
-                                    />
-                                </Box>
-                                <Box width="100%">
-                                    <Text fontSize="sm" as="label" display="block" marginBottom="8px">
-                                        Цель презентации
-                                    </Text>
-                                    <Textarea
-                                        value={goal}
-                                        onChange={e => setGoal(e.target.value)}
-                                        placeholder="Какой цели должна служить презентация"
-                                        aria-label="Цель презентации"
-                                        tabIndex={0}
-                                    />
-                                </Box>
-                                <Box width="100%">
-                                    <Text fontSize="sm" as="label" display="block" marginBottom="8px">
-                                        Аудитория презентации
-                                    </Text>
-                                    <Textarea
-                                        value={audience}
-                                        onChange={e => setAudience(e.target.value)}
-                                        placeholder="Для какой аудитории создается презентация"
-                                        aria-label="Аудитория презентации"
-                                        tabIndex={0}
-                                    />
-                                </Box>
-                            </Flex>
+
+                            <Box width="100%">
+                                <Text fontSize="sm" as="label" display="block" marginBottom="8px">
+                                    Длительность презентации (минуты)
+                                </Text>
+                                <Input
+                                    value={durationMinutes || ''}
+                                    onChange={e => setDurationMinutes(e.target.value ? Number(e.target.value) : null)}
+                                    placeholder="Сколько времени будет длиться презентация"
+                                    aria-label="Длительность презентации"
+                                    type="number"
+                                    tabIndex={0}
+                                />
+                            </Box>
+
+                            <Box width="100%">
+                                <Text fontSize="sm" as="label" display="block" marginBottom="8px">
+                                    Цель презентации
+                                </Text>
+                                <Textarea
+                                    value={goal}
+                                    onChange={e => setGoal(e.target.value)}
+                                    placeholder="Какой цели должна служить презентация"
+                                    aria-label="Цель презентации"
+                                    tabIndex={0}
+                                />
+                            </Box>
+
+                            <Box width="100%">
+                                <Text fontSize="sm" as="label" display="block" marginBottom="8px">
+                                    Аудитория презентации
+                                </Text>
+                                <Textarea
+                                    value={audience}
+                                    onChange={e => setAudience(e.target.value)}
+                                    placeholder="Для какой аудитории создается презентация"
+                                    aria-label="Аудитория презентации"
+                                    tabIndex={0}
+                                />
+                            </Box>
                         </Stack>
 
                         {error && (
@@ -821,13 +1017,14 @@ const AiPresentationPage = () => {
                         )}
 
                         <Button
-                            onClick={handleDocumentUpload}
+                            onClick={handleDocumentPresentationCreate}
                             colorScheme="blue"
-                            disabled={isLoading || !uploadedFile}
+                            disabled={isLoading}
                             marginTop="24px"
                             width="100%"
+                            size="lg"
                         >
-                            {isLoading ? 'Обработка документа...' : 'Создать презентацию из документа'}
+                            {isLoading ? 'Создание презентации...' : 'Создать презентацию'}
                         </Button>
                     </Box>
                 </Stack>
@@ -906,7 +1103,7 @@ const AiPresentationPage = () => {
                                         width="100%"
                                     >
                                         <Select.HiddenSelect />
-                                        <Select.Label>Объем контента</Select.Label>
+                                        <Select.Label>Объем контента на слайдах</Select.Label>
                                         <Select.Control>
                                             <Select.Trigger>
                                                 <Select.ValueText placeholder="Выберите объем" />
@@ -938,9 +1135,7 @@ const AiPresentationPage = () => {
                                     </Text>
                                     <Input
                                         value={durationMinutes || ''}
-                                        onChange={e =>
-                                            setDurationMinutes(e.target.value ? Number(e.target.value) : null)
-                                        }
+                                        onChange={e => setDurationMinutes(e.target.value ? Number(e.target.value) : null)}
                                         placeholder="Сколько времени будет длиться презентация"
                                         aria-label="Длительность презентации"
                                         type="number"
@@ -1045,7 +1240,7 @@ const AiPresentationPage = () => {
                                 <Select.Root
                                     collection={slideOptions}
                                     value={[String(numSlides)]}
-                                    onValueChange={value => setNumSlides(Number(value.value))}
+                                    onValueChange={value => setNumSlides(Number(value.value[0]))}
                                     size="sm"
                                     width="100%"
                                 >
@@ -1116,7 +1311,7 @@ const AiPresentationPage = () => {
                                 width="100%"
                             >
                                 <Select.HiddenSelect />
-                                <Select.Label>Объем контента</Select.Label>
+                                <Select.Label>Объем контента на слайдах</Select.Label>
                                 <Select.Control>
                                     <Select.Trigger>
                                         <Select.ValueText placeholder="Выберите объем контента" />

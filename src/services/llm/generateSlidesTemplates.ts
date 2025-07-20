@@ -124,7 +124,7 @@ export default async function generateSlidesTemplates({
 }: {
     title: string;
     prompt: string;
-    topics: any[];
+    topics: { title: string; instructions: string }[];
     contentAmount?: string;
     durationMinutes?: number;
     goal?: string;

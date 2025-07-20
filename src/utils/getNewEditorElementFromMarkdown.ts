@@ -15,7 +15,7 @@ const hasStructuredContent = (html: string): boolean => {
 const stripMarkdownSyntax = (text: string): string => {
     return text
         .replace(/^#{1,6}\s+/gm, '') // Remove heading markers
-        .replace(/^\d+\.\s+/gm, '') // Remove numbered list markers  
+        .replace(/^\d+\.\s+/gm, '') // Remove numbered list markers
         .replace(/^-\s+/gm, '') // Remove bullet markers
         .replace(/^>\s+/gm, '') // Remove blockquote markers
         .replace(/\*\*(.+?)\*\*/g, '$1') // Remove bold markers
@@ -28,15 +28,15 @@ export const getNewEditorElementFromMarkdown = (markdown: string, textType: stri
     if (!markdown || markdown.trim() === '') {
         return getNewEditorElement('', { textType, textAlign });
     }
-    
+
     // Convert markdown to HTML
     const htmlContent = markdownToHtml(markdown);
-    
+
     // If markdown produced structured content (headings, lists, etc.), don't wrap it again
     if (hasStructuredContent(htmlContent)) {
         return getNewEditorElement(htmlContent, { textAlign });
     }
-    
+
     // For plain text or simple content, apply the slot's textType formatting
     const plainContent = stripMarkdownSyntax(markdown);
     return getNewEditorElement(plainContent, { textType, textAlign });

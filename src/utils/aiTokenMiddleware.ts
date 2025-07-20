@@ -103,7 +103,7 @@ export async function withTokenDeduction<T>(
             tokensUsed: requiredTokens,
         });
     } catch (error) {
-        logger.error(`Error in AI operation: ${error?.message}`);
+        logger.error(`Error in AI operation: ${error?.message} ${error?.stack}`);
         return NextResponse.json(
             {
                 error: 'Internal server error',
@@ -119,6 +119,11 @@ export async function withTokenDeduction<T>(
  * These functions ensure token calculation logic is secure and consistent
  */
 export const TokenCalculators = {
+    generatePresentationFromDocument: (requestData: any): number => {
+        const { numSlides } = requestData;
+        return getTokenCostForOperation('GENERATE_PRESENTATION_FROM_DOCUMENT') * numSlides;
+    },
+
     /**
      * Calculate tokens for slide generation based on number of topics
      */
