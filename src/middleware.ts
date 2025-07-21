@@ -2,8 +2,14 @@ import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { NextRequest } from 'next/server';
 
+const redirectPaths = ['/docs', '/view'];
+
 export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
+
+    if (redirectPaths.some(pp => path === pp)) {
+        return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
 
     // Define which paths are public (no auth needed)
     const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password'];
@@ -33,6 +39,8 @@ export const config = {
     matcher: [
         '/',
         '/dashboard/:path*',
+        '/docs',
+        '/view',
         '/docs/:path*',
         '/login',
         '/register',

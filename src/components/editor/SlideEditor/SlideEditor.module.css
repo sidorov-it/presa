@@ -80,10 +80,12 @@
 .slideBorderMenuOpen {
     position: absolute;
     inset: 0px;
-    outline: 2px solid #806cff;
     box-shadow: 0 0 0 0.0625em #E5E0DF, 0 0.25em 0.375em -0.0625em rgba(0, 0, 0, 0.1), 0 0.125em 0.25em -0.0625em rgba(0, 0, 0, 0.06);
     backdrop-filter: none;
     border-radius: var(--presentation-slide-border-radius);
+    border-color: #806cff;
+    border-width: var(--presentation-slide-border-width);
+    border-style: solid;
 }
 
 .slideContentSelected {
