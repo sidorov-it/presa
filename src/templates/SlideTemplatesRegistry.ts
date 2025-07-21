@@ -1,7 +1,7 @@
 import { TextType } from '@/types';
 import { ElementType } from '@/types/elements';
 import { SlideTemplateCore } from '@/types/templates';
-import { FaImage, FaRegAddressCard, FaColumns, FaList, FaHighlighter, FaThLarge, FaChartBar } from 'react-icons/fa';
+import { FaImage, FaRegAddressCard, FaColumns, FaList, FaThLarge, FaChartBar } from 'react-icons/fa';
 import { MdViewColumn } from 'react-icons/md';
 
 // Единый реестр шаблонов
@@ -1834,6 +1834,344 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
         },
         llm: {
             description: 'Шаблон для структурированного представления информации в текстовых блоках',
+            purpose: ['structured-content', 'information-blocks', 'key-points'],
+            useCases: ['Ключевые моменты', 'Преимущества', 'Характеристики'],
+        },
+    },
+    'images-with-text': {
+        id: 'images-with-text',
+        name: 'Изображения с текстом',
+        layouts: [
+            {
+                layout: 'heading',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'title',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.HEADING2,
+                            content: 'Заголовок слайда',
+                        },
+
+                        llmHints: {
+                            purpose: 'Основной Заголовок слайда',
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
+                        },
+                    },
+                ],
+            },
+
+            {
+                layout: 'text-boxes-with-title',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.SMART_LAYOUT,
+                        elementVariant: 'images-with-text',
+                        slot: 'content',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            columnSize: 3,
+                            align: 'center',
+                            items: [
+                                {
+                                    id: 'item1',
+                                    title: '<p><span class="heading-text heading-3">Блок 1</span></p>',
+                                    text: '<p>Содержимое блока 1</p>',
+                                },
+                                {
+                                    id: 'item2',
+                                    title: '<p><span class="heading-text heading-3">Блок 2</span></p>',
+                                    text: '<p>Содержимое блока 2</p>',
+                                },
+                                {
+                                    id: 'item3',
+                                    title: '<p><span class="heading-text heading-3">Блок 3</span></p>',
+                                    text: '<p>Содержимое блока 3</p>',
+                                },
+                            ],
+                            itemsSchema: [
+                                {
+                                    key: 'title',
+                                    type: ElementType.TEXT,
+                                    variant: TextType.HEADING3,
+                                },
+                                {
+                                    key: 'text',
+                                    type: ElementType.TEXT,
+                                    variant: TextType.DEFAULT,
+                                },
+                            ],
+                        },
+
+                        llmHints: {
+                            purpose: 'Структурированное представление информации в блоках',
+                            contextRules: [
+                                'Блоки должны быть связаны общей темой',
+                                'Заголовки блоков должны быть информативными',
+                                'Содержимое должно быть кратким и четким',
+                            ],
+                            items: {
+                                title: {
+                                    type: 'string',
+                                    description: 'Заголовок изображения',
+                                    contextRules: ['Текст без символов для markdown'],
+                                },
+                                text: {
+                                    type: 'string',
+                                    description: 'Описание изображения',
+                                    contextRules: ['Текст без символов для markdown'],
+                                },
+                                imageUrl: {
+                                    type: 'string',
+                                    description: 'URL изображения',
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+        ],
+        ui: {
+            category: 'text-templates',
+            label: 'Изображения с текстом',
+            icon: FaColumns,
+            description: 'Шаблон с заголовком и изображениями с текстом',
+        },
+        llm: {
+            description: 'Шаблон для структурированного представления информации в изображениях с текстом',
+            purpose: ['structured-content', 'information-blocks', 'key-points'],
+            useCases: ['Ключевые моменты', 'Преимущества', 'Характеристики'],
+        },
+    },
+
+    steps: {
+        id: 'steps',
+        name: 'Шаги',
+        layouts: [
+            {
+                layout: 'heading',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'title',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.HEADING2,
+                            content: 'Заголовок слайда',
+                        },
+
+                        llmHints: {
+                            purpose: 'Основной Заголовок слайда',
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
+                        },
+                    },
+                ],
+            },
+
+            {
+                layout: 'text-boxes-with-title',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.SMART_LAYOUT,
+                        elementVariant: 'steps',
+                        slot: 'content',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            columnSize: 3,
+                            align: 'center',
+                            items: [
+                                {
+                                    id: 'item1',
+                                    title: '<p><span class="heading-text heading-3">Блок 1</span></p>',
+                                    text: '<p>Содержимое блока 1</p>',
+                                },
+                                {
+                                    id: 'item2',
+                                    title: '<p><span class="heading-text heading-3">Блок 2</span></p>',
+                                    text: '<p>Содержимое блока 2</p>',
+                                },
+                                {
+                                    id: 'item3',
+                                    title: '<p><span class="heading-text heading-3">Блок 3</span></p>',
+                                    text: '<p>Содержимое блока 3</p>',
+                                },
+                            ],
+                            itemsSchema: [
+                                {
+                                    key: 'title',
+                                    type: ElementType.TEXT,
+                                    variant: TextType.HEADING3,
+                                },
+                                {
+                                    key: 'text',
+                                    type: ElementType.TEXT,
+                                    variant: TextType.DEFAULT,
+                                },
+                            ],
+                        },
+
+                        llmHints: {
+                            purpose: 'Структурированное представление информации в блоках',
+                            contextRules: [
+                                'Блоки должны быть связаны общей темой',
+                                'Заголовки блоков должны быть информативными',
+                                'Содержимое должно быть кратким и четким',
+                            ],
+                            items: {
+                                title: {
+                                    type: 'string',
+                                    description: 'Заголовок изображения',
+                                    contextRules: ['Текст без символов для markdown'],
+                                },
+                                text: {
+                                    type: 'string',
+                                    description: 'Описание изображения',
+                                    contextRules: ['Текст без символов для markdown'],
+                                },
+                                imageUrl: {
+                                    type: 'string',
+                                    description: 'URL изображения',
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+        ],
+        ui: {
+            category: 'text-templates',
+            label: 'Шаги',
+            icon: FaColumns,
+            description: 'Шаблон с заголовком и шагами',
+        },
+        llm: {
+            description: 'Шаблон для структурированного представления информации в шагах',
+            purpose: ['structured-content', 'information-blocks', 'key-points'],
+            useCases: ['Ключевые моменты', 'Преимущества', 'Характеристики'],
+        },
+    },
+
+    timeline: {
+        id: 'timeline',
+        name: 'Хронология',
+        layouts: [
+            {
+                layout: 'heading',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'title',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.HEADING2,
+                            content: 'Заголовок слайда',
+                        },
+
+                        llmHints: {
+                            purpose: 'Основной Заголовок слайда',
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
+                        },
+                    },
+                ],
+            },
+
+            {
+                layout: 'text-boxes-with-title',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.SMART_LAYOUT,
+                        elementVariant: 'timeline',
+                        slot: 'content',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            columnSize: 3,
+                            align: 'center',
+                            items: [
+                                {
+                                    id: 'item1',
+                                    title: '<p><span class="heading-text heading-3">Блок 1</span></p>',
+                                    text: '<p>Содержимое блока 1</p>',
+                                },
+                                {
+                                    id: 'item2',
+                                    title: '<p><span class="heading-text heading-3">Блок 2</span></p>',
+                                    text: '<p>Содержимое блока 2</p>',
+                                },
+                                {
+                                    id: 'item3',
+                                    title: '<p><span class="heading-text heading-3">Блок 3</span></p>',
+                                    text: '<p>Содержимое блока 3</p>',
+                                },
+                            ],
+                            itemsSchema: [
+                                {
+                                    key: 'title',
+                                    type: ElementType.TEXT,
+                                    variant: TextType.HEADING3,
+                                },
+                                {
+                                    key: 'text',
+                                    type: ElementType.TEXT,
+                                    variant: TextType.DEFAULT,
+                                },
+                            ],
+                        },
+
+                        llmHints: {
+                            purpose: 'Структурированное представление информации в блоках',
+                            contextRules: [
+                                'Блоки должны быть связаны общей темой',
+                                'Заголовки блоков должны быть информативными',
+                                'Содержимое должно быть кратким и четким',
+                            ],
+                            items: {
+                                title: {
+                                    type: 'string',
+                                    description: 'Заголовок изображения',
+                                    contextRules: ['Текст без символов для markdown'],
+                                },
+                                text: {
+                                    type: 'string',
+                                    description: 'Описание изображения',
+                                    contextRules: ['Текст без символов для markdown'],
+                                },
+                                imageUrl: {
+                                    type: 'string',
+                                    description: 'URL изображения',
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+        ],
+        ui: {
+            category: 'text-templates',
+            label: 'Хронология',
+            icon: FaColumns,
+            description: 'Шаблон с заголовком и хронологией',
+        },
+        llm: {
+            description: 'Шаблон для структурированного представления информации в хронологии',
             purpose: ['structured-content', 'information-blocks', 'key-points'],
             useCases: ['Ключевые моменты', 'Преимущества', 'Характеристики'],
         },
