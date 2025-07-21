@@ -454,26 +454,27 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({
     );
 
     const renderUploadMode = () => (
-        <>
-            <div className={styles.inputGroup}>
-                <label htmlFor="imageUrl" className={styles.label}>
-                    Укажите ссылку на изображение
-                </label>
-                <input
-                    id="imageUrl"
-                    type="url"
-                    className={`${styles.input} ${error ? styles.inputError : ''}`}
-                    value={imageUrlLocal || ''}
-                    onChange={e => handleUpdateLink(e.target.value)}
-                    placeholder="https://example.com/image.jpg"
-                    disabled={isLoading}
-                />
-                {error && <div className={styles.error}>{error}</div>}
-            </div>
+        // <>
+        //     <div className={styles.inputGroup}>
+        //         <label htmlFor="imageUrl" className={styles.label}>
+        //             Укажите ссылку на изображение
+        //         </label>
+        //         <input
+        //             id="imageUrl"
+        //             type="url"
+        //             className={`${styles.input} ${error ? styles.inputError : ''}`}
+        //             value={imageUrlLocal || ''}
+        //             onChange={e => handleUpdateLink(e.target.value)}
+        //             placeholder="https://example.com/image.jpg"
+        //             disabled={isLoading}
+        //         />
+        //         {error && <div className={styles.error}>{error}</div>}
+        //     </div>
 
-            <label htmlFor="imageUrl" className={styles.label}>
-                или загрузите с компьютера
-            </label>
+        // <label htmlFor="imageUrl" className={styles.label}>
+        //     загрузите с компьютера
+        // </label>
+        <>
             {imageUrlLocal && (
                 <div {...getRootProps()} className={`${styles.dropzone} ${isLoading ? styles.loading : ''}`}>
                     {isLoading && (

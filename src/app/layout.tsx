@@ -29,6 +29,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html lang="ru" suppressHydrationWarning>
             <head>
+                <base
+                    href={`${process.env.NODE_ENV === 'production' ? 'https://app.slydle.ru' : 'http://localhost:3000'}`}
+                />
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
             </head>

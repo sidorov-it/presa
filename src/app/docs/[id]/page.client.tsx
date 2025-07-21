@@ -616,7 +616,7 @@ export default function PresentationEditorPage() {
                             </div>
                             <div
                                 className="last-step"
-                                style={{ position: 'absolute', bottom: 0, right: 0, width: 1, height: 1, opacity: 0 }}
+                                style={{ position: 'fixed', bottom: 0, right: 0, width: 1, height: 1, opacity: 0 }}
                             />
                             <BackgroundSettingsModal
                                 defaultSlideBackground={currentTheme?.colors.slideBackground}
