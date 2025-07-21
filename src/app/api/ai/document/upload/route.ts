@@ -3,7 +3,11 @@ import { NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import logger from '@/utils/logger';
-import { createLLMService, YaGptService } from '@/services/llm';
+import { createLLMService } from '@/services/llm';
+import { getTextExtractor } from 'office-text-extractor';
+import { DocExtractor } from './DocExtractor';
+
+const Extractor = getTextExtractor();
 
 async function POSTHandler(request: NextRequest) {
     try {
@@ -24,14 +28,16 @@ async function POSTHandler(request: NextRequest) {
         // Validate file type
         const allowedTypes = [
             'application/pdf',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'application/msword',
             'text/plain',
+            //word
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            //pptx
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
         ];
 
         if (!allowedTypes.includes(file.type)) {
             return Response.json(
-                { error: 'Unsupported file type. Only PDF, DOCX, DOC, and TXT files are supported.' },
+                { error: 'Unsupported file type. Only PDF, DOCX, PPTX, and TXT files are supported.' },
                 { status: 400 }
             );
         }
@@ -44,22 +50,36 @@ async function POSTHandler(request: NextRequest) {
         // Extract text content from file
         let extractedText = '';
 
-        if (file.type === 'text/plain') {
-            extractedText = await file.text();
-        } else if (file.type === 'application/pdf') {
-            // For PDF files, we'll need a PDF parser
-            // For now, we'll throw an error and implement later
-            return Response.json(
-                { error: 'PDF processing not yet implemented. Please use TXT, DOCX, or DOC files.' },
-                { status: 400 }
-            );
-        } else if (file.type.includes('word') || file.type.includes('document')) {
-            // For Word documents, we'll need a DOCX parser
-            // For now, we'll throw an error and implement later
-            return Response.json(
-                { error: 'Word document processing not yet implemented. Please use TXT files for now.' },
-                { status: 400 }
-            );
+        const buffer = Buffer.from(await file.arrayBuffer());
+
+        switch (file.type) {
+            case 'text/plain':
+                extractedText = await file.text();
+                break;
+            case 'application/pdf':
+                extractedText = await Extractor.extractText({ input: buffer, type: 'buffer' });
+                break;
+            case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+                const docExtractor = new DocExtractor();
+                extractedText = await docExtractor.apply(buffer);
+                break;
+            default:
+                break;
+            //     break;
+            // case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+            //     const filename = `${Date.now()}-${file.name}`;
+            //     const filePath = path.join(UPLOAD_DIR, filename);
+
+            //     // Ensure uploads directory exists
+            //     await fs.mkdir(UPLOAD_DIR, { recursive: true });
+            //     // Save file
+            //     const arrayBuffer = await file.arrayBuffer();
+            //     buffer = Buffer.from(arrayBuffer);
+            //     await fs.writeFile(filePath, buffer);
+
+            //     const pptxParser = new PptxParser(filePath);
+            //     extractedText = await pptxParser.parse(Buffer.from(await file.arrayBuffer()));
+            //     break;
         }
 
         if (!extractedText.trim()) {
@@ -67,10 +87,10 @@ async function POSTHandler(request: NextRequest) {
         }
 
         // Truncate content if too long (to avoid token limits)
-        const maxContentLength = 10000; // ~2500 tokens
-        if (extractedText.length > maxContentLength) {
-            extractedText = extractedText.substring(0, maxContentLength) + '...';
-        }
+        // const maxContentLength = 10000; // ~2500 tokens
+        // if (extractedText.length > maxContentLength) {
+        //     extractedText = extractedText.substring(0, maxContentLength) + '...';
+        // }
 
         // Get token count from Yandex tokenization API
         let tokenCount = 0;
@@ -112,7 +132,7 @@ async function POSTHandler(request: NextRequest) {
             filename: file.name,
         });
     } catch (error) {
-        logger.error('Error processing document upload:', error);
+        logger.error('Error processing document upload:', error.message);
         return Response.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

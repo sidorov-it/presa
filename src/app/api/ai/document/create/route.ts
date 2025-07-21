@@ -108,6 +108,27 @@ async function POSTHandler(request: NextRequest) {
                     hidden: false,
                 }));
 
+                const themesIds = await prisma.theme.findMany({
+                    select: {
+                        id: true,
+                    },
+                    where: {
+                        OR: [
+                            {
+                                isDefault: true,
+                            },
+                            {
+                                userId,
+                            },
+                        ],
+                        AND: {
+                            isActive: true,
+                        },
+                    },
+                });
+
+                const theme = themesIds[Math.floor(Math.random() * themesIds.length)];
+
                 const presentation = await prisma.presentation.create({
                     data: {
                         title: title || 'AI Generated Presentation',
@@ -119,6 +140,7 @@ async function POSTHandler(request: NextRequest) {
                         audience,
                         tone,
                         contentAmount,
+                        themeId: theme.id,
                     },
                 });
 

@@ -67,7 +67,7 @@ const CREATION_METHODS = [
     {
         id: 'document' as CreationMethod,
         title: 'Из документа',
-        description: 'Загрузите документ (PDF, DOCX, TXT) для создания презентации',
+        description: 'Загрузите документ (PDF, DOCX, PPTX, TXT) для создания презентации',
         icon: FaUpload,
         color: 'green',
     },
@@ -276,13 +276,15 @@ const AiPresentationPage = () => {
     const handleFileSelect = (file: File) => {
         const allowedTypes = [
             'application/pdf',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'application/msword',
             'text/plain',
+            //word
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            //pptx
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
         ];
 
         if (!allowedTypes.includes(file.type)) {
-            toast.error('Поддерживаются только файлы PDF, DOCX, DOC и TXT');
+            toast.error('Поддерживаются только файлы PDF, DOCX, PPTX и TXT');
             return;
         }
 
@@ -745,7 +747,7 @@ const AiPresentationPage = () => {
                             Загрузка документа
                         </Text>
                         <Text color="gray.600" marginBottom="24px">
-                            Загрузите документ в формате PDF, DOCX, DOC или TXT для создания презентации
+                            Загрузите документ в формате PDF, DOCX, PPTX или TXT для создания презентации
                         </Text>
 
                         {/* File upload area */}
@@ -782,7 +784,7 @@ const AiPresentationPage = () => {
                                         Перетащите файл сюда или выберите
                                     </Text>
                                     <Text fontSize="sm" color="gray.600">
-                                        Поддерживаются PDF, DOCX, DOC, TXT (до 10 МБ)
+                                        Поддерживаются PDF, DOCX, PPTX, TXT (до 10 МБ)
                                     </Text>
                                     <Box as="label" cursor="pointer">
                                         <Button as="span" colorScheme="blue">
@@ -791,7 +793,7 @@ const AiPresentationPage = () => {
                                         <Input
                                             id="file-input"
                                             type="file"
-                                            accept=".pdf,.docx,.doc,.txt"
+                                            accept=".pdf,.docx,.pptx,.txt"
                                             onChange={handleFileInputChange}
                                             display="none"
                                         />
