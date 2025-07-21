@@ -30,6 +30,8 @@ export interface LLMService {
         prompt: string,
         options: { presentationId?: string; userId: string }
     ): Promise<{ imageUrl: string; imageId: string }>;
+
+    getTokensCount(text: string): Promise<number>;
 }
 
 export interface SlideGenerationContext {

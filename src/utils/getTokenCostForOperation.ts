@@ -6,6 +6,7 @@ export const TOKEN_COSTS = {
     GENERATE_TEXT: 5,
     GENERATE_IMAGE: 5,
     GENERATE_TOPICS: 0,
+    GENERATE_PRESENTATION_FROM_DOCUMENT: 5, // Cost per slide, multiplied by number of slides
 } as const;
 
 export function getTokenCostForOperation(operation: keyof typeof TOKEN_COSTS): number {

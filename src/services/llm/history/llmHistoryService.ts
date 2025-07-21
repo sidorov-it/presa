@@ -5,6 +5,7 @@ export interface LLMRequestData {
     userId: string;
     provider: string;
     presentationId?: string;
+    requestId?: string;
     requestType: string;
     prompt: string;
     inputTokens: number;
@@ -32,6 +33,7 @@ export class LLMHistoryService {
                     userId: data.userId,
                     provider: data.provider,
                     presentationId: data.presentationId,
+                    requestId: data.requestId,
                     requestType: data.requestType,
                     prompt: data.prompt,
                     inputTokens: data.inputTokens,
@@ -64,11 +66,13 @@ export class LLMHistoryService {
             offset?: number;
             startDate?: Date;
             endDate?: Date;
+            requestId?: string;
         }
     ) {
         return await prisma.lLMRequestHistory.findMany({
             where: {
                 userId,
+                ...(options?.requestId ? { requestId: options.requestId } : {}),
                 ...(options?.startDate && options?.endDate
                     ? {
                           timestamp: {
@@ -143,8 +147,19 @@ export class LLMHistoryService {
     }
 
     /** Get full history */
-    static async getAllHistory(options?: { limit?: number; offset?: number }) {
+    static async getAllHistory(options?: { 
+        limit?: number; 
+        offset?: number;
+        requestId?: string;
+        userId?: string;
+        provider?: string;
+    }) {
         return prisma.lLMRequestHistory.findMany({
+            where: {
+                ...(options?.requestId ? { requestId: options.requestId } : {}),
+                ...(options?.userId ? { userId: options.userId } : {}),
+                ...(options?.provider ? { provider: options.provider } : {}),
+            },
             orderBy: { timestamp: 'desc' },
             skip: options?.offset ?? 0,
             take: options?.limit ?? 50,
@@ -193,5 +208,58 @@ export class LLMHistoryService {
         });
 
         return cachedRequest?.metadata?.response;
+    }
+
+    /**
+     * Get all requests for a specific requestId
+     */
+    static async getRequestsByRequestId(requestId: string) {
+        return await prisma.lLMRequestHistory.findMany({
+            where: { requestId },
+            orderBy: { timestamp: 'asc' },
+        });
+    }
+
+    /**
+     * Get unique request IDs with basic info
+     */
+    static async getRequestIds(options?: {
+        limit?: number;
+        userId?: string;
+        startDate?: Date;
+        endDate?: Date;
+    }) {
+        const where = {
+            requestId: { not: null },
+            ...(options?.userId ? { userId: options.userId } : {}),
+            ...(options?.startDate && options?.endDate
+                ? {
+                      timestamp: {
+                          gte: options.startDate,
+                          lte: options.endDate,
+                      },
+                  }
+                : {}),
+        };
+
+        return await prisma.lLMRequestHistory.groupBy({
+            by: ['requestId'],
+            where,
+            _count: {
+                id: true,
+            },
+            _min: {
+                timestamp: true,
+            },
+            _max: {
+                timestamp: true,
+            },
+            orderBy: {
+                _min: {
+                    timestamp: 'desc',
+                },
+            },
+            take: options?.limit || 100,
+        });
     }
 }

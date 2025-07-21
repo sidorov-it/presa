@@ -98,7 +98,7 @@ export const markdownToHtml = (raw: string): string => {
         }
 
         // Default paragraph line
-        htmlParts.push(applyInlineFormatting(line));
+        htmlParts.push(`<span class="body-text normar-text">${applyInlineFormatting(line)}</span>`);
     }
 
     // Close any open list at EOF

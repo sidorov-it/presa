@@ -1,3 +1,6 @@
+/* eslint-disable no-nested-ternary */
+/* eslint-disable no-trailing-spaces */
+/* eslint-disable indent */
 import { createLLMService } from '@/services/llm';
 
 const generateTopicsFunction = {
@@ -34,10 +37,23 @@ const generateTopicsFunction = {
     },
 };
 
+const getContentAmountDescription = (contentAmount?: string) => {
+    switch (contentAmount) {
+        case 'concise':
+            return 'КРАТКИЙ контент - минимум текста, только ключевые моменты, тезисы и основные идеи';
+        case 'detailed':
+            return 'ПОДРОБНЫЙ контент - развернутые объяснения, детали, примеры, дополнительная информация';
+        case 'medium':
+        default:
+            return 'СРЕДНИЙ объем контента - баланс между краткостью и детальностью';
+    }
+};
+
 const getTopicsPrompt = ({
     description,
     numSlides,
     tone,
+    contentAmount,
     durationMinutes,
     goal,
     audience,
@@ -45,6 +61,7 @@ const getTopicsPrompt = ({
     description: string;
     numSlides: number;
     tone: string;
+    contentAmount?: string;
     durationMinutes?: number;
     goal?: string;
     audience?: string;
@@ -59,14 +76,70 @@ ${goal ? `• Цель: ${goal}` : ''}
 ${audience ? `• Аудитория: ${audience}` : ''}
 • Количество слайдов: ${numSlides}
 • Тон/стиль: ${tone}
+• Объем контента: ${getContentAmountDescription(contentAmount)}
 ${Number.isInteger(durationMinutes) ? `• Длительность доклада: ${durationMinutes} минут` : ''}
 
 Требования к результату:
 1. Сгенерируй **ровно ${numSlides}** слайдов.
 2. Каждый слайд должен иметь **чёткое, сфокусированное название** и **цель**.
-3. Следуй логической арке “вступление → проблема → решение → результат → CTA”.
+3. Следуй логической арке "вступление → проблема → решение → результат → CTA".
 4. Учитывай аудиторию и цель при выборе акцентов и доказательств.
-5. **Формат ответа:** JSON-массив объектов со структурой
+5. **Важно**: Адаптируй инструкции под выбранный объем контента:
+   ${
+       contentAmount === 'concise'
+           ? '- Для КРАТКОГО формата: создавай инструкции для коротких, емких слайдов с минимумом текста'
+           : contentAmount === 'detailed'
+             ? '- Для ПОДРОБНОГО формата: создавай инструкции для развернутых слайдов с детальными объяснениями'
+             : '- Для СРЕДНЕГО формата: создавай инструкции для сбалансированных слайдов с умеренным количеством информации'
+   }
+
+Для генерации структуры презентации ОБЯЗАТЕЛЬНО ВЫЗОВИ фунцию generate_presentation_topics!
+
+`;
+
+const getPlanTopicsPrompt = ({
+    plan,
+    tone,
+    contentAmount,
+    durationMinutes,
+    goal,
+    audience,
+}: {
+    plan: string;
+    tone?: string;
+    contentAmount?: string;
+    durationMinutes?: number;
+    goal?: string;
+    audience?: string;
+}) =>
+    `Преобразуй готовый план презентации в структурированный список слайдов с подробными инструкциями.
+
+ОБЯЗАТЕЛЬНО ВЫЗОВИ фунцию generate_presentation_topics!
+
+Входные данные:
+• План презентации:
+${plan}
+${goal ? `• Цель: ${goal}` : ''}
+${audience ? `• Аудитория: ${audience}` : ''}
+${tone ? `• Тон/стиль: ${tone}` : ''}
+• Объем контента: ${getContentAmountDescription(contentAmount)}
+${Number.isInteger(durationMinutes) ? `• Длительность доклада: ${durationMinutes} минут` : ''}
+
+Требования к результату:
+1. Проанализируй предоставленный план и создай на его основе структуру слайдов
+2. Каждый пункт плана должен стать отдельным слайдом или группой слайдов
+3. Каждый слайд должен иметь **чёткое, сфокусированное название** и **подробные инструкции для контента**
+4. Сохрани логическую последовательность из исходного плана
+5. Добавь необходимые переходные слайды если нужно
+6. Учитывай цель, аудиторию и стиль при формулировке инструкций
+7. **Важно**: Адаптируй инструкции под выбранный объем контента:
+   ${
+       contentAmount === 'concise'
+           ? '- Для КРАТКОГО формата: создавай инструкции для лаконичных слайдов с основными тезисами'
+           : contentAmount === 'detailed'
+             ? '- Для ПОДРОБНОГО формата: создавай инструкции для развернутых слайдов с детальными разъяснениями'
+             : '- Для СРЕДНЕГО формата: создавай инструкции для сбалансированных слайдов с умеренной детализацией'
+   }
 
 Для генерации структуры презентации ОБЯЗАТЕЛЬНО ВЫЗОВИ фунцию generate_presentation_topics!
 
@@ -83,6 +156,7 @@ async function generateTopics(
         description,
         numSlides,
         tone,
+        contentAmount,
         durationMinutes,
         goal,
         audience,
@@ -90,6 +164,7 @@ async function generateTopics(
         description: string;
         numSlides: number;
         tone: string;
+        contentAmount?: string;
         durationMinutes?: number;
         goal?: string;
         audience?: string;
@@ -105,6 +180,7 @@ async function generateTopics(
                 description,
                 numSlides,
                 tone,
+                contentAmount,
                 durationMinutes,
                 goal,
                 audience,
@@ -137,6 +213,61 @@ async function generateTopics(
         };
     } catch (error) {
         console.error('Error generating topics:', error);
+        throw error;
+    }
+}
+
+export async function generateTopicsFromPlan(
+    userId: string,
+    {
+        plan,
+        tone,
+        contentAmount,
+        durationMinutes,
+        goal,
+        audience,
+    }: {
+        plan: string;
+        tone?: string;
+        contentAmount?: string;
+        durationMinutes?: number;
+        goal?: string;
+        audience?: string;
+    },
+    requestId: string
+) {
+    try {
+        const llmService = createLLMService({ userId });
+
+        // Generate topics from plan using function calling
+        const topicsResponse = await llmService.generate(
+            getPlanTopicsPrompt({
+                plan,
+                tone,
+                contentAmount,
+                durationMinutes,
+                goal,
+                audience,
+            }),
+            {
+                ...topicsOptions,
+                ...(requestId ? { requestId } : {}),
+            }
+        );
+
+        let topics = [];
+        if (topicsResponse.function_call?.arguments) {
+            topics = topicsResponse.function_call.arguments.topics;
+        }
+
+        const title = topicsResponse.function_call?.arguments?.presentationTitle;
+
+        return {
+            title,
+            topics,
+        };
+    } catch (error) {
+        console.error('Error generating topics from plan:', error);
         throw error;
     }
 }

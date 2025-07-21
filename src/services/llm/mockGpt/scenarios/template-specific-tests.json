@@ -1,0 +1,109 @@
+{
+  "name": "Template Specific Tests",
+  "description": "Test scenario for specific slide templates with various content types",
+  "responses": [
+    {
+      "id": "welcome-slide-test",
+      "description": "Test response for welcome slide template",
+      "trigger": {
+        "type": "template_id",
+        "value": "welcome-slide"
+      },
+      "response": {
+        "elements": [],
+        "function_call": {
+          "name": "generate_slide_text",
+          "arguments": {
+            "title": "Добро пожаловать на презентацию",
+            "subtitle": "Тестирование форматирования текста в слайдах",
+            "description": "Этот слайд используется для тестирования **форматирования** и *стилизации* текста в приветственном шаблоне"
+          }
+        }
+      }
+    },
+    {
+      "id": "two-columns-complex",
+      "description": "Complex two-column layout with mixed content",
+      "trigger": {
+        "type": "template_id",
+        "value": "two-columns"
+      },
+      "response": {
+        "elements": [],
+        "function_call": {
+          "name": "generate_slide_text",
+          "arguments": {
+            "title": "Двухколоночный макет с **форматированием**",
+            "left_content": "## Левая колонка\n\n**Жирный текст** и *курсив*\n\n- Первый пункт списка\n- Второй пункт с **выделением**\n- Третий пункт с *курсивом*\n\n### Подзаголовок\n\nОбычный текст с [ссылкой](http://example.com)",
+            "right_content": "## Правая колонка\n\n> Цитата с важной информацией\n\n1. Нумерованный список\n2. Второй пункт\n3. Третий пункт\n\n```\nКод или примеры\nвторая строка кода\n```\n\n**Заключение:** Текст с выводами"
+          }
+        }
+      }
+    },
+    {
+      "id": "smart-layout-cards",
+      "description": "Smart layout with card items",
+      "trigger": {
+        "type": "template_id",
+        "value": "smart-layout"
+      },
+      "response": {
+        "elements": [],
+        "function_call": {
+          "name": "generate_slide_text",
+          "arguments": {
+            "title": "Умный макет с карточками",
+            "card_title_0": "**Первая карточка**",
+            "card_content_0": "Содержимое первой карточки с *форматированием* и списком:\n- Пункт 1\n- Пункт 2",
+            "card_title_1": "*Вторая карточка*",
+            "card_content_1": "Содержимое второй карточки с **жирным текстом** и цитатой:\n\n> Важная информация",
+            "card_title_2": "Третья карточка",
+            "card_content_2": "Обычное содержимое без форматирования для сравнения"
+          }
+        }
+      }
+    },
+    {
+      "id": "chart-slide-test",
+      "description": "Chart slide with data visualization",
+      "trigger": {
+        "type": "template_id",
+        "value": "chart"
+      },
+      "response": {
+        "elements": [],
+        "function_call": {
+          "name": "generate_slide_text",
+          "arguments": {
+            "title": "Диаграмма с **форматированным** заголовком",
+            "chart_title": "Статистика продаж по *регионам*",
+            "chart_data": "[{\"name\": \"Москва & область\", \"value\": 45}, {\"name\": \"СПб < регион\", \"value\": 30}, {\"name\": \"Другие > 50\", \"value\": 25}]",
+            "description": "Описание диаграммы с **выделенными** словами и специальными символами: & < > \" '"
+          }
+        }
+      }
+    },
+    {
+      "id": "final-slide-contacts",
+      "description": "Final slide with contact information",
+      "trigger": {
+        "type": "template_id",
+        "value": "final-slide-contacts"
+      },
+      "response": {
+        "elements": [],
+        "function_call": {
+          "name": "generate_slide_text",
+          "arguments": {
+            "title": "**Спасибо за внимание!**",
+            "subtitle": "*Контактная информация*",
+            "email": "test@example.com",
+            "phone": "+7 (999) 123-45-67",
+            "website": "https://example.com",
+            "additional_info": "Дополнительная информация с **форматированием** и *стилизацией*\n\n- Подписывайтесь на наши обновления\n- Участвуйте в вебинарах\n- Делитесь опытом"
+          }
+        }
+      }
+    }
+  ]
+} 

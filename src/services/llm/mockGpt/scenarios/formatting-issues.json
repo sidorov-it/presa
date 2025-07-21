@@ -1,0 +1,106 @@
+{
+  "name": "Formatting Issues Test",
+  "description": "Test scenario for reproducing text formatting issues in slides",
+  "responses": [
+    {
+      "id": "broken-markdown-response",
+      "description": "Response with broken markdown formatting that causes issues",
+      "trigger": {
+        "type": "function_name",
+        "value": "generate_slide_text"
+      },
+      "response": {
+        "elements": [],
+        "function_call": {
+          "name": "generate_slide_text",
+          "arguments": {
+            "title": "**Заголовок без закрывающего тега",
+            "content": "# Заголовок\n\nТекст с **жирным шрифтом без закрытия\n\n- Первый пункт\n- Второй пункт **без закрытия жирного",
+            "description": "*Курсив без закрытия и неправильная структура",
+            "list_items": [
+              "**Жирный текст без закрытия",
+              "Обычный текст",
+              "*Курсив без закрытия"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "nested-formatting-issue",
+      "description": "Response with nested formatting that breaks rendering",
+      "trigger": {
+        "type": "prompt_contains",
+        "value": "two-columns"
+      },
+      "response": {
+        "elements": [],
+        "function_call": {
+          "name": "generate_slide_text",
+          "arguments": {
+            "left_content": "# **Заголовок с вложенным *курсивом внутри* жирного**\n\nТекст с ***тройным форматированием*** который может сломать парсер",
+            "right_content": "## Список с проблемами:\n\n- **Пункт с *вложенным курсивом* в жирном**\n- *Курсив с **вложенным жирным** внутри*\n- ***Тройное форматирование***",
+            "title": "**Заголовок с *вложенным* форматированием**"
+          }
+        }
+      }
+    },
+    {
+      "id": "html-in-markdown",
+      "description": "Response with mixed HTML and markdown that causes issues",
+      "trigger": {
+        "type": "template_id",
+        "value": "content-with-image"
+      },
+      "response": {
+        "elements": [],
+        "function_call": {
+          "name": "generate_slide_text",
+          "arguments": {
+            "main_content": "# Заголовок\n\n<p>HTML параграф внутри markdown</p>\n\n**Жирный текст** с <strong>HTML жирным</strong>\n\n- Список\n- <li>HTML элемент списка</li>",
+            "image_description": "Описание изображения с <em>HTML тегами</em> и **markdown**",
+            "title": "<h1>HTML заголовок</h1> с **markdown**"
+          }
+        }
+      }
+    },
+    {
+      "id": "special-characters",
+      "description": "Response with special characters that break formatting",
+      "trigger": {
+        "type": "prompt_contains",
+        "value": "chart"
+      },
+      "response": {
+        "elements": [],
+        "function_call": {
+          "name": "generate_slide_text",
+          "arguments": {
+            "chart_title": "Диаграмма с символами: & < > \" ' %",
+            "chart_data": "[{\"name\": \"Категория A & B\", \"value\": 50}, {\"name\": \"C > D\", \"value\": 30}]",
+            "description": "Описание с символами: & амперсанд, < меньше, > больше, \" кавычки",
+            "title": "Заголовок с & символами < и > кавычками \""
+          }
+        }
+      }
+    },
+    {
+      "id": "long-unformatted-text",
+      "description": "Response with very long text without proper formatting",
+      "trigger": {
+        "type": "prompt_contains",
+        "value": "long content"
+      },
+      "response": {
+        "elements": [],
+        "function_call": {
+          "name": "generate_slide_text",
+          "arguments": {
+            "content": "Очень длинный текст без форматирования который должен быть разбит на параграфы но представлен как одна длинная строка что может вызвать проблемы с отображением и читаемостью контента особенно на мобильных устройствах где такой текст будет выглядеть как сплошная стена текста без возможности нормального восприятия информации пользователем что является серьезной проблемой пользовательского опыта",
+            "title": "Заголовок для длинного неформатированного текста"
+          }
+        }
+      }
+    }
+  ]
+} 

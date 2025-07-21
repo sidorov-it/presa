@@ -16,7 +16,7 @@ async function POSTHandler(request: NextRequest) {
             metadata: MetadataExtractors.topics,
         },
         async (session, requestData) => {
-            const { description, numSlides, tone, durationMinutes, goal, audience } = requestData;
+            const { description, numSlides, tone, contentAmount, durationMinutes, goal, audience } = requestData;
 
             if (!description) {
                 throw new Error('Description is required');
@@ -29,6 +29,7 @@ async function POSTHandler(request: NextRequest) {
                         description,
                         numSlides,
                         tone,
+                        contentAmount,
                         durationMinutes,
                         goal,
                         audience,
@@ -48,4 +49,5 @@ async function POSTHandler(request: NextRequest) {
         }
     );
 }
+
 export const POST = withLogging(POSTHandler);

@@ -22,7 +22,7 @@ async function POSTHandler(request: NextRequest) {
             metadata: MetadataExtractors.presentation,
         },
         async (session, requestData) => {
-            const { title, prompt, topics, durationMinutes, goal, audience, tone } = requestData;
+            const { title, prompt, topics, durationMinutes, goal, audience, tone, contentAmount } = requestData;
 
             if (!prompt || !topics || !Array.isArray(topics)) {
                 throw new Error('Invalid request data: prompt and topics are required');
@@ -40,6 +40,7 @@ async function POSTHandler(request: NextRequest) {
                     goal,
                     audience,
                     tone,
+                    contentAmount,
                     options: {
                         userId,
                         requestId,
@@ -54,15 +55,21 @@ async function POSTHandler(request: NextRequest) {
                         .map((el: any) => extractTextFromElement(el as any))
                         .join('\n');
 
-                for (let i = 0; i < templateSuggestions.length; i++) {
+                for (let i = 0; i < topics.length; i++) {
+                    const topic = topics[i];
                     const template = SlideTemplatesRegistry[templateSuggestions[i].templateId];
                     if (!template) {
                         throw new Error(`Template not found: ${templateSuggestions[i].templateId}`);
                     }
+                    logger.info(`Generating slide ${i + 1} with template: ${template.id}`);
 
-                    const previousSlidesContent = slides
-                        .slice(Math.max(0, slides.length - 2))
-                        .map(ps => ({ title: ps.title, content: extractSlidePlainText(ps) }));
+                    // Get surrounding slides for context
+                    const surroundingSlides = slides
+                        .slice(Math.max(0, i - 2), i)
+                        .map((slide: any) => ({
+                            title: slide.title || '',
+                            content: extractSlidePlainText(slide),
+                        }));
 
                     const slide = await generateSlide({
                         topic: title,
@@ -74,87 +81,24 @@ async function POSTHandler(request: NextRequest) {
                         goal,
                         audience,
                         tone,
-                        previousSlides: previousSlidesContent,
+                        previousSlides: surroundingSlides,
                         options: {
                             userId,
                             requestId,
                         },
-                    });
+                    });                    // Set slide title from topic
+                    slide.title = topic.title;
                     slides.push(slide);
+
+                    logger.info(`Generated slide ${i + 1}/${topics.length}`);
                 }
 
-                const themes = await prisma.theme.findMany({
-                    where: {
-                        isActive: true,
-                        isDefault: true,
-                    },
-                    select: {
-                        id: true,
-                    },
-                });
-
-                const ramdomTheme = themes[Math.floor(Math.random() * themes.length)];
-
                 // Create presentation in database
-                const presentation = await prisma.presentation.create({
-                    data: {
-                        title: title || 'AI Generated Presentation',
-                        description: prompt?.substring(0, 500) || '',
-                        slides: slides as any,
-                        userId,
-                        durationMinutes,
-                        goal,
-                        audience,
-                        tone,
-                        themeId: ramdomTheme.id,
-                    },
-                });
-
-                return {
-                    presentation: {
-                        ...presentation,
-                        slides: slides,
-                    },
-                };
-            } catch (templateError) {
-                logger.error(`Error selecting templates: ${templateError}`);
-
-                // Fallback to basic slides if template selection fails
-                const slidesData = topics.map((topic: any) => ({
-                    id: `slide-${generateId()}`,
-                    title: topic.title || topic,
-                    layouts: [
-                        {
-                            id: `layout-${generateId()}`,
-                            type: 'blank',
-                            elements: [
-                                {
-                                    id: `element-${generateId()}`,
-                                    type: 'editor',
-                                    content: topic.title || topic,
-                                    cellId: `cell-${generateId()}`,
-                                },
-                            ],
-                            style: {},
-                            gridStructure: {
-                                rows: [
-                                    {
-                                        id: generateId(),
-                                        cells: [
-                                            {
-                                                id: `cell-${generateId()}`,
-                                                row: 0,
-                                                column: 0,
-                                            },
-                                        ],
-                                    },
-                                ],
-                                columns: 1,
-                                columnWidths: ['100%'],
-                            },
-                        },
-                    ],
-                    contentAlignment: 'center',
+                const slidesData = slides.map((slide: any, index: number) => ({
+                    ...slide,
+                    id: generateId(),
+                    index,
+                    hidden: false,
                 }));
 
                 const presentation = await prisma.presentation.create({
@@ -167,6 +111,7 @@ async function POSTHandler(request: NextRequest) {
                         goal,
                         audience,
                         tone,
+                        contentAmount,
                     },
                 });
 
@@ -176,8 +121,12 @@ async function POSTHandler(request: NextRequest) {
                         slides: slidesData,
                     },
                 };
+            } catch (error) {
+                logger.error('Error generating presentation:', error);
+                throw error;
             }
         }
     );
 }
+
 export const POST = withLogging(POSTHandler);

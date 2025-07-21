@@ -4,6 +4,8 @@ import { TextType } from '@/types';
 import { markdownToHtml } from '@/utils/markdownToHtml';
 import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
 import { LLMHistoryService } from '../history/llmHistoryService';
+import fs from 'fs';
+import path from 'path';
 
 // Placeholder content generators based on element type and context
 const generatePlaceholderContent = (type: string, description?: string, purpose?: string): string => {
@@ -117,11 +119,92 @@ const generatePlaceholderChartData = (chartType: string) => {
 const MOCK_IMAGE_URL = '/uploads/mock-image.jpg';
 const MOCK_IMAGE_ID = 'mock-image-id';
 
+// Interface for predefined test responses
+interface TestResponse {
+    id: string;
+    description: string;
+    trigger?: {
+        type: 'prompt_contains' | 'function_name' | 'template_id';
+        value: string;
+    };
+    response: LLMResponse;
+}
+
+// Interface for test scenarios
+interface TestScenario {
+    name: string;
+    description: string;
+    responses: TestResponse[];
+}
+
 export class MockGptService implements LLMService {
     private readonly userId: string;
+    private testScenario?: TestScenario;
+    private testResponses: TestResponse[] = [];
 
-    constructor(config: MockGptConfig) {
+    constructor(config: MockGptConfig & { testScenario?: string }) {
         this.userId = config.userId;
+
+        // Load test scenario if specified
+        if (config.testScenario) {
+            this.loadTestScenario(config.testScenario);
+        }
+    }
+
+    /**
+     * Load test scenario from file
+     */
+    private loadTestScenario(scenarioName: string) {
+        try {
+            const scenarioPath = path.join(process.cwd(), 'src/services/llm/mockGpt/scenarios', `${scenarioName}.json`);
+            if (fs.existsSync(scenarioPath)) {
+                const scenarioData = JSON.parse(fs.readFileSync(scenarioPath, 'utf8'));
+                this.testScenario = scenarioData;
+                this.testResponses = scenarioData.responses || [];
+                console.log(`[MockGPT] Loaded test scenario: ${scenarioData.name}`);
+            } else {
+                console.warn(`[MockGPT] Test scenario file not found: ${scenarioPath}`);
+            }
+        } catch (error) {
+            console.error(`[MockGPT] Error loading test scenario: ${error}`);
+        }
+    }
+
+    /**
+     * Find matching test response based on prompt and options
+     */
+    private findTestResponse(prompt: string, options?: any): TestResponse | null {
+        for (const testResponse of this.testResponses) {
+            if (!testResponse.trigger) {
+                continue;
+            }
+
+            const { type, value } = testResponse.trigger;
+
+            switch (type) {
+                case 'prompt_contains':
+                    if (prompt.toLowerCase().includes(value.toLowerCase())) {
+                        return testResponse;
+                    }
+                    break;
+                case 'function_name':
+                    if (options?.function_call?.name === value) {
+                        return testResponse;
+                    }
+                    break;
+                case 'template_id':
+                    if (prompt.toLowerCase().includes(value.toLowerCase()) && value !== '-') {
+                        return testResponse;
+                    }
+                    break;
+            }
+        }
+
+        return null;
+    }
+
+    async getTokensCount(_text: string): Promise<number> {
+        return 0;
     }
 
     async generate(
@@ -140,6 +223,7 @@ export class MockGptService implements LLMService {
                 userId: this.userId,
                 provider: 'mock',
                 presentationId: options?.presentationId,
+                requestId: options?.requestId,
                 requestType: 'generate_content',
                 prompt,
                 inputTokens: 0,
@@ -149,11 +233,19 @@ export class MockGptService implements LLMService {
                 cached: false,
                 cost: 0,
                 success: true,
-                metadata: {},
+                metadata: this.testScenario ? { scenario: this.testScenario.name } : {},
                 responseContent: JSON.stringify(response),
             });
             return response;
         };
+
+        // Check for predefined test responses first
+        const testResponse = this.findTestResponse(prompt, options);
+        if (testResponse) {
+            console.log(`[MockGPT] Using test response: ${testResponse.id} - ${testResponse.description}`);
+            return await log(testResponse.response);
+        }
+
         // Если требуется function_call, генерируем соответствующий ответ
         if (options?.function_call && options.functions) {
             const functionName = options.function_call.name;
@@ -164,12 +256,10 @@ export class MockGptService implements LLMService {
                 if (functionName === 'generate_presentation_topics') {
                     // Получаем все доступные шаблоны (не disabled)
                     const templates = Object.values(SlideTemplatesRegistry).filter(t => !t.disabled);
-                    
-                    const filteredTemplates = templates.filter(t => [
-                        'welcome-slide',
-                        'final-slide-contacts',
-                        'final-slide-contacts-qr'
-                    ].includes(t.id));
+
+                    const filteredTemplates = templates.filter(t =>
+                        ['welcome-slide', 'final-slide-contacts', 'final-slide-contacts-qr'].includes(t.id)
+                    );
 
                     const mockTopics = filteredTemplates.map(template => ({
                         title: `Слайд для шаблона ${template.name}`,
@@ -192,11 +282,9 @@ export class MockGptService implements LLMService {
                 if (functionName === 'select_slide_templates') {
                     // Получаем все доступные шаблоны (не disabled)
                     const templates = Object.values(SlideTemplatesRegistry).filter(t => !t.disabled);
-                    const filteredTemplates = templates.filter(t => [
-                        'welcome-slide',
-                        'final-slide-contacts',
-                        'final-slide-contacts-qr'
-                    ].includes(t.id));
+                    const filteredTemplates = templates.filter(t =>
+                        ['welcome-slide', 'final-slide-contacts', 'final-slide-contacts-qr'].includes(t.id)
+                    );
                     const mockTemplateSelections = filteredTemplates.map((template, idx) => ({
                         topicIndex: idx,
                         templateId: template.id,
@@ -361,12 +449,13 @@ export class MockGptService implements LLMService {
 
     async generateImage(
         _prompt: string,
-        _options: { presentationId?: string; userId: string }
+        _options: { presentationId?: string; userId: string; requestId?: string }
     ): Promise<{ imageUrl: string; imageId: string }> {
         await LLMHistoryService.logRequest({
             userId: this.userId,
             provider: 'mock',
             presentationId: _options.presentationId,
+            requestId: _options.requestId,
             requestType: 'generate_image',
             prompt: _prompt,
             inputTokens: 0,
@@ -376,7 +465,7 @@ export class MockGptService implements LLMService {
             cached: false,
             cost: 0,
             success: true,
-            metadata: {},
+            metadata: this.testScenario ? { scenario: this.testScenario.name } : {},
             responseContent: JSON.stringify({ imageUrl: MOCK_IMAGE_URL, imageId: MOCK_IMAGE_ID }),
         });
         return {

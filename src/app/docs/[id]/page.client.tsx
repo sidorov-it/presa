@@ -30,7 +30,7 @@ import { Tooltip } from '@/components/ui/tooltip';
 import { clearAllThemeStyles, getSlideLayoutVars } from '@/utils/themeUtils';
 import { SimplePdfExportButton } from '@/components/export';
 import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
-import { LuEye, LuSettings, LuUser, LuHouse, LuCoins } from 'react-icons/lu';
+import { LuSettings, LuUser, LuHouse, LuCoins, LuPlay } from 'react-icons/lu';
 import Popover from '@/components/ui/Popover';
 import { useShallow } from 'zustand/react/shallow';
 import FontLoader from '@/components/theme/components/Fonts/FontLoader';
@@ -252,7 +252,7 @@ const Header = ({
                             className={styles.viewButton}
                             aria-label="Просмотреть презентацию"
                         >
-                            <LuEye className={styles.viewIcon} aria-hidden="true" />
+                            <LuPlay className={styles.viewIcon} aria-hidden="true" />
                         </button>
                     </Tooltip>
 

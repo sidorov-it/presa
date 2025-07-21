@@ -38,12 +38,25 @@ const selectTemplatesFunction = {
     },
 };
 
+const getContentAmountDescription = (contentAmount?: string) => {
+    switch (contentAmount) {
+        case 'concise':
+            return 'КРАТКИЙ контент - минимум текста, только ключевые моменты, тезисы и основные идеи';
+        case 'detailed':
+            return 'ПОДРОБНЫЙ контент - развернутые объяснения, детали, примеры, дополнительная информация';
+        case 'medium':
+        default:
+            return 'СРЕДНИЙ объем контента - баланс между краткостью и детальностью';
+    }
+};
+
 // Enhanced prompt: includes additional brief fields, sets agent role, lists best practices, and emphasises mandatory function call
 const getTemplatesPrompt = ({
     title,
     description,
     topics,
     templates,
+    contentAmount,
     durationMinutes,
     goal,
     audience,
@@ -53,6 +66,7 @@ const getTemplatesPrompt = ({
     description: string;
     topics: any[];
     templates: any[];
+    contentAmount?: string;
     durationMinutes?: number;
     goal?: string;
     audience?: string;
@@ -62,9 +76,8 @@ const getTemplatesPrompt = ({
 Входные данные брифа:
 • Название презентации: "${title}"
 • Описание: "${description}"
-${goal ? `• Цель: ${goal}\n` : ''}${audience ? `• Аудитория: ${audience}\n` : ''}${tone ? `• Тон/стиль: ${tone}\n` : ''}${
-    Number.isInteger(durationMinutes) ? `• Длительность доклада: ${durationMinutes} минут\n` : ''
-}
+${goal ? `• Цель: ${goal}\n` : ''}${audience ? `• Аудитория: ${audience}\n` : ''}${tone ? `• Тон/стиль: ${tone}\n` : ''}• Объем контента: ${getContentAmountDescription(contentAmount)}
+${Number.isInteger(durationMinutes) ? `• Длительность доклада: ${durationMinutes} минут\n` : ''}
 
 Доступные шаблоны:
 ${templates
@@ -77,15 +90,21 @@ ${templates
 Темы для анализа:
 ${topics.map((t, i) => `${i + 1}. "${t.title}"${t.instructions ? ` — Инструкции: ${t.instructions}` : ''}`).join('\n')}
 
-Лучшие практики выбора шаблонов:
+Лучшие практики выбора шаблона:
 1. Поддерживай визуальную иерархию: ключевая мысль должна быть в центре внимания.
-2. Избегай перегрузки текстом — выбирай шаблоны, которые помогают краткости.
-3. Учитывай аудиторию и цель презентации при выборе акцентов.
-4. Используй простые, контрастные композиции и достаточные поля.
-5. У двух соседних слайдов не может быть один и тот же шаблон — обеспечь разнообразие.
+2. Избегай перегрузки текстом.
+3. Учитывай аудиторию и цель презентации.
+4. Используй простые, контрастные композиции.
+5. Выбирай шаблон, который лучше всего раскрывает тему.
+6. **ВАЖНО**: Учитывай объем контента при выборе шаблона:
+   ${contentAmount === 'concise' 
+     ? '- Для КРАТКОГО контента выбирай простые шаблоны с минимумом элементов'
+     : contentAmount === 'detailed'
+     ? '- Для ПОДРОБНОГО контента выбирай шаблоны с большим количеством текстовых блоков'
+     : '- Для СРЕДНЕГО контента выбирай сбалансированные шаблоны'
+   }
 
-**Внимание:** Для возврата результата ты ОБЯЗАН вызвать функцию "select_slide_templates"!
-`;
+**ВНИМАНИЕ:** Для возврата результата ТЫ ОБЯЗАН вызвать функцию "select_slide_templates".`;
 
 const getTemplatesOptions = {
     functions: [selectTemplatesFunction],
@@ -96,6 +115,7 @@ export default async function generateSlidesTemplates({
     title,
     prompt,
     topics,
+    contentAmount,
     durationMinutes,
     goal,
     audience,
@@ -104,7 +124,8 @@ export default async function generateSlidesTemplates({
 }: {
     title: string;
     prompt: string;
-    topics: any[];
+    topics: { title: string; instructions: string }[];
+    contentAmount?: string;
     durationMinutes?: number;
     goal?: string;
     audience?: string;
@@ -132,6 +153,7 @@ export default async function generateSlidesTemplates({
                 description: prompt,
                 topics,
                 templates,
+                contentAmount,
                 durationMinutes,
                 goal,
                 audience,
