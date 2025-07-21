@@ -69,7 +69,16 @@ export default function ThemesPage() {
             <div className={styles.header}>
                 <Heading
                     title="Темы"
-                    description="Создавайте и настраивайте темы для ваших презентаций"
+                    // description="Создавайте и настраивайте темы для ваших презентаций."
+                    description={
+                        <>
+                            Создавайте и настраивайте темы для ваших презентаций.
+                            <br />
+                            <span style={{ fontSize: '14px', fontStyle: 'italic' }}>
+                                При выборе стандартной темы, создастся новая тема на её основе.
+                            </span>
+                        </>
+                    }
                     withoutMargin={true}
                 />
                 <Link href="/themes/new">
