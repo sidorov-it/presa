@@ -457,7 +457,7 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({
         <>
             <div className={styles.inputGroup}>
                 <label htmlFor="imageUrl" className={styles.label}>
-                    Ссылка на изображение
+                    Укажите ссылку на изображение
                 </label>
                 <input
                     id="imageUrl"
@@ -471,6 +471,9 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({
                 {error && <div className={styles.error}>{error}</div>}
             </div>
 
+            <label htmlFor="imageUrl" className={styles.label}>
+                или загрузите с компьютера
+            </label>
             {imageUrlLocal && (
                 <div {...getRootProps()} className={`${styles.dropzone} ${isLoading ? styles.loading : ''}`}>
                     {isLoading && (

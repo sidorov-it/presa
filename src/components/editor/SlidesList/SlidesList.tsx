@@ -379,7 +379,7 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId }) => {
 
     // Expanded view with the list of slides
     return (
-        <div className={`${styles.leftPanel} slides-list-panel`}>
+        <div className={`${styles.leftPanel} slides-list-panel`} data-tour="slides-panel">
             <Portal>
                 <button
                     className={`${styles.expandedPanelCollapseButton} ${colorMode === 'light' ? styles.expandedPanelCollapseButtonLight : ''}`}

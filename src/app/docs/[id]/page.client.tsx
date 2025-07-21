@@ -36,6 +36,7 @@ import { useShallow } from 'zustand/react/shallow';
 import FontLoader from '@/components/theme/components/Fonts/FontLoader';
 import { Content } from '@tiptap/react';
 import UIStateDebugButton from '@/components/debug/UIStateDebugButton';
+import OnboardingUI from './OnboardingUI';
 
 const Header = ({
     presentationId,
@@ -224,7 +225,7 @@ const Header = ({
                             placeholder="Новая презентация"
                         />
                     ) : (
-                        <span className={styles.titleDisplay} onClick={() => setIsEditingTitle(true)}>
+                        <span className={styles.titleDisplay} onClick={() => setIsEditingTitle(true)} data-tour="title">
                             {title}
                         </span>
                     )}
@@ -241,6 +242,7 @@ const Header = ({
                                 useUIStateStore.getState().openSideMenu('theme-select', { presentationId });
                             }
                         }}
+                        data-tour="theme"
                     >
                         <ThemeIcon />
                         <span>Тема</span>
@@ -251,12 +253,15 @@ const Header = ({
                             onClick={handleViewPresentation}
                             className={styles.viewButton}
                             aria-label="Просмотреть презентацию"
+                            data-tour="view"
                         >
                             <LuPlay className={styles.viewIcon} aria-hidden="true" />
                         </button>
                     </Tooltip>
 
-                    <SimplePdfExportButton presentationId={presentationId} />
+                    <div data-tour="export">
+                        <SimplePdfExportButton presentationId={presentationId} />
+                    </div>
 
                     <div className={styles.headerDivider} />
                     <UndoRedoControls presentationId={presentationId} tiptapRefs={tiptapRefs} />
@@ -270,6 +275,7 @@ const Header = ({
                         tabIndex={0}
                         onClick={handleOpenBgModal}
                         onKeyDown={handleKeyDownCog}
+                        data-tour="settings"
                     >
                         <LuSettings className={styles.settingsIcon} aria-hidden="true" />
                     </button>
@@ -580,7 +586,7 @@ export default function PresentationEditorPage() {
     if (notFound) return <NotFoundPage />;
 
     return (
-        <>
+        <OnboardingUI>
             <ReadOnlyProvider isReadOnly={isMobile}>
                 <SavingStatusAlert />
                 <ThemeStylesApplier
@@ -601,15 +607,23 @@ export default function PresentationEditorPage() {
                             isMobile={isMobile}
                         />
                         <main className={styles.main}>
-                            <Editor presentationId={id} tiptapRefs={tiptapRefs} />
-
+                            <div
+                                className="first-step"
+                                style={{ position: 'fixed', top: '50%', left: '50%', width: 1, height: 1, opacity: 0 }}
+                            />
+                            <div data-tour="editor">
+                                <Editor presentationId={id} tiptapRefs={tiptapRefs} />
+                            </div>
+                            <div
+                                className="last-step"
+                                style={{ position: 'absolute', bottom: 0, right: 0, width: 1, height: 1, opacity: 0 }}
+                            />
                             <BackgroundSettingsModal
                                 defaultSlideBackground={currentTheme?.colors.slideBackground}
                                 isOpen={isBgModalOpen}
                                 onClose={handleCloseBgModal}
                                 presentationId={id}
                             />
-
                             {process.env.NODE_ENV === 'development' && (
                                 <>
                                     <HistoryDebugPopup />
@@ -627,6 +641,6 @@ export default function PresentationEditorPage() {
                     </div>
                 </ThemeStylesApplier>
             </ReadOnlyProvider>
-        </>
+        </OnboardingUI>
     );
 }

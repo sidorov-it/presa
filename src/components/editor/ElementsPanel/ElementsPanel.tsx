@@ -92,7 +92,7 @@ const ElementsPanel: React.FC = () => {
 
     return (
         <div ref={containerRef} className={styles.elementsPanel}>
-            <div className={styles.elementsPanelContent}>
+            <div className={styles.elementsPanelContent} data-tour="elements-panel">
                 <div className={styles.elementsPanelCategories}>
                     {menuRegistry.map(category => (
                         <div key={category.id} className={`${styles.elementsPanelCategory} group`}>
