@@ -190,11 +190,18 @@ export interface ChartElement extends BaseElement {
     legendPosition?: 'left' | 'right' | 'top' | 'bottom';
 }
 
+export interface ButtonItem {
+    id: string;
+    text: string;
+    link?: string;
+    buttonStyle?: 'filled' | 'outlined';
+    alignment?: 'left' | 'center' | 'right';
+    color?: string;
+}
+
 export interface ButtonElement extends BaseElement {
-    link: string;
-    buttonStyle: 'filled' | 'outlined';
-    alignment: 'left' | 'center' | 'right';
-    color: string;
+    items: ButtonItem[];
+    alignment?: 'left' | 'center' | 'right';
 }
 
 export interface BoxElement extends BaseElement {

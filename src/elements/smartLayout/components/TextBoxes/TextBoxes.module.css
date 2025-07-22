@@ -76,6 +76,11 @@
     z-index: 1;
 
 }
+
+.textBox :global(.body-text),
+.textBox :global(.heading-text) {
+    margin: 0;
+}
 /* [style*="--presentation-block-background-custom-type: custom"][style*="--presentation-block-background-custom-count: 1"] .itemBackground::before { */
 
 

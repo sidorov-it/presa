@@ -79,6 +79,8 @@ interface TiptapProps {
     // флаг, что редактор внутри другого элемента, например, smart layout
     isInnerTiptap?: boolean;
     isHideEmpty?: boolean;
+    isHideCommonMenu?: boolean;
+    onFocus?: () => void;
     onEnterPressed?: (content?: any) => void;
     onBackspacePressed?: (isEmpty: boolean, textContent: string) => void;
     onDeletePressed?: (isEmpty: boolean, textContent: string) => void;
@@ -114,6 +116,8 @@ const Tiptap = ({
     placeholder,
     isInnerTiptap = false,
     isHideEmpty = false,
+    isHideCommonMenu = false,
+    onFocus = () => {},
     onEnterPressed = () => {},
     onBackspacePressed = () => {},
     onDeletePressed = () => {},
@@ -248,6 +252,7 @@ const Tiptap = ({
             onBlur?.();
         },
         onFocus: () => {
+            onFocus?.();
             useEditorStore.getState().setActiveEditor(editor, elementId);
 
             // Apply stored styles when focusing empty editor
@@ -659,7 +664,7 @@ const Tiptap = ({
 
     return (
         <div className="not-prose" style={{ position: 'relative', width: '100%' }} data-editor-id={id}>
-            {!elementConfig?.customMenu && editor && <CommonBubbleMenu editor={editor} data-element-id={elementId} />}
+            {!elementConfig?.customMenu && !isHideCommonMenu && editor && <CommonBubbleMenu editor={editor} data-element-id={elementId} />}
             <div className="tiptap-editor-wrapper" style={{ width: '100%' }}>
                 {editor && (
                     <EditorContent

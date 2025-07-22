@@ -171,4 +171,5 @@ async function GETHandler(_request: NextRequest, _props: { params: Promise<{ def
         return NextResponse.json({ error: 'Failed to import themes' }, { status: 500 });
     }
 }
-export const GET = withLogging(GETHandler);
+
+export const GET = () => NextResponse.json({ }, { status: 403 });

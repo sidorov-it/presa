@@ -10,6 +10,8 @@ export enum ElementType {
     CHART = 'chart',
     SMART_LAYOUT = 'smart-layout',
 
+    BUTTON = 'button',
+
     TABLE = 'table',
     BOX = 'box',
 }

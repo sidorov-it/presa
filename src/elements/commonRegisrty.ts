@@ -790,6 +790,28 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
             contextRules: ['Изображение должно быть напрямую связано с текстом'],
         },
     },
+    Buttons: {
+        elementTypeId: ElementType.BUTTON,
+        label: 'Кнопка',
+        Icon: FaListCheck,
+        props: {
+            items: [
+                {
+                    id: '1',
+                    text: '<p><span>Button</span></p>',
+                    link: '',
+                    buttonStyle: 'filled',
+                    alignment: 'left',
+                    color: '#3C3939',
+                },
+            ],
+        },
+        isArray: true,
+        itemFields: [
+            { field: 'text', llmHint: 'Текст кнопки', type: 'text' },
+            { field: 'link', llmHint: 'Ссылка', type: 'text' },
+        ],
+    },
     BarChart: {
         elementTypeId: ElementType.CHART,
         // MenuComponent: ChartSettings,

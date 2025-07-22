@@ -70,7 +70,7 @@ export const elementTypes: Record<string, ElementTypeConfig> = {
         elementTypeId: 'button',
         hasTextEditor: true,
         customMenu: true,
-        MenuComponent: ButtonMenu,
+        // MenuComponent: ButtonMenu,
         hasLimitedTextFormatting: true,
     },
     toggle: {

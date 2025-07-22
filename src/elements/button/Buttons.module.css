@@ -1,0 +1,86 @@
+.container {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.left {
+    justify-content: flex-start;
+}
+
+.center {
+    justify-content: center;
+}
+
+.right {
+    justify-content: flex-end;
+}
+
+.buttonItem {
+    position: relative;
+}
+
+.addButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(0,0,0,0.2);
+    background: #fff;
+    color: rgba(0,0,0,0.6);
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    position: absolute;
+    top: 50%;
+    transform: translate(50%, -50%);
+    right: -0.75rem;
+    opacity: 0;
+}
+
+.buttonItem:hover .addButton,
+.focused .buttonItem:last-child .addButton {
+    opacity: 1;
+}
+
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-width: 100px;
+    border-radius: var(--presentation-slide-border-radius);
+    padding: 0.5em 1em;
+    /* font-size: var(--presentation-font-size-normal); */
+    /* font-weight: var(--presentation-font-weight-normal); */
+    /* text-align: var(--presentation-text-align-center); */
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.button :global(.body-text) {
+    margin: 0;
+}
+
+.dragHandler {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%) rotate(90deg);
+    /* top: 50%;
+    transform: translate(50%, -50%);
+    right: -0.75rem;
+    opacity: 0; */
+}
+
+.filled {
+    background-color: var(--presentation-primary-accent);
+    color: var(--presentation-primary-accent-contrast-text-color);
+}
+
+.outlined {
+    border: 1px solid var(--presentation-primary-accent);
+    color: var(--presentation-primary-accent);
+}

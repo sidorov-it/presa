@@ -1,5 +1,5 @@
 'use client';
-import { ChartElement, Element, ImageElement, SmartLayoutElement } from '@/types';
+import { ChartElement, Element, ImageElement, SmartLayoutElement, ButtonElement } from '@/types';
 import { ViewerElement } from '@/types/elements';
 import ChartComponent from '@/elements/chart/ChartComponent';
 
@@ -11,6 +11,8 @@ import SmartLayoutView from '@/elements/smartLayout/SmartLayoutView';
 
 import { Theme } from '@/types/theme';
 import ImageComponentView from '@/elements/image/ImageComponentView';
+import { getContrastingTextColor } from '@/utils/themeUtils';
+import { CSSProperties } from 'react';
 
 interface ElementViewerProps {
     element: Element & ViewerElement;
@@ -145,6 +147,65 @@ const ElementViewer = ({
                         primaryAccentColor={primaryAccentColor}
                         backgroundBlockFillType={theme.design.blocks.backgroundBlockFillType}
                     />
+                );
+            }
+
+            case ElementType.BUTTON: {
+                const btnElement = element as ButtonElement;
+                const style: CSSProperties = {
+                    display: 'flex',
+                    gap: '0.5rem',
+                    flexWrap: 'wrap',
+                    width: '100%',
+                }
+
+                switch (btnElement.alignment) {
+                    case 'left':
+                        style.justifyContent = 'flex-start';
+                        break;
+                    case 'center':
+                        style.justifyContent = 'center';
+                        break;
+                    case 'right':
+                        style.justifyContent = 'flex-end';
+                        break;
+                    default:
+                        style.justifyContent = 'flex-start';
+                        break;
+                }
+
+                return (
+                    <div style={style}>
+                        {btnElement.items.map(item => {
+                            let style: {[key: string]: string} = {};
+
+                            if (item.buttonStyle === 'filled') {
+                                if (item?.color) {
+                                    style.backgroundColor = item?.color;
+                                    style['--presentation-text-color'] = getContrastingTextColor(item?.color);
+                                } else {
+                                    style.backgroundColor = 'var(--presentation-primary-accent)';
+                                    style['--presentation-text-color'] = 'var(--presentation-primary-accent-contrast-text-color)';
+                                }
+                            } else {
+                                style.backgroundColor = 'transparent';
+                                style['--presentation-text-color'] = 'var(--presentation-primary-accent)';
+                                style.border = `1px solid var(--presentation-primary-accent)`;
+                            }
+                            style.borderRadius = 'var(--presentation-slide-border-radius)';
+                            
+        
+                            return (
+                                <button
+                                    key={item.id}
+                                    className={styles.viewerButton}
+                                    style={style}
+                                >
+                                    <span dangerouslySetInnerHTML={{ __html: item.text }} />
+                                </button>
+                            )
+                        })}
+                    </div>
                 );
             }
 
