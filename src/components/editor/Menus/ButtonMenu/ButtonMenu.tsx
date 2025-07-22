@@ -7,12 +7,15 @@ import { ElementMenuProps } from '@/types';
 import { RefObject } from 'react';
 
 import styles from './ButtonMenu.module.css';
+import ColorPicker from '@/components/ui/ColorPicker';
 
 interface ButtonMenuProps extends ElementMenuProps {
-    onUpdate: (key: string, value: any) => void;
-    onDelete: () => void;
     nodeAttributes: Record<string, any>;
     ref?: RefObject<HTMLDivElement>;
+    alignment: 'left' | 'center' | 'right';
+    onUpdate: (key: string, value: any) => void;
+    onDelete: () => void;
+    onAlignmentChange: (value: string) => void;
 }
 
 export default function ButtonMenu({
@@ -20,10 +23,12 @@ export default function ButtonMenu({
     layoutId,
     elementId,
     presentationId,
+    nodeAttributes,
+    alignment,
+    ref,
     onUpdate,
     onDelete,
-    nodeAttributes,
-    ref,
+    onAlignmentChange,
 }: ButtonMenuProps) {
     const [color, setColor] = useState(nodeAttributes.color || '#3C3939');
     const { updateElement } = usePresentationStore();
@@ -38,6 +43,10 @@ export default function ButtonMenu({
             presentationId,
         });
     }, [elementId, nodeAttributes.elementId, slideId, layoutId, presentationId]);
+    
+    const handleChangeAlignment = (value: string) => {
+        onAlignmentChange(value);
+    };
 
     // Используем локальное состояние для мгновенной обратной связи
     const handleChange = (key: string, value: any) => {
@@ -78,7 +87,7 @@ export default function ButtonMenu({
                     type="text"
                     value={nodeAttributes.link || ''}
                     onChange={e => handleChange('link', e.target.value)}
-                    placeholder="Paste a link or search for a page"
+                    placeholder="Вставьте ссылку"
                     className={styles.buttonMenuLinkInput}
                 />
             </div>
@@ -109,8 +118,8 @@ export default function ButtonMenu({
                 <span className={styles.menuLabel}>Выравнивание</span>
                 <div className={styles.menuButtons}>
                     <button
-                        onClick={() => handleChange('alignment', 'left')}
-                        className={`${styles.menuButton} ${nodeAttributes.alignment === 'left' ? styles.activeButton : ''}`}
+                        onClick={() => handleChangeAlignment('left')}
+                        className={`${styles.menuButton} ${!alignment || alignment === 'left' ? styles.activeButton : ''}`}
                         aria-label="Выравнивание"
                     >
                         <svg style={{ width: '1rem', height: '1rem' }} viewBox="0 0 24 24" fill="currentColor">
@@ -118,8 +127,8 @@ export default function ButtonMenu({
                         </svg>
                     </button>
                     <button
-                        onClick={() => handleChange('alignment', 'center')}
-                        className={`${styles.menuButton} ${nodeAttributes.alignment === 'center' ? styles.activeButton : ''}`}
+                        onClick={() => handleChangeAlignment('center')}
+                        className={`${styles.menuButton} ${alignment === 'center' ? styles.activeButton : ''}`}
                         aria-label="Выравнивание"
                     >
                         <svg style={{ width: '1rem', height: '1rem' }} viewBox="0 0 24 24" fill="currentColor">
@@ -127,8 +136,8 @@ export default function ButtonMenu({
                         </svg>
                     </button>
                     <button
-                        onClick={() => handleChange('alignment', 'right')}
-                        className={`${styles.menuButton} ${nodeAttributes.alignment === 'right' ? styles.activeButton : ''}`}
+                        onClick={() => handleChangeAlignment('right')}
+                        className={`${styles.menuButton} ${alignment === 'right' ? styles.activeButton : ''}`}
                         aria-label="Выравнивание"
                     >
                         <svg style={{ width: '1rem', height: '1rem' }} viewBox="0 0 24 24" fill="currentColor">
@@ -139,7 +148,7 @@ export default function ButtonMenu({
             </div>
 
             {/* Color Picker */}
-            <div className={styles.buttonMenuSetting}>
+            {/* <div className={styles.buttonMenuSetting}>
                 <span className={styles.menuLabel}>Цвет</span>
                 <div className={styles.colorPicker}>
                     <div className={styles.colorPreview} style={{ backgroundColor: color }} />
@@ -151,8 +160,13 @@ export default function ButtonMenu({
                         aria-label="Цвет"
                     />
                 </div>
-            </div>
+            </div> */}
 
+            <ColorPicker
+                value={color}
+                onChange={value => handleChange('color', value)}
+            />
+            
             {/* Delete Button */}
             <button onClick={handleDelete} className={styles.deleteButton} aria-label="Удалить">
                 <svg className={styles.deleteButtonIcon} viewBox="0 0 24 24" fill="currentColor">

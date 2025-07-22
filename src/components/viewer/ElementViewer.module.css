@@ -237,3 +237,15 @@
     margin: 0 1rem 0.75rem;
     /* color: var(--presentation-accent-blocks-text-color); */
 }
+.buttonGroup {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.viewerButton {
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    font-size: inherit;
+}

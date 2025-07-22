@@ -105,10 +105,6 @@ const SmartLayout: React.FC<SmartLayoutProps> = ({
             }}
         >
             {renderLayout()}
-            {/* <button onClick={handleAddItem} className="mt-4 flex items-center gap-2 text-blue-500 hover:text-blue-600">
-                <FaPlus className="w-4 h-4" />
-                <span>Add item</span>
-            </button> */}
         </div>
     );
 };

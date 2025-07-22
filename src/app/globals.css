@@ -1124,7 +1124,7 @@ none
     caret-color: var(--presentation-heading-color);
     font-family: var(--presentation-heading-font) !important;
     letter-spacing: var(--presentation-heading-letter-spacing) !important;
-    margin-bottom: 2em;
+    /* margin-bottom: 2em; */
 }
 
 a {

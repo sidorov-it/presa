@@ -61,6 +61,11 @@ export const menuRegistry: MenuCategory[] = [
                     ElementRegistry.QuestionBox,
                 ],
             },
+            {
+                id: 'interactive',
+                label: 'Интерактивные',
+                elements: [ElementRegistry.Buttons],
+            },
         ],
     },
     {

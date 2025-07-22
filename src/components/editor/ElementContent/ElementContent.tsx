@@ -15,6 +15,7 @@ import { useShallow } from 'zustand/react/shallow';
 import Chart from '@/elements/chart';
 import SmartLayout from '@/elements/smartLayout/SmartLayout';
 import Box from '@/elements/box';
+import Buttons from '@/elements/button';
 import getColumnWidths from '@/utils/getColumnWidths';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
 import { MenuItem } from '@/types/templates';
@@ -736,6 +737,17 @@ export const ElementContent = ({
             } else if (elementTypeId === 'smart-layout') {
                 return (
                     <SmartLayout
+                        elementId={elementId}
+                        presentationId={presentationId}
+                        slideId={slideId}
+                        layoutId={layoutId}
+                        tiptapRefs={tiptapRefs}
+                        isFocused={isFocused}
+                    />
+                );
+            } else if (elementTypeId === ElementType.BUTTON) {
+                return (
+                    <Buttons
                         elementId={elementId}
                         presentationId={presentationId}
                         slideId={slideId}

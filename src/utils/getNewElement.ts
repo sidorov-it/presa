@@ -22,6 +22,12 @@ export const getNewElement = (
                 ...item,
                 id: generateId(),
             })) || [];
+    } else if (elementTypeId === ElementType.BUTTON) {
+        (element as any).items =
+            props.items?.map((item: any) => ({
+                ...item,
+                id: generateId(),
+            })) || [];
     } else if (Object.values(TextType).includes(props.textType as TextType)) {
         const content = getTextContent(props.textType as TextType, props.content);
         element.content = content;

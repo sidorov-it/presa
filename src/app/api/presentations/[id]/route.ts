@@ -12,8 +12,14 @@ import { parsePresentation } from '@/utils/json';
 async function GETHandler(request: Request, props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
     try {
+        const session = await getServerSession(authOptions);
+
+        if (!session?.user) {
+            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+        }
+
         const presentationData = await prisma.presentation.findUnique({
-            where: { id: params.id },
+            where: { id: params.id, userId: session.user.id },
         });
 
         if (!presentationData) {
