@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { POST } from './route';
 import { prisma } from '@/lib/prisma';
-import { sendVerificationEmail } from '@/lib/email';
+import { sendVerificationEmail } from '@/server/email';
 
 jest.mock('@/lib/prisma', () => ({
     prisma: {

@@ -3,7 +3,7 @@ import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
-import { sendEmail } from '@/lib/email';
+import { sendEmail } from '@/server/email';
 
 async function POSTHandler(req: NextRequest) {
     try {

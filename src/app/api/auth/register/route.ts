@@ -3,9 +3,9 @@ import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { hashPassword } from '@/lib/auth';
-import { sendEmail } from '@/lib/email';
+import { sendEmail } from '@/server/email';
 import { PurchaseStatus } from '@prisma/client';
-import { sendVerificationEmail } from '@/lib/email';
+import { sendVerificationEmail } from '@/server/email';
 import { v4 as uuidv4 } from 'uuid';
 
 async function POSTHandler(req: NextRequest) {

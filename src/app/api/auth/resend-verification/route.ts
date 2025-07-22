@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { sendVerificationEmail } from '@/lib/email';
+import { sendVerificationEmail } from '@/server/email';
 import { v4 as uuidv4 } from 'uuid';
 
 const WINDOW_MS = 60 * 60 * 1000; // 1 hour

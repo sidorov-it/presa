@@ -1,6 +1,8 @@
+'use server';
+
 import nodemailer from 'nodemailer';
 import React from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
+import { render, pretty } from '@react-email/render';
 import { WelcomeEmail } from '@/emails/WelcomeEmail';
 
 export interface SendEmailOptions {
@@ -30,9 +32,7 @@ export async function sendEmail({ to, subject, text, html }: SendEmailOptions): 
 
 export async function sendVerificationEmail(email: string, token: string): Promise<void> {
     const verifyUrl = `${process.env.NEXTAUTH_URL}/verify-email?token=${token}`;
-    const html = renderToStaticMarkup(
-        <WelcomeEmail verificationUrl={verifyUrl} />
-    );
+    const html = await pretty(await render(<WelcomeEmail verificationUrl={verifyUrl} />));
     await sendEmail({
         to: email,
         subject: 'Добро пожаловать в Presa!',
