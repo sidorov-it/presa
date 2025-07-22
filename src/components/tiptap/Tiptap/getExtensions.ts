@@ -187,7 +187,10 @@ const getExtensions = ({
         openOnClick: false,
         autolink: true,
         defaultProtocol: 'https',
-        protocols: ['http', 'https'],
+        protocols: ['http', 'https', 'mailto', 'tel'],
+        HTMLAttributes: {
+            class: 'link-text',
+        },
         isAllowedUri: (url, ctx) => {
             try {
                 // construct URL

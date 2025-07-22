@@ -1151,6 +1151,9 @@ button {
     letter-spacing: var(--presentation-heading-letter-spacing) !important;
 }
 
+.link-text {
+    color: var(--presentation-link-color) !important;
+}
 
 .small-text {
     font-size: 0.8em;

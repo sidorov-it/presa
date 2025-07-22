@@ -17,13 +17,15 @@ export function themeToCSSVariables(theme: Theme, backgroundSettings?: Backgroun
     // Base colors
     set('--presentation-primary-accent', theme.colors.primaryAccent);
     set('--presentation-primary-accent-contrast-text-color', getContrastingTextColor(theme.colors.primaryAccent));
-    
+
     set('--presentation-accent-blocks-color', theme.colors.primaryAccent);
 
     // Text colors
     set('--presentation-heading-color', theme.typography.headingColor);
     set('--presentation-text-color', theme.typography.bodyColor);
     set('--presentation-slide-background', theme.colors.slideBackground);
+
+    // set('--presentation-link-color', theme.colors.primaryAccent);
 
     // Page background
     if (theme.colors.pageBackground || backgroundSettings?.backgroundColor) {
@@ -251,7 +253,8 @@ export function themeToCSSVariables(theme: Theme, backgroundSettings?: Backgroun
         rounded: '0.5em',
     };
     set('--presentation-button-radius', buttonRadiusMap[theme.design.buttons.buttonShape] || '4px');
-    set('--presentation-link-color', theme.design.buttons.linkColor || theme.colors.primaryAccent);
+    // set('--presentation-link-color', theme.design.buttons.linkColor || theme.colors.primaryAccent);
+    set('--presentation-link-color', theme.colors.primaryAccent);
 
     return style as React.CSSProperties;
 }

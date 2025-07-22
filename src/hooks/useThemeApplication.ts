@@ -131,6 +131,7 @@ const applyThemeStyles = ({
         prevColors?.slideBackground
     );
 
+    setCSSVariableIfChanged('--presentation-link-color', theme.colors.primaryAccent, prevColors?.primaryAccent);
     // Handle page background
     if (theme.colors.pageBackground || backgroundSettings?.backgroundColor) {
         let backgroundColor;
@@ -523,9 +524,9 @@ const applyThemeStyles = ({
     );
 
     // Link color
-    const linkColor = theme.design.buttons.linkColor || theme.colors.primaryAccent;
-    const prevLinkColor = prevDesign?.buttons.linkColor || prevColors?.primaryAccent;
-    setCSSVariableIfChanged('--presentation-link-color', linkColor, prevLinkColor);
+    // const linkColor = theme.design.buttons.linkColor || theme.colors.primaryAccent;
+    // const prevLinkColor = prevDesign?.buttons.linkColor || prevColors?.primaryAccent;
+    // setCSSVariableIfChanged('--presentation-link-color', linkColor, prevLinkColor);
 
     // Set color mode if provided
     if (setColorMode) {

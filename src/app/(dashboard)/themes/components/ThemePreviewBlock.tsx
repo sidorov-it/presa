@@ -5,7 +5,7 @@ import { Theme } from '@/types/theme';
 import styles from './ThemePreviewBlock.module.css';
 import { FaCopy, FaEye, FaTrash } from 'react-icons/fa';
 import { HiOutlineDotsVertical } from 'react-icons/hi';
-import { getRequiredFontsFromTheme, loadFontsInContainer, unloadFontsFromContainer } from '@/utils/fontLoader';
+import { getRequiredFontsFromTheme, loadFontsInContainer } from '@/utils/fontLoader';
 
 interface ThemePreviewProps {
     theme: Theme;
@@ -25,7 +25,12 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
     onClickDelete,
 }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [menuPosition, setMenuPosition] = useState<{ top?: number; left?: number; right?: number; bottom?: number } | null>(null);
+    const [menuPosition, setMenuPosition] = useState<{
+        top?: number;
+        left?: number;
+        right?: number;
+        bottom?: number;
+    } | null>(null);
     const [isVisible, setIsVisible] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -38,8 +43,8 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
         if (!previewRef.current) return;
 
         observerRef.current = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
+            entries => {
+                entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         setIsVisible(true);
                         // Отключаем observer после первого появления
@@ -229,7 +234,9 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
                                     Текст &{' '}
                                     <span
                                         className={styles.slideLink}
-                                        style={{ color: theme.design.buttons.linkColor || theme.colors.primaryAccent }}
+                                        style={{
+                                            color: /* theme.design.buttons.linkColor || */ theme.colors.primaryAccent,
+                                        }}
                                     >
                                         ссылка
                                     </span>

@@ -22,6 +22,7 @@ import { EditorState } from '@tiptap/pm/state';
 import HeadingSelector from '../settings/HeadingSelector/HeadingSelector';
 import { HEADING_LEVELS, NORMAL_TEXT_LEVEL } from '@/constants/consts';
 import getHeadingLevel from '@/utils/getHeadingLevel';
+import { LinkEditor } from './LinkEditor';
 
 export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
@@ -209,7 +210,7 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
                     <BiCode size={16} />
                 </button> */}
 
-                {/* <LinkEditor editor={editor} className={styles.button} /> */}
+                <LinkEditor editor={editor} className={styles.button} />
 
                 <button
                     onClick={() => editor.chain().focus().toggleOrderedList().run()}
