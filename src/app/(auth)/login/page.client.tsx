@@ -18,7 +18,7 @@ export default function LoginPage() {
     useEffect(() => {
         const emailVerified = searchParams.get('email-verified');
         const registered = searchParams.get('registered');
-        
+
         if (emailVerified === 'true') {
             setSuccessMessage('Email успешно подтвержден!');
         } else if (registered === 'true') {

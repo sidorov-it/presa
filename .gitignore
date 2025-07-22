@@ -19,3 +19,5 @@ deploy-package.tar.gz
 deploy-package/
 deploy.env
 deploy.env.example
+package-lock.json.hash
+package.json.hash
