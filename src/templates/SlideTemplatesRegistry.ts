@@ -2727,7 +2727,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
     //     },
     // },
 
-    'welcome-slide': {
+    'welcome-slide-speaker': {
         id: 'welcome-slide',
         name: 'Приветственный слайд с темой',
         contentAlignment: 'center',
@@ -2759,38 +2759,6 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                                 'Должен отражать основную тему презентации',
                                 'Использовать привлекающие внимание формулировки',
                                 'Символ # в markdown',
-                            ],
-                        },
-                    },
-                ],
-            },
-            {
-                layout: 'welcome-slide',
-                columnsCount: 1,
-                rowsCount: 1,
-                elements: [
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'subtitle',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.HEADING3,
-                            content: 'Подзаголовок или описание темы',
-                            style: {
-                                fontSize: '1.8rem',
-                                textAlign: 'center',
-                                opacity: 0.8,
-                                marginBottom: '3rem',
-                            },
-                        },
-                        llmHints: {
-                            purpose: 'Дополнительное описание или контекст',
-                            contextRules: [
-                                'Расширяет и поясняет основной заголовок',
-                                'Может содержать краткое описание содержания',
-                                'Устанавливает контекст для аудитории',
-                                'Символ ### в markdown для заголовков и без дополнительных символов для текста',
                             ],
                         },
                     },
@@ -2836,9 +2804,125 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
             description: 'Шаблон для начала презентации с темой',
         },
         llm: {
-            description: 'Шаблон для создания приветственного слайда с основной темой презентации',
+            description: 'Шаблон для создания приветственного слайда с основной темой презентации. Используется для презентаций с личным выступлением на конференциях или онлайн, где важно указать имя докладчика.',
             purpose: ['introduction', 'presentation-start', 'theme-announcement'],
             useCases: ['Начало презентации', 'Представление темы', 'Вводная информация'],
+        },
+    },
+
+    'welcome-slide': {
+        id: 'welcome-slide',
+        name: 'Приветственный слайд с изображением',
+        contentAlignment: 'center',
+        layouts: [
+            {
+                layout: 'welcome-slide',
+                columnsCount: 2,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'main_title',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.HEADING1,
+                            content: 'Заголовок',
+                            style: {
+                                fontSize: '3.5rem',
+                                fontWeight: 'bold',
+                                textAlign: 'center',
+                                marginBottom: '2rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Главный заголовок презентации',
+                            contextRules: [
+                                'Краткий, но информативный заголовок',
+                                'Должен отражать основную тему презентации',
+                                'Использовать привлекающие внимание формулировки',
+                                'Символ # в markdown',
+                            ],
+                        },
+                    },
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'subtitle',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.HEADING2,
+                            content: 'Подзаголовок',
+                            style: {
+                                fontSize: '2rem',
+                                textAlign: 'center',
+                                marginBottom: '1.5rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Подзаголовок презентации',
+                            contextRules: [
+                                'Краткое пояснение к теме',
+                                'Может содержать дополнительную информацию',
+                                'Символ ## в markdown',
+                            ],
+                        },
+                    },
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'small_subtitle',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.DEFAULT,
+                            content: 'совсем маленький подзаголовок',
+                            style: {
+                                fontSize: '1.2rem',
+                                textAlign: 'center',
+                                opacity: 0.7,
+                                marginBottom: '1rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Маленький подзаголовок или дополнительная информация',
+                            contextRules: [
+                                'Может содержать дату, место или организацию',
+                                'Символ ### в markdown для заголовков и без дополнительных символов для текста',
+                            ],
+                        },
+                    },
+                    {
+                        elementTypeId: ElementType.IMAGE,
+                        slot: 'main_image',
+                        row: 0,
+                        column: 1,
+                        props: {
+                            src: '',
+                            alt: 'Image',
+                            alignment: 'center',
+                            width: '300px',
+                        },
+                        llmHints: {
+                            purpose: 'Изображение для визуального оформления приветственного слайда',
+                            contextRules: [
+                                'Изображение должно быть связано с темой презентации',
+                                'Может быть логотипом, иллюстрацией или фотографией',
+                            ],
+                        },
+                    },
+                ],
+            },
+        ],
+        ui: {
+            category: 'intro-templates',
+            label: 'Приветственный слайд',
+            icon: FaRegAddressCard,
+            description: 'Шаблон для начала презентации с темой и изображением',
+        },
+        llm: {
+            description: 'Шаблон для создания приветственного слайда с основной темой презентации и изображением.',
+            purpose: ['introduction', 'presentation-start', 'theme-announcement'],
+            useCases: ['Начало презентации', 'Представление темы'],
         },
     },
 
@@ -3113,4 +3197,168 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
             useCases: ['Завершение презентации', 'Предоставление контактов', 'Быстрый доступ к ресурсам'],
         },
     },
+
+    'final-slide': {
+        id: 'final-slide-custom',
+        name: 'Финальный слайд с благодарностью',
+        contentAlignment: 'center',
+        layouts: [
+          {
+            layout: 'final-slide-custom',
+            columnsCount: 1,
+            rowsCount: 1,
+            elements: [
+              {
+                elementTypeId: ElementType.TEXT,
+                slot: 'main_title',
+                row: 0,
+                column: 0,
+                props: {
+                  textType: TextType.HEADING1,
+                  content: 'Спасибо за внимание!',
+                  style: {
+                    fontSize: '2.5rem',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    marginBottom: '2rem',
+                  },
+                },
+                llmHints: {
+                  purpose: 'Благодарность аудитории',
+                  contextRules: [
+                    'Вежливое завершение презентации',
+                    'Может включать призыв к действию',
+                    'Создает позитивное впечатление',
+                    'Символ # в markdown',
+                  ],
+                },
+              },
+            ],
+          },
+          {
+            layout: 'final-slide-custom',
+            columnsCount: 1,
+            rowsCount: 1,
+            elements: [
+              {
+                elementTypeId: ElementType.TEXT,
+                slot: 'custom_info_left',
+                row: 0,
+                column: 0,
+                props: {
+                  textType: TextType.DEFAULT,
+                  content: 'Здесь может быть ваша контактная информация или дополнительный текст.',
+                  style: {
+                    fontSize: '1.2rem',
+                    textAlign: 'left',
+                    lineHeight: '1.8rem',
+                    marginBottom: '2rem',
+                  },
+                },
+                llmHints: {
+                  purpose: 'Контактная информация или дополнительный текст',
+                  contextRules: [
+                    'Включает основные способы связи или дополнительную информацию',
+                    'Может содержать эмодзи для визуального разделения',
+                    'Информация должна быть актуальной',
+                    'Символ ### в markdown для заголовков и без дополнительных символов для текста',
+                  ],
+                },
+              }
+            ],
+          },
+        ],
+        ui: {
+          category: 'final-templates',
+          label: 'Пользовательский финальный слайд',
+          icon: FaRegAddressCard,
+          description: 'Шаблон для завершения презентации с пользовательским контентом',
+        },
+        llm: {
+          description: 'Шаблон для создания финального слайда с благодарностью, контактами и иллюстрацией/QR-кодом',
+          purpose: ['conclusion', 'contact-information', 'custom-content', 'presentation-end'],
+          useCases: ['Завершение презентации', 'Предоставление контактов', 'Быстрый доступ к ресурсам', 'Пользовательский контент'],
+        },
+      },
+
+    // 'final-slide': {
+    //     id: 'final-slide',
+    //     name: 'Заключительный слайд с благодарностью',
+    //     contentAlignment: 'center',
+    //     layouts: [
+    //         {
+    //             "id": "04w55m2u4s6g",
+    //             "gridStructure": {
+    //                 "columns": 1,
+    //                 "rows": [
+    //                     {
+    //                         "id": "k867ku",
+    //                         "cells": [
+    //                             {
+    //                                 "id": "ehdf6f",
+    //                                 "row": 1,
+    //                                 "column": 1
+    //                             }
+    //                         ]
+    //                     }
+    //                 ],
+    //                 "columnWidths": [
+    //                     "100%"
+    //                 ]
+    //             },
+    //             "type": "blank",
+    //             "style": {},
+    //             "elements": [
+    //                 {
+    //                     "id": "dwy1k084yr6",
+    //                     "content": "<p style=\"text-align: center\"><span class=\"heading-text title-text\">Спасибо за внимание!</span></p>",
+    //                     "elementTypeId": "text",
+    //                     "cellId": "ehdf6f"
+    //                 }
+    //             ]
+    //         },
+    //         {
+    //             "id": "5es0d3",
+    //             "gridStructure": {
+    //                 "columns": 1,
+    //                 "rows": [
+    //                     {
+    //                         "id": "s8gdm1",
+    //                         "cells": [
+    //                             {
+    //                                 "id": "hbuflx",
+    //                                 "row": 1,
+    //                                 "column": 1
+    //                             }
+    //                         ]
+    //                     }
+    //                 ],
+    //                 "columnWidths": [
+    //                     "100%"
+    //                 ]
+    //             },
+    //             "type": "blank",
+    //             "style": {},
+    //             "elements": [
+    //                 {
+    //                     "id": "jp8q63xdkvr",
+    //                     "content": "<p style=\"text-align: center\"><span class=\"body-text big-text\">Готов ответить на вопросы.</span></p>",
+    //                     "elementTypeId": "text",
+    //                     "cellId": "hbuflx"
+    //                 }
+    //             ]
+    //         }
+    //     ],
+    //     ui: {
+    //         category: 'final-templates',
+    //         label: 'Заключительный слайд с благодарностью',
+    //         icon: FaRegAddressCard,
+    //         description: 'Шаблон для завершения презентации с благодарностью',
+    //     },
+    //     llm: {
+    //         description: 'Шаблон для создания заключительного слайда с благодарностью',
+    //         purpose: ['conclusion', 'presentation-end'],
+    //         useCases: ['Завершение презентации'],
+    //     },
+    // }
 };
