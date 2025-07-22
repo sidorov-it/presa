@@ -10,7 +10,6 @@ export async function middleware(request: NextRequest) {
     if (redirectPaths.some(pp => path === pp)) {
         return NextResponse.redirect(new URL('/dashboard', request.url));
     }
-
     // Define which paths are public (no auth needed)
     const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password'];
     const isPublicPath = publicPaths.some(pp => path === pp || path.startsWith(pp));

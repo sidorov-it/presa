@@ -66,7 +66,8 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
         });
 
         // Get the base URL for the slide pages
-        const baseUrl = 'http://localhost:3000';
+        // const baseUrl = 'http://localhost:3000';
+        const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://app.slydle.ru';
 
         // Start async PDF generation (don't await)
         generatePdfAsync(task.id, presentationId, slideIndex, baseUrl).catch(error => {

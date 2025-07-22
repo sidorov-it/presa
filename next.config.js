@@ -5,12 +5,11 @@ const isProd = process.env.NODE_ENV === 'production';
 
 const securityHeaders = [
     {
-      key: 'Content-Security-Policy',
-      value: "script-src 'self' https://widget.cloudpayments.ru 'unsafe-inline' 'unsafe-eval';"
-    }
-  ];
-  
-  
+        key: 'Content-Security-Policy',
+        value: "script-src 'self' https://widget.cloudpayments.ru https://app.slydle.ru 'unsafe-inline' 'unsafe-eval';",
+    },
+];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     eslint: {
@@ -28,18 +27,29 @@ const nextConfig = {
     // Отключаем source maps для экономии памяти при сборке
     productionBrowserSourceMaps: false,
     images: {
-        remotePatterns: [
-            new URL('https://app.slydle.ru/uploads/**'),
-        ],
+        remotePatterns: [new URL('https://app.slydle.ru/uploads/**')],
     },
     async headers() {
         return [
-          {
-            source: '/(.*)', // Применять ко всем страницам
-            headers: securityHeaders,
-          },
+            {
+                source: '/view/:id/slide/:slide',
+                headers: [
+                    {
+                        key: 'Content-Security-Policy',
+                        value: "script-src 'self' https://app.slydle.ru https://widget.cloudpayments.ru 'unsafe-inline' 'unsafe-eval'",
+                    },
+                    {
+                        key: 'X-Content-Type-Options',
+                        value: 'nosniff',
+                    },
+                ],
+            },
+            {
+                source: '/(.*)', // Применять ко всем страницам
+                headers: securityHeaders,
+            },
         ];
-      },
+    },
     reactStrictMode: true,
     experimental: {
         // Оптимизируем импорты больших библиотек
