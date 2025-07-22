@@ -114,6 +114,7 @@ export default async function SlidePage(props: {
                                 '--card-max-width': 'var(--editor-width)',
                                 '--media-scale': 'min(1, var(--card-font-scale, 1))',
                                 boxSizing: 'border-box',
+                                position: 'relative',
                             } as React.CSSProperties
                         }
                         data-read-only="true"
