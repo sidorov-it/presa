@@ -3,6 +3,7 @@ import { getToken } from 'next-auth/jwt';
 import { NextRequest } from 'next/server';
 
 const redirectPaths = ['/docs', '/view'];
+const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password', '/view/', '/verify-email'];
 
 export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
@@ -11,7 +12,6 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/dashboard', request.url));
     }
     // Define which paths are public (no auth needed)
-    const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password', '/view/', '/email-not-verified', '/verify-email'];
     const isPublicPath = publicPaths.some(pp => path === pp || path.startsWith(pp));
 
     // Get the token
