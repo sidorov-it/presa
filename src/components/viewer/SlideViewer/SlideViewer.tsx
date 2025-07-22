@@ -344,6 +344,34 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                         ))}
                     </div>
                 </div>
+
+
+                {isPdfExport && (
+                    <a
+                        href="https://slydle.ru"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                            position: 'absolute',
+                            bottom: '8px',
+                            right: '12px',
+                            background: 'rgba(0, 0, 0, 0.7)',
+                            border: '1px solid #ebebeb',
+                            color: 'white',
+                            padding: '4px 8px',
+                            borderRadius: '4px',
+                            fontSize: '10px',
+                            fontFamily:
+                                '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                            fontWeight: 500,
+                            textDecoration: 'none',
+                            pointerEvents: 'none',
+                        }}
+                        data-slydle-watermark="true"
+                    >
+                        Сделано в Slydle
+                    </a>
+                )}
             </div>
         </div>
     );
