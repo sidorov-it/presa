@@ -20,12 +20,14 @@ import UserMenu from '@/components/ui/UserMenu/UserMenu';
 import Footer from '@/components/ui/Footer';
 import { Tooltip } from '@/components/ui/tooltip';
 import { LuInfo } from 'react-icons/lu';
+import { useEarlyTestBanner } from '@/contexts/EarlyTestBannerContext';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     // const { data: session } = useSession();
     const pathname = usePathname();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [previousPath, setPreviousPath] = useState<string | null>(null);
+    const { isVisible: isEarlyTestBannerVisible } = useEarlyTestBanner();
 
     // Track path changes to detect when leaving editor pages
     useEffect(() => {
@@ -92,7 +94,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                 <div className={styles.container}>
                     {/* Sidebar */}
-                    <div className={`${styles.sidebar}${sidebarOpen ? ` ${styles.sidebarOpen}` : ''}`}>
+                    <div
+                        className={`${styles.sidebar}${sidebarOpen ? ` ${styles.sidebarOpen}` : ''} ${
+                            isEarlyTestBannerVisible ? ` ${styles.sidebarWithBanner}` : ''
+                        }`}
+                    >
                         <div className={styles.logo}>
                             <div className={styles.logoText}>
                                 <Logo />

@@ -1,5 +1,6 @@
 .earlyTestBanner {
-    position: relative;
+    position: sticky;
+    top: 0;
     background: var(--color-secondary);
     color: white;
     text-align: center;

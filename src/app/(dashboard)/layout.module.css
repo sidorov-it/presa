@@ -77,11 +77,15 @@
     .sidebar {
         position: fixed;
         transform: none;
+        top: 0;
         left: 0;
-        top: 37px;
         bottom: 0;
         flex-shrink: 0;
         border-right: 1px solid var(--color-border);
+    }
+
+    .sidebarWithBanner {
+        top: 37px;
     }
 }
 

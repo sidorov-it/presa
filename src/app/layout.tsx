@@ -8,6 +8,7 @@ import YaMetrika from '@/components/metrika';
 import BrowserWarning from '@/components/BrowserWarning';
 import EarlyTestBanner from '@/components/EarlyTestBanner/EarlyTestBanner';
 import { Suspense } from 'react';
+import { EarlyTestBannerProvider } from '@/contexts/EarlyTestBannerContext';
 // import Footer from '@/components/ui/Footer';
 
 // const inter = Inter({ subsets: ['latin', 'cyrillic'] });
@@ -43,13 +44,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 }}
             >
                 <NextAuthProvider>
-                    <Provider>
-                        <BrowserWarning />
-                        <EarlyTestBanner />
-                        {children}
-                        <SideMenuRenderer />
-                        {/* <Footer /> */}
-                    </Provider>
+                    <EarlyTestBannerProvider>
+                        <Provider>
+                            <BrowserWarning />
+                            <EarlyTestBanner />
+                            {children}
+                            <SideMenuRenderer />
+                            {/* <Footer /> */}
+                        </Provider>
+                    </EarlyTestBannerProvider>
                     {process.env.NODE_ENV === 'production' && (
                         <Suspense fallback={null}>
                             <YaMetrika />

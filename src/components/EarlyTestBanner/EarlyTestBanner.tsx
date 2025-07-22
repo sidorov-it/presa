@@ -3,28 +3,11 @@
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import styles from './EarlyTestBanner.module.css';
-
-const excludedPaths = ['/view'];
-const STORAGE_KEY = 'earlyTestBannerClosed';
+import { useEarlyTestBanner } from '@/contexts/EarlyTestBannerContext';
 
 export default function EarlyTestBanner() {
-    const pathname = usePathname();
-    const [isVisible, setIsVisible] = useState(true);
-
-    useEffect(() => {
-        const closed = sessionStorage.getItem(STORAGE_KEY);
-        if (closed) {
-            setIsVisible(false);
-        }
-    }, []);
-
-    const handleClose = () => {
-        sessionStorage.setItem(STORAGE_KEY, 'true');
-        setIsVisible(false);
-    };
-
-    const isEarlyTest = excludedPaths.some(path => pathname.includes(path));
-    if (isEarlyTest || !isVisible) {
+    const { isVisible, handleClose } = useEarlyTestBanner();
+    if (!isVisible) {
         return null;
     }
 
