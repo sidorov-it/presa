@@ -189,7 +189,7 @@ const { balance, loading, packages, purchaseTokens } = useTokens();
 
 ## Стилизация
 
-Проект использует CSS-модули вместо Tailwind CSS:
+Проект использует CSS-модули:
 
 - `src/app/(dashboard)/tokens/page.module.css` - стили страницы токенов
 - `src/components/tokens/TokenBalance.module.css` - стили компонента баланса
