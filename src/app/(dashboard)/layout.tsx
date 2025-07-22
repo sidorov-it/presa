@@ -4,10 +4,22 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from './layout.module.css';
-import { FaChalkboard, FaHome, FaPalette, FaTrash, FaCog, FaCreditCard, FaBars, FaTimes } from 'react-icons/fa';
+import {
+    FaChalkboard,
+    FaHome,
+    FaPalette,
+    FaTrash,
+    FaCog,
+    FaCreditCard,
+    FaBars,
+    FaTimes,
+    FaComment,
+} from 'react-icons/fa';
 import Logo from '@/components/icons/Logo/Logo';
 import UserMenu from '@/components/ui/UserMenu/UserMenu';
 import Footer from '@/components/ui/Footer';
+import { Tooltip } from '@/components/ui/tooltip';
+import { LuInfo } from 'react-icons/lu';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     // const { data: session } = useSession();
@@ -50,6 +62,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             label: 'Оплата',
             path: '/tokens',
             icon: <FaCreditCard size={20} />,
+        },
+        {
+            label: 'Обратная связь',
+            path: 'https://forms.yandex.ru/u/6879f43890fa7b0b0f2f43f1',
+            tooltip: 'Поделиться мнением, предложить недостающий функционал, рассказать о проблемах',
+            icon: <FaComment size={20} />,
         },
     ];
 
@@ -103,6 +121,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                         >
                                             <span className={styles.menuIcon}>{item.icon}</span>
                                             <span>{item.label}</span>
+                                            {item.tooltip && (
+                                                <Tooltip content={item.tooltip}>
+                                                    <span style={{ marginLeft: '6px' }}>
+                                                        <LuInfo />
+                                                    </span>
+                                                </Tooltip>
+                                            )}
                                         </Link>
                                     );
                                 })}
