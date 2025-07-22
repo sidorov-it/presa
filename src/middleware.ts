@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/dashboard', request.url));
     }
     // Define which paths are public (no auth needed)
-    const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password'];
+    const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password', '/view/'];
     const isPublicPath = publicPaths.some(pp => path === pp || path.startsWith(pp));
 
     // Get the token
