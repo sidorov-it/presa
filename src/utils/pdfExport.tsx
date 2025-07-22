@@ -171,7 +171,10 @@ const addSlideWatermark = (slideElement: HTMLElement): HTMLElement | null => {
     }
 
     // Create watermark element
-    const watermark = document.createElement('div');
+    const watermark = document.createElement('a');
+    watermark.setAttribute('href', 'https://slydle.ru');
+    watermark.setAttribute('target', '_blank');
+    watermark.setAttribute('rel', 'noopener noreferrer');
     watermark.setAttribute('data-slydle-watermark', 'true');
     watermark.style.cssText = `
         position: absolute;
@@ -189,7 +192,7 @@ const addSlideWatermark = (slideElement: HTMLElement): HTMLElement | null => {
         backdrop-filter: blur(4px);
         -webkit-backdrop-filter: blur(4px);
     `;
-    watermark.textContent = 'Сделано в slydle.ru';
+    watermark.textContent = 'Made in Slydle';
 
     // Add to slide element
     slideElement.style.position = 'relative';
