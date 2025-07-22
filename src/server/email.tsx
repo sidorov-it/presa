@@ -40,3 +40,19 @@ export async function sendVerificationEmail(email: string, token: string): Promi
         html: `<!DOCTYPE html>${html}`,
     });
 }
+
+export interface NewUserInfo {
+    name: string;
+    email: string;
+}
+
+export async function sendRegistrationNotification({
+    name,
+    email,
+}: NewUserInfo): Promise<void> {
+    await sendEmail({
+        to: 'sidorov.s.aleksa@gmail.com',
+        subject: 'Новая регистрация пользователя',
+        text: `Зарегистрирован новый пользователь: ${name} <${email}>`,
+    });
+}

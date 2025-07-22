@@ -5,7 +5,10 @@ import { prisma } from '@/lib/prisma';
 import { hashPassword } from '@/lib/auth';
 import { sendEmail } from '@/server/email';
 import { PurchaseStatus } from '@prisma/client';
-import { sendVerificationEmail } from '@/server/email';
+import {
+    sendVerificationEmail,
+    sendRegistrationNotification,
+} from '@/server/email';
 import { v4 as uuidv4 } from 'uuid';
 
 async function POSTHandler(req: NextRequest) {
@@ -93,8 +96,15 @@ async function POSTHandler(req: NextRequest) {
         // Send welcome email (errors are logged but do not block registration)
         try {
             await sendVerificationEmail(newUser.email, verificationToken);
+            await sendRegistrationNotification({
+                name: newUser.name,
+                email: newUser.email,
+            });
         } catch (emailError) {
-            logger.error('Failed to send verification email:', emailError);
+            logger.error(
+                'Failed to send registration email notifications:',
+                emailError
+            );
         }
 
         // Return success response (without sensitive data)
