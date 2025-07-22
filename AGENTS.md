@@ -16,7 +16,7 @@ Node.js >=22 is required, as specified in `package.json`.
 ## Architecture overview
 
 - **Frontend**: Next.js 15 and React 19 with TypeScript.
-- **Styling**: Tailwind CSS and Chakra UI components.
+- **Styling**: Chakra UI components and CSS modules.
 - **Editor**: TipTap editor and drag&drop via `@dnd-kit`.
 - **Database**: MongoDB accessed via Prisma ORM.
 - **AI services**: integration with various LLM providers (GigaChat, YandexGPT and a Mock provider for tests).

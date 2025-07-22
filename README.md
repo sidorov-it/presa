@@ -51,10 +51,10 @@ Presa - это веб-инструмент для создания слайдо�
 
 ## Технические аспекты
 
-- **Фронтенд**: React + TypeScript, Tailwind CSS, Zustand
+- **Фронтенд**: React + TypeScript, Zustand
 - **Редактор**: Canvas API или Fabric.js для работы с элементами
 - **Анимация**: Framer Motion
-- **Генерация контента**: OpenAI API
+- **Генерация контента**: YandexGPT или GigaChat API
 
 ## Запуск проекта
 
