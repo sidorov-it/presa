@@ -53,6 +53,11 @@ export interface UIState {
         sideMenuData: any;
     };
 
+    // Header/Footer modal state
+    isHeaderFooterModalOpen: boolean;
+    isGlobalHeaderFooterModalOpen: boolean;
+    currentSlideId: string | null;
+
     // Presentation context
     currentPresentationId: string | null;
 
@@ -90,6 +95,11 @@ export interface UIState {
     // Actions for side menu control
     openSideMenu: (sideMenuId: string, sideMenuData: any) => void;
     closeSideMenu: () => void;
+
+    // Actions for header/footer modal control
+    setHeaderFooterModalOpen: (isOpen: boolean) => void;
+    setGlobalHeaderFooterModalOpen: (isOpen: boolean) => void;
+    setCurrentSlideId: (slideId: string | null) => void;
 
     // Actions for table hover state
     hoverTableCell: (tableId: string, rowIndex: number | null, columnIndex: number | null) => void;
@@ -164,6 +174,11 @@ export const useUIStateStore = create<UIState>()(
                     sideMenuId: null,
                     sideMenuData: null,
                 },
+
+                // Initial header/footer modal state
+                isHeaderFooterModalOpen: false,
+                isGlobalHeaderFooterModalOpen: false,
+                currentSlideId: null,
 
                 // Initial presentation context
                 currentPresentationId: null,
@@ -324,6 +339,19 @@ export const useUIStateStore = create<UIState>()(
                             sideMenuData: null,
                         },
                     });
+                },
+
+                // Actions for header/footer modal control
+                setHeaderFooterModalOpen: (isOpen: boolean) => {
+                    set({ isHeaderFooterModalOpen: isOpen });
+                },
+
+                setGlobalHeaderFooterModalOpen: (isOpen: boolean) => {
+                    set({ isGlobalHeaderFooterModalOpen: isOpen });
+                },
+
+                setCurrentSlideId: (slideId: string | null) => {
+                    set({ currentSlideId: slideId });
                 },
 
                 // Actions for table hover state

@@ -78,8 +78,12 @@ export default async function PresentationViewWrapper({ params }: Props) {
         where: { id },
     });
 
-    if (!presentationData || !presentationData.themeId) {
+    if (!presentationData) {
         return <NotFoundPage />;
+    }
+
+    if (!presentationData.themeId) {
+        presentationData.themeId = '687f6b77009104ef7546a07b';
     }
 
     const theme = await prisma.theme.findUnique({

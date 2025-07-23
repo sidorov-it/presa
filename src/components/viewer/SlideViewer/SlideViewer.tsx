@@ -2,14 +2,48 @@
 /* eslint-disable indent */
 /* eslint-disable no-nested-ternary */
 import React, { useCallback, useMemo } from 'react';
-import { Layout, Slide } from '@/types';
+import { HeaderFooterConfig, Layout, Slide } from '@/types';
 import LayoutViewer from '../LayoutViewer/LayoutViewer';
 import ViewerTemplateImageWithPlaceholder from '../ViewerTemplateImageWithPlaceholder';
+import HeaderFooter from '../../editor/HeaderFooter/HeaderFooter';
+import { applyGlobalHeaderFooterToSlide } from '@/utils/applyGlobalHeaderFooter';
 
 import styles from '../../editor/SlideEditor/SlideEditor.module.css';
 import localStyles from './SlideViewer.module.css';
 import { Theme } from '@/types/theme';
 
+const getHeaderFooterPadding = (headerFooter?: HeaderFooterConfig): number => {
+    if (headerFooter?.enabled && headerFooter.fixedHeight) {
+        // Размеры логотипов как пропорции от ширины слайда
+        // Базируемся на том, что стандартная ширина слайда 64.5em,
+        // и переводим em в пропорции (em / 64.5)
+        const logoSizeOrder = {
+            small: 5, // ≈ 0.0775
+            medium: 7.5, // ≈ 0.116
+            large: 10, // ≈ 0.155
+        };
+        let largestLogoSize: 'small' | 'medium' | 'large' | undefined = undefined;
+
+        // Проверяем все позиции (left, center, right) на наличие логотипов
+        const positions = [headerFooter.left, headerFooter.center, headerFooter.right];
+        const logos = positions.filter(position => position?.type === 'logo' || position?.type === 'theme-logo');
+
+        if (logos.length > 0) {
+            // Находим самый большой логотип
+            if (logos.some(logo => logo.logoSize === 'large')) {
+                largestLogoSize = 'large';
+            } else if (logos.some(logo => logo.logoSize === 'medium')) {
+                largestLogoSize = 'medium';
+            } else if (logos.some(logo => logo.logoSize === 'small')) {
+                largestLogoSize = 'small';
+            }
+        }
+
+        // Если есть логотипы, используем размер самого большого, иначе 10/64.5 ≈ 0.155
+        return largestLogoSize ? logoSizeOrder[largestLogoSize] : 10 / 64.5;
+    }
+    return 0;
+};
 interface SlideViewerProps {
     slide: Slide;
     themeClassName?: string;
@@ -25,6 +59,12 @@ interface SlideViewerProps {
     wrapperRef?: React.Ref<HTMLDivElement>;
     isSlidePreview?: boolean;
     theme: Theme;
+    /** Current slide index for numbering (0-based) */
+    currentSlideIndex?: number;
+    /** Total number of slides */
+    totalSlides?: number;
+    /** Global header/footer configuration */
+    globalHeaderFooterConfig?: any;
 }
 
 // No longer needed - we now use imageHeightRatio and imageWidthRatio directly
@@ -41,6 +81,9 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     primaryAccentColor,
     wrapperRef,
     theme,
+    currentSlideIndex = 0,
+    totalSlides = 1,
+    globalHeaderFooterConfig,
 }) => {
     // Get slide background styling
     const getSlideStyle = useCallback(() => {
@@ -155,7 +198,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
             default:
                 return {};
         }
-    }, [slide?.templateType, slide?.imageUrl, slide?.imageHeightRatio, slide?.imageWidthRatio]);
+    }, [slide.templateType, slide.imageUrl, slide.imageWidthRatio, slide.imageHeightRatio]);
 
     // Calculate content style for layouts based on template
     const contentStyle: React.CSSProperties = useMemo(() => {
@@ -194,6 +237,14 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
             }
         }
 
+        // Применяем глобальные настройки колонтитулов к слайду
+        const effectiveSlide = globalHeaderFooterConfig
+            ? applyGlobalHeaderFooterToSlide(slide, currentSlideIndex, totalSlides, globalHeaderFooterConfig)
+            : slide;
+
+        const headerPadding = getHeaderFooterPadding(effectiveSlide.header);
+        const footerPadding = getHeaderFooterPadding(effectiveSlide.footer);
+
         // Additional styles for image templates
         if (slide.templateType) {
             // Calculate dimensions based on ratios
@@ -202,8 +253,20 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
 
             // Convert ratios to CSS values
             const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
-            // const paddingTopVw = `calc(64.5em * var(--card-font-scale, 1) * ${currentImageHeightRatio} + 1em)`;
-            const paddingTopVw = `calc(var(--card-width) * ${currentImageHeightRatio} + 1em)`;
+
+            let paddingTopVw;
+            let paddingBottomVw;
+
+            if (headerPadding > 0) {
+                paddingTopVw = `calc(var(--card-width) * ${currentImageHeightRatio} + ${headerPadding}em)`;
+            } else {
+                paddingTopVw = `calc(var(--card-width) * ${currentImageHeightRatio} + 1em)`;
+            }
+            if (footerPadding > 0) {
+                paddingBottomVw = `calc(var(--card-width) * ${footerPadding})`;
+            } else {
+                paddingBottomVw = undefined;
+            }
 
             const remainingWidth = `${(1 - currentImageWidthRatio) * 100}%`;
             // For remaining height, we need to subtract the image height from total height
@@ -216,6 +279,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                         position: 'relative',
                         zIndex: 2,
                         paddingTop: paddingTopVw,
+                        paddingBottom: paddingBottomVw,
                         height: remainingHeight,
                     };
                 case 'imageLeft':
@@ -234,12 +298,27 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                         width: remainingWidth,
                     };
                 default:
+                    baseStyle.paddingTop = `calc(48px + ${headerPadding}em)`;
+                    baseStyle.paddingBottom = `calc(48px + ${footerPadding}em)`;
                     return baseStyle;
+            }
+        } else {
+            // Для слайдов без template типа применяем отступы для колонтитулов
+            if (headerPadding > 0) {
+                baseStyle.paddingTop = `calc(48px + var(--card-inner-padding-y) + var(--card-width) * ${headerPadding})`;
+            } else {
+                baseStyle.paddingTop = 'calc(48px + var(--card-inner-padding-y))';
+            }
+
+            if (footerPadding > 0) {
+                baseStyle.paddingBottom = `calc(48px + var(--card-inner-padding-y) + var(--card-width) * ${footerPadding})`;
+            } else {
+                baseStyle.paddingBottom = 'calc(48px + var(--card-inner-padding-y))';
             }
         }
 
         return baseStyle;
-    }, [slide]);
+    }, [slide, currentSlideIndex, totalSlides, globalHeaderFooterConfig]);
 
     let height;
     let width;
@@ -293,7 +372,13 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     const slideContentStyle: React.CSSProperties = {
         // backgroundColor: fullPage ? 'transparent' : 'var(--presentation-slide-background)',
         borderRadius: fullPage ? 0 : 'var(--presentation-slide-border-radius)',
-        minHeight: isSlidePreview ? 'var(--card-min-height)' : fullPage ? 'var(--card-height)' : isPdfExport ? 'auto' : undefined,
+        minHeight: isSlidePreview
+            ? 'var(--card-min-height)'
+            : fullPage
+              ? 'var(--card-height)'
+              : isPdfExport
+                ? 'auto'
+                : undefined,
         height: isSlidePreview || fullPage ? 'auto' : undefined,
         overflow: isSlidePreview || fullPage || isPdfExport ? 'visible' : 'auto',
         // transform: isSlidePreview ? 'scale(1)' : 'none',
@@ -303,17 +388,38 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     const slideClassName = `${styles.slide} ${localStyles.slide} ${themeClassName} ${isPdfExport ? styles.pdfExport : ''}`;
     // const outerStyle = fullPage ? { padding: 0, width: '100%', height: '100%' } : undefined;
 
+    console.log('contentStyle', contentStyle);
     return (
         <div className={`${slideClassName} ${isSlidePreview ? localStyles.slidePreview : ''}`}>
-            <div
-                className={`${styles.slideWrapper} ${localStyles.slideWrapper}`}
-                style={slideWrapperStyle}
-            >
+            <div className={`${styles.slideWrapper} ${localStyles.slideWrapper}`} style={slideWrapperStyle}>
                 <div
                     ref={wrapperRef}
                     className={`${styles.slideContent} ${localStyles.slideContent}`}
                     style={slideContentStyle}
                 >
+                    {/* Apply global header/footer settings */}
+                    {(() => {
+                        const effectiveSlide = globalHeaderFooterConfig
+                            ? applyGlobalHeaderFooterToSlide(
+                                  slide,
+                                  currentSlideIndex,
+                                  totalSlides,
+                                  globalHeaderFooterConfig
+                              )
+                            : slide;
+
+                        return (
+                            effectiveSlide?.header && (
+                                <HeaderFooter
+                                    config={effectiveSlide.header}
+                                    type="header"
+                                    currentSlideIndex={currentSlideIndex}
+                                    totalSlides={totalSlides}
+                                />
+                            )
+                        );
+                    })()}
+
                     {/* Template image if needed */}
                     {slide?.templateType &&
                         slide.templateType !== 'imageBackground' &&
@@ -343,8 +449,29 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                             />
                         ))}
                     </div>
-                </div>
 
+                    {(() => {
+                        const effectiveSlide = globalHeaderFooterConfig
+                            ? applyGlobalHeaderFooterToSlide(
+                                  slide,
+                                  currentSlideIndex,
+                                  totalSlides,
+                                  globalHeaderFooterConfig
+                              )
+                            : slide;
+                        return (
+                            effectiveSlide?.footer && (
+                                <HeaderFooter
+                                    config={effectiveSlide.footer}
+                                    type="footer"
+                                    currentSlideIndex={currentSlideIndex}
+                                    totalSlides={totalSlides}
+                                    theme={theme}
+                                />
+                            )
+                        );
+                    })()}
+                </div>
 
                 {isPdfExport && (
                     <a
@@ -361,11 +488,11 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                             padding: '4px 8px',
                             borderRadius: '4px',
                             fontSize: '10px',
-                            fontFamily:
-                                '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                             fontWeight: 500,
                             textDecoration: 'none',
                             pointerEvents: 'none',
+                            zIndex: 1000,
                         }}
                         data-slydle-watermark="true"
                     >

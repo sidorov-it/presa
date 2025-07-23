@@ -125,6 +125,9 @@ export default async function SlidePage(props: {
                             primaryAccentColor={finalTheme.colors.primaryAccent}
                             fullPage={true}
                             isPdfExport={isPdfExport}
+                            currentSlideIndex={slideIndex}
+                            totalSlides={visibleSlides.length}
+                            globalHeaderFooterConfig={presentation.headerFooterConfig}
                         />
                     </div>
                 </ViewerProvider>

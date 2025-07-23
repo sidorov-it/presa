@@ -11,6 +11,7 @@ import {
     AlignCenterIcon,
     AlignBottomIcon,
     MergeIcon,
+    HeaderFooterIcon,
 } from '@/components/icons';
 import RowTableMenu from './RowTableMenu/RowTableMenu';
 import ColumnTableMenu from './ColumnTableMenu/ColumnTableMenu';
@@ -20,6 +21,7 @@ import { TipTapRefs } from '@/types';
 import TableMenu from './TableMenu/TableMenu';
 import { BaseMenu, MenuItem } from './BaseMenu';
 import { getElementMenuComponent } from '@/utils/getElementMenuComponent';
+
 
 const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tiptapRefs }) => {
     const {
@@ -289,6 +291,15 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
             case 'slide':
                 return (
                     <>
+                        <MenuItem
+                            icon={<HeaderFooterIcon />}
+                            label="Заголовок и подвал"
+                            onClick={() => {
+                                // Открываем модальное окно через глобальное состояние
+                                useUIStateStore.getState().setHeaderFooterModalOpen(true);
+                                closeContextMenu();
+                            }}
+                        />
                         <MenuItem
                             icon={<DuplicateIcon />}
                             label="Дублировать"

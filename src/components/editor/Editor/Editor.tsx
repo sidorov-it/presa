@@ -9,6 +9,7 @@ import { useUIStateStore } from '@/store/uiStateStore';
 import { useEditorStore } from '@/store/editorStore';
 import { TipTapRefs } from '@/types';
 import { useShallow } from 'zustand/react/shallow';
+import GlobalHeaderFooterModal from '../GlobalHeaderFooterModal/GlobalHeaderFooterModal';
 
 import styles from './Editor.module.css';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
@@ -106,12 +107,13 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
 
             // Проверяем, что событие произошло не внутри текстового редактора
             const target = e.target as HTMLElement;
-            const isInsideTextEditor = target.closest('[data-tiptap-editor]') || 
-                                     target.closest('.ProseMirror') || 
-                                     target.closest('[contenteditable="true"]') ||
-                                     target.closest('.tiptap-editor-wrapper') ||
-                                     target.closest('.tiptap') ||
-                                     target.closest('.custom-tiptap-editor');
+            const isInsideTextEditor =
+                target.closest('[data-tiptap-editor]') ||
+                target.closest('.ProseMirror') ||
+                target.closest('[contenteditable="true"]') ||
+                target.closest('.tiptap-editor-wrapper') ||
+                target.closest('.tiptap') ||
+                target.closest('.custom-tiptap-editor');
 
             if (isInsideTextEditor) {
                 return; // Не обрабатываем события внутри текстового редактора
@@ -132,14 +134,7 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
                 return;
             }
 
-            if (
-                isReadOnly ||
-                !elementId ||
-                !slideId ||
-                !layoutId ||
-                !menuPresentationId ||
-                isTextEditor
-            ) {
+            if (isReadOnly || !elementId || !slideId || !layoutId || !menuPresentationId || isTextEditor) {
                 return;
             }
 
@@ -161,6 +156,10 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, [isReadOnly]);
+
+    const isGlobalHeaderFooterModalOpen = useUIStateStore(state => state.isGlobalHeaderFooterModalOpen);
+    const setGlobalHeaderFooterModalOpen = useUIStateStore(state => state.setGlobalHeaderFooterModalOpen);
+    const currentSlideId = useUIStateStore(state => state.currentSlideId);
 
     if (!presentationExists) {
         return notFoundUI;
@@ -196,6 +195,14 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
                     // onSlideSelect={handleSlideSelect}
                 />
             </div>
+
+            {/* Global Header/Footer Modal */}
+            <GlobalHeaderFooterModal
+                isOpen={isGlobalHeaderFooterModalOpen}
+                onClose={() => setGlobalHeaderFooterModalOpen(false)}
+                presentationId={presentationId}
+                slideId={currentSlideId}
+            />
         </DndProvider>
     );
 };

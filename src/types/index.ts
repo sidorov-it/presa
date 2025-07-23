@@ -238,6 +238,23 @@ export interface Layout {
     parentId?: string; // Reference to parent layout if nested
 }
 
+// Header/Footer position content types
+export type HeaderFooterContentType = 'none' | 'text' | 'logo' | 'theme-logo' | 'slide-number';
+
+export interface HeaderFooterPosition {
+    type: HeaderFooterContentType;
+    content?: string; // Text content or logo URL
+    logoSize?: 'small' | 'medium' | 'large';
+}
+
+export interface HeaderFooterConfig {
+    enabled: boolean;
+    left: HeaderFooterPosition;
+    center: HeaderFooterPosition;
+    right: HeaderFooterPosition;
+    fixedHeight: boolean;
+}
+
 export interface Slide {
     id: string;
     title?: string;
@@ -254,6 +271,8 @@ export interface Slide {
     imageWidthRatio?: number; // Width of image as ratio to slide width (0-1) for left/right templates
     contentAlignment?: 'top' | 'center' | 'bottom';
     hidden?: boolean;
+    header?: HeaderFooterConfig;
+    footer?: HeaderFooterConfig;
 }
 
 export interface BackgroundSettings {
@@ -262,6 +281,12 @@ export interface BackgroundSettings {
 }
 
 // Интерфейс презентации
+export interface GlobalHeaderFooterConfig {
+    header: HeaderFooterConfig;
+    footer: HeaderFooterConfig;
+    applyTo: 'all' | 'except-first' | 'except-first-last';
+}
+
 export interface IPresentation {
     id: string;
     title: string;
@@ -271,6 +296,7 @@ export interface IPresentation {
     createdAt: number;
     updatedAt: number;
     backgroundSettings?: BackgroundSettings;
+    headerFooterConfig?: GlobalHeaderFooterConfig;
 
     // AI generation metadata
     durationMinutes?: number;

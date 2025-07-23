@@ -444,6 +444,9 @@ export default function PresentationView({ presentation, theme }: Props) {
                                 fullPage={true}
                                 primaryAccentColor={theme?.colors.primaryAccent || '#000000'}
                                 wrapperRef={slideWrapperRef}
+                                currentSlideIndex={currentSlideIndex}
+                                totalSlides={visibleSlides.length}
+                                globalHeaderFooterConfig={presentation.headerFooterConfig}
                             />
                         </motion.div>
                     </AnimatePresence>
