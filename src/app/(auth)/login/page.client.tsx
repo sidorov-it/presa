@@ -26,6 +26,12 @@ export default function LoginPage() {
         }
     }, [searchParams]);
 
+    const providerNames: Record<string, string> = {
+        vk: 'VK',
+        mailru: 'Mail.ru',
+        yandex: 'Yandex',
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -45,7 +51,13 @@ export default function LoginPage() {
             });
 
             if (result?.error) {
-                setError('Неверный email или пароль');
+                if (result.error.startsWith('OAUTH_ONLY:')) {
+                    const provider = result.error.split(':')[1];
+                    const name = providerNames[provider] ?? provider;
+                    setError(`Вы регистрировались через ${name}, вход по паролю невозможен`);
+                } else {
+                    setError('Неверный email или пароль');
+                }
                 setIsLoading(false);
                 return;
             }
@@ -55,6 +67,32 @@ export default function LoginPage() {
         } catch (error) {
             console.error('Login error:', error);
             setError('Что-то пошло не так. Попробуйте еще раз.');
+            setIsLoading(false);
+        }
+    };
+
+    const handleOAuth = async (provider: string) => {
+        try {
+            setIsLoading(true);
+            setError('');
+
+            const result = await signIn(provider, { redirect: false });
+
+            if (result?.error) {
+                if (result.error === 'EmailRegistered') {
+                    setError('На ваш email уже зарегистрирован аккаунт. Пожалуйста, войдите через почту и пароль');
+                } else {
+                    const name = providerNames[provider] ?? provider;
+                    setError(`Не удалось войти через ${name}`);
+                }
+                setIsLoading(false);
+                return;
+            }
+
+            router.push('/dashboard');
+        } catch (err) {
+            console.error('OAuth login error:', err);
+            setError('Не удалось выполнить вход');
             setIsLoading(false);
         }
     };
@@ -139,21 +177,21 @@ export default function LoginPage() {
                     <div className={styles.socialButtons}>
                         <button
                             type="button"
-                            onClick={() => signIn('vk', { callbackUrl: '/dashboard' })}
+                            onClick={() => handleOAuth('vk')}
                             className={styles.socialButton}
                         >
                             Войти через VK
                         </button>
                         <button
                             type="button"
-                            onClick={() => signIn('mailru', { callbackUrl: '/dashboard' })}
+                            onClick={() => handleOAuth('mailru')}
                             className={styles.socialButton}
                         >
                             Войти через Mail.ru
                         </button>
                         <button
                             type="button"
-                            onClick={() => signIn('yandex', { callbackUrl: '/dashboard' })}
+                            onClick={() => handleOAuth('yandex')}
                             className={styles.socialButton}
                         >
                             Войти через Yandex

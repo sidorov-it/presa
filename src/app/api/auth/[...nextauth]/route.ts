@@ -47,7 +47,7 @@ export const authOptions: NextAuthOptions = {
 
                 if (!user.passwordHash) {
                     logger.warn(`Password login not allowed for ${credentials.email}`);
-                    return null;
+                    throw new Error(`OAUTH_ONLY:${user.createdVia}`);
                 }
 
                 const isPasswordMatch = await comparePassword(credentials.password, user.passwordHash);
@@ -103,27 +103,8 @@ export const authOptions: NextAuthOptions = {
 
                 const existing = await prisma.user.findUnique({ where: { email: user.email } });
 
-                if (existing && existing.passwordHash) {
-                    await prisma.oAuthAccount.create({
-                        data: {
-                            userId: existing.id,
-                            provider,
-                            providerUserId: account.providerAccountId,
-                            accessToken: account.access_token ?? '',
-                            refreshToken: account.refresh_token,
-                            tokenExpiresAt: account.expires_at ? new Date(account.expires_at * 1000) : null,
-                        },
-                    });
-                    user.id = existing.id;
-                    user.role = existing.role;
-                    user.name = existing.name;
-                    (user as any).emailVerified = Boolean(existing.emailVerified || existing.isVerified);
-                    return true;
-                }
-
-                if (existing && !existing.passwordHash) {
-                    console.warn('OAuth account email already registered via another provider');
-                    return false;
+                if (existing) {
+                    throw new Error('EmailRegistered');
                 }
 
                 const newUser = await prisma.user.create({
