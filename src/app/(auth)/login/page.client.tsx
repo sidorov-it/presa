@@ -136,6 +136,29 @@ export default function LoginPage() {
                             {isLoading ? 'Входим...' : 'Войти'}
                         </button>
                     </div>
+                    <div className={styles.socialButtons}>
+                        <button
+                            type="button"
+                            onClick={() => signIn('vk', { callbackUrl: '/dashboard' })}
+                            className={styles.socialButton}
+                        >
+                            Войти через VK
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => signIn('mailru', { callbackUrl: '/dashboard' })}
+                            className={styles.socialButton}
+                        >
+                            Войти через Mail.ru
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => signIn('yandex', { callbackUrl: '/dashboard' })}
+                            className={styles.socialButton}
+                        >
+                            Войти через Yandex
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

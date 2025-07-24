@@ -45,10 +45,11 @@ async function POSTHandler(req: NextRequest) {
                     data: {
                         name,
                         email,
-                        password: hashedPassword,
+                        passwordHash: hashedPassword,
                         verificationToken,
                         verificationTokenExpires: verificationExpires,
                         isVerified: false,                        emailPreferences: { emailUpdates: true },
+                        createdVia: 'email',
                     },
                 });
 

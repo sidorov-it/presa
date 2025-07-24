@@ -44,7 +44,7 @@ async function PUTHandler(req: NextRequest) {
             }
 
             // Verify current password
-            const isPasswordValid = await comparePassword(currentPassword, userByEmail.password);
+            const isPasswordValid = await comparePassword(currentPassword, userByEmail.passwordHash ?? '');
             logger.debug('PUT /api/user/password - Password valid:', isPasswordValid);
 
             if (!isPasswordValid) {
@@ -52,8 +52,9 @@ async function PUTHandler(req: NextRequest) {
             }
 
             // Update password
-            userByEmail.password = newPassword;
-            await prisma.user.update({ where: { id: userByEmail.id }, data: { password: newPassword } });
+            const hashed = await hashPassword(newPassword);
+            userByEmail.passwordHash = hashed;
+            await prisma.user.update({ where: { id: userByEmail.id }, data: { passwordHash: hashed } });
             logger.debug('PUT /api/user/password - Password updated by email lookup');
 
             return NextResponse.json({
@@ -62,7 +63,7 @@ async function PUTHandler(req: NextRequest) {
         }
 
         // Verify current password
-        const isPasswordValid = await comparePassword(currentPassword, user.password);
+        const isPasswordValid = await comparePassword(currentPassword, user.passwordHash ?? '');
         logger.debug('PUT /api/user/password - Password valid:', isPasswordValid);
 
         if (!isPasswordValid) {
@@ -70,8 +71,9 @@ async function PUTHandler(req: NextRequest) {
         }
 
         // Update password
-        user.password = await hashPassword(newPassword);
-        await prisma.user.update({ where: { id: user.id }, data: { password: newPassword } });
+        const hashed = await hashPassword(newPassword);
+        user.passwordHash = hashed;
+        await prisma.user.update({ where: { id: user.id }, data: { passwordHash: hashed } });
         logger.debug('PUT /api/user/password - Password updated successfully');
 
         return NextResponse.json({

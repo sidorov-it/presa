@@ -85,7 +85,7 @@ type PageBackground {
 model User {
   id                   String            @id @default(auto()) @map("_id") @db.ObjectId
   email                String            @unique
-  password             String
+  passwordHash        String?           @map("password")
   name                 String
   image                String?
   isVerified           Boolean           @default(false)
@@ -93,6 +93,7 @@ model User {
   verificationToken    String?
   verificationTokenExpires DateTime?
   role                 String            @default("user")
+  createdVia           CreatedVia        @default(email)
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
   emailPreferences     EmailPreferences?
@@ -107,6 +108,30 @@ model User {
   tokenPurchases     TokenPurchase[]
   tokenTransactions  TokenTransaction[]
   pdfGenerationTasks PdfGenerationTask[]
+  oauthAccounts      OAuthAccount[]
+}
+
+enum CreatedVia {
+  email
+  vk
+  ya
+  mailru
+}
+
+model OAuthAccount {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String   @db.ObjectId
+  provider      String
+  providerUserId String
+  accessToken   String
+  refreshToken  String?
+  tokenExpiresAt DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerUserId])
 }
 
 model Presentation {
