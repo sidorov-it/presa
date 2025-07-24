@@ -1,15 +1,16 @@
 import * as React from 'react';
 
-interface WelcomeEmailProps {
-    verificationUrl: string;
+interface PasswordResetEmailProps {
+    resetUrl: string;
 }
 
-export function WelcomeEmail({ verificationUrl }: WelcomeEmailProps) {
+export function PasswordResetEmail({ resetUrl }: PasswordResetEmailProps) {
+    const logoUrl = `${process.env.NEXTAUTH_URL}/logo.svg`;
     return (
         <html>
             <head>
                 <meta charSet="utf-8" />
-                <title>Добро пожаловать в Slydle!</title>
+                <title>Сброс пароля</title>
             </head>
             <body style={{ fontFamily: 'Arial, sans-serif', backgroundColor: '#f8f8f8', padding: '20px' }}>
                 <div
@@ -20,17 +21,13 @@ export function WelcomeEmail({ verificationUrl }: WelcomeEmailProps) {
                         textAlign: 'center',
                     }}
                 >
-                    <img
-                        src={`${process.env.NEXTAUTH_URL}/logo.svg`}
-                        alt="Slydle"
-                        style={{ width: '150px', margin: '0 auto' }}
-                    />
-                    <h1 style={{ color: '#333333' }}>Добро пожаловать в Slydle!</h1>
-                    <p style={{ color: '#555555' }}>Спасибо за регистрацию.</p>
+                    <img src={logoUrl} alt="Slydle" style={{ width: '150px', margin: '0 auto' }} />
+                    <h1 style={{ color: '#333333' }}>Сброс пароля</h1>
+                    <p style={{ color: '#555555' }}>Вы запросили сброс пароля.</p>
                     <br />
-                    <p style={{ color: '#555555' }}>Подтвердите адрес электронной почты, нажав на кнопку ниже.</p>
+                    <p style={{ color: '#555555' }}>Нажмите на кнопку ниже, чтобы установить новый пароль.</p>
                     <a
-                        href={verificationUrl}
+                        href={resetUrl}
                         style={{
                             display: 'inline-block',
                             padding: '10px 20px',
@@ -41,11 +38,11 @@ export function WelcomeEmail({ verificationUrl }: WelcomeEmailProps) {
                             textDecoration: 'none',
                         }}
                     >
-                        Подтвердить email
+                        Сбросить пароль
                     </a>
                     <p style={{ color: '#555555', marginTop: '20px', fontSize: '12px' }}>
                         Если кнопка не работает, перейдите по ссылке:&nbsp;
-                        <a href={verificationUrl}>{verificationUrl}</a>
+                        <a href={resetUrl}>{resetUrl}</a>
                     </p>
                 </div>
             </body>
