@@ -6,7 +6,7 @@ interface WelcomeEmailProps {
 
 export function WelcomeEmail({ verificationUrl }: WelcomeEmailProps) {
     return (
-        <html>
+        <html lang="ru">
             <head>
                 <meta charSet="utf-8" />
                 <title>Добро пожаловать в Slydle!</title>
@@ -21,7 +21,7 @@ export function WelcomeEmail({ verificationUrl }: WelcomeEmailProps) {
                     }}
                 >
                     <img
-                        src={`${process.env.NEXTAUTH_URL}/logo.svg`}
+                        src={`https://app.slydle.ru/logo.svg`}
                         alt="Slydle"
                         style={{ width: '150px', margin: '0 auto' }}
                     />

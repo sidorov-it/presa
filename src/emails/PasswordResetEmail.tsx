@@ -5,9 +5,8 @@ interface PasswordResetEmailProps {
 }
 
 export function PasswordResetEmail({ resetUrl }: PasswordResetEmailProps) {
-    const logoUrl = `${process.env.NEXTAUTH_URL}/logo.svg`;
     return (
-        <html>
+        <html lang="ru">
             <head>
                 <meta charSet="utf-8" />
                 <title>Сброс пароля</title>
@@ -21,7 +20,11 @@ export function PasswordResetEmail({ resetUrl }: PasswordResetEmailProps) {
                         textAlign: 'center',
                     }}
                 >
-                    <img src={logoUrl} alt="Slydle" style={{ width: '150px', margin: '0 auto' }} />
+                    <img
+                        src="https://app.slydle.ru/logo.svg"
+                        alt="Slydle"
+                        style={{ width: '150px', margin: '0 auto' }}
+                    />
                     <h1 style={{ color: '#333333' }}>Сброс пароля</h1>
                     <p style={{ color: '#555555' }}>Вы запросили сброс пароля.</p>
                     <br />
