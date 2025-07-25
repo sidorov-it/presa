@@ -4,6 +4,7 @@ import { NextRequest } from 'next/server';
 
 const redirectPaths = ['/docs', '/view'];
 const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password', '/view/', '/verify-email'];
+const authOnlyPaths = ['/login', '/register', '/forgot-password', '/reset-password']; // Pages that authenticated users shouldn't access
 
 export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
@@ -11,8 +12,10 @@ export async function middleware(request: NextRequest) {
     if (redirectPaths.some(pp => path === pp)) {
         return NextResponse.redirect(new URL('/dashboard', request.url));
     }
+    
     // Define which paths are public (no auth needed)
     const isPublicPath = publicPaths.some(pp => path === pp || path.startsWith(pp));
+    const isAuthOnlyPath = authOnlyPaths.some(pp => path === pp || path.startsWith(pp));
 
     // Get the token
     const token = await getToken({
@@ -22,17 +25,29 @@ export async function middleware(request: NextRequest) {
 
     const emailVerified = token?.emailVerified === true;
 
+    // If user is authenticated and tries to access auth pages, redirect to dashboard
+    if (token && isAuthOnlyPath) {
+        console.log(`[MIDDLEWARE] Authenticated user trying to access ${path}, redirecting to dashboard`);
+        const callbackUrl = request.nextUrl.searchParams.get('callbackUrl') || '/dashboard';
+        return NextResponse.redirect(new URL(callbackUrl, request.url));
+    }
+
     // If it's not a public path and no token, redirect to login
     if (!isPublicPath && !token) {
-        return NextResponse.redirect(new URL('/login', request.url));
+        console.log(`[MIDDLEWARE] Unauthenticated user trying to access ${path}, redirecting to login`);
+        const loginUrl = new URL('/login', request.url);
+        loginUrl.searchParams.set('callbackUrl', request.url);
+        return NextResponse.redirect(loginUrl);
     }
 
     let response: NextResponse | null = null;
 
     if (token) {
         if (!emailVerified && path !== '/email-not-verified' && !isPublicPath) {
+            console.log(`[MIDDLEWARE] User email not verified, redirecting to email verification`);
             response = NextResponse.redirect(new URL('/email-not-verified', request.url));
         } else if (emailVerified && path === '/email-not-verified') {
+            console.log(`[MIDDLEWARE] User email verified, redirecting from email verification page`);
             response = NextResponse.redirect(new URL('/dashboard', request.url));
         }
     }

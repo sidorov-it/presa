@@ -89,6 +89,12 @@ DATABASE_URL="mongodb+srv://username:password@cluster.mongodb.net/slydle"
 | `DATABASE_URL` | Строка подключения к БД | `mongodb://...` |
 | `NEXTAUTH_SECRET` | Секрет для NextAuth | `openssl rand -base64 32` |
 | `NEXTAUTH_URL` | URL приложения | `https://ваш-домен.com` |
+| `VK_CLIENT_ID` | ID приложения VK | `123456` |
+| `VK_CLIENT_SECRET` | Секрет VK приложения | `abcdef` |
+| `MAILRU_CLIENT_ID` | ID приложения Mail.ru | `123456` |
+| `MAILRU_CLIENT_SECRET` | Секрет Mail.ru | `abcdef` |
+| `YANDEX_CLIENT_ID` | ID приложения Yandex | `123456` |
+| `YANDEX_CLIENT_SECRET` | Секрет Yandex | `abcdef` |
 
 #### 4.2 Генерация NEXTAUTH_SECRET
 ```bash

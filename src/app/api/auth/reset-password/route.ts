@@ -39,7 +39,7 @@ async function POSTHandler(req: NextRequest) {
         await prisma.user.update({
             where: { id: user.id },
             data: {
-                password: hashedPassword,
+                passwordHash: hashedPassword,
                 resetPasswordToken: null,
                 resetPasswordExpires: null,
             },
