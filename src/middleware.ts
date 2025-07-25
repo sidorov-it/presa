@@ -21,15 +21,17 @@ export async function middleware(request: NextRequest) {
     const isPublicPath = publicPaths.some(pp => path === pp || path.startsWith(pp));
     const isAuthOnlyPath = authOnlyPaths.some(pp => path === pp || path.startsWith(pp));
 
+    console.log(`[MIDDLEWARE] getToken`);
     const token = await getToken({
         req: request,
         secret: process.env.NEXTAUTH_SECRET,
     });
+    console.log(`[MIDDLEWARE] token`, token);
 
     const emailVerified = token?.emailVerified === true;
 
     // Если авторизован и пытается попасть на страницу логина/регистрации
-    if (token && isAuthOnlyPath) {
+    if (token && emailVerified && isAuthOnlyPath) {
         console.log(`[MIDDLEWARE] Authenticated user trying to access ${path}, redirecting to dashboard`);
         const callbackUrl = request.nextUrl.searchParams.get('callbackUrl') || '/dashboard';
         return NextResponse.redirect(new URL(callbackUrl, fullBaseUrl));
@@ -46,8 +48,12 @@ export async function middleware(request: NextRequest) {
     let response: NextResponse | null = null;
 
     if (token) {
-        if (!emailVerified && path !== '/email-not-verified' && !isPublicPath) {
-            console.log(`[MIDDLEWARE] User email not verified, redirecting to email verification`);
+        if (!emailVerified && path === '/login') {
+            response = NextResponse.next();
+        } else if (!emailVerified && path === '/') {
+            response = NextResponse.redirect(new URL('/login', fullBaseUrl));
+        } else if (!emailVerified && path !== '/email-not-verified' && path !== '/login' && !isPublicPath) {
+            console.log(`[MIDDLEWARE] User email not verified, redirecting to email verification`, token);
             response = NextResponse.redirect(new URL('/email-not-verified', fullBaseUrl));
         } else if (emailVerified && path === '/email-not-verified') {
             console.log(`[MIDDLEWARE] User email verified, redirecting from email verification page`);

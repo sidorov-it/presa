@@ -18,7 +18,7 @@ export default function LoginPage() {
 
     // Redirect authenticated users to dashboard
     useEffect(() => {
-        if (status === 'authenticated' && session) {
+        if (status === 'authenticated' && session && session.user.emailVerified) {
             console.log('[LOGIN_PAGE] User is already authenticated, redirecting to dashboard');
             const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
             router.replace(callbackUrl);
