@@ -4,14 +4,29 @@ import VKProvider from 'next-auth/providers/vk';
 import MailRuProvider from 'next-auth/providers/mailru';
 import YandexProvider from 'next-auth/providers/yandex';
 import { prisma } from '@/lib/prisma';
-import { comparePassword, hashPassword } from '@/lib/auth';
+import { comparePassword } from '@/lib/auth';
 import logger from '@/utils/logger';
+import { PurchaseStatus } from '@prisma/client';
+
+// Track ongoing OAuth requests to prevent duplicates
+const ongoingRequests = new Map<string, Promise<any>>();
+
+// Track callback requests
+const callbackRequestCount = new Map<string, number>();
 
 export const authOptions: NextAuthOptions = {
     providers: [
         VKProvider({
             clientId: process.env.VK_CLIENT_ID ?? '',
             clientSecret: process.env.VK_CLIENT_SECRET ?? '',
+            // checks: 'pkce', // или default, не 'none'
+            authorization: {
+                url: 'https://oauth.vk.com/authorize',
+                params: {
+                    response_type: 'openid,code',
+                    scope: 'email',
+                },
+            },
         }),
         MailRuProvider({
             clientId: process.env.MAILRU_CLIENT_ID ?? '',
@@ -20,6 +35,33 @@ export const authOptions: NextAuthOptions = {
         YandexProvider({
             clientId: process.env.YANDEX_CLIENT_ID ?? '',
             clientSecret: process.env.YANDEX_CLIENT_SECRET ?? '',
+            authorization: {
+                url: 'https://oauth.yandex.ru/authorize',
+                params: {
+                    scope: 'login:email login:info',
+                    response_type: 'code',
+                },
+            },
+            token: {
+                url: 'https://oauth.yandex.ru/token',
+            },
+            userinfo: {
+                url: 'https://login.yandex.ru/info',
+                params: {
+                    format: 'json',
+                },
+            },
+            profile(profile) {
+                return {
+                    id: profile.id,
+                    name: profile.real_name || profile.display_name || '',
+                    email: profile.default_email || '',
+                    role: 'user',
+                    image: profile.default_avatar_id
+                        ? `https://avatars.yandex.net/get-yapic/${profile.default_avatar_id}/islands-200`
+                        : '',
+                };
+            },
         }),
         CredentialsProvider({
             name: 'Credentials',
@@ -33,8 +75,6 @@ export const authOptions: NextAuthOptions = {
                 if (!credentials?.email || !credentials.password) {
                     return null;
                 }
-
-                logger.info(`Login attempt for ${credentials.email}`);
 
                 const user = await prisma.user.findUnique({
                     where: { email: credentials.email },
@@ -70,9 +110,10 @@ export const authOptions: NextAuthOptions = {
     ],
     session: {
         strategy: 'jwt',
+        maxAge: 30 * 24 * 60 * 60, // 30 days
     },
     pages: {
-        signIn: '/auth/signin',
+        signIn: '/login',
         error: '/auth/error',
     },
     callbacks: {
@@ -82,64 +123,189 @@ export const authOptions: NextAuthOptions = {
             }
 
             if (!user.email || !account.providerAccountId) {
-                return false;
+                logger.warn('[SIGNIN_CALLBACK] Missing email or providerAccountId in OAuth signIn');
+                return `/login?error=Configuration`;
             }
 
             const provider = account.provider;
+            const requestKey = `${provider}-${account.providerAccountId}`;
 
-            try {
-                let oauth = await prisma.oAuthAccount.findUnique({
-                    where: { provider_providerUserId: { provider, providerUserId: account.providerAccountId } },
-                    include: { user: true },
-                });
-
-                if (oauth) {
-                    user.id = oauth.userId;
-                    user.role = oauth.user.role;
-                    user.name = oauth.user.name;
-                    (user as any).emailVerified = Boolean(oauth.user.emailVerified || oauth.user.isVerified);
-                    return true;
+            // Check if there's already an ongoing request for this user
+            if (ongoingRequests.has(requestKey)) {
+                try {
+                    const result = await ongoingRequests.get(requestKey);
+                    return result;
+                } catch (error) {
+                    logger.error(`[SIGNIN_CALLBACK] Duplicate request failed for ${requestKey}:`, error);
+                    ongoingRequests.delete(requestKey);
+                    return `/login?error=OAuthCallback`;
                 }
-
-                const existing = await prisma.user.findUnique({ where: { email: user.email } });
-
-                if (existing) {
-                    throw new Error('EmailRegistered');
-                }
-
-                const newUser = await prisma.user.create({
-                    data: {
-                        email: user.email,
-                        name: user.name ?? '',
-                        passwordHash: null,
-                        image: user.image,
-                        isVerified: true,
-                        emailVerified: new Date(),
-                        emailPreferences: { emailUpdates: true },
-                        createdVia: provider === 'yandex' ? 'ya' : (provider as any),
-                    },
-                });
-
-                await prisma.oAuthAccount.create({
-                    data: {
-                        userId: newUser.id,
-                        provider,
-                        providerUserId: account.providerAccountId,
-                        accessToken: account.access_token ?? '',
-                        refreshToken: account.refresh_token,
-                        tokenExpiresAt: account.expires_at ? new Date(account.expires_at * 1000) : null,
-                    },
-                });
-
-                user.id = newUser.id;
-                user.role = newUser.role;
-                user.name = newUser.name;
-                (user as any).emailVerified = true;
-                return true;
-            } catch (error) {
-                console.error('OAuth signIn error:', error);
-                return false;
             }
+
+            // Create a promise for this request and store it
+            const requestPromise = (async () => {
+                try {
+                    const oauth = await prisma.oAuthAccount.findUnique({
+                        where: {
+                            provider_providerUserId: {
+                                provider,
+                                providerUserId: account.providerAccountId,
+                            },
+                        },
+                        include: { user: true },
+                    });
+
+                    if (oauth) {
+                        user.id = oauth.userId;
+                        user.role = oauth.user?.role ?? 'user';
+                        user.name = oauth.user?.name ?? '';
+                        (user as any).emailVerified = Boolean(oauth.user?.emailVerified || oauth.user?.isVerified);
+                        return true;
+                    }
+
+                    const existing = await prisma.user.findUnique({ where: { email: user.email } });
+
+                    if (existing) {
+                        logger.warn(`[SIGNIN_CALLBACK] Email ${user.email} already registered with different provider`);
+                        return `/login?error=EmailRegistered`;
+                    }
+
+                    // Use transaction to ensure atomicity
+                    const result = await prisma.$transaction(async tx => {
+                        const newUser = await tx.user.create({
+                            data: {
+                                email: user.email,
+                                name: user.name ?? '',
+                                passwordHash: null,
+                                image: user.image,
+                                isVerified: true,
+                                emailVerified: new Date(),
+                                emailPreferences: { emailUpdates: true },
+                                createdVia: provider === 'yandex' ? 'ya' : (provider as any),
+                            },
+                        });
+
+                        await tx.oAuthAccount.create({
+                            data: {
+                                userId: newUser.id,
+                                provider,
+                                providerUserId: account.providerAccountId,
+                                accessToken: account.access_token ?? '',
+                                refreshToken: account.refresh_token,
+                                tokenExpiresAt: account.expires_at ? new Date(account.expires_at * 1000) : null,
+                            },
+                        });
+
+                        if (provider === 'yandex') {
+                            const welcomePackage = await tx.tokenPackage.findFirst({
+                                where: { packageType: 'welcome' },
+                            });
+                            if (!welcomePackage) {
+                                throw new Error('Welcome package not found');
+                            }
+
+                            await tx.tokenPurchase.create({
+                                data: {
+                                    userId: newUser.id,
+                                    packageId: welcomePackage.id,
+                                    packageType: 'welcome',
+                                    tokensAmount: 200,
+                                    price: 0,
+                                    currency: 'RUB',
+                                    status: PurchaseStatus.completed,
+                                    paymentProvider: '',
+                                    paymentId: 'welcome',
+                                    sessionId: 'welcome',
+                                    purchasedAt: new Date(),
+                                    completedAt: new Date(),
+                                    metadata: {
+                                        welcomePackage: true,
+                                    },
+                                },
+                            });
+                            await tx.userTokens.create({
+                                data: {
+                                    userId: newUser.id,
+                                    balance: 200,
+                                    totalUsed: 0,
+                                },
+                            });
+                        }
+
+                        return newUser;
+                    });
+
+                    user.id = result.id;
+                    user.role = result.role;
+                    user.name = result.name;
+                    (user as any).emailVerified = true;
+                    return true;
+                } catch (error) {
+                    logger.error('[SIGNIN_CALLBACK] OAuth signIn error:', error);
+
+                    // Handle specific error types
+                    if (error instanceof Error) {
+                        if (error.message === 'EmailRegistered') {
+                            return `/login?error=EmailRegistered`;
+                        }
+                        if (error.message.includes('invalid_grant') || error.message.includes('Code has expired')) {
+                            return `/login?error=CodeExpired`;
+                        }
+                        if (error.message.includes('duplicate key') || error.message.includes('unique constraint')) {
+                            logger.warn(`[SIGNIN_CALLBACK] Duplicate user creation attempt for ${user.email}`);
+                            // Try to find the existing user and link the OAuth account
+                            try {
+                                const existingUser = await prisma.user.findUnique({ where: { email: user.email } });
+                                if (existingUser) {
+                                    await prisma.oAuthAccount.upsert({
+                                        where: {
+                                            provider_providerUserId: {
+                                                provider: account.provider,
+                                                providerUserId: account.providerAccountId,
+                                            },
+                                        },
+                                        create: {
+                                            userId: existingUser.id,
+                                            provider: account.provider,
+                                            providerUserId: account.providerAccountId,
+                                            accessToken: account.access_token ?? '',
+                                            refreshToken: account.refresh_token,
+                                            tokenExpiresAt: account.expires_at
+                                                ? new Date(account.expires_at * 1000)
+                                                : null,
+                                        },
+                                        update: {
+                                            accessToken: account.access_token ?? '',
+                                            refreshToken: account.refresh_token,
+                                            tokenExpiresAt: account.expires_at
+                                                ? new Date(account.expires_at * 1000)
+                                                : null,
+                                        },
+                                    });
+                                    user.id = existingUser.id;
+                                    user.role = existingUser.role;
+                                    user.name = existingUser.name;
+                                    (user as any).emailVerified = Boolean(
+                                        existingUser.emailVerified || existingUser.isVerified
+                                    );
+                                    return true;
+                                }
+                            } catch (retryError) {
+                                logger.error('[SIGNIN_CALLBACK] Error during retry:', retryError);
+                            }
+                        }
+                    }
+
+                    return `/login?error=OAuthCallback`;
+                } finally {
+                    // Clean up the ongoing request
+                    ongoingRequests.delete(requestKey);
+                }
+            })();
+
+            // Store the promise and return its result
+            ongoingRequests.set(requestKey, requestPromise);
+            return await requestPromise;
         },
         async jwt({ token, user, trigger, session }) {
             if (user) {
@@ -159,13 +325,13 @@ export const authOptions: NextAuthOptions = {
                 try {
                     const dbUser = await prisma.user.findUnique({
                         where: { id: token.id as string },
-                        select: { isVerified: true, emailVerified: true }
+                        select: { isVerified: true, emailVerified: true },
                     });
                     if (dbUser) {
                         token.emailVerified = Boolean(dbUser.emailVerified || dbUser.isVerified);
                     }
                 } catch (error) {
-                    console.error('Error refreshing email verification status:', error);
+                    logger.error('[JWT_CALLBACK] Error refreshing email verification status:', error);
                 }
             }
 
@@ -178,10 +344,63 @@ export const authOptions: NextAuthOptions = {
                 session.user.name = token.name as string;
                 session.user.emailVerified = Boolean(token.emailVerified);
             }
+
             return session;
+        },
+    },
+    debug: true,
+    logger: {
+        error(code, metadata) {
+            logger.error(`[NEXTAUTH_ERROR] ${code}:`, metadata);
+        },
+        warn(code) {
+            logger.warn(`[NEXTAUTH_WARN] ${code}`);
+        },
+        debug(code, metadata) {
+            logger.info(`[NEXTAUTH_DEBUG] ${code}:`, metadata);
         },
     },
 };
 
 const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
+
+// Wrap the handler to add request logging
+const wrappedHandler = async (req: Request, context: any) => {
+    const url = new URL(req.url);
+    const pathname = url.pathname;
+    const searchParams = url.searchParams;
+
+    // Track callback requests specifically
+    if (pathname.includes('/callback/')) {
+        const provider = pathname.split('/callback/')[1];
+        const state = searchParams.get('state');
+
+        const callbackKey = `${provider}-${state || 'no-state'}`;
+        const currentCount = callbackRequestCount.get(callbackKey) || 0;
+        callbackRequestCount.set(callbackKey, currentCount + 1);
+
+        if (currentCount > 0) {
+            logger.warn(
+                `[CALLBACK_REQUEST] DUPLICATE CALLBACK detected for ${callbackKey}, count: ${currentCount + 1}`
+            );
+        }
+
+        // Clean up old entries (older than 5 minutes)
+        setTimeout(
+            () => {
+                callbackRequestCount.delete(callbackKey);
+            },
+            5 * 60 * 1000
+        );
+    }
+
+    try {
+        const result = await handler(req, context);
+        return result;
+    } catch (error) {
+        logger.error(`[AUTH_REQUEST] ${req.method} ${pathname} failed:`, error);
+        throw error;
+    }
+};
+
+export { wrappedHandler as GET, wrappedHandler as POST };
