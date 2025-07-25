@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
 import { sendEmail } from '@/server/email';
+import { PasswordResetEmail } from '@/emails/PasswordResetEmail';
+import { render, pretty } from '@react-email/render';
 
 async function POSTHandler(req: NextRequest) {
     try {
@@ -42,10 +44,12 @@ async function POSTHandler(req: NextRequest) {
         const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`;
 
         try {
+            const html = await pretty(await render(<PasswordResetEmail resetUrl={resetUrl} />));
             await sendEmail({
                 to: user.email,
                 subject: 'Сброс пароля',
                 text: `Чтобы сбросить пароль, перейдите по ссылке: ${resetUrl}`,
+                html: `<!DOCTYPE html>${html}`,
             });
         } catch (emailError) {
             logger.error('Failed to send reset password email:', emailError);
