@@ -499,3 +499,223 @@
     color: var(--chakra-colors-blue-600);
     text-decoration: underline;
 } 
+
+/* Tab Navigation */
+.tabNavigation {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+    background: #f8fafc;
+    padding: 4px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.tabButton {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.tabButton:hover {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.tabButtonActive {
+    background: #ffffff;
+    color: #3b82f6;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tabIcon {
+    font-size: 16px;
+}
+
+.recommendedBadge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+/* Subscription Status Card */
+.subscriptionStatusCard {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.subscriptionStatusContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+.subscriptionStatusLeft {
+    flex: 1;
+}
+
+.subscriptionStatusTitle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+}
+
+.subscriptionIcon {
+    color: #fbbf24;
+    font-size: 20px;
+}
+
+.subscriptionDetails {
+    margin-top: 8px;
+}
+
+.subscriptionPlan {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    opacity: 0.95;
+}
+
+.subscriptionExpiry {
+    font-size: 14px;
+    margin: 0;
+    opacity: 0.8;
+}
+
+.subscriptionStatusRight {
+    text-align: right;
+}
+
+.subscriptionBenefits {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    opacity: 0.9;
+}
+
+.subscriptionBenefitsList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.subscriptionBenefitsList li {
+    margin-bottom: 2px;
+}
+
+/* Subscriptions Section */
+.subscriptionsSection {
+    margin-bottom: 32px;
+}
+
+.subscriptionsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+}
+
+/* Comparison Grid */
+.comparisonGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 20px;
+}
+
+.comparisonColumn {
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.comparisonColumn h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    color: #1f2937;
+}
+
+.comparisonColumn p {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0 0 16px 0;
+}
+
+.comparisonColumn ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+    color: #374151;
+}
+
+.comparisonColumn li {
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .tabNavigation {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .tabButton {
+        justify-content: flex-start;
+        padding: 16px 20px;
+    }
+    
+    .recommendedBadge {
+        position: static;
+        margin-left: auto;
+    }
+    
+    .subscriptionStatusContent {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .subscriptionStatusRight {
+        text-align: left;
+    }
+    
+    .subscriptionsGrid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .comparisonGrid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+} 

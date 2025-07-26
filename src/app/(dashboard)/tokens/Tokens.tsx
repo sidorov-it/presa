@@ -2,76 +2,24 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { useTokens } from '@/hooks/useTokens';
+import { useSubscriptions } from '@/hooks/useSubscriptions';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
 import { TokenPackage } from '@/types/tokens';
-import { FaCoins, FaCheckCircle, FaTimesCircle, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { FaCoins, FaCheckCircle, FaTimesCircle, FaChevronDown, FaChevronUp, FaCrown } from 'react-icons/fa';
 import { PaymentStatus } from '@/components/tokens/PaymentStatus';
 import { Heading } from '@/components/ui/heading';
+import { SubscriptionCard } from '@/components/subscriptions/SubscriptionCard';
 import styles from './page.module.css';
 import { CloudPaymentsPaymentButton } from '@/components/tokens/CloudPaymentsPaymentButton';
-// interface TransactionRowProps {
-//     transaction: any;
-// }
-
-// const TransactionRow = ({ transaction }: TransactionRowProps) => {
-//     const isPositive = transaction.amount > 0;
-//     const date = new Date(transaction.createdAt).toLocaleDateString('ru-RU', {
-//         year: 'numeric',
-//         month: 'short',
-//         day: 'numeric',
-//         hour: '2-digit',
-//         minute: '2-digit',
-//     });
-
-//     const getTypeLabel = (type: string) => {
-//         switch (type) {
-//             case 'purchase':
-//                 return 'Покупка';
-//             case 'usage':
-//                 return 'Использование';
-//             case 'bonus':
-//                 return 'Бонус';
-//             case 'refund':
-//                 return 'Возврат';
-//             default:
-//                 return type;
-//         }
-//     };
-
-//     return (
-//         <div className={styles.transactionRow}>
-//             <div className={styles.transactionLeft}>
-//                 <div
-//                     className={`${styles.transactionIcon} ${isPositive ? styles.transactionIconPositive : styles.transactionIconNegative}`}
-//                 >
-//                     <HiOutlineCreditCard />
-//                 </div>
-//                 <div className={styles.transactionDetails}>
-//                     <p className={styles.transactionDescription}>{transaction.description}</p>
-//                     <p className={styles.transactionMeta}>
-//                         {getTypeLabel(transaction.type)} • {date}
-//                     </p>
-//                 </div>
-//             </div>
-//             <div className={styles.transactionRight}>
-//                 <p
-//                     className={`${styles.transactionAmount} ${isPositive ? styles.transactionAmountPositive : styles.transactionAmountNegative}`}
-//                 >
-//                     {isPositive ? '+' : ''}
-//                     {formatTokenAmount(Math.abs(transaction.amount))}
-//                 </p>
-//                 <p className={styles.transactionBalance}>Баланс: {formatTokenAmount(transaction.balanceAfter)}</p>
-//             </div>
-//         </div>
-//     );
-// };
 
 interface TokenPackageCardProps {
     package: TokenPackage;
     onPurchase: (purchaseId: string) => void;
     isLoading: boolean;
 }
+
 const TokenPackageCard = ({ package: pkg, onPurchase, isLoading }: TokenPackageCardProps) => {
     return (
         <div className={`${styles.packageCard} ${pkg.isPopular ? styles.packageCardPopular : ''}`}>
@@ -108,12 +56,24 @@ const TokenPackageCard = ({ package: pkg, onPurchase, isLoading }: TokenPackageC
 const Tokens = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { balance, loading, packages, refreshBalance } = useTokens();
+    const { data: session } = useSession();
+    const { balance, loading: tokensLoading, packages, refreshBalance } = useTokens();
+    const {
+        plans,
+        userSubscription,
+        hasActiveSubscription,
+        loading: subscriptionLoading,
+        createSubscription,
+        refreshSubscriptionStatus,
+    } = useSubscriptions();
+
     const [activePurchaseId, setActivePurchaseId] = useState<string | null>(null);
     const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
     const [isAccordionOpen, setIsAccordionOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState<'tokens' | 'subscriptions'>('subscriptions');
+    // const [subscriptionLoading, setSubscriptionLoading] = useState(false);
 
-    // Проверяем, есть ли purchaseId в URL для отслеживания статуса
+    // Check for purchase ID in URL for tracking status
     useEffect(() => {
         const purchaseId = searchParams.get('purchase');
         if (purchaseId) {
@@ -121,8 +81,80 @@ const Tokens = () => {
         }
     }, [searchParams]);
 
-    const handlePurchase = (purchaseId: string) => {
-        setActivePurchaseId(purchaseId); // Устанавливаем активный ID покупки для отслеживания
+    const handleTokenPurchase = (purchaseId: string) => {
+        setActivePurchaseId(purchaseId);
+    };
+
+    const handleSubscriptionPurchase = async (planId: string) => {
+        if (!session?.user) {
+            setNotification({
+                type: 'error',
+                message: 'Необходимо войти в систему для оформления подписки',
+            });
+            return;
+        }
+
+        // setSubscriptionLoading(true);
+        try {
+            const result = await createSubscription(planId);
+
+            if (result.success && result.paymentData) {
+                // Open CloudPayments widget for subscription
+                if (window.cp?.CloudPayments) {
+                    const cp = new window.cp.CloudPayments();
+
+                    cp.pay(
+                        'charge',
+                        {
+                            publicId: result.paymentData.cloudpaymentsData.publicId,
+                            description: result.paymentData.description,
+                            amount: Number(result.paymentData.amount),
+                            currency: result.paymentData.currency.toUpperCase(),
+                            invoiceId: result.paymentData.subscriptionId,
+                            accountId: session.user.id || '',
+                            skin: 'classic',
+                            data: {
+                                subscriptionId: result.paymentData.subscriptionId,
+                                planId: planId,
+                                userId: session.user.id,
+                            },
+                        },
+                        {
+                            onSuccess: function (options: any) {
+                                console.log('Subscription payment successful:', options);
+                                setNotification({
+                                    type: 'success',
+                                    message: 'Подписка успешно оформлена!',
+                                });
+                                refreshSubscriptionStatus();
+                            },
+                            onFail: function (reason: any, options: any) {
+                                console.error('Subscription payment failed:', reason, options);
+                                setNotification({
+                                    type: 'error',
+                                    message: 'Ошибка при оплате подписки',
+                                });
+                            },
+                            onComplete: function (paymentResult: any, options: any) {
+                                console.log('Subscription payment completed:', paymentResult, options);
+                                // setSubscriptionLoading(false);
+                            },
+                        }
+                    );
+                } else {
+                    throw new Error('CloudPayments widget not loaded');
+                }
+            } else {
+                throw new Error(result.error || 'Failed to create subscription');
+            }
+        } catch (error) {
+            console.error('Subscription error:', error);
+            setNotification({
+                type: 'error',
+                message: error instanceof Error ? error.message : 'Ошибка при создании подписки',
+            });
+            // setSubscriptionLoading(false);
+        }
     };
 
     const handlePaymentSuccess = () => {
@@ -132,14 +164,8 @@ const Tokens = () => {
             message: 'Оплата прошла успешно! Токены добавлены на ваш баланс.',
         });
 
-        // Обновляем данные
         refreshBalance();
-        // refreshTransactions();
-
-        // Убираем purchaseId из URL
         router.replace('/tokens');
-
-        // Убираем уведомление через 5 секунд
         setTimeout(() => setNotification(null), 5000);
     };
 
@@ -150,10 +176,7 @@ const Tokens = () => {
             message: error,
         });
 
-        // Убираем purchaseId из URL
         router.replace('/tokens');
-
-        // Убираем уведомление через 5 секунд
         setTimeout(() => setNotification(null), 5000);
     };
 
@@ -161,7 +184,9 @@ const Tokens = () => {
         setIsAccordionOpen(!isAccordionOpen);
     };
 
-    if (loading) {
+    const loading = tokensLoading || subscriptionLoading;
+
+    if (loading && !plans.length && !packages.length) {
         return (
             <div className={styles.loadingContainer}>
                 <div className={styles.loadingSpinnerLarge}></div>
@@ -174,7 +199,10 @@ const Tokens = () => {
             <div className={styles.content}>
                 {/* Header */}
                 <div className={styles.header}>
-                    <Heading title="Токены" description="Ваши токены для использования AI-функций" />
+                    <Heading
+                        title="Токены и подписки"
+                        description="Выберите между покупкой токенов или подпиской для доступа к AI-функциям"
+                    />
                 </div>
 
                 {/* Notifications */}
@@ -202,7 +230,107 @@ const Tokens = () => {
                     </div>
                 )}
 
-                {/* Info about tokens */}
+                {/* Current Subscription Status */}
+                {hasActiveSubscription && userSubscription && (
+                    <div className={styles.subscriptionStatusCard}>
+                        <div className={styles.subscriptionStatusContent}>
+                            <div className={styles.subscriptionStatusLeft}>
+                                <h2 className={styles.subscriptionStatusTitle}>
+                                    <FaCrown className={styles.subscriptionIcon} />
+                                    Активная подписка
+                                </h2>
+                                <div className={styles.subscriptionDetails}>
+                                    <p className={styles.subscriptionPlan}>{userSubscription.plan?.name}</p>
+                                    <p className={styles.subscriptionExpiry}>
+                                        Действует до: {new Date(userSubscription.endDate).toLocaleDateString('ru-RU')}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className={styles.subscriptionStatusRight}>
+                                <p className={styles.subscriptionBenefits}>Преимущества:</p>
+                                <ul className={styles.subscriptionBenefitsList}>
+                                    <li>• До 20 слайдов</li>
+                                    <li>• Без водяного знака</li>
+                                    <li>• Приоритетная обработка</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Current Token Balance */}
+                <div className={styles.balanceCard}>
+                    <div className={styles.balanceContent}>
+                        <div className={styles.balanceLeft}>
+                            <h2 className={styles.balanceTitle}>Текущий баланс токенов</h2>
+                            <div className={styles.balanceAmount}>
+                                <FaCoins className={styles.balanceIcon} />
+                                <span className={styles.balanceNumber}>{formatTokenAmount(balance)}</span>
+                                <span className={styles.balanceUnit}>токенов</span>
+                            </div>
+                        </div>
+                        <div className={styles.balanceRight}>
+                            <p className={styles.usageLabel}>Примерное использование:</p>
+                            <p className={styles.usageAmount}>~{Math.floor(balance / 5)} слайдов</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Tab Navigation */}
+                <div className={styles.tabNavigation}>
+                    <button
+                        className={`${styles.tabButton} ${activeTab === 'subscriptions' ? styles.tabButtonActive : ''}`}
+                        onClick={() => setActiveTab('subscriptions')}
+                    >
+                        <FaCrown className={styles.tabIcon} />
+                        Подписки
+                        {!hasActiveSubscription && <span className={styles.recommendedBadge}>Рекомендуем</span>}
+                    </button>
+                    <button
+                        className={`${styles.tabButton} ${activeTab === 'tokens' ? styles.tabButtonActive : ''}`}
+                        onClick={() => setActiveTab('tokens')}
+                    >
+                        <FaCoins className={styles.tabIcon} />
+                        Пакеты токенов
+                    </button>
+                </div>
+
+                {/* Subscription Plans */}
+                {activeTab === 'subscriptions' && (
+                    <div className={styles.subscriptionsSection}>
+                        <h2 className={styles.sectionTitle}>Планы подписки</h2>
+                        <div className={styles.subscriptionsGrid}>
+                            {plans.map(plan => (
+                                <SubscriptionCard
+                                    key={plan.id}
+                                    plan={plan}
+                                    onSubscribe={handleSubscriptionPurchase}
+                                    isLoading={subscriptionLoading}
+                                    isActive={hasActiveSubscription && userSubscription?.planId === plan.id}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Token Packages */}
+                {activeTab === 'tokens' && (
+                    <div className={styles.packagesSection}>
+                        <h2 className={styles.sectionTitle}>Пакеты токенов</h2>
+                        <div className={styles.packagesGrid}>
+                            {packages.map(pkg => (
+                                <TokenPackageCard
+                                    key={pkg.id}
+                                    package={pkg}
+                                    onPurchase={handleTokenPurchase}
+                                    isLoading={false}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Info about tokens and subscriptions */}
                 <div className={styles.infoCard}>
                     <button
                         className={styles.accordionHeader}
@@ -210,7 +338,7 @@ const Tokens = () => {
                         aria-expanded={isAccordionOpen}
                         aria-controls="tokens-info-content"
                     >
-                        <h2 className={styles.infoTitle}>Что такое токены</h2>
+                        <h2 className={styles.infoTitle}>Что выбрать: токены или подписку?</h2>
                         <div className={styles.accordionIcon}>
                             {isAccordionOpen ? <FaChevronUp /> : <FaChevronDown />}
                         </div>
@@ -219,10 +347,30 @@ const Tokens = () => {
                         id="tokens-info-content"
                         className={`${styles.accordionContent} ${isAccordionOpen ? styles.accordionContentOpen : ''}`}
                     >
-                        <p className={styles.infoText}>
-                            Токены — это внутренняя валюта для оплаты ИИ-функций в Slydle. Они используются для
-                            автоматической генерации текста, создания слайдов с помощью ИИ и других умных функций.
-                        </p>
+                        <div className={styles.comparisonGrid}>
+                            <div className={styles.comparisonColumn}>
+                                <h3>🎯 Подписка</h3>
+                                <p>Лучший выбор для регулярного использования</p>
+                                <ul>
+                                    <li>• Генерируйте до 20 слайдов при генерации презентации ИИ</li>
+                                    <li>• Без водяного знака при экспорте</li>
+                                    <li>• Увеличенный лимит загрузки документов</li>
+                                    <li>• Приоритетная обработка AI-запросов</li>
+                                    <li>• Экономия до 20% при долгосрочных планах</li>
+                                </ul>
+                            </div>
+                            <div className={styles.comparisonColumn}>
+                                <h3>💎 Токены</h3>
+                                <p>Гибкий вариант для нерегулярного использования</p>
+                                <ul>
+                                    <li>• Платите только за то, что используете</li>
+                                    <li>• Токены не сгорают</li>
+                                    <li>• Подходит для разовых проектов</li>
+                                    <li>• Можно купить в любой момент</li>
+                                    <li>• Нет ежемесячных обязательств</li>
+                                </ul>
+                            </div>
+                        </div>
                         <p className={styles.infoText}>
                             Совершая покупку, пользователь соглашается с{' '}
                             <a
@@ -237,57 +385,6 @@ const Tokens = () => {
                         </p>
                     </div>
                 </div>
-                {/* Current Balance */}
-                <div className={styles.balanceCard}>
-                    <div className={styles.balanceContent}>
-                        <div className={styles.balanceLeft}>
-                            <h2 className={styles.balanceTitle}>Текущий баланс</h2>
-                            <div className={styles.balanceAmount}>
-                                <FaCoins className={styles.balanceIcon} />
-                                <span className={styles.balanceNumber}>{formatTokenAmount(balance)}</span>
-                                <span className={styles.balanceUnit}>токенов</span>
-                            </div>
-                        </div>
-                        <div className={styles.balanceRight}>
-                            <p className={styles.usageLabel}>Примерное использование:</p>
-                            <p className={styles.usageAmount}>~{Math.floor(balance / 5)} слайдов</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Token Packages */}
-                <div className={styles.packagesSection}>
-                    <h2 className={styles.sectionTitle}>Пакеты токенов</h2>
-                    <div className={styles.packagesGrid}>
-                        {packages.map(pkg => (
-                            <TokenPackageCard
-                                key={pkg.id}
-                                package={pkg}
-                                onPurchase={handlePurchase}
-                                isLoading={false} // isLoading is no longer available from useTokens
-                            />
-                        ))}
-                    </div>
-                </div>
-
-                {/* Transaction History */}
-                {/* <div className={styles.transactionsCard}>
-                    <div className={styles.transactionsHeader}>
-                        <h2 className={styles.transactionsTitle}>
-                            <FaHistory />
-                            История транзакций
-                        </h2>
-                    </div>
-                    <div className={styles.transactionsList}>
-                        {transactions.length > 0 ? (
-                            transactions.map(transaction => (
-                                <TransactionRow key={transaction.id} transaction={transaction} />
-                            ))
-                        ) : (
-                            <div className={styles.emptyState}>Нет транзакций</div>
-                        )}
-                    </div>
-                </div> */}
             </div>
         </div>
     );

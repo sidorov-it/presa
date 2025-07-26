@@ -1,123 +1,97 @@
-import { prisma } from '@/lib/prisma';
-import { SlideViewer } from '@/components/viewer';
-import ViewerProvider from '@/components/viewer/ViewerProvider';
 import { notFound } from 'next/navigation';
 import { Theme } from '@/types/theme';
-import type { Metadata } from 'next';
-import createNewTheme from '@/utils/theme/createNewTheme';
-import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
+import { prisma } from '@/lib/prisma';
+import { parsePresentation } from '@/utils/json';
+import SlideViewer from '@/components/viewer/SlideViewer/SlideViewer';
+// import ReadOnlyProvider from '@/components/providers/ReadOnlyProvider';
+// import ThemeStylesApplier from '@/components/theme/ThemeStylesApplier/ThemeStylesApplier';
+// import ViewerProvider from '@/components/providers/ViewerProvider';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { shouldHideBranding } from '@/utils/subscriptions';
 import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
-
-export const metadata: Metadata = {
-    title: 'Слайд презентации',
-    description: 'Просмотр отдельного слайда презентации',
-};
+import { ThemeStylesApplier, ViewerProvider } from '@/components/viewer';
 
 export default async function SlidePage(props: {
     params: Promise<{ id: string; index: string }>;
     searchParams: Promise<{ pdf?: string }>;
 }) {
-    const { id, index } = await props.params;
+    const params = await props.params;
     const searchParams = await props.searchParams;
-    const isPdfExport = searchParams.pdf === 'true';
+    const { id, index } = params;
+    const { pdf } = searchParams;
 
     const slideIndex = parseInt(index, 10);
+    const isPdfExport = pdf === 'true';
 
+    // Get session for subscription checking
+    const session = await getServerSession(authOptions);
+
+    // Получаем презентацию из базы данных
     const presentation = await prisma.presentation.findUnique({
         where: { id },
+        include: {
+            user: true,
+            theme: true,
+        },
     });
 
     if (!presentation) {
         notFound();
     }
 
-    const slides =
-        typeof presentation.slides === 'string'
-            ? JSON.parse(presentation.slides as unknown as string)
-            : (presentation.slides as any);
+    // Парсим слайды
+    const parsedPresentation = parsePresentation(presentation);
+    const slides = parsedPresentation.slides;
 
-    const visibleSlides = slides.filter((s: any) => !s.hidden);
-    const slide = visibleSlides[slideIndex];
+    // Filter out hidden slides for viewer
+    const visibleSlides = slides.filter(slide => !slide.hidden);
 
-    if (!slide) {
+    if (slideIndex < 0 || slideIndex >= visibleSlides.length) {
         notFound();
     }
 
-    let theme: Theme | null = null;
-    if (presentation.themeId) {
-        const dbTheme = await prisma.theme.findUnique({ where: { id: presentation.themeId } });
-        if (dbTheme) {
-            // Convert database theme to proper Theme type
-            theme = {
-                ...dbTheme,
-                description: dbTheme.description || undefined, // Convert null to undefined
-            } as Theme;
-        }
-    }
+    const slide = visibleSlides[slideIndex];
 
-    const finalTheme: Theme = theme || {
-        ...createNewTheme(),
-        id: 'default-theme',
-    };
-
-    // Type-safe conversion of backgroundSettings to handle null values
-    let backgroundSettings;
-    if (presentation.backgroundSettings) {
-        backgroundSettings = {
-            backgroundColor: presentation.backgroundSettings.backgroundColor || undefined,
-            backgroundImage: presentation.backgroundSettings.backgroundImage || undefined,
-        };
-    }
-
-    const pageStyle: React.CSSProperties = {};
-    if (slide.templateType === 'imageBackground' && slide.imageUrl) {
-        pageStyle.backgroundImage = `url(${slide.imageUrl})`;
-        pageStyle.backgroundSize = 'cover';
-        pageStyle.backgroundPosition = 'center';
-        pageStyle.backgroundRepeat = 'no-repeat';
-    } else if (slide.background?.type === 'color') {
-        pageStyle.backgroundColor = slide.background.value;
+    // Получаем тему
+    let finalTheme: Theme;
+    if (presentation.theme) {
+        finalTheme = presentation.theme as Theme;
     } else {
-        pageStyle.backgroundColor = 'var(--presentation-slide-background)';
+        // Fallback: get default theme
+        const defaultTheme = await prisma.theme.findFirst({
+            where: { isDefault: true },
+        });
+        finalTheme = defaultTheme as Theme;
     }
 
-    // PDF-specific styles
-    if (isPdfExport) {
-        pageStyle.width = '100vw';
-        pageStyle.margin = '0';
-        pageStyle.padding = '0';
-        pageStyle.overflow = 'visible';
+    if (!finalTheme) {
+        notFound();
+    }
+
+    // Check if branding should be hidden for this user
+    let hideBranding = false;
+    if (session?.user?.id && isPdfExport) {
+        // Check if the presentation owner has an active subscription
+        const presentationOwnerId = presentation.userId;
+        hideBranding = await shouldHideBranding(presentationOwnerId);
     }
 
     return (
         <ReadOnlyProvider isReadOnly={true}>
-            <ThemeStylesApplier theme={finalTheme} backgroundSettings={backgroundSettings}>
-                <ViewerProvider>
+            <ThemeStylesApplier theme={finalTheme}>
+                <ViewerProvider isViewer={true}>
                     <div
-                        style={
-                            {
-                                width: '100%',
-                                minHeight: '100vh',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                backgroundColor: 'var(--presentation-page-background-color)',
-                                backgroundImage: 'var(--presentation-page-background-image)',
-                                backgroundSize: 'cover',
-                                backgroundRepeat: 'no-repeat',
-                                '--card-width': 'min(100vw, calc(100vh * 1.7777777777777777))',
-                                '--card-height': 'calc(var(--card-width) / 1.7777777777777777 - 64px)',
-                                '--card-font-scale': 'calc(var(--card-width) / 1032)', // Scale fonts based on slide width
-                                '--editor-width': '1032px', // Standard editor width
-                                '--card-min-height':
-                                    'calc(min(var(--card-width), var(--editor-width)) / 1.7777777777777777)',
-                                '--card-max-width': 'var(--editor-width)',
-                                '--media-scale': 'min(1, var(--card-font-scale, 1))',
-                                boxSizing: 'border-box',
-                                position: 'relative',
-                            } as React.CSSProperties
-                        }
-                        data-read-only="true"
+                        className="slide-page-container"
+                        style={{
+                            width: '100%',
+                            height: '100vh',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: isPdfExport ? 'white' : '#f8f9fa',
+                            overflow: isPdfExport ? 'visible' : 'hidden',
+                        }}
                     >
                         <SlideViewer
                             theme={finalTheme}
@@ -125,6 +99,7 @@ export default async function SlidePage(props: {
                             primaryAccentColor={finalTheme.colors.primaryAccent}
                             fullPage={true}
                             isPdfExport={isPdfExport}
+                            hideBranding={hideBranding}
                             currentSlideIndex={slideIndex}
                             totalSlides={visibleSlides.length}
                             globalHeaderFooterConfig={presentation.headerFooterConfig}

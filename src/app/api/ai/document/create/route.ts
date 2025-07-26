@@ -1,24 +1,28 @@
 import { withLogging } from '@/hooks/withLoging';
 import { NextRequest } from 'next/server';
-import { withTokenDeduction, TokenCalculators, MetadataExtractors } from '@/utils/aiTokenMiddleware';
-import logger from '@/utils/logger';
-import { generateRequestId } from '@/utils/requestId';
-import { prisma } from '@/lib/prisma';
-import { generateId } from '@/utils/id';
-import { generateSlidesTemplates } from '@/services/llm/gigaChat';
-import generateSlide from '@/services/llm/generateSlide';
+import { withTokenDeduction, TokenCalculators } from '@/utils/aiTokenMiddleware';
 import { generateTopicsWithContent } from '@/services/llm/generateTopicsWithContent';
+// import { generateSlidesTemplates } from '@/services/llm/generateSlidesTemplates';
+// import { generateSlide } from '@/services/llm/generateSlide';
 import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
+// import { generateId } from '@/utils/generateId';
+import logger from '@/utils/logger';
+import { prisma } from '@/lib/prisma';
+import { v4 as uuidv4 } from 'uuid';
+import { getUserFeatures } from '@/utils/subscriptions';
+import generateSlidesTemplates from '@/services/llm/generateSlidesTemplates';
+import generateSlide from '@/services/llm/generateSlide';
+import { generateId } from '@/utils/id';
 
 async function POSTHandler(request: NextRequest) {
-    const requestId = generateRequestId();
+    logger.info('POST /api/ai/document/create');
+    const requestId = uuidv4();
     return withTokenDeduction(
         request,
         {
             operation: 'GENERATE_PRESENTATION_FROM_DOCUMENT',
             description: 'Generate presentation from document',
             calculateTokens: TokenCalculators.generatePresentationFromDocument,
-            metadata: MetadataExtractors.presentation,
         },
         async (session, requestData) => {
             const { extractedText, filename, numSlides, tone, contentAmount, durationMinutes, goal, audience } =
@@ -30,9 +34,20 @@ async function POSTHandler(request: NextRequest) {
 
             const userId = session.user.id;
 
+            // Check user's subscription features and apply slide limits
+            const userFeatures = await getUserFeatures(userId);
+            const maxSlides = userFeatures.maxSlides;
+
+            if (numSlides > maxSlides) {
+                throw new Error(
+                    `Slide limit exceeded. Your current plan allows up to ${maxSlides} slides. Requested: ${numSlides}`
+                );
+            }
+
             try {
                 logger.info(`Starting document-based presentation generation for user ${userId}`);
                 logger.info(`Document: ${filename}, Content length: ${extractedText.length} chars`);
+                logger.info(`User slide limit: ${maxSlides}, Requested slides: ${numSlides}`);
 
                 // First, generate topics from the document using full content
                 const { title, topics } = await generateTopicsWithContent(

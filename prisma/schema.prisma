@@ -115,6 +115,7 @@ model User {
   tokenTransactions  TokenTransaction[]
   pdfGenerationTasks PdfGenerationTask[]
   oauthAccounts      OAuthAccount[]
+  subscriptions      UserSubscription[]
 }
 
 enum CreatedVia {
@@ -422,4 +423,93 @@ model CloudPaymentsWebhookLog {
   operationType String
   rawData       Json // Полный JSON-пакет от CloudPayments
   testMode      Boolean
+}
+
+// Subscription system models
+enum SubscriptionInterval {
+  monthly
+  quarterly
+  semiannual
+}
+
+enum SubscriptionStatus {
+  active
+  cancelled
+  expired
+  pending
+  failed
+}
+
+model SubscriptionPlan {
+  id          String               @id @default(auto()) @map("_id") @db.ObjectId
+  name        String              // e.g. "Месячная подписка"
+  description String?
+  interval    SubscriptionInterval // monthly, quarterly, semiannual
+  price       Float               // Price per billing cycle
+  currency    String              @default("RUB")
+  isActive    Boolean             @default(true)
+  isPopular   Boolean             @default(false)
+  
+  // Features included in this plan
+  features    Json?               // JSON object with plan features
+  
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  
+  subscriptions UserSubscription[]
+  
+  @@unique([interval])
+}
+
+model UserSubscription {
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String             @db.ObjectId
+  user             User               @relation(fields: [userId], references: [id])
+  planId           String             @db.ObjectId
+  plan             SubscriptionPlan   @relation(fields: [planId], references: [id])
+  
+  // Subscription details
+  status           SubscriptionStatus @default(pending)
+  startDate        DateTime
+  endDate          DateTime
+  nextBillingDate  DateTime?
+  
+  // Payment tracking
+  cloudpaymentsId  String?           // CloudPayments subscription ID
+  lastPaymentId    String?           // Reference to last successful payment
+  
+  // Cancellation tracking
+  cancelledAt      DateTime?
+  cancelReason     String?
+  
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  
+  payments         SubscriptionPayment[]
+  
+  @@unique([userId, planId, status]) // User can have only one active subscription per plan
+}
+
+model SubscriptionPayment {
+  id               String           @id @default(auto()) @map("_id") @db.ObjectId
+  subscriptionId   String           @db.ObjectId
+  subscription     UserSubscription @relation(fields: [subscriptionId], references: [id])
+  
+  // Payment details
+  amount           Float
+  currency         String           @default("RUB")
+  status           PurchaseStatus   @default(pending)
+  
+  // CloudPayments integration
+  cloudpaymentsId  String?          // CloudPayments transaction ID
+  paymentMethod    String?          // Payment method used
+  
+  // Billing period this payment covers
+  billingStart     DateTime
+  billingEnd       DateTime
+  
+  createdAt        DateTime         @default(now())
+  completedAt      DateTime?
+  
+  metadata         Json?
 }

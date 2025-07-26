@@ -6,6 +6,7 @@ import logger from '@/utils/logger';
 import { createLLMService } from '@/services/llm';
 import { getTextExtractor } from 'office-text-extractor';
 import { DocExtractor } from './DocExtractor';
+import { getUserFeatures } from '@/utils/subscriptions';
 
 const Extractor = getTextExtractor();
 
@@ -42,9 +43,16 @@ async function POSTHandler(request: NextRequest) {
             );
         }
 
-        // Validate file size (10MB limit)
-        if (file.size > 10 * 1024 * 1024) {
-            return Response.json({ error: 'File size exceeds 10MB limit' }, { status: 400 });
+        // Check user's subscription features and apply file size limits
+        const userFeatures = await getUserFeatures(session.user.id);
+        const maxFileSizeInMB = userFeatures.maxDocumentSize;
+        const maxFileSizeInBytes = maxFileSizeInMB * 1024 * 1024;
+
+        if (file.size > maxFileSizeInBytes) {
+            return Response.json({ 
+                error: `File size exceeds ${maxFileSizeInMB}MB limit for your subscription plan`,
+                maxSizeAllowed: maxFileSizeInMB 
+            }, { status: 400 });
         }
 
         // Extract text content from file
@@ -130,6 +138,7 @@ async function POSTHandler(request: NextRequest) {
             extractedText,
             tokenCount,
             filename: file.name,
+            maxDocumentSize: maxFileSizeInMB,
         });
     } catch (error) {
         logger.error('Error processing document upload:', error.message);

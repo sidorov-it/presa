@@ -65,6 +65,8 @@ interface SlideViewerProps {
     totalSlides?: number;
     /** Global header/footer configuration */
     globalHeaderFooterConfig?: any;
+    /** Hide branding watermark for premium users */
+    hideBranding?: boolean;
 }
 
 // No longer needed - we now use imageHeightRatio and imageWidthRatio directly
@@ -78,6 +80,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     showImagePlaceholder = false,
     isPreview = false,
     isSlidePreview = false,
+    hideBranding = false,
     primaryAccentColor,
     wrapperRef,
     theme,
@@ -473,7 +476,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                     })()}
                 </div>
 
-                {isPdfExport && (
+                {isPdfExport && !hideBranding && (
                     <a
                         href="https://slydle.ru"
                         target="_blank"
