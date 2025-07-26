@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSubscriptions } from '@/hooks/useSubscriptions';
-import { FaCrown, FaCalendarAlt, FaCheckCircle, FaTimesCircle, FaInfoCircle } from 'react-icons/fa';
+import { FaCrown, FaCalendarAlt, FaCheckCircle, FaTimesCircle, FaInfoCircle, FaExclamationTriangle } from 'react-icons/fa';
+import { SubscriptionStatus } from '@prisma/client';
 import styles from './SubscriptionManagement.module.css';
 
 interface SubscriptionManagementProps {
@@ -44,14 +45,59 @@ const getStatusLabel = (status: string): string => {
     }
 };
 
+const getStatusColor = (status: string): string => {
+    switch (status) {
+        case 'active':
+            return '#10b981';
+        case 'cancelled':
+            return '#f59e0b';
+        case 'expired':
+            return '#ef4444';
+        case 'pending':
+            return '#3b82f6';
+        case 'failed':
+            return '#ef4444';
+        default:
+            return '#6b7280';
+    }
+};
+
 export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ className }) => {
     const { userSubscription, hasActiveSubscription, loading, error, refreshSubscriptionStatus } = useSubscriptions();
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [isCancelling, setIsCancelling] = useState(false);
+    const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
     const handleRefresh = async () => {
         setIsRefreshing(true);
         await refreshSubscriptionStatus();
         setIsRefreshing(false);
+    };
+
+    const handleCancelSubscription = async () => {
+        if (!userSubscription) return;
+        
+        setIsCancelling(true);
+        try {
+            const response = await fetch(`/api/subscriptions/${userSubscription.id}/cancel`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                await refreshSubscriptionStatus();
+                setShowCancelConfirm(false);
+            } else {
+                const errorData = await response.json();
+                console.error('Failed to cancel subscription:', errorData);
+            }
+        } catch (error) {
+            console.error('Error cancelling subscription:', error);
+        } finally {
+            setIsCancelling(false);
+        }
     };
 
     if (loading) {
@@ -77,16 +123,14 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
         );
     }
 
-    if (!hasActiveSubscription || !userSubscription) {
+    // Show subscription info for any subscription (active, cancelled, expired)
+    if (!userSubscription) {
         return (
             <div className={`${styles.container} ${className || ''}`}>
                 <div className={styles.noSubscription}>
                     <FaInfoCircle className={styles.infoIcon} />
-                    <h3>У вас нет активной подписки</h3>
+                    <h3>У вас нет подписки</h3>
                     <p>Оформите подписку, чтобы получить доступ к расширенным возможностям Presa.</p>
-                    <a href="/tokens" className={styles.subscribeButton}>
-                        Выбрать подписку
-                    </a>
                 </div>
             </div>
         );
@@ -106,20 +150,32 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
         );
     }
 
+    const startDate = new Date(subscription.startDate);
     const endDate = new Date(subscription.endDate);
     const nextBillingDate = subscription.nextBillingDate ? new Date(subscription.nextBillingDate) : null;
     const isExpiringSoon = endDate.getTime() - Date.now() < 7 * 24 * 60 * 60 * 1000; // 7 days
+    const isExpired = subscription.status === SubscriptionStatus.expired || endDate.getTime() < Date.now();
+    const isCancelled = subscription.status === SubscriptionStatus.cancelled;
+    const canCancel = subscription.status === SubscriptionStatus.active && !isCancelled;
 
     return (
         <div className={`${styles.container} ${className || ''}`}>
-            <div className={styles.subscriptionCard}>
+            <div className={`${styles.subscriptionCard} ${styles[subscription.status]}`}>
                 <div className={styles.subscriptionHeader}>
                     <div className={styles.subscriptionTitle}>
                         <FaCrown className={styles.crownIcon} />
-                        <h2>Активная подписка</h2>
+                        <h2>Ваша подписка</h2>
                     </div>
-                    <div className={`${styles.statusBadge} ${styles[subscription.status]}`}>
-                        <FaCheckCircle className={styles.statusIcon} />
+                    <div 
+                        className={`${styles.statusBadge} ${styles[subscription.status]}`}
+                        style={{ borderColor: getStatusColor(subscription.status) }}
+                    >
+                        {subscription.status === 'active' && <FaCheckCircle className={styles.statusIcon} />}
+                        {(subscription.status === 'cancelled' || subscription.status === 'expired') && (
+                            <FaExclamationTriangle className={styles.statusIcon} />
+                        )}
+                        {subscription.status === 'pending' && <FaInfoCircle className={styles.statusIcon} />}
+                        {subscription.status === 'failed' && <FaTimesCircle className={styles.statusIcon} />}
                         {getStatusLabel(subscription.status)}
                     </div>
                 </div>
@@ -139,8 +195,24 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
                         <div className={styles.metadataItem}>
                             <FaCalendarAlt className={styles.metadataIcon} />
                             <div>
-                                <span className={styles.metadataLabel}>Действует до:</span>
-                                <span className={`${styles.metadataValue} ${isExpiringSoon ? styles.expiringSoon : ''}`}>
+                                <span className={styles.metadataLabel}>Дата начала:</span>
+                                <span className={styles.metadataValue}>
+                                    {startDate.toLocaleDateString('ru-RU', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                    })}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className={styles.metadataItem}>
+                            <FaCalendarAlt className={styles.metadataIcon} />
+                            <div>
+                                <span className={styles.metadataLabel}>
+                                    {isExpired || isCancelled ? 'Дата окончания:' : 'Действует до:'}
+                                </span>
+                                <span className={`${styles.metadataValue} ${isExpiringSoon && !isExpired ? styles.expiringSoon : ''} ${isExpired ? styles.expired : ''}`}>
                                     {endDate.toLocaleDateString('ru-RU', {
                                         year: 'numeric',
                                         month: 'long',
@@ -150,7 +222,7 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
                             </div>
                         </div>
 
-                        {nextBillingDate && (
+                        {nextBillingDate && subscription.status === SubscriptionStatus.active && (
                             <div className={styles.metadataItem}>
                                 <FaCalendarAlt className={styles.metadataIcon} />
                                 <div>
@@ -165,34 +237,53 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
                                 </div>
                             </div>
                         )}
+
+                        {subscription.cancelledAt && (
+                            <div className={styles.metadataItem}>
+                                <FaCalendarAlt className={styles.metadataIcon} />
+                                <div>
+                                    <span className={styles.metadataLabel}>Дата отмены:</span>
+                                    <span className={styles.metadataValue}>
+                                        {new Date(subscription.cancelledAt).toLocaleDateString('ru-RU', {
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric',
+                                        })}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 
-                <div className={styles.subscriptionFeatures}>
-                    <h4>Ваши возможности:</h4>
-                    <ul className={styles.featuresList}>
-                        <li>
-                            <FaCheckCircle className={styles.featureIcon} />
-                            До 20 слайдов в презентации
-                        </li>
-                        <li>
-                            <FaCheckCircle className={styles.featureIcon} />
-                            Экспорт без водяного знака
-                        </li>
-                        <li>
-                            <FaCheckCircle className={styles.featureIcon} />
-                            Увеличенный лимит загрузки документов (50 МБ)
-                        </li>
-                        <li>
-                            <FaCheckCircle className={styles.featureIcon} />
-                            Приоритетная обработка AI-запросов
-                        </li>
-                        <li>
-                            <FaCheckCircle className={styles.featureIcon} />
-                            Все возможности экспорта
-                        </li>
-                    </ul>
-                </div>
+                {/* Show features only for active subscriptions */}
+                {subscription.status === SubscriptionStatus.active && (
+                    <div className={styles.subscriptionFeatures}>
+                        <h4>Ваши возможности:</h4>
+                        <ul className={styles.featuresList}>
+                            <li>
+                                <FaCheckCircle className={styles.featureIcon} />
+                                До 20 слайдов в презентации
+                            </li>
+                            <li>
+                                <FaCheckCircle className={styles.featureIcon} />
+                                Экспорт без водяного знака
+                            </li>
+                            <li>
+                                <FaCheckCircle className={styles.featureIcon} />
+                                Увеличенный лимит загрузки документов (50 МБ)
+                            </li>
+                            <li>
+                                <FaCheckCircle className={styles.featureIcon} />
+                                Приоритетная обработка AI-запросов
+                            </li>
+                            <li>
+                                <FaCheckCircle className={styles.featureIcon} />
+                                Все возможности экспорта
+                            </li>
+                        </ul>
+                    </div>
+                )}
 
                 <div className={styles.subscriptionActions}>
                     <button
@@ -203,12 +294,25 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
                         {isRefreshing ? 'Обновление...' : 'Обновить статус'}
                     </button>
                     
-                    <a href="/tokens" className={styles.manageButton}>
-                        Управление подпиской
-                    </a>
+                    {canCancel && (
+                        <button
+                            onClick={() => setShowCancelConfirm(true)}
+                            className={styles.cancelButton}
+                            disabled={isCancelling}
+                        >
+                            Отменить подписку
+                        </button>
+                    )}
+
+                    {(isExpired || isCancelled) && (
+                        <a href="#subscription-plans" className={styles.renewButton}>
+                            Продлить подписку
+                        </a>
+                    )}
                 </div>
 
-                {isExpiringSoon && (
+                {/* Warning messages */}
+                {isExpiringSoon && !isExpired && subscription.status === SubscriptionStatus.active && (
                     <div className={styles.expirationWarning}>
                         <FaInfoCircle className={styles.warningIcon} />
                         <span>
@@ -218,7 +322,55 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
                         </span>
                     </div>
                 )}
+
+                {isCancelled && (
+                    <div className={styles.cancelledWarning}>
+                        <FaExclamationTriangle className={styles.warningIcon} />
+                        <span>
+                            Подписка отменена. Вы можете пользоваться всеми возможностями до{' '}
+                            {endDate.toLocaleDateString('ru-RU')}.
+                        </span>
+                    </div>
+                )}
+
+                {isExpired && (
+                    <div className={styles.expiredWarning}>
+                        <FaTimesCircle className={styles.warningIcon} />
+                        <span>
+                            Срок действия подписки истек. Для получения доступа к расширенным возможностям оформите новую подписку.
+                        </span>
+                    </div>
+                )}
             </div>
+
+            {/* Cancel Confirmation Modal */}
+            {showCancelConfirm && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
+                        <h3>Отменить подписку?</h3>
+                        <p>
+                            После отмены подписки вы сможете пользоваться всеми возможностями до{' '}
+                            {endDate.toLocaleDateString('ru-RU')}. Подписку можно будет возобновить в любое время.
+                        </p>
+                        <div className={styles.modalActions}>
+                            <button
+                                onClick={() => setShowCancelConfirm(false)}
+                                className={styles.modalCancelButton}
+                                disabled={isCancelling}
+                            >
+                                Оставить подписку
+                            </button>
+                            <button
+                                onClick={handleCancelSubscription}
+                                className={styles.modalConfirmButton}
+                                disabled={isCancelling}
+                            >
+                                {isCancelling ? 'Отменяем...' : 'Да, отменить'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }; 

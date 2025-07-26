@@ -11,6 +11,7 @@ import { FaCoins, FaCheckCircle, FaTimesCircle, FaChevronDown, FaChevronUp, FaCr
 import { PaymentStatus } from '@/components/tokens/PaymentStatus';
 import { Heading } from '@/components/ui/heading';
 import { SubscriptionCard } from '@/components/subscriptions/SubscriptionCard';
+import { SubscriptionManagement } from '@/components/subscriptions/SubscriptionManagement';
 import styles from './page.module.css';
 import { CloudPaymentsPaymentButton } from '@/components/tokens/CloudPaymentsPaymentButton';
 
@@ -58,20 +59,18 @@ const Tokens = () => {
     const searchParams = useSearchParams();
     const { data: session } = useSession();
     const { balance, loading: tokensLoading, packages, refreshBalance } = useTokens();
-    const {
-        plans,
-        userSubscription,
-        hasActiveSubscription,
-        loading: subscriptionLoading,
+    const { 
+        plans, 
+        userSubscription, 
+        hasActiveSubscription, 
+        loading: subscriptionLoading, 
         createSubscription,
         refreshSubscriptionStatus,
     } = useSubscriptions();
-
+    
     const [activePurchaseId, setActivePurchaseId] = useState<string | null>(null);
     const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
     const [isAccordionOpen, setIsAccordionOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState<'tokens' | 'subscriptions'>('subscriptions');
-    // const [subscriptionLoading, setSubscriptionLoading] = useState(false);
 
     // Check for purchase ID in URL for tracking status
     useEffect(() => {
@@ -94,15 +93,14 @@ const Tokens = () => {
             return;
         }
 
-        // setSubscriptionLoading(true);
         try {
             const result = await createSubscription(planId);
-
+            
             if (result.success && result.paymentData) {
                 // Open CloudPayments widget for subscription
                 if (window.cp?.CloudPayments) {
                     const cp = new window.cp.CloudPayments();
-
+                    
                     cp.pay(
                         'charge',
                         {
@@ -137,7 +135,6 @@ const Tokens = () => {
                             },
                             onComplete: function (paymentResult: any, options: any) {
                                 console.log('Subscription payment completed:', paymentResult, options);
-                                // setSubscriptionLoading(false);
                             },
                         }
                     );
@@ -153,7 +150,6 @@ const Tokens = () => {
                 type: 'error',
                 message: error instanceof Error ? error.message : 'Ошибка при создании подписки',
             });
-            // setSubscriptionLoading(false);
         }
     };
 
@@ -199,9 +195,9 @@ const Tokens = () => {
             <div className={styles.content}>
                 {/* Header */}
                 <div className={styles.header}>
-                    <Heading
-                        title="Токены и подписки"
-                        description="Выберите между покупкой токенов или подпиской для доступа к AI-функциям"
+                    <Heading 
+                        title="Токены и подписки" 
+                        description="Управляйте своими токенами и подпиской для доступа к AI-функциям" 
                     />
                 </div>
 
@@ -230,31 +226,10 @@ const Tokens = () => {
                     </div>
                 )}
 
-                {/* Current Subscription Status */}
-                {hasActiveSubscription && userSubscription && (
-                    <div className={styles.subscriptionStatusCard}>
-                        <div className={styles.subscriptionStatusContent}>
-                            <div className={styles.subscriptionStatusLeft}>
-                                <h2 className={styles.subscriptionStatusTitle}>
-                                    <FaCrown className={styles.subscriptionIcon} />
-                                    Активная подписка
-                                </h2>
-                                <div className={styles.subscriptionDetails}>
-                                    <p className={styles.subscriptionPlan}>{userSubscription.plan?.name}</p>
-                                    <p className={styles.subscriptionExpiry}>
-                                        Действует до: {new Date(userSubscription.endDate).toLocaleDateString('ru-RU')}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className={styles.subscriptionStatusRight}>
-                                <p className={styles.subscriptionBenefits}>Преимущества:</p>
-                                <ul className={styles.subscriptionBenefitsList}>
-                                    <li>• До 20 слайдов</li>
-                                    <li>• Без водяного знака</li>
-                                    <li>• Приоритетная обработка</li>
-                                </ul>
-                            </div>
-                        </div>
+                {/* Subscription Status Management */}
+                {(hasActiveSubscription || userSubscription) && (
+                    <div className={styles.subscriptionManagementSection}>
+                        <SubscriptionManagement />
                     </div>
                 )}
 
@@ -276,29 +251,19 @@ const Tokens = () => {
                     </div>
                 </div>
 
-                {/* Tab Navigation */}
-                <div className={styles.tabNavigation}>
-                    <button
-                        className={`${styles.tabButton} ${activeTab === 'subscriptions' ? styles.tabButtonActive : ''}`}
-                        onClick={() => setActiveTab('subscriptions')}
-                    >
-                        <FaCrown className={styles.tabIcon} />
-                        Подписки
-                        {!hasActiveSubscription && <span className={styles.recommendedBadge}>Рекомендуем</span>}
-                    </button>
-                    <button
-                        className={`${styles.tabButton} ${activeTab === 'tokens' ? styles.tabButtonActive : ''}`}
-                        onClick={() => setActiveTab('tokens')}
-                    >
-                        <FaCoins className={styles.tabIcon} />
-                        Пакеты токенов
-                    </button>
-                </div>
-
-                {/* Subscription Plans */}
-                {activeTab === 'subscriptions' && (
+                {/* Subscription Plans Section - Only show if user doesn't have active subscription */}
+                {!hasActiveSubscription && plans.length > 0 && (
                     <div className={styles.subscriptionsSection}>
-                        <h2 className={styles.sectionTitle}>Планы подписки</h2>
+                        <div className={styles.sectionHeader}>
+                            <h2 className={styles.sectionTitle}>
+                                <FaCrown className={styles.sectionIcon} />
+                                Планы подписки
+                            </h2>
+                            <div className={styles.recommendedBadge}>Рекомендуем</div>
+                        </div>
+                        <p className={styles.sectionDescription}>
+                            Подписка дает доступ к расширенным возможностям и снимает лимиты
+                        </p>
                         <div className={styles.subscriptionsGrid}>
                             {plans.map(plan => (
                                 <SubscriptionCard
@@ -306,29 +271,35 @@ const Tokens = () => {
                                     plan={plan}
                                     onSubscribe={handleSubscriptionPurchase}
                                     isLoading={subscriptionLoading}
-                                    isActive={hasActiveSubscription && userSubscription?.planId === plan.id}
+                                    isActive={false}
                                 />
                             ))}
                         </div>
                     </div>
                 )}
 
-                {/* Token Packages */}
-                {activeTab === 'tokens' && (
-                    <div className={styles.packagesSection}>
-                        <h2 className={styles.sectionTitle}>Пакеты токенов</h2>
-                        <div className={styles.packagesGrid}>
-                            {packages.map(pkg => (
-                                <TokenPackageCard
-                                    key={pkg.id}
-                                    package={pkg}
-                                    onPurchase={handleTokenPurchase}
-                                    isLoading={false}
-                                />
-                            ))}
-                        </div>
+                {/* Token Packages Section - Always show */}
+                <div className={styles.packagesSection}>
+                    <div className={styles.sectionHeader}>
+                        <h2 className={styles.sectionTitle}>
+                            <FaCoins className={styles.sectionIcon} />
+                            Пакеты токенов
+                        </h2>
                     </div>
-                )}
+                    <p className={styles.sectionDescription}>
+                        Токены используются для AI-генерации контента и слайдов
+                    </p>
+                    <div className={styles.packagesGrid}>
+                        {packages.map(pkg => (
+                            <TokenPackageCard
+                                key={pkg.id}
+                                package={pkg}
+                                onPurchase={handleTokenPurchase}
+                                isLoading={false}
+                            />
+                        ))}
+                    </div>
+                </div>
 
                 {/* Info about tokens and subscriptions */}
                 <div className={styles.infoCard}>

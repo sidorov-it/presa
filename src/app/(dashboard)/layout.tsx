@@ -21,6 +21,7 @@ import Footer from '@/components/ui/Footer';
 import { Tooltip } from '@/components/ui/tooltip';
 import { LuInfo } from 'react-icons/lu';
 import { useEarlyTestBanner } from '@/contexts/EarlyTestBannerContext';
+import { useSubscriptionHealthCheck } from '@/hooks/useSubscriptionHealthCheck';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     // const { data: session } = useSession();
@@ -28,6 +29,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [previousPath, setPreviousPath] = useState<string | null>(null);
     const { isVisible: isEarlyTestBannerVisible } = useEarlyTestBanner();
+
+    // Perform background subscription health check
+    useSubscriptionHealthCheck();
 
     // Track path changes to detect when leaving editor pages
     useEffect(() => {

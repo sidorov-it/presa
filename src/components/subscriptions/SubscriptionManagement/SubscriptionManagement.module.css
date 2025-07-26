@@ -76,29 +76,39 @@
     line-height: 1.5;
 }
 
-.subscribeButton {
-    display: inline-block;
-    padding: 12px 24px;
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.subscribeButton:hover {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
 .subscriptionCard {
     background: white;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     padding: 24px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+/* Card variants based on subscription status */
+.subscriptionCard.active {
+    border-color: #10b981;
+    background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
+}
+
+.subscriptionCard.cancelled {
+    border-color: #f59e0b;
+    background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
+}
+
+.subscriptionCard.expired {
+    border-color: #ef4444;
+    background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+}
+
+.subscriptionCard.pending {
+    border-color: #3b82f6;
+    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+}
+
+.subscriptionCard.failed {
+    border-color: #ef4444;
+    background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
 }
 
 .subscriptionHeader {
@@ -136,31 +146,37 @@
     border-radius: 20px;
     font-size: 12px;
     font-weight: 600;
+    border: 2px solid;
 }
 
 .statusBadge.active {
     background: #d1fae5;
     color: #065f46;
+    border-color: #10b981;
 }
 
 .statusBadge.cancelled {
-    background: #fee2e2;
-    color: #991b1b;
+    background: #fef3c7;
+    color: #92400e;
+    border-color: #f59e0b;
 }
 
 .statusBadge.expired {
-    background: #fef3c7;
-    color: #92400e;
+    background: #fee2e2;
+    color: #991b1b;
+    border-color: #ef4444;
 }
 
 .statusBadge.pending {
     background: #dbeafe;
     color: #1e40af;
+    border-color: #3b82f6;
 }
 
 .statusBadge.failed {
     background: #fee2e2;
     color: #991b1b;
+    border-color: #ef4444;
 }
 
 .statusIcon {
@@ -231,6 +247,11 @@
     color: #dc2626;
 }
 
+.metadataValue.expired {
+    color: #ef4444;
+    text-decoration: line-through;
+}
+
 .subscriptionFeatures {
     margin-bottom: 24px;
     padding-top: 20px;
@@ -271,6 +292,7 @@
     display: flex;
     gap: 12px;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .refreshButton {
@@ -299,7 +321,29 @@
     opacity: 0.7;
 }
 
-.manageButton {
+.cancelButton {
+    padding: 8px 16px;
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.cancelButton:hover:not(:disabled) {
+    background: #fecaca;
+    border-color: #fca5a5;
+}
+
+.cancelButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.renewButton {
     padding: 8px 16px;
     background: #3b82f6;
     color: white;
@@ -310,29 +354,136 @@
     transition: all 0.2s ease;
 }
 
-.manageButton:hover {
+.renewButton:hover {
     background: #2563eb;
 }
 
-.expirationWarning {
+/* Warning messages */
+.expirationWarning,
+.cancelledWarning,
+.expiredWarning {
     display: flex;
     align-items: flex-start;
     gap: 8px;
     padding: 12px;
-    background: #fef3c7;
-    border: 1px solid #f59e0b;
     border-radius: 8px;
     margin-top: 16px;
     font-size: 14px;
-    color: #92400e;
     line-height: 1.4;
 }
 
+.expirationWarning {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    color: #92400e;
+}
+
+.cancelledWarning {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    color: #92400e;
+}
+
+.expiredWarning {
+    background: #fee2e2;
+    border: 1px solid #ef4444;
+    color: #dc2626;
+}
+
 .warningIcon {
-    color: #f59e0b;
     font-size: 16px;
     margin-top: 1px;
     flex-shrink: 0;
+}
+
+.expirationWarning .warningIcon {
+    color: #f59e0b;
+}
+
+.cancelledWarning .warningIcon {
+    color: #f59e0b;
+}
+
+.expiredWarning .warningIcon {
+    color: #ef4444;
+}
+
+/* Modal styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modalContent h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 12px 0;
+}
+
+.modalContent p {
+    color: #6b7280;
+    margin: 0 0 20px 0;
+    line-height: 1.5;
+}
+
+.modalActions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.modalCancelButton {
+    padding: 8px 16px;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.modalCancelButton:hover:not(:disabled) {
+    background: #e5e7eb;
+}
+
+.modalConfirmButton {
+    padding: 8px 16px;
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.modalConfirmButton:hover:not(:disabled) {
+    background: #b91c1c;
+}
+
+.modalConfirmButton:disabled,
+.modalCancelButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 /* Responsive design */
@@ -349,7 +500,8 @@
     }
     
     .refreshButton,
-    .manageButton {
+    .cancelButton,
+    .renewButton {
         width: 100%;
         text-align: center;
         justify-content: center;
@@ -357,5 +509,20 @@
     
     .subscriptionMetadata {
         gap: 16px;
+    }
+    
+    .modalContent {
+        margin: 20px;
+        width: calc(100% - 40px);
+    }
+    
+    .modalActions {
+        flex-direction: column;
+    }
+    
+    .modalCancelButton,
+    .modalConfirmButton {
+        width: 100%;
+        justify-content: center;
     }
 } 
