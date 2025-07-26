@@ -155,13 +155,17 @@ export const PaymentStatus: React.FC<PaymentStatusProps> = ({ purchaseId, onSucc
                         <div className={styles.detailItem}>
                             Сумма: {status.purchase.price} {status.purchase.currency.toUpperCase()}
                         </div>
-                        <div className={styles.detailItem}>Создан: {new Date(status.purchase.createdAt).toLocaleString('ru-RU')}</div>
+                        <div className={styles.detailItem}>
+                            Создан: {new Date(status.purchase.createdAt).toLocaleString('ru-RU')}
+                        </div>
                         {status.purchase.completedAt && (
-                            <div className={styles.detailItem}>Завершен: {new Date(status.purchase.completedAt).toLocaleString('ru-RU')}</div>
+                            <div className={styles.detailItem}>
+                                Завершен: {new Date(status.purchase.completedAt).toLocaleString('ru-RU')}
+                            </div>
                         )}
                     </div>
                 </div>
             </div>
         </div>
     );
-}; 
+};

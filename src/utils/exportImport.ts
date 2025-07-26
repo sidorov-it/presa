@@ -101,4 +101,4 @@ export const createSafeFilename = (title: string): string => {
 export const isVersionSupported = (version: string): boolean => {
     const supportedVersions = ['1.0'];
     return supportedVersions.includes(version);
-}; 
+};

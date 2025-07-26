@@ -10,7 +10,7 @@ import { ImportPresentationResponse } from '@/types';
 export const exportPresentation = async (presentationId: string): Promise<void> => {
     try {
         const response = await fetch(`/api/presentations/${presentationId}/export`);
-        
+
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.error || 'Export failed');
@@ -90,14 +90,14 @@ export const validateImportFile = (file: File): { valid: boolean; error?: string
  * Reads and validates JSON file content
  */
 export const readAndValidateJsonFile = (file: File): Promise<{ valid: boolean; data?: any; error?: string }> => {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         const reader = new FileReader();
-        
-        reader.onload = (e) => {
+
+        reader.onload = e => {
             try {
                 const content = e.target?.result as string;
                 const data = JSON.parse(content);
-                
+
                 // Basic validation
                 if (!data.presentation || !data.presentation.title || !data.presentation.slides) {
                     resolve({ valid: false, error: 'Invalid presentation data structure' });
@@ -109,11 +109,11 @@ export const readAndValidateJsonFile = (file: File): Promise<{ valid: boolean; d
                 resolve({ valid: false, error: 'Invalid JSON file' });
             }
         };
-        
+
         reader.onerror = () => {
             resolve({ valid: false, error: 'Error reading file' });
         };
-        
+
         reader.readAsText(file);
     });
 };
@@ -126,14 +126,14 @@ export const createFileInput = (onFileSelect: (file: File) => void): HTMLInputEl
     input.type = 'file';
     input.accept = '.json';
     input.style.display = 'none';
-    
-    input.addEventListener('change', (e) => {
+
+    input.addEventListener('change', e => {
         const file = (e.target as HTMLInputElement).files?.[0];
         if (file) {
             onFileSelect(file);
         }
     });
-    
+
     return input;
 };
 
@@ -141,15 +141,15 @@ export const createFileInput = (onFileSelect: (file: File) => void): HTMLInputEl
  * Triggers file selection dialog
  */
 export const selectFileForImport = (): Promise<File | null> => {
-    return new Promise((resolve) => {
-        const input = createFileInput((file) => {
+    return new Promise(resolve => {
+        const input = createFileInput(file => {
             resolve(file);
             document.body.removeChild(input);
         });
-        
+
         document.body.appendChild(input);
         input.click();
-        
+
         // Handle cancel
         const handleCancel = () => {
             setTimeout(() => {
@@ -159,8 +159,8 @@ export const selectFileForImport = (): Promise<File | null> => {
                 }
             }, 100);
         };
-        
+
         input.addEventListener('cancel', handleCancel);
         window.addEventListener('focus', handleCancel, { once: true });
     });
-}; 
+};

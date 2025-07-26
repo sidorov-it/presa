@@ -93,7 +93,7 @@ function generateUniqueSlotKeys(template: SlideTemplateCore): Map<string, SlotKe
                     });
                 }
             });
-	
+
             // elementsByCell.forEach((elements, col) => {
             //     elements.forEach((element, elementIndex) => {
             //         if (element.elementTypeId === ElementType.SMART_LAYOUT) {

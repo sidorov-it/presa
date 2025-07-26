@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Theme } from '@/types/theme';
-import { FONT_URLS, getRequiredFontsFromTheme, loadFonts, unloadAllFonts } from '@/utils/fontLoader';
+import { FONT_URLS, getRequiredFontsFromTheme, loadFonts } from '@/utils/fontLoader';
 
 interface FontLoaderProps {
     theme: Theme;

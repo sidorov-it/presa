@@ -10,8 +10,8 @@ const ConditionalFooter: React.FC = () => {
     if (pathname?.startsWith('/view')) {
         return null;
     }
-    
+
     return <Footer />;
 };
 
-export default ConditionalFooter; 
+export default ConditionalFooter;

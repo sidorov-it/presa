@@ -40,11 +40,7 @@ export const CloudPaymentsPaymentButton: React.FC<CloudPaymentsPaymentButtonProp
     const buttonClassName = `${styles.button} ${className}`.trim();
 
     return (
-        <button
-            onClick={handlePayment}
-            disabled={loading || isLoading}
-            className={buttonClassName}
-        >
+        <button onClick={handlePayment} disabled={loading || isLoading} className={buttonClassName}>
             {loading || isLoading ? (
                 <div className={styles.spinner} />
             ) : (
@@ -55,4 +51,4 @@ export const CloudPaymentsPaymentButton: React.FC<CloudPaymentsPaymentButtonProp
             )}
         </button>
     );
-}; 
+};

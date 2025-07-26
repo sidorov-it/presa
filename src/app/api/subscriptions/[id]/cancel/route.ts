@@ -4,10 +4,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/prisma';
 import { SubscriptionStatus } from '@prisma/client';
 
-export async function POST(
-    request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
@@ -26,10 +23,7 @@ export async function POST(
         });
 
         if (!subscription) {
-            return NextResponse.json(
-                { error: 'Subscription not found or cannot be cancelled' },
-                { status: 404 }
-            );
+            return NextResponse.json({ error: 'Subscription not found or cannot be cancelled' }, { status: 404 });
         }
 
         // Update subscription status to cancelled
@@ -61,4 +55,4 @@ export async function POST(
             { status: 500 }
         );
     }
-} 
+}

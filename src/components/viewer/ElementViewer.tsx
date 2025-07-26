@@ -157,7 +157,7 @@ const ElementViewer = ({
                     gap: '0.5rem',
                     flexWrap: 'wrap',
                     width: '100%',
-                }
+                };
 
                 switch (btnElement.alignment) {
                     case 'left':
@@ -177,7 +177,7 @@ const ElementViewer = ({
                 return (
                     <div style={style}>
                         {btnElement.items.map(item => {
-                            let style: {[key: string]: string} = {};
+                            const style: { [key: string]: string } = {};
 
                             if (item.buttonStyle === 'filled') {
                                 if (item?.color) {
@@ -185,7 +185,8 @@ const ElementViewer = ({
                                     style['--presentation-text-color'] = getContrastingTextColor(item?.color);
                                 } else {
                                     style.backgroundColor = 'var(--presentation-primary-accent)';
-                                    style['--presentation-text-color'] = 'var(--presentation-primary-accent-contrast-text-color)';
+                                    style['--presentation-text-color'] =
+                                        'var(--presentation-primary-accent-contrast-text-color)';
                                 }
                             } else {
                                 style.backgroundColor = 'transparent';
@@ -193,17 +194,12 @@ const ElementViewer = ({
                                 style.border = `1px solid var(--presentation-primary-accent)`;
                             }
                             style.borderRadius = 'var(--presentation-slide-border-radius)';
-                            
-        
+
                             return (
-                                <button
-                                    key={item.id}
-                                    className={styles.viewerButton}
-                                    style={style}
-                                >
+                                <button key={item.id} className={styles.viewerButton} style={style}>
                                     <span dangerouslySetInnerHTML={{ __html: item.text }} />
                                 </button>
-                            )
+                            );
                         })}
                     </div>
                 );
@@ -232,11 +228,15 @@ const ElementViewer = ({
                 const blockType = boxElement.iconType || element.elementVariant || 'info-box';
 
                 // Get colors using new logic
-                const blockColors = getBlockColors(slideBackground || theme?.colors.slideBackground || '#000000', blockType, {
-                    blockBgColor: boxElement.customBackgroundColor || boxElement.backgroundColor,
-                    iconColor: (boxElement as any).iconColor,
-                    textColor: (boxElement as any).textColor,
-                });
+                const blockColors = getBlockColors(
+                    slideBackground || theme?.colors.slideBackground || '#000000',
+                    blockType,
+                    {
+                        blockBgColor: boxElement.customBackgroundColor || boxElement.backgroundColor,
+                        iconColor: (boxElement as any).iconColor,
+                        textColor: (boxElement as any).textColor,
+                    }
+                );
 
                 // Get icon component
                 const IconInfo = BoxIconOptions.find(option => option.id === boxElement.iconType);

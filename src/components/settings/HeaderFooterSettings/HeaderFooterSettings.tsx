@@ -51,10 +51,7 @@ const HeaderFooterSettings: React.FC<HeaderFooterSettingsProps> = ({
         <div className={styles.container}>
             <div className={styles.section}>
                 <div className={styles.sectionHeader}>
-                    <Checkbox.Root
-                        checked={header.enabled}
-                        onCheckedChange={handleHeaderEnabledChange}
-                    >
+                    <Checkbox.Root checked={header.enabled} onCheckedChange={handleHeaderEnabledChange}>
                         <Checkbox.HiddenInput />
                         <Checkbox.Control />
                         <Checkbox.Label>Заголовок слайда</Checkbox.Label>
@@ -79,10 +76,7 @@ const HeaderFooterSettings: React.FC<HeaderFooterSettingsProps> = ({
 
             <div className={styles.section}>
                 <div className={styles.sectionHeader}>
-                <Checkbox.Root
-                        checked={footer.enabled}
-                        onCheckedChange={handleFooterEnabledChange}
-                    >
+                    <Checkbox.Root checked={footer.enabled} onCheckedChange={handleFooterEnabledChange}>
                         <Checkbox.HiddenInput />
                         <Checkbox.Control />
                         <Checkbox.Label>Подвал слайда</Checkbox.Label>
@@ -108,4 +102,4 @@ const HeaderFooterSettings: React.FC<HeaderFooterSettingsProps> = ({
     );
 };
 
-export default HeaderFooterSettings; 
+export default HeaderFooterSettings;

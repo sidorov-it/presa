@@ -32,13 +32,13 @@ const SlideHeaderFooterModal: React.FC<SlideHeaderFooterModalProps> = ({
 }) => {
     const { getSlide, updateSlide, getPresentation } = usePresentationStore();
     const modalRef = useRef<HTMLDivElement>(null);
-    
+
     const slide = getSlide(presentationId, slideId);
     const presentation = getPresentation(presentationId);
-    
+
     const [header, setHeader] = useState<HeaderFooterConfig>(slide?.header || defaultHeaderFooter);
     const [footer, setFooter] = useState<HeaderFooterConfig>(slide?.footer || defaultHeaderFooter);
-    
+
     const currentSlideIndex = presentation?.slides.findIndex(s => s.id === slideId) ?? 0;
     const totalSlides = presentation?.slides.length ?? 1;
 
@@ -147,4 +147,4 @@ const SlideHeaderFooterModal: React.FC<SlideHeaderFooterModalProps> = ({
     );
 };
 
-export default SlideHeaderFooterModal; 
+export default SlideHeaderFooterModal;

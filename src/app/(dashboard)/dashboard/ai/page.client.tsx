@@ -1137,7 +1137,9 @@ const AiPresentationPage = () => {
                                     </Text>
                                     <Input
                                         value={durationMinutes || ''}
-                                        onChange={e => setDurationMinutes(e.target.value ? Number(e.target.value) : null)}
+                                        onChange={e =>
+                                            setDurationMinutes(e.target.value ? Number(e.target.value) : null)
+                                        }
                                         placeholder="Сколько времени будет длиться презентация"
                                         aria-label="Длительность презентации"
                                         type="number"

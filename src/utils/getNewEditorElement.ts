@@ -4,7 +4,13 @@ import { ElementType } from '@/types/elements';
 
 export const getNewEditorElement = (
     content?: string,
-    options: { tempEditor?: boolean; tempLayout?: boolean; textType?: string; textAlign?: string; preservedStyles?: any } = {}
+    options: {
+        tempEditor?: boolean;
+        tempLayout?: boolean;
+        textType?: string;
+        textAlign?: string;
+        preservedStyles?: any;
+    } = {}
 ): Omit<EditorElement, 'cellId'> => {
     // Если контент не передан или пустой, создаем контент по умолчанию с правильными классами
     let defaultContent = '';

@@ -430,6 +430,7 @@ enum SubscriptionInterval {
   monthly
   quarterly
   semiannual
+  daily
 }
 
 enum SubscriptionStatus {
@@ -506,7 +507,7 @@ model SubscriptionPayment {
   
   // Billing period this payment covers
   billingStart     DateTime
-  billingEnd       DateTime
+  billingEnd       DateTime?
   
   createdAt        DateTime         @default(now())
   completedAt      DateTime?

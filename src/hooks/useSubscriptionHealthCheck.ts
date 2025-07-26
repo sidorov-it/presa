@@ -21,4 +21,4 @@ export const useSubscriptionHealthCheck = () => {
             });
         }
     }, [session?.user?.id, status]);
-}; 
+};

@@ -1,9 +1,9 @@
-import { 
-    createExportData, 
-    validateImportData, 
-    regenerateIds, 
-    createSafeFilename, 
-    isVersionSupported 
+import {
+    createExportData,
+    validateImportData,
+    regenerateIds,
+    createSafeFilename,
+    isVersionSupported,
 } from '../exportImport';
 import { IPresentation } from '@/types';
 
@@ -23,8 +23,8 @@ describe('exportImport utilities', () => {
                                 id: 'element-1',
                                 cellId: 'cell-1',
                                 elementTypeId: 'text',
-                                content: 'Test content'
-                            }
+                                content: 'Test content',
+                            },
                         ],
                         gridStructure: {
                             rows: [
@@ -34,18 +34,18 @@ describe('exportImport utilities', () => {
                                         {
                                             id: 'cell-1',
                                             row: 0,
-                                            column: 0
-                                        }
-                                    ]
-                                }
+                                            column: 0,
+                                        },
+                                    ],
+                                },
                             ],
                             columns: 1,
-                            columnWidths: ['100%']
+                            columnWidths: ['100%'],
                         },
-                        style: {}
-                    }
-                ]
-            }
+                        style: {},
+                    },
+                ],
+            },
         ],
         themeId: 'theme-1',
         createdAt: Date.now(),
@@ -53,7 +53,7 @@ describe('exportImport utilities', () => {
         durationMinutes: 30,
         goal: 'Test goal',
         audience: 'Test audience',
-        tone: 'Professional'
+        tone: 'Professional',
     };
 
     describe('createExportData', () => {
@@ -88,10 +88,10 @@ describe('exportImport utilities', () => {
                     slides: [
                         {
                             id: 'slide-1',
-                            layouts: []
-                        }
-                    ]
-                }
+                            layouts: [],
+                        },
+                    ],
+                },
             };
 
             expect(validateImportData(validData)).toBe(true);
@@ -109,9 +109,9 @@ describe('exportImport utilities', () => {
                 presentation: {
                     title: 'Test',
                     slides: [
-                        { id: 'slide-1' } // missing layouts
-                    ]
-                }
+                        { id: 'slide-1' }, // missing layouts
+                    ],
+                },
             };
 
             expect(validateImportData(invalidData)).toBe(false);
@@ -125,11 +125,8 @@ describe('exportImport utilities', () => {
                 cellId: 'original-cell-id',
                 nested: {
                     id: 'nested-id',
-                    items: [
-                        { id: 'item-1' },
-                        { id: 'item-2', cellId: 'cell-2' }
-                    ]
-                }
+                    items: [{ id: 'item-1' }, { id: 'item-2', cellId: 'cell-2' }],
+                },
             };
 
             const regenerated = regenerateIds(original);
@@ -143,10 +140,7 @@ describe('exportImport utilities', () => {
         });
 
         it('should handle arrays correctly', () => {
-            const original = [
-                { id: 'item-1' },
-                { id: 'item-2' }
-            ];
+            const original = [{ id: 'item-1' }, { id: 'item-2' }];
 
             const regenerated = regenerateIds(original);
 
@@ -160,7 +154,7 @@ describe('exportImport utilities', () => {
                 id: 'test-id',
                 title: 'Test Title',
                 content: 'Test Content',
-                number: 42
+                number: 42,
             };
 
             const regenerated = regenerateIds(original);
@@ -174,7 +168,9 @@ describe('exportImport utilities', () => {
     describe('createSafeFilename', () => {
         it('should create safe filename from title', () => {
             expect(createSafeFilename('My Presentation')).toBe('My_Presentation_export.json');
-            expect(createSafeFilename('Test/Title\\With:Special*Characters')).toBe('TestTitleWithSpecialCharacters_export.json');
+            expect(createSafeFilename('Test/Title\\With:Special*Characters')).toBe(
+                'TestTitleWithSpecialCharacters_export.json'
+            );
             expect(createSafeFilename('Multiple   Spaces')).toBe('Multiple_Spaces_export.json');
         });
 
@@ -195,4 +191,4 @@ describe('exportImport utilities', () => {
             expect(isVersionSupported('1.1')).toBe(false);
         });
     });
-}); 
+});

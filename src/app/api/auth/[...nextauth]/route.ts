@@ -416,24 +416,24 @@ export const authOptions: NextAuthOptions = {
 const handler = NextAuth(authOptions);
 
 // Log NextAuth configuration on startup
-logger.info('[NEXTAUTH_CONFIG] NextAuth configuration loaded:', {
-    providersCount: authOptions.providers.length,
-    providerNames: authOptions.providers.map(p => p.id || p.name || 'unknown'),
-    sessionStrategy: authOptions.session?.strategy || 'default',
-    debug: authOptions.debug,
-    hasSignInPage: !!authOptions.pages?.signIn,
-    hasErrorPage: !!authOptions.pages?.error,
-});
+// logger.info('[NEXTAUTH_CONFIG] NextAuth configuration loaded:', {
+//     providersCount: authOptions.providers.length,
+//     providerNames: authOptions.providers.map(p => p.id || p.name || 'unknown'),
+//     sessionStrategy: authOptions.session?.strategy || 'default',
+//     debug: authOptions.debug,
+//     hasSignInPage: !!authOptions.pages?.signIn,
+//     hasErrorPage: !!authOptions.pages?.error,
+// });
 
-// Log each provider configuration
-authOptions.providers.forEach((provider, index) => {
-    logger.info(`[NEXTAUTH_CONFIG] Provider ${index + 1}:`, {
-        id: provider.id,
-        name: provider.name,
-        type: provider.type,
-        hasAuthorize: !!(provider as any).authorize,
-    });
-});
+// // Log each provider configuration
+// authOptions.providers.forEach((provider, index) => {
+//     logger.info(`[NEXTAUTH_CONFIG] Provider ${index + 1}:`, {
+//         id: provider.id,
+//         name: provider.name,
+//         type: provider.type,
+//         hasAuthorize: !!(provider as any).authorize,
+//     });
+// });
 
 // Wrap the handler to add request logging
 const wrappedHandler = async (req: Request, context: any) => {
@@ -530,7 +530,11 @@ const wrappedHandler = async (req: Request, context: any) => {
                     });
 
                     // Check if this looks like a valid credentials request
-                    const isValidCredentialsRequest = !!(formEntries.email && formEntries.password && formEntries.csrfToken);
+                    const isValidCredentialsRequest = !!(
+                        formEntries.email &&
+                        formEntries.password &&
+                        formEntries.csrfToken
+                    );
                     logger.info('[AUTH_REQUEST] Credentials validation:', {
                         isValidCredentialsRequest,
                         missingFields: {
@@ -539,7 +543,6 @@ const wrappedHandler = async (req: Request, context: any) => {
                             csrfToken: !formEntries.csrfToken,
                         },
                     });
-
                 } catch (formError) {
                     logger.error('[AUTH_REQUEST] Error reading form data:', {
                         error: formError instanceof Error ? formError.message : 'Unknown error',

@@ -1,17 +1,15 @@
-import { SubscriptionInterval, SubscriptionStatus, PurchaseStatus } from '@prisma/client';
+import { SubscriptionInterval, SubscriptionStatus } from '@prisma/client';
 
 export interface SubscriptionPlan {
     id: string;
     name: string;
-    description?: string;
+    description: string;
     interval: SubscriptionInterval;
     price: number;
     currency: string;
     isActive: boolean;
-    isPopular: boolean;
-    features?: SubscriptionFeatures;
-    createdAt: Date;
-    updatedAt: Date;
+    isPopular?: boolean;
+    features: SubscriptionFeatures;
 }
 
 export interface SubscriptionFeatures {
@@ -42,55 +40,103 @@ export interface UserSubscription {
 export interface SubscriptionPayment {
     id: string;
     subscriptionId: string;
-    subscription?: UserSubscription;
     amount: number;
     currency: string;
-    status: PurchaseStatus;
+    status: string;
     cloudpaymentsId?: string;
     paymentMethod?: string;
-    billingStart: Date;
-    billingEnd: Date;
+    billingStart?: Date;
+    billingEnd?: Date;
     createdAt: Date;
-    completedAt?: Date;
-    metadata?: Record<string, any>;
 }
 
 export interface CreateSubscriptionRequest {
     planId: string;
-    returnUrl?: string;
 }
 
 export interface CreateSubscriptionResponse {
     success: boolean;
-    subscriptionId: string;
+    subscriptionId?: string;
+    paymentData?: {
+        subscriptionId: string;
+        amount: string;
+        currency: string;
+        description: string;
+        cloudpaymentsData: CloudPaymentsSubscriptionData;
+        recurrentData: CloudPaymentsRecurrentData;
+    };
+    error?: string;
+}
+
+export interface CloudPaymentsSubscriptionData {
+    publicId: string;
+    description: string;
     amount: number;
     currency: string;
-    description: string;
-    cloudpaymentsData?: {
-        publicId: string;
-        invoiceId: string;
-        accountId: string;
+    invoiceId: string;
+    accountId: string;
+    skin: string;
+    data: {
+        subscriptionId: string;
+        planId: string;
+        userId: string;
+    };
+}
+
+export interface CloudPaymentsRecurrentData {
+    period: number;
+    interval: 'Day' | 'Week' | 'Month';
+    amount: number;
+    startDate: string;
+    maxPeriods?: number;
+    receipt: {
+        items: Array<{
+            label: string;
+            price: number;
+            quantity: number;
+            amount: number;
+            vat: number;
+            method: number;
+            object: number;
+        }>;
+        taxationSystem: number;
+        email?: string;
+        phone?: string;
+        isBso: boolean;
+        amounts: {
+            electronic: number;
+            advancePayment: number;
+            credit: number;
+            provision: number;
+        };
     };
 }
 
 export interface SubscriptionStatusResponse {
     hasActiveSubscription: boolean;
     subscription?: UserSubscription;
-    features?: SubscriptionFeatures;
+    features: SubscriptionFeatures;
 }
 
 export interface SubscriptionWebhookData {
     TransactionId: string;
     Amount: string;
     Currency: string;
-    OperationType: string;
-    InvoiceId: string;
-    AccountId: string;
-    Status: string;
-    Description: string;
-    TestMode: string;
-    Data: string;
     DateTime: string;
+    CardFirstSix?: string;
+    CardLastFour?: string;
+    CardType?: string;
+    CardExpDate?: string;
+    TestMode: string;
+    Status: string;
+    OperationType?: string;
+    InvoiceId?: string;
+    AccountId?: string;
     SubscriptionId?: string;
-    RecurrenceType?: string;
-} 
+    Name?: string;
+    Email?: string;
+    Data?: string;
+    Token?: string;
+    TotalFee?: string;
+    RecurrenceType?: 'Init' | 'Auto';
+}

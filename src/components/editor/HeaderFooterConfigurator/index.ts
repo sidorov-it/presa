@@ -1,1 +1,1 @@
-export { default } from './HeaderFooterConfigurator'; 
+export { default } from './HeaderFooterConfigurator';

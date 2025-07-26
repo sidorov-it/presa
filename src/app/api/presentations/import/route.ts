@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/prisma';
-import { ExportPresentationData, ImportPresentationResponse } from '@/types';
+import { ExportPresentationData } from '@/types';
 import { validateImportData, regenerateIds, isVersionSupported } from '@/utils/exportImport';
 
 const handleRequest = async (request: NextRequest) => {
@@ -90,4 +90,4 @@ async function POSTHandler(request: NextRequest) {
     return handleRequest(request);
 }
 
-export const POST = withLogging(POSTHandler); 
+export const POST = withLogging(POSTHandler);

@@ -97,11 +97,13 @@ export default function TextBoxesView({
 
                 const color = customColors[index % customColors.length];
 
-                const colorsStyle = color ? {
-                    '--presentation-block-text-color': color,
-                    '--presentation-heading-color': color,
-                    '--presentation-text-color': color,
-                } : {};
+                const colorsStyle = color
+                    ? {
+                        '--presentation-block-text-color': color,
+                        '--presentation-heading-color': color,
+                        '--presentation-text-color': color,
+                    }
+                    : {};
                 return (
                     <div
                         key={itemId}

@@ -54,10 +54,13 @@ async function GETHandler(request: NextRequest, props: RouteParams) {
         return NextResponse.json(response);
     } catch (error) {
         logger.error('Error checking purchase status:', error);
-        return NextResponse.json({
-            error: 'Failed to check purchase status',
-            details: error instanceof Error ? error.message : 'Unknown error',
-        }, { status: 500 });
+        return NextResponse.json(
+            {
+                error: 'Failed to check purchase status',
+                details: error instanceof Error ? error.message : 'Unknown error',
+            },
+            { status: 500 }
+        );
     }
 }
 export const GET = withLogging(GETHandler);

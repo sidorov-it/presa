@@ -145,7 +145,7 @@ const TimelineVerticalContent = ({
                 }}
             >
                 <div className={`${styles.textBox}`} style={{ position: 'relative', ...itemStyle }}>
-                    <div className={styles.title}>  
+                    <div className={styles.title}>
                         <Tiptap
                             isReadOnly={isReadOnly}
                             elementId={elementId}

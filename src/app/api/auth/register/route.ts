@@ -3,12 +3,8 @@ import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { hashPassword } from '@/lib/auth';
-import { sendEmail } from '@/server/email';
 import { PurchaseStatus } from '@prisma/client';
-import {
-    sendVerificationEmail,
-    sendRegistrationNotification,
-} from '@/server/email';
+import { sendVerificationEmail, sendRegistrationNotification } from '@/server/email';
 import { v4 as uuidv4 } from 'uuid';
 
 async function POSTHandler(req: NextRequest) {
@@ -48,7 +44,8 @@ async function POSTHandler(req: NextRequest) {
                         passwordHash: hashedPassword,
                         verificationToken,
                         verificationTokenExpires: verificationExpires,
-                        isVerified: false,                        emailPreferences: { emailUpdates: true },
+                        isVerified: false,
+                        emailPreferences: { emailUpdates: true },
                         createdVia: 'email',
                     },
                 });
@@ -102,10 +99,7 @@ async function POSTHandler(req: NextRequest) {
                 email: newUser.email,
             });
         } catch (emailError) {
-            logger.error(
-                'Failed to send registration email notifications:',
-                emailError
-            );
+            logger.error('Failed to send registration email notifications:', emailError);
         }
 
         // Return success response (without sensitive data)

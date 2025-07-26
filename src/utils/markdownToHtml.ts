@@ -108,10 +108,10 @@ export const markdownToHtml = (raw: string): string => {
     let result = '';
     for (let i = 0; i < htmlParts.length; i++) {
         const part = htmlParts[i];
-        
+
         if (i > 0) {
             const prevPart = htmlParts[i - 1];
-            
+
             // Не добавляем <br /> в следующих случаях:
             // - После открывающего тега списка
             // - Перед закрывающим тегом списка

@@ -4,7 +4,6 @@ import projectKickoffDescriptor from './projectKickoff.json';
 import startapPitchDeckDescriptor from './startapPitchDeck.json';
 import marketingAgencyDescriptor from './marketingAgency.json';
 
-
 // export const marketingStrategyDescriptor: PresentationDescriptor = {
 //     title: 'Портфолио',
 //     description: 'Простое портфолио для демонстрации ваших работ и навыков.',

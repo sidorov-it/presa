@@ -1,165 +1,140 @@
 import { prisma } from '@/lib/prisma';
-import { SubscriptionStatus, SubscriptionInterval } from '@prisma/client';
-import { SubscriptionFeatures, UserSubscription } from '@/types/subscriptions';
+import { SubscriptionInterval, SubscriptionStatus } from '@prisma/client';
+import { SubscriptionFeatures } from '@/types/subscriptions';
 
 /**
- * Check if user has an active subscription with real-time validation
+ * Check if user has active subscription with real-time validation
  */
 export async function hasActiveSubscription(userId: string): Promise<boolean> {
-    const subscription = await prisma.userSubscription.findFirst({
-        where: {
-            userId,
-            status: SubscriptionStatus.active,
-            endDate: {
-                gte: new Date(),
-            },
-        },
-    });
+    try {
+        // First, sync subscription status to handle expired subscriptions
+        await validateAndSyncSubscriptionStatus(userId);
 
-    // If subscription exists but is expired, update status
-    if (subscription && subscription.endDate < new Date()) {
-        await expireSubscription(subscription.id);
+        const activeSubscription = await prisma.userSubscription.findFirst({
+            where: {
+                userId,
+                status: SubscriptionStatus.active,
+                endDate: {
+                    gt: new Date(),
+                },
+            },
+        });
+
+        return !!activeSubscription;
+    } catch (error) {
+        console.error('Error checking active subscription:', error);
         return false;
     }
-
-    return !!subscription;
 }
 
 /**
- * Get user's active subscription with plan details and real-time validation
+ * Get user's active subscription with real-time status updates
  */
-export async function getUserActiveSubscription(userId: string): Promise<UserSubscription | null> {
-    const subscription = await prisma.userSubscription.findFirst({
-        where: {
-            userId,
-            OR: [
-                { status: SubscriptionStatus.active },
-                { status: SubscriptionStatus.cancelled },
-                { status: SubscriptionStatus.expired },
-            ],
-        },
-        include: {
-            plan: true,
-        },
-        orderBy: {
-            createdAt: 'desc',
-        },
-    });
+export async function getUserActiveSubscription(userId: string) {
+    try {
+        // First, sync subscription status
+        await validateAndSyncSubscriptionStatus(userId);
 
-    // Real-time status validation
-    if (subscription) {
-        const now = new Date();
-        const isExpired = subscription.endDate < now;
-        
-        // Update status if subscription has expired
-        if (isExpired && subscription.status === SubscriptionStatus.active) {
-            await expireSubscription(subscription.id);
-            subscription.status = SubscriptionStatus.expired;
-        }
-        
-        // Update status if cancelled subscription has reached end date
-        if (isExpired && subscription.status === SubscriptionStatus.cancelled) {
-            await expireSubscription(subscription.id);
-            subscription.status = SubscriptionStatus.expired;
-        }
+        const subscription = await prisma.userSubscription.findFirst({
+            where: {
+                userId,
+            },
+            include: {
+                plan: true,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+
+        return subscription;
+    } catch (error) {
+        console.error('Error getting user subscription:', error);
+        return null;
     }
-
-    return subscription;
 }
 
 /**
- * Get subscription features for a user with fallback validation
+ * Get subscription features for active subscription only
  */
 export async function getSubscriptionFeatures(userId: string): Promise<SubscriptionFeatures | null> {
     try {
-        const subscription = await getUserActiveSubscription(userId);
-        
-        // Only return features for truly active subscriptions
-        if (!subscription || subscription.status !== SubscriptionStatus.active || subscription.endDate < new Date()) {
-            return null;
-        }
+        const subscription = await prisma.userSubscription.findFirst({
+            where: {
+                userId,
+                status: SubscriptionStatus.active,
+                endDate: {
+                    gt: new Date(),
+                },
+            },
+            include: {
+                plan: true,
+            },
+        });
 
-        if (!subscription.plan?.features) {
+        if (!subscription || !subscription.plan) {
             return null;
         }
 
         return subscription.plan.features as SubscriptionFeatures;
     } catch (error) {
         console.error('Error getting subscription features:', error);
-        return null; // Fail-safe: return null to use default features
+        return null;
     }
 }
 
 /**
- * Get default subscription features for non-subscribers
+ * Get default features for non-subscribers
  */
 export function getDefaultFeatures(): SubscriptionFeatures {
     return {
         maxSlides: 10,
         hideBranding: false,
-        maxDocumentSize: 5, // 5MB for free users
+        maxDocumentSize: 10, // 10MB
         priority: false,
         customExport: false,
     };
 }
 
 /**
- * Get effective features for a user with proper error handling
+ * Get effective user features (subscription or default)
  */
 export async function getUserFeatures(userId: string): Promise<SubscriptionFeatures> {
     try {
         const subscriptionFeatures = await getSubscriptionFeatures(userId);
         return subscriptionFeatures || getDefaultFeatures();
     } catch (error) {
-        console.error('Error getting user features, falling back to default:', error);
-        return getDefaultFeatures(); // Always return something
+        console.error('Error getting user features:', error);
+        return getDefaultFeatures();
     }
 }
 
 /**
- * Check if user can create more slides based on their subscription with real-time validation
+ * Check if user can create more slides
  */
 export async function canCreateSlides(userId: string, currentSlideCount: number): Promise<boolean> {
-    try {
-        const features = await getUserFeatures(userId);
-        return currentSlideCount < features.maxSlides;
-    } catch (error) {
-        console.error('Error checking slide creation limit:', error);
-        // Fail-safe: use default limit
-        return currentSlideCount < getDefaultFeatures().maxSlides;
-    }
+    const features = await getUserFeatures(userId);
+    return currentSlideCount < features.maxSlides;
 }
 
 /**
- * Check if user can upload documents of a certain size with real-time validation
+ * Check if user can upload document of given size
  */
 export async function canUploadDocument(userId: string, fileSizeInMB: number): Promise<boolean> {
-    try {
-        const features = await getUserFeatures(userId);
-        return fileSizeInMB <= features.maxDocumentSize;
-    } catch (error) {
-        console.error('Error checking document upload limit:', error);
-        // Fail-safe: use default limit
-        return fileSizeInMB <= getDefaultFeatures().maxDocumentSize;
-    }
+    const features = await getUserFeatures(userId);
+    return fileSizeInMB <= features.maxDocumentSize;
 }
 
 /**
- * Check if exports should hide branding for this user with real-time validation
+ * Check if branding should be hidden for user
  */
 export async function shouldHideBranding(userId: string): Promise<boolean> {
-    try {
-        const features = await getUserFeatures(userId);
-        return features.hideBranding;
-    } catch (error) {
-        console.error('Error checking branding visibility:', error);
-        // Fail-safe: show branding if there's an error
-        return false;
-    }
+    const features = await getUserFeatures(userId);
+    return features.hideBranding;
 }
 
 /**
- * Validate subscription status and sync with database
+ * Validate and sync subscription status for a user
  */
 export async function validateAndSyncSubscriptionStatus(userId: string): Promise<void> {
     try {
@@ -207,8 +182,11 @@ async function expireSubscription(subscriptionId: string): Promise<void> {
  */
 export function calculateSubscriptionEndDate(startDate: Date, interval: SubscriptionInterval): Date {
     const endDate = new Date(startDate);
-    
+
     switch (interval) {
+        case SubscriptionInterval.daily:
+            endDate.setDate(endDate.getDate() + 1);
+            break;
         case SubscriptionInterval.monthly:
             endDate.setMonth(endDate.getMonth() + 1);
             break;
@@ -219,7 +197,7 @@ export function calculateSubscriptionEndDate(startDate: Date, interval: Subscrip
             endDate.setMonth(endDate.getMonth() + 6);
             break;
     }
-    
+
     return endDate;
 }
 
@@ -228,6 +206,54 @@ export function calculateSubscriptionEndDate(startDate: Date, interval: Subscrip
  */
 export function calculateNextBillingDate(currentDate: Date, interval: SubscriptionInterval): Date {
     return calculateSubscriptionEndDate(currentDate, interval);
+}
+
+/**
+ * Get CloudPayments recurrent interval from subscription interval
+ */
+export function getCloudPaymentsInterval(interval: SubscriptionInterval): {
+    period: number;
+    interval: 'Day' | 'Week' | 'Month';
+} {
+    switch (interval) {
+        case SubscriptionInterval.monthly:
+            return { period: 1, interval: 'Month' };
+        case SubscriptionInterval.quarterly:
+            return { period: 3, interval: 'Month' };
+        case SubscriptionInterval.semiannual:
+            return { period: 6, interval: 'Month' };
+        default:
+            return { period: 1, interval: 'Month' };
+    }
+}
+
+/**
+ * Generate CloudPayments receipt for subscription
+ */
+export function generateSubscriptionReceipt(plan: any, userEmail?: string): any {
+    return {
+        Items: [
+            {
+                label: `Подписка ${plan.name}`,
+                price: plan.price,
+                quantity: 1.0,
+                amount: plan.price,
+                vat: 0, // НДС не облагается
+                method: 0, // полный расчет
+                object: 4, // услуга
+            },
+        ],
+        taxationSystem: 1, // упрощенная система налогообложения
+        email: userEmail || '',
+        phone: '',
+        isBso: false,
+        amounts: {
+            electronic: plan.price,
+            advancePayment: 0.0,
+            credit: 0.0,
+            provision: 0.0,
+        },
+    };
 }
 
 /**
@@ -298,16 +324,51 @@ export async function activateSubscription(subscriptionId: string, cloudpayments
 }
 
 /**
+ * Extend active subscription after successful recurring payment
+ */
+export async function extendSubscription(subscriptionId: string, paymentId: string): Promise<boolean> {
+    try {
+        const subscription = await prisma.userSubscription.findUnique({
+            where: { id: subscriptionId },
+            include: { plan: true },
+        });
+
+        if (!subscription) {
+            throw new Error('Subscription not found');
+        }
+
+        // Calculate new end date from current end date (not from now)
+        const currentEndDate = subscription.endDate;
+        const newEndDate = calculateSubscriptionEndDate(currentEndDate, subscription.plan.interval);
+        const nextBillingDate = calculateNextBillingDate(newEndDate, subscription.plan.interval);
+
+        await prisma.userSubscription.update({
+            where: { id: subscriptionId },
+            data: {
+                endDate: newEndDate,
+                nextBillingDate,
+                lastPaymentId: paymentId,
+            },
+        });
+
+        console.log(`Subscription ${subscriptionId} extended until ${newEndDate.toISOString()}`);
+        return true;
+    } catch (error) {
+        console.error('Error extending subscription:', error);
+        return false;
+    }
+}
+
+/**
  * Check subscription health and auto-fix common issues
  */
 export async function performSubscriptionHealthCheck(userId: string): Promise<void> {
     try {
         await validateAndSyncSubscriptionStatus(userId);
-        
+
         // Additional health checks can be added here
         // e.g., check for duplicate active subscriptions, orphaned payments, etc.
-        
     } catch (error) {
         console.error('Subscription health check failed:', error);
     }
-} 
+}

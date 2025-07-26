@@ -31,10 +31,7 @@ const HeaderFooterPositionSettings: React.FC<HeaderFooterPositionSettingsProps> 
     currentSlideIndex,
     totalSlides,
 }) => {
-    const handlePositionChange = (
-        position: 'left' | 'center' | 'right',
-        updates: Partial<HeaderFooterPosition>
-    ) => {
+    const handlePositionChange = (position: 'left' | 'center' | 'right', updates: Partial<HeaderFooterPosition>) => {
         onChange({
             ...config,
             [position]: {
@@ -47,12 +44,12 @@ const HeaderFooterPositionSettings: React.FC<HeaderFooterPositionSettingsProps> 
     const handleTypeChange = (position: 'left' | 'center' | 'right', type: string) => {
         const newType = type as HeaderFooterContentType;
         let content = '';
-        
+
         // Set default content based on type
         if (newType === 'slide-number') {
             content = `${currentSlideIndex + 1} / ${totalSlides}`;
         }
-        
+
         handlePositionChange(position, { type: newType, content });
     };
 
@@ -62,14 +59,14 @@ const HeaderFooterPositionSettings: React.FC<HeaderFooterPositionSettingsProps> 
 
     const renderPositionSettings = (position: 'left' | 'center' | 'right') => {
         const positionConfig = config[position];
-        
+
         return (
             <div className={styles.positionGroup} key={position}>
                 <label className={styles.positionLabel}>{POSITION_LABELS[position]}</label>
-                
+
                 <SettingsSelector
                     value={positionConfig.type}
-                    setValue={(type) => handleTypeChange(position, type)}
+                    setValue={type => handleTypeChange(position, type)}
                     options={CONTENT_TYPES}
                 />
 
@@ -79,7 +76,7 @@ const HeaderFooterPositionSettings: React.FC<HeaderFooterPositionSettingsProps> 
                             type="text"
                             placeholder="Введите текст"
                             value={positionConfig.content || ''}
-                            onChange={(e) => handleContentChange(position, e.target.value)}
+                            onChange={e => handleContentChange(position, e.target.value)}
                             className={styles.input}
                         />
                     </div>
@@ -91,12 +88,10 @@ const HeaderFooterPositionSettings: React.FC<HeaderFooterPositionSettingsProps> 
                             type="url"
                             placeholder="URL логотипа"
                             value={positionConfig.content || ''}
-                            onChange={(e) => handleContentChange(position, e.target.value)}
+                            onChange={e => handleContentChange(position, e.target.value)}
                             className={styles.input}
                         />
-                        <small className={styles.hint}>
-                            Вставьте ссылку на изображение логотипа
-                        </small>
+                        <small className={styles.hint}>Вставьте ссылку на изображение логотипа</small>
                     </div>
                 )}
 
@@ -122,4 +117,4 @@ const HeaderFooterPositionSettings: React.FC<HeaderFooterPositionSettingsProps> 
     );
 };
 
-export default HeaderFooterPositionSettings; 
+export default HeaderFooterPositionSettings;

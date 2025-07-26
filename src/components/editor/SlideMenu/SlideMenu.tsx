@@ -22,7 +22,6 @@ import TableMenu from './TableMenu/TableMenu';
 import { BaseMenu, MenuItem } from './BaseMenu';
 import { getElementMenuComponent } from '@/utils/getElementMenuComponent';
 
-
 const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tiptapRefs }) => {
     const {
         currentPresentationId,

@@ -11,13 +11,13 @@ describe('createSlideFromTemplateWithContent', () => {
         // Test welcome-slide template which has contentAlignment: 'center'
         const templateId = 'welcome-slide';
         const template = SlideTemplatesRegistry[templateId];
-        
+
         expect(template.contentAlignment).toBe('center');
-        
+
         const slotMapping = new Map<string, SlotKeyMapping>();
         const layoutsContents = {};
         const title = 'Test Slide';
-        
+
         const slide = await createSlideFromTemplateWithContent({
             templateId,
             slotMapping,
@@ -25,7 +25,7 @@ describe('createSlideFromTemplateWithContent', () => {
             title,
             options: { userId: 'test-user', requestId: 'test-request' },
         });
-        
+
         expect(slide.contentAlignment).toBe('center');
     });
 
@@ -33,13 +33,13 @@ describe('createSlideFromTemplateWithContent', () => {
         // Test a template without explicit contentAlignment
         const templateId = 'image-text';
         const template = SlideTemplatesRegistry[templateId];
-        
+
         expect(template.contentAlignment).toBeUndefined();
-        
+
         const slotMapping = new Map<string, SlotKeyMapping>();
         const layoutsContents = {};
         const title = 'Test Slide';
-        
+
         const slide = await createSlideFromTemplateWithContent({
             templateId,
             slotMapping,
@@ -47,20 +47,20 @@ describe('createSlideFromTemplateWithContent', () => {
             title,
             options: { userId: 'test-user', requestId: 'test-request' },
         });
-        
+
         expect(slide.contentAlignment).toBe('center');
     });
 
     test('title-bullets template has top alignment', async () => {
         const templateId = 'title-bullets';
         const template = SlideTemplatesRegistry[templateId];
-        
+
         expect(template.contentAlignment).toBe('top');
-        
+
         const slotMapping = new Map<string, SlotKeyMapping>();
         const layoutsContents = {};
         const title = 'Test Slide';
-        
+
         const slide = await createSlideFromTemplateWithContent({
             templateId,
             slotMapping,
@@ -68,7 +68,7 @@ describe('createSlideFromTemplateWithContent', () => {
             title,
             options: { userId: 'test-user', requestId: 'test-request' },
         });
-        
+
         expect(slide.contentAlignment).toBe('top');
     });
 

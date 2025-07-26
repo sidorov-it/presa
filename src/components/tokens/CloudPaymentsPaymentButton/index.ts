@@ -1,1 +1,1 @@
-export { CloudPaymentsPaymentButton } from './CloudPaymentsPaymentButton'; 
+export { CloudPaymentsPaymentButton } from './CloudPaymentsPaymentButton';

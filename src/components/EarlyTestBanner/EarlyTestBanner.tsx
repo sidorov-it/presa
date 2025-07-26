@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
 import styles from './EarlyTestBanner.module.css';
 import { useEarlyTestBanner } from '@/contexts/EarlyTestBannerContext';
 

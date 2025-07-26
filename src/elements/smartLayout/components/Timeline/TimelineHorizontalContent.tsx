@@ -210,10 +210,7 @@ const TimelineHorizontalContent = ({
                     ) : null;
                 }}
             >
-                <div
-                    className={`${styles.textBox} ${align ? styles[align] : ''}`}
-                    style={{ position: 'relative' }}
-                >
+                <div className={`${styles.textBox} ${align ? styles[align] : ''}`} style={{ position: 'relative' }}>
                     <div className={styles.title}>
                         <Tiptap
                             isReadOnly={isReadOnly}

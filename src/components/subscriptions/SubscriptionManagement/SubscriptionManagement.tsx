@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import { useSubscriptions } from '@/hooks/useSubscriptions';
-import { FaCrown, FaCalendarAlt, FaCheckCircle, FaTimesCircle, FaInfoCircle, FaExclamationTriangle } from 'react-icons/fa';
+import {
+    FaCrown,
+    FaCalendarAlt,
+    FaCheckCircle,
+    FaTimesCircle,
+    FaInfoCircle,
+    FaExclamationTriangle,
+} from 'react-icons/fa';
 import { SubscriptionStatus } from '@prisma/client';
 import styles from './SubscriptionManagement.module.css';
 
@@ -76,7 +83,7 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
 
     const handleCancelSubscription = async () => {
         if (!userSubscription) return;
-        
+
         setIsCancelling(true);
         try {
             const response = await fetch(`/api/subscriptions/${userSubscription.id}/cancel`, {
@@ -166,7 +173,7 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
                         <FaCrown className={styles.crownIcon} />
                         <h2>Ваша подписка</h2>
                     </div>
-                    <div 
+                    <div
                         className={`${styles.statusBadge} ${styles[subscription.status]}`}
                         style={{ borderColor: getStatusColor(subscription.status) }}
                     >
@@ -183,9 +190,7 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
                 <div className={styles.subscriptionDetails}>
                     <div className={styles.planInfo}>
                         <h3 className={styles.planName}>{plan.name}</h3>
-                        {plan.description && (
-                            <p className={styles.planDescription}>{plan.description}</p>
-                        )}
+                        {plan.description && <p className={styles.planDescription}>{plan.description}</p>}
                         <div className={styles.planPrice}>
                             {formatCurrency(plan.price, plan.currency)} / {getIntervalLabel(plan.interval)}
                         </div>
@@ -212,7 +217,9 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
                                 <span className={styles.metadataLabel}>
                                     {isExpired || isCancelled ? 'Дата окончания:' : 'Действует до:'}
                                 </span>
-                                <span className={`${styles.metadataValue} ${isExpiringSoon && !isExpired ? styles.expiringSoon : ''} ${isExpired ? styles.expired : ''}`}>
+                                <span
+                                    className={`${styles.metadataValue} ${isExpiringSoon && !isExpired ? styles.expiringSoon : ''} ${isExpired ? styles.expired : ''}`}
+                                >
                                     {endDate.toLocaleDateString('ru-RU', {
                                         year: 'numeric',
                                         month: 'long',
@@ -293,7 +300,7 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
                     >
                         {isRefreshing ? 'Обновление...' : 'Обновить статус'}
                     </button>
-                    
+
                     {canCancel && (
                         <button
                             onClick={() => setShowCancelConfirm(true)}
@@ -317,8 +324,8 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
                         <FaInfoCircle className={styles.warningIcon} />
                         <span>
                             Ваша подписка истекает через{' '}
-                            {Math.ceil((endDate.getTime() - Date.now()) / (24 * 60 * 60 * 1000))} дней.
-                            Продлите подписку, чтобы продолжить пользоваться всеми возможностями.
+                            {Math.ceil((endDate.getTime() - Date.now()) / (24 * 60 * 60 * 1000))} дней. Продлите
+                            подписку, чтобы продолжить пользоваться всеми возможностями.
                         </span>
                     </div>
                 )}
@@ -337,7 +344,8 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
                     <div className={styles.expiredWarning}>
                         <FaTimesCircle className={styles.warningIcon} />
                         <span>
-                            Срок действия подписки истек. Для получения доступа к расширенным возможностям оформите новую подписку.
+                            Срок действия подписки истек. Для получения доступа к расширенным возможностям оформите
+                            новую подписку.
                         </span>
                     </div>
                 )}
@@ -373,4 +381,4 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
             )}
         </div>
     );
-}; 
+};

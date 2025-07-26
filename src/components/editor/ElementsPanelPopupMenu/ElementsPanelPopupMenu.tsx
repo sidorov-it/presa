@@ -70,7 +70,6 @@ const ElementsPanelPopupMenu: React.FC<PElementsPanelPopupMenuProps> = ({ isOpen
                     block: 'center',
                 });
             }, 300);
-
         } else {
             // Normal element click
             const newElement = getNewElement(element);

@@ -14,4 +14,4 @@ export default function LinkButton({ href, children, ...buttonProps }: LinkButto
             <Button {...buttonProps}>{children}</Button>
         </Link>
     );
-} 
+}

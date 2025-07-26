@@ -1,346 +1,272 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { headers } from 'next/headers';
 import { prisma } from '@/lib/prisma';
-import { PurchaseStatus, TransactionType, SubscriptionStatus } from '@prisma/client';
-import { addTokens } from '@/utils/tokens';
-import { activateSubscription, calculateNextBillingDate, performSubscriptionHealthCheck } from '@/utils/subscriptions';
+import { activateSubscription, performSubscriptionHealthCheck, extendSubscription } from '@/utils/subscriptions';
+import { SubscriptionStatus } from '@prisma/client';
 
 interface CloudPaymentsWebhookData {
     TransactionId: string;
     Amount: string;
     Currency: string;
-    PaymentAmount: string;
-    PaymentCurrency: string;
-    OperationType: string;
-    InvoiceId: string;
-    AccountId: string;
-    Status: string;
-    Description: string;
-    TestMode: string;
-    Data: string;
     DateTime: string;
-    // Subscription-specific fields
+    CardFirstSix?: string;
+    CardLastFour?: string;
+    CardType?: string;
+    CardExpDate?: string;
+    TestMode: string;
+    Status: string;
+    OperationType?: string;
+    InvoiceId?: string;
+    AccountId?: string;
     SubscriptionId?: string;
-    RecurrenceType?: string;
+    Name?: string;
+    Email?: string;
+    Data?: string;
+    Token?: string;
+    TotalFee?: string;
+    RecurrenceType?: 'Init' | 'Auto';
 }
 
 export async function POST(request: NextRequest) {
-    let webhookData: CloudPaymentsWebhookData;
-
     try {
-        // Получаем данные как form-urlencoded
-        const formData = await request.formData();
+        console.log('CloudPayments webhook received');
 
-        // Преобразуем FormData в объект
-        webhookData = {
-            TransactionId: formData.get('TransactionId') as string,
-            Amount: formData.get('Amount') as string,
-            Currency: formData.get('Currency') as string,
-            PaymentAmount: formData.get('PaymentAmount') as string,
-            PaymentCurrency: formData.get('PaymentCurrency') as string,
-            OperationType: formData.get('OperationType') as string,
-            InvoiceId: formData.get('InvoiceId') as string,
-            AccountId: formData.get('AccountId') as string,
-            Status: formData.get('Status') as string,
-            Description: formData.get('Description') as string,
-            TestMode: formData.get('TestMode') as string,
-            Data: formData.get('Data') as string,
-            DateTime: formData.get('DateTime') as string,
-            SubscriptionId: formData.get('SubscriptionId') as string,
-            RecurrenceType: formData.get('RecurrenceType') as string,
-        };
+        const headersList = await headers();
+        const contentType = headersList.get('content-type');
 
-        // Log webhook for debugging
-        await prisma.cloudPaymentsWebhookLog.create({
-            data: {
-                transactionId: webhookData.TransactionId,
-                invoiceId: webhookData.InvoiceId,
-                accountId: webhookData.AccountId,
-                status: webhookData.Status,
-                operationType: webhookData.OperationType,
-                testMode: webhookData.TestMode === '1',
-                rawData: Object.fromEntries(formData.entries()),
-            }
-        });
+        let webhookData: CloudPaymentsWebhookData;
 
-        console.log('CloudPayments webhook received:', {
-            transactionId: webhookData.TransactionId,
-            status: webhookData.Status,
-            amount: webhookData.Amount,
-            invoiceId: webhookData.InvoiceId,
-            isSubscription: !!(webhookData.SubscriptionId || webhookData.RecurrenceType)
-        });
+        if (contentType?.includes('application/json')) {
+            webhookData = await request.json();
+        } else {
+            // Handle form-encoded data
+            const formData = await request.formData();
+            webhookData = Object.fromEntries(formData.entries()) as any;
+        }
 
-        // Parse additional data
-        let additionalData = {};
+        console.log('Webhook data:', JSON.stringify(webhookData, null, 2));
+
+        // Parse additional data from webhook
+        let paymentData: any = {};
         try {
             if (webhookData.Data) {
-                additionalData = JSON.parse(webhookData.Data);
+                paymentData = JSON.parse(webhookData.Data);
+                console.log('Payment data:', paymentData);
             }
-        } catch (e) {
-            console.warn('Failed to parse additional data:', webhookData.Data);
+        } catch (error) {
+            console.warn('Failed to parse payment data:', webhookData.Data);
         }
 
-        // Check if this is a subscription payment or token purchase
-        const isSubscriptionPayment = webhookData.SubscriptionId || webhookData.RecurrenceType;
+        // Determine if this is a token purchase or subscription payment
+        // Check for subscription indicators: subscriptionId in data or CloudPayments.recurrent config
+        const isSubscriptionPayment =
+            paymentData.subscriptionId ||
+            paymentData.CloudPayments?.recurrent ||
+            webhookData.SubscriptionId ||
+            webhookData.RecurrenceType;
+
+        console.log('Is subscription payment:', isSubscriptionPayment);
 
         if (isSubscriptionPayment) {
-            return await handleSubscriptionPayment(webhookData, additionalData);
+            await handleSubscriptionPayment(webhookData, paymentData);
         } else {
-            return await handleTokenPurchase(webhookData, additionalData);
-        }
-    } catch (error) {
-        console.error('Error processing CloudPayments webhook:', error);
-        
-        // Log error for debugging
-        try {
-            await prisma.cloudPaymentsWebhookLog.create({
-                data: {
-                    transactionId: webhookData?.TransactionId || 'unknown',
-                    invoiceId: webhookData?.InvoiceId || 'unknown',
-                    accountId: webhookData?.AccountId || 'unknown',
-                    status: 'error',
-                    operationType: webhookData?.OperationType || 'unknown',
-                    testMode: false,
-                    rawData: { error: error instanceof Error ? error.message : 'Unknown error' },
-                }
-            });
-        } catch (logError) {
-            console.error('Failed to log webhook error:', logError);
+            await handleTokenPurchase(webhookData);
         }
 
-        return NextResponse.json({
-            error: 'Webhook processing failed',
-            details: error instanceof Error ? error.message : 'Unknown error',
-        }, { status: 500 });
+        return NextResponse.json({ code: 0 });
+    } catch (error) {
+        console.error('CloudPayments webhook error:', error);
+        return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
     }
 }
 
-async function handleTokenPurchase(webhookData: CloudPaymentsWebhookData, additionalData: any) {
+async function handleTokenPurchase(webhookData: CloudPaymentsWebhookData) {
+    console.log('Processing token purchase webhook');
+
+    const { TransactionId, Amount, Status, InvoiceId, AccountId } = webhookData;
+
+    if (!InvoiceId || !AccountId) {
+        console.error('Missing required fields for token purchase:', { InvoiceId, AccountId });
+        return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
     try {
-        // Find token purchase by InvoiceId
-        const purchase = await prisma.tokenPurchase.findFirst({
-            where: { id: webhookData.InvoiceId },
-            include: { package: true },
-        });
-
-        if (!purchase) {
-            console.error('Purchase not found for InvoiceId:', webhookData.InvoiceId);
-            return NextResponse.json({ error: 'Purchase not found' }, { status: 404 });
-        }
-
-        // Check for duplicate processing
-        if (purchase.status === PurchaseStatus.completed && purchase.metadata?.cloudpaymentsTxId === webhookData.TransactionId) {
-            console.log('Duplicate webhook received — already processed');
-            return NextResponse.json({ code: 0 });
-        }
-
-        // Update purchase status based on CloudPayments status
-        if (webhookData.Status === 'Completed') {
-            // Complete purchase and add tokens
-            await prisma.$transaction(async (tx) => {
-                const updatedPurchaseData = {
-                    status: PurchaseStatus.completed,
-                    completedAt: new Date(),
-                    metadata: {
-                        ...(purchase.metadata as Record<string, any> || {}),
-                        cloudpaymentsStatus: webhookData.Status,
-                        cloudpaymentsTransactionId: webhookData.TransactionId,
-                        cloudpaymentsAmount: webhookData.Amount,
-                        cloudpaymentsCurrency: webhookData.Currency,
-                        cloudpaymentsDateTime: webhookData.DateTime,
-                        cloudpaymentsTestMode: webhookData.TestMode === '1',
-                        cloudpaymentsTxId: webhookData.TransactionId,
-                        ...additionalData,
-                    },
-                };
-
-                const updatedPurchase = await tx.tokenPurchase.update({
-                    where: { id: purchase.id },
-                    data: updatedPurchaseData
-                });
-
-                console.log('Token purchase completed:', updatedPurchase.id);
-
-                await addTokens(
-                    purchase.userId,
-                    purchase.tokensAmount,
-                    TransactionType.purchase,
-                    `Покупка токенов: ${purchase.package.name}`,
-                    purchase.id,
-                    {
-                        paymentProvider: 'cloudpayments',
-                        paymentId: webhookData.TransactionId,
-                        packageName: purchase.package.name,
-                        tokensAmount: purchase.tokensAmount,
-                        cloudpaymentsData: additionalData,
-                    }
-                );
+        if (Status === 'Completed') {
+            // Find the purchase record
+            const purchase = await prisma.tokenPurchase.findUnique({
+                where: { id: InvoiceId },
+                include: { package: true },
             });
 
-            console.log('Payment completed successfully:', {
-                purchaseId: purchase.id,
-                transactionId: webhookData.TransactionId,
-                amount: webhookData.Amount,
-                tokensAdded: purchase.tokensAmount,
-            });
-        } else if (webhookData.Status === 'Failed' || webhookData.Status === 'Cancelled') {
+            if (!purchase) {
+                console.error('Purchase not found:', InvoiceId);
+                return NextResponse.json({ error: 'Purchase not found' }, { status: 404 });
+            }
+
+            if (purchase.status === 'completed') {
+                console.log('Purchase already completed:', InvoiceId);
+                return NextResponse.json({ message: 'Already processed' });
+            }
+
+            // Update purchase status
             await prisma.tokenPurchase.update({
-                where: { id: purchase.id },
+                where: { id: InvoiceId },
                 data: {
-                    status: webhookData.Status === 'Failed' ? PurchaseStatus.failed : PurchaseStatus.canceled,
-                    metadata: {
-                        ...(purchase.metadata as Record<string, any> || {}),
-                        cloudpaymentsStatus: webhookData.Status,
-                        cloudpaymentsTransactionId: webhookData.TransactionId,
-                        cloudpaymentsDateTime: webhookData.DateTime,
-                        cloudpaymentsTestMode: webhookData.TestMode === '1',
-                        ...additionalData,
+                    status: 'completed',
+                    completedAt: new Date(),
+                    cloudpaymentsTransactionId: TransactionId,
+                },
+            });
+
+            // Add tokens to user account
+            await prisma.user.update({
+                where: { id: AccountId },
+                data: {
+                    tokens: {
+                        increment: purchase.package.tokens,
                     },
                 },
             });
 
-            console.log('Payment failed/cancelled:', {
-                purchaseId: purchase.id,
-                transactionId: webhookData.TransactionId,
-                status: webhookData.Status,
+            console.log(`Token purchase completed: ${purchase.package.tokens} tokens added to user ${AccountId}`);
+        } else {
+            // Handle failed payment
+            await prisma.tokenPurchase.update({
+                where: { id: InvoiceId },
+                data: { status: 'failed' },
             });
+            console.log(`Token purchase failed: ${InvoiceId}`);
         }
 
-        return NextResponse.json({ code: 0 });
+        return NextResponse.json({ message: 'Token purchase processed successfully' });
     } catch (error) {
-        console.error('Error handling token purchase webhook:', error);
-        throw error; // Re-throw to be handled by main error handler
+        console.error('Error processing token purchase webhook:', error);
+        return NextResponse.json({ error: 'Processing failed' }, { status: 500 });
     }
 }
 
-async function handleSubscriptionPayment(webhookData: CloudPaymentsWebhookData, additionalData: any) {
-    try {
-        // Find subscription by InvoiceId (which should be the subscription ID)
-        const subscription = await prisma.userSubscription.findFirst({
-            where: { id: webhookData.InvoiceId },
+async function handleSubscriptionPayment(webhookData: CloudPaymentsWebhookData, paymentData: any) {
+    console.log('Processing subscription payment webhook');
+
+    const {
+        TransactionId,
+        Amount,
+        Status,
+        InvoiceId,
+        AccountId,
+        RecurrenceType,
+        DateTime,
+        SubscriptionId: webhookSubscriptionId,
+    } = webhookData;
+
+    // Получение локального subscriptionId из paymentData или InvoiceId
+    const fallbackSubscriptionId = paymentData?.subscriptionId || InvoiceId;
+
+    let subscription = null;
+
+    // Сначала ищем по cloudpaymentsId (это webhookData.SubscriptionId)
+    if (webhookSubscriptionId) {
+        subscription = await prisma.userSubscription.findFirst({
+            where: { cloudpaymentsId: webhookSubscriptionId },
             include: { plan: true },
         });
 
-        if (!subscription) {
-            console.error('Subscription not found for InvoiceId:', webhookData.InvoiceId);
-            return NextResponse.json({ error: 'Subscription not found' }, { status: 404 });
+        if (subscription) {
+            console.log(`Subscription found by cloudpaymentsId: ${webhookSubscriptionId}`);
         }
+    }
 
-        // Create or update subscription payment record
-        let payment = await prisma.subscriptionPayment.findFirst({
-            where: {
-                subscriptionId: subscription.id,
-                cloudpaymentsId: webhookData.TransactionId,
-            },
+    // Если не нашли — пробуем по локальному ID (из paymentData)
+    if (!subscription && fallbackSubscriptionId) {
+        subscription = await prisma.userSubscription.findUnique({
+            where: { id: fallbackSubscriptionId },
+            include: { plan: true },
         });
 
-        const paymentData = {
-            amount: parseFloat(webhookData.Amount),
-            currency: webhookData.Currency,
-            cloudpaymentsId: webhookData.TransactionId,
-            metadata: {
-                cloudpaymentsStatus: webhookData.Status,
-                cloudpaymentsDateTime: webhookData.DateTime,
-                cloudpaymentsTestMode: webhookData.TestMode === '1',
-                subscriptionId: webhookData.SubscriptionId,
-                recurrenceType: webhookData.RecurrenceType,
-                ...additionalData,
-            },
-        };
+        if (subscription) {
+            console.log(`Subscription found by local ID: ${fallbackSubscriptionId}`);
 
-        if (webhookData.Status === 'Completed') {
-            if (!payment) {
-                // Create new payment record for recurring payment
-                const billingStart = new Date();
-                const billingEnd = calculateNextBillingDate(billingStart, subscription.plan.interval);
-                
-                payment = await prisma.subscriptionPayment.create({
-                    data: {
-                        subscriptionId: subscription.id,
-                        billingStart,
-                        billingEnd,
-                        status: PurchaseStatus.completed,
-                        completedAt: new Date(),
-                        ...paymentData,
-                    },
-                });
-            } else {
-                // Update existing payment
-                payment = await prisma.subscriptionPayment.update({
-                    where: { id: payment.id },
-                    data: {
-                        status: PurchaseStatus.completed,
-                        completedAt: new Date(),
-                        ...paymentData,
-                    },
-                });
-            }
-
-            // Activate or extend subscription
-            let subscriptionUpdated = false;
-            
-            if (subscription.status === SubscriptionStatus.pending) {
-                // First-time activation
-                subscriptionUpdated = await activateSubscription(subscription.id, webhookData.TransactionId);
-            } else if (subscription.status === SubscriptionStatus.active) {
-                // Recurring payment - extend subscription
-                const newEndDate = calculateNextBillingDate(subscription.endDate, subscription.plan.interval);
-                const nextBillingDate = calculateNextBillingDate(newEndDate, subscription.plan.interval);
-
+            if (webhookSubscriptionId) {
                 await prisma.userSubscription.update({
                     where: { id: subscription.id },
-                    data: {
-                        endDate: newEndDate,
-                        nextBillingDate,
-                        lastPaymentId: payment.id,
-                    },
-                });
-                subscriptionUpdated = true;
-            }
-
-            // Perform health check to ensure consistency
-            if (subscriptionUpdated) {
-                await performSubscriptionHealthCheck(subscription.userId);
-            }
-
-            console.log('Subscription payment completed successfully:', {
-                subscriptionId: subscription.id,
-                transactionId: webhookData.TransactionId,
-                amount: webhookData.Amount,
-                isRecurring: !!webhookData.RecurrenceType,
-                updated: subscriptionUpdated,
-            });
-        } else if (webhookData.Status === 'Failed' || webhookData.Status === 'Cancelled') {
-            if (payment) {
-                await prisma.subscriptionPayment.update({
-                    where: { id: payment.id },
-                    data: {
-                        status: webhookData.Status === 'Failed' ? PurchaseStatus.failed : PurchaseStatus.canceled,
-                        ...paymentData,
-                    },
+                    data: { cloudpaymentsId: webhookSubscriptionId },
                 });
             }
+        }
+    }
 
-            // If subscription is pending and payment failed, mark subscription as failed
-            if (subscription.status === SubscriptionStatus.pending) {
-                await prisma.userSubscription.update({
-                    where: { id: subscription.id },
-                    data: {
-                        status: SubscriptionStatus.failed,
-                    },
-                });
-            }
+    if (!subscription) {
+        console.error('Subscription not found');
+        return NextResponse.json({ error: 'Subscription not found' }, { status: 404 });
+    }
 
-            console.log('Subscription payment failed/cancelled:', {
-                subscriptionId: subscription.id,
-                transactionId: webhookData.TransactionId,
-                status: webhookData.Status,
-            });
+    // Безопасно сохраняем cloudpaymentsId (если не установлен)
+    if (!subscription.cloudpaymentsId && webhookSubscriptionId) {
+        await prisma.userSubscription.update({
+            where: { id: subscription.id },
+            data: { cloudpaymentsId: webhookSubscriptionId },
+        });
+        console.log(`Saved cloudpaymentsId: ${webhookSubscriptionId}`);
+    }
+
+    // Создание/обновление платежа
+    const existingPayment = await prisma.subscriptionPayment.findFirst({
+        where: {
+            subscriptionId: subscription.id,
+            // cloudpaymentsId: InvoiceId,
+        },
+    });
+
+    const paymentDataRecord = {
+        subscriptionId: subscription.id,
+        amount: parseFloat(Amount),
+        currency: subscription.plan.currency,
+        status: Status.toLowerCase(),
+        cloudpaymentsId: InvoiceId,
+        paymentMethod: webhookData.CardType || 'card',
+        createdAt: new Date(DateTime),
+    };
+
+    let payment;
+    if (existingPayment) {
+        console.log(`Updating existing payment: ${existingPayment.id}`);
+        payment = await prisma.subscriptionPayment.update({
+            where: { id: existingPayment.id },
+            data: { status: Status.toLowerCase() },
+        });
+    } else {
+        console.log('Creating new payment record');
+        payment = await prisma.subscriptionPayment.create({
+            data: paymentDataRecord,
+        });
+    }
+
+    if (Status === 'Completed') {
+        const isInitialPayment =
+            RecurrenceType === 'Init' ||
+            subscription.status === SubscriptionStatus.pending ||
+            !paymentData.CloudPayments?.recurrent;
+
+        if (isInitialPayment) {
+            console.log(`Activating subscription ${subscription.id}`);
+            await activateSubscription(subscription.id, webhookSubscriptionId || '');
+        } else {
+            console.log(`Extending subscription ${subscription.id}`);
+            await extendSubscription(subscription.id, payment.id);
         }
 
-        return NextResponse.json({ code: 0 });
-    } catch (error) {
-        console.error('Error handling subscription payment webhook:', error);
-        throw error; // Re-throw to be handled by main error handler
+        await performSubscriptionHealthCheck(subscription.userId);
+        console.log(`Subscription payment processed successfully: ${subscription.id}`);
+    } else if (Status === 'Failed' || Status === 'Cancelled') {
+        if (subscription.status === SubscriptionStatus.pending) {
+            console.log(`Marking subscription ${subscription.id} as failed`);
+            await prisma.userSubscription.update({
+                where: { id: subscription.id },
+                data: { status: SubscriptionStatus.failed },
+            });
+        }
+        console.log(`Subscription payment failed: ${subscription.id}, Status: ${Status}`);
     }
-} 
+
+    return NextResponse.json({ code: 0 });
+}

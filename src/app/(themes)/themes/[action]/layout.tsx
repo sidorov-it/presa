@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import Footer from '@/components/ui/Footer';
 
 export default function ThemesLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();

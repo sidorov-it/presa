@@ -770,10 +770,6 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         },
     },
 
-
-
-
-
     Image: {
         elementTypeId: ElementType.IMAGE,
         label: 'Изображение',

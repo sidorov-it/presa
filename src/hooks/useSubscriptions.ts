@@ -91,7 +91,7 @@ export const useSubscriptions = (): UseSubscriptionsReturn => {
             return {
                 success: true,
                 subscriptionId: data.subscriptionId,
-                paymentData: data,
+                paymentData: data.paymentData,
             };
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to create subscription';

@@ -59,15 +59,15 @@ const Tokens = () => {
     const searchParams = useSearchParams();
     const { data: session } = useSession();
     const { balance, loading: tokensLoading, packages, refreshBalance } = useTokens();
-    const { 
-        plans, 
-        userSubscription, 
-        hasActiveSubscription, 
-        loading: subscriptionLoading, 
+    const {
+        plans,
+        userSubscription,
+        hasActiveSubscription,
+        loading: subscriptionLoading,
         createSubscription,
         refreshSubscriptionStatus,
     } = useSubscriptions();
-    
+
     const [activePurchaseId, setActivePurchaseId] = useState<string | null>(null);
     const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
     const [isAccordionOpen, setIsAccordionOpen] = useState(false);
@@ -95,49 +95,61 @@ const Tokens = () => {
 
         try {
             const result = await createSubscription(planId);
-            
+
             if (result.success && result.paymentData) {
-                // Open CloudPayments widget for subscription
+                // Open CloudPayments widget for subscription with recurrent support
                 if (window.cp?.CloudPayments) {
                     const cp = new window.cp.CloudPayments();
-                    
-                    cp.pay(
-                        'charge',
-                        {
-                            publicId: result.paymentData.cloudpaymentsData.publicId,
-                            description: result.paymentData.description,
-                            amount: Number(result.paymentData.amount),
-                            currency: result.paymentData.currency.toUpperCase(),
-                            invoiceId: result.paymentData.subscriptionId,
-                            accountId: session.user.id || '',
-                            skin: 'classic',
-                            data: {
-                                subscriptionId: result.paymentData.subscriptionId,
-                                planId: planId,
-                                userId: session.user.id,
+
+                    const paymentParams = {
+                        publicId: result.paymentData.cloudpaymentsData.publicId,
+                        description: result.paymentData.description,
+                        amount: Number(result.paymentData.amount),
+                        currency: result.paymentData.currency.toUpperCase(),
+                        invoiceId: result.paymentData.subscriptionId,
+                        accountId: session.user.id || '',
+                        skin: 'modern',
+                        autoClose: 3,
+                        data: {
+                            CloudPayments: {
+                                CustomerReceipt: result.paymentData.recurrentData.receipt, // чек для первого платежа
+                                recurrent: {
+                                    interval: result.paymentData.recurrentData.interval, // 'Month'
+                                    period: result.paymentData.recurrentData.period, // 1, 3, или 6
+                                    amount: result.paymentData.recurrentData.amount,
+                                    startDate: result.paymentData.recurrentData.startDate,
+                                    maxPeriods: result.paymentData.recurrentData.maxPeriods,
+                                    customerReceipt: result.paymentData.recurrentData.receipt, // чек для регулярных платежей
+                                },
                             },
+                            subscriptionId: result.paymentData.subscriptionId,
+                            planId: planId,
+                            userId: session.user.id,
                         },
-                        {
-                            onSuccess: function (options: any) {
-                                console.log('Subscription payment successful:', options);
-                                setNotification({
-                                    type: 'success',
-                                    message: 'Подписка успешно оформлена!',
-                                });
-                                refreshSubscriptionStatus();
-                            },
-                            onFail: function (reason: any, options: any) {
-                                console.error('Subscription payment failed:', reason, options);
-                                setNotification({
-                                    type: 'error',
-                                    message: 'Ошибка при оплате подписки',
-                                });
-                            },
-                            onComplete: function (paymentResult: any, options: any) {
-                                console.log('Subscription payment completed:', paymentResult, options);
-                            },
-                        }
-                    );
+                    };
+
+                    console.debug('CloudPayments payment params:', paymentParams);
+
+                    cp.pay('charge', paymentParams, {
+                        onSuccess: function (options: any) {
+                            console.log('Subscription payment successful:', options);
+                            setNotification({
+                                type: 'success',
+                                message: 'Подписка успешно оформлена! Автоматические списания активированы.',
+                            });
+                            refreshSubscriptionStatus();
+                        },
+                        onFail: function (reason: any, options: any) {
+                            console.error('Subscription payment failed:', reason, options);
+                            setNotification({
+                                type: 'error',
+                                message: 'Ошибка при оплате подписки',
+                            });
+                        },
+                        onComplete: function (paymentResult: any, options: any) {
+                            console.log('Subscription payment completed:', paymentResult, options);
+                        },
+                    });
                 } else {
                     throw new Error('CloudPayments widget not loaded');
                 }
@@ -195,9 +207,9 @@ const Tokens = () => {
             <div className={styles.content}>
                 {/* Header */}
                 <div className={styles.header}>
-                    <Heading 
-                        title="Токены и подписки" 
-                        description="Управляйте своими токенами и подпиской для доступа к AI-функциям" 
+                    <Heading
+                        title="Токены и подписки"
+                        description="Управляйте своими токенами и подпиской для доступа к AI-функциям"
                     />
                 </div>
 
@@ -286,9 +298,7 @@ const Tokens = () => {
                             Пакеты токенов
                         </h2>
                     </div>
-                    <p className={styles.sectionDescription}>
-                        Токены используются для AI-генерации контента и слайдов
-                    </p>
+                    <p className={styles.sectionDescription}>Токены используются для AI-генерации контента и слайдов</p>
                     <div className={styles.packagesGrid}>
                         {packages.map(pkg => (
                             <TokenPackageCard

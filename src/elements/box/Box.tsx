@@ -15,7 +15,15 @@ interface BoxProps {
     slideBackground?: string;
 }
 
-export default function Box({ elementId, presentationId, slideId, layoutId, tiptapRefs, dragHandleRef, slideBackground }: BoxProps) {
+export default function Box({
+    elementId,
+    presentationId,
+    slideId,
+    layoutId,
+    tiptapRefs,
+    dragHandleRef,
+    slideBackground,
+}: BoxProps) {
     const element = usePresentationStore(
         useShallow(state => state.getElement(presentationId, slideId, layoutId, elementId) as BoxElement)
     );

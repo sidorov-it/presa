@@ -49,10 +49,13 @@ async function POSTHandler(request: NextRequest) {
         const maxFileSizeInBytes = maxFileSizeInMB * 1024 * 1024;
 
         if (file.size > maxFileSizeInBytes) {
-            return Response.json({ 
-                error: `File size exceeds ${maxFileSizeInMB}MB limit for your subscription plan`,
-                maxSizeAllowed: maxFileSizeInMB 
-            }, { status: 400 });
+            return Response.json(
+                {
+                    error: `File size exceeds ${maxFileSizeInMB}MB limit for your subscription plan`,
+                    maxSizeAllowed: maxFileSizeInMB,
+                },
+                { status: 400 }
+            );
         }
 
         // Extract text content from file

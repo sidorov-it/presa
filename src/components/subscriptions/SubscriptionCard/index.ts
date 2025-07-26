@@ -1,1 +1,1 @@
-export { SubscriptionCard } from './SubscriptionCard'; 
+export { SubscriptionCard } from './SubscriptionCard';

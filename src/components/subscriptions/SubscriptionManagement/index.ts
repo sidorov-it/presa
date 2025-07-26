@@ -1,1 +1,1 @@
-export { SubscriptionManagement } from './SubscriptionManagement'; 
+export { SubscriptionManagement } from './SubscriptionManagement';

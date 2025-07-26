@@ -1,7 +1,6 @@
 import { withLogging } from '@/hooks/withLoging';
 import { NextRequest } from 'next/server';
 import { withTokenDeduction, TokenCalculators } from '@/utils/aiTokenMiddleware';
-import { generateTopicsWithContent } from '@/services/llm/generateTopicsWithContent';
 import generateSlidesTemplates from '@/services/llm/generateSlidesTemplates';
 import generateSlide from '@/services/llm/generateSlide';
 import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
@@ -79,12 +78,10 @@ async function POSTHandler(request: NextRequest) {
                     logger.info(`Generating slide ${i + 1} with template: ${template.id}`);
 
                     // Get surrounding slides for context
-                    const surroundingSlides = slides
-                        .slice(Math.max(0, i - 2), i)
-                        .map((slide: any) => ({
-                            title: slide.title || '',
-                            content: extractSlidePlainText(slide),
-                        }));
+                    const surroundingSlides = slides.slice(Math.max(0, i - 2), i).map((slide: any) => ({
+                        title: slide.title || '',
+                        content: extractSlidePlainText(slide),
+                    }));
 
                     const slide = await generateSlide({
                         topic: title,

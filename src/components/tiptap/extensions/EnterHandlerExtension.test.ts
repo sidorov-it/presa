@@ -6,9 +6,10 @@ describe('EnterHandlerExtension', () => {
         const onEnterPressed = vi.fn();
         const onBackspacePressed = vi.fn();
         const onDeletePressed = vi.fn();
-        
+
         const extension = EnterHandlerExtension(
-            (contentBeforeCursor, contentAfterCursor, preservedStyles) => onEnterPressed(contentBeforeCursor, contentAfterCursor),
+            (contentBeforeCursor, contentAfterCursor, preservedStyles) =>
+                onEnterPressed(contentBeforeCursor, contentAfterCursor),
             onBackspacePressed,
             onDeletePressed,
             false
@@ -20,22 +21,22 @@ describe('EnterHandlerExtension', () => {
                 selection: {
                     empty: false,
                     $head: { pos: 10 },
-                    $anchor: { pos: 5 }
+                    $anchor: { pos: 5 },
                 },
                 doc: {
                     cut: vi.fn((from: number, to?: number) => ({
                         toJSON: () => ({
-                            content: to ? [{ type: 'paragraph', content: [{ text: 'test' }] }] : []
-                        })
-                    }))
-                }
+                            content: to ? [{ type: 'paragraph', content: [{ text: 'test' }] }] : [],
+                        }),
+                    })),
+                },
             },
             chain: vi.fn(() => ({
                 setMeta: vi.fn().mockReturnThis(),
                 focus: vi.fn().mockReturnThis(),
                 deleteRange: vi.fn().mockReturnThis(),
-                run: vi.fn()
-            }))
+                run: vi.fn(),
+            })),
         };
 
         // Mock keyboard shortcut handler
@@ -57,9 +58,10 @@ describe('EnterHandlerExtension', () => {
         const onEnterPressed = vi.fn();
         const onBackspacePressed = vi.fn();
         const onDeletePressed = vi.fn();
-        
+
         const extension = EnterHandlerExtension(
-            (contentBeforeCursor, contentAfterCursor, preservedStyles) => onEnterPressed(contentBeforeCursor, contentAfterCursor),
+            (contentBeforeCursor, contentAfterCursor, preservedStyles) =>
+                onEnterPressed(contentBeforeCursor, contentAfterCursor),
             onBackspacePressed,
             onDeletePressed,
             false
@@ -71,22 +73,22 @@ describe('EnterHandlerExtension', () => {
                 selection: {
                     empty: true,
                     $head: { pos: 5 },
-                    $anchor: { pos: 5 }
+                    $anchor: { pos: 5 },
                 },
                 doc: {
                     cut: vi.fn((from: number, to?: number) => ({
                         toJSON: () => ({
-                            content: to ? [{ type: 'paragraph', content: [{ text: 'test' }] }] : []
-                        })
-                    }))
-                }
+                            content: to ? [{ type: 'paragraph', content: [{ text: 'test' }] }] : [],
+                        }),
+                    })),
+                },
             },
             chain: vi.fn(() => ({
                 setMeta: vi.fn().mockReturnThis(),
                 focus: vi.fn().mockReturnThis(),
                 deleteRange: vi.fn().mockReturnThis(),
-                run: vi.fn()
-            }))
+                run: vi.fn(),
+            })),
         };
 
         // Mock keyboard shortcut handler
@@ -98,19 +100,19 @@ describe('EnterHandlerExtension', () => {
 
         expect(result).toBe(true);
         expect(mockEditor.chain).not.toHaveBeenCalled(); // No deletion needed
-        expect(onEnterPressed).toHaveBeenCalledWith(
-            undefined,
-            { content: [{ type: 'paragraph', content: [{ text: 'test' }] }] }
-        );
+        expect(onEnterPressed).toHaveBeenCalledWith(undefined, {
+            content: [{ type: 'paragraph', content: [{ text: 'test' }] }],
+        });
     });
 
     it('should handle Enter at end of line correctly', () => {
         const onEnterPressed = vi.fn();
         const onBackspacePressed = vi.fn();
         const onDeletePressed = vi.fn();
-        
+
         const extension = EnterHandlerExtension(
-            (contentBeforeCursor, contentAfterCursor, preservedStyles) => onEnterPressed(contentBeforeCursor, contentAfterCursor),
+            (contentBeforeCursor, contentAfterCursor, preservedStyles) =>
+                onEnterPressed(contentBeforeCursor, contentAfterCursor),
             onBackspacePressed,
             onDeletePressed,
             false
@@ -122,22 +124,22 @@ describe('EnterHandlerExtension', () => {
                 selection: {
                     empty: true,
                     $head: { pos: 10 },
-                    $anchor: { pos: 10 }
+                    $anchor: { pos: 10 },
                 },
                 doc: {
                     cut: vi.fn((from: number, to?: number) => ({
                         toJSON: () => ({
-                            content: []
-                        })
-                    }))
-                }
+                            content: [],
+                        }),
+                    })),
+                },
             },
             chain: vi.fn(() => ({
                 setMeta: vi.fn().mockReturnThis(),
                 focus: vi.fn().mockReturnThis(),
                 deleteRange: vi.fn().mockReturnThis(),
-                run: vi.fn()
-            }))
+                run: vi.fn(),
+            })),
         };
 
         // Mock keyboard shortcut handler
@@ -151,4 +153,4 @@ describe('EnterHandlerExtension', () => {
         expect(mockEditor.chain).not.toHaveBeenCalled(); // No deletion needed
         expect(onEnterPressed).toHaveBeenCalledWith(); // No content to pass
     });
-}); 
+});
