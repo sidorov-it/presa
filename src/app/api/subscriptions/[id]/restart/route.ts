@@ -17,7 +17,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             where: {
                 id: subscriptionId,
                 userId: session.user.id,
-                status: SubscriptionStatus.active,
+                OR: [{ status: SubscriptionStatus.cancelled }, { status: SubscriptionStatus.expired }],
             },
         });
 
@@ -31,7 +31,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             `${process.env.CLOUDPAYMENTS_PUBLIC_ID}:${process.env.CLOUDPAYMENTS_SECRET_KEY}`
         ).toString('base64');
 
-        const response = await fetch(`https://api.cloudpayments.ru/subscriptions/cancel`, {
+        const startDate = new Date();
+
+        startDate.setMinutes(startDate.getMinutes() + 1);
+
+        const response = await fetch(`https://api.cloudpayments.ru/subscriptions/update`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -39,34 +43,34 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             },
             body: JSON.stringify({
                 Id: subscription.cloudpaymentsId,
+                StartDate: startDate.toUTCString(),
             }),
         });
 
         const data = await response.json();
         if (data.Success) {
-            //        Find the subscription and verify ownership
-
-            if (!subscription) {
-                return NextResponse.json({ error: 'Subscription not found or cannot be cancelled' }, { status: 404 });
-            }
-
-            // Update subscription status to cancelled
+            const model = data.Model;
+            // Обновляем только поля, которые есть в модели UserSubscription
             const updatedSubscription = await prisma.userSubscription.update({
                 where: { id: subscriptionId },
                 data: {
-                    status: SubscriptionStatus.cancelled,
-                    cancelledAt: new Date(),
-                    cancelReason: 'User requested cancellation',
-                    // Keep the endDate as is - user can use subscription until it expires
+                    status: SubscriptionStatus.active,
+                    cancelledAt: null,
+                    cancelReason: null,
+                    cloudpaymentsId: model.Id,
+                    startDate: model.StartDateIso ? new Date(model.StartDateIso) : subscription.startDate,
+                    nextBillingDate: model.NextTransactionDateIso
+                        ? new Date(model.NextTransactionDateIso)
+                        : subscription.nextBillingDate,
                 },
             });
 
-            // Log the cancellation
-            console.log(`Subscription ${subscriptionId} cancelled by user ${session.user.id}`);
+            // Логируем возобновление
+            console.log(`Subscription ${subscriptionId} restarted by user ${session.user.id}`);
 
             return NextResponse.json({
                 success: true,
-                message: 'Subscription cancelled successfully',
+                message: 'Subscription restarted successfully',
                 subscription: updatedSubscription,
             });
         } else {

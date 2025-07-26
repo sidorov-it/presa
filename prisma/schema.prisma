@@ -458,8 +458,7 @@ model SubscriptionPlan {
   updatedAt   DateTime            @updatedAt
   
   subscriptions UserSubscription[]
-  
-  @@unique([interval])
+  // @@unique([interval])
 }
 
 model UserSubscription {
@@ -483,6 +482,9 @@ model UserSubscription {
   cancelledAt      DateTime?
   cancelReason     String?
   
+  // Metadata for additional data
+  metadata         Json?
+  
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   
@@ -503,6 +505,8 @@ model SubscriptionPayment {
   
   // CloudPayments integration
   cloudpaymentsId  String?          // CloudPayments transaction ID
+  cloudpaymentsTransactionId String? // CloudPayments transaction ID
+
   paymentMethod    String?          // Payment method used
   
   // Billing period this payment covers

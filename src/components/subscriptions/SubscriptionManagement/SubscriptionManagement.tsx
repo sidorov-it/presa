@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useSubscriptions } from '@/hooks/useSubscriptions';
+import React, { useState, useEffect } from 'react';
 import {
     FaCrown,
     FaCalendarAlt,
@@ -8,11 +7,15 @@ import {
     FaInfoCircle,
     FaExclamationTriangle,
 } from 'react-icons/fa';
-import { SubscriptionStatus } from '@prisma/client';
+import { SubscriptionStatus, UserSubscription } from '@prisma/client';
 import styles from './SubscriptionManagement.module.css';
 
 interface SubscriptionManagementProps {
     className?: string;
+    subscription: UserSubscription;
+    loading: boolean;
+    error: string | null;
+    refreshSubscriptionStatus: () => Promise<void>;
 }
 
 const formatCurrency = (amount: number, currency: string): string => {
@@ -69,11 +72,36 @@ const getStatusColor = (status: string): string => {
     }
 };
 
-export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ className }) => {
-    const { userSubscription, hasActiveSubscription, loading, error, refreshSubscriptionStatus } = useSubscriptions();
+export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
+    className,
+    subscription,
+    loading,
+    error,
+    refreshSubscriptionStatus,
+}: {
+    className?: string;
+    subscription: UserSubscription;
+    loading: boolean;
+    error: string | null;
+    refreshSubscriptionStatus: () => Promise<void>;
+}) => {
+    // const { lastUserSubscription: subscription, loading, error, refreshSubscriptionStatus } = useSubscriptions();
+    const [isRestarting, setIsRestarting] = useState(false);
+
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [isCancelling, setIsCancelling] = useState(false);
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+
+    // Логируем изменения lastUserSubscription для отладки
+    useEffect(() => {
+        console.log('SubscriptionManagement: lastUserSubscription changed:', subscription);
+    }, [subscription]);
+
+    // Принудительно обновляем состояние при монтировании компонента
+    useEffect(() => {
+        console.log('SubscriptionManagement: Component mounted, refreshing subscription status');
+        refreshSubscriptionStatus();
+    }, [refreshSubscriptionStatus]);
 
     const handleRefresh = async () => {
         setIsRefreshing(true);
@@ -82,11 +110,11 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
     };
 
     const handleCancelSubscription = async () => {
-        if (!userSubscription) return;
+        if (!subscription) return;
 
         setIsCancelling(true);
         try {
-            const response = await fetch(`/api/subscriptions/${userSubscription.id}/cancel`, {
+            const response = await fetch(`/api/subscriptions/${subscription.id}/cancel`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -104,6 +132,30 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
             console.error('Error cancelling subscription:', error);
         } finally {
             setIsCancelling(false);
+        }
+    };
+
+    const handleRestartSubscription = async () => {
+        if (!subscription) return;
+        setIsRestarting(true);
+        try {
+            const response = await fetch(`/api/subscriptions/${subscription.id}/restart`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (response.ok) {
+                await refreshSubscriptionStatus();
+                setIsRestarting(false);
+            } else {
+                const errorData = await response.json();
+                console.error('Failed to restart subscription:', errorData);
+            }
+        } catch (error) {
+            console.error('Error restarting subscription:', error);
+        } finally {
+            setIsRestarting(false);
         }
     };
 
@@ -131,7 +183,7 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
     }
 
     // Show subscription info for any subscription (active, cancelled, expired)
-    if (!userSubscription) {
+    if (!subscription) {
         return (
             <div className={`${styles.container} ${className || ''}`}>
                 <div className={styles.noSubscription}>
@@ -143,7 +195,7 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
         );
     }
 
-    const subscription = userSubscription;
+    // const subscription = lastUserSubscription;
     const plan = subscription.plan;
 
     if (!plan) {
@@ -293,13 +345,13 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
                 )}
 
                 <div className={styles.subscriptionActions}>
-                    <button
+                    {/* <button
                         onClick={handleRefresh}
                         disabled={isRefreshing}
                         className={`${styles.refreshButton} ${isRefreshing ? styles.loading : ''}`}
                     >
                         {isRefreshing ? 'Обновление...' : 'Обновить статус'}
-                    </button>
+                    </button> */}
 
                     {canCancel && (
                         <button
@@ -311,10 +363,14 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
                         </button>
                     )}
 
-                    {(isExpired || isCancelled) && (
-                        <a href="#subscription-plans" className={styles.renewButton}>
+                    {isCancelled && (
+                        <button
+                            onClick={handleRestartSubscription}
+                            className={styles.renewButton}
+                            disabled={isCancelling}
+                        >
                             Продлить подписку
-                        </a>
+                        </button>
                     )}
                 </div>
 

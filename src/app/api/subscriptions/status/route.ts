@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { getUserActiveSubscription, getUserFeatures } from '@/utils/subscriptions';
+import { getUserSubscriptions, getUserFeatures } from '@/utils/subscriptions';
+import { SubscriptionStatus } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
     try {
@@ -11,13 +12,17 @@ export async function GET(request: NextRequest) {
         }
 
         // Get user's active subscription
-        const subscription = await getUserActiveSubscription(session.user.id);
+        const subscriptions = await getUserSubscriptions(session.user.id);
         const features = await getUserFeatures(session.user.id);
+
+        const hasActiveSubscription = subscriptions?.some(
+            subscription => subscription.status === SubscriptionStatus.active
+        );
 
         return NextResponse.json({
             success: true,
-            hasActiveSubscription: !!subscription,
-            subscription,
+            hasActiveSubscription: !!hasActiveSubscription,
+            subscriptions,
             features,
         });
     } catch (error) {

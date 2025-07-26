@@ -18,6 +18,25 @@ export interface CloudPaymentsWebhookData {
     RecurrenceType?: string;
 }
 
+export interface CloudPaymentsRecurrentWebhookData {
+    Id: string; // Идентификатор подписки
+    AccountId: string; // Идентификатор пользователя
+    Description: string; // Назначение платежа
+    Email: string; // E-mail плательщика
+    Amount: number; // Сумма платежа
+    Currency: string; // Валюта
+    RequireConfirmation: boolean; // Двухстадийная схема
+    StartDate: string; // Дата первого платежа UTC
+    Interval: string; // Week, Month
+    Period: number; // Период
+    Status: string; // Статус подписки
+    SuccessfulTransactionsNumber: number; // Количество успешных платежей
+    FailedTransactionsNumber: number; // Количество неуспешных платежей
+    MaxPeriods?: number; // Максимальное количество платежей
+    LastTransactionDate?: string; // Дата последнего успешного платежа
+    NextTransactionDate?: string; // Дата следующего платежа
+}
+
 export async function parseWebhookPayload(request: NextRequest): Promise<{
     webhookData: CloudPaymentsWebhookData;
     paymentData: Record<string, any>;
@@ -38,14 +57,11 @@ export async function parseWebhookPayload(request: NextRequest): Promise<{
         TestMode: String(formData.get('TestMode') || ''),
         Data: String(formData.get('Data') || ''),
         DateTime: String(formData.get('DateTime') || ''),
-        SubscriptionId: formData.get('SubscriptionId')
-            ? String(formData.get('SubscriptionId'))
-            : undefined,
-        RecurrenceType: formData.get('RecurrenceType')
-            ? String(formData.get('RecurrenceType'))
-            : undefined,
+        SubscriptionId: formData.get('SubscriptionId') ? String(formData.get('SubscriptionId')) : undefined,
+        RecurrenceType: formData.get('RecurrenceType') ? String(formData.get('RecurrenceType')) : undefined,
     };
 
+    console.log('webhookData', webhookData);
     let paymentData: Record<string, any> = {};
     if (webhookData.Data) {
         try {
@@ -54,6 +70,46 @@ export async function parseWebhookPayload(request: NextRequest): Promise<{
             // ignore parsing errors
         }
     }
+
+    return { webhookData, paymentData };
+}
+
+export async function parseRecurrentWebhookPayload(request: NextRequest): Promise<{
+    webhookData: CloudPaymentsRecurrentWebhookData;
+    paymentData: Record<string, any>;
+}> {
+    const formData = await request.formData();
+
+    const webhookData: CloudPaymentsRecurrentWebhookData = {
+        Id: String(formData.get('Id') || ''),
+        AccountId: String(formData.get('AccountId') || ''),
+        Description: String(formData.get('Description') || ''),
+        Email: String(formData.get('Email') || ''),
+        Amount: Number(formData.get('Amount') || 0),
+        Currency: String(formData.get('Currency') || ''),
+        RequireConfirmation: formData.get('RequireConfirmation') === 'true',
+        StartDate: String(formData.get('StartDate') || ''),
+        Interval: String(formData.get('Interval') || ''),
+        Period: Number(formData.get('Period') || 0),
+        Status: String(formData.get('Status') || ''),
+        SuccessfulTransactionsNumber: Number(formData.get('SuccessfulTransactionsNumber') || 0),
+        FailedTransactionsNumber: Number(formData.get('FailedTransactionsNumber') || 0),
+        MaxPeriods: formData.get('MaxPeriods') ? Number(formData.get('MaxPeriods')) : undefined,
+        LastTransactionDate: formData.get('LastTransactionDate') ? String(formData.get('LastTransactionDate')) : undefined,
+        NextTransactionDate: formData.get('NextTransactionDate') ? String(formData.get('NextTransactionDate')) : undefined,
+    };
+
+    console.log('recurrent webhookData', webhookData);
+    let paymentData: Record<string, any> = {};
+    
+    // Для рекуррентных уведомлений может быть дополнительная информация в других полях
+    const dataFields = ['Data', 'TestMode', 'DateTime'];
+    dataFields.forEach(field => {
+        const value = formData.get(field);
+        if (value) {
+            paymentData[field] = value;
+        }
+    });
 
     return { webhookData, paymentData };
 }

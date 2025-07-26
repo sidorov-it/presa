@@ -61,7 +61,7 @@ const Tokens = () => {
     const { balance, loading: tokensLoading, packages, refreshBalance } = useTokens();
     const {
         plans,
-        userSubscription,
+        lastUserSubscription,
         hasActiveSubscription,
         loading: subscriptionLoading,
         createSubscription,
@@ -137,7 +137,10 @@ const Tokens = () => {
                                 type: 'success',
                                 message: 'Подписка успешно оформлена! Автоматические списания активированы.',
                             });
-                            refreshSubscriptionStatus();
+                            // Принудительно обновляем состояние подписки
+                            setTimeout(() => {
+                                refreshSubscriptionStatus();
+                            }, 1000);
                         },
                         onFail: function (reason: any, options: any) {
                             console.error('Subscription payment failed:', reason, options);
@@ -239,9 +242,14 @@ const Tokens = () => {
                 )}
 
                 {/* Subscription Status Management */}
-                {(hasActiveSubscription || userSubscription) && (
+                {(hasActiveSubscription || lastUserSubscription) && (
                     <div className={styles.subscriptionManagementSection}>
-                        <SubscriptionManagement />
+                        <SubscriptionManagement
+                            subscription={lastUserSubscription || null}
+                            loading={subscriptionLoading}
+                            error={null}
+                            refreshSubscriptionStatus={refreshSubscriptionStatus}
+                        />
                     </div>
                 )}
 

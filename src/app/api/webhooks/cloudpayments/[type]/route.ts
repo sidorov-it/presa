@@ -13,16 +13,11 @@ const handlers: Record<string, any> = {
     recurrent: recurrentHandler,
 };
 
-export async function POST(
-    request: NextRequest,
-    { params }: { params: { type: string } },
-) {
-    const handler = handlers[params.type];
+export async function POST(request: NextRequest, { params }: { params: Promise<{ type: string }> }) {
+    const { type } = await params;
+    const handler = handlers[type];
     if (!handler || typeof handler.POST !== 'function') {
-        return NextResponse.json(
-            { error: 'Unsupported webhook type' },
-            { status: 400 },
-        );
+        return NextResponse.json({ error: 'Unsupported webhook type' }, { status: 400 });
     }
     return handler.POST(request);
 }

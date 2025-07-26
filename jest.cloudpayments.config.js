@@ -12,7 +12,7 @@ const customJestConfig = {
         // Handle module aliases (this will be automatically configured for you soon)
         '^@/(.*)$': '<rootDir>/src/$1',
     },
-    testEnvironment: 'node',
+    testEnvironment: 'node', // Use Node.js environment for CloudPayments tests
     preset: 'ts-jest',
     testPathIgnorePatterns: [
         '<rootDir>/src/test/database.test.ts',
@@ -20,7 +20,12 @@ const customJestConfig = {
         '<rootDir>/src/utils/rewriteSlide.test.ts',
         '<rootDir>/src/services/llm/gigaChat/',
     ],
+    // Only run CloudPayments tests
+    testMatch: [
+        '<rootDir>/src/test/cloudpayments/**/*.test.ts',
+        '<rootDir>/src/test/cloudpayments/**/*.test.tsx',
+    ],
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-module.exports = createJestConfig(customJestConfig);
+module.exports = createJestConfig(customJestConfig); 

@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
         });
 
         // Create initial payment record
-        const payment = await prisma.subscriptionPayment.create({
+        await prisma.subscriptionPayment.create({
             data: {
                 subscriptionId: subscription.id,
                 amount: plan.price,

@@ -4,22 +4,25 @@ import {
     UserSubscription,
     SubscriptionFeatures,
     CreateSubscriptionRequest,
+    CreateSubscriptionResponse,
 } from '@/types/subscriptions';
 
 interface UseSubscriptionsReturn {
     plans: SubscriptionPlan[];
-    userSubscription: UserSubscription | null;
+    userSubscriptions: UserSubscription[] | null;
+    lastUserSubscription: UserSubscription | null;
     features: SubscriptionFeatures | null;
     hasActiveSubscription: boolean;
     loading: boolean;
     error: string | null;
-    createSubscription: (planId: string) => Promise<{ success: boolean; subscriptionId?: string; error?: string }>;
+    createSubscription: (planId: string) => Promise<CreateSubscriptionResponse>;
     refreshSubscriptionStatus: () => Promise<void>;
 }
 
 export const useSubscriptions = (): UseSubscriptionsReturn => {
     const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
-    const [userSubscription, setUserSubscription] = useState<UserSubscription | null>(null);
+    const [userSubscriptions, setUserSubscriptions] = useState<UserSubscription[] | null>(null);
+    const [lastUserSubscription, setLastUserSubscription] = useState<UserSubscription | null>(null);
     const [features, setFeatures] = useState<SubscriptionFeatures | null>(null);
     const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -49,7 +52,8 @@ export const useSubscriptions = (): UseSubscriptionsReturn => {
             if (!response.ok) {
                 if (response.status === 401) {
                     // User not authenticated, clear subscription data
-                    setUserSubscription(null);
+                    setUserSubscriptions(null);
+                    setLastUserSubscription(null);
                     setFeatures(null);
                     setHasActiveSubscription(false);
                     return;
@@ -58,7 +62,12 @@ export const useSubscriptions = (): UseSubscriptionsReturn => {
             }
             const data = await response.json();
             if (data.success) {
-                setUserSubscription(data.subscription);
+                setUserSubscriptions(data.subscriptions);
+                const lastSubscription = data.subscriptions.sort((a: UserSubscription, b: UserSubscription) => {
+                    return new Date(b.endDate).getTime() - new Date(a.endDate).getTime();
+                })[0];
+
+                setLastUserSubscription(lastSubscription);
                 setFeatures(data.features);
                 setHasActiveSubscription(data.hasActiveSubscription);
             }
@@ -69,7 +78,7 @@ export const useSubscriptions = (): UseSubscriptionsReturn => {
     }, []);
 
     // Create subscription
-    const createSubscription = useCallback(async (planId: string) => {
+    const createSubscription = useCallback(async (planId: string): Promise<CreateSubscriptionResponse> => {
         try {
             setError(null);
             const requestData: CreateSubscriptionRequest = { planId };
@@ -126,7 +135,8 @@ export const useSubscriptions = (): UseSubscriptionsReturn => {
 
     return {
         plans,
-        userSubscription,
+        userSubscriptions,
+        lastUserSubscription,
         features,
         hasActiveSubscription,
         loading,

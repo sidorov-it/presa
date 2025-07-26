@@ -30,14 +30,17 @@ export async function hasActiveSubscription(userId: string): Promise<boolean> {
 /**
  * Get user's active subscription with real-time status updates
  */
-export async function getUserActiveSubscription(userId: string) {
+export async function getUserSubscriptions(userId: string) {
     try {
         // First, sync subscription status
         await validateAndSyncSubscriptionStatus(userId);
 
-        const subscription = await prisma.userSubscription.findFirst({
+        const subscriptions = await prisma.userSubscription.findMany({
             where: {
                 userId,
+                status: {
+                    in: [SubscriptionStatus.active, SubscriptionStatus.cancelled, SubscriptionStatus.expired],
+                },
             },
             include: {
                 plan: true,
@@ -47,7 +50,7 @@ export async function getUserActiveSubscription(userId: string) {
             },
         });
 
-        return subscription;
+        return subscriptions;
     } catch (error) {
         console.error('Error getting user subscription:', error);
         return null;
@@ -348,6 +351,7 @@ export async function extendSubscription(subscriptionId: string, paymentId: stri
                 endDate: newEndDate,
                 nextBillingDate,
                 lastPaymentId: paymentId,
+                status: SubscriptionStatus.active,
             },
         });
 
