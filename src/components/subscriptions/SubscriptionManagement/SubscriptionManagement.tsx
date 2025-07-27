@@ -6,9 +6,11 @@ import {
     FaTimesCircle,
     FaInfoCircle,
     FaExclamationTriangle,
+    FaExchangeAlt,
 } from 'react-icons/fa';
 import { SubscriptionStatus } from '@prisma/client';
-import { UserSubscription } from '@/types/subscriptions';
+import { UserSubscription, SubscriptionPlan } from '@/types/subscriptions';
+import { PlanChangeModal } from '../PlanChangeModal/PlanChangeModal';
 import styles from './SubscriptionManagement.module.css';
 
 interface SubscriptionManagementProps {
@@ -17,6 +19,7 @@ interface SubscriptionManagementProps {
     loading: boolean;
     error: string | null;
     refreshSubscriptionStatus: () => Promise<void>;
+    availablePlans?: SubscriptionPlan[];
 }
 
 const formatCurrency = (amount: number, currency: string): string => {
@@ -51,6 +54,8 @@ const getStatusLabel = (status: string): string => {
             return 'Ожидает оплаты';
         case 'failed':
             return 'Ошибка оплаты';
+        case 'scheduled':
+            return 'Запланирована';
         default:
             return status;
     }
@@ -79,13 +84,15 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
     loading,
     error,
     refreshSubscriptionStatus,
+    availablePlans = [],
 }) => {
     // const { lastUserSubscription: subscription, loading, error, refreshSubscriptionStatus } = useSubscriptions();
     const [isRestarting, setIsRestarting] = useState(false);
-
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [isCancelling, setIsCancelling] = useState(false);
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+    const [showPlanChangeModal, setShowPlanChangeModal] = useState(false);
+    const [isChangingPlan, setIsChangingPlan] = useState(false);
 
     // Логируем изменения lastUserSubscription для отладки
     useEffect(() => {
@@ -151,6 +158,35 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
             console.error('Error restarting subscription:', error);
         } finally {
             setIsRestarting(false);
+        }
+    };
+
+    const handlePlanChange = async (planId: string, startImmediately: boolean) => {
+        setIsChangingPlan(true);
+        try {
+            const response = await fetch('/api/subscriptions/change', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    newPlanId: planId,
+                    startImmediately,
+                }),
+            });
+
+            if (response.ok) {
+                await refreshSubscriptionStatus();
+                setShowPlanChangeModal(false);
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to change subscription plan');
+            }
+        } catch (error) {
+            console.error('Error changing subscription plan:', error);
+            throw error;
+        } finally {
+            setIsChangingPlan(false);
         }
     };
 
@@ -348,6 +384,17 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
                         {isRefreshing ? 'Обновление...' : 'Обновить статус'}
                     </button> */}
 
+                    {subscription.status === SubscriptionStatus.active && availablePlans.length > 0 && (
+                        <button
+                            onClick={() => setShowPlanChangeModal(true)}
+                            className={styles.changePlanButton}
+                            disabled={isChangingPlan}
+                        >
+                            <FaExchangeAlt />
+                            Изменить план
+                        </button>
+                    )}
+
                     {canCancel && (
                         <button
                             onClick={() => setShowCancelConfirm(true)}
@@ -364,7 +411,7 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
                             className={styles.renewButton}
                             disabled={isCancelling}
                         >
-                            Продлить подписку
+                            Возобновить подписку
                         </button>
                     )}
                 </div>
@@ -429,6 +476,17 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
                         </div>
                     </div>
                 </div>
+            )}
+
+            {showPlanChangeModal && subscription?.plan && (
+                <PlanChangeModal
+                    isOpen={showPlanChangeModal}
+                    onClose={() => setShowPlanChangeModal(false)}
+                    currentPlan={subscription.plan}
+                    availablePlans={availablePlans}
+                    onPlanChange={handlePlanChange}
+                    loading={isChangingPlan}
+                />
             )}
         </div>
     );

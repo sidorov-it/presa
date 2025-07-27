@@ -211,6 +211,7 @@ const Tokens = () => {
                             loading={subscriptionLoading}
                             error={null}
                             refreshSubscriptionStatus={refreshSubscriptionStatus}
+                            availablePlans={plans}
                         />
                     </div>
                 )}

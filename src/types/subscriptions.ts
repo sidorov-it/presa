@@ -33,6 +33,8 @@ export interface UserSubscription {
     lastPaymentId?: string;
     cancelledAt?: Date;
     cancelReason?: string;
+    nextPlanId?: string; // References SubscriptionPlan for future plan change
+    nextPlanStartDate?: Date; // When the new plan should start
     createdAt: Date;
     updatedAt: Date;
     metadata?: any; // JSON field from Prisma
@@ -53,6 +55,18 @@ export interface SubscriptionPayment {
 
 export interface CreateSubscriptionRequest {
     planId: string;
+}
+
+export interface ChangeSubscriptionRequest {
+    newPlanId: string;
+    startImmediately?: boolean; // If true, change plan immediately; if false, schedule for end of current period
+}
+
+export interface ChangeSubscriptionResponse {
+    success: boolean;
+    subscriptionId?: string;
+    message?: string;
+    error?: string;
 }
 
 export interface CreateSubscriptionResponse {

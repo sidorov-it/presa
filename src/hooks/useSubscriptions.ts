@@ -16,6 +16,8 @@ interface UseSubscriptionsReturn {
     loading: boolean;
     error: string | null;
     createSubscription: (planId: string) => Promise<CreateSubscriptionResponse>;
+    changeSubscriptionPlan: (planId: string, startImmediately: boolean) => Promise<{ success: boolean; error?: string }>;
+    resumeSubscription: (planId?: string) => Promise<{ success: boolean; error?: string }>;
     refreshSubscriptionStatus: () => Promise<void>;
 }
 
@@ -112,6 +114,61 @@ export const useSubscriptions = (): UseSubscriptionsReturn => {
         }
     }, []);
 
+    // Change subscription plan
+    const changeSubscriptionPlan = useCallback(async (planId: string, startImmediately: boolean): Promise<{ success: boolean; error?: string }> => {
+        try {
+            setError(null);
+            const response = await fetch('/api/subscriptions/change', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    newPlanId: planId,
+                    startImmediately,
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to change subscription plan');
+            }
+
+            await loadSubscriptionStatus();
+            return { success: true };
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to change subscription plan';
+            setError(errorMessage);
+            return { success: false, error: errorMessage };
+        }
+    }, [loadSubscriptionStatus]);
+
+    // Resume subscription
+    const resumeSubscription = useCallback(async (planId?: string): Promise<{ success: boolean; error?: string }> => {
+        try {
+            setError(null);
+            const response = await fetch('/api/subscriptions/resume', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ planId }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to resume subscription');
+            }
+
+            await loadSubscriptionStatus();
+            return { success: true };
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to resume subscription';
+            setError(errorMessage);
+            return { success: false, error: errorMessage };
+        }
+    }, [loadSubscriptionStatus]);
+
     // Refresh subscription status
     const refreshSubscriptionStatus = useCallback(async () => {
         setLoading(true);
@@ -142,6 +199,8 @@ export const useSubscriptions = (): UseSubscriptionsReturn => {
         loading,
         error,
         createSubscription,
+        changeSubscriptionPlan,
+        resumeSubscription,
         refreshSubscriptionStatus,
     };
 };

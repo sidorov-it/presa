@@ -343,6 +343,31 @@
     cursor: not-allowed;
 }
 
+.changePlanButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #8b5cf6;
+    color: white;
+    border: 1px solid #8b5cf6;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.changePlanButton:hover:not(:disabled) {
+    background: #7c3aed;
+    border-color: #7c3aed;
+}
+
+.changePlanButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 .renewButton {
     padding: 8px 16px;
     background: #3b82f6;

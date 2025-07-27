@@ -176,19 +176,31 @@ async function handleSubscriptionPayment(webhookData: CloudPaymentsWebhookData, 
         }
 
         // Определяем, является ли это продлением существующей активной подписки
-        const isRenewal = subscription.cloudpaymentsId !== null && subscription.status === SubscriptionStatus.active;
-        
+        const isRenewal =
+            subscription.cloudpaymentsId !== null &&
+            (subscription.status === SubscriptionStatus.active || subscription.status === SubscriptionStatus.expired);
+
         console.log(
             `Processing subscription payment: ${isRenewal ? 'RENEWAL' : 'NEW'} for subscription ${subscription.id}, user ${webhookData.AccountId}`
         );
-        
+
         // Рассчитываем даты биллинга
         let billingStart: Date;
         let billingEnd: Date;
-        
+
         if (isRenewal) {
             // Для продления: новый период начинается с даты окончания текущей подписки
-            billingStart = subscription.endDate;
+            const currentDate = new Date();
+
+            let maxDate;
+
+            if (currentDate > subscription.endDate) {
+                maxDate = currentDate;
+            } else {
+                maxDate = subscription.endDate;
+            }
+
+            billingStart = maxDate;
             billingEnd = calculateNextBillingDate(billingStart, subscription.plan.interval);
         } else {
             // Для новой подписки: период начинается с текущей даты
@@ -203,7 +215,7 @@ async function handleSubscriptionPayment(webhookData: CloudPaymentsWebhookData, 
         while (retryCount < maxRetries) {
             try {
                 let payment;
-                
+
                 if (isRenewal) {
                     // Для продления: создаем новую запись платежа
                     payment = await prisma.subscriptionPayment.create({
@@ -262,10 +274,44 @@ async function handleSubscriptionPayment(webhookData: CloudPaymentsWebhookData, 
                 }
 
                 let subscriptionUpdated = false;
-                
+
                 if (subscription.status === SubscriptionStatus.pending) {
-                    // Активируем новую подписку
-                    subscriptionUpdated = await activateSubscription(subscription.id, webhookData.SubscriptionId);
+                    // Check if this is a scheduled plan change
+                    const isScheduledChange = subscription.startDate > new Date();
+
+                    if (isScheduledChange) {
+                        // This is a scheduled plan change - activate the new plan
+                        console.log(`Activating scheduled plan change for subscription ${subscription.id}`);
+                        subscriptionUpdated = await activateSubscription(subscription.id, webhookData.SubscriptionId);
+
+                        // Cancel the old subscription if it exists
+                        const oldSubscription = await prisma.userSubscription.findFirst({
+                            where: {
+                                userId: subscription.userId,
+                                status: SubscriptionStatus.active,
+                                endDate: {
+                                    lte: subscription.startDate,
+                                },
+                            },
+                        });
+
+                        if (oldSubscription) {
+                            await prisma.userSubscription.update({
+                                where: { id: oldSubscription.id },
+                                data: {
+                                    status: SubscriptionStatus.cancelled,
+                                    cancelledAt: new Date(),
+                                    cancelReason: 'Replaced by scheduled plan change',
+                                },
+                            });
+                            console.log(
+                                `Cancelled old subscription ${oldSubscription.id} due to scheduled plan change`
+                            );
+                        }
+                    } else {
+                        // Regular new subscription activation
+                        subscriptionUpdated = await activateSubscription(subscription.id, webhookData.SubscriptionId);
+                    }
                 } else {
                     // Продлеваем существующую подписку
                     subscriptionUpdated = await extendSubscription(subscription.id, payment.id);
