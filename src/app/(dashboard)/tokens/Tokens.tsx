@@ -12,9 +12,8 @@ import { Heading } from '@/components/ui/heading';
 import { SubscriptionCard } from '@/components/subscriptions/SubscriptionCard';
 import { SubscriptionFeatures } from '@/components/subscriptions/SubscriptionFeatures';
 import { SubscriptionManagement } from '@/components/subscriptions/SubscriptionManagement';
-// import { TokenPackageCard } from '@/components/tokens/TokenPackageCard';
-import styles from './page.module.css';
 import { TokenPackageCard } from '@/components/tokens/TokenPackageCard/TokenPackageCard';
+import styles from './page.module.css';
 
 const Tokens = () => {
     const router = useRouter();
@@ -23,7 +22,9 @@ const Tokens = () => {
     const { balance, loading: tokensLoading, packages, refreshBalance } = useTokens();
     const {
         plans,
-        lastUserSubscription,
+        activeSubscription,
+        lastActiveSubscription,
+        nextSubscription,
         hasActiveSubscription,
         loading: subscriptionLoading,
         createSubscription,
@@ -167,6 +168,9 @@ const Tokens = () => {
         );
     }
 
+    // Determine if we should show subscription plans
+    const shouldShowSubscriptionPlans = !hasActiveSubscription && plans.length > 0;
+
     return (
         <div className={styles.container}>
             <div className={styles.content}>
@@ -203,11 +207,13 @@ const Tokens = () => {
                     </div>
                 )}
 
-                {/* Subscription Status Management */}
-                {(hasActiveSubscription || lastUserSubscription) && (
+                {/* Subscription Status Management - Show for any subscription state */}
+                {activeSubscription && (
                     <div className={styles.subscriptionManagementSection}>
                         <SubscriptionManagement
-                            subscription={lastUserSubscription || null}
+                            activeSubscription={activeSubscription}
+                            lastSubscription={lastActiveSubscription}
+                            nextSubscription={nextSubscription}
                             loading={subscriptionLoading}
                             error={null}
                             refreshSubscriptionStatus={refreshSubscriptionStatus}
@@ -235,7 +241,7 @@ const Tokens = () => {
                 </div>
 
                 {/* Subscription Plans Section - Only show if user doesn't have active subscription */}
-                {!hasActiveSubscription && plans.length > 0 && (
+                {shouldShowSubscriptionPlans && (
                     <div className={styles.subscriptionsSection}>
                         <div className={styles.sectionHeader}>
                             <h2 className={styles.sectionTitle}>

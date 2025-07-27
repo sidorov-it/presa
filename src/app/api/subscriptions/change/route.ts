@@ -25,28 +25,28 @@ export async function POST(request: NextRequest) {
             const response: ChangeSubscriptionResponse = {
                 success: true,
                 subscriptionId: result.subscriptionId,
-                message: startImmediately 
-                    ? 'План подписки изменен немедленно' 
+                message: startImmediately
+                    ? 'План подписки изменен немедленно'
                     : 'Изменение плана подписки запланировано на конец текущего периода',
             };
             return NextResponse.json(response);
         } else {
             return NextResponse.json(
-                { 
-                    success: false, 
-                    error: result.error || 'Failed to change subscription plan' 
-                }, 
+                {
+                    success: false,
+                    error: result.error || 'Failed to change subscription plan',
+                },
                 { status: 400 }
             );
         }
     } catch (error) {
         console.error('Error changing subscription plan:', error);
         return NextResponse.json(
-            { 
-                success: false, 
-                error: 'Internal server error' 
-            }, 
+            {
+                success: false,
+                error: 'Internal server error',
+            },
             { status: 500 }
         );
     }
-} 
+}

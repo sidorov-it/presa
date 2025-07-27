@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { getUserSubscriptions, getUserFeatures } from '@/utils/subscriptions';
+import { getUserSubscriptions } from '@/utils/subscriptions';
 import { SubscriptionStatus } from '@prisma/client';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
@@ -13,17 +13,38 @@ export async function GET(request: NextRequest) {
 
         // Get user's active subscription
         const subscriptions = await getUserSubscriptions(session.user.id);
-        const features = await getUserFeatures(session.user.id);
 
-        const hasActiveSubscription = subscriptions?.some(
+        const activeSubscription = subscriptions?.find(
             subscription => subscription.status === SubscriptionStatus.active
+        );
+
+        let lastActiveSubscription;
+
+        if (activeSubscription) {
+            lastActiveSubscription = activeSubscription;
+        } else {
+            lastActiveSubscription = subscriptions
+                ?.filter(
+                    sub =>
+                        sub.status === SubscriptionStatus.active ||
+                        sub.status === SubscriptionStatus.expired ||
+                        sub.status === SubscriptionStatus.cancelled
+                )
+                .sort((a, b) => {
+                    return new Date(b.endDate).getTime() - new Date(a.endDate).getTime();
+                })[0];
+        }
+
+        const nextSubscription = subscriptions?.find(
+            subscription => subscription.status === SubscriptionStatus.scheduled
         );
 
         return NextResponse.json({
             success: true,
-            hasActiveSubscription: !!hasActiveSubscription,
-            subscriptions,
-            features,
+            activeSubscription,
+            lastActiveSubscription,
+            nextSubscription,
+            // features,
         });
     } catch (error) {
         console.error('Error fetching subscription status:', error);

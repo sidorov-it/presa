@@ -7,6 +7,9 @@ import {
     FaInfoCircle,
     FaExclamationTriangle,
     FaExchangeAlt,
+    FaUndo,
+    FaSync,
+    FaPlay,
 } from 'react-icons/fa';
 import { SubscriptionStatus } from '@prisma/client';
 import { UserSubscription, SubscriptionPlan } from '@/types/subscriptions';
@@ -15,43 +18,26 @@ import styles from './SubscriptionManagement.module.css';
 
 interface SubscriptionManagementProps {
     className?: string;
-    subscription: UserSubscription | null;
+    activeSubscription: UserSubscription | null;
+    lastSubscription: UserSubscription | null;
+    nextSubscription: UserSubscription | null;
     loading: boolean;
     error: string | null;
     refreshSubscriptionStatus: () => Promise<void>;
     availablePlans?: SubscriptionPlan[];
 }
 
-const formatCurrency = (amount: number, currency: string): string => {
-    return new Intl.NumberFormat('ru-RU', {
-        style: 'currency',
-        currency: currency,
-    }).format(amount);
-};
-
-const getIntervalLabel = (interval: string): string => {
-    switch (interval) {
-        case 'monthly':
-            return 'Ежемесячно';
-        case 'quarterly':
-            return 'Каждые 3 месяца';
-        case 'semiannual':
-            return 'Каждые 6 месяцев';
-        default:
-            return interval;
-    }
-};
-
-const getStatusLabel = (status: string): string => {
+// Helper functions
+const getStatusLabel = (status: SubscriptionStatus): string => {
     switch (status) {
         case 'active':
             return 'Активна';
+        case 'pending':
+            return 'Ожидает оплаты';
         case 'cancelled':
             return 'Отменена';
         case 'expired':
             return 'Истекла';
-        case 'pending':
-            return 'Ожидает оплаты';
         case 'failed':
             return 'Ошибка оплаты';
         case 'scheduled':
@@ -61,43 +47,78 @@ const getStatusLabel = (status: string): string => {
     }
 };
 
-const getStatusColor = (status: string): string => {
+const getStatusColor = (status: SubscriptionStatus): string => {
     switch (status) {
         case 'active':
             return '#10b981';
-        case 'cancelled':
+        case 'pending':
             return '#f59e0b';
+        case 'cancelled':
+            return '#6b7280';
         case 'expired':
             return '#ef4444';
-        case 'pending':
-            return '#3b82f6';
         case 'failed':
-            return '#ef4444';
+            return '#dc2626';
+        case 'scheduled':
+            return '#8b5cf6';
         default:
             return '#6b7280';
     }
 };
 
+const formatCurrency = (amount: number, currency: string): string => {
+    return new Intl.NumberFormat('ru-RU', {
+        style: 'currency',
+        currency: currency.toUpperCase(),
+    }).format(amount);
+};
+
+const getIntervalLabel = (interval: string): string => {
+    switch (interval) {
+        case 'monthly':
+            return 'месяц';
+        case 'quarterly':
+            return '3 месяца';
+        case 'semiannual':
+            return '6 месяцев';
+        case 'daily':
+            return 'день';
+        default:
+            return interval;
+    }
+};
+
+const formatDate = (date: Date | string): string => {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj.toLocaleDateString('ru-RU', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    });
+};
+
 export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
     className,
-    subscription,
+    activeSubscription,
+    lastSubscription,
+    nextSubscription,
     loading,
     error,
     refreshSubscriptionStatus,
     availablePlans = [],
 }) => {
-    // const { lastUserSubscription: subscription, loading, error, refreshSubscriptionStatus } = useSubscriptions();
     const [isRestarting, setIsRestarting] = useState(false);
-    const [isRefreshing, setIsRefreshing] = useState(false);
     const [isCancelling, setIsCancelling] = useState(false);
+    const [isCancellingPlanChange, setIsCancellingPlanChange] = useState(false);
+    const [isRetryingPayment, setIsRetryingPayment] = useState(false);
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
     const [showPlanChangeModal, setShowPlanChangeModal] = useState(false);
     const [isChangingPlan, setIsChangingPlan] = useState(false);
 
     // Логируем изменения lastUserSubscription для отладки
     useEffect(() => {
-        console.log('SubscriptionManagement: lastUserSubscription changed:', subscription);
-    }, [subscription]);
+        console.log('SubscriptionManagement: lastUserSubscription changed:', lastSubscription);
+    }, [lastSubscription]);
 
     // Принудительно обновляем состояние при монтировании компонента
     useEffect(() => {
@@ -106,17 +127,15 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
     }, [refreshSubscriptionStatus]);
 
     const handleRefresh = async () => {
-        setIsRefreshing(true);
         await refreshSubscriptionStatus();
-        setIsRefreshing(false);
     };
 
     const handleCancelSubscription = async () => {
-        if (!subscription) return;
+        if (!activeSubscription) return;
 
         setIsCancelling(true);
         try {
-            const response = await fetch(`/api/subscriptions/${subscription.id}/cancel`, {
+            const response = await fetch(`/api/subscriptions/${activeSubscription.id}/cancel`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -137,11 +156,11 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
         }
     };
 
-    const handleRestartSubscription = async () => {
-        if (!subscription) return;
-        setIsRestarting(true);
+    const handleCancelPlanChange = async () => {
+        if (!activeSubscription) return;
+        setIsCancellingPlanChange(true);
         try {
-            const response = await fetch(`/api/subscriptions/${subscription.id}/restart`, {
+            const response = await fetch(`/api/subscriptions/${activeSubscription.id}/cancel-plan-change`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -149,15 +168,82 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
             });
             if (response.ok) {
                 await refreshSubscriptionStatus();
-                setIsRestarting(false);
             } else {
                 const errorData = await response.json();
-                console.error('Failed to restart subscription:', errorData);
+                console.error('Failed to cancel plan change:', errorData);
             }
         } catch (error) {
-            console.error('Error restarting subscription:', error);
+            console.error('Error cancelling plan change:', error);
         } finally {
-            setIsRestarting(false);
+            setIsCancellingPlanChange(false);
+        }
+    };
+
+    const handleRetryPayment = async () => {
+        if (!activeSubscription) return;
+        setIsRetryingPayment(true);
+        try {
+            const response = await fetch(`/api/subscriptions/${activeSubscription.id}/retry-payment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success && result.paymentData) {
+                    // Open CloudPayments widget for retry payment
+                    if (window.cp?.CloudPayments) {
+                        const cp = new window.cp.CloudPayments();
+                        const paymentParams = {
+                            publicId: result.paymentData.cloudpaymentsData.publicId,
+                            description: result.paymentData.description,
+                            amount: Number(result.paymentData.amount),
+                            currency: result.paymentData.currency.toUpperCase(),
+                            invoiceId: result.paymentData.subscriptionId,
+                            accountId: activeSubscription.userId,
+                            skin: 'modern',
+                            autoClose: 3,
+                            data: {
+                                CloudPayments: {
+                                    CustomerReceipt: result.paymentData.recurrentData.receipt,
+                                    recurrent: {
+                                        interval: result.paymentData.recurrentData.interval,
+                                        period: result.paymentData.recurrentData.period,
+                                        amount: result.paymentData.recurrentData.amount,
+                                        startDate: result.paymentData.recurrentData.startDate,
+                                        maxPeriods: result.paymentData.recurrentData.maxPeriods,
+                                        customerReceipt: result.paymentData.recurrentData.receipt,
+                                    },
+                                },
+                                subscriptionId: result.paymentData.subscriptionId,
+                                planId: activeSubscription.planId,
+                                userId: activeSubscription.userId,
+                            },
+                        };
+
+                        cp.pay('charge', paymentParams, {
+                            onSuccess: function (options: any) {
+                                console.log('Retry payment successful:', options);
+                                refreshSubscriptionStatus();
+                            },
+                            onFail: function (reason: any, options: any) {
+                                console.error('Retry payment failed:', reason, options);
+                            },
+                            onComplete: function (paymentResult: any, options: any) {
+                                console.log('Retry payment completed:', paymentResult, options);
+                            },
+                        });
+                    }
+                }
+            } else {
+                const errorData = await response.json();
+                console.error('Failed to retry payment:', errorData);
+            }
+        } catch (error) {
+            console.error('Error retrying payment:', error);
+        } finally {
+            setIsRetryingPayment(false);
         }
     };
 
@@ -190,6 +276,42 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
         }
     };
 
+    const handleStartSubscription = () => {
+        // This would typically open a plan selection modal or redirect to subscription page
+        console.log('Start subscription clicked');
+    };
+
+    const handleResumeSubscription = async () => {
+        if (!activeSubscription) return;
+        setIsRestarting(true);
+        try {
+            const response = await fetch('/api/subscriptions/resume', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    planId: activeSubscription.planId,
+                }),
+            });
+            if (response.ok) {
+                await refreshSubscriptionStatus();
+            } else {
+                const errorData = await response.json();
+                console.error('Failed to resume subscription:', errorData);
+            }
+        } catch (error) {
+            console.error('Error resuming subscription:', error);
+        } finally {
+            setIsRestarting(false);
+        }
+    };
+
+    const handleRenewSubscription = () => {
+        // This would typically open a plan selection modal or redirect to subscription page
+        console.log('Renew subscription clicked');
+    };
+
     if (loading) {
         return (
             <div className={`${styles.container} ${className || ''}`}>
@@ -213,22 +335,31 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
         );
     }
 
-    // Show subscription info for any subscription (active, cancelled, expired)
-    if (!subscription) {
+    // Helper function to determine current subscription
+    const getCurrentSubscription = (): UserSubscription | null => {
+        return activeSubscription || lastSubscription;
+    };
+
+    const currentSubscription = getCurrentSubscription();
+
+    // Scenario 6: No subscription at all
+    if (!currentSubscription) {
         return (
             <div className={`${styles.container} ${className || ''}`}>
                 <div className={styles.noSubscription}>
                     <FaInfoCircle className={styles.infoIcon} />
-                    <h3>У вас нет подписки</h3>
+                    <h3>У вас нет активной подписки</h3>
                     <p>Оформите подписку, чтобы получить доступ к расширенным возможностям Presa.</p>
+                    <button onClick={handleStartSubscription} className={styles.startSubscriptionButton}>
+                        <FaPlay />
+                        Начать подписку
+                    </button>
                 </div>
             </div>
         );
     }
 
-    // const subscription = lastUserSubscription;
-    const plan = subscription.plan;
-
+    const plan = currentSubscription.plan;
     if (!plan) {
         return (
             <div className={`${styles.container} ${className || ''}`}>
@@ -240,33 +371,51 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
         );
     }
 
-    const startDate = new Date(subscription.startDate);
-    const endDate = new Date(subscription.endDate);
-    const nextBillingDate = subscription.nextBillingDate ? new Date(subscription.nextBillingDate) : null;
+    const startDate = new Date(currentSubscription.startDate);
+    const endDate = new Date(currentSubscription.endDate);
+    const nextBillingDate = currentSubscription.nextBillingDate ? new Date(currentSubscription.nextBillingDate) : null;
     const isExpiringSoon = endDate.getTime() - Date.now() < 7 * 24 * 60 * 60 * 1000; // 7 days
-    const isExpired = subscription.status === SubscriptionStatus.expired || endDate.getTime() < Date.now();
-    const isCancelled = subscription.status === SubscriptionStatus.cancelled;
-    const canCancel = subscription.status === SubscriptionStatus.active && !isCancelled;
+    const isExpired = currentSubscription.status === SubscriptionStatus.expired || endDate.getTime() < Date.now();
+    const isCancelled = currentSubscription.status === SubscriptionStatus.cancelled;
+    const isFailed = currentSubscription.status === SubscriptionStatus.failed;
+    const canCancel = currentSubscription.status === SubscriptionStatus.active && !isCancelled;
+    const hasScheduledPlanChange = currentSubscription.nextPlanId && currentSubscription.nextPlanStartDate;
+    const isAutoRenewalCancelled =
+        currentSubscription.status === SubscriptionStatus.active && currentSubscription.cancelledAt;
+    const hasNextSubscription = nextSubscription && nextSubscription.planId !== currentSubscription.planId;
+
+    // Determine which scenario we're in
+    const isScenario1 = activeSubscription && activeSubscription.status === SubscriptionStatus.active && !hasNextSubscription;
+    const isScenario2 =
+        activeSubscription &&
+        activeSubscription.status === SubscriptionStatus.cancelled &&
+        endDate.getTime() > Date.now() &&
+        !hasNextSubscription;
+    const isScenario3 = activeSubscription && hasNextSubscription;
+    const isScenario4 = !activeSubscription && lastSubscription && !hasNextSubscription;
+    const isScenario5 = !activeSubscription && lastSubscription && hasNextSubscription;
+    const isScenario7 = activeSubscription && activeSubscription.status === SubscriptionStatus.active && isAutoRenewalCancelled;
 
     return (
         <div className={`${styles.container} ${className || ''}`}>
-            <div className={`${styles.subscriptionCard} ${styles[subscription.status]}`}>
+            {/* Current / Upcoming Subscription Block */}
+            <div className={`${styles.subscriptionCard} ${styles[currentSubscription.status]}`}>
                 <div className={styles.subscriptionHeader}>
                     <div className={styles.subscriptionTitle}>
                         <FaCrown className={styles.crownIcon} />
-                        <h2>Ваша подписка</h2>
+                        <h2>{isScenario3 || isScenario5 ? 'Текущая подписка' : 'Ваша подписка'}</h2>
                     </div>
                     <div
-                        className={`${styles.statusBadge} ${styles[subscription.status]}`}
-                        style={{ borderColor: getStatusColor(subscription.status) }}
+                        className={`${styles.statusBadge} ${styles[currentSubscription.status]}`}
+                        style={{ borderColor: getStatusColor(currentSubscription.status) }}
                     >
-                        {subscription.status === 'active' && <FaCheckCircle className={styles.statusIcon} />}
-                        {(subscription.status === 'cancelled' || subscription.status === 'expired') && (
+                        {currentSubscription.status === 'active' && <FaCheckCircle className={styles.statusIcon} />}
+                        {(currentSubscription.status === 'cancelled' || currentSubscription.status === 'expired') && (
                             <FaExclamationTriangle className={styles.statusIcon} />
                         )}
-                        {subscription.status === 'pending' && <FaInfoCircle className={styles.statusIcon} />}
-                        {subscription.status === 'failed' && <FaTimesCircle className={styles.statusIcon} />}
-                        {getStatusLabel(subscription.status)}
+                        {currentSubscription.status === 'pending' && <FaInfoCircle className={styles.statusIcon} />}
+                        {currentSubscription.status === 'failed' && <FaTimesCircle className={styles.statusIcon} />}
+                        {getStatusLabel(currentSubscription.status)}
                     </div>
                 </div>
 
@@ -284,61 +433,35 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
                             <FaCalendarAlt className={styles.metadataIcon} />
                             <div>
                                 <span className={styles.metadataLabel}>Дата начала:</span>
-                                <span className={styles.metadataValue}>
-                                    {startDate.toLocaleDateString('ru-RU', {
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric',
-                                    })}
-                                </span>
+                                <span className={styles.metadataValue}>{formatDate(startDate)}</span>
                             </div>
                         </div>
 
                         <div className={styles.metadataItem}>
                             <FaCalendarAlt className={styles.metadataIcon} />
                             <div>
-                                <span className={styles.metadataLabel}>
-                                    {isExpired || isCancelled ? 'Дата окончания:' : 'Действует до:'}
-                                </span>
-                                <span
-                                    className={`${styles.metadataValue} ${isExpiringSoon && !isExpired ? styles.expiringSoon : ''} ${isExpired ? styles.expired : ''}`}
-                                >
-                                    {endDate.toLocaleDateString('ru-RU', {
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric',
-                                    })}
-                                </span>
+                                <span className={styles.metadataLabel}>Дата окончания:</span>
+                                <span className={styles.metadataValue}>{formatDate(endDate)}</span>
                             </div>
                         </div>
 
-                        {nextBillingDate && subscription.status === SubscriptionStatus.active && (
+                        {nextBillingDate && (
                             <div className={styles.metadataItem}>
                                 <FaCalendarAlt className={styles.metadataIcon} />
                                 <div>
                                     <span className={styles.metadataLabel}>Следующее списание:</span>
-                                    <span className={styles.metadataValue}>
-                                        {nextBillingDate.toLocaleDateString('ru-RU', {
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric',
-                                        })}
-                                    </span>
+                                    <span className={styles.metadataValue}>{formatDate(nextBillingDate)}</span>
                                 </div>
                             </div>
                         )}
 
-                        {subscription.cancelledAt && (
+                        {hasScheduledPlanChange && currentSubscription.nextPlanStartDate && (
                             <div className={styles.metadataItem}>
-                                <FaCalendarAlt className={styles.metadataIcon} />
+                                <FaExchangeAlt className={styles.metadataIcon} />
                                 <div>
-                                    <span className={styles.metadataLabel}>Дата отмены:</span>
+                                    <span className={styles.metadataLabel}>Запланированное изменение:</span>
                                     <span className={styles.metadataValue}>
-                                        {new Date(subscription.cancelledAt).toLocaleDateString('ru-RU', {
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric',
-                                        })}
+                                        {formatDate(currentSubscription.nextPlanStartDate)}
                                     </span>
                                 </div>
                             </div>
@@ -346,117 +469,277 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
                     </div>
                 </div>
 
-                {/* Show features only for active subscriptions */}
-                {subscription.status === SubscriptionStatus.active && (
-                    <div className={styles.subscriptionFeatures}>
-                        <h4>Ваши возможности:</h4>
-                        <ul className={styles.featuresList}>
-                            <li>
-                                <FaCheckCircle className={styles.featureIcon} />
-                                До 20 слайдов в презентации
-                            </li>
-                            <li>
-                                <FaCheckCircle className={styles.featureIcon} />
-                                Экспорт без водяного знака
-                            </li>
-                            <li>
-                                <FaCheckCircle className={styles.featureIcon} />
-                                Увеличенный лимит загрузки документов (50 МБ)
-                            </li>
-                            <li>
-                                <FaCheckCircle className={styles.featureIcon} />
-                                Приоритетная обработка AI-запросов
-                            </li>
-                            {/* <li>
-                                <FaCheckCircle className={styles.featureIcon} />
-                                Все возможности экспорта
-                            </li> */}
-                        </ul>
+                {/* Scenario-specific messages and actions */}
+                {isScenario1 && (
+                    <div className={styles.subscriptionActions}>
+                        <div className={styles.statusMessage}>Ваша подписка активна до {formatDate(endDate)}</div>
+                        {availablePlans.length > 0 && (
+                            <button
+                                onClick={() => setShowPlanChangeModal(true)}
+                                className={styles.changePlanButton}
+                                disabled={isChangingPlan}
+                            >
+                                <FaExchangeAlt />
+                                Изменить план
+                            </button>
+                        )}
+                        {canCancel && (
+                            <button
+                                onClick={() => setShowCancelConfirm(true)}
+                                className={styles.cancelButton}
+                                disabled={isCancelling}
+                            >
+                                Отменить подписку
+                            </button>
+                        )}
                     </div>
                 )}
 
-                <div className={styles.subscriptionActions}>
-                    {/* <button
-                        onClick={handleRefresh}
-                        disabled={isRefreshing}
-                        className={`${styles.refreshButton} ${isRefreshing ? styles.loading : ''}`}
-                    >
-                        {isRefreshing ? 'Обновление...' : 'Обновить статус'}
-                    </button> */}
-
-                    {subscription.status === SubscriptionStatus.active && availablePlans.length > 0 && (
+                {isScenario2 && (
+                    <div className={styles.subscriptionActions}>
+                        <div className={styles.statusMessage}>
+                            Ваша подписка была отменена и закончится {formatDate(endDate)}
+                        </div>
                         <button
-                            onClick={() => setShowPlanChangeModal(true)}
-                            className={styles.changePlanButton}
-                            disabled={isChangingPlan}
-                        >
-                            <FaExchangeAlt />
-                            Изменить план
-                        </button>
-                    )}
-
-                    {canCancel && (
-                        <button
-                            onClick={() => setShowCancelConfirm(true)}
-                            className={styles.cancelButton}
-                            disabled={isCancelling}
-                        >
-                            Отменить подписку
-                        </button>
-                    )}
-
-                    {isCancelled && (
-                        <button
-                            onClick={handleRestartSubscription}
+                            onClick={handleResumeSubscription}
                             className={styles.renewButton}
-                            disabled={isCancelling}
+                            disabled={isRestarting}
                         >
-                            Возобновить подписку
+                            <FaUndo />
+                            {isRestarting ? 'Возобновляем...' : 'Возобновить подписку'}
                         </button>
-                    )}
-                </div>
+                        {availablePlans.length > 0 && (
+                            <button
+                                onClick={() => setShowPlanChangeModal(true)}
+                                className={styles.changePlanButton}
+                                disabled={isChangingPlan}
+                            >
+                                <FaExchangeAlt />
+                                Изменить план
+                            </button>
+                        )}
+                    </div>
+                )}
+
+                {isScenario3 && (
+                    <div className={styles.subscriptionActions}>
+                        <div className={styles.statusMessage}>Ваша подписка активна до {formatDate(endDate)}</div>
+                        {availablePlans.length > 0 && (
+                            <button
+                                onClick={() => setShowPlanChangeModal(true)}
+                                className={styles.changePlanButton}
+                                disabled={isChangingPlan}
+                            >
+                                <FaExchangeAlt />
+                                Изменить будущий план
+                            </button>
+                        )}
+                        {hasScheduledPlanChange && (
+                            <button
+                                onClick={handleCancelPlanChange}
+                                className={styles.cancelPlanChangeButton}
+                                disabled={isCancellingPlanChange}
+                            >
+                                <FaTimesCircle />
+                                {isCancellingPlanChange ? 'Отменяем...' : 'Отменить изменение плана'}
+                            </button>
+                        )}
+                    </div>
+                )}
+
+                {isScenario4 && (
+                    <div className={styles.subscriptionActions}>
+                        <div className={styles.statusMessage}>Ваша подписка истекла {formatDate(endDate)}</div>
+                        <button onClick={handleRenewSubscription} className={styles.renewButton}>
+                            <FaUndo />
+                            Продлить подписку
+                        </button>
+                    </div>
+                )}
+
+                {isScenario5 && (
+                    <div className={styles.subscriptionActions}>
+                        <div className={styles.statusMessage}>
+                            Ваша предыдущая подписка истекла {formatDate(endDate)}
+                        </div>
+                        {availablePlans.length > 0 && (
+                            <button
+                                onClick={() => setShowPlanChangeModal(true)}
+                                className={styles.changePlanButton}
+                                disabled={isChangingPlan}
+                            >
+                                <FaExchangeAlt />
+                                Изменить будущий план
+                            </button>
+                        )}
+                        {hasScheduledPlanChange && (
+                            <button
+                                onClick={handleCancelPlanChange}
+                                className={styles.cancelPlanChangeButton}
+                                disabled={isCancellingPlanChange}
+                            >
+                                <FaTimesCircle />
+                                {isCancellingPlanChange ? 'Отменяем...' : 'Отменить изменение плана'}
+                            </button>
+                        )}
+                    </div>
+                )}
+
+                {isScenario7 && (
+                    <div className={styles.subscriptionActions}>
+                        <div className={styles.statusMessage}>
+                            Подписка активна до {formatDate(endDate)}, но автопродление отменено
+                        </div>
+                        <button
+                            onClick={handleResumeSubscription}
+                            className={styles.renewButton}
+                            disabled={isRestarting}
+                        >
+                            <FaUndo />
+                            {isRestarting ? 'Возобновляем...' : 'Возобновить подписку'}
+                        </button>
+                    </div>
+                )}
+
+                {/* Common actions for other scenarios */}
+                {!isScenario1 && !isScenario2 && !isScenario3 && !isScenario4 && !isScenario5 && !isScenario7 && (
+                    <div className={styles.subscriptionActions}>
+                        {isFailed && (
+                            <button
+                                onClick={handleRetryPayment}
+                                className={styles.retryButton}
+                                disabled={isRetryingPayment}
+                            >
+                                <FaSync className={isRetryingPayment ? styles.spinning : ''} />
+                                {isRetryingPayment ? 'Повторяем...' : 'Повторить оплату'}
+                            </button>
+                        )}
+                    </div>
+                )}
 
                 {/* Warning messages */}
-                {isExpiringSoon && !isExpired && subscription.status === SubscriptionStatus.active && (
+                {isExpiringSoon && currentSubscription.status === SubscriptionStatus.active && (
                     <div className={styles.expirationWarning}>
-                        <FaInfoCircle className={styles.warningIcon} />
-                        <span>
-                            Ваша подписка истекает через{' '}
-                            {Math.ceil((endDate.getTime() - Date.now()) / (24 * 60 * 60 * 1000))} дней. Продлите
-                            подписку, чтобы продолжить пользоваться всеми возможностями.
-                        </span>
+                        <FaExclamationTriangle className={styles.warningIcon} />
+                        <div>
+                            <strong>Подписка истекает скоро</strong>
+                            <br />
+                            Ваша подписка истекает {formatDate(endDate)}. Продлите её, чтобы продолжить пользоваться
+                            всеми возможностями.
+                        </div>
                     </div>
                 )}
 
                 {isCancelled && (
                     <div className={styles.cancelledWarning}>
                         <FaExclamationTriangle className={styles.warningIcon} />
-                        <span>
-                            Подписка отменена. Вы можете пользоваться всеми возможностями до{' '}
-                            {endDate.toLocaleDateString('ru-RU')}.
-                        </span>
+                        <div>
+                            <strong>Подписка отменена</strong>
+                            <br />
+                            Вы можете пользоваться всеми возможностями до {formatDate(endDate)}. После этого подписка
+                            будет приостановлена.
+                        </div>
                     </div>
                 )}
 
                 {isExpired && (
                     <div className={styles.expiredWarning}>
+                        <FaExclamationTriangle className={styles.warningIcon} />
+                        <div>
+                            <strong>Подписка истекла</strong>
+                            <br />
+                            Ваша подписка истекла {formatDate(endDate)}. Оформите новую подписку, чтобы продолжить
+                            пользоваться расширенными возможностями.
+                        </div>
+                    </div>
+                )}
+
+                {isFailed && (
+                    <div className={styles.expiredWarning}>
                         <FaTimesCircle className={styles.warningIcon} />
-                        <span>
-                            Срок действия подписки истек. Для получения доступа к расширенным возможностям оформите
-                            новую подписку.
-                        </span>
+                        <div>
+                            <strong>Ошибка оплаты</strong>
+                            <br />
+                            Произошла ошибка при обработке платежа. Попробуйте повторить оплату или обратитесь в службу
+                            поддержки.
+                        </div>
+                    </div>
+                )}
+
+                {hasScheduledPlanChange && currentSubscription.nextPlanStartDate && (
+                    <div className={styles.expirationWarning}>
+                        <FaInfoCircle className={styles.warningIcon} />
+                        <div>
+                            <strong>Изменение плана запланировано</strong>
+                            <br />
+                            Ваш план будет изменен {formatDate(currentSubscription.nextPlanStartDate)}. Вы можете
+                            отменить это изменение в любое время.
+                        </div>
                     </div>
                 )}
             </div>
 
-            {/* Cancel Confirmation Modal */}
+            {/* Upcoming Plan Block for Scenarios 3 and 5 */}
+            {(isScenario3 || isScenario5) && nextSubscription && nextSubscription.plan && (
+                <div className={`${styles.subscriptionCard} ${styles.upcoming}`}>
+                    <div className={styles.subscriptionHeader}>
+                        <div className={styles.subscriptionTitle}>
+                            <FaCalendarAlt className={styles.crownIcon} />
+                            <h2>Будущий план</h2>
+                        </div>
+                        <div className={`${styles.statusBadge} ${styles.pending}`}>
+                            <FaInfoCircle className={styles.statusIcon} />
+                            Запланирован
+                        </div>
+                    </div>
+
+                    <div className={styles.subscriptionDetails}>
+                        <div className={styles.planInfo}>
+                            <h3 className={styles.planName}>{nextSubscription.plan.name}</h3>
+                            {nextSubscription.plan.description && (
+                                <p className={styles.planDescription}>{nextSubscription.plan.description}</p>
+                            )}
+                            <div className={styles.planPrice}>
+                                {formatCurrency(nextSubscription.plan.price, nextSubscription.plan.currency)} /{' '}
+                                {getIntervalLabel(nextSubscription.plan.interval)}
+                            </div>
+                        </div>
+
+                        <div className={styles.subscriptionMetadata}>
+                            <div className={styles.metadataItem}>
+                                <FaCalendarAlt className={styles.metadataIcon} />
+                                <div>
+                                    <span className={styles.metadataLabel}>Начинается:</span>
+                                    <span className={styles.metadataValue}>
+                                        {formatDate(nextSubscription.startDate)}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className={styles.subscriptionActions}>
+                        <div className={styles.statusMessage}>
+                            {isScenario3
+                                ? `Новый план ('${nextSubscription.plan.name}') начнется ${formatDate(
+                                      nextSubscription.startDate
+                                  )}`
+                                : `Новый план ('${nextSubscription.plan.name}') начнется ${formatDate(
+                                      nextSubscription.startDate
+                                  )}`}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Confirmation modals */}
             {showCancelConfirm && (
                 <div className={styles.modalOverlay}>
                     <div className={styles.modalContent}>
                         <h3>Отменить подписку?</h3>
                         <p>
-                            После отмены подписки вы сможете пользоваться всеми возможностями до{' '}
-                            {endDate.toLocaleDateString('ru-RU')}. Подписку можно будет возобновить в любое время.
+                            После отмены подписки вы сможете пользоваться всеми возможностями до {formatDate(endDate)}.
+                            Подписку можно будет возобновить в любое время.
                         </p>
                         <div className={styles.modalActions}>
                             <button
@@ -478,11 +761,11 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
                 </div>
             )}
 
-            {showPlanChangeModal && subscription?.plan && (
+            {showPlanChangeModal && activeSubscription?.plan && (
                 <PlanChangeModal
                     isOpen={showPlanChangeModal}
                     onClose={() => setShowPlanChangeModal(false)}
-                    currentPlan={subscription.plan}
+                    currentPlan={activeSubscription.plan}
                     availablePlans={availablePlans}
                     onPlanChange={handlePlanChange}
                     loading={isChangingPlan}

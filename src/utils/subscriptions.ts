@@ -350,7 +350,7 @@ export async function extendSubscription(subscriptionId: string, paymentId: stri
         // Calculate new end date from current end date (not from now)
         const currentEndDate = subscription.endDate;
         const newEndDate = calculateSubscriptionEndDate(currentEndDate, subscription.plan.interval);
-        const nextBillingDate = calculateNextBillingDate(newEndDate, subscription.plan.interval);
+        const nextBillingDate = calculateNextBillingDate(new Date(), subscription.plan.interval);
 
         await prisma.userSubscription.update({
             where: { id: subscriptionId },
@@ -522,7 +522,7 @@ async function schedulePlanChange(
             where: {
                 userId: currentSubscription.userId,
                 planId: newPlan.id,
-                status: SubscriptionStatus.pending,
+                status: SubscriptionStatus.scheduled,
             },
         });
 
@@ -532,7 +532,7 @@ async function schedulePlanChange(
                 data: {
                     userId: currentSubscription.userId,
                     planId: newPlan.id,
-                    status: SubscriptionStatus.pending,
+                    status: SubscriptionStatus.scheduled,
                     startDate: currentSubscription.endDate,
                     endDate: calculateSubscriptionEndDate(currentSubscription.endDate, newPlan.interval),
                     nextBillingDate: calculateNextBillingDate(currentSubscription.endDate, newPlan.interval),
@@ -638,6 +638,101 @@ export async function resumeSubscription(
         };
     } catch (error) {
         console.error('Error resuming subscription:', error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error',
+        };
+    }
+}
+
+/**
+ * Create a new subscription for a user
+ */
+export async function createSubscription(
+    userId: string,
+    planId: string
+): Promise<{ success: boolean; subscriptionId?: string; paymentData?: any; error?: string }> {
+    try {
+        // Get the plan
+        const plan = await prisma.subscriptionPlan.findUnique({
+            where: { id: planId, isActive: true },
+        });
+
+        if (!plan) {
+            return {
+                success: false,
+                error: 'Subscription plan not found',
+            };
+        }
+
+        // Create subscription record
+        const subscription = await prisma.userSubscription.create({
+            data: {
+                userId,
+                planId: plan.id,
+                status: SubscriptionStatus.pending,
+                startDate: new Date(),
+                endDate: new Date(), // Will be updated after successful payment
+                nextBillingDate: new Date(), // Will be updated after successful payment
+            },
+        });
+
+        // Create initial payment record
+        await prisma.subscriptionPayment.create({
+            data: {
+                subscriptionId: subscription.id,
+                amount: plan.price,
+                currency: plan.currency,
+                status: 'pending',
+                billingStart: new Date(),
+            },
+        });
+
+        // Get CloudPayments recurrent configuration
+        const recurrentConfig = getCloudPaymentsInterval(plan.interval);
+
+        // Calculate start date for recurrent payments (next billing cycle)
+        const nextBillingDate = calculateSubscriptionEndDate(new Date(), plan.interval);
+
+        // Generate receipt for CloudPayments
+        const receipt = generateSubscriptionReceipt(plan, undefined);
+
+        const paymentData = {
+            subscriptionId: subscription.id,
+            amount: plan.price.toString(),
+            currency: plan.currency,
+            description: `Подписка ${plan.name}`,
+            cloudpaymentsData: {
+                publicId: process.env.CLOUDPAYMENTS_PUBLIC_ID!,
+                description: `Подписка ${plan.name}`,
+                amount: plan.price,
+                currency: plan.currency,
+                invoiceId: subscription.id,
+                accountId: userId,
+                skin: 'modern',
+                data: {
+                    subscriptionId: subscription.id,
+                    planId: plan.id,
+                    userId: userId,
+                },
+            },
+            recurrentData: {
+                period: recurrentConfig.period,
+                interval: recurrentConfig.interval,
+                amount: plan.price,
+                startDate: nextBillingDate.toISOString(),
+                maxPeriods: undefined,
+                receipt,
+            },
+        };
+
+        return {
+            success: true,
+            subscriptionId: subscription.id,
+            paymentData,
+        };
+    } catch (error) {
+        console.error('Error creating subscription:', error);
         return {
             success: false,
             error: error instanceof Error ? error.message : 'Unknown error',
