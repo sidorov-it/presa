@@ -5,7 +5,6 @@ import { prisma } from '@/lib/prisma';
 import { SubscriptionStatus } from '@prisma/client';
 import { CreateSubscriptionRequest, CreateSubscriptionResponse } from '@/types/subscriptions';
 import {
-    hasActiveSubscription,
     getCloudPaymentsInterval,
     generateSubscriptionReceipt,
     calculateSubscriptionEndDate,
@@ -26,11 +25,6 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Plan ID is required' }, { status: 400 });
         }
 
-        // Check if user already has an active subscription
-        const hasActive = await hasActiveSubscription(session.user.id);
-        if (hasActive) {
-            return NextResponse.json({ error: 'User already has an active subscription' }, { status: 409 });
-        }
 
         // Get subscription plan
         const plan = await prisma.subscriptionPlan.findUnique({
@@ -48,8 +42,7 @@ export async function POST(request: NextRequest) {
                 planId: plan.id,
                 status: SubscriptionStatus.pending,
                 startDate: new Date(),
-                endDate: new Date(), // Will be updated after successful payment
-                nextBillingDate: new Date(), // Will be updated after successful payment
+                endDate: calculateSubscriptionEndDate(new Date(), plan.interval),
             },
         });
 
@@ -67,8 +60,6 @@ export async function POST(request: NextRequest) {
 
         // Get CloudPayments recurrent configuration
         const recurrentConfig = getCloudPaymentsInterval(plan.interval);
-
-        // Calculate start date for recurrent payments (next billing cycle)
         const nextBillingDate = calculateSubscriptionEndDate(new Date(), plan.interval);
 
         // Generate receipt for CloudPayments
@@ -81,7 +72,6 @@ export async function POST(request: NextRequest) {
             planPrice: plan.price,
             planInterval: plan.interval,
             recurrentConfig,
-            nextBillingDate: nextBillingDate.toISOString(),
             userId: session.user.id,
             userEmail: session.user.email,
         });

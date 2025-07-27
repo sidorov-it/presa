@@ -43,7 +43,6 @@ export async function getUserSubscriptions(userId: string) {
                         SubscriptionStatus.active,
                         SubscriptionStatus.cancelled,
                         SubscriptionStatus.expired,
-                        SubscriptionStatus.scheduled,
                     ],
                 },
             },
@@ -481,7 +480,7 @@ async function changePlanImmediately(
             data: {
                 userId: currentSubscription.userId,
                 planId: newPlan.id,
-                status: SubscriptionStatus.scheduled,
+                status: SubscriptionStatus.pending,
                 startDate: new Date(),
                 endDate: calculateSubscriptionEndDate(new Date(), newPlan.interval),
                 nextBillingDate: calculateNextBillingDate(new Date(), newPlan.interval),
@@ -522,7 +521,7 @@ async function schedulePlanChange(
             where: {
                 userId: currentSubscription.userId,
                 planId: newPlan.id,
-                status: SubscriptionStatus.scheduled,
+                status: SubscriptionStatus.pending,
             },
         });
 
@@ -532,7 +531,7 @@ async function schedulePlanChange(
                 data: {
                     userId: currentSubscription.userId,
                     planId: newPlan.id,
-                    status: SubscriptionStatus.scheduled,
+                    status: SubscriptionStatus.pending,
                     startDate: currentSubscription.endDate,
                     endDate: calculateSubscriptionEndDate(currentSubscription.endDate, newPlan.interval),
                     nextBillingDate: calculateNextBillingDate(currentSubscription.endDate, newPlan.interval),

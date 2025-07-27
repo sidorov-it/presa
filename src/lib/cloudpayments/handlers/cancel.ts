@@ -44,16 +44,7 @@ async function handleSubscriptionCancellation(webhookData: CloudPaymentsWebhookD
         where: { id: subscription.id },
         data: {
             status: SubscriptionStatus.cancelled,
-            cancelledAt: new Date(),
-            cancelReason: 'Cancelled via CloudPayments webhook',
-            metadata: {
-                ...(subscription.metadata as Record<string, any> | undefined),
-                cloudpaymentsStatus: webhookData.Status,
-                cloudpaymentsDateTime: webhookData.DateTime,
-                cloudpaymentsTestMode: webhookData.TestMode === '1',
-                cancellationSource: 'cloudpayments_webhook',
-                ...paymentData,
-            },
+            cloudpaymentsId: webhookData.SubscriptionId,
         },
     });
 

@@ -3,12 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { parseWebhookPayload, CloudPaymentsWebhookData } from '../parseWebhookPayload';
 import { PurchaseStatus, TransactionType, SubscriptionStatus } from '@prisma/client';
 import { addTokens } from '@/utils/tokens';
-import {
-    activateSubscription,
-    calculateNextBillingDate,
-    performSubscriptionHealthCheck,
-    extendSubscription,
-} from '@/utils/subscriptions';
+import { calculateSubscriptionEndDate } from '@/utils/subscriptions';
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
     try {
@@ -111,274 +106,60 @@ async function handleTokenPurchase(webhookData: CloudPaymentsWebhookData, paymen
 }
 
 async function handleSubscriptionPayment(webhookData: CloudPaymentsWebhookData, paymentData: Record<string, any>) {
-    // Validate required fields to prevent Prisma errors
     if (!webhookData.SubscriptionId || !webhookData.AccountId) {
-        console.warn('Invalid subscription webhook data: missing SubscriptionId or AccountId');
+        console.warn('Invalid subscription webhook data');
         return;
     }
 
-    let subscription = await prisma.userSubscription.findFirst({
+    const existing = await prisma.userSubscription.findFirst({
         where: {
             userId: webhookData.AccountId,
-            cloudpaymentsId: webhookData.SubscriptionId,
+            id: paymentData.subscriptionId,
         },
         include: { plan: true },
     });
 
-    if (!subscription) {
-        subscription = await prisma.userSubscription.findFirst({
-            where: {
-                id: paymentData.subscriptionId,
-                userId: webhookData.AccountId,
-            },
-            include: { plan: true },
-        });
+    if (!existing) {
+        console.warn('Subscription not found for payment');
+        return;
     }
 
-    if (!subscription) {
-        throw new Error('Subscription not found');
-    }
+    const endDate = calculateSubscriptionEndDate(new Date(), existing.plan.interval);
 
-    if (!subscription.cloudpaymentsId && webhookData.SubscriptionId) {
+    if (existing.status === SubscriptionStatus.pending) {
         await prisma.userSubscription.update({
-            where: { id: subscription.id },
-            data: { cloudpaymentsId: webhookData.SubscriptionId },
-        });
-    }
-
-    const dataForDb = {
-        amount: parseFloat(webhookData.Amount),
-        currency: webhookData.Currency,
-        cloudpaymentsId: webhookData.SubscriptionId,
-        cloudpaymentsTransactionId: webhookData.TransactionId,
-        metadata: {
-            cloudpaymentsStatus: webhookData.Status,
-            cloudpaymentsDateTime: webhookData.DateTime,
-            cloudpaymentsTestMode: webhookData.TestMode === '1',
-            subscriptionId: webhookData.SubscriptionId,
-            recurrenceType: webhookData.RecurrenceType,
-            ...paymentData,
-        },
-    };
-
-    if (webhookData.Status === 'Completed') {
-        // Проверяем, не был ли уже обработан этот платеж
-        const existingPayment = await prisma.subscriptionPayment.findFirst({
-            where: {
-                cloudpaymentsTransactionId: webhookData.TransactionId,
-                status: PurchaseStatus.completed,
-            },
-        });
-
-        if (existingPayment) {
-            console.log(`Payment ${webhookData.TransactionId} already processed, skipping duplicate`);
-            return;
-        }
-
-        // Определяем, является ли это продлением существующей активной подписки
-        const isRenewal =
-            subscription.cloudpaymentsId !== null &&
-            (subscription.status === SubscriptionStatus.active || subscription.status === SubscriptionStatus.expired);
-
-        console.log(
-            `Processing subscription payment: ${isRenewal ? 'RENEWAL' : 'NEW'} for subscription ${subscription.id}, user ${webhookData.AccountId}`
-        );
-
-        // Рассчитываем даты биллинга
-        let billingStart: Date;
-        let billingEnd: Date;
-
-        if (isRenewal) {
-            // Для продления: новый период начинается с даты окончания текущей подписки
-            const currentDate = new Date();
-
-            let maxDate;
-
-            if (currentDate > subscription.endDate) {
-                maxDate = currentDate;
-            } else {
-                maxDate = subscription.endDate;
-            }
-
-            billingStart = maxDate;
-            billingEnd = calculateNextBillingDate(billingStart, subscription.plan.interval);
-        } else {
-            // Для новой подписки: период начинается с текущей даты
-            billingStart = new Date();
-            billingEnd = calculateNextBillingDate(billingStart, subscription.plan.interval);
-        }
-
-        // Retry logic for transaction conflicts
-        let retryCount = 0;
-        const maxRetries = 3;
-
-        while (retryCount < maxRetries) {
-            try {
-                let payment;
-
-                if (isRenewal) {
-                    // Для продления: создаем новую запись платежа
-                    payment = await prisma.subscriptionPayment.create({
-                        data: {
-                            subscriptionId: subscription.id,
-                            billingStart,
-                            billingEnd,
-                            status: PurchaseStatus.completed,
-                            completedAt: new Date(),
-                            ...dataForDb,
-                        },
-                    });
-                    console.log(
-                        `Created renewal payment record ${payment.id} for subscription ${subscription.id}, billing period: ${billingStart.toISOString()} - ${billingEnd.toISOString()}`
-                    );
-                } else {
-                    // Для новой подписки: ищем существующую запись со статусом pending и обновляем её
-                    const pendingPayment = await prisma.subscriptionPayment.findFirst({
-                        where: {
-                            subscriptionId: subscription.id,
-                            status: 'pending',
-                        },
-                    });
-
-                    if (pendingPayment) {
-                        payment = await prisma.subscriptionPayment.update({
-                            where: { id: pendingPayment.id },
-                            data: {
-                                billingStart,
-                                billingEnd,
-                                status: PurchaseStatus.completed,
-                                completedAt: new Date(),
-                                cloudpaymentsTransactionId: webhookData.TransactionId,
-                                ...dataForDb,
-                            },
-                        });
-                        console.log(
-                            `Updated pending payment record ${payment.id} for subscription ${subscription.id}, billing period: ${billingStart.toISOString()} - ${billingEnd.toISOString()}`
-                        );
-                    } else {
-                        // Если pending записи нет, создаем новую (fallback)
-                        payment = await prisma.subscriptionPayment.create({
-                            data: {
-                                subscriptionId: subscription.id,
-                                billingStart,
-                                billingEnd,
-                                status: PurchaseStatus.completed,
-                                completedAt: new Date(),
-                                ...dataForDb,
-                            },
-                        });
-                        console.log(
-                            `Created new payment record ${payment.id} for subscription ${subscription.id} (no pending found), billing period: ${billingStart.toISOString()} - ${billingEnd.toISOString()}`
-                        );
-                    }
-                }
-
-                let subscriptionUpdated = false;
-
-                if (subscription.status === SubscriptionStatus.pending) {
-                    // Check if this is a scheduled plan change
-                    const isScheduledChange = subscription.startDate > new Date();
-
-                    if (isScheduledChange) {
-                        // This is a scheduled plan change - activate the new plan
-                        console.log(`Activating scheduled plan change for subscription ${subscription.id}`);
-                        subscriptionUpdated = await activateSubscription(subscription.id, webhookData.SubscriptionId);
-
-                        // Cancel the old subscription if it exists
-                        const oldSubscription = await prisma.userSubscription.findFirst({
-                            where: {
-                                userId: subscription.userId,
-                                status: SubscriptionStatus.active,
-                                endDate: {
-                                    lte: subscription.startDate,
-                                },
-                            },
-                        });
-
-                        if (oldSubscription) {
-                            await prisma.userSubscription.update({
-                                where: { id: oldSubscription.id },
-                                data: {
-                                    status: SubscriptionStatus.cancelled,
-                                    cancelledAt: new Date(),
-                                    cancelReason: 'Replaced by scheduled plan change',
-                                },
-                            });
-                            console.log(
-                                `Cancelled old subscription ${oldSubscription.id} due to scheduled plan change`
-                            );
-                        }
-                    } else {
-                        // Regular new subscription activation
-                        subscriptionUpdated = await activateSubscription(subscription.id, webhookData.SubscriptionId);
-                    }
-                } else {
-                    // Продлеваем существующую подписку
-                    subscriptionUpdated = await extendSubscription(subscription.id, payment.id);
-                }
-
-                // Update subscription metadata with payment information
-                await prisma.userSubscription.update({
-                    where: { id: subscription.id },
-                    data: {
-                        metadata: {
-                            ...(subscription.metadata as Record<string, any> | undefined),
-                            cloudpaymentsStatus: webhookData.Status,
-                            cloudpaymentsTransactionId: webhookData.TransactionId,
-                            cloudpaymentsTestMode: webhookData.TestMode === '1',
-                            lastPaymentDate: new Date().toISOString(),
-                            isRenewal,
-                            ...paymentData,
-                        },
-                    },
-                });
-
-                if (subscriptionUpdated) {
-                    // Perform health check with timeout to prevent hanging
-                    try {
-                        const healthCheckPromise = performSubscriptionHealthCheck(subscription.userId);
-                        const timeoutPromise = new Promise((_, reject) =>
-                            setTimeout(() => reject(new Error('Health check timeout')), 5000)
-                        );
-                        await Promise.race([healthCheckPromise, timeoutPromise]);
-                    } catch (error) {
-                        console.warn('Subscription health check failed or timed out:', error);
-                        // Don't fail the webhook processing if health check fails
-                    }
-                }
-                break; // Success, exit retry loop
-            } catch (error: any) {
-                retryCount++;
-                if (error.code === 'P2034' && retryCount < maxRetries) {
-                    // Transaction conflict, wait and retry
-                    console.warn(
-                        `Transaction conflict for subscription ${subscription.id}, retry ${retryCount}/${maxRetries}`
-                    );
-                    await new Promise(resolve => setTimeout(resolve, 100 * retryCount)); // Exponential backoff
-                } else {
-                    // Other error or max retries reached
-                    throw error;
-                }
-            }
-        }
-    } else if (webhookData.Status === 'Failed' || webhookData.Status === 'Cancelled') {
-        // Создаем запись о неудачном платеже
-        await prisma.subscriptionPayment.create({
+            where: { id: existing.id },
             data: {
-                subscriptionId: subscription.id,
-                billingStart: new Date(),
-                billingEnd: new Date(),
-                status: webhookData.Status === 'Failed' ? PurchaseStatus.failed : PurchaseStatus.canceled,
-                completedAt: new Date(),
-                ...dataForDb,
+                status: SubscriptionStatus.active,
+                cloudpaymentsId: webhookData.SubscriptionId,
+                startDate: new Date(),
+                endDate,
             },
         });
-
-        if (subscription.status === SubscriptionStatus.pending) {
-            await prisma.userSubscription.update({
-                where: { id: subscription.id },
-                data: { status: SubscriptionStatus.failed },
-            });
-        }
+    } else {
+        await prisma.userSubscription.create({
+            data: {
+                userId: existing.userId,
+                planId: existing.planId,
+                status: SubscriptionStatus.active,
+                startDate: new Date(),
+                endDate,
+                cloudpaymentsId: webhookData.SubscriptionId,
+            },
+        });
     }
+
+    await prisma.subscriptionPayment.create({
+        data: {
+            subscriptionId: existing.id,
+            amount: parseFloat(webhookData.Amount),
+            currency: webhookData.Currency,
+            status: PurchaseStatus.completed,
+            cloudpaymentsId: webhookData.SubscriptionId,
+            cloudpaymentsTransactionId: webhookData.TransactionId,
+            billingStart: new Date(),
+            billingEnd: endDate,
+            completedAt: new Date(),
+        },
+    });
 }

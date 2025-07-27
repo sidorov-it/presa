@@ -28,16 +28,9 @@ export interface UserSubscription {
     status: SubscriptionStatus;
     startDate: Date;
     endDate: Date;
-    nextBillingDate?: Date;
     cloudpaymentsId?: string;
-    lastPaymentId?: string;
-    cancelledAt?: Date;
-    cancelReason?: string;
-    nextPlanId?: string; // References SubscriptionPlan for future plan change
-    nextPlanStartDate?: Date; // When the new plan should start
     createdAt: Date;
     updatedAt: Date;
-    metadata?: any; // JSON field from Prisma
 }
 
 export interface SubscriptionPayment {

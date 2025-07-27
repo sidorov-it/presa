@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { getUserSubscriptions } from '@/utils/subscriptions';
+import { prisma } from '@/lib/prisma';
 import { SubscriptionStatus } from '@prisma/client';
 
 export async function GET() {
@@ -11,41 +11,24 @@ export async function GET() {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Get user's active subscription
-        const subscriptions = await getUserSubscriptions(session.user.id);
+        let subscription = await prisma.userSubscription.findFirst({
+            where: {
+                userId: session.user.id,
+                status: { in: [SubscriptionStatus.active, SubscriptionStatus.cancelled] },
+            },
+            include: { plan: true },
+            orderBy: { createdAt: 'desc' },
+        });
 
-        const activeSubscription = subscriptions?.find(
-            subscription => subscription.status === SubscriptionStatus.active
-        );
-
-        let lastActiveSubscription;
-
-        if (activeSubscription) {
-            lastActiveSubscription = activeSubscription;
-        } else {
-            lastActiveSubscription = subscriptions
-                ?.filter(
-                    sub =>
-                        sub.status === SubscriptionStatus.active ||
-                        sub.status === SubscriptionStatus.expired ||
-                        sub.status === SubscriptionStatus.cancelled
-                )
-                .sort((a, b) => {
-                    return new Date(b.endDate).getTime() - new Date(a.endDate).getTime();
-                })[0];
+        if (subscription && subscription.endDate < new Date()) {
+            subscription = await prisma.userSubscription.update({
+                where: { id: subscription.id },
+                data: { status: SubscriptionStatus.expired },
+                include: { plan: true },
+            });
         }
 
-        const nextSubscription = subscriptions?.find(
-            subscription => subscription.status === SubscriptionStatus.scheduled
-        );
-
-        return NextResponse.json({
-            success: true,
-            activeSubscription,
-            lastActiveSubscription,
-            nextSubscription,
-            // features,
-        });
+        return NextResponse.json({ success: true, subscription });
     } catch (error) {
         console.error('Error fetching subscription status:', error);
         return NextResponse.json(

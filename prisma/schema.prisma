@@ -439,7 +439,6 @@ enum SubscriptionStatus {
   expired
   pending
   failed
-  scheduled
 }
 
 model SubscriptionPlan {
@@ -463,39 +462,23 @@ model SubscriptionPlan {
 }
 
 model UserSubscription {
-  id               String             @id @default(auto()) @map("_id") @db.ObjectId
-  userId           String             @db.ObjectId
-  user             User               @relation(fields: [userId], references: [id])
-  planId           String             @db.ObjectId
-  plan             SubscriptionPlan   @relation(fields: [planId], references: [id])
-  
-  // Subscription details
-  status           SubscriptionStatus @default(pending)
-  startDate        DateTime
-  endDate          DateTime
-  nextBillingDate  DateTime?
-  
-  // Payment tracking
-  cloudpaymentsId  String?           // CloudPayments subscription ID
-  lastPaymentId    String?           // Reference to last successful payment
-  
-  // Cancellation tracking
-  cancelledAt      DateTime?
-  cancelReason     String?
-  
-  // Plan change tracking
-  nextPlanId       String?           @db.ObjectId // References SubscriptionPlan for future plan change
-  nextPlanStartDate DateTime?        // When the new plan should start
-  
-  // Metadata for additional data
-  metadata         Json?
-  
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  
-  payments         SubscriptionPayment[]
-  
-  @@unique([userId, planId, status]) // User can have only one active subscription per plan
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  planId          String
+  plan            SubscriptionPlan @relation(fields: [planId], references: [id])
+
+  status          SubscriptionStatus
+  startDate       DateTime
+  endDate         DateTime
+  cloudpaymentsId String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  payments        SubscriptionPayment[]
+
+  @@index([userId])
 }
 
 model SubscriptionPayment {
