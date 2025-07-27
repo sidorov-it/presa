@@ -439,6 +439,7 @@ enum SubscriptionStatus {
   expired
   pending
   failed
+  scheduled
 }
 
 model SubscriptionPlan {
@@ -481,6 +482,10 @@ model UserSubscription {
   // Cancellation tracking
   cancelledAt      DateTime?
   cancelReason     String?
+  
+  // Plan change tracking
+  nextPlanId       String?           @db.ObjectId // References SubscriptionPlan for future plan change
+  nextPlanStartDate DateTime?        // When the new plan should start
   
   // Metadata for additional data
   metadata         Json?

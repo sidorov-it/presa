@@ -6,53 +6,14 @@ import { useSession } from 'next-auth/react';
 import { useTokens } from '@/hooks/useTokens';
 import { useSubscriptions } from '@/hooks/useSubscriptions';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
-import { TokenPackage } from '@/types/tokens';
 import { FaCoins, FaCheckCircle, FaTimesCircle, FaChevronDown, FaChevronUp, FaCrown } from 'react-icons/fa';
 import { PaymentStatus } from '@/components/tokens/PaymentStatus';
 import { Heading } from '@/components/ui/heading';
 import { SubscriptionCard } from '@/components/subscriptions/SubscriptionCard';
+import { SubscriptionFeatures } from '@/components/subscriptions/SubscriptionFeatures';
 import { SubscriptionManagement } from '@/components/subscriptions/SubscriptionManagement';
+import { TokenPackageCard } from '@/components/tokens/TokenPackageCard/TokenPackageCard';
 import styles from './page.module.css';
-import { CloudPaymentsPaymentButton } from '@/components/tokens/CloudPaymentsPaymentButton';
-
-interface TokenPackageCardProps {
-    package: TokenPackage;
-    onPurchase: (purchaseId: string) => void;
-    isLoading: boolean;
-}
-
-const TokenPackageCard = ({ package: pkg, onPurchase, isLoading }: TokenPackageCardProps) => {
-    return (
-        <div className={`${styles.packageCard} ${pkg.isPopular ? styles.packageCardPopular : ''}`}>
-            {pkg.isPopular && <div className={styles.popularBadge}>Популярный</div>}
-
-            <div className={styles.packageContent}>
-                <h3 className={styles.packageName}>{pkg.name}</h3>
-                {pkg.description && <p className={styles.packageDescription}>{pkg.description}</p>}
-
-                <div className={styles.packageTokens}>
-                    <div className={styles.packageTokensAmount}>
-                        <FaCoins className={styles.packageTokensIcon} />
-                        <span className={styles.packageTokensNumber}>{formatTokenAmount(pkg.tokens)}</span>
-                    </div>
-                </div>
-
-                <div className={styles.packagePrice}>{pkg.price} руб.</div>
-
-                <CloudPaymentsPaymentButton
-                    packageId={pkg.id}
-                    onSuccess={purchaseId => onPurchase(purchaseId)}
-                    onError={error => console.error('Payment error:', error)}
-                    isLoading={isLoading}
-                />
-
-                <div className={styles.paymentInfo}>
-                    <small>Безопасная оплата картой</small>
-                </div>
-            </div>
-        </div>
-    );
-};
 
 const Tokens = () => {
     const router = useRouter();
@@ -61,7 +22,9 @@ const Tokens = () => {
     const { balance, loading: tokensLoading, packages, refreshBalance } = useTokens();
     const {
         plans,
-        lastUserSubscription,
+        activeSubscription,
+        lastActiveSubscription,
+        nextSubscription,
         hasActiveSubscription,
         loading: subscriptionLoading,
         createSubscription,
@@ -205,6 +168,9 @@ const Tokens = () => {
         );
     }
 
+    // Determine if we should show subscription plans
+    const shouldShowSubscriptionPlans = !hasActiveSubscription && plans.length > 0;
+
     return (
         <div className={styles.container}>
             <div className={styles.content}>
@@ -241,14 +207,17 @@ const Tokens = () => {
                     </div>
                 )}
 
-                {/* Subscription Status Management */}
-                {(hasActiveSubscription || lastUserSubscription) && (
+                {/* Subscription Status Management - Show for any subscription state */}
+                {activeSubscription && (
                     <div className={styles.subscriptionManagementSection}>
                         <SubscriptionManagement
-                            subscription={lastUserSubscription || null}
+                            activeSubscription={activeSubscription}
+                            lastSubscription={lastActiveSubscription}
+                            nextSubscription={nextSubscription}
                             loading={subscriptionLoading}
                             error={null}
                             refreshSubscriptionStatus={refreshSubscriptionStatus}
+                            availablePlans={plans}
                         />
                     </div>
                 )}
@@ -272,7 +241,7 @@ const Tokens = () => {
                 </div>
 
                 {/* Subscription Plans Section - Only show if user doesn't have active subscription */}
-                {!hasActiveSubscription && plans.length > 0 && (
+                {shouldShowSubscriptionPlans && (
                     <div className={styles.subscriptionsSection}>
                         <div className={styles.sectionHeader}>
                             <h2 className={styles.sectionTitle}>
@@ -284,6 +253,7 @@ const Tokens = () => {
                         <p className={styles.sectionDescription}>
                             Подписка дает доступ к расширенным возможностям и снимает лимиты
                         </p>
+                        <SubscriptionFeatures />
                         <div className={styles.subscriptionsGrid}>
                             {plans.map(plan => (
                                 <SubscriptionCard
