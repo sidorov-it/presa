@@ -7,6 +7,7 @@ import {
     FaInfoCircle,
     FaExclamationTriangle,
 } from 'react-icons/fa';
+import { SubscriptionFeatures as FeaturesBlock } from '@/components/subscriptions/SubscriptionFeatures';
 import { SubscriptionStatus, UserSubscription } from '@prisma/client';
 import styles from './SubscriptionManagement.module.css';
 
@@ -311,31 +312,10 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
 
                 {/* Show features only for active subscriptions */}
                 {subscription.status === SubscriptionStatus.active && (
-                    <div className={styles.subscriptionFeatures}>
-                        <h4>Ваши возможности:</h4>
-                        <ul className={styles.featuresList}>
-                            <li>
-                                <FaCheckCircle className={styles.featureIcon} />
-                                До 20 слайдов в презентации
-                            </li>
-                            <li>
-                                <FaCheckCircle className={styles.featureIcon} />
-                                Экспорт без водяного знака
-                            </li>
-                            <li>
-                                <FaCheckCircle className={styles.featureIcon} />
-                                Увеличенный лимит загрузки документов (50 МБ)
-                            </li>
-                            <li>
-                                <FaCheckCircle className={styles.featureIcon} />
-                                Приоритетная обработка AI-запросов
-                            </li>
-                            <li>
-                                <FaCheckCircle className={styles.featureIcon} />
-                                Все возможности экспорта
-                            </li>
-                        </ul>
-                    </div>
+                    <FeaturesBlock
+                        className={styles.subscriptionFeatures}
+                        title="Ваши возможности:"
+                    />
                 )}
 
                 <div className={styles.subscriptionActions}>
