@@ -11,6 +11,7 @@ import { FaCoins, FaCheckCircle, FaTimesCircle, FaChevronDown, FaChevronUp, FaCr
 import { PaymentStatus } from '@/components/tokens/PaymentStatus';
 import { Heading } from '@/components/ui/heading';
 import { SubscriptionCard } from '@/components/subscriptions/SubscriptionCard';
+import { SubscriptionFeatures } from '@/components/subscriptions/SubscriptionFeatures';
 import { SubscriptionManagement } from '@/components/subscriptions/SubscriptionManagement';
 import styles from './page.module.css';
 import { CloudPaymentsPaymentButton } from '@/components/tokens/CloudPaymentsPaymentButton';
@@ -284,6 +285,7 @@ const Tokens = () => {
                         <p className={styles.sectionDescription}>
                             Подписка дает доступ к расширенным возможностям и снимает лимиты
                         </p>
+                        <SubscriptionFeatures />
                         <div className={styles.subscriptionsGrid}>
                             {plans.map(plan => (
                                 <SubscriptionCard
