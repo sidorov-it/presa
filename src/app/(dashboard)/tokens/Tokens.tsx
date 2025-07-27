@@ -241,38 +241,39 @@ const Tokens = () => {
                     </div>
                 )}
 
-                {/* Subscription Status Management */}
-                {(hasActiveSubscription || lastUserSubscription) && (
-                    <div className={styles.subscriptionManagementSection}>
-                        <SubscriptionManagement
-                            subscription={lastUserSubscription || null}
-                            loading={subscriptionLoading}
-                            error={null}
-                            refreshSubscriptionStatus={refreshSubscriptionStatus}
-                        />
-                    </div>
-                )}
-
-                {/* Current Token Balance */}
-                <div className={styles.balanceCard}>
-                    <div className={styles.balanceContent}>
-                        <div className={styles.balanceLeft}>
-                            <h2 className={styles.balanceTitle}>Текущий баланс токенов</h2>
-                            <div className={styles.balanceAmount}>
-                                <FaCoins className={styles.balanceIcon} />
-                                <span className={styles.balanceNumber}>{formatTokenAmount(balance)}</span>
-                                <span className={styles.balanceUnit}>токенов</span>
-                            </div>
+                {/* Subscription status and balance */}
+                <div className={styles.statusGrid}>
+                    {(hasActiveSubscription || lastUserSubscription) && (
+                        <div className={styles.subscriptionManagementSection}>
+                            <SubscriptionManagement
+                                subscription={lastUserSubscription || null}
+                                loading={subscriptionLoading}
+                                error={null}
+                                refreshSubscriptionStatus={refreshSubscriptionStatus}
+                            />
                         </div>
-                        <div className={styles.balanceRight}>
-                            <p className={styles.usageLabel}>Примерное использование:</p>
-                            <p className={styles.usageAmount}>~{Math.floor(balance / 5)} слайдов</p>
+                    )}
+
+                    <div className={styles.balanceCard}>
+                        <div className={styles.balanceContent}>
+                            <div className={styles.balanceLeft}>
+                                <h2 className={styles.balanceTitle}>Текущий баланс токенов</h2>
+                                <div className={styles.balanceAmount}>
+                                    <FaCoins className={styles.balanceIcon} />
+                                    <span className={styles.balanceNumber}>{formatTokenAmount(balance)}</span>
+                                    <span className={styles.balanceUnit}>токенов</span>
+                                </div>
+                            </div>
+                            <div className={styles.balanceRight}>
+                                <p className={styles.usageLabel}>Примерное использование:</p>
+                                <p className={styles.usageAmount}>~{Math.floor(balance / 5)} слайдов</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Subscription Plans Section - Only show if user doesn't have active subscription */}
-                {!hasActiveSubscription && plans.length > 0 && (
+                {/* Subscription Plans Section */}
+                {plans.length > 0 && (
                     <div className={styles.subscriptionsSection}>
                         <div className={styles.sectionHeader}>
                             <h2 className={styles.sectionTitle}>
@@ -291,7 +292,7 @@ const Tokens = () => {
                                     plan={plan}
                                     onSubscribe={handleSubscriptionPurchase}
                                     isLoading={subscriptionLoading}
-                                    isActive={false}
+                                    isActive={hasActiveSubscription && lastUserSubscription?.planId === plan.id}
                                 />
                             ))}
                         </div>

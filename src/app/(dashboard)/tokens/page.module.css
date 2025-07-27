@@ -10,12 +10,23 @@
     /* Styling is now handled by the Heading component */
 }
 
+.statusGrid {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+    .statusGrid {
+        grid-template-columns: 2fr 1fr;
+    }
+}
+
 .balanceCard {
     background-color: var(--chakra-colors-white);
     border-radius: var(--chakra-radii-lg);
     box-shadow: var(--chakra-shadows-sm);
-    padding: 1.5rem;
-    margin-bottom: 2rem;
+    padding: 1rem 1.25rem;
 }
 
 .balanceContent {
@@ -562,7 +573,7 @@
 
 /* Subscription Management Section */
 .subscriptionManagementSection {
-    margin-bottom: 32px;
+    margin-bottom: 0;
 }
 
 /* Subscriptions Section */
@@ -611,7 +622,11 @@
 
 /* Update existing styles */
 .balanceCard {
-    margin-bottom: 32px;
+    margin-bottom: 0;
+}
+.statusGrid .subscriptionManagementSection,
+.statusGrid .balanceCard {
+    margin-bottom: 0;
 }
 
 /* Comparison Grid - already exists, keeping as is */
