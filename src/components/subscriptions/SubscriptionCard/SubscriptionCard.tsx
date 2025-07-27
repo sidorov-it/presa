@@ -34,17 +34,6 @@ const getIntervalDiscount = (interval: string): string | null => {
     }
 };
 
-const getPlanFeatures = (): string[] => {
-    const baseFeatures = [
-        'До 20 слайдов при генерации презентации',
-        'Без водяного знака при экспорте',
-        'Увеличенный лимит размера документов для генерации презентации ИИ',
-        'Приоритетная обработка AI-запросов',
-        'Все возможности экспорта',
-    ];
-
-    return baseFeatures;
-};
 
 export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
     plan,
@@ -60,7 +49,6 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 
     const intervalLabel = getIntervalLabel(plan.interval);
     const discount = getIntervalDiscount(plan.interval);
-    const features = getPlanFeatures();
 
     return (
         <div
@@ -87,19 +75,6 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                 </div>
                 <div className={styles.interval}>{intervalLabel}</div>
             </div>
-
-            <div className={styles.featuresSection}>
-                <h4 className={styles.featuresTitle}>Что включено:</h4>
-                <ul className={styles.featuresList}>
-                    {features.map((feature, index) => (
-                        <li key={index} className={styles.featureItem}>
-                            <FaCheckCircle className={styles.checkIcon} />
-                            <span>{feature}</span>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-
             <div className={styles.actionSection}>
                 {isActive ? (
                     <div className={styles.activeStatus}>
