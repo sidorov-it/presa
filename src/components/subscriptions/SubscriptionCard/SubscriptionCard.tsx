@@ -1,6 +1,7 @@
 import React from 'react';
 import { SubscriptionPlan } from '@/types/subscriptions';
-import { FaCrown, FaCheckCircle } from 'react-icons/fa';
+import { FaCheckCircle, FaCreditCard } from 'react-icons/fa';
+import { Card } from '@/components/ui/Card/Card';
 import styles from './SubscriptionCard.module.css';
 
 interface SubscriptionCardProps {
@@ -23,18 +24,6 @@ const getIntervalLabel = (interval: string): string => {
     }
 };
 
-const getIntervalDiscount = (interval: string): string | null => {
-    switch (interval) {
-        case 'quarterly':
-            return 'Скидка 10%';
-        case 'semiannual':
-            return 'Скидка 20%';
-        default:
-            return null;
-    }
-};
-
-
 export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
     plan,
     onSubscribe,
@@ -48,21 +37,9 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
     };
 
     const intervalLabel = getIntervalLabel(plan.interval);
-    const discount = getIntervalDiscount(plan.interval);
 
     return (
-        <div
-            className={`${styles.subscriptionCard} ${plan.isPopular ? styles.popular : ''} ${isActive ? styles.active : ''}`}
-        >
-            {plan.isPopular && (
-                <div className={styles.popularBadge}>
-                    <FaCrown className={styles.crownIcon} />
-                    Популярный
-                </div>
-            )}
-
-            {discount && <div className={styles.discountBadge}>{discount}</div>}
-
+        <Card isPopular={plan.isPopular} className={`${isActive ? styles.active : ''}`}>
             <div className={styles.cardHeader}>
                 <h3 className={styles.planName}>{plan.name}</h3>
                 {plan.description && <p className={styles.planDescription}>{plan.description}</p>}
@@ -87,10 +64,17 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                         disabled={isLoading}
                         className={`${styles.subscribeButton} ${isLoading ? styles.loading : ''}`}
                     >
-                        {isLoading ? 'Обработка...' : `Подписаться`}
+                        {isLoading ? (
+                            'Обработка...'
+                        ) : (
+                            <div className={styles.subscribeButtonContent}>
+                                <FaCreditCard />
+                                Оформить
+                            </div>
+                        )}
                     </button>
                 )}
             </div>
-        </div>
+        </Card>
     );
 };

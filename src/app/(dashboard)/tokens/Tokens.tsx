@@ -6,54 +6,15 @@ import { useSession } from 'next-auth/react';
 import { useTokens } from '@/hooks/useTokens';
 import { useSubscriptions } from '@/hooks/useSubscriptions';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
-import { TokenPackage } from '@/types/tokens';
 import { FaCoins, FaCheckCircle, FaTimesCircle, FaChevronDown, FaChevronUp, FaCrown } from 'react-icons/fa';
 import { PaymentStatus } from '@/components/tokens/PaymentStatus';
 import { Heading } from '@/components/ui/heading';
 import { SubscriptionCard } from '@/components/subscriptions/SubscriptionCard';
 import { SubscriptionFeatures } from '@/components/subscriptions/SubscriptionFeatures';
 import { SubscriptionManagement } from '@/components/subscriptions/SubscriptionManagement';
+// import { TokenPackageCard } from '@/components/tokens/TokenPackageCard';
 import styles from './page.module.css';
-import { CloudPaymentsPaymentButton } from '@/components/tokens/CloudPaymentsPaymentButton';
-
-interface TokenPackageCardProps {
-    package: TokenPackage;
-    onPurchase: (purchaseId: string) => void;
-    isLoading: boolean;
-}
-
-const TokenPackageCard = ({ package: pkg, onPurchase, isLoading }: TokenPackageCardProps) => {
-    return (
-        <div className={`${styles.packageCard} ${pkg.isPopular ? styles.packageCardPopular : ''}`}>
-            {pkg.isPopular && <div className={styles.popularBadge}>Популярный</div>}
-
-            <div className={styles.packageContent}>
-                <h3 className={styles.packageName}>{pkg.name}</h3>
-                {pkg.description && <p className={styles.packageDescription}>{pkg.description}</p>}
-
-                <div className={styles.packageTokens}>
-                    <div className={styles.packageTokensAmount}>
-                        <FaCoins className={styles.packageTokensIcon} />
-                        <span className={styles.packageTokensNumber}>{formatTokenAmount(pkg.tokens)}</span>
-                    </div>
-                </div>
-
-                <div className={styles.packagePrice}>{pkg.price} руб.</div>
-
-                <CloudPaymentsPaymentButton
-                    packageId={pkg.id}
-                    onSuccess={purchaseId => onPurchase(purchaseId)}
-                    onError={error => console.error('Payment error:', error)}
-                    isLoading={isLoading}
-                />
-
-                <div className={styles.paymentInfo}>
-                    <small>Безопасная оплата картой</small>
-                </div>
-            </div>
-        </div>
-    );
-};
+import { TokenPackageCard } from '@/components/tokens/TokenPackageCard/TokenPackageCard';
 
 const Tokens = () => {
     const router = useRouter();

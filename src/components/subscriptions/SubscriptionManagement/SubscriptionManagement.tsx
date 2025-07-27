@@ -7,7 +7,8 @@ import {
     FaInfoCircle,
     FaExclamationTriangle,
 } from 'react-icons/fa';
-import { SubscriptionStatus, UserSubscription } from '@prisma/client';
+import { SubscriptionStatus } from '@prisma/client';
+import { UserSubscription } from '@/types/subscriptions';
 import styles from './SubscriptionManagement.module.css';
 
 interface SubscriptionManagementProps {
@@ -330,10 +331,10 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
                                 <FaCheckCircle className={styles.featureIcon} />
                                 Приоритетная обработка AI-запросов
                             </li>
-                            <li>
+                            {/* <li>
                                 <FaCheckCircle className={styles.featureIcon} />
                                 Все возможности экспорта
-                            </li>
+                            </li> */}
                         </ul>
                     </div>
                 )}

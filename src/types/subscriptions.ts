@@ -35,6 +35,7 @@ export interface UserSubscription {
     cancelReason?: string;
     createdAt: Date;
     updatedAt: Date;
+    metadata?: any; // JSON field from Prisma
 }
 
 export interface SubscriptionPayment {

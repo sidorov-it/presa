@@ -1,65 +1,9 @@
-.subscriptionCard {
-    position: relative;
-    background: var(--color-surface, #ffffff);
-    border: 2px solid #e2e8f0;
-    border-radius: var(--radius-lg, 12px);
-    padding: 24px;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    min-height: 400px;
-}
-
-.subscriptionCard:hover {
-    border-color: #3b82f6;
-    box-shadow: var(--shadow-lg, 0 10px 25px -3px rgba(0, 0, 0, 0.1));
-    transform: translateY(-2px);
-}
-
-.subscriptionCard.popular {
-    border-color: #f59e0b;
-    position: relative;
-    transform: scale(1.05);
-    z-index: 1;
-}
+/* Убираем стили, которые теперь в универсальном Card компоненте */
+/* .subscriptionCard, .popular, .popularBadge, .crownIcon - теперь в Card.module.css */
 
 .subscriptionCard.active {
     border-color: #10b981;
     background: #f0fdf4;
-}
-
-.popularBadge {
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    color: white;
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-}
-
-.crownIcon {
-    font-size: 10px;
-}
-
-.discountBadge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: #ef4444;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 600;
 }
 
 .cardHeader {
@@ -82,10 +26,8 @@
 
 .priceSection {
     text-align: center;
-    margin-bottom: 24px;
     padding: 16px 0;
     border-top: 1px solid #e5e7eb;
-    border-bottom: 1px solid #e5e7eb;
 }
 
 .price {
@@ -203,17 +145,15 @@
     font-size: 16px;
 }
 
+.subscribeButtonContent {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
-    .subscriptionCard {
-        padding: 20px;
-        min-height: 350px;
-    }
-    
-    .subscriptionCard.popular {
-        transform: none;
-    }
-    
     .planName {
         font-size: 20px;
     }
@@ -221,4 +161,4 @@
     .amount {
         font-size: 28px;
     }
-} 
+}
