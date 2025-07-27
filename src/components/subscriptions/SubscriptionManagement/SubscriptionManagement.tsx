@@ -12,7 +12,7 @@ import styles from './SubscriptionManagement.module.css';
 
 interface SubscriptionManagementProps {
     className?: string;
-    subscription: UserSubscription;
+    subscription: UserSubscription | null;
     loading: boolean;
     error: string | null;
     refreshSubscriptionStatus: () => Promise<void>;
@@ -78,12 +78,6 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
     loading,
     error,
     refreshSubscriptionStatus,
-}: {
-    className?: string;
-    subscription: UserSubscription;
-    loading: boolean;
-    error: string | null;
-    refreshSubscriptionStatus: () => Promise<void>;
 }) => {
     // const { lastUserSubscription: subscription, loading, error, refreshSubscriptionStatus } = useSubscriptions();
     const [isRestarting, setIsRestarting] = useState(false);

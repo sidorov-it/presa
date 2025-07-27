@@ -49,7 +49,9 @@ export const useCloudPaymentsPayment = () => {
                     cp.pay(
                         'charge',
                         {
-                            publicId: process.env.CLOUDPAYMENTS_PUBLIC_ID!, // publicId CloudPayments
+                            // publicId: process.env.CLOUDPAYMENTS_PUBLIC_ID!, // publicId CloudPayments
+                            publicId: 'pk_99c7613d5b4422d18b4784f5ff9e4', // publicId CloudPayments
+
                             description: result.description,
                             amount: Number(result.amount),
                             currency: result.currency.toUpperCase(),
