@@ -16,6 +16,7 @@ interface SubscriptionManagementProps {
     loading: boolean;
     error: string | null;
     refreshSubscriptionStatus: () => Promise<void>;
+    compact?: boolean;
 }
 
 const formatCurrency = (amount: number, currency: string): string => {
@@ -78,6 +79,7 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
     loading,
     error,
     refreshSubscriptionStatus,
+    compact = false,
 }) => {
     // const { lastUserSubscription: subscription, loading, error, refreshSubscriptionStatus } = useSubscriptions();
     const [isRestarting, setIsRestarting] = useState(false);
@@ -213,7 +215,9 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
 
     return (
         <div className={`${styles.container} ${className || ''}`}>
-            <div className={`${styles.subscriptionCard} ${styles[subscription.status]}`}>
+            <div
+                className={`${styles.subscriptionCard} ${styles[subscription.status]} ${compact ? styles.compact : ''}`}
+            >
                 <div className={styles.subscriptionHeader}>
                     <div className={styles.subscriptionTitle}>
                         <FaCrown className={styles.crownIcon} />
@@ -309,8 +313,8 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
                     </div>
                 </div>
 
-                {/* Show features only for active subscriptions */}
-                {subscription.status === SubscriptionStatus.active && (
+                {/* Show features only for active subscriptions in full mode */}
+                {subscription.status === SubscriptionStatus.active && !compact && (
                     <div className={styles.subscriptionFeatures}>
                         <h4>Ваши возможности:</h4>
                         <ul className={styles.featuresList}>
@@ -369,7 +373,7 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
                 </div>
 
                 {/* Warning messages */}
-                {isExpiringSoon && !isExpired && subscription.status === SubscriptionStatus.active && (
+                {!compact && isExpiringSoon && !isExpired && subscription.status === SubscriptionStatus.active && (
                     <div className={styles.expirationWarning}>
                         <FaInfoCircle className={styles.warningIcon} />
                         <span>
@@ -380,7 +384,7 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
                     </div>
                 )}
 
-                {isCancelled && (
+                {!compact && isCancelled && (
                     <div className={styles.cancelledWarning}>
                         <FaExclamationTriangle className={styles.warningIcon} />
                         <span>
@@ -390,7 +394,7 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
                     </div>
                 )}
 
-                {isExpired && (
+                {!compact && isExpired && (
                     <div className={styles.expiredWarning}>
                         <FaTimesCircle className={styles.warningIcon} />
                         <span>

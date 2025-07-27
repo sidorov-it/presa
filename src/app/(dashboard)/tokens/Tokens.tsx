@@ -249,6 +249,7 @@ const Tokens = () => {
                             loading={subscriptionLoading}
                             error={null}
                             refreshSubscriptionStatus={refreshSubscriptionStatus}
+                            compact
                         />
                     </div>
                 )}
@@ -271,8 +272,8 @@ const Tokens = () => {
                     </div>
                 </div>
 
-                {/* Subscription Plans Section - Only show if user doesn't have active subscription */}
-                {!hasActiveSubscription && plans.length > 0 && (
+                {/* Subscription Plans Section */}
+                {plans.length > 0 && (
                     <div className={styles.subscriptionsSection}>
                         <div className={styles.sectionHeader}>
                             <h2 className={styles.sectionTitle}>
@@ -291,7 +292,10 @@ const Tokens = () => {
                                     plan={plan}
                                     onSubscribe={handleSubscriptionPurchase}
                                     isLoading={subscriptionLoading}
-                                    isActive={false}
+                                    isActive={
+                                        hasActiveSubscription &&
+                                        lastUserSubscription?.planId === plan.id
+                                    }
                                 />
                             ))}
                         </div>

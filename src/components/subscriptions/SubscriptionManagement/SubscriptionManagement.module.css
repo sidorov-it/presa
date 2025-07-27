@@ -85,6 +85,17 @@
     position: relative;
 }
 
+.subscriptionCard.compact {
+    padding: 16px;
+}
+
+.subscriptionCard.compact .subscriptionFeatures,
+.subscriptionCard.compact .expirationWarning,
+.subscriptionCard.compact .cancelledWarning,
+.subscriptionCard.compact .expiredWarning {
+    display: none;
+}
+
 /* Card variants based on subscription status */
 .subscriptionCard.active {
     border-color: #10b981;
@@ -185,6 +196,10 @@
 
 .subscriptionDetails {
     margin-bottom: 24px;
+}
+
+.compact .subscriptionDetails {
+    margin-bottom: 16px;
 }
 
 .planInfo {
