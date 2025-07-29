@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { parseWebhookPayload, CloudPaymentsWebhookData } from '../parseWebhookPayload';
-import { PurchaseStatus, SubscriptionStatus } from '@prisma/client';
+import { PurchaseStatus } from '@prisma/client';
+import logger from '@/utils/logger';
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
     try {
@@ -21,68 +22,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 }
 
-async function handleSubscriptionPaymentFailure(webhookData: CloudPaymentsWebhookData, paymentData: Record<string, any>) {
+async function handleSubscriptionPaymentFailure(webhookData: CloudPaymentsWebhookData) {
     // Validate required fields
     if (!webhookData.SubscriptionId || !webhookData.AccountId) {
         console.warn('Invalid subscription failure webhook data: missing SubscriptionId or AccountId');
         return;
     }
 
-    const subscription = await prisma.userSubscription.findFirst({
-        where: {
-            userId: webhookData.AccountId,
-            cloudpaymentsId: webhookData.SubscriptionId,
-        },
-        include: { plan: true },
-    });
-
-    if (!subscription) {
-        console.warn(`Subscription not found for failure: ${webhookData.SubscriptionId}`);
-        return;
-    }
-
-    // Create failed payment record
-    await prisma.subscriptionPayment.create({
-        data: {
-            subscriptionId: subscription.id,
-            amount: parseFloat(webhookData.Amount),
-            currency: webhookData.Currency,
-            status: PurchaseStatus.failed,
-            cloudpaymentsId: webhookData.SubscriptionId,
-            cloudpaymentsTransactionId: webhookData.TransactionId,
-            billingStart: new Date(),
-            billingEnd: new Date(),
-            completedAt: new Date(),
-            metadata: {
-                cloudpaymentsStatus: webhookData.Status,
-                cloudpaymentsDateTime: webhookData.DateTime,
-                cloudpaymentsTestMode: webhookData.TestMode === '1',
-                failureReason: 'Payment failed via CloudPayments webhook',
-                ...paymentData,
-            },
-        },
-    });
-
-    // Update subscription status if it's pending
-    if (subscription.status === SubscriptionStatus.pending) {
-        await prisma.userSubscription.update({
-            where: { id: subscription.id },
-            data: {
-                status: SubscriptionStatus.failed,
-                metadata: {
-                    ...(subscription.metadata as Record<string, any> | undefined),
-                    cloudpaymentsStatus: webhookData.Status,
-                    cloudpaymentsDateTime: webhookData.DateTime,
-                    cloudpaymentsTestMode: webhookData.TestMode === '1',
-                    lastFailureDate: new Date().toISOString(),
-                    failureReason: 'Payment failed via CloudPayments webhook',
-                    ...paymentData,
-                },
-            },
-        });
-    }
-
-    console.log(`Subscription payment failed for subscription ${subscription.id}`);
+    logger.info(
+        `Subscription payment failed for subscription. UserId: ${webhookData.AccountId}, SubscriptionId: ${webhookData.SubscriptionId}`
+    );
+    // console.log(`Subscription payment failed for subscription ${subscription.id}`);
 }
 
 async function handleTokenPurchaseFailure(webhookData: CloudPaymentsWebhookData, paymentData: Record<string, any>) {

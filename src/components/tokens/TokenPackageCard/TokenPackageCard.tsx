@@ -12,11 +12,7 @@ interface TokenPackageCardProps {
     isLoading: boolean;
 }
 
-export const TokenPackageCard: React.FC<TokenPackageCardProps> = ({ 
-    package: pkg, 
-    onPurchase, 
-    isLoading 
-}) => {
+export const TokenPackageCard: React.FC<TokenPackageCardProps> = ({ package: pkg, onPurchase, isLoading }) => {
     return (
         <Card isPopular={pkg.isPopular}>
             <div className={styles.packageContent}>
@@ -41,4 +37,4 @@ export const TokenPackageCard: React.FC<TokenPackageCardProps> = ({
             </div>
         </Card>
     );
-}; 
+};

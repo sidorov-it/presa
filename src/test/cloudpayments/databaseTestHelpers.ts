@@ -251,7 +251,7 @@ export async function cleanupTestData(testIds: {
     if (subscriptionIds.length > 0) {
         // Clean up subscription payments first
         await prisma.subscriptionPayment.deleteMany({
-            where: { subscriptionId: { in: subscriptionIds } },
+            where: { userSubscriptionId: { in: subscriptionIds } },
         });
 
         await prisma.userSubscription.deleteMany({

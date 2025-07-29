@@ -39,11 +39,7 @@ export async function getUserSubscriptions(userId: string) {
             where: {
                 userId,
                 status: {
-                    in: [
-                        SubscriptionStatus.active,
-                        SubscriptionStatus.cancelled,
-                        SubscriptionStatus.expired,
-                    ],
+                    in: [SubscriptionStatus.active, SubscriptionStatus.cancelled, SubscriptionStatus.expired],
                 },
             },
             include: {
@@ -172,17 +168,17 @@ export async function validateAndSyncSubscriptionStatus(userId: string): Promise
 /**
  * Expire a subscription
  */
-async function expireSubscription(subscriptionId: string): Promise<void> {
+async function expireSubscription(userSubscriptionId: string): Promise<void> {
     try {
         await prisma.userSubscription.update({
-            where: { id: subscriptionId },
+            where: { id: userSubscriptionId },
             data: {
                 status: SubscriptionStatus.expired,
             },
         });
-        console.log(`Subscription ${subscriptionId} marked as expired`);
+        console.log(`Subscription ${userSubscriptionId} marked as expired`);
     } catch (error) {
-        console.error(`Error expiring subscription ${subscriptionId}:`, error);
+        console.error(`Error expiring subscription ${userSubscriptionId}:`, error);
     }
 }
 
@@ -580,6 +576,7 @@ async function schedulePlanChange(
  */
 export async function resumeSubscription(
     userId: string,
+    subscriptionId: string,
     planId?: string
 ): Promise<{ success: boolean; subscriptionId?: string; error?: string }> {
     try {
@@ -620,20 +617,58 @@ export async function resumeSubscription(
         }
 
         // Create new subscription
-        const newSubscription = await prisma.userSubscription.create({
-            data: {
-                userId: cancelledSubscription.userId,
-                planId: targetPlan.id,
-                status: SubscriptionStatus.pending,
-                startDate: new Date(),
-                endDate: calculateSubscriptionEndDate(new Date(), targetPlan.interval),
-                nextBillingDate: calculateNextBillingDate(new Date(), targetPlan.interval),
+        // const newSubscription = await prisma.userSubscription.create({
+        //     data: {
+        //         userId: cancelledSubscription.userId,
+        //         planId: targetPlan.id,
+        //         status: SubscriptionStatus.pending,
+        //         startDate: new Date(),
+        //         endDate: calculateSubscriptionEndDate(new Date(), targetPlan.interval),
+        //         nextBillingDate: calculateNextBillingDate(new Date(), targetPlan.interval),
+        //     },
+        // });
+
+        const authToken = Buffer.from(
+            `${process.env.CLOUDPAYMENTS_PUBLIC_ID}:${process.env.CLOUDPAYMENTS_SECRET_KEY}`
+        ).toString('base64');
+
+        const response = await fetch(`https://api.cloudpayments.ru/subscriptions/cancel`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Basic ${authToken}`,
             },
+            body: JSON.stringify({
+                Id: cancelledSubscription.cloudpaymentsId,
+                description: 'Возобновление подписки',
+            }),
         });
+
+        const data = await response.json();
+        if (data.Success) {
+            //        Find the subscription and verify ownership
+            console.log('Subscription resumed successfully', data);
+            await prisma.userSubscription.update({
+                where: { id: subscriptionId },
+                data: { status: SubscriptionStatus.active },
+            });
+        } else {
+            return {
+                success: false,
+                error: 'Failed to resume subscription',
+            };
+        }
+
+        // await prisma.userSubscription.update({
+        //     where: { id: subscriptionId },
+        //     data: {
+        //         status: SubscriptionStatus.active,
+        //     },
+        // });
 
         return {
             success: true,
-            subscriptionId: newSubscription.id,
+            subscriptionId: subscriptionId,
         };
     } catch (error) {
         console.error('Error resuming subscription:', error);

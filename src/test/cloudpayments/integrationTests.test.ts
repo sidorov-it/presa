@@ -67,7 +67,7 @@ describe('CloudPayments Integration Tests', () => {
 
                 // Process subscription payment
                 const subscriptionTestData: SubscriptionTestData = {
-                    subscriptionId: subscription.id,
+                    userSubscriptionId: subscription.id,
                     userId: user.id,
                     planId: subscriptionPlan.id,
                     amount: subscriptionPlan.price,
@@ -104,7 +104,7 @@ describe('CloudPayments Integration Tests', () => {
                     packageIds: [tokenPackage.id],
                     planIds: [subscriptionPlan.id],
                     purchaseIds: [tokenPurchase.id],
-                    subscriptionIds: [subscription.id],
+                    userSubscriptionIds: [subscription.id],
                 });
             }
         });
@@ -120,7 +120,7 @@ describe('CloudPayments Integration Tests', () => {
             });
 
             try {
-                // Test token purchase webhook (no SubscriptionId)
+                // Test token purchase webhook (no userSubscriptionId)
                 const tokenTestData: TokenPurchaseTestData = {
                     purchaseId: tokenPurchase.id,
                     userId: user.id,
@@ -133,16 +133,16 @@ describe('CloudPayments Integration Tests', () => {
                 const { webhookData: tokenWebhookData, additionalData: tokenAdditionalData } =
                     createTokenPurchaseWebhookData(tokenTestData);
 
-                // Ensure no SubscriptionId is present for token purchase
-                expect(tokenWebhookData.SubscriptionId).toBeUndefined();
+                // Ensure no userSubscriptionId is present for token purchase
+                expect(tokenWebhookData.userSubscriptionId).toBeUndefined();
 
                 const tokenRequest = createMockWebhookRequest(tokenWebhookData, tokenAdditionalData);
                 const tokenResponse = await payHandler.POST(tokenRequest);
                 expect(tokenResponse.status).toBe(200);
 
-                // Test subscription webhook (with SubscriptionId)
+                // Test subscription webhook (with userSubscriptionId)
                 const subscriptionTestData: SubscriptionTestData = {
-                    subscriptionId: subscription.id,
+                    userSubscriptionId: subscription.id,
                     userId: user.id,
                     planId: subscriptionPlan.id,
                     amount: subscriptionPlan.price,
@@ -154,8 +154,8 @@ describe('CloudPayments Integration Tests', () => {
                 const { webhookData: subWebhookData, additionalData: subAdditionalData } =
                     createSubscriptionWebhookData(subscriptionTestData);
 
-                // Ensure SubscriptionId is present for subscription
-                expect(subWebhookData.SubscriptionId).toBe(subscription.cloudpaymentsId);
+                // Ensure userSubscriptionId is present for subscription
+                expect(subWebhookData.userSubscriptionId).toBe(subscription.cloudpaymentsId);
 
                 const subRequest = createMockWebhookRequest(subWebhookData, subAdditionalData);
                 const subResponse = await payHandler.POST(subRequest);
@@ -177,7 +177,7 @@ describe('CloudPayments Integration Tests', () => {
                     packageIds: [tokenPackage.id],
                     planIds: [subscriptionPlan.id],
                     purchaseIds: [tokenPurchase.id],
-                    subscriptionIds: [subscription.id],
+                    userSubscriptionIds: [subscription.id],
                 });
             }
         });
@@ -248,7 +248,7 @@ describe('CloudPayments Integration Tests', () => {
 
             try {
                 const testData: SubscriptionTestData = {
-                    subscriptionId: subScenario.subscription.id,
+                    userSubscriptionId: subScenario.subscription.id,
                     userId: subScenario.user.id,
                     planId: subScenario.plan.id,
                     amount: subScenario.plan.price,

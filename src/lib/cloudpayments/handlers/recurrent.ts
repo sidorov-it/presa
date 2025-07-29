@@ -32,10 +32,10 @@ async function handleRecurrentNotification(
     // Находим подписку по CloudPayments ID
     const subscription = await prisma.userSubscription.findFirst({
         where: {
-            cloudpaymentsId: webhookData.Id,
+            cloudpaymentsSubscriptionId: webhookData.Id,
             userId: webhookData.AccountId,
         },
-        include: { plan: true },
+        include: { subscriptionPlan: true },
     });
 
     if (!subscription) {
@@ -57,7 +57,7 @@ async function handleRecurrentNotification(
             break;
         case 'Cancelled':
             newStatus = SubscriptionStatus.cancelled;
-            updateData.cloudpaymentsId = webhookData.Id;
+            updateData.cloudpaymentsSubscriptionId = webhookData.Id;
             break;
         case 'Rejected':
             newStatus = SubscriptionStatus.failed;

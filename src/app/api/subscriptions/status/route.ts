@@ -16,7 +16,7 @@ export async function GET() {
                 userId: session.user.id,
                 status: { in: [SubscriptionStatus.active, SubscriptionStatus.cancelled] },
             },
-            include: { plan: true },
+            include: { subscriptionPlan: true },
             orderBy: { createdAt: 'desc' },
         });
 
@@ -24,7 +24,7 @@ export async function GET() {
             subscription = await prisma.userSubscription.update({
                 where: { id: subscription.id },
                 data: { status: SubscriptionStatus.expired },
-                include: { plan: true },
+                include: { subscriptionPlan: true },
             });
         }
 

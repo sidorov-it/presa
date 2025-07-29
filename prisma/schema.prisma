@@ -20,8 +20,8 @@ type BackgroundSettings {
 }
 
 type GlobalHeaderFooterConfig {
-  header Json
-  footer Json
+  header  Json
+  footer  Json
   applyTo String
 }
 
@@ -89,22 +89,22 @@ type PageBackground {
 }
 
 model User {
-  id                   String            @id @default(auto()) @map("_id") @db.ObjectId
-  email                String            @unique
-  passwordHash        String?           @map("password")
-  name                 String
-  image                String?
-  isVerified           Boolean           @default(false)
-  emailVerified        DateTime?
-  verificationToken    String?
+  id                       String            @id @default(auto()) @map("_id") @db.ObjectId
+  email                    String            @unique
+  passwordHash             String?           @map("password")
+  name                     String
+  image                    String?
+  isVerified               Boolean           @default(false)
+  emailVerified            DateTime?
+  verificationToken        String?
   verificationTokenExpires DateTime?
-  role                 String            @default("user")
-  createdVia           CreatedVia        @default(email)
-  resetPasswordToken   String?
-  resetPasswordExpires DateTime?
-  emailPreferences     EmailPreferences?
-  createdAt            DateTime          @default(now())
-  updatedAt            DateTime          @updatedAt
+  role                     String            @default("user")
+  createdVia               CreatedVia        @default(email)
+  resetPasswordToken       String?
+  resetPasswordExpires     DateTime?
+  emailPreferences         EmailPreferences?
+  createdAt                DateTime          @default(now())
+  updatedAt                DateTime          @updatedAt
 
   // Relationships
   presentations      Presentation[]
@@ -126,15 +126,15 @@ enum CreatedVia {
 }
 
 model OAuthAccount {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId        String   @db.ObjectId
-  provider      String
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String    @db.ObjectId
+  provider       String
   providerUserId String
-  accessToken   String
-  refreshToken  String?
+  accessToken    String
+  refreshToken   String?
   tokenExpiresAt DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id])
 
@@ -142,22 +142,22 @@ model OAuthAccount {
 }
 
 model Presentation {
-  id                 String              @id @default(auto()) @map("_id") @db.ObjectId
+  id                 String                    @id @default(auto()) @map("_id") @db.ObjectId
   title              String
   description        String?
   durationMinutes    Int?
   goal               String?
   audience           String?
   tone               String?
-  contentAmount      String?             @default("medium")
+  contentAmount      String?                   @default("medium")
   slides             Json
-  themeId            String?             @db.ObjectId
-  userId             String              @db.ObjectId
-  user               User                @relation(fields: [userId], references: [id])
-  isDeleted          Boolean             @default(false)
+  themeId            String?                   @db.ObjectId
+  userId             String                    @db.ObjectId
+  user               User                      @relation(fields: [userId], references: [id])
+  isDeleted          Boolean                   @default(false)
   deletedAt          DateTime?
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
+  createdAt          DateTime                  @default(now())
+  updatedAt          DateTime                  @updatedAt
   backgroundSettings BackgroundSettings?
   headerFooterConfig GlobalHeaderFooterConfig?
   llmRequests        LLMRequestHistory[]
@@ -443,66 +443,85 @@ enum SubscriptionStatus {
 
 model SubscriptionPlan {
   id          String               @id @default(auto()) @map("_id") @db.ObjectId
-  name        String              // e.g. "Месячная подписка"
+  name        String // e.g. "Месячная подписка"
   description String?
   interval    SubscriptionInterval // monthly, quarterly, semiannual
-  price       Float               // Price per billing cycle
-  currency    String              @default("RUB")
-  isActive    Boolean             @default(true)
-  isPopular   Boolean             @default(false)
-  
+  price       Float // Price per billing cycle
+  currency    String               @default("RUB")
+  isActive    Boolean              @default(true)
+  isPopular   Boolean              @default(false)
+
   // Features included in this plan
-  features    Json?               // JSON object with plan features
-  
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-  
+  features Json? // JSON object with plan features
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   subscriptions UserSubscription[]
+  payments      SubscriptionPayment[]
   // @@unique([interval])
 }
 
 model UserSubscription {
-  id              String   @id @default(cuid())
-  userId          String
-  user            User     @relation(fields: [userId], references: [id])
-  planId          String
-  plan            SubscriptionPlan @relation(fields: [planId], references: [id])
+  id     String           @id @default(auto()) @map("_id") @db.ObjectId
+  userId String           @db.ObjectId
+  user   User             @relation(fields: [userId], references: [id])
+  subscriptionPlanId String           @db.ObjectId
+  subscriptionPlan   SubscriptionPlan @relation(fields: [subscriptionPlanId], references: [id])
 
-  status          SubscriptionStatus
+  // Subscription details
+  status          SubscriptionStatus @default(pending)
   startDate       DateTime
   endDate         DateTime
-  cloudpaymentsId String?
+  nextBillingDate DateTime?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  // Payment tracking
+  cloudpaymentsSubscriptionId String? // если подписка пришла от CloudPayments
+  cloudpaymentsTransactionId String? // CloudPayments transaction ID
+  lastPaymentId   String? // Reference to last successful payment
 
-  payments        SubscriptionPayment[]
+  // Cancellation tracking
+  cancelledAt  DateTime?
+  cancelReason String?
 
-  @@index([userId])
+  // Metadata for additional data
+  metadata Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payments SubscriptionPayment[]
+
+  // @@unique([userId, planId, status]) // User can have only one active subscription per plan
 }
 
 model SubscriptionPayment {
-  id               String           @id @default(auto()) @map("_id") @db.ObjectId
-  subscriptionId   String           @db.ObjectId
-  subscription     UserSubscription @relation(fields: [subscriptionId], references: [id])
-  
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  userSubscriptionId String           @db.ObjectId
+  userSubscription   UserSubscription @relation(fields: [userSubscriptionId], references: [id])
+
+  subscriptionPlanId String           @db.ObjectId
+  subscriptionPlan   SubscriptionPlan @relation(fields: [subscriptionPlanId], references: [id])
+
+  invoiceId String?
+
   // Payment details
-  amount           Float
-  currency         String           @default("RUB")
-  status           PurchaseStatus   @default(pending)
-  
+  amount   Float
+  currency String         @default("RUB")
+  status   PurchaseStatus @default(pending)
+
   // CloudPayments integration
-  cloudpaymentsId  String?          // CloudPayments transaction ID
+  cloudpaymentsSubscriptionId            String? // CloudPayments transaction ID
   cloudpaymentsTransactionId String? // CloudPayments transaction ID
 
-  paymentMethod    String?          // Payment method used
-  
+  paymentMethod String? // Payment method used
+
   // Billing period this payment covers
-  billingStart     DateTime
-  billingEnd       DateTime?
-  
-  createdAt        DateTime         @default(now())
-  completedAt      DateTime?
-  
-  metadata         Json?
+  billingStart DateTime
+  billingEnd   DateTime?
+
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  metadata Json?
 }

@@ -38,7 +38,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
                 Authorization: `Basic ${authToken}`,
             },
             body: JSON.stringify({
-                Id: subscription.cloudpaymentsId,
+                Id: subscription.cloudpaymentsSubscriptionId,
             }),
         });
 

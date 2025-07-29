@@ -23,23 +23,26 @@ export interface SubscriptionFeatures {
 export interface UserSubscription {
     id: string;
     userId: string;
-    planId: string;
-    plan?: SubscriptionPlan;
+    subscriptionPlanId: string;
+    subscriptionPlan?: SubscriptionPlan;
     status: SubscriptionStatus;
+    nextBillingDate: Date;
     startDate: Date;
     endDate: Date;
-    cloudpaymentsId?: string;
+    cloudpaymentsSubscriptionId?: string;
+    cloudpaymentsTransactionId?: string;
     createdAt: Date;
     updatedAt: Date;
 }
 
 export interface SubscriptionPayment {
     id: string;
-    subscriptionId: string;
+    userSubscriptionId: string;
     amount: number;
     currency: string;
     status: string;
-    cloudpaymentsId?: string;
+    cloudpaymentsSubscriptionId?: string;
+    cloudpaymentsTransactionId?: string;
     paymentMethod?: string;
     billingStart?: Date;
     billingEnd?: Date;
@@ -57,20 +60,22 @@ export interface ChangeSubscriptionRequest {
 
 export interface ChangeSubscriptionResponse {
     success: boolean;
-    subscriptionId?: string;
+    userSubscriptionId?: string;
     message?: string;
     error?: string;
 }
 
 export interface CreateSubscriptionResponse {
     success: boolean;
-    subscriptionId?: string;
+    publicId: string;
     paymentData?: {
-        subscriptionId: string;
+        userSubscriptionId: string;
+        userId: string;
         amount: string;
         currency: string;
-        description: string;
-        cloudpaymentsData: CloudPaymentsSubscriptionData;
+        description: string; // Подписка {plan.name}
+        invoiceId: string;
+        planId: string;
         recurrentData: CloudPaymentsRecurrentData;
     };
     error?: string;
@@ -85,7 +90,7 @@ export interface CloudPaymentsSubscriptionData {
     accountId: string;
     skin: string;
     data: {
-        subscriptionId: string;
+        userSubscriptionId: string;
         planId: string;
         userId: string;
     };

@@ -50,7 +50,7 @@ export interface TokenPurchaseTestData {
 }
 
 export interface SubscriptionTestData {
-    subscriptionId: string;
+    userSubscriptionId: string;
     userId: string;
     planId: string;
     amount: number;
@@ -163,7 +163,7 @@ export function createSubscriptionWebhookData(testData: SubscriptionTestData): {
         PaymentAmount: String(testData.amount),
         PaymentCurrency: testData.currency,
         OperationType: 'Payment',
-        InvoiceId: testData.subscriptionId,
+        InvoiceId: testData.userSubscriptionId,
         AccountId: testData.userId,
         Status: status,
         Description: `Subscription payment: Plan ${testData.planId}`,
@@ -175,7 +175,7 @@ export function createSubscriptionWebhookData(testData: SubscriptionTestData): {
     };
 
     const additionalData = {
-        subscriptionId: testData.subscriptionId,
+        userSubscriptionId: testData.userSubscriptionId,
         planId: testData.planId,
         userId: testData.userId,
         testSubscription: testData.testMode !== false,

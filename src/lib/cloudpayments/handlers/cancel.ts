@@ -29,9 +29,9 @@ async function handleSubscriptionCancellation(webhookData: CloudPaymentsWebhookD
     const subscription = await prisma.userSubscription.findFirst({
         where: {
             userId: webhookData.AccountId,
-            cloudpaymentsId: webhookData.SubscriptionId,
+            cloudpaymentsSubscriptionId: webhookData.SubscriptionId,
         },
-        include: { plan: true },
+        include: { subscriptionPlan: true },
     });
 
     if (!subscription) {
@@ -44,7 +44,7 @@ async function handleSubscriptionCancellation(webhookData: CloudPaymentsWebhookD
         where: { id: subscription.id },
         data: {
             status: SubscriptionStatus.cancelled,
-            cloudpaymentsId: webhookData.SubscriptionId,
+            cloudpaymentsSubscriptionId: webhookData.SubscriptionId,
         },
     });
 

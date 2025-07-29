@@ -77,10 +77,9 @@ export const useSubscriptions = (): UseSubscriptionsReturn => {
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to create subscription';
             setError(errorMessage);
-            return { success: false, error: errorMessage };
+            return { success: false, error: errorMessage, publicId: '' };
         }
     }, []);
-
 
     // Cancel subscription
     const cancelSubscription = useCallback(

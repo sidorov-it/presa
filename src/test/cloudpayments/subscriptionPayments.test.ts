@@ -39,7 +39,7 @@ describe('CloudPayments Subscription Payment Tests', () => {
     describe('Subscription Check Handler', () => {
         test('should accept valid subscription check', async () => {
             const testData: SubscriptionTestData = {
-                subscriptionId: testScenario.subscription.id,
+                useruserSubscriptionId: testScenario.subscription.id,
                 userId: testScenario.user.id,
                 planId: testScenario.plan.id,
                 amount: testScenario.plan.price,
@@ -60,7 +60,7 @@ describe('CloudPayments Subscription Payment Tests', () => {
 
         // test('should reject check for non-existent subscription', async () => {
         //     const testData: SubscriptionTestData = {
-        //         subscriptionId: 'non-existent-subscription',
+        //         userSubscriptionId: 'non-existent-subscription',
         //         userId: testScenario.user.id,
         //         planId: testScenario.plan.id,
         //         amount: testScenario.plan.price,
@@ -82,7 +82,7 @@ describe('CloudPayments Subscription Payment Tests', () => {
 
         // test('should reject check for non-existent user', async () => {
         //     const testData: SubscriptionTestData = {
-        //         subscriptionId: testScenario.subscription.id,
+        //         userSubscriptionId: testScenario.subscription.id,
         //         userId: 'non-existent-user',
         //         planId: testScenario.plan.id,
         //         amount: testScenario.plan.price,
@@ -110,7 +110,7 @@ describe('CloudPayments Subscription Payment Tests', () => {
             });
 
             const testData: SubscriptionTestData = {
-                subscriptionId: testScenario.subscription.id,
+                userSubscriptionId: testScenario.subscription.id,
                 userId: testScenario.user.id,
                 planId: testScenario.plan.id,
                 amount: testScenario.plan.price,
@@ -138,7 +138,7 @@ describe('CloudPayments Subscription Payment Tests', () => {
             });
 
             const testData: SubscriptionTestData = {
-                subscriptionId: testScenario.subscription.id,
+                userSubscriptionId: testScenario.subscription.id,
                 userId: testScenario.user.id,
                 planId: testScenario.plan.id,
                 amount: testScenario.plan.price,
@@ -166,7 +166,7 @@ describe('CloudPayments Subscription Payment Tests', () => {
 
         test('should warn about amount mismatch but still accept', async () => {
             const testData: SubscriptionTestData = {
-                subscriptionId: testScenario.subscription.id,
+                userSubscriptionId: testScenario.subscription.id,
                 userId: testScenario.user.id,
                 planId: testScenario.plan.id,
                 amount: testScenario.plan.price + 100, // Different amount
@@ -196,7 +196,7 @@ describe('CloudPayments Subscription Payment Tests', () => {
     describe('Subscription Pay Handler', () => {
         test('should successfully process completed subscription payment', async () => {
             const testData: SubscriptionTestData = {
-                subscriptionId: testScenario.subscription.id,
+                userSubscriptionId: testScenario.subscription.id,
                 userId: testScenario.user.id,
                 planId: testScenario.plan.id,
                 amount: testScenario.plan.price,
@@ -230,7 +230,7 @@ describe('CloudPayments Subscription Payment Tests', () => {
             // Verify subscription payment record was created
             const paymentRecord = await prisma.subscriptionPayment.findFirst({
                 where: { 
-                    subscriptionId: testScenario.subscription.id,
+                    userSubscriptionId: testScenario.subscription.id,
                     status: 'completed',
                 },
             });
@@ -241,7 +241,7 @@ describe('CloudPayments Subscription Payment Tests', () => {
 
         test('should handle non-completed subscription payment status', async () => {
             const testData: SubscriptionTestData = {
-                subscriptionId: testScenario.subscription.id,
+                userSubscriptionId: testScenario.subscription.id,
                 userId: testScenario.user.id,
                 planId: testScenario.plan.id,
                 amount: testScenario.plan.price,
@@ -269,7 +269,7 @@ describe('CloudPayments Subscription Payment Tests', () => {
 
         test('should handle non-existent subscription gracefully', async () => {
             const testData: SubscriptionTestData = {
-                subscriptionId: 'non-existent-subscription',
+                userSubscriptionId: 'non-existent-subscription',
                 userId: testScenario.user.id,
                 planId: testScenario.plan.id,
                 amount: testScenario.plan.price,
@@ -290,7 +290,7 @@ describe('CloudPayments Subscription Payment Tests', () => {
 
         test('should calculate and update next billing date correctly', async () => {
             const testData: SubscriptionTestData = {
-                subscriptionId: testScenario.subscription.id,
+                userSubscriptionId: testScenario.subscription.id,
                 userId: testScenario.user.id,
                 planId: testScenario.plan.id,
                 amount: testScenario.plan.price,
@@ -560,7 +560,7 @@ describe('CloudPayments Subscription Payment Tests', () => {
     describe('Subscription Integration Tests', () => {
         test('should handle complete subscription flow: check -> pay -> recurrent', async () => {
             const testData: SubscriptionTestData = {
-                subscriptionId: testScenario.subscription.id,
+                userSubscriptionId: testScenario.subscription.id,
                 userId: testScenario.user.id,
                 planId: testScenario.plan.id,
                 amount: testScenario.plan.price,

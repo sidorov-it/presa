@@ -86,7 +86,7 @@ interface TokenPurchaseTestData {
 ### Subscription Test Data
 ```typescript
 interface SubscriptionTestData {
-    subscriptionId: string;
+    userSubscriptionId: string;
     userId: string;
     planId: string;
     amount: number;

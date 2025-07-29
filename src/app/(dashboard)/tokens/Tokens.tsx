@@ -9,9 +9,11 @@ import { formatTokenAmount } from '@/utils/formatTokenAmount';
 import { SubscriptionCard } from '@/components/subscriptions/SubscriptionCard';
 import { TokenPackageCard } from '@/components/tokens/TokenPackageCard/TokenPackageCard';
 import { Heading } from '@/components/ui/heading';
+import { SubscriptionManagement } from '@/components/subscriptions/SubscriptionManagement';
 import { PaymentStatus } from '@/components/tokens/PaymentStatus';
-import { FaCoins } from 'react-icons/fa';
+import { FaCoins, FaCrown } from 'react-icons/fa';
 import styles from './page.module.css';
+import { SubscriptionFeatures } from '@/components/subscriptions/SubscriptionFeatures';
 
 const Tokens = () => {
     const router = useRouter();
@@ -19,10 +21,128 @@ const Tokens = () => {
     const { data: session } = useSession();
 
     const { balance, loading: tokensLoading, packages, refreshBalance } = useTokens();
-    const { plans, activeSubscription, loading: subsLoading, createSubscription, cancelSubscription, refreshSubscriptionStatus } = useSubscriptions();
+    const {
+        plans,
+        activeSubscription,
+        loading: subsLoading,
+        createSubscription,
+        cancelSubscription,
+        refreshSubscriptionStatus,
+    } = useSubscriptions();
 
     const [activePurchaseId, setActivePurchaseId] = useState<string | null>(null);
     const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+    const handleSubscriptionPurchase = async (planId: string) => {
+        if (!session?.user) {
+            setNotification({
+                type: 'error',
+                message: 'Необходимо войти в систему для оформления подписки',
+            });
+            return;
+        }
+
+        try {
+            const result = await createSubscription(planId);
+
+            if (result.success && result.paymentData) {
+                // Open CloudPayments widget for subscription with recurrent support
+                if (window.cp?.CloudPayments) {
+                    const cp = new window.cp.CloudPayments();
+
+                    const paymentParams = {
+                        publicId: result.publicId,
+                        description: result.paymentData.description,
+                        amount: Number(result.paymentData.amount),
+                        currency: result.paymentData.currency.toUpperCase(),
+                        invoiceId: result.paymentData.invoiceId,
+                        accountId: session.user.id || '',
+                        skin: 'modern',
+                        autoClose: 3,
+                        data: {
+                            CloudPayments: {
+                                CustomerReceipt: result.paymentData.recurrentData.receipt, // чек для первого платежа
+                                recurrent: {
+                                    interval: result.paymentData.recurrentData.interval, // 'Month'
+                                    period: result.paymentData.recurrentData.period, // 1, 3, или 6
+                                    amount: result.paymentData.recurrentData.amount,
+                                    startDate: result.paymentData.recurrentData.startDate,
+                                    maxPeriods: result.paymentData.recurrentData.maxPeriods,
+                                    customerReceipt: result.paymentData.recurrentData.receipt, // чек для регулярных платежей
+                                },
+                            },
+                            subscriptionId: result.paymentData.userSubscriptionId,
+                            planId: planId,
+                            userId: session.user.id,
+                        },
+                    };
+
+                    // const paymentParams = {
+                    //     publicId: result.publicId,
+                    //     description: result.paymentData.description,
+                    //     amount: Number(result.paymentData.amount),
+                    //     currency: result.paymentData.currency.toUpperCase(),
+                    //     invoiceId: result.paymentData.invoiceId,
+                    //     accountId: session.user.id || '',
+                    //     skin: 'modern',
+                    //     autoClose: 3,
+                    //     data: {
+                    //         CloudPayments: {
+                    //             CustomerReceipt: result.paymentData.recurrentData.receipt, // чек для первого платежа
+                    //             recurrent: {
+                    //                 interval: result.paymentData.recurrentData.interval, // 'Month'
+                    //                 period: result.paymentData.recurrentData.period, // 1, 3, или 6
+                    //                 amount: result.paymentData.recurrentData.amount,
+                    //                 startDate: result.paymentData.recurrentData.startDate,
+                    //                 maxPeriods: result.paymentData.recurrentData.maxPeriods,
+                    //                 customerReceipt: result.paymentData.recurrentData.receipt, // чек для регулярных платежей
+                    //             },
+                    //         },
+                    //         userSubscriptionId: result.paymentData.userSubscriptionId,
+                    //         planId: result.paymentData.planId,
+                    //         userId: session.user.id,
+                    //     },
+                    // };
+
+                    console.debug('CloudPayments payment params:', paymentParams);
+
+                    cp.pay('charge', paymentParams, {
+                        onSuccess: function (options: any) {
+                            console.log('Subscription payment successful:', options);
+                            setNotification({
+                                type: 'success',
+                                message: 'Подписка успешно оформлена! Автоматические списания активированы.',
+                            });
+                            // Принудительно обновляем состояние подписки
+                            setTimeout(() => {
+                                refreshSubscriptionStatus();
+                            }, 1000);
+                        },
+                        onFail: function (reason: any, options: any) {
+                            console.error('Subscription payment failed:', reason, options);
+                            setNotification({
+                                type: 'error',
+                                message: 'Ошибка при оплате подписки',
+                            });
+                        },
+                        onComplete: function (paymentResult: any, options: any) {
+                            console.log('Subscription payment completed:', paymentResult, options);
+                        },
+                    });
+                } else {
+                    throw new Error('CloudPayments widget not loaded');
+                }
+            } else {
+                throw new Error(result.error || 'Failed to create subscription');
+            }
+        } catch (error) {
+            console.error('Subscription error:', error);
+            setNotification({
+                type: 'error',
+                message: error instanceof Error ? error.message : 'Ошибка при создании подписки',
+            });
+        }
+    };
 
     useEffect(() => {
         const purchaseId = searchParams.get('purchase');
@@ -41,25 +161,25 @@ const Tokens = () => {
         router.replace('/tokens');
     };
 
-    const handleSubscriptionBuy = async (planId: string) => {
-        if (!session?.user) return;
-        const result = await createSubscription(planId);
-        if (result.success && result.paymentData && window.cp?.CloudPayments) {
-            const cp = new window.cp.CloudPayments();
-            cp.pay('charge', {
-                ...result.paymentData.cloudpaymentsData,
-                data: { subscriptionId: result.paymentData.subscriptionId, planId, userId: session.user.id },
-            });
-        }
-    };
+    // const handleSubscriptionBuy = async (planId: string) => {
+    //     if (!session?.user) return;
+    //     const result = await createSubscription(planId);
+    //     if (result.success && result.paymentData && window.cp?.CloudPayments) {
+    //         const cp = new window.cp.CloudPayments();
+    //         cp.pay('charge', {
+    //             ...result.paymentData.cloudpaymentsData,
+    //             data: { subscriptionId: result.paymentData.subscriptionId, planId, userId: session.user.id },
+    //         });
+    //     }
+    // };
 
-    const handleCancelSubscription = async () => {
-        if (!activeSubscription) return;
-        await cancelSubscription(activeSubscription.id);
-        refreshSubscriptionStatus();
-    };
+    // const handleCancelSubscription = async () => {
+    //     if (!activeSubscription) return;
+    //     await cancelSubscription(activeSubscription.id);
+    //     refreshSubscriptionStatus();
+    // };
 
-    const loading = tokensLoading || subsLoading;
+    // const loading = tokensLoading || subsLoading;
 
     return (
         <div className={styles.container}>
@@ -73,25 +193,22 @@ const Tokens = () => {
                 {activePurchaseId && (
                     <div className={styles.paymentStatusCard}>
                         <h2 className={styles.sectionTitle}>Статус платежа</h2>
-                        <PaymentStatus purchaseId={activePurchaseId} onSuccess={handlePaymentSuccess} onError={() => setActivePurchaseId(null)} />
+                        <PaymentStatus
+                            purchaseId={activePurchaseId}
+                            onSuccess={handlePaymentSuccess}
+                            onError={() => setActivePurchaseId(null)}
+                        />
                     </div>
                 )}
 
-                {activeSubscription && activeSubscription.status !== 'expired' ? (
-                    <div className={styles.subscriptionInfo}>
-                        <p>Ваша подписка активна до {new Date(activeSubscription.endDate).toLocaleDateString('ru-RU')}</p>
-                        {activeSubscription.status === 'cancelled' ? (
-                            <p>Автопродление отключено</p>
-                        ) : (
-                            <button onClick={handleCancelSubscription} className={styles.cancelButton} disabled={subsLoading}>Отменить подписку</button>
-                        )}
-                    </div>
-                ) : (
-                    <div className={styles.subscriptionsGrid}>
-                        {plans.map(plan => (
-                            <SubscriptionCard key={plan.id} plan={plan} onSubscribe={handleSubscriptionBuy} isLoading={subsLoading} />
-                        ))}
-                    </div>
+                {activeSubscription && activeSubscription.status !== 'expired' && (
+                    <SubscriptionManagement
+                        subscription={activeSubscription}
+                        loading={subsLoading}
+                        error={null}
+                        refreshSubscriptionStatus={refreshSubscriptionStatus}
+                        availablePlans={plans}
+                    />
                 )}
 
                 <div className={styles.balanceCard}>
@@ -102,10 +219,51 @@ const Tokens = () => {
                     </div>
                 </div>
 
-                <div className={styles.packagesGrid}>
-                    {packages.map(pkg => (
-                        <TokenPackageCard key={pkg.id} package={pkg} onPurchase={handleTokenPurchase} isLoading={false} />
-                    ))}
+                {(!activeSubscription || activeSubscription.status === 'expired') && (
+                    <div className={styles.subscriptionsSection}>
+                        <div className={styles.sectionHeader}>
+                            <h2 className={styles.sectionTitle}>
+                                <FaCrown className={styles.sectionIcon} />
+                                Планы подписки
+                            </h2>
+                            <div className={styles.recommendedBadge}>Рекомендуем</div>
+                        </div>
+                        <p className={styles.sectionDescription}>
+                            Подписка дает доступ к расширенным возможностям и снимает лимиты
+                        </p>
+                        <SubscriptionFeatures />
+                        <div className={styles.subscriptionsGrid}>
+                            {plans.map(plan => (
+                                <SubscriptionCard
+                                    key={plan.id}
+                                    plan={plan}
+                                    onSubscribe={handleSubscriptionPurchase}
+                                    isLoading={subsLoading}
+                                    isActive={false}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                <div className={styles.packagesSection}>
+                    <div className={styles.sectionHeader}>
+                        <h2 className={styles.sectionTitle}>
+                            <FaCoins className={styles.sectionIcon} />
+                            Пакеты токенов
+                        </h2>
+                    </div>
+                    <p className={styles.sectionDescription}>Токены используются для AI-генерации контента и слайдов</p>
+                    <div className={styles.packagesGrid}>
+                        {packages.map(pkg => (
+                            <TokenPackageCard
+                                key={pkg.id}
+                                package={pkg}
+                                onPurchase={handleTokenPurchase}
+                                isLoading={false}
+                            />
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
