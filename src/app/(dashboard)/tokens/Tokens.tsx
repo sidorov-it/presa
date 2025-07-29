@@ -111,7 +111,7 @@ const Tokens = () => {
                             console.log('Subscription payment successful:', options);
                             setNotification({
                                 type: 'success',
-                                message: 'Подписка успешно оформлена! Автоматические списания активированы.',
+                                message: 'Подписка успешно оформлена!',
                             });
                             // Принудительно обновляем состояние подписки
                             setTimeout(() => {

@@ -139,33 +139,6 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
         }
     };
 
-    const handleResumeSubscription = async () => {
-        if (!subscription) return;
-        setIsRestarting(true);
-        try {
-            const response = await fetch('/api/subscriptions/resume', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    subscriptionId: subscription.id,
-                    planId: subscription.subscriptionPlanId,
-                }),
-            });
-            if (response.ok) {
-                await refreshSubscriptionStatus();
-            } else {
-                const errorData = await response.json();
-                console.error('Failed to resume subscription:', errorData);
-            }
-        } catch (error) {
-            console.error('Error resuming subscription:', error);
-        } finally {
-            setIsRestarting(false);
-        }
-    };
-
     if (loading) {
         return (
             <div className={`${styles.container} ${className || ''}`}>
@@ -282,7 +255,7 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
                             </div>
                         </div>
 
-                        {nextBillingDate && (
+                        {nextBillingDate && currentSubscription.status === 'active' && (
                             <div className={styles.metadataItem}>
                                 <FaCalendarAlt className={styles.metadataIcon} />
                                 <div>
@@ -297,7 +270,6 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
                 {/* Scenario-specific messages and actions */}
                 {isScenario1 && canCancel && (
                     <div className={styles.subscriptionActions}>
-                        <div className={styles.statusMessage}>Ваша подписка активна до {formatDate(endDate)}</div>
                         {canCancel && (
                             <button
                                 onClick={() => setShowCancelConfirm(true)}
@@ -307,22 +279,6 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
                                 Отменить подписку
                             </button>
                         )}
-                    </div>
-                )}
-
-                {isScenario2 && (
-                    <div className={styles.subscriptionActions}>
-                        <div className={styles.statusMessage}>
-                            Ваша подписка была отменена и закончится {formatDate(endDate)}
-                        </div>
-                        <button
-                            onClick={handleResumeSubscription}
-                            className={styles.renewButton}
-                            disabled={isRestarting}
-                        >
-                            <FaUndo />
-                            {isRestarting ? 'Возобновляем...' : 'Возобновить подписку'}
-                        </button>
                     </div>
                 )}
 
@@ -345,8 +301,8 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
                         <div>
                             <strong>Подписка отменена</strong>
                             <br />
-                            Вы можете пользоваться всеми возможностями до {formatDate(endDate)}. После этого подписка
-                            будет приостановлена.
+                            Вы можете пользоваться всеми возможностями до {formatDate(endDate)} После окочания действия
+                            подписки, вы сможете продлить её.
                         </div>
                     </div>
                 )}
@@ -382,7 +338,7 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
                     <div className={styles.modalContent}>
                         <h3>Отменить подписку?</h3>
                         <p>
-                            После отмены подписки вы сможете пользоваться всеми возможностями до {formatDate(endDate)}.
+                            После отмены подписки вы сможете пользоваться всеми возможностями до {formatDate(endDate)}
                             Подписку можно будет возобновить в любое время.
                         </p>
                         <div className={styles.modalActions}>
